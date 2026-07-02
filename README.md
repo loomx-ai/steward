@@ -102,3 +102,9 @@ If you enable `--executor alicloud-tag`, the RAM user also needs tag permissions
 go test ./...
 npm --prefix web run build
 ```
+
+## License
+
+Copyright 2026 Prodesire
+
+Licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for the full text, or read it at http://www.apache.org/licenses/LICENSE-2.0.
