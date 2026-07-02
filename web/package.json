@@ -11,10 +11,13 @@
     "preview": "vite preview --host 127.0.0.1"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.101.2",
     "@vitejs/plugin-react": "^5.1.2",
+    "@xyflow/react": "^12.11.1",
     "lucide-react": "^0.469.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.1",
     "typescript": "^5.7.2",
     "vite": "^6.0.7"
   },
