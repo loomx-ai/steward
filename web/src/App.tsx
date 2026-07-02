@@ -35,8 +35,8 @@ import {
   listScans,
   reconcileScan,
   updateCandidateStatus,
-} from "./api";
-import { copyForBrowser, type Copy } from "./i18n";
+} from "./lib/api";
+import { copyForBrowser, type Copy } from "./lib/i18n";
 import type {
   AuditEvent,
   CleanupCandidate,
@@ -46,7 +46,7 @@ import type {
   ResourceEdge,
   SavingsReport,
   ScanJob,
-} from "./api";
+} from "./lib/api";
 
 const resourceTypes = [
   "",
@@ -235,7 +235,7 @@ export function App() {
     setLoading(true);
     setMessage("");
     try {
-      const result = await reconcileScan(activeScanId);
+      const result = await reconcileScan(activeScanId, "local-user");
       setMessage(
         copy.messages.analysisCompleted(
           result.edge_count,
@@ -299,7 +299,7 @@ export function App() {
     setLoading(true);
     setMessage("");
     try {
-      const plan = await createPlan(selectedCandidateIds, {
+      const plan = await createPlan(selectedCandidateIds, "local-user", {
         maxResourceCount: numericLimit(maxResourceCount),
         maxRegionCount: numericLimit(maxRegionCount),
         maxHighRiskCount: numericLimit(maxHighRiskCount) ?? 0,
@@ -334,7 +334,7 @@ export function App() {
     setLoading(true);
     setMessage("");
     try {
-      const plan = await approvePlan(id);
+      const plan = await approvePlan(id, "local-user");
       setMessage(copy.messages.planApproved(shortID(plan.id)));
       await refresh(activeScanId);
       setSelectedPlan(await getPlan(id));
@@ -353,7 +353,7 @@ export function App() {
     setLoading(true);
     setMessage("");
     try {
-      const plan = await executePlan(id);
+      const plan = await executePlan(id, "local-user");
       setMessage(copy.messages.planExecuted(shortID(plan.id)));
       await refresh(activeScanId);
       setSelectedPlan(await getPlan(id));

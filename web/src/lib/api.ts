@@ -197,10 +197,11 @@ export function getResource(id: string): Promise<Resource> {
 
 export function reconcileScan(
   scanId: string,
+  actor: string,
 ): Promise<{ edge_count: number; candidate_count: number }> {
   return request(`/api/scans/${scanId}/reconcile`, {
     method: "POST",
-    body: JSON.stringify({ actor: "local-user" }),
+    body: JSON.stringify({ actor }),
   });
 }
 
@@ -232,13 +233,14 @@ export function updateCandidateStatus(
 
 export function createPlan(
   candidateIds: string[],
+  actor: string,
   limits: PlanLimitsInput = {},
 ): Promise<CleanupPlan> {
   return request<CleanupPlan>("/api/plans", {
     method: "POST",
     body: JSON.stringify({
       candidate_ids: candidateIds,
-      actor: "local-user",
+      actor,
       max_resource_count: limits.maxResourceCount,
       max_region_count: limits.maxRegionCount,
       max_high_risk_count: limits.maxHighRiskCount ?? 0,
@@ -254,20 +256,21 @@ export function getPlan(id: string): Promise<PlanDetail> {
   return request<PlanDetail>(`/api/plans/${id}`);
 }
 
-export function approvePlan(id: string): Promise<CleanupPlan> {
+export function approvePlan(
+  id: string,
+  actor: string,
+  comment = "approved in local console",
+): Promise<CleanupPlan> {
   return request<CleanupPlan>(`/api/plans/${id}/approve`, {
     method: "POST",
-    body: JSON.stringify({
-      actor: "local-user",
-      comment: "approved in local console",
-    }),
+    body: JSON.stringify({ actor, comment }),
   });
 }
 
-export function executePlan(id: string): Promise<CleanupPlan> {
+export function executePlan(id: string, actor: string): Promise<CleanupPlan> {
   return request<CleanupPlan>(`/api/plans/${id}/execute`, {
     method: "POST",
-    body: JSON.stringify({ actor: "local-user" }),
+    body: JSON.stringify({ actor }),
   });
 }
 
