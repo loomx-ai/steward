@@ -1,0 +1,11 @@
+.cloud-steward/
+bin/
+coverage.out
+tmp/
+
+web/node_modules/
+web/.vite/
+web/tsconfig.tsbuildinfo
+
+.env
+.DS_Store
