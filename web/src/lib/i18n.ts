@@ -128,6 +128,43 @@ export type Copy = {
     blocked: string;
     pending: string;
   };
+  nav: {
+    overview: string;
+    scans: string;
+    resources: string;
+    candidates: string;
+    plans: string;
+    reports: string;
+    audit: string;
+  };
+  overview: {
+    pipelineTitle: string;
+    needsYou: string;
+    scanned: string;
+    analyzed: string;
+    toReview: string;
+    toApprove: string;
+    executed: string;
+    reviewCta: string;
+    approveCta: string;
+    failedScans: string;
+    recentActivity: string;
+    allClear: string;
+  };
+  guardrail: {
+    impactTitle: string;
+    resources: string;
+    regions: string;
+    highRisk: string;
+    totalSavings: string;
+    blockedSkipped: string;
+    liveWarning: string;
+    liveAck: string;
+    confirmApprove: string;
+    confirmExecute: string;
+    cancel: string;
+  };
+  actorLabel: string;
   messages: {
     requestFailed: string;
     scanFailed: string;
@@ -308,6 +345,43 @@ export const copies: Record<Locale, Copy> = {
       blocked: "blocked",
       pending: "pending",
     },
+    nav: {
+      overview: "Overview",
+      scans: "Scans",
+      resources: "Resources",
+      candidates: "Cleanup",
+      plans: "Plans",
+      reports: "Reports",
+      audit: "Audit",
+    },
+    overview: {
+      pipelineTitle: "Current scan progress",
+      needsYou: "Needs you",
+      scanned: "Scanned",
+      analyzed: "Analyzed",
+      toReview: "to review",
+      toApprove: "to approve",
+      executed: "Execute",
+      reviewCta: "Review",
+      approveCta: "Approve",
+      failedScans: "scan failed",
+      recentActivity: "Recent activity",
+      allClear: "Nothing needs your attention right now.",
+    },
+    guardrail: {
+      impactTitle: "Impact summary",
+      resources: "Resources",
+      regions: "Regions",
+      highRisk: "High-risk items",
+      totalSavings: "Estimated monthly savings",
+      blockedSkipped: "Blocked items (will be skipped)",
+      liveWarning: "This is a LIVE run and will act on real resources.",
+      liveAck: "I understand this will modify live resources",
+      confirmApprove: "Approve plan",
+      confirmExecute: "Execute plan",
+      cancel: "Cancel",
+    },
+    actorLabel: "Actor",
     messages: {
       requestFailed: "request failed",
       scanFailed: "scan failed",
@@ -487,6 +561,43 @@ export const copies: Record<Locale, Copy> = {
       blocked: "阻塞",
       pending: "待执行",
     },
+    nav: {
+      overview: "概览",
+      scans: "扫描",
+      resources: "资源·拓扑",
+      candidates: "清理项",
+      plans: "计划",
+      reports: "复盘",
+      audit: "审计",
+    },
+    overview: {
+      pipelineTitle: "当前扫描进度",
+      needsYou: "待你处理",
+      scanned: "已扫描",
+      analyzed: "已分析",
+      toReview: "待审查",
+      toApprove: "待审批",
+      executed: "执行",
+      reviewCta: "去审查",
+      approveCta: "去审批",
+      failedScans: "扫描失败",
+      recentActivity: "最近活动",
+      allClear: "当前没有需要你处理的事项。",
+    },
+    guardrail: {
+      impactTitle: "影响摘要",
+      resources: "资源",
+      regions: "地域",
+      highRisk: "高风险项",
+      totalSavings: "预计每月可省",
+      blockedSkipped: "被拦截项(将跳过)",
+      liveWarning: "这是实操(LIVE)执行,会作用于真实资源。",
+      liveAck: "我已知晓这会修改真实资源",
+      confirmApprove: "确认审批",
+      confirmExecute: "确认执行",
+      cancel: "取消",
+    },
+    actorLabel: "操作者",
     messages: {
       requestFailed: "请求失败",
       scanFailed: "扫描失败",
