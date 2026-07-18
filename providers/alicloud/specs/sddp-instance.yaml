@@ -1,0 +1,28 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SDDP::Instance
+  class: security.data_protection
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/?p=sddp#/sddp/assetCenter/manager/{regionId}"
+  displayNames:
+    zh-CN: 数据安全中心实例
+    en-US: Data Security Center Instance
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SDDP.DescribeUserStatus
+    itemsPath: UserStatus
+    identityPath: InstanceId
+    statePath: Purchased
+fields:
+  state: Purchased
+  chargeType: ChargeType
+  authorized: Authed
+  trial: Trail
+  remainingDays: RemainDays
+  releaseTime: ReleaseTime

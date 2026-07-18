@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::Instance
+  class: compute.instance
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/server/region/{regionId}?instanceId={nativeId}"
+
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DescribeInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.Instance
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  enrich:
+    operation: AlibabaCloud.DescribeInstances
+    parameters:
+      RegionId: scope.location
+      InstanceIds: resources.nativeIdsJson
+      MaxResults: resources.count
+    itemsPath: Instances.Instance
+    identityPath: InstanceId
+    maxBatchSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: CreationTime
+  tags: Tags.Tag
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpc_id
+  - type: member_of
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vswitch_id
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: security_group_ids
+  - type: uses
+    targetType: ACS::ECS::NetworkInterface
+    targetIdPath: network_interface_ids
+actions:
+  delete:
+    operation: AlibabaCloud.DeleteInstance
+    parameters:
+      InstanceId: resource.nativeId
+      Force: true
+      ForceStop: true
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DescribeInstances
+      parameters:
+        RegionId: scope.location
+        InstanceIds: resource.nativeIdsJson
+        MaxResults: 1
+      itemsPath: Instances.Instance
+      identityPath: InstanceId
+      statePath: Status
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.ModifyInstanceAttribute
+        parameters:
+          InstanceId: resource.nativeId
+          DeletionProtection: false

@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ApiGateway::Instance
+  class: network.api_gateway
+presentation:
+  consoleLinkTemplate: "https://apigateway.console.aliyun.com/#/{regionId}/dashboard/view?instance={nativeId}"
+  displayNames:
+    zh-CN: API 网关实例
+    en-US: API Gateway Instance
+  icon: gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ApiGateway.DescribeInstances
+    itemsPath: Instances.InstanceAttribute
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 500
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: CreatedTime
+  chargeType: InstanceChargeType
+  instanceType: InstanceType
+  instanceSpec: InstanceSpec
+  vpcId: UserVpcId
+  vSwitchId: UserVswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.ApiGateway.DeleteInstance
+    parameters:
+      InstanceId: resource.nativeId
+    preconditions:
+      - path: InstanceChargeType
+        allowedValues: [PayAsYouGo]
+        reason: only pay-as-you-go API Gateway instances can be deleted through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ApiGateway.DescribeInstances
+      parameters:
+        InstanceId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: Instances.InstanceAttribute
+      identityPath: InstanceId
+      statePath: Status

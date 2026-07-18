@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ADB::DBClusterLakeVersion
+  class: database.analytics
+presentation:
+  consoleLinkTemplate: "https://ads.console.aliyun.com/adb/{regionId}/instances/v5/{nativeId}/basic"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ADB.DescribeDBClusters
+    parameters:
+      RegionId: scope.location
+      DBClusterVersion: "5.0"
+    itemsPath: Items.DBCluster
+    identityPath: DBClusterId
+    statePath: DBClusterStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DBClusterDescription
+  state: DBClusterStatus
+  createdAt: CreateTime
+  vpcId: VPCId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.ADB.DeleteDBCluster
+    parameters:
+      DBClusterId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ADB.DescribeDBClusters
+      parameters:
+        RegionId: scope.location
+        DBClusterIds: resource.nativeId
+        DBClusterVersion: "5.0"
+        PageSize: 1
+      itemsPath: Items.DBCluster
+      identityPath: DBClusterId
+      statePath: DBClusterStatus

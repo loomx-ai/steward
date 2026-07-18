@@ -1,0 +1,70 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterVpcAttachment
+  class: network.vpc_attachment
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}/{cenId}/{transitRouterId}"
+  displayNames:
+    zh-CN: CEN 地域内连接
+    en-US: CEN Intra-region Connection
+  fieldDisplayNames:
+    cenId:
+      zh-CN: 云企业网实例 ID
+      en-US: CEN Instance ID
+    transitRouterId:
+      zh-CN: 转发路由器 ID
+      en-US: Transit Router ID
+    vpcId:
+      zh-CN: 专有网络 ID
+      en-US: VPC ID
+    regionId:
+      zh-CN: 地域
+      en-US: Region
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterVpcAttachments
+    parameters:
+      RegionId: scope.location
+    itemsPath: TransitRouterAttachments
+    identityPath: TransitRouterAttachmentId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: TransitRouterAttachmentName
+  state: Status
+  createdAt: CreationTime
+  regionId: VpcRegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  vpcId: VpcId
+  zoneMappings: ZoneMappings
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterVpcAttachment
+    parameters:
+      TransitRouterAttachmentId: resource.nativeId
+      DryRun: false
+      Force: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterVpcAttachments
+      parameters:
+        CenId: resource.normalized.cenId
+        RegionId: resource.normalized.regionId
+        TransitRouterAttachmentId: resource.nativeId
+        MaxResults: 1
+      itemsPath: TransitRouterAttachments
+      identityPath: TransitRouterAttachmentId
+      statePath: Status

@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CloudStorageGateway::Gateway
+  class: storage.gateway
+presentation:
+  consoleLinkTemplate: "https://sgwnew.console.aliyun.com/#/gatewayInfo/{nativeId}"
+  displayNames:
+    zh-CN: 云存储网关
+    en-US: Cloud Storage Gateway
+  icon: gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CloudStorageGateway.DescribeGateways
+    parameters:
+      ResourceRegionId: scope.location
+    itemsPath: Gateways.Gateway
+    identityPath: GatewayId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreatedTime
+  gatewayRegionId: GatewayRegionId
+  gatewayType: GatewayType
+  isPostPaid: IsPostPaid
+  storageBundleId: StorageBundleId
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.CloudStorageGateway.DeleteGateway
+    parameters:
+      GatewayId: resource.nativeId
+    preconditions:
+      - path: IsPostPaid
+        allowedValues: ["true"]
+        reason: only pay-as-you-go Cloud Storage Gateway instances can be deleted through the product API
+      - path: Status
+        allowedValues: [Initialized, Activated, Running, Unknown, Failed, Stopped]
+        reason: the Cloud Storage Gateway state does not permit deletion
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CloudStorageGateway.DescribeGateway
+      parameters:
+        GatewayId: resource.nativeId
+      itemsPath: $
+      identityPath: GatewayId
+      statePath: Status

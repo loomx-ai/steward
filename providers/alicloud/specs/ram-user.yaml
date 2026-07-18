@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RAM::User
+  class: identity.user
+presentation:
+  consoleLinkTemplate: "https://ram.console.aliyun.com/"
+  displayNames:
+    zh-CN: RAM 用户
+    en-US: RAM User
+  icon: user
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RAM.ListUsers
+    itemsPath: Users.User
+    identityPath: UserName
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxItems
+      maxPageSize: 1000
+fields:
+  name: UserName
+  displayName: DisplayName
+  createdAt: CreateDate
+  updatedAt: UpdateDate
+  userId: UserId
+actions:
+  delete:
+    operation: AlibabaCloud.RAM.DeleteUser
+    parameters:
+      UserName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RAM.GetUser
+      parameters:
+        UserName: resource.nativeId
+      itemsPath: User
+      identityPath: UserName

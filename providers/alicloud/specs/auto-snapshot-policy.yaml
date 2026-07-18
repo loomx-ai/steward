@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::AutoSnapshotPolicy
+  class: storage.snapshot_policy
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/autoSnapshotPolicyDetail/{regionId}/{nativeId}/detail"
+  icon: snapshot
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeAutoSnapshotPolicyEx
+    parameters:
+      RegionId: scope.location
+    itemsPath: AutoSnapshotPolicies.AutoSnapshotPolicy
+    identityPath: AutoSnapshotPolicyId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: AutoSnapshotPolicyName
+  state: Status
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: DeleteAutoSnapshotPolicy
+    parameters:
+      regionId: scope.location
+      autoSnapshotPolicyId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeAutoSnapshotPolicyEx
+      parameters:
+        RegionId: scope.location
+        AutoSnapshotPolicyId: resource.nativeId
+        PageSize: 1
+      itemsPath: AutoSnapshotPolicies.AutoSnapshotPolicy
+      identityPath: AutoSnapshotPolicyId
+      statePath: Status

@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Live::Domain
+  class: media.live_domain
+presentation:
+  consoleLinkTemplate: "https://live.console.aliyun.com/"
+  displayNames:
+    zh-CN: 视频直播域名
+    en-US: ApsaraVideo Live Domain
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Live.DescribeLiveUserDomains
+    itemsPath: Domains.PageData
+    identityPath: DomainName
+    statePath: LiveDomainStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DomainName
+  state: LiveDomainStatus
+  createdAt: GmtCreated
+  updatedAt: GmtModified
+  domainType: LiveDomainType
+  resourceGroupId: ResourceGroupId
+  cname: Cname
+actions:
+  delete:
+    operation: AlibabaCloud.Live.DeleteLiveDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Live.DescribeLiveUserDomains
+      parameters:
+        DomainName: resource.nativeId
+        DomainSearchType: full_match
+        PageSize: 1
+      itemsPath: Domains.PageData
+      identityPath: DomainName
+      statePath: LiveDomainStatus

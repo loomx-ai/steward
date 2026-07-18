@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::RouteTable
+  class: network.route_table
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/route-tables/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeRouteTableList
+    parameters:
+      RegionId: scope.location
+    itemsPath: RouterTableList.RouterTableListType
+    identityPath: RouteTableId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: RouteTableName
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+  routeTableType: RouteTableType
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: DeleteRouteTable
+    parameters:
+      RegionId: scope.location
+      RouteTableId: resource.nativeId
+    preconditions:
+      - path: RouteTableType
+        allowedValues: [Custom]
+        reason: only custom VPC route tables can be deleted through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeRouteTableList
+      parameters:
+        RegionId: scope.location
+        RouteTableId: resource.nativeId
+        PageSize: 1
+      itemsPath: RouterTableList.RouterTableListType
+      identityPath: RouteTableId
+      statePath: Status

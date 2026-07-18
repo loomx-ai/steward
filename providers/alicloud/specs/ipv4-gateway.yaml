@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::Ipv4Gateway
+  class: network.ipv4_gateway
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/ipv4-gateways/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListIpv4Gateways
+    parameters:
+      RegionId: scope.location
+    itemsPath: Ipv4GatewayModels
+    identityPath: Ipv4GatewayId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Ipv4GatewayName
+  state: Status
+  createdAt: GmtCreate
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: DeleteIpv4Gateway
+    parameters:
+      RegionId: scope.location
+      Ipv4GatewayId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListIpv4Gateways
+      parameters:
+        RegionId: scope.location
+        Ipv4GatewayId: resource.nativeId
+        MaxResults: 1
+      itemsPath: Ipv4GatewayModels
+      identityPath: Ipv4GatewayId
+      statePath: Status

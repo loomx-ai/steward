@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::FC::Service
+  class: serverless.service
+presentation:
+  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{nativeId}/functions"
+  displayNames:
+    zh-CN: 函数计算服务
+    en-US: Function Compute Service
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.FC.ListServices
+    itemsPath: services
+    identityPath: serviceName
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+      pageSizeParameter: limit
+      maxPageSize: 100
+fields:
+  name: serviceName
+  createdAt: createdTime
+  updatedAt: lastModifiedTime
+  serviceId: serviceId
+  role: role
+  vpcId: vpcConfig.vpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.FC.DeleteService
+    parameters:
+      serviceName: resource.nativeId
+      accountId: resource.normalized.accountId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.FC.ListServices
+      parameters:
+        prefix: resource.nativeId
+        limit: 1
+      itemsPath: services
+      identityPath: serviceName

@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::Disk
+  class: storage.block
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/diskdetail/{nativeId}/detail?regionId={regionId}"
+  icon: disk
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeDisks
+    parameters:
+      RegionId: scope.location
+    itemsPath: Disks.Disk
+    identityPath: DiskId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  enrich:
+    operation: DescribeDisks
+    parameters:
+      RegionId: scope.location
+      DiskIds: resources.nativeIdsJson
+      MaxResults: resources.count
+    itemsPath: Disks.Disk
+    identityPath: DiskId
+    maxBatchSize: 100
+fields:
+  name: DiskName
+  state: Status
+  createdAt: CreationTime
+relationships:
+  - type: attached_to
+    targetType: ACS::ECS::Instance
+    targetIdPath: attached_instance_id
+actions:
+  delete:
+    operation: DeleteDisk
+    parameters:
+      DiskId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeDisks
+      parameters:
+        RegionId: scope.location
+        DiskIds: resource.nativeIdsJson
+        MaxResults: 1
+      itemsPath: Disks.Disk
+      identityPath: DiskId
+      statePath: Status

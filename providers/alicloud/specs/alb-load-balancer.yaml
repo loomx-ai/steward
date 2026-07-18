@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ALB::LoadBalancer
+  class: network.load_balancer
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/alb/{regionId}/albs/{nativeId}"
+  icon: load-balancer
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ALB.ListLoadBalancers
+    itemsPath: LoadBalancers
+    identityPath: LoadBalancerId
+    statePath: LoadBalancerStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: LoadBalancerName
+  state: LoadBalancerStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.ALB.DeleteLoadBalancer
+    parameters:
+      LoadBalancerId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ALB.ListLoadBalancers
+      parameters:
+        LoadBalancerIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: LoadBalancers
+      identityPath: LoadBalancerId
+      statePath: LoadBalancerStatus
+    deletionProtection:
+      path: DeletionProtectionConfig.Enabled
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.ALB.DisableDeletionProtection
+        parameters:
+          ResourceId: resource.nativeId

@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DdosCoo::Instance
+  class: security.ddos_protection
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/?p=ddoscoo#/instance/{regionId}"
+  displayNames:
+    zh-CN: DDoS 高防实例
+    en-US: Anti-DDoS Proxy Instance
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DdosCoo.DescribeInstances
+    parameters:
+      PageNumber: "1"
+      PageSize: "10"
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Remark
+  state: Status
+  createdAt: CreateTime
+  expireTime: ExpireTime
+  edition: Edition
+  ip: Ip
+actions:
+  delete:
+    operation: AlibabaCloud.DdosCoo.ReleaseInstance
+    parameters:
+      InstanceId: resource.nativeId
+    preconditions:
+      - path: Status
+        allowedValues: ["2"]
+        reason: only expired Anti-DDoS Proxy instances can be released through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DdosCoo.DescribeInstances
+      parameters:
+        InstanceIds: resources.nativeIds
+        PageNumber: "1"
+        PageSize: "1"
+      itemsPath: Instances
+      identityPath: InstanceId
+      statePath: Status

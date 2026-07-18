@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PrivateZone::Zone
+  class: dns.private_zone
+presentation:
+  consoleLinkTemplate: "https://dnsnext.console.aliyun.com/privateDNS/zones/{nativeId}/records"
+  displayNames:
+    zh-CN: 云解析 PrivateZone
+    en-US: PrivateZone Zone
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PrivateZone.DescribeZones
+    itemsPath: Zones.Zone
+    identityPath: ZoneId
+    statePath: DnsGroupChanging
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalItems
+      maxPageSize: 100
+fields:
+  name: ZoneName
+  state: DnsGroupChanging
+  createdAt: CreateTimestamp
+  zoneType: ZoneType
+  recordCount: RecordCount
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.PrivateZone.DeleteZone
+    parameters:
+      ZoneId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.PrivateZone.DescribeZones
+      parameters:
+        Keyword: resource.normalized.name
+        SearchMode: EXACT
+        PageSize: 1
+      itemsPath: Zones.Zone
+      identityPath: ZoneId
+      statePath: DnsGroupChanging

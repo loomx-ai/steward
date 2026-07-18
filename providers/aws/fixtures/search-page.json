@@ -1,0 +1,25 @@
+{
+  "request_id": "aws-search-request-1",
+  "next_token": "aws-page-2",
+  "resources": [
+    {
+      "arn": "arn:aws:iam::123456789012:role/Admin",
+      "native_type": "AWS::IAM::Role",
+      "resource_type": "iam:role",
+      "service": "iam",
+      "account_id": "123456789012",
+      "name": "Admin",
+      "properties": {"tags": {"owner": "platform"}}
+    },
+    {
+      "arn": "arn:aws:ec2:us-east-1:123456789012:instance/i-123",
+      "native_type": "AWS::EC2::Instance",
+      "resource_type": "ec2:instance",
+      "service": "ec2",
+      "region": "us-east-1",
+      "account_id": "123456789012",
+      "name": "worker",
+      "properties": {"state": "running", "tags": {"Name": "worker"}}
+    }
+  ]
+}

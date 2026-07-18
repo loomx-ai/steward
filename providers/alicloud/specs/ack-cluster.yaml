@@ -1,0 +1,98 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ACK::Cluster
+  class: container.cluster
+presentation:
+  consoleLinkTemplate: "https://cs.console.aliyun.com/#/k8s/cluster/{nativeId}"
+  displayNames:
+    zh-CN: 容器服务集群
+    en-US: Container Service Cluster
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DescribeClustersForRegion
+    parameters:
+      region_id: scope.location
+      page_number: 1
+      page_size: 100
+    itemsPath: clusters
+    identityPath: cluster_id
+    statePath: state
+    supportedRegions:
+      - cn-beijing
+      - cn-zhengzhou-jva
+      - cn-heyuan
+      - cn-zhangjiakou
+      - ap-northeast-2
+      - ap-northeast-1
+      - ap-southeast-1
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-6
+      - ap-southeast-7
+      - ap-southeast-8
+      - cn-wulanchabu
+      - cn-qingdao
+      - cn-wuhan-lr
+      - cn-shanghai
+      - cn-hongkong
+      - cn-shenzhen
+      - cn-nanjing
+      - cn-fuzhou
+      - cn-chengdu
+      - cn-guangzhou
+      - cn-huhehaote
+      - cn-hangzhou
+      - cn-zhongwei
+      - eu-west-2
+      - na-south-1
+      - us-west-1
+      - us-east-1
+      - eu-central-1
+      - eu-west-1
+      - us-southeast-1
+      - me-central-1
+      - me-east-1
+      - cn-north-2-gov-1
+      - cn-heyuan-acdr-1
+      - cn-wulanchabu-gic-1
+      - cn-shanghai-finance-1
+      - cn-beijing-finance-1
+      - cn-shenzhen-finance-1
+      - cn-hangzhou-finance
+    pagination:
+      type: page-number
+      pageParameter: page_number
+      pageSizeParameter: page_size
+      totalPath: page_info.total_count
+      maxPageSize: 100
+  detail:
+    operation: DescribeClusterDetail
+    itemsPath: Cluster
+    identityPath: cluster_id
+fields:
+  name: name
+  state: state
+  createdAt: created
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.DeleteCluster
+    idempotency: readback
+    waiter: ack_task_terminal
+extensions:
+  hook: alicloud.ack.cluster

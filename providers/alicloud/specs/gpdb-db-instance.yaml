@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::GPDB::DBInstance
+  class: database.analytics
+presentation:
+  consoleLinkTemplate: "https://gpdbnext.console.aliyun.com/gpdb/{regionId}/list/nav/{nativeId}/StorageElastic/basic"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GPDB.DescribeDBInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items.DBInstance
+    identityPath: DBInstanceId
+    statePath: DBInstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalRecordCount
+      maxPageSize: 100
+fields:
+  name: DBInstanceDescription
+  state: DBInstanceStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.GPDB.DeleteDBInstance
+    parameters:
+      DBInstanceId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.GPDB.DescribeDBInstances
+      parameters:
+        RegionId: scope.location
+        DBInstanceIds: resource.nativeId
+        PageSize: 1
+      itemsPath: Items.DBInstance
+      identityPath: DBInstanceId
+      statePath: DBInstanceStatus

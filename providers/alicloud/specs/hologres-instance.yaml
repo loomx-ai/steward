@@ -1,0 +1,37 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Hologram::Instance
+  class: database.analytics
+presentation:
+  consoleLinkTemplate: "https://hologram.console.aliyun.com/"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Hologram.ListInstances
+    itemsPath: InstanceList
+    identityPath: InstanceId
+    statePath: InstanceStatus
+fields:
+  name: InstanceName
+  state: InstanceStatus
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: AlibabaCloud.Hologram.DeleteInstance
+    parameters:
+      instanceId: resource.nativeId
+      RegionId: scope.location
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Hologram.GetInstance
+      parameters:
+        instanceId: resource.nativeId
+      itemsPath: Instance
+      identityPath: InstanceId
+      statePath: InstanceStatus

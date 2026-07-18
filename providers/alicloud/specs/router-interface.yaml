@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::RouterInterface
+  class: network.peer_connection
+presentation:
+  consoleLinkTemplate: "https://expressconnect.console.aliyun.com/peerconnection/{regionId}/vpc2vpc?ConnectionType=vpc2vpc&ProductForm=expressconnect&RouterInterfaceId={nativeId}&TabKey=vbr2vpc"
+  displayNames:
+    zh-CN: 高速通道路由器接口
+    en-US: Express Connect Router Interface
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeRouterInterfaces
+    parameters:
+      RegionId: scope.location
+    itemsPath: RouterInterfaceSet.RouterInterfaceType
+    identityPath: RouterInterfaceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcInstanceId
+  acceptingVpcId: OppositeVpcInstanceId
+  routerId: RouterId
+  routerType: RouterType
+  oppositeInterfaceId: OppositeInterfaceId
+  oppositeRouterId: OppositeRouterId
+  oppositeRouterType: OppositeRouterType
+  oppositeRegionId: OppositeRegionId
+  role: Role
+  chargeType: ChargeType
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: acceptingVpcId
+actions:
+  delete:
+    operation: DeleteRouterInterface
+    deletionCheckTimeoutSeconds: 120
+    parameters:
+      RegionId: scope.location
+      RouterInterfaceId: resource.nativeId
+      Force: true
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeRouterInterfaces
+      parameters:
+        RegionId: scope.location
+        Filter.1.Key: RouterInterfaceId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 1
+      itemsPath: RouterInterfaceSet.RouterInterfaceType
+      identityPath: RouterInterfaceId
+      statePath: Status

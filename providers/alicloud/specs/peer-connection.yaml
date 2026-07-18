@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::PeerConnection
+  class: network.peer_connection
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpcpeer/{regionId}/peer-connections/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListVpcPeerConnections
+    parameters:
+      RegionId: scope.location
+    itemsPath: VpcPeerConnects
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: GmtCreate
+  vpcId: Vpc.VpcId
+  acceptingVpcId: AcceptingVpc.VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: acceptingVpcId
+actions:
+  delete:
+    operation: DeleteVpcPeerConnection
+    parameters:
+      InstanceId: resource.nativeId
+      Force: false
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListVpcPeerConnections
+      parameters:
+        RegionId: scope.location
+        InstanceId: resource.nativeId
+        MaxResults: 1
+      itemsPath: VpcPeerConnects
+      identityPath: InstanceId
+      statePath: Status

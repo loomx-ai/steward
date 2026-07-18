@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Ga::BandwidthPackage
+  class: network.bandwidth_package
+presentation:
+  consoleLinkTemplate: "https://ga.console.aliyun.com/"
+  displayNames:
+    zh-CN: 全球加速带宽包
+    en-US: Global Accelerator Bandwidth Package
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GA.ListBandwidthPackages
+    parameters:
+      RegionId: cn-hangzhou
+    itemsPath: BandwidthPackages
+    identityPath: BandwidthPackageId
+    statePath: State
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: Name
+  state: State
+  createdAt: CreateTime
+  chargeType: ChargeType
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.GA.DeleteBandwidthPackage
+    parameters:
+      RegionId: cn-hangzhou
+      BandwidthPackageId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.GA.ListBandwidthPackages
+      parameters:
+        RegionId: cn-hangzhou
+        BandwidthPackageId: resource.nativeId
+        PageSize: 1
+      itemsPath: BandwidthPackages
+      identityPath: BandwidthPackageId
+      statePath: State

@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLB::LoadBalancer
+  class: network.load_balancer
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/slb/{regionId}/slbs/{nativeId}"
+  icon: load-balancer
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SLB.DescribeLoadBalancers
+    parameters:
+      RegionId: scope.location
+    itemsPath: LoadBalancers.LoadBalancer
+    identityPath: LoadBalancerId
+    statePath: LoadBalancerStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: LoadBalancerName
+  state: LoadBalancerStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.SLB.DeleteLoadBalancer
+    parameters:
+      RegionId: scope.location
+      LoadBalancerId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLB.DescribeLoadBalancers
+      parameters:
+        RegionId: scope.location
+        LoadBalancerId: resource.nativeId
+        PageSize: 1
+      itemsPath: LoadBalancers.LoadBalancer
+      identityPath: LoadBalancerId
+      statePath: LoadBalancerStatus
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.SLB.DescribeLoadBalancerAttribute
+        parameters:
+          RegionId: scope.location
+          LoadBalancerId: resource.nativeId
+        itemsPath: $
+        identityPath: LoadBalancerId
+        statePath: LoadBalancerStatus
+      path: DeleteProtection
+      enabledValues:
+        - "on"
+      disable:
+        operation: AlibabaCloud.SLB.SetLoadBalancerDeleteProtection
+        parameters:
+          RegionId: scope.location
+          LoadBalancerId: resource.nativeId
+          DeleteProtection: "off"

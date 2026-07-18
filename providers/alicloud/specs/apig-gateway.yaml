@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::APIG::Gateway
+  class: network.api_gateway
+presentation:
+  consoleLinkTemplate: "https://apig.console.aliyun.com/#/{regionId}/gateway/{nativeId}/detail"
+  displayNames:
+    zh-CN: 云原生 API 网关
+    en-US: Cloud-native API Gateway
+  icon: gateway
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.APIG.ListGateways
+    itemsPath: data.items
+    identityPath: gatewayId
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalSize
+      maxPageSize: 100
+fields:
+  name: name
+  state: status
+  createdAt: createTimestamp
+  resourceGroupId: resourceGroupId
+  gatewayType: gatewayType
+  vpcId: vpc.vpcId
+  vSwitchId: vSwitch.vSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.APIG.DeleteGateway
+    parameters:
+      gatewayId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.APIG.GetGateway
+      parameters:
+        gatewayId: resource.nativeId
+      itemsPath: data
+      identityPath: gatewayId
+      statePath: status

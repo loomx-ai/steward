@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MessageService::Queue
+  class: messaging.queue
+presentation:
+  consoleLinkTemplate: "https://mns.console.aliyun.com/region/{regionId}/queue/{nativeId}/detail"
+  displayNames:
+    zh-CN: 轻量消息队列
+    en-US: Simple Message Queue
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MNS.ListQueue
+    itemsPath: Data.PageData
+    identityPath: QueueName
+    statePath: QueueType
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: Data.Total
+      maxPageSize: 50
+fields:
+  name: QueueName
+  state: QueueType
+  createdAt: CreateTime
+  updatedAt: LastModifyTime
+  messageRetentionPeriod: MessageRetentionPeriod
+actions:
+  delete:
+    operation: AlibabaCloud.MNS.DeleteQueue
+    parameters:
+      QueueName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.MNS.GetQueueAttributes
+      parameters:
+        QueueName: resource.nativeId
+      itemsPath: Data
+      identityPath: QueueName
+      statePath: QueueType

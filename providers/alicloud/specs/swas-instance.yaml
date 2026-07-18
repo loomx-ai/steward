@@ -1,0 +1,38 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SWAS::Instance
+  class: compute.simple_server
+presentation:
+  consoleLinkTemplate: "https://swasnext.console.aliyun.com/servers/{regionId}/{nativeId}/dashboard"
+  displayNames:
+    zh-CN: 轻量应用服务器
+    en-US: Simple Application Server
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SWAS.ListInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  businessStatus: BusinessStatus
+  createdAt: CreationTime
+  expiredAt: ExpiredTime
+  chargeType: ChargeType
+  regionId: RegionId
+  resourceGroupId: ResourceGroupId

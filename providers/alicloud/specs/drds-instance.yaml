@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DRDS::DBInstance
+  class: database.distributed
+presentation:
+  consoleLinkTemplate: "https://drdsnew.console.aliyun.com/index#/{nativeId}/instDetail/drdsInstanceInfo"
+  displayNames:
+    zh-CN: DRDS 实例
+    en-US: DRDS Instance
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DRDS.DescribeDrdsInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.Instance
+    identityPath: DrdsInstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: Description
+  state: Status
+  createdAt: CreateTime
+  resourceGroupId: ResourceGroupId
+  productVersion: ProductVersion
+  commodityCode: CommodityCode
+  vpcId: VpcId
+  vSwitchId: ZoneId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.DRDS.RemoveDrdsInstance
+    parameters:
+      DrdsInstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DRDS.DescribeDrdsInstance
+      parameters:
+        DrdsInstanceId: resource.nativeId
+      itemsPath: Data
+      identityPath: DrdsInstanceId
+      statePath: Status

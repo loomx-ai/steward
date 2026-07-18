@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::NAS::MountTarget
+  class: storage.mount_target
+presentation:
+  consoleLinkTemplate: "https://nas.console.aliyun.com/{regionId}/filesystem/{parentId}/mountTarget"
+  displayNames:
+    zh-CN: NAS 挂载点
+    en-US: NAS Mount Target
+  icon: disk
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: resource-center
+    nativeType: ACS::NAS::FileSystem
+  list:
+    operation: AlibabaCloud.NAS.DescribeMountTargets
+    parameters:
+      FileSystemId: parent.nativeId
+    itemsPath: MountTargets.MountTarget
+    identityPath: MountTargetDomain
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: MountTargetDomain
+  state: Status
+  fileSystemId: _parent.nativeId
+  vpcId: VpcId
+  vSwitchId: VswId
+  accessGroup: AccessGroup
+  networkType: NetworkType
+  ipVersion: IPVersion
+relationships:
+  - type: member_of
+    targetType: ACS::NAS::FileSystem
+    targetIdPath: fileSystemId
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: member_of
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.NAS.DeleteMountTarget
+    parameters:
+      FileSystemId: resource.normalized.fileSystemId
+      MountTargetDomain: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.NAS.DescribeMountTargets
+      parameters:
+        FileSystemId: resource.normalized.fileSystemId
+        MountTargetDomain: resource.nativeId
+        PageSize: 1
+      itemsPath: MountTargets.MountTarget
+      identityPath: MountTargetDomain
+      statePath: Status

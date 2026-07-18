@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MSE::Cluster
+  class: middleware.registry
+presentation:
+  consoleLinkTemplate: "https://mse.console.aliyun.com/#/InstanceList?region={regionId}"
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MSE.ListClusters
+    parameters:
+      RegionId: scope.location
+    itemsPath: Data
+    identityPath: InstanceId
+    statePath: InitStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: ClusterAliasName
+  state: InitStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.MSE.DeleteCluster
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: terminal
+    terminalStates:
+      - DESTROY_SUCCESS
+    read:
+      operation: AlibabaCloud.MSE.QueryClusterDetail
+      parameters:
+        InstanceId: resource.nativeId
+      itemsPath: Data
+      identityPath: InstanceId
+      statePath: InitStatus

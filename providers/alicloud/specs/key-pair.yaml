@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::KeyPair
+  class: security.key_pair
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/keyPair/region/{regionId}?keyPairName={nativeId}"
+  icon: key
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeKeyPairs
+    parameters:
+      RegionId: scope.location
+    itemsPath: KeyPairs.KeyPair
+    identityPath: KeyPairName
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: KeyPairName
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: DeleteKeyPairs
+    parameters:
+      RegionId: scope.location
+      KeyPairNames: resource.nativeIdsJson
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeKeyPairs
+      parameters:
+        RegionId: scope.location
+        KeyPairName: resource.nativeId
+        PageSize: 1
+      itemsPath: KeyPairs.KeyPair
+      identityPath: KeyPairName

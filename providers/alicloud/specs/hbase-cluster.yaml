@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::HBase::Cluster
+  class: database.wide_column
+presentation:
+  consoleLinkTemplate: "https://hbase.console.aliyun.com/"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.HBase.DescribeInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.Instance
+    identityPath: ClusterId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: CreatedTimeUTC
+  vpcId: VpcId
+  vSwitchId: VswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.HBase.DeleteInstance
+    parameters:
+      ClusterId: resource.nativeId
+      ImmediateDeleteFlag: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.HBase.DescribeInstances
+      parameters:
+        RegionId: scope.location
+        ClusterId: resource.nativeId
+        PageSize: 1
+      itemsPath: Instances.Instance
+      identityPath: ClusterId
+      statePath: Status
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.HBase.DescribeInstance
+        parameters:
+          ClusterId: resource.nativeId
+        itemsPath: $
+        identityPath: InstanceId
+        statePath: Status
+      path: IsDeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.HBase.ModifyClusterDeletionProtection
+        parameters:
+          ClusterId: resource.nativeId
+          Protection: false

@@ -1,0 +1,26 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::InterRegionTrafficQosPolicy
+  class: network.qos_policy
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN 跨地域流量 QoS 策略
+    en-US: CEN Inter-region Traffic QoS Policy
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListCenInterRegionTrafficQosPolicies
+    itemsPath: TrafficQosPolicies
+    identityPath: TrafficQosPolicyId
+    statePath: TrafficQosPolicyStatus
+fields:
+  name: TrafficQosPolicyName
+  state: TrafficQosPolicyStatus
+  transitRouterId: TransitRouterId
+  transitRouterAttachmentId: TransitRouterAttachmentId

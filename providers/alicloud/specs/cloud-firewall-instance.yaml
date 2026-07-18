@@ -1,0 +1,43 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CloudFirewall::Instance
+  class: security.firewall
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/"
+  displayNames:
+    zh-CN: 云防火墙实例
+    en-US: Cloud Firewall Instance
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CloudFirewall.DescribeUserBuyVersion
+    itemsPath: $
+    identityPath: InstanceId
+    statePath: InstanceStatus
+fields:
+  state: InstanceStatus
+  version: Version
+  startTime: StartTime
+  expireTime: Expire
+  userStatus: UserStatus
+actions:
+  delete:
+    operation: AlibabaCloud.CloudFirewall.ReleasePostInstance
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: cloud_firewall_release
+    read:
+      operation: AlibabaCloud.CloudFirewall.DescribeUserBuyVersion
+      parameters:
+        InstanceId: resource.nativeId
+      itemsPath: $
+      identityPath: InstanceId
+      statePath: InstanceStatus
+extensions:
+  hook: alicloud.cloud_firewall.instance

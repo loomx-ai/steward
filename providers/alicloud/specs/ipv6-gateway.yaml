@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::Ipv6Gateway
+  class: network.ipv6_gateway
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/ipv6/{regionId}/ipv6-gateways/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeIpv6Gateways
+    parameters:
+      RegionId: scope.location
+    itemsPath: Ipv6Gateways.Ipv6Gateway
+    identityPath: Ipv6GatewayId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: DeleteIpv6Gateway
+    parameters:
+      RegionId: scope.location
+      Ipv6GatewayId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeIpv6Gateways
+      parameters:
+        RegionId: scope.location
+        Ipv6GatewayId: resource.nativeId
+        PageSize: 1
+      itemsPath: Ipv6Gateways.Ipv6Gateway
+      identityPath: Ipv6GatewayId
+      statePath: Status

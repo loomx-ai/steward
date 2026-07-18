@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DdosBgp::Instance
+  class: security.ddos_protection
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/"
+  displayNames:
+    zh-CN: DDoS 原生防护实例
+    en-US: Anti-DDoS Origin Instance
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DdosBgp.DescribeInstanceList
+    parameters:
+      RegionId: cn-hangzhou
+      PageNo: 1
+      PageSize: 100
+    itemsPath: InstanceList
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNo
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: Remark
+  state: Status
+  createdAt: GmtCreate
+  expireTime: ExpireTime
+  commodityType: CommodityType
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.DdosBgp.ReleaseDdosOriginInstance
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: ddos_bgp_release
+    read:
+      operation: AlibabaCloud.DdosBgp.DescribeInstanceList
+      parameters:
+        RegionId: cn-hangzhou
+        InstanceIdList: resource.nativeIdsJson
+        PageNo: 1
+        PageSize: 1
+      itemsPath: InstanceList
+      identityPath: InstanceId
+      statePath: Status
+extensions:
+  hook: alicloud.ddos_bgp.instance

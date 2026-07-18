@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ExpressConnect::PhysicalConnection
+  class: network.physical_connection
+presentation:
+  consoleLinkTemplate: "https://expressconnect.console.aliyun.com/"
+  displayNames:
+    zh-CN: 高速通道物理专线
+    en-US: Express Connect Physical Connection
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ExpressConnect.DescribePhysicalConnections
+    parameters:
+      RegionId: scope.location
+    itemsPath: PhysicalConnectionSet.PhysicalConnectionType
+    identityPath: PhysicalConnectionId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  businessStatus: BusinessStatus
+  createdAt: CreationTime
+  chargeType: ChargeType
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ExpressConnect.DeletePhysicalConnection
+    parameters:
+      RegionId: scope.location
+      PhysicalConnectionId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ExpressConnect.DescribePhysicalConnections
+      parameters:
+        RegionId: scope.location
+        Filter.1.Key: PhysicalConnectionId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 1
+      itemsPath: PhysicalConnectionSet.PhysicalConnectionType
+      identityPath: PhysicalConnectionId
+      statePath: Status

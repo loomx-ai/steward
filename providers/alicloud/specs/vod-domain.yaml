@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VOD::Domain
+  class: media.vod_domain
+presentation:
+  consoleLinkTemplate: "https://vod.console.aliyun.com/"
+  displayNames:
+    zh-CN: 视频点播加速域名
+    en-US: ApsaraVideo VOD Domain
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.VOD.DescribeVodUserDomains
+    itemsPath: Domains.PageData
+    identityPath: DomainName
+    statePath: DomainStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: DomainName
+  state: DomainStatus
+  createdAt: GmtCreated
+  updatedAt: GmtModified
+  cname: Cname
+actions:
+  delete:
+    operation: AlibabaCloud.VOD.DeleteVodDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.VOD.DescribeVodUserDomains
+      parameters:
+        DomainName: resource.nativeId
+        DomainSearchType: full_match
+        PageSize: 1
+      itemsPath: Domains.PageData
+      identityPath: DomainName
+      statePath: DomainStatus

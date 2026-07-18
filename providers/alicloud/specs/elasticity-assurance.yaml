@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::ElasticityAssurance
+  class: compute.elasticity_assurance
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/elasticityAssurance/region/{regionId}?privatePoolOptionsId={nativeId}"
+  icon: instance
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeElasticityAssurances
+    parameters:
+      RegionId: scope.location
+    itemsPath: ElasticityAssuranceSet.ElasticityAssuranceItem
+    identityPath: PrivatePoolOptionsId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: PrivatePoolOptionsName
+  state: Status
+  createdAt: StartTime

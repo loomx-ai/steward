@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RocketMQ::Instance
+  class: messaging.broker
+presentation:
+  consoleLinkTemplate: "https://ons.console.aliyun.com/region/{regionId}/instance/{nativeId}/detail"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RocketMQ.ListInstances
+    itemsPath: data.list
+    identityPath: instanceId
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: data.totalCount
+      maxPageSize: 100
+fields:
+  name: instanceName
+  state: status
+  createdAt: createTime
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.RocketMQ.DeleteInstance
+    parameters:
+      instanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RocketMQ.GetInstance
+      parameters:
+        instanceId: resource.nativeId
+      itemsPath: data
+      identityPath: instanceId
+      statePath: status

@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Ehpc::Cluster
+  class: compute.hpc_cluster
+presentation:
+  consoleLinkTemplate: "https://ehpc.console.aliyun.com/#/clusterdetail/info/{nativeId}?referrer=%2Fcluster&regionId={regionId}"
+  displayNames:
+    zh-CN: 弹性高性能计算集群
+    en-US: E-HPC Cluster
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EHPC.ListClusters
+    itemsPath: Clusters.ClusterInfoSimple
+    identityPath: Id
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  chargeType: InstanceChargeType
+  resourceGroupId: ResourceGroupId
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.EHPC.DeleteCluster
+    parameters:
+      ClusterId: resource.nativeId
+      ReleaseInstance: "false"
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.EHPC.DescribeCluster
+      parameters:
+        ClusterId: resource.nativeId
+      itemsPath: ClusterInfo
+      identityPath: Id
+      statePath: Status

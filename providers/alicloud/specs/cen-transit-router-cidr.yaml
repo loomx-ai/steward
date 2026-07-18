@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterCidr
+  class: network.transit_router_cidr
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN 转发路由器 CIDR
+    en-US: CEN Transit Router CIDR
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterCidr
+    itemsPath: CidrLists
+    identityPath: TransitRouterCidrId
+fields:
+  name: Name
+  cidr: Cidr
+  regionId: regionId
+  cenId: cenId
+  transitRouterId: TransitRouterId
+relationships:
+  - type: member_of
+    targetType: ACS::CEN::TransitRouter
+    targetIdPath: transitRouterId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterCidr
+    parameters:
+      RegionId: scope.location
+      TransitRouterId: resource.normalized.transitRouterId
+      TransitRouterCidrId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterCidr
+      parameters:
+        RegionId: scope.location
+        TransitRouterId: resource.normalized.transitRouterId
+      itemsPath: CidrLists
+      identityPath: TransitRouterCidrId

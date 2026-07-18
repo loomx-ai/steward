@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MongoDB::DBInstance
+  class: database.document
+presentation:
+  consoleLinkTemplate: "https://mongodb.console.aliyun.com/replicate/{regionId}/instances/{nativeId}/basicInfo"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MongoDB.DescribeDBInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: DBInstances.DBInstance
+    identityPath: DBInstanceId
+    statePath: DBInstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DBInstanceDescription
+  state: DBInstanceStatus
+  createdAt: CreationTime
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.MongoDB.DeleteDBInstance
+    parameters:
+      DBInstanceId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.MongoDB.DescribeDBInstances
+      parameters:
+        RegionId: scope.location
+        DBInstanceId: resource.nativeId
+        PageSize: 1
+      itemsPath: DBInstances.DBInstance
+      identityPath: DBInstanceId
+      statePath: DBInstanceStatus
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.MongoDB.DescribeDBInstanceAttribute
+        parameters:
+          DBInstanceId: resource.nativeId
+        itemsPath: DBInstances.DBInstanceAttribute
+        identityPath: DBInstanceId
+        statePath: DBInstanceStatus
+      path: DBInstanceReleaseProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.MongoDB.ModifyDBInstanceAttribute
+        parameters:
+          DBInstanceId: resource.nativeId
+          DBInstanceReleaseProtection: false

@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MSE::Gateway
+  class: network.gateway
+presentation:
+  consoleLinkTemplate: "https://mse.console.aliyun.com/#/gateway/basicInfo?Id={nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MSE.ListGateway
+    itemsPath: Data.Result
+    identityPath: GatewayUniqueId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Data.TotalSize
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: GmtCreate
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.MSE.DeleteGateway
+    parameters:
+      GatewayUniqueId: resource.nativeId
+      DeleteSlb: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.MSE.GetGateway
+      parameters:
+        GatewayUniqueId: resource.nativeId
+      itemsPath: Data
+      identityPath: GatewayUniqueId
+      statePath: Status

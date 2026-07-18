@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::NAT::NatIp
+  class: network.nat_ip
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/nat/{regionId}/nats/{parentId}"
+  displayNames:
+    zh-CN: NAT IP 地址
+    en-US: NAT IP Address
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: DescribeNatGateways
+    parameters:
+      RegionId: scope.location
+    itemsPath: NatGateways.NatGateway
+    identityPath: NatGatewayId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+  list:
+    operation: ListNatIps
+    parameters:
+      RegionId: scope.location
+      NatGatewayId: parent.nativeId
+    itemsPath: NatIps
+    identityPath: NatIpId
+    statePath: NatIpStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: NatIpName
+  state: NatIpStatus
+  natGatewayId: _parent.nativeId
+  natIp: NatIp
+  natIpCidr: NatIpCidr
+  ipv4Prefix: Ipv4Prefix
+  isDefault: IsDefault
+  description: NatIpDescription
+relationships:
+  - type: member_of
+    targetType: ACS::NAT::NatGateway
+    targetIdPath: natGatewayId
+actions:
+  delete:
+    operation: DeleteNatIp
+    parameters:
+      RegionId: scope.location
+      NatIpId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListNatIps
+      parameters:
+        RegionId: scope.location
+        NatGatewayId: resource.normalized.natGatewayId
+        NatIpIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: NatIps
+      identityPath: NatIpId
+      statePath: NatIpStatus

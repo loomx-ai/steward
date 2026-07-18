@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::CenInstance
+  class: network.cloud_enterprise_network
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/detail/{nativeId}"
+  displayNames:
+    zh-CN: 云企业网实例
+    en-US: Cloud Enterprise Network
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CEN.DescribeCens
+    itemsPath: Cens.Cen
+    identityPath: CenId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteCen
+    parameters:
+      CenId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.DescribeCens
+      parameters:
+        Filter.1.Key: CenId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 1
+      itemsPath: Cens.Cen
+      identityPath: CenId
+      statePath: Status

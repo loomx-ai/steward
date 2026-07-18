@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::NetworkAcl
+  class: network.acl
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/network-acls/{nativeId}"
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeNetworkAcls
+    parameters:
+      RegionId: scope.location
+    itemsPath: NetworkAcls.NetworkAcl
+    identityPath: NetworkAclId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: NetworkAclName
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: DeleteNetworkAcl
+    parameters:
+      RegionId: scope.location
+      NetworkAclId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeNetworkAcls
+      parameters:
+        RegionId: scope.location
+        NetworkAclId: resource.nativeId
+        PageSize: 1
+      itemsPath: NetworkAcls.NetworkAcl
+      identityPath: NetworkAclId
+      statePath: Status

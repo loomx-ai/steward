@@ -1,0 +1,28 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::Flowlog
+  class: observability.flow_log
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/flowlog/{regionId}"
+  displayNames:
+    zh-CN: CEN 流日志
+    en-US: CEN Flow Log
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.DescribeFlowlogs
+    itemsPath: FlowLogs.FlowLog
+    identityPath: FlowLogId
+    statePath: Status
+fields:
+  name: FlowLogName
+  state: Status
+  createdAt: CreationTime
+  regionId: RegionId
+  cenId: CenId
+  transitRouterAttachmentId: TransitRouterAttachmentId

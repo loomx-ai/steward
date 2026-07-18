@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MaxCompute::Project
+  class: data.project
+presentation:
+  consoleLinkTemplate: "https://maxcompute.console.aliyun.com/{regionId}/project-detail/{nativeId}/param-config"
+  displayNames:
+    zh-CN: MaxCompute 项目
+    en-US: MaxCompute Project
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MaxCompute.ListProjects
+    parameters:
+      region: scope.location
+    itemsPath: data.projects
+    identityPath: name
+    statePath: status
+    pagination:
+      type: token
+      tokenParameter: marker
+      tokenPath: data.NextToken
+      pageSizeParameter: maxItem
+      maxPageSize: 100
+fields:
+  name: name
+  state: status
+  createdAt: createdTime
+  owner: owner
+  projectType: type
+  regionId: regionId
+actions:
+  delete:
+    operation: AlibabaCloud.MaxCompute.DeleteProject
+    parameters:
+      projectName: resource.nativeId
+      isLogical: true
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.MaxCompute.GetProject
+      parameters:
+        projectName: resource.nativeId
+      itemsPath: data
+      identityPath: name
+      statePath: status

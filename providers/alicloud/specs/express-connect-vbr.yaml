@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ExpressConnect::VirtualBorderRouter
+  class: network.virtual_border_router
+presentation:
+  consoleLinkTemplate: "https://expressconnect.console.aliyun.com/vbr/{regionId}/detail/{nativeId}"
+  displayNames:
+    zh-CN: 边界路由器
+    en-US: Virtual Border Router
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ExpressConnect.DescribeVirtualBorderRouters
+    parameters:
+      RegionId: scope.location
+    itemsPath: VirtualBorderRouterSet.VirtualBorderRouterType
+    identityPath: VbrId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  physicalConnectionId: PhysicalConnectionId
+  resourceGroupId: ResourceGroupId
+  routeTableId: RouteTableId
+actions:
+  delete:
+    operation: AlibabaCloud.ExpressConnect.DeleteVirtualBorderRouter
+    parameters:
+      RegionId: scope.location
+      VbrId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ExpressConnect.DescribeVirtualBorderRouters
+      parameters:
+        RegionId: scope.location
+        Filter.1.Key: VbrId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 1
+      itemsPath: VirtualBorderRouterSet.VirtualBorderRouterType
+      identityPath: VbrId
+      statePath: Status

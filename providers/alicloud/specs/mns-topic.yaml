@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::MessageService::Topic
+  class: messaging.topic
+presentation:
+  consoleLinkTemplate: "https://mns.console.aliyun.com/region/{regionId}/topic/{nativeId}/detail"
+  displayNames:
+    zh-CN: 轻量消息主题
+    en-US: Simple Message Topic
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.MNS.ListTopic
+    itemsPath: Data.PageData
+    identityPath: TopicName
+    statePath: TopicType
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: Data.Total
+      maxPageSize: 50
+fields:
+  name: TopicName
+  state: TopicType
+  createdAt: CreateTime
+  updatedAt: LastModifyTime
+  messageRetentionPeriod: MessageRetentionPeriod
+actions:
+  delete:
+    operation: AlibabaCloud.MNS.DeleteTopic
+    parameters:
+      TopicName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.MNS.GetTopicAttributes
+      parameters:
+        TopicName: resource.nativeId
+      itemsPath: Data
+      identityPath: TopicName
+      statePath: TopicType

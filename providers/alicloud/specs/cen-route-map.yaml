@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::CenRouteMap
+  class: network.route_policy
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}/{cenId}/{transitRouterId}/routeTable?CenId={cenId}&TransitRouterId={transitRouterId}&TransitRouterRouteTableId={transitRouterRouteTableId}"
+  displayNames:
+    zh-CN: CEN 路由策略
+    en-US: CEN Route Map
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.DescribeCenRouteMaps
+    itemsPath: RouteMaps.RouteMap
+    identityPath: RouteMapId
+    statePath: Status
+fields:
+  state: Status
+  regionId: CenRegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  transitRouterRouteTableId: TransitRouterRouteTableId
+  priority: Priority
+  transmitDirection: TransmitDirection
+relationships:
+  - type: member_of
+    targetType: ACS::CEN::TransitRouterRouteTable
+    targetIdPath: transitRouterRouteTableId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteCenRouteMap
+    parameters:
+      CenId: resource.normalized.cenId
+      CenRegionId: scope.location
+      RouteMapId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.DescribeCenRouteMaps
+      parameters:
+        CenId: resource.normalized.cenId
+        CenRegionId: scope.location
+        RouteMapId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: RouteMaps.RouteMap
+      identityPath: RouteMapId
+      statePath: Status

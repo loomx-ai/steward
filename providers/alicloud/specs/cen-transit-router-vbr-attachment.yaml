@@ -1,0 +1,29 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterVbrAttachment
+  class: network.cen_attachment
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN VBR 连接
+    en-US: CEN VBR Attachment
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterVbrAttachments
+    itemsPath: TransitRouterAttachments
+    identityPath: TransitRouterAttachmentId
+    statePath: Status
+fields:
+  name: TransitRouterAttachmentName
+  state: Status
+  createdAt: CreationTime
+  regionId: VbrRegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  vbrId: VbrId

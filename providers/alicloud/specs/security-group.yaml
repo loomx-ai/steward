@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::SecurityGroup
+  class: network.security_group
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/securityGroupDetail/region/{regionId}/groupId/{nativeId}/detail/intranetIngress"
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeSecurityGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: SecurityGroups.SecurityGroup
+    identityPath: SecurityGroupId
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  enrich:
+    operation: DescribeSecurityGroups
+    parameters:
+      RegionId: scope.location
+      SecurityGroupIds: resources.nativeIdsJson
+      MaxResults: resources.count
+    itemsPath: SecurityGroups.SecurityGroup
+    identityPath: SecurityGroupId
+    maxBatchSize: 100
+fields:
+  name: SecurityGroupName
+  createdAt: CreationTime
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpc_id
+actions:
+  delete:
+    operation: DeleteSecurityGroup
+    parameters:
+      RegionId: scope.location
+      SecurityGroupId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeSecurityGroups
+      parameters:
+        RegionId: scope.location
+        SecurityGroupIds: resource.nativeIdsJson
+        MaxResults: 1
+      itemsPath: SecurityGroups.SecurityGroup
+      identityPath: SecurityGroupId

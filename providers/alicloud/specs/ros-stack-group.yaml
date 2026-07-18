@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ROS::StackGroup
+  class: orchestration.stack_group
+presentation:
+  consoleLinkTemplate: "https://ros.console.aliyun.com/{regionId}/stackGroup/{nativeId}"
+  displayNames:
+    zh-CN: ROS 资源栈组
+    en-US: ROS Stack Group
+  icon: stack
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ROS.ListStackGroups
+    parameters:
+      RegionId: scope.location
+      Status: ACTIVE
+    itemsPath: StackGroups
+    identityPath: StackGroupName
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: StackGroupName
+  state: Status
+  createdAt: CreateTime
+  updatedAt: UpdateTime
+  stackGroupId: StackGroupId
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ROS.DeleteStackGroup
+    parameters:
+      RegionId: scope.location
+      StackGroupName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.ROS.GetStackGroup
+      parameters:
+        RegionId: scope.location
+        StackGroupName: resource.nativeId
+      itemsPath: StackGroup
+      identityPath: StackGroupName
+      statePath: Status

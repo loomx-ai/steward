@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPN::VpnGateway
+  class: network.vpn_gateway
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpn/{regionId}/vpn-gateways/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeVpnGateways
+    parameters:
+      RegionId: scope.location
+    itemsPath: VpnGateways.VpnGateway
+    identityPath: VpnGatewayId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: DeleteVpnGateway
+    parameters:
+      RegionId: scope.location
+      VpnGatewayId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: DescribeVpnGateways
+      parameters:
+        RegionId: scope.location
+        VpnGatewayId: resource.nativeId
+        PageSize: 1
+      itemsPath: VpnGateways.VpnGateway
+      identityPath: VpnGatewayId
+      statePath: Status

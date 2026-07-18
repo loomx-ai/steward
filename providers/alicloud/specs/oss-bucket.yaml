@@ -1,0 +1,102 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::OSS::Bucket
+  class: storage.object_bucket
+presentation:
+  consoleLinkTemplate: "https://oss.console.aliyun.com/bucket/oss-{regionId}/{nativeId}/object"
+  displayNames:
+    zh-CN: OSS Bucket
+    en-US: OSS Bucket
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.OSS.ListBuckets
+    itemsPath: ListAllMyBucketsResult.Buckets.Bucket
+    identityPath: Name
+    pagination:
+      type: token
+      tokenParameter: marker
+      tokenPath: ListAllMyBucketsResult.NextMarker
+      pageSizeParameter: max-keys
+      maxPageSize: 1000
+  enrich:
+    operation: AlibabaCloud.OSS.GetBucketInfo
+    parameters:
+      bucket: resources.nativeId
+      location: scope.location
+    itemsPath: BucketInfo.Bucket
+    identityPath: Name
+    maxBatchSize: 1
+fields:
+  name:
+    path: Name
+    type: string
+    displayNames:
+      zh-CN: 名称
+      en-US: Name
+  createdAt:
+    path: CreationDate
+    type: datetime
+    displayNames:
+      zh-CN: 创建时间
+      en-US: Created at
+  location:
+    path: Location
+    type: string
+    displayNames:
+      zh-CN: 地域端点
+      en-US: Location
+  region:
+    path: Region
+    type: string
+    displayNames:
+      zh-CN: 地域
+      en-US: Region
+  resourceGroupId:
+    path: ResourceGroupId
+    type: string
+    displayNames:
+      zh-CN: 资源组 ID
+      en-US: Resource group ID
+  storageClass:
+    path: StorageClass
+    type: string
+    displayNames:
+      zh-CN: 存储类型
+      en-US: Storage class
+  acl:
+    path: AccessControlList.Grant
+    type: string
+    displayNames:
+      zh-CN: 读写权限
+      en-US: Access control list
+    enum:
+      - private
+      - public-read
+      - public-read-write
+    operators:
+      - "="
+      - "!="
+      - in
+      - not_in
+actions:
+  delete:
+    operation: AlibabaCloud.OSS.DeleteBucket
+    parameters:
+      bucket: resource.nativeId
+      location: scope.location
+    idempotency: readback
+    waiter: absent
+    deletionCheckTimeoutSeconds: 21600
+    read:
+      operation: AlibabaCloud.OSS.GetBucketInfo
+      parameters:
+        bucket: resource.nativeId
+        location: scope.location
+      itemsPath: BucketInfo.Bucket
+      identityPath: Name

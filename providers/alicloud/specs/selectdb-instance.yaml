@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SelectDB::DBInstance
+  class: database.analytics
+presentation:
+  consoleLinkTemplate: "https://selectdb.console.aliyun.com/{regionId}/instanceDetail/{nativeId}/detail"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SelectDB.DescribeDBInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items
+    identityPath: DBInstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalRecordCount
+      maxPageSize: 100
+fields:
+  name: Description
+  state: Status
+  vpcId: VpcId
+  vSwitchId: VswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.SelectDB.DeleteDBInstance
+    parameters:
+      RegionId: scope.location
+      DBInstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SelectDB.DescribeDBInstances
+      parameters:
+        RegionId: scope.location
+        DBInstanceIds: resource.nativeId
+        PageSize: 1
+      itemsPath: Items
+      identityPath: DBInstanceId
+      statePath: Status

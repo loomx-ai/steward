@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ENS::Instance
+  class: compute.edge_instance
+presentation:
+  consoleLinkTemplate: "https://ens.console.aliyun.com/"
+  displayNames:
+    zh-CN: 边缘节点服务实例
+    en-US: ENS Instance
+  icon: compute
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ENS.DescribeInstances
+    itemsPath: Instances.Instance
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  serviceStatus: ServiceStatus
+  createdAt: CreationTime
+  expiredAt: ExpiredTime
+  ensRegionId: EnsRegionId
+  instanceResourceType: InstanceResourceType
+  vpcId: NetworkAttributes.NetworkId
+  vSwitchId: NetworkAttributes.VSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.ENS.ReleasePostPaidInstance
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: ens_release
+    read:
+      operation: AlibabaCloud.ENS.DescribeInstances
+      parameters:
+        InstanceId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: Instances.Instance
+      identityPath: InstanceId
+      statePath: Status
+extensions:
+  hook: alicloud.ens.instance

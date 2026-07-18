@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RDS::DBInstance
+  class: database.relational
+presentation:
+  consoleLinkTemplate: "https://rdsnext.console.aliyun.com/detail/{nativeId}/basicInfo?region={regionId}"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RDS.DescribeDBInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items.DBInstance
+    identityPath: DBInstanceId
+    statePath: DBInstanceStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: DBInstanceDescription
+  state: DBInstanceStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.RDS.DeleteDBInstance
+    parameters:
+      DBInstanceId: resource.nativeId
+      ReleasedKeepPolicy: None
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RDS.DescribeDBInstances
+      parameters:
+        RegionId: scope.location
+        DBInstanceId: resource.nativeId
+        MaxResults: 1
+      itemsPath: Items.DBInstance
+      identityPath: DBInstanceId
+      statePath: DBInstanceStatus
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.RDS.ModifyDBInstanceDeletionProtection
+        parameters:
+          DBInstanceId: resource.nativeId
+          DeletionProtection: false

@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::DhcpOptionsSet
+  class: network.dhcp_options_set
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/dhcp-options-set"
+  displayNames:
+    zh-CN: DHCP 选项集
+    en-US: DHCP Options Set
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListDhcpOptionsSets
+    parameters:
+      RegionId: scope.location
+    itemsPath: DhcpOptionsSets
+    identityPath: DhcpOptionsSetId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: DhcpOptionsSetName
+  state: Status
+  createdAt: CreationTime
+  resourceGroupId: ResourceGroupId
+  associateVpcCount: AssociateVpcCount
+  domainName: DhcpOptions.DomainName
+  domainNameServers: DhcpOptions.DomainNameServers
+actions:
+  delete:
+    operation: DeleteDhcpOptionsSet
+    deletionCheckTimeoutSeconds: 120
+    parameters:
+      RegionId: scope.location
+      DhcpOptionsSetId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListDhcpOptionsSets
+      parameters:
+        RegionId: scope.location
+        DhcpOptionsSetId.1: resource.nativeId
+        MaxResults: 1
+      itemsPath: DhcpOptionsSets
+      identityPath: DhcpOptionsSetId
+      statePath: Status

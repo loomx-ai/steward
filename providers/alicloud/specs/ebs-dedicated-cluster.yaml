@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EBS::DedicatedBlockStorageCluster
+  class: storage.dedicated_cluster
+presentation:
+  consoleLinkTemplate: "https://ebs.console.aliyun.com/"
+  displayNames:
+    zh-CN: 专属块存储集群
+    en-US: Dedicated Block Storage Cluster
+  icon: storage
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EBS.DescribeDedicatedBlockStorageClusters
+    parameters:
+      RegionId: scope.location
+    itemsPath: DedicatedBlockStorageClusters
+    identityPath: DedicatedBlockStorageClusterId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: PageSize
+      maxPageSize: 100
+fields:
+  name: DedicatedBlockStorageClusterName
+  state: Status
+  createdAt: CreateTime
+  expiredAt: ExpiredTime
+  regionId: RegionId
+  zoneId: ZoneId
+  resourceGroupId: ResourceGroupId
+  totalCapacity: TotalCapacity
+  availableCapacity: AvailableCapacity

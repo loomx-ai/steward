@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECI::ImageCache
+  class: compute.image_cache
+presentation:
+  consoleLinkTemplate: "https://eci.console.aliyun.com/#/eci/{regionId}/image/{nativeId|replacePrefix:imc-,eci-}/{nativeId}/productevents"
+  icon: image
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECI.DescribeImageCaches
+    parameters:
+      RegionId: scope.location
+    itemsPath: ImageCaches
+    identityPath: ImageCacheId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: Limit
+      maxPageSize: 100
+fields:
+  name: ImageCacheName
+  state: Status
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: AlibabaCloud.ECI.DeleteImageCache
+    parameters:
+      RegionId: scope.location
+      ImageCacheId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ECI.DescribeImageCaches
+      parameters:
+        RegionId: scope.location
+        ImageCacheId: resource.nativeId
+        Limit: 1
+      itemsPath: ImageCaches
+      identityPath: ImageCacheId
+      statePath: Status

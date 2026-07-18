@@ -1,0 +1,29 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterEcrAttachment
+  class: network.cen_attachment
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN ECR 连接
+    en-US: CEN ECR Attachment
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterEcrAttachments
+    itemsPath: TransitRouterAttachments
+    identityPath: TransitRouterAttachmentId
+    statePath: Status
+fields:
+  name: TransitRouterAttachmentName
+  state: Status
+  createdAt: CreationTime
+  regionId: EcrRegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  ecrId: EcrId

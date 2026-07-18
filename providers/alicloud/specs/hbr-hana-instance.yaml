@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::HBR::HanaInstance
+  class: storage.backup_source
+presentation:
+  consoleLinkTemplate: "https://hbr.console.aliyun.com/"
+  displayNames:
+    zh-CN: SAP HANA 备份实例
+    en-US: SAP HANA Backup Instance
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.HBR.DescribeHanaInstances
+    itemsPath: Hanas.Hana
+    identityPath: ClusterId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: HanaName
+  state: Status
+  instanceNumber: InstanceNumber
+  resourceGroupId: ResourceGroupId
+  vaultId: VaultId
+actions:
+  delete:
+    operation: AlibabaCloud.HBR.DeleteHanaInstance
+    parameters:
+      VaultId: resource.normalized.vaultId
+      ClusterId: resource.nativeId
+      Sid: ""
+    requiredParameters:
+      - Sid
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.HBR.DescribeHanaInstances
+      parameters:
+        VaultId: resource.normalized.vaultId
+        ClusterId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: Hanas.Hana
+      identityPath: ClusterId
+      statePath: Status

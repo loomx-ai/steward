@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RAM::Group
+  class: identity.group
+presentation:
+  consoleLinkTemplate: "https://ram.console.aliyun.com/"
+  displayNames:
+    zh-CN: RAM 用户组
+    en-US: RAM Group
+  icon: group
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RAM.ListGroups
+    itemsPath: Groups.Group
+    identityPath: GroupName
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxItems
+      maxPageSize: 1000
+fields:
+  name: GroupName
+  createdAt: CreateDate
+  updatedAt: UpdateDate
+  groupId: GroupId
+actions:
+  delete:
+    operation: AlibabaCloud.RAM.DeleteGroup
+    parameters:
+      GroupName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RAM.GetGroup
+      parameters:
+        GroupName: resource.nativeId
+      itemsPath: Group
+      identityPath: GroupName

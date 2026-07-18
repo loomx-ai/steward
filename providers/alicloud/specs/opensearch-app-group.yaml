@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::OpenSearch::AppGroup
+  class: search.application
+presentation:
+  consoleLinkTemplate: "https://opensearch.console.aliyun.com/"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.OpenSearch.ListAppGroups
+    itemsPath: result
+    identityPath: id
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: pageNumber
+      pageSizeParameter: pageSize
+      totalPath: totalCount
+      maxPageSize: 100
+fields:
+  name: name
+  appGroupName: name
+  state: status
+  createdAt: created
+actions:
+  delete:
+    operation: AlibabaCloud.OpenSearch.RemoveAppGroup
+    parameters:
+      appGroupIdentity: resource.normalized.appGroupName
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.OpenSearch.ListAppGroups
+      parameters:
+        name: resource.normalized.appGroupName
+        pageSize: 1
+      itemsPath: result
+      identityPath: id
+      statePath: status

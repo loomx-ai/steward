@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Ga::Accelerator
+  class: network.global_accelerator
+presentation:
+  consoleLinkTemplate: "https://ga.console.aliyun.com/"
+  displayNames:
+    zh-CN: 全球加速实例
+    en-US: Global Accelerator
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GA.ListAccelerators
+    parameters:
+      RegionId: cn-hangzhou
+    itemsPath: Accelerators
+    identityPath: AcceleratorId
+    statePath: State
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: State
+  createdAt: CreateTime
+  chargeType: InstanceChargeType
+  resourceGroupId: ResourceGroupId
+  cenId: CenId
+actions:
+  delete:
+    operation: AlibabaCloud.GA.DeleteAccelerator
+    parameters:
+      RegionId: cn-hangzhou
+      AcceleratorId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.GA.ListAccelerators
+      parameters:
+        RegionId: cn-hangzhou
+        AcceleratorId: resource.nativeId
+        PageSize: 1
+      itemsPath: Accelerators
+      identityPath: AcceleratorId
+      statePath: State

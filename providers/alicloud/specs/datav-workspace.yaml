@@ -1,0 +1,16 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DataV::Workspace
+  class: data.workspace
+presentation:
+  consoleLinkTemplate: "https://datav.aliyun.com/"
+  displayNames:
+    zh-CN: DataV 工作空间
+    en-US: DataV Workspace
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: resource-center

@@ -1,0 +1,33 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Alidns::DnsGtmInstance
+  class: dns.gtm_instance
+presentation:
+  consoleLinkTemplate: "https://dns.console.aliyun.com/"
+  displayNames:
+    zh-CN: DNS GTM 实例
+    en-US: DNS GTM Instance
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Alidns.DescribeDnsGtmInstances
+    itemsPath: GtmInstances
+    identityPath: InstanceId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalItems
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  createdAt: CreateTime
+  expireTime: ExpireTime
+  paymentType: PaymentType
+  versionCode: VersionCode
+  resourceGroupId: ResourceGroupId

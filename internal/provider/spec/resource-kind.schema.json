@@ -1,0 +1,297 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steward.local/schema/resource-kind.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "kind", "metadata", "scope", "discovery"],
+  "properties": {
+    "schema": {"const": "steward.io/resource-kind"},
+    "kind": {"const": "ResourceKind"},
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "nativeType"],
+      "properties": {
+        "provider": {"enum": ["alicloud", "aws"]},
+        "nativeType": {"type": "string", "minLength": 1},
+        "class": {"type": "string"}
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayNames": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "zh-CN": {"type": "string", "minLength": 1},
+            "en-US": {"type": "string", "minLength": 1}
+          }
+        },
+        "fieldDisplayNames": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "zh-CN": {"type": "string", "minLength": 1},
+              "en-US": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "icon": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.-]*$"},
+        "consoleLinkTemplate": {"type": "string", "minLength": 1, "pattern": "^https://"}
+      }
+    },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {"enum": ["organization", "folder", "tenant", "account", "subscription", "project", "resource_group", "region", "zone", "global"]}
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "parent": {
+          "oneOf": [
+            {"$ref": "#/$defs/productApi"},
+            {"$ref": "#/$defs/inventoryParent"}
+          ]
+        },
+        "list": {"$ref": "#/$defs/productApi"},
+        "enrich": {"$ref": "#/$defs/productApi"},
+        "detail": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["operation", "itemsPath", "identityPath"],
+          "properties": {
+            "operation": {"type": "string", "minLength": 1},
+            "itemsPath": {"$ref": "#/$defs/path"},
+            "identityPath": {"$ref": "#/$defs/path"}
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "propertyNames": {"pattern": "^[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)*$"},
+      "additionalProperties": {
+        "oneOf": [
+          {"$ref": "#/$defs/path"},
+          {"$ref": "#/$defs/field"}
+        ]
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["type", "targetType", "targetIdPath"],
+        "properties": {
+          "type": {"enum": ["depends_on", "attached_to", "connected_to", "member_of", "uses", "created_from", "routes_to"]},
+          "targetType": {"type": "string", "minLength": 1},
+          "targetIdPath": {"$ref": "#/$defs/path"}
+        }
+      }
+    },
+    "governance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rules"],
+      "properties": {
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "title", "severity", "condition"],
+            "properties": {
+              "id": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+$"},
+              "title": {"type": "string", "minLength": 1},
+              "description": {"type": "string"},
+              "severity": {"enum": ["info", "low", "medium", "high", "critical"]},
+              "condition": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["operation", "idempotency"],
+        "properties": {
+          "operation": {"type": "string", "minLength": 1},
+          "parameters": {"type": "object", "additionalProperties": true},
+          "requiredParameters": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "preconditions": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "allowedValues", "reason"],
+              "properties": {
+                "path": {"$ref": "#/$defs/path"},
+                "allowedValues": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}
+                },
+                "reason": {"type": "string", "minLength": 1}
+              }
+            }
+          },
+          "idempotency": {"type": "string", "minLength": 1},
+          "waiter": {"type": "string", "minLength": 1},
+          "pollIntervalSeconds": {"type": "integer", "minimum": 1, "maximum": 300},
+          "deletionCheckTimeoutSeconds": {"type": "integer", "minimum": 1, "maximum": 86400},
+          "terminalStates": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "failureStates": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "readback": {"type": "string", "minLength": 1},
+          "read": {"$ref": "#/$defs/productApi"},
+          "deletionProtection": {"$ref": "#/$defs/actionDeletionProtection"}
+        }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hook": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path"],
+      "properties": {
+        "path": {"$ref": "#/$defs/path"},
+        "type": {"enum": ["any", "string", "number", "integer", "boolean", "datetime", "object", "array"]},
+        "displayNames": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "zh-CN": {"type": "string", "minLength": 1},
+            "en-US": {"type": "string", "minLength": 1}
+          }
+        },
+        "enum": {"type": "array", "minItems": 1, "uniqueItems": true},
+        "operators": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["=", "!=", ">", ">=", "<", "<=", "in", "not_in", "contains", "is_null", "is_not_null"]}
+        }
+      }
+    },
+    "path": {
+      "type": "string",
+      "anyOf": [
+        {"const": "$"},
+        {"pattern": "^[A-Za-z_][A-Za-z0-9_-]*(\\.[A-Za-z_][A-Za-z0-9_-]*)*$"}
+      ]
+    },
+    "productApi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation", "itemsPath", "identityPath"],
+      "properties": {
+        "operation": {"type": "string", "minLength": 1},
+        "parameters": {"type": "object", "additionalProperties": true},
+        "itemsPath": {"$ref": "#/$defs/path"},
+        "identityPath": {"$ref": "#/$defs/path"},
+        "statePath": {"$ref": "#/$defs/path"},
+        "maxBatchSize": {"type": "integer", "minimum": 1, "maximum": 1000},
+        "supportedRegions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "pagination": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": {"enum": ["token", "page-number", "offset"]},
+            "tokenParameter": {"type": "string", "minLength": 1},
+            "tokenPath": {"$ref": "#/$defs/path"},
+            "pageParameter": {"type": "string", "minLength": 1},
+            "offsetParameter": {"type": "string", "minLength": 1},
+            "pageSizeParameter": {"type": "string", "minLength": 1},
+            "totalPath": {"$ref": "#/$defs/path"},
+            "maxPageSize": {"type": "integer", "minimum": 1, "maximum": 1000}
+          }
+        }
+      }
+    },
+    "inventoryParent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "nativeType"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "nativeType": {"type": "string", "minLength": 1}
+      }
+    },
+    "actionInvocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation", "parameters"],
+      "properties": {
+        "operation": {"type": "string", "minLength": 1},
+        "parameters": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": true
+        }
+      }
+    },
+    "actionDeletionProtection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "enabledValues", "disable"],
+      "properties": {
+        "read": {"$ref": "#/$defs/productApi"},
+        "path": {"$ref": "#/$defs/path"},
+        "enabledValues": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "disable": {"$ref": "#/$defs/actionInvocation"}
+      }
+    }
+  }
+}

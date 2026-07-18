@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::VPC
+  class: network.vpc
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/vpcs/{nativeId}"
+  displayNames:
+    zh-CN: 专有网络
+    en-US: Virtual Private Cloud
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeVpcs
+    parameters:
+      RegionId: scope.location
+    itemsPath: Vpcs.Vpc
+    identityPath: VpcId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: VpcName
+  state: Status
+  createdAt: CreationTime
+  vpc_id: VpcId
+  dhcpOptionsSetId: DhcpOptionsSetId
+  dhcpOptionsSetStatus: DhcpOptionsSetStatus
+relationships:
+  - type: uses
+    targetType: ACS::VPC::DhcpOptionsSet
+    targetIdPath: dhcpOptionsSetId
+actions:
+  delete:
+    operation: DeleteVpc
+    deletionCheckTimeoutSeconds: 120
+    parameters:
+      VpcId: resource.nativeId
+      RegionId: scope.location
+      ForceDelete: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeVpcs
+      parameters:
+        RegionId: scope.location
+        VpcId: resource.nativeId
+        PageSize: 1
+      itemsPath: Vpcs.Vpc
+      identityPath: VpcId
+      statePath: Status

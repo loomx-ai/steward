@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::TSDB::Instance
+  class: database.timeseries
+presentation:
+  consoleLinkTemplate: "https://tsdb.console.aliyun.com/"
+  displayNames:
+    zh-CN: 时序数据库实例
+    en-US: Time Series Database Instance
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.TSDB.DescribeHiTSDBInstanceList
+    parameters:
+      RegionId: scope.location
+      EngineType: tsdb_tsdb
+    itemsPath: InstanceList
+    identityPath: InstanceId
+    statePath: InstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: InstanceAlias
+  state: InstanceStatus
+  createdAt: GmtCreated
+  chargeType: ChargeType
+  engineType: EngineType
+  regionId: RegionId
+  zoneId: ZoneId
+  vpcId: VpcId
+  vSwitchId: VswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.TSDB.DeleteHiTSDBInstance
+    parameters:
+      InstanceId: resource.nativeId
+      RegionId: scope.location
+    preconditions:
+      - path: ChargeType
+        allowedValues: [POSTPAY]
+        reason: only pay-as-you-go TSDB instances can be deleted through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.TSDB.DescribeHiTSDBInstance
+      parameters:
+        InstanceId: resource.nativeId
+        RegionId: scope.location
+      itemsPath: $
+      identityPath: InstanceId
+      statePath: InstanceStatus

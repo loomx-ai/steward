@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PolarDB::DBCluster
+  class: database.relational
+presentation:
+  consoleLinkTemplate: "https://polardb.console.aliyun.com/{regionId}/cluster/{nativeId}"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PolarDB.DescribeDBClusters
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items.DBCluster
+    identityPath: DBClusterId
+    statePath: DBClusterStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalRecordCount
+      maxPageSize: 100
+fields:
+  name: DBClusterDescription
+  state: DBClusterStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  vSwitchId: VswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.PolarDB.DeleteDBCluster
+    parameters:
+      DBClusterId: resource.nativeId
+      BackupRetentionPolicyOnClusterDeletion: NONE
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.PolarDB.DescribeDBClusters
+      parameters:
+        RegionId: scope.location
+        DBClusterIds: resource.nativeId
+        PageSize: 1
+      itemsPath: Items.DBCluster
+      identityPath: DBClusterId
+      statePath: DBClusterStatus
+    deletionProtection:
+      path: DeletionLock
+      enabledValues:
+        - "1"
+      disable:
+        operation: AlibabaCloud.PolarDB.ModifyDBClusterDeletion
+        parameters:
+          DBClusterId: resource.nativeId
+          Protection: false

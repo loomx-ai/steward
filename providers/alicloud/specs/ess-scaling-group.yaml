@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ESS::ScalingGroup
+  class: compute.scaling_group
+presentation:
+  consoleLinkTemplate: "https://ess.console.aliyun.com/#/v3/group/detail/{regionId}/{nativeId}/basicInfo"
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ESS.DescribeScalingGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: ScalingGroups.ScalingGroup
+    identityPath: ScalingGroupId
+    statePath: LifecycleState
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: ScalingGroupName
+  state: LifecycleState
+  createdAt: CreationTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::SLB::LoadBalancer
+    targetIdPath: loadBalancerIds
+actions:
+  delete:
+    operation: AlibabaCloud.ESS.DeleteScalingGroup
+    parameters:
+      RegionId: scope.location
+      ScalingGroupId: resource.nativeId
+      ForceDelete: true
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.ESS.DescribeScalingGroups
+      parameters:
+        RegionId: scope.location
+        ScalingGroupId: resources.nativeIds
+        PageSize: 1
+      itemsPath: ScalingGroups.ScalingGroup
+      identityPath: ScalingGroupId
+      statePath: LifecycleState
+    deletionProtection:
+      path: GroupDeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.ESS.SetGroupDeletionProtection
+        parameters:
+          RegionId: scope.location
+          ScalingGroupId: resource.nativeId
+          GroupDeletionProtection: false

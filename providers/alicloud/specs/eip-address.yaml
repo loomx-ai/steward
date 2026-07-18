@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EIP::EipAddress
+  class: network.public_ip
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/eip/{regionId}/eips/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeEipAddresses
+    parameters:
+      RegionId: scope.location
+    itemsPath: EipAddresses.EipAddress
+    identityPath: AllocationId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: AllocationTime
+actions:
+  delete:
+    operation: ReleaseEipAddress
+    parameters:
+      RegionId: scope.location
+      AllocationId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeEipAddresses
+      parameters:
+        RegionId: scope.location
+        AllocationId: resource.nativeId
+        PageSize: 1
+      itemsPath: EipAddresses.EipAddress
+      identityPath: AllocationId
+      statePath: Status
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.VPC.DeletionProtection
+        parameters:
+          RegionId: scope.location
+          InstanceId: resource.nativeId
+          Type: EIP
+          ProtectionEnable: false

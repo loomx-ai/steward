@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::OceanBase::Instance
+  class: database.relational
+presentation:
+  consoleLinkTemplate: "https://oceanbase.console.aliyun.com/"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.OceanBase.DescribeInstances
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: State
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: State
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.OceanBase.DeleteInstances
+    parameters:
+      InstanceIds: resource.nativeIdsJson
+      BackupRetainMode: delete_all
+      DryRun: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.OceanBase.DescribeInstances
+      parameters:
+        InstanceId: resource.nativeId
+        PageSize: 1
+      itemsPath: Instances
+      identityPath: InstanceId
+      statePath: State

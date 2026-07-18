@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::OOS::Application
+  class: application
+presentation:
+  consoleLinkTemplate: "https://oos.console.aliyun.com/"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.OOS.ListApplications
+    parameters:
+      RegionId: scope.location
+    itemsPath: Applications
+    identityPath: Name
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  createdAt: CreateDate
+actions:
+  delete:
+    operation: AlibabaCloud.OOS.DeleteApplication
+    parameters:
+      RegionId: scope.location
+      Name: resource.nativeId
+      Force: false
+      RetainResource: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.OOS.GetApplication
+      parameters:
+        RegionId: scope.location
+        Name: resource.nativeId
+      itemsPath: Application
+      identityPath: Name

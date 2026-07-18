@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::HBR::Vault
+  class: storage.backup_vault
+presentation:
+  consoleLinkTemplate: "https://hbr.console.aliyun.com/#/vault?search=%7B%22VaultId%22:%22{nativeId}%22%7D"
+  displayNames:
+    zh-CN: 云备份仓库
+    en-US: Cloud Backup Vault
+  icon: storage
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.HBR.DescribeVaults
+    parameters:
+      VaultRegionId: scope.location
+    itemsPath: Vaults.Vault
+    identityPath: VaultId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: VaultName
+  state: Status
+  createdAt: CreatedTime
+  chargeType: ChargeType
+  vaultType: VaultType
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.HBR.DeleteVault
+    parameters:
+      VaultId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.HBR.DescribeVaults
+      parameters:
+        VaultId: resource.nativeId
+        VaultRegionId: scope.location
+        PageSize: 1
+      itemsPath: Vaults.Vault
+      identityPath: VaultId
+      statePath: Status

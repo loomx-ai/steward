@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPN::VpnConnection
+  class: network.vpn_connection
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpn/{regionId}/ipsec-connections/{nativeId}"
+  displayNames:
+    zh-CN: IPsec-VPN 连接
+    en-US: IPsec-VPN Connection
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeVpnConnections
+    parameters:
+      RegionId: scope.location
+    itemsPath: VpnConnections.VpnConnection
+    identityPath: VpnConnectionId
+    statePath: State
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: State
+  createdAt: CreateTime
+  vpnGatewayId: VpnGatewayId
+  customerGatewayId: CustomerGatewayId
+  attachType: AttachType
+  transitRouterId: TransitRouterId
+relationships:
+  - type: uses
+    targetType: ACS::VPN::VpnGateway
+    targetIdPath: vpnGatewayId
+  - type: member_of
+    targetType: ACS::VPN::CustomerGateway
+    targetIdPath: customerGatewayId
+actions:
+  delete:
+    operation: DeleteVpnConnection
+    parameters:
+      RegionId: scope.location
+      VpnConnectionId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeVpnConnections
+      parameters:
+        RegionId: scope.location
+        VpnConnectionId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: VpnConnections.VpnConnection
+      identityPath: VpnConnectionId
+      statePath: State

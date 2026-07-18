@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::VPC::GatewayEndpoint
+  class: network.endpoint
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/vpc/{regionId}/gateway-endpoint"
+  displayNames:
+    zh-CN: VPC 网关终端节点
+    en-US: VPC Gateway Endpoint
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListVpcGatewayEndpoints
+    parameters:
+      RegionId: scope.location
+    itemsPath: Endpoints
+    identityPath: EndpointId
+    statePath: EndpointStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: EndpointName
+  state: EndpointStatus
+  createdAt: CreationTime
+  serviceName: ServiceName
+  resourceGroupId: ResourceGroupId
+  vpcId: VpcId
+  associatedRouteTableIds: AssociatedRouteTables
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::RouteTable
+    targetIdPath: associatedRouteTableIds
+actions:
+  delete:
+    operation: DeleteVpcGatewayEndpoint
+    deletionCheckTimeoutSeconds: 120
+    parameters:
+      RegionId: scope.location
+      EndpointId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: ListVpcGatewayEndpoints
+      parameters:
+        RegionId: scope.location
+        EndpointId: resource.nativeId
+        MaxResults: 1
+      itemsPath: Endpoints
+      identityPath: EndpointId
+      statePath: EndpointStatus
+extensions:
+  hook: alicloud.vpc.gateway_endpoint

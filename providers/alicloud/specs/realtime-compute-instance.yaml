@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RealtimeCompute::VvpInstance
+  class: data.stream_compute
+presentation:
+  consoleLinkTemplate: "https://realtime-compute.console.aliyun.com/"
+  displayNames:
+    zh-CN: 实时计算工作空间
+    en-US: Realtime Compute Workspace
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RealtimeCompute.DescribeInstances
+    parameters:
+      Region: scope.location
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: ClusterStatus
+    pagination:
+      type: page-number
+      pageParameter: PageIndex
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: ClusterStatus
+  createdAt: ResourceCreateTime
+  expiredAt: ResourceExpiredTime
+  chargeType: ChargeType
+  resourceGroupId: ResourceGroupId
+  vpcId: VpcId
+  zoneId: ZoneId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.RealtimeCompute.DeleteInstance
+    parameters:
+      Region: scope.location
+      InstanceId: resource.nativeId
+    preconditions:
+      - path: ChargeType
+        allowedValues: [POST]
+        reason: only pay-as-you-go Realtime Compute workspaces can be released through the product API
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RealtimeCompute.DescribeInstances
+      parameters:
+        Region: scope.location
+        InstanceId: resource.nativeId
+        PageIndex: 1
+        PageSize: 1
+      itemsPath: Instances
+      identityPath: InstanceId
+      statePath: ClusterStatus

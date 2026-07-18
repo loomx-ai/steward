@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Lindorm::Instance
+  class: database.wide_column
+presentation:
+  consoleLinkTemplate: "https://lindorm.console.aliyun.com/{regionId}/cluster/lindorm/{nativeId}/info"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Lindorm.GetLindormInstanceList
+    parameters:
+      RegionId: scope.location
+    itemsPath: InstanceList
+    identityPath: InstanceId
+    statePath: InstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: Total
+      maxPageSize: 100
+fields:
+  name: InstanceAlias
+  state: InstanceStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.Lindorm.ReleaseLindormInstance
+    parameters:
+      InstanceId: resource.nativeId
+      Immediately: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Lindorm.GetLindormInstanceList
+      parameters:
+        RegionId: scope.location
+        QueryStr: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: InstanceList
+      identityPath: InstanceId
+      statePath: InstanceStatus
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.Lindorm.GetLindormInstance
+        parameters:
+          InstanceId: resource.nativeId
+        itemsPath: $
+        identityPath: InstanceId
+        statePath: InstanceStatus
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.Lindorm.UpdateLindormInstanceAttribute
+        parameters:
+          InstanceId: resource.nativeId
+          DeletionProtection: false

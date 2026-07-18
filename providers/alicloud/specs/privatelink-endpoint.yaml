@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PrivateLink::VpcEndpoint
+  class: network.endpoint
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/endpoint/{regionId}/endpoints/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PrivateLink.ListVpcEndpoints
+    parameters:
+      RegionId: scope.location
+    itemsPath: Endpoints
+    identityPath: EndpointId
+    statePath: EndpointStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: EndpointName
+  state: EndpointStatus
+  createdAt: CreateTime
+  serviceId: ServiceId
+  vpcId: VpcId
+relationships:
+  - type: uses
+    targetType: ACS::PrivateLink::VpcEndpointService
+    targetIdPath: serviceId
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.PrivateLink.DeleteVpcEndpoint
+    deletionCheckTimeoutSeconds: 30
+    parameters:
+      RegionId: scope.location
+      EndpointId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.PrivateLink.ListVpcEndpoints
+      parameters:
+        RegionId: scope.location
+        EndpointId: resource.nativeId
+        MaxResults: 1
+      itemsPath: Endpoints
+      identityPath: EndpointId
+      statePath: EndpointStatus

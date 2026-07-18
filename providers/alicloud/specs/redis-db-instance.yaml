@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Redis::DBInstance
+  class: database.cache
+presentation:
+  consoleLinkTemplate: "https://kvstore.console.aliyun.com/Redis/instance/{regionId}/{nativeId}"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Redis.DescribeInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.KVStoreInstance
+    identityPath: InstanceId
+    statePath: InstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: InstanceName
+  state: InstanceStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.Redis.DeleteInstance
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Redis.DescribeInstances
+      parameters:
+        RegionId: scope.location
+        InstanceIds: resource.nativeId
+        PageSize: 1
+      itemsPath: Instances.KVStoreInstance
+      identityPath: InstanceId
+      statePath: InstanceStatus
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.Redis.DescribeInstanceAttribute
+        parameters:
+          InstanceId: resource.nativeId
+        itemsPath: Instances.DBInstanceAttribute
+        identityPath: InstanceId
+        statePath: InstanceStatus
+      path: InstanceReleaseProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.Redis.ModifyInstanceAttribute
+        parameters:
+          InstanceId: resource.nativeId
+          InstanceReleaseProtection: false

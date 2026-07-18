@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Elasticsearch::Instance
+  class: database.search
+presentation:
+  consoleLinkTemplate: "https://elasticsearch.console.aliyun.com/{regionId}/instances/{nativeId}/base"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Elasticsearch.ListInstance
+    itemsPath: Result
+    identityPath: instanceId
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: page
+      pageSizeParameter: size
+      totalPath: Headers.X-Total-Count
+      maxPageSize: 100
+fields:
+  name: description
+  state: status
+  createdAt: createdAt
+  vpcId: networkConfig.vpcId
+  vSwitchId: networkConfig.vswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: AlibabaCloud.Elasticsearch.DeleteInstance
+    parameters:
+      InstanceId: resource.nativeId
+      deleteType: immediate
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Elasticsearch.DescribeInstance
+      parameters:
+        InstanceId: resource.nativeId
+      itemsPath: Result
+      identityPath: instanceId
+      statePath: status

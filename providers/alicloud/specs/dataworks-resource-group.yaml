@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DataWorks::DwResourceGroup
+  class: data.resource_group
+presentation:
+  consoleLinkTemplate: "https://dataworks.console.aliyun.com/resource/detail?id={nativeId|suffix:_}&regionId={regionId}"
+  displayNames:
+    zh-CN: DataWorks 资源组
+    en-US: DataWorks Resource Group
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DataWorks.ListResourceGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: PagingInfo.ResourceGroupList
+    identityPath: Id
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: PagingInfo.TotalCount
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  paymentType: PaymentType
+  resourceGroupType: ResourceGroupType
+  resourceGroupId: AliyunResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.DataWorks.DeleteResourceGroup
+    parameters:
+      Id: resource.nativeId
+      RegionId: scope.location
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DataWorks.GetResourceGroup
+      parameters:
+        Id: resource.nativeId
+        RegionId: scope.location
+      itemsPath: ResourceGroup
+      identityPath: Id
+      statePath: Status

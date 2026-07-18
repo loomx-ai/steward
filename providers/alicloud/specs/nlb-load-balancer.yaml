@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::NLB::LoadBalancer
+  class: network.load_balancer
+presentation:
+  consoleLinkTemplate: "https://slb.console.aliyun.com/nlb/{regionId}/nlbs/{nativeId}"
+  icon: load-balancer
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.NLB.ListLoadBalancers
+    parameters:
+      RegionId: scope.location
+    itemsPath: LoadBalancers
+    identityPath: LoadBalancerId
+    statePath: LoadBalancerStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: LoadBalancerName
+  state: LoadBalancerStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.NLB.DeleteLoadBalancer
+    parameters:
+      RegionId: scope.location
+      LoadBalancerId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.NLB.ListLoadBalancers
+      parameters:
+        RegionId: scope.location
+        LoadBalancerIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: LoadBalancers
+      identityPath: LoadBalancerId
+      statePath: LoadBalancerStatus
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.NLB.GetLoadBalancerAttribute
+        parameters:
+          RegionId: scope.location
+          LoadBalancerId: resource.nativeId
+        itemsPath: $
+        identityPath: LoadBalancerId
+        statePath: LoadBalancerStatus
+      path: DeletionProtectionConfig.Enabled
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.NLB.UpdateLoadBalancerProtection
+        parameters:
+          RegionId: scope.location
+          LoadBalancerId: resource.nativeId
+          DeletionProtectionEnabled: false

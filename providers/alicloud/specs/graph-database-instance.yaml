@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::GraphDatabase::DbInstance
+  class: database.graph
+presentation:
+  consoleLinkTemplate: "https://gdb.console.aliyun.com/#/InstanceDetail?dbInstanceId={nativeId}&regionId={regionId}"
+  displayNames:
+    zh-CN: 图数据库实例
+    en-US: Graph Database Instance
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.GDB.DescribeDBInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items.DBInstance
+    identityPath: DBInstanceId
+    statePath: DBInstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DBInstanceDescription
+  state: DBInstanceStatus
+  createdAt: CreateTime
+  resourceGroupId: ResourceGroupId
+  payType: PayType
+  instanceType: DBInstanceType
+  nodeClass: DBNodeClass
+  nodeCount: DBNodeCount
+  nodeStorage: DBNodeStorage
+  version: DBVersion
+  expireTime: ExpireTime
+  regionId: RegionId
+  zoneId: ZoneId
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.GDB.DeleteDBInstance
+    parameters:
+      DBInstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.GDB.DescribeDBInstanceAttribute
+      parameters:
+        DBInstanceId: resource.nativeId
+      itemsPath: Items.DBInstance
+      identityPath: DBInstanceId
+      statePath: DBInstanceStatus

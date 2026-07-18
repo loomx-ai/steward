@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::AliKafka::Instance
+  class: messaging.broker
+presentation:
+  consoleLinkTemplate: "https://kafka.console.aliyun.com/region/{regionId}/instance/{nativeId}/detail"
+  displayNames:
+    zh-CN: 云消息队列 Kafka 实例
+    en-US: ApsaraMQ for Kafka Instance
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.AliKafka.GetInstanceList
+    parameters:
+      RegionId: scope.location
+    itemsPath: InstanceList.InstanceVO
+    identityPath: InstanceId
+    statePath: ViewInstanceStatusCode
+fields:
+  name: Name
+  state: ViewInstanceStatusCode
+  createdAt: CreateTime
+  paidType: PaidType
+  serviceStatus: ServiceStatus
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.AliKafka.ReleaseInstance
+    parameters:
+      InstanceId: resource.nativeId
+      RegionId: scope.location
+      ForceDeleteInstance: false
+    idempotency: readback
+    waiter: alikafka_release_delete
+    read:
+      operation: AlibabaCloud.AliKafka.GetInstanceList
+      parameters:
+        RegionId: scope.location
+        InstanceId: resources.nativeIds
+      itemsPath: InstanceList.InstanceVO
+      identityPath: InstanceId
+      statePath: ViewInstanceStatusCode
+extensions:
+  hook: alicloud.alikafka.instance

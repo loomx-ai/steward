@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DataWorks::Project
+  class: data.workspace
+presentation:
+  consoleLinkTemplate: "https://dataworks.console.aliyun.com/workspace/detail?regionId={regionId}&workspaceId={nativeId}"
+  displayNames:
+    zh-CN: DataWorks 工作空间
+    en-US: DataWorks Workspace
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DataWorks.ListProjects
+    parameters:
+      RegionId: scope.location
+    itemsPath: PagingInfo.Projects
+    identityPath: Id
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: PagingInfo.TotalCount
+      maxPageSize: 100
+fields:
+  name: Name
+  displayName: DisplayName
+  state: Status
+  owner: Owner
+  resourceGroupId: AliyunResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.DataWorks.DeleteProject
+    parameters:
+      Id: resource.normalized.configuration.ProjectId
+      RegionId: scope.location
+    idempotency: readback
+    waiter: terminal
+    terminalStates:
+      - Deleting
+    read:
+      operation: AlibabaCloud.DataWorks.GetProject
+      parameters:
+        Id: resource.normalized.configuration.ProjectId
+        RegionId: scope.location
+      itemsPath: Project
+      identityPath: Name
+      statePath: Status

@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::Snapshot
+  class: storage.snapshot
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/#/snapshotDetail/{regionId}/{nativeId}/detail"
+  icon: snapshot
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeSnapshots
+    parameters:
+      RegionId: scope.location
+    itemsPath: Snapshots.Snapshot
+    identityPath: SnapshotId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: SnapshotName
+  state: Status
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: DeleteSnapshot
+    parameters:
+      SnapshotId: resource.nativeId
+      Force: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeSnapshots
+      parameters:
+        RegionId: scope.location
+        SnapshotIds: resource.nativeIdsJson
+        MaxResults: 1
+      itemsPath: Snapshots.Snapshot
+      identityPath: SnapshotId
+      statePath: Status

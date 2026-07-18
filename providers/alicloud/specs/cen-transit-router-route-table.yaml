@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterRouteTable
+  class: network.route_table
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}/{cenId}/{transitRouterId}/routeTable?CenId={cenId}&TransitRouterId={transitRouterId}&TransitRouterRouteTableId={transitRouterRouteTableId}"
+  displayNames:
+    zh-CN: CEN 转发路由器路由表
+    en-US: CEN Transit Router Route Table
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterRouteTables
+    itemsPath: TransitRouterRouteTables
+    identityPath: TransitRouterRouteTableId
+    statePath: TransitRouterRouteTableStatus
+fields:
+  regionId: RegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  transitRouterRouteTableId: TransitRouterRouteTableId
+  name: TransitRouterRouteTableName
+  state: TransitRouterRouteTableStatus
+  createdAt: CreateTime
+  routeTableType: TransitRouterRouteTableType
+relationships:
+  - type: member_of
+    targetType: ACS::CEN::TransitRouter
+    targetIdPath: transitRouterId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterRouteTable
+    parameters:
+      TransitRouterRouteTableId: resource.nativeId
+      DryRun: false
+    preconditions:
+      - path: TransitRouterRouteTableType
+        allowedValues: [Custom]
+        reason: Alibaba Cloud system transit-router route tables are deleted with their transit router
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterRouteTables
+      parameters:
+        TransitRouterId: resource.normalized.transitRouterId
+        TransitRouterRouteTableId: resource.nativeId
+        MaxResults: 1
+      itemsPath: TransitRouterRouteTables
+      identityPath: TransitRouterRouteTableId
+      statePath: TransitRouterRouteTableStatus

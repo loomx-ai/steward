@@ -1,0 +1,36 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ActionTrail::Trail
+  class: security.audit_trail
+presentation:
+  consoleLinkTemplate: "https://actiontrail.console.aliyun.com/{regionId}/trails/{nativeId}"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ActionTrail.DescribeTrails
+    itemsPath: TrailList
+    identityPath: Name
+    statePath: Status
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+actions:
+  delete:
+    operation: AlibabaCloud.ActionTrail.DeleteTrail
+    parameters:
+      Name: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ActionTrail.DescribeTrails
+      parameters:
+        NameList: resource.nativeId
+      itemsPath: TrailList
+      identityPath: Name
+      statePath: Status

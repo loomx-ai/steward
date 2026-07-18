@@ -1,0 +1,31 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::CloudFormation::Stack
+  class: orchestration.stack
+presentation:
+  displayNames:
+    zh-CN: CloudFormation 资源栈
+    en-US: CloudFormation Stack
+  icon: stack
+scope:
+  kind: region
+discovery:
+  source: resource-explorer
+  detail:
+    operation: com.amazonaws.cloudformation#DescribeStacks
+    itemsPath: Stacks
+    identityPath: StackId
+fields:
+  name: StackName
+  state: StackStatus
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: com.amazonaws.cloudformation#DeleteStack
+    idempotency: provider_token
+    waiter: stack_terminal
+    readback: stack_absent
+extensions:
+  hook: aws.cloudformation.stack

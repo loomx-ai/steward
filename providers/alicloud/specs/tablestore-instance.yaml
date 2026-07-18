@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::OTS::Instance
+  class: database.nosql
+presentation:
+  consoleLinkTemplate: "https://otsnext.console.aliyun.com/{regionId}/{nativeId}/list"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.OTS.ListInstances
+    itemsPath: Instances
+    identityPath: InstanceName
+    statePath: InstanceStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: AliasName
+  state: InstanceStatus
+  createdAt: CreateTime
+actions:
+  delete:
+    operation: AlibabaCloud.OTS.DeleteInstance
+    parameters:
+      InstanceName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.OTS.ListInstances
+      parameters:
+        InstanceName: resource.nativeId
+        MaxResults: 1
+      itemsPath: Instances
+      identityPath: InstanceName
+      statePath: InstanceStatus

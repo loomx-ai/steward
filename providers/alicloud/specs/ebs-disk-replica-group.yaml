@@ -1,0 +1,46 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EBS::DiskReplicaGroup
+  class: storage.replica_group
+presentation:
+  consoleLinkTemplate: "https://ebs.console.aliyun.com/consistencyGroup/{regionId}/{nativeId}"
+  icon: disk
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EBS.DescribeDiskReplicaGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: ReplicaGroups
+    identityPath: ReplicaGroupId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: GroupName
+  state: Status
+actions:
+  delete:
+    operation: AlibabaCloud.EBS.DeleteDiskReplicaGroup
+    parameters:
+      RegionId: scope.location
+      ReplicaGroupId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.EBS.DescribeDiskReplicaGroups
+      parameters:
+        RegionId: scope.location
+        GroupIds: resource.nativeId
+        MaxResults: 1
+      itemsPath: ReplicaGroups
+      identityPath: ReplicaGroupId
+      statePath: Status

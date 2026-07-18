@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CloudSSO::Group
+  class: identity.group
+presentation:
+  consoleLinkTemplate: "https://cloudsso.console.aliyun.com/{regionId}/groups/{nativeId|suffix::}/info"
+  displayNames:
+    zh-CN: Cloud SSO 用户组
+    en-US: Cloud SSO Group
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.CloudSSO.ListDirectories
+    itemsPath: Directories
+    identityPath: DirectoryId
+  list:
+    operation: AlibabaCloud.CloudSSO.ListGroups
+    parameters:
+      DirectoryId: parent.nativeId
+    itemsPath: Groups
+    identityPath: GroupId
+    statePath: ProvisionType
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: GroupName
+  state: ProvisionType
+  createdAt: CreateTime
+  updatedAt: UpdateTime
+  directoryId: _parent.nativeId
+actions:
+  delete:
+    operation: AlibabaCloud.CloudSSO.DeleteGroup
+    parameters:
+      DirectoryId: resource.normalized.directoryId
+      GroupId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CloudSSO.GetGroup
+      parameters:
+        DirectoryId: resource.normalized.directoryId
+        GroupId: resource.nativeId
+      itemsPath: Group
+      identityPath: GroupId
+      statePath: ProvisionType

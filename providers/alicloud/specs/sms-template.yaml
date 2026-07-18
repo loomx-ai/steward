@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SMS::Template
+  class: messaging.sms_template
+presentation:
+  consoleLinkTemplate: "https://dysms.console.aliyun.com/"
+  displayNames:
+    zh-CN: 短信模板
+    en-US: SMS Template
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SMS.QuerySmsTemplateList
+    itemsPath: SmsTemplateList
+    identityPath: TemplateCode
+    statePath: AuditStatus
+    pagination:
+      type: page-number
+      pageParameter: PageIndex
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: TemplateName
+  state: AuditStatus
+  createdAt: CreateDate
+  templateType: TemplateType
+  signatureName: SignatureName
+actions:
+  delete:
+    operation: AlibabaCloud.SMS.DeleteSmsTemplate
+    parameters:
+      TemplateCode: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SMS.GetSmsTemplate
+      parameters:
+        TemplateCode: resource.nativeId
+      itemsPath: $
+      identityPath: TemplateCode
+      statePath: TemplateStatus

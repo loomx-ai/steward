@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SSLCertificatesService::Certificate
+  class: security.certificate
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/"
+  displayNames:
+    zh-CN: SSL 证书
+    en-US: SSL Certificate
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SSLCertificatesService.ListUserCertificateOrder
+    parameters:
+      OrderType: CERT
+    itemsPath: CertificateOrderList
+    identityPath: CertificateId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: CurrentPage
+      pageSizeParameter: ShowSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  domain: Domain
+  commonName: CommonName
+  startDate: StartDate
+  endDate: EndDate
+  expired: Expired
+  upload: Upload
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.SSLCertificatesService.DeleteUserCertificate
+    parameters:
+      CertId: resource.nativeId
+    idempotency: readback
+    waiter: ssl_certificate_delete
+    read:
+      operation: AlibabaCloud.SSLCertificatesService.GetUserCertificateDetail
+      parameters:
+        CertId: resource.nativeId
+      itemsPath: $
+      identityPath: Id
+extensions:
+  hook: alicloud.ssl_certificate

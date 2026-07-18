@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Domain::Domain
+  class: dns.registered_domain
+presentation:
+  consoleLinkTemplate: "https://domain.console.aliyun.com/"
+  displayNames:
+    zh-CN: 注册域名
+    en-US: Registered Domain
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Domain.QueryDomainList
+    parameters:
+      PageNum: 1
+      PageSize: 100
+    itemsPath: Data.Domain
+    identityPath: InstanceId
+    statePath: DomainStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: TotalItemNum
+      maxPageSize: 100
+fields:
+  name: DomainName
+  domainName: DomainName
+  state: DomainStatus
+  registrationDate: RegistrationDate
+  expirationDate: ExpirationDate
+  resourceGroupId: ResourceGroupId
+  autoRenewEnabled: AutoRenewEnabled
+actions:
+  delete:
+    operation: AlibabaCloud.Domain.SaveTaskForSubmittingDomainDelete
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Domain.QueryDomainList
+      parameters:
+        DomainName: resource.normalized.domainName
+        PageNum: 1
+        PageSize: 1
+      itemsPath: Data.Domain
+      identityPath: InstanceId
+      statePath: DomainStatus

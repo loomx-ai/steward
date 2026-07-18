@@ -1,0 +1,70 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouter
+  class: network.transit_router
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}/{parentId}/{nativeId}"
+  displayNames:
+    zh-CN: CEN 转发路由器
+    en-US: CEN Transit Router
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    operation: AlibabaCloud.CEN.DescribeCens
+    itemsPath: Cens.Cen
+    identityPath: CenId
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouters
+    parameters:
+      CenId: parent.nativeId
+      RegionId: scope.location
+    itemsPath: TransitRouters
+    identityPath: TransitRouterId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: TransitRouterName
+  state: Status
+  createdAt: CreationTime
+  regionId: RegionId
+  cenId: _parent.nativeId
+relationships:
+  - type: member_of
+    targetType: ACS::CEN::CenInstance
+    targetIdPath: cenId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouter
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    parameters:
+      TransitRouterId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouters
+      parameters:
+        CenId: resource.normalized.cenId
+        TransitRouterId: resource.nativeId
+        PageNumber: 1
+        PageSize: 1
+      itemsPath: TransitRouters
+      identityPath: TransitRouterId
+      statePath: Status

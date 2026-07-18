@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Eipanycast::AnycastEipAddress
+  class: network.public_ip
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/"
+  displayNames:
+    zh-CN: Anycast 弹性公网 IP
+    en-US: Anycast EIP Address
+  icon: public-ip
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Eipanycast.ListAnycastEipAddresses
+    itemsPath: AnycastList
+    identityPath: AnycastId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  businessStatus: BusinessStatus
+  createdAt: CreateTime
+  chargeType: InstanceChargeType
+  ipAddress: IpAddress
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.Eipanycast.ReleaseAnycastEipAddress
+    parameters:
+      AnycastId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Eipanycast.ListAnycastEipAddresses
+      parameters:
+        AnycastIds: resources.nativeIds
+        MaxResults: 1
+      itemsPath: AnycastList
+      identityPath: AnycastId
+      statePath: Status

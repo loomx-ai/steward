@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ARMS::TraceApp
+  class: observability.apm_application
+presentation:
+  consoleLinkTemplate: "https://armsnext.console.aliyun.com/tracing#/tracing/{regionId}?appId={nativeId}"
+  displayNames:
+    zh-CN: ARMS 应用监控任务
+    en-US: ARMS Trace Application
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ARMS.ListTraceApps
+    parameters:
+      RegionId: scope.location
+    itemsPath: TraceApps
+    identityPath: Pid
+    statePath: Show
+fields:
+  name: AppName
+  state: Show
+  createdAt: CreateTime
+  appId: AppId
+  appType: Type
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ARMS.DeleteTraceApp
+    parameters:
+      RegionId: scope.location
+      Pid: resource.nativeId
+      AppId: resource.normalized.appId
+      Type: resource.normalized.appType
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ARMS.GetTraceApp
+      parameters:
+        RegionId: scope.location
+        Pid: resource.nativeId
+      itemsPath: TraceApp
+      identityPath: Pid
+      statePath: Show

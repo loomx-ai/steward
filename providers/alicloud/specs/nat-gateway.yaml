@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::NAT::NatGateway
+  class: network.nat_gateway
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/nat/{regionId}/nats/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeNatGateways
+    parameters:
+      RegionId: scope.location
+    itemsPath: NatGateways.NatGateway
+    identityPath: NatGatewayId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+actions:
+  delete:
+    operation: DeleteNatGateway
+    parameters:
+      RegionId: scope.location
+      NatGatewayId: resource.nativeId
+      Force: true
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: DescribeNatGateways
+      parameters:
+        RegionId: scope.location
+        NatGatewayId: resource.nativeId
+        PageSize: 1
+      itemsPath: NatGateways.NatGateway
+      identityPath: NatGatewayId
+      statePath: Status
+    deletionProtection:
+      path: DeletionProtection
+      enabledValues:
+        - "true"
+      disable:
+        operation: AlibabaCloud.VPC.DeletionProtection
+        parameters:
+          RegionId: scope.location
+          InstanceId: resource.nativeId
+          Type: NATGW
+          ProtectionEnable: false

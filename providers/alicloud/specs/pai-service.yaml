@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PAI::Service
+  class: ai.inference_service
+presentation:
+  consoleLinkTemplate: "https://pai.console.aliyun.com/?regionId={regionId}#/sw?path=/eas"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PAI.ListServices
+    itemsPath: Services
+    identityPath: ServiceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: ServiceName
+  serviceName: ServiceName
+  state: Status
+  createdAt: CreateTime
+actions:
+  delete:
+    operation: AlibabaCloud.PAI.DeleteService
+    parameters:
+      ClusterId: scope.location
+      ServiceName: resource.normalized.serviceName
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.PAI.ListServices
+      parameters:
+        ServiceUid: resource.nativeId
+        PageSize: 1
+      itemsPath: Services
+      identityPath: ServiceId
+      statePath: Status

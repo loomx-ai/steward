@@ -1,0 +1,34 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Ons::Instance
+  class: messaging.broker
+presentation:
+  consoleLinkTemplate: "https://ons.console.aliyun.com/region/{regionId}/instance/{nativeId}/detail"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ONS.OnsInstanceInServiceList
+    itemsPath: Data.InstanceVO
+    identityPath: InstanceId
+    statePath: InstanceStatus
+fields:
+  name: InstanceName
+  state: InstanceStatus
+  createdAt: CreateTime
+actions:
+  delete:
+    operation: AlibabaCloud.ONS.OnsInstanceDelete
+    parameters:
+      InstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ONS.OnsInstanceInServiceList
+      itemsPath: Data.InstanceVO
+      identityPath: InstanceId
+      statePath: InstanceStatus

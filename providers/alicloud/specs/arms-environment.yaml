@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ARMS::Environment
+  class: observability.monitoring_environment
+presentation:
+  consoleLinkTemplate: "https://arms.console.aliyun.com/"
+  displayNames:
+    zh-CN: ARMS VPC 环境
+    en-US: ARMS VPC Environment
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ARMS.ListEnvironments
+    parameters:
+      EnvironmentType: ECS
+      RegionId: scope.location
+    itemsPath: Data.Environments
+    identityPath: EnvironmentId
+    statePath: BindResourceStatus
+  enrich:
+    operation: AlibabaCloud.ARMS.DescribeEnvironment
+    parameters:
+      RegionId: scope.location
+      EnvironmentId: resources.nativeId
+    itemsPath: Data
+    identityPath: EnvironmentId
+    maxBatchSize: 1
+fields:
+  name: EnvironmentName
+  state: BindResourceStatus
+  createdAt: CreateTime
+  environmentType: EnvironmentType
+  environmentSubType: EnvironmentSubType
+  bindResourceType: BindResourceType
+  managedType: ManagedType
+  resourceGroupId: ResourceGroupId
+  vpcId: VpcId
+  vSwitchId: VswitchId
+  securityGroupId: SecurityGroupId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: member_of
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ARMS.DeleteEnvironment
+    parameters:
+      RegionId: scope.location
+      EnvironmentId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.ARMS.DescribeEnvironment
+      parameters:
+        RegionId: scope.location
+        EnvironmentId: resource.nativeId
+      itemsPath: Data
+      identityPath: EnvironmentId

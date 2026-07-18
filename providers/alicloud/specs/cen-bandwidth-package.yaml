@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::CenBandwidthPackage
+  class: network.bandwidth_package
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/bandwidth?CenBandwidthPackageId={nativeId}&IncludeReservationData=true&IsOrKey=true"
+  displayNames:
+    zh-CN: 云企业网带宽包
+    en-US: CEN Bandwidth Package
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CEN.DescribeCenBandwidthPackages
+    itemsPath: CenBandwidthPackages.CenBandwidthPackage
+    identityPath: CenBandwidthPackageId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  businessStatus: BusinessStatus
+  chargeType: BandwidthPackageChargeType
+  createdAt: CreationTime
+  expiredAt: ExpiredTime
+  resourceGroupId: ResourceGroupId
+  cenIds: CenIds.CenId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteCenBandwidthPackage
+    parameters:
+      CenBandwidthPackageId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.DescribeCenBandwidthPackages
+      parameters:
+        Filter.1.Key: CenBandwidthPackageId
+        Filter.1.Value.1: resource.nativeId
+        PageSize: 1
+      itemsPath: CenBandwidthPackages.CenBandwidthPackage
+      identityPath: CenBandwidthPackageId
+      statePath: Status

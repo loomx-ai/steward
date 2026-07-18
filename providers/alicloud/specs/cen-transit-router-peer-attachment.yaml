@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterPeerAttachment
+  class: network.cen_attachment
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}/{cenId}/{transitRouterId}/crossInteregional?CenId={cenId}&TransitRouterId={transitRouterId}"
+  displayNames:
+    zh-CN: CEN 跨地域连接
+    en-US: CEN Inter-region Connection
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterPeerAttachments
+    itemsPath: TransitRouterAttachments
+    identityPath: TransitRouterAttachmentId
+    statePath: Status
+fields:
+  name: TransitRouterAttachmentName
+  state: Status
+  createdAt: CreationTime
+  regionId: RegionId
+  cenId: CenId
+  transitRouterId: TransitRouterId
+  peerTransitRouterId: PeerTransitRouterId
+  peerRegionId: PeerTransitRouterRegionId
+  cenBandwidthPackageId: CenBandwidthPackageId
+relationships:
+  - type: member_of
+    targetType: ACS::CEN::TransitRouter
+    targetIdPath: transitRouterId
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DeleteTransitRouterPeerAttachment
+    parameters:
+      TransitRouterAttachmentId: resource.nativeId
+      DryRun: false
+      Force: true
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.CEN.ListTransitRouterPeerAttachments
+      parameters:
+        TransitRouterAttachmentId: resource.nativeId
+        MaxResults: 20
+      itemsPath: TransitRouterAttachments
+      identityPath: TransitRouterAttachmentId
+      statePath: Status

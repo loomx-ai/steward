@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DTS::Instance
+  class: data.transfer_job
+presentation:
+  consoleLinkTemplate: "https://dtsnew.console.aliyun.com/sbe/detail/basic-info/{nativeId}?regionId={regionId}"
+  displayNames:
+    zh-CN: 数据传输服务实例
+    en-US: Data Transmission Service Instance
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DTS.DescribeDtsJobs
+    parameters:
+      RegionId: scope.location
+    itemsPath: DtsJobList
+    identityPath: DtsInstanceID
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalRecordCount
+      maxPageSize: 100
+  enrich:
+    operation: AlibabaCloud.DTS.DescribeDtsJobs
+    parameters:
+      RegionId: scope.location
+      Type: instance
+      Params: resources.nativeId
+      JobType: resource.normalized.jobType
+      PageNumber: 1
+      PageSize: 20
+      WithoutDbList: true
+    itemsPath: DtsJobList
+    identityPath: DtsInstanceID
+    maxBatchSize: 1
+fields:
+  name: DtsJobName
+  state: Status
+  createdAt: CreateTime
+  chargeType: PayType
+  jobType: JobType
+  instanceId: DtsInstanceID
+  resourceGroupId: ResourceGroupId
+relationships:
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::RDS::DBInstance
+    targetIdPath: rdsInstanceIds
+actions:
+  delete:
+    operation: AlibabaCloud.DTS.DeleteDtsJob
+    parameters:
+      RegionId: scope.location
+      DtsInstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DTS.DescribeDtsJobs
+      parameters:
+        RegionId: scope.location
+        Type: instance
+        Params: resource.nativeId
+        JobType: resource.normalized.jobType
+        PageNumber: 1
+        PageSize: 20
+      itemsPath: DtsJobList
+      identityPath: DtsInstanceID
+      statePath: Status

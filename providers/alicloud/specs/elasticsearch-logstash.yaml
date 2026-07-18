@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Elasticsearch::Logstash
+  class: data.pipeline
+presentation:
+  consoleLinkTemplate: "https://elasticsearch.console.aliyun.com/{regionId}/logstashes/{nativeId}/base"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Elasticsearch.ListLogstash
+    itemsPath: Result
+    identityPath: instanceId
+    statePath: status
+    pagination:
+      type: page-number
+      pageParameter: page
+      pageSizeParameter: size
+      totalPath: Headers.X-Total-Count
+      maxPageSize: 100
+fields:
+  name: description
+  state: status
+  createdAt: createdAt
+  vpcId: networkConfig.vpcId
+  vSwitchId: networkConfig.vswitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.Elasticsearch.DeleteLogstash
+    parameters:
+      InstanceId: resource.nativeId
+      deleteType: immediate
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Elasticsearch.DescribeLogstash
+      parameters:
+        InstanceId: resource.nativeId
+      itemsPath: Result
+      identityPath: instanceId
+      statePath: status

@@ -1,0 +1,35 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CR::Instance
+  class: container.registry
+presentation:
+  consoleLinkTemplate: "https://cr.console.aliyun.com/{regionId}/instance/{nativeId}/dashboard"
+  displayNames:
+    zh-CN: 容器镜像服务实例
+    en-US: Container Registry Instance
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.CR.ListInstance
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: InstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNo
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: InstanceStatus
+  createdAt: CreateTime
+  updatedAt: ModifiedTime
+  regionId: RegionId
+  resourceGroupId: ResourceGroupId
+  instanceSpecification: InstanceSpecification

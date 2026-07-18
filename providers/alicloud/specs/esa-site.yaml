@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ESA::Site
+  class: network.edge_site
+presentation:
+  consoleLinkTemplate: "https://esa.console.aliyun.com/"
+  displayNames:
+    zh-CN: 边缘安全加速站点
+    en-US: Edge Security Acceleration Site
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ESA.ListSites
+    itemsPath: Sites
+    identityPath: SiteId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 500
+fields:
+  name: SiteName
+  state: Status
+  createdAt: CreateTime
+  updatedAt: UpdateTime
+  instanceId: InstanceId
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ESA.DeleteSite
+    parameters:
+      SiteId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ESA.GetSite
+      parameters:
+        SiteId: resource.nativeId
+      itemsPath: SiteModel
+      identityPath: SiteId
+      statePath: Status

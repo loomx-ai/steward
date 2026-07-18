@@ -1,0 +1,34 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RTC::Application
+  class: media.rtc_application
+presentation:
+  consoleLinkTemplate: "https://rtc.console.aliyun.com/"
+  displayNames:
+    zh-CN: 实时音视频应用
+    en-US: RTC Application
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RTC.DescribeApps
+    itemsPath: AppList.App
+    identityPath: AppId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: TotalNum
+      maxPageSize: 100
+fields:
+  name: AppName
+  state: Status
+  createdAt: CreateTime
+  appType: AppType
+  billType: BillType
+  version: Version

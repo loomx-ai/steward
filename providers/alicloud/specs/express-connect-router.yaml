@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ExpressConnectRouter::ExpressConnectRouter
+  class: network.express_connect_router
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/"
+  displayNames:
+    zh-CN: 专线网关
+    en-US: Express Connect Router
+  icon: network
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ExpressConnectRouter.DescribeExpressConnectRouter
+    itemsPath: EcrList
+    identityPath: EcrId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: Name
+  state: Status
+  businessStatus: BizStatus
+  createdAt: GmtCreate
+  updatedAt: GmtModified
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ExpressConnectRouter.DeleteExpressConnectRouter
+    parameters:
+      EcrId: resource.nativeId
+      DryRun: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ExpressConnectRouter.DescribeExpressConnectRouter
+      parameters:
+        EcrId: resource.nativeId
+        MaxResults: 1
+      itemsPath: EcrList
+      identityPath: EcrId
+      statePath: Status

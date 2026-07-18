@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Alidns::Domain
+  class: dns.zone
+presentation:
+  consoleLinkTemplate: "https://dnsnext.console.aliyun.com/authoritative/domains/{nativeId}"
+  displayNames:
+    zh-CN: 云解析 DNS 域名
+    en-US: Alibaba Cloud DNS Domain
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Alidns.DescribeDomains
+    itemsPath: Domains.Domain
+    identityPath: DomainName
+    statePath: InstanceExpired
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DomainName
+  state: InstanceExpired
+  createdAt: CreateTimestamp
+  domainId: DomainId
+  instanceId: InstanceId
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.Alidns.DeleteDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Alidns.DescribeDomains
+      parameters:
+        KeyWord: resource.nativeId
+        SearchMode: EXACT
+        PageSize: 1
+      itemsPath: Domains.Domain
+      identityPath: DomainName
+      statePath: InstanceExpired

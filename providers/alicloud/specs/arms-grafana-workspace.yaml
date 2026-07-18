@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ARMS::GrafanaWorkspace
+  class: observability.visualization
+presentation:
+  consoleLinkTemplate: "https://arms.console.aliyun.com/"
+  displayNames:
+    zh-CN: 可观测可视化 Grafana 工作区
+    en-US: Managed Grafana Workspace
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ARMS.ListGrafanaWorkspace
+    parameters:
+      RegionId: scope.location
+    itemsPath: Data
+    identityPath: grafanaWorkspaceId
+    statePath: status
+fields:
+  name: grafanaWorkspaceName
+  state: status
+  createdAt: gmtCreate
+  edition: grafanaWorkspaceEdition
+  resourceGroupId: resourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.ARMS.DeleteGrafanaWorkspace
+    parameters:
+      RegionId: scope.location
+      GrafanaWorkspaceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ARMS.GetGrafanaWorkspace
+      parameters:
+        RegionId: scope.location
+        GrafanaWorkspaceId: resource.nativeId
+      itemsPath: Data
+      identityPath: grafanaWorkspaceId
+      statePath: status

@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ROS::Stack
+  class: orchestration.stack
+presentation:
+  consoleLinkTemplate: "https://ros.console.aliyun.com/{regionId}/stacks/{nativeId}"
+  icon: stack
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ROS.ListStacks
+    parameters:
+      RegionId: scope.location
+    itemsPath: Stacks
+    identityPath: StackId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: StackName
+  state: Status
+  createdAt: CreateTime
+actions:
+  delete:
+    operation: AlibabaCloud.ROS.DeleteStack
+    parameters:
+      RegionId: scope.location
+      StackId: resource.nativeId
+      RetainAllResources: false
+    idempotency: readback
+    waiter: terminal
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 1800
+    terminalStates:
+      - DELETE_COMPLETE
+    failureStates:
+      - DELETE_FAILED
+    read:
+      operation: AlibabaCloud.ROS.ListStacks
+      parameters:
+        RegionId: scope.location
+        StackId: resource.nativeId
+        PageSize: 1
+      itemsPath: Stacks
+      identityPath: StackId
+      statePath: Status
+    deletionProtection:
+      read:
+        operation: AlibabaCloud.ROS.GetStack
+        parameters:
+          RegionId: scope.location
+          StackId: resource.nativeId
+          OutputOption: Disabled
+        itemsPath: $
+        identityPath: StackId
+        statePath: Status
+      path: DeletionProtection
+      enabledValues:
+        - Enabled
+      disable:
+        operation: AlibabaCloud.ROS.SetDeletionProtection
+        parameters:
+          RegionId: scope.location
+          StackId: resource.nativeId
+          DeletionProtection: Disabled

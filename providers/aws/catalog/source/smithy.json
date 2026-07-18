@@ -1,0 +1,14 @@
+{
+  "shapes": {
+    "com.amazonaws.resourceexplorer2#ListResources": {"type": "operation", "traits": {"smithy.api#http": {"method": "POST", "uri": "/ListResources"}}},
+    "com.amazonaws.cloudformation#ListStackResources": {"type": "operation", "traits": {"smithy.api#http": {"method": "POST", "uri": "/"}}},
+    "com.amazonaws.cloudformation#DescribeStacks": {"type": "operation", "traits": {"smithy.api#http": {"method": "POST", "uri": "/"}}},
+    "com.amazonaws.cloudformation#DeleteStack": {"type": "operation", "traits": {"smithy.api#http": {"method": "POST", "uri": "/"}}}
+  },
+  "x-resource-types": [
+    {"nativeType": "AWS::CloudFormation::Stack", "class": "orchestration.stack", "displayName": "CloudFormation Stack", "scopeKinds": ["region"]},
+    {"nativeType": "AWS::EC2::Instance", "class": "compute.instance", "displayName": "EC2 Instance", "scopeKinds": ["region"]},
+    {"nativeType": "AWS::IAM::Role", "class": "identity.role", "displayName": "IAM Role", "scopeKinds": ["global"]},
+    {"nativeType": "AWS::S3::Bucket", "class": "storage.bucket", "displayName": "S3 Bucket", "scopeKinds": ["global", "region"]}
+  ]
+}

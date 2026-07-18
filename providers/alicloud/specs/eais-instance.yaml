@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::EAIS::Instance
+  class: compute.accelerator
+presentation:
+  consoleLinkTemplate: "https://eais.console.aliyun.com/"
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.EAIS.DescribeEais
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.Instance
+    identityPath: ElasticAcceleratedInstanceId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 200
+    supportedRegions:
+      - cn-beijing
+      - cn-hangzhou
+      - cn-shanghai
+      - cn-shenzhen
+      - cn-chengdu
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: CreationTime
+  vSwitchId: VSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.EAIS.DeleteEai
+    parameters:
+      RegionId: scope.location
+      ElasticAcceleratedInstanceId: resource.nativeId
+      Force: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.EAIS.DescribeEais
+      parameters:
+        RegionId: scope.location
+        ElasticAcceleratedInstanceIds: resource.nativeId
+        PageSize: 1
+      itemsPath: Instances.Instance
+      identityPath: ElasticAcceleratedInstanceId
+      statePath: Status

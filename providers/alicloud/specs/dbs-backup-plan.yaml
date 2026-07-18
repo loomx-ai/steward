@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::DBS::BackupPlan
+  class: storage.backup_plan
+presentation:
+  consoleLinkTemplate: "https://dms.aliyun.com/#to=dbs_data_source"
+  displayNames:
+    zh-CN: 数据库备份计划
+    en-US: Database Backup Plan
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.DBS.DescribeBackupPlanList
+    parameters:
+      Region: scope.location
+    itemsPath: Items.BackupPlanDetail
+    identityPath: BackupPlanId
+    statePath: BackupPlanStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNum
+      pageSizeParameter: PageSize
+      totalPath: TotalElements
+      maxPageSize: 100
+fields:
+  name: BackupPlanName
+  state: BackupPlanStatus
+  createdAt: BackupPlanCreateTime
+  chargeType: InstanceChargeType
+  resourceGroupId: ResourceGroupId
+  sourceInstanceId: SourceEndpointInstanceID
+  sourceRegion: SourceEndpointRegion
+actions:
+  delete:
+    operation: AlibabaCloud.DBS.ReleaseBackupPlan
+    parameters:
+      BackupPlanId: resource.nativeId
+      ClientToken: ""
+    preconditions:
+      - path: InstanceChargeType
+        allowedValues: [POSTPAY]
+        reason: only pay-as-you-go DBS backup plans can be released through the product API
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.DBS.DescribeBackupPlanList
+      parameters:
+        BackupPlanId: resource.nativeId
+        Region: scope.location
+        PageNum: 1
+        PageSize: 1
+      itemsPath: Items.BackupPlanDetail
+      identityPath: BackupPlanId
+      statePath: BackupPlanStatus

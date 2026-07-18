@@ -1,0 +1,26 @@
+{
+  "RequestId": "resource-request-1",
+  "NextToken": "page-2",
+  "Resources": [
+    {
+      "AccountId": "1234567890123456",
+      "ResourceGroupId": "rg-a",
+      "ResourceId": "bucket-a",
+      "ResourceName": "archive-bucket",
+      "ResourceType": "ACS::OSS::Bucket",
+      "RegionId": "cn-hangzhou",
+      "CreateTime": "2026-07-01T00:00:00Z",
+      "Tags": [{"Key": "environment", "Value": "test"}]
+    },
+    {
+      "AccountId": "1234567890123456",
+      "ResourceGroupId": "rg-a",
+      "ResourceId": "i-a",
+      "ResourceName": "worker-a",
+      "ResourceType": "ACS::ECS::Instance",
+      "RegionId": "cn-hangzhou",
+      "CreateTime": "2026-07-02T00:00:00Z",
+      "Tags": [{"Key": "role", "Value": "worker"}]
+    }
+  ]
+}

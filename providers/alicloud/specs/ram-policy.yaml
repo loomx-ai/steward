@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RAM::Policy
+  class: identity.policy
+presentation:
+  consoleLinkTemplate: "https://ram.console.aliyun.com/"
+  displayNames:
+    zh-CN: RAM 自定义权限策略
+    en-US: RAM Custom Policy
+  icon: policy
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RAM.ListPolicies
+    parameters:
+      PolicyType: Custom
+    itemsPath: Policies.Policy
+    identityPath: PolicyName
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxItems
+      maxPageSize: 1000
+fields:
+  name: PolicyName
+  createdAt: CreateDate
+  updatedAt: UpdateDate
+  attachmentCount: AttachmentCount
+  policyType: PolicyType
+actions:
+  delete:
+    operation: AlibabaCloud.RAM.DeletePolicy
+    parameters:
+      PolicyName: resource.nativeId
+      CascadingDelete: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RAM.GetPolicy
+      parameters:
+        PolicyName: resource.nativeId
+        PolicyType: Custom
+      itemsPath: Policy
+      identityPath: PolicyName

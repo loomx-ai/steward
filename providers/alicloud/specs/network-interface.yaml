@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::NetworkInterface
+  class: network.interface
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/networkInterfaces/region/{regionId}/detail/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeNetworkInterfaces
+    parameters:
+      RegionId: scope.location
+    itemsPath: NetworkInterfaceSets.NetworkInterfaceSet
+    identityPath: NetworkInterfaceId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+  enrich:
+    operation: DescribeNetworkInterfaces
+    parameters:
+      RegionId: scope.location
+      NetworkInterfaceId: resources.nativeIds
+      MaxResults: resources.count
+    itemsPath: NetworkInterfaceSets.NetworkInterfaceSet
+    identityPath: NetworkInterfaceId
+    maxBatchSize: 100
+fields:
+  name: NetworkInterfaceName
+  state: Status
+  createdAt: CreationTime
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpc_id
+  - type: member_of
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vswitch_id
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: security_group_ids
+actions:
+  delete:
+    operation: DeleteNetworkInterface
+    parameters:
+      RegionId: scope.location
+      NetworkInterfaceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: DescribeNetworkInterfaces
+      parameters:
+        RegionId: scope.location
+        NetworkInterfaceId: resources.nativeIds
+        MaxResults: 1
+      itemsPath: NetworkInterfaceSets.NetworkInterfaceSet
+      identityPath: NetworkInterfaceId
+      statePath: Status

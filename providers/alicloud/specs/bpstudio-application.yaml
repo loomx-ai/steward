@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::BPStudio::Application
+  class: application.architecture
+presentation:
+  consoleLinkTemplate: "https://bpstudio.console.aliyun.com/bpStudio/topo?AppId={nativeId}"
+  displayNames:
+    zh-CN: 云速搭应用
+    en-US: CADT Application
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.BPStudio.ListApplication
+    parameters:
+      NextToken: 1
+      MaxResults: 50
+    itemsPath: Data
+    identityPath: ApplicationId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: NextToken
+      pageSizeParameter: MaxResults
+      totalPath: TotalCount
+      maxPageSize: 50
+fields:
+  name: Name
+  state: Status
+  createdAt: CreateTime
+  resourceGroupId: ResourceGroupId
+actions:
+  delete:
+    operation: AlibabaCloud.BPStudio.ReleaseApplication
+    parameters:
+      ApplicationId: resource.nativeId
+      ClientToken: ""
+    idempotency: provider_token
+    waiter: bpstudio_release_delete
+    read:
+      operation: AlibabaCloud.BPStudio.GetApplication
+      parameters:
+        ApplicationId: resource.nativeId
+      itemsPath: Data
+      identityPath: ApplicationId
+      statePath: Status
+extensions:
+  hook: alicloud.bpstudio.application

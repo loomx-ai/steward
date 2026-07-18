@@ -1,0 +1,38 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Bastionhost::Instance
+  class: security.bastion_host
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/"
+  displayNames:
+    zh-CN: 堡垒机实例
+    en-US: Bastionhost Instance
+  icon: shield
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Bastionhost.DescribeInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances
+    identityPath: InstanceId
+    statePath: InstanceStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: Description
+  state: InstanceStatus
+  startTime: StartTime
+  expireTime: ExpireTime
+  regionId: RegionId
+  resourceGroupId: ResourceGroupId
+  vpcId: VpcId
+  vSwitchId: VswitchId

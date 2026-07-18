@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::Eflo::Cluster
+  class: compute.lingjun_cluster
+presentation:
+  consoleLinkTemplate: "https://lingjun.console.aliyun.com/{regionId}/edp-bms/hosted-cluster/cluster-details?ClusterId={nativeId}"
+  displayNames:
+    zh-CN: 智算灵骏集群
+    en-US: Intelligent Computing Lingjun Cluster
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.Eflo.ListClusters
+    itemsPath: Clusters
+    identityPath: ClusterId
+    statePath: OperatingState
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ClusterName
+  state: OperatingState
+  createdAt: CreateTime
+  resourceGroupId: ResourceGroupId
+  clusterType: ClusterType
+  nodeCount: NodeCount
+  nodeGroupCount: NodeGroupCount
+  vpcId: VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.Eflo.DeleteCluster
+    parameters:
+      ClusterId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.Eflo.DescribeCluster
+      parameters:
+        ClusterId: resource.nativeId
+      itemsPath: $
+      identityPath: ClusterId
+      statePath: OperatingState

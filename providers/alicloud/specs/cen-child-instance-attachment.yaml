@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::ChildInstanceAttachment
+  class: network.cen_attachment
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN 网络实例连接
+    en-US: CEN Child Instance Attachment
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.DescribeCenAttachedChildInstances
+    itemsPath: ChildInstances.ChildInstance
+    identityPath: ChildInstanceId
+    statePath: Status
+fields:
+  state: Status
+  createdAt: ChildInstanceAttachTime
+  regionId: ChildInstanceRegionId
+  cenId: CenId
+  childInstanceId: ChildInstanceId
+  childInstanceType: ChildInstanceType
+actions:
+  delete:
+    operation: AlibabaCloud.CEN.DetachCenChildInstance
+    parameters:
+      CenId: resource.normalized.cenId
+      ChildInstanceId: resource.normalized.childInstanceId
+      ChildInstanceType: resource.normalized.childInstanceType
+      ChildInstanceRegionId: resource.normalized.regionId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.CEN.DescribeCenAttachedChildInstanceAttribute
+      parameters:
+        CenId: resource.normalized.cenId
+        ChildInstanceId: resource.normalized.childInstanceId
+        ChildInstanceType: resource.normalized.childInstanceType
+        ChildInstanceRegionId: resource.normalized.regionId
+      itemsPath: $
+      identityPath: ChildInstanceId
+      statePath: Status

@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::FC::Function
+  class: serverless.function
+presentation:
+  consoleLinkTemplate: "https://fcnext.console.aliyun.com/{regionId}/services/{parentId}/functions"
+  displayNames:
+    zh-CN: 函数计算函数
+    en-US: Function Compute Function
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: resource-center
+    nativeType: ACS::FC::Service
+  list:
+    operation: AlibabaCloud.FC.ListFunctions
+    parameters:
+      serviceName: parent.nativeId
+    itemsPath: functions
+    identityPath: functionId
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+      pageSizeParameter: limit
+      maxPageSize: 100
+fields:
+  name: functionName
+  createdAt: createdTime
+  updatedAt: lastModifiedTime
+  serviceName: _parent.nativeId
+  functionId: functionId
+  functionName: functionName
+  description: description
+  runtime: runtime
+  handler: handler
+  timeout: timeout
+  memorySize: memorySize
+  cpu: cpu
+  diskSize: diskSize
+  instanceType: instanceType
+  instanceConcurrency: instanceConcurrency
+relationships:
+  - type: member_of
+    targetType: ACS::FC::Service
+    targetIdPath: serviceName

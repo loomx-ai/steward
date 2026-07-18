@@ -1,0 +1,1162 @@
+{
+  "revision": "2026-07-27",
+  "source_url": "https://help.aliyun.com/zh/resource-management/resource-center/product-overview/services-that-work-with-resource-center",
+  "resources": [
+    {
+      "native_type": "ACS::ACK::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ack-cluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ADB::DBCluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-adb-dbcluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ADB::DBClusterLakeVersion",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-adb-dbclusterlakeversion.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:a6f505660de7965bacf3f740a5971a742d5f4e013e847f5c02f73b6177a1f448"
+    },
+    {
+      "native_type": "ACS::ALB::Listener",
+      "level": "subresource",
+      "parent_native_type": "ACS::ALB::LoadBalancer",
+      "reason": "listener belongs to an ALB instance"
+    },
+    {
+      "native_type": "ACS::ALB::LoadBalancer",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-alb-loadbalancer.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ALB::ServerGroup",
+      "level": "subresource",
+      "parent_native_type": "ACS::ALB::LoadBalancer",
+      "reason": "server group belongs to an ALB instance"
+    },
+    {
+      "native_type": "ACS::APIG::Gateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-apig-gateway.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::APIG::HttpApi",
+      "level": "subresource",
+      "parent_native_type": "ACS::APIG::Gateway",
+      "reason": "HTTP API is configured within an API gateway"
+    },
+    {
+      "native_type": "ACS::APIG::Service",
+      "level": "subresource",
+      "parent_native_type": "ACS::APIG::Gateway",
+      "reason": "backend service is configured within an API gateway"
+    },
+    {
+      "native_type": "ACS::ARMS::GrafanaWorkspace",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-arms-grafanaworkspace.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:1a67550ebc7e80f9e52316e73de4d3180b5700e2ebe440151dc7f23e0dc951cb"
+    },
+    {
+      "native_type": "ACS::ARMS::Prometheus",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-arms-prometheus.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ARMS::TraceApp",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-arms-traceapp.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::AckOne::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ackone-cluster.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:9e48fcabacb702508618d918c6b5e95fb49106525da73ae710db77f93e0083c8"
+    },
+    {
+      "native_type": "ACS::ActionTrail::Trail",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-actiontrail-trail.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::AliKafka::ConsumerGroup",
+      "level": "subresource",
+      "parent_native_type": "ACS::AliKafka::Instance",
+      "reason": "consumer group belongs to a Kafka instance"
+    },
+    {
+      "native_type": "ACS::AliKafka::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-alikafka-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::AliKafka::Topic",
+      "level": "subresource",
+      "parent_native_type": "ACS::AliKafka::Instance",
+      "reason": "topic belongs to a Kafka instance"
+    },
+    {
+      "native_type": "ACS::Alidns::DnsGtmInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-alidns-dnsgtminstance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:02772d2693161046ceb1f7d17bcaf78391b726dc52c8a1b345eea9266a68078c"
+    },
+    {
+      "native_type": "ACS::Alidns::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-alidns-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Alidns::GtmInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-alidns-gtminstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ApiGateway::Api",
+      "level": "subresource",
+      "parent_native_type": "ACS::ApiGateway::Instance",
+      "reason": "API is deployed and managed within an API Gateway instance"
+    },
+    {
+      "native_type": "ACS::ApiGateway::App",
+      "level": "subresource",
+      "parent_native_type": "ACS::ApiGateway::Instance",
+      "reason": "application credential is managed within API Gateway"
+    },
+    {
+      "native_type": "ACS::ApiGateway::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-apigateway-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::BPStudio::Application",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-bpstudio-application.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Bastionhost::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-bastionhost-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CBWP::CommonBandwidthPackage",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cbwp-commonbandwidthpackage.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CDN::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cdn-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CEN::CenBandwidthPackage",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cen-cenbandwidthpackage.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CEN::CenInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cen-ceninstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CEN::Flowlog",
+      "level": "subresource",
+      "parent_native_type": "ACS::CEN::CenInstance",
+      "reason": "flow log is an observation configuration on CEN"
+    },
+    {
+      "native_type": "ACS::CEN::TransitRouter",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cen-transitrouter.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CEN::TransitRouterVbrAttachment",
+      "level": "subresource",
+      "parent_native_type": "ACS::CEN::TransitRouter",
+      "reason": "VBR attachment belongs to a transit router"
+    },
+    {
+      "native_type": "ACS::CEN::TransitRouterVpcAttachment",
+      "level": "subresource",
+      "parent_native_type": "ACS::CEN::TransitRouter",
+      "reason": "VPC attachment belongs to a transit router"
+    },
+    {
+      "native_type": "ACS::CEN::TransitRouterVpnAttachment",
+      "level": "subresource",
+      "parent_native_type": "ACS::CEN::TransitRouter",
+      "reason": "VPN attachment belongs to a transit router"
+    },
+    {
+      "native_type": "ACS::CR::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cr-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CR::Namespace",
+      "level": "subresource",
+      "parent_native_type": "ACS::CR::Instance",
+      "reason": "namespace belongs to a Container Registry instance"
+    },
+    {
+      "native_type": "ACS::CR::Repository",
+      "level": "subresource",
+      "parent_native_type": "ACS::CR::Instance",
+      "reason": "repository belongs to a Container Registry instance"
+    },
+    {
+      "native_type": "ACS::ClickHouse::DBCluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-clickhouse-dbcluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ClickHouse::EnterpriseDBCluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-clickhouse-enterprisedbcluster.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:e7e43df36a24e6f462da5e6c1e2031b38ad6eef989deb079a3faffbdd9b1b864"
+    },
+    {
+      "native_type": "ACS::CloudFirewall::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cloudfirewall-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::CloudSSO::Group",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cloudsso-group.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:c38585c18602d3350af8e5b54626f926e4b396191886c3f9f5bdc5a191b32065"
+    },
+    {
+      "native_type": "ACS::CloudStorageGateway::Gateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-cloudstoragegateway-gateway.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DBS::BackupPlan",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dbs-backupplan.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DCDN::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dcdn-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DCDN::IpaDomain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dcdn-ipadomain.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:edca577b9e9762e93c03121732924d021fd3ccb0054d2cffa9a5790ec279125a"
+    },
+    {
+      "native_type": "ACS::DRDS::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-drds-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DRDS::PolarDBXInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-drds-polardbxinstance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:8e1dce179c339543d55714313d8fdfc7fd27a43fd5b92f32d80e2325128c1927"
+    },
+    {
+      "native_type": "ACS::DTS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dts-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DataHub::Project",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-datahub-project.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DataV::Workspace",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-datav-workspace.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DataWorks::DwResourceGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dataworks-dwresourcegroup.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:76d124ea20e9b95dcbf9b0f56df053ad32d334e00171942ae5c12d5c8b79f399"
+    },
+    {
+      "native_type": "ACS::DataWorks::Project",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-dataworks-project.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DdosBgp::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ddosbgp-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::DdosCoo::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ddoscoo-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Domain::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-domain-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::EAIS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eais-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::EBS::DedicatedBlockStorageCluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ebs-dedicatedblockstoragecluster.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:0bb233aa3799c4106fc8039847508681e0fbf223b5bd601744e4ba0a51c0c4c9"
+    },
+    {
+      "native_type": "ACS::EBS::DiskReplicaGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ebs-diskreplicagroup.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:861c9a2bc8eea4cfacfa476f7f9449fec19a3cafb075737243cd0fcdb9e57722"
+    },
+    {
+      "native_type": "ACS::EBS::DiskReplicaPair",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ebs-diskreplicapair.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:9d80fa324eb4bc621fbf06363e0ad3b316d642261f7c70b51c72f5b5fd8d0b48"
+    },
+    {
+      "native_type": "ACS::ECI::ContainerGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eci-containergroup.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ECI::ImageCache",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eci-imagecache.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:33b5c1dcd69344c3c85a77605764a04a39a217b218afad24ac006da3b49f5a78"
+    },
+    {
+      "native_type": "ACS::ECP::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecp-instance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:9e59a15cf00b2a9a9563707d63600fae35c412a180c4c4f43a14b6ca51a3b7a8"
+    },
+    {
+      "native_type": "ACS::ECS::AutoSnapshotPolicy",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-autosnapshotpolicy.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:4d64d7d54266a901aa996b67f4809337e33d8a82eb1ac3ddcf394ef1ea54f920"
+    },
+    {
+      "native_type": "ACS::ECS::CapacityReservation",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-capacityreservation.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:4fb6223e8e5a3ebc503073e62c0df514de3236054a9ff122450b4fed663d3418"
+    },
+    {
+      "native_type": "ACS::ECS::DedicatedHost",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-dedicatedhost.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ECS::Disk",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-disk.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ECS::ElasticityAssurance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-elasticityassurance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:76ae82ce5231746d0cf07712324f8fd4f3747faae35f477899248dd661a0161f"
+    },
+    {
+      "native_type": "ACS::ECS::Image",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-image.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:077237f20fce3cb2432178d9d84fb88ccf714a786ac9051888d492a80eb2fa50"
+    },
+    {
+      "native_type": "ACS::ECS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ECS::KeyPair",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-keypair.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:5c69ebae98e02c5156ed4ea3f47dcfd6165842a46cebfc4e8a0eb51625d3bc92"
+    },
+    {
+      "native_type": "ACS::ECS::NetworkInterface",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-networkinterface.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:b52a908967e65597b1e5d9545df554ad22db2f7398789977a02a825724a74a58"
+    },
+    {
+      "native_type": "ACS::ECS::SecurityGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-securitygroup.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:9c7015e7613843c90eecb2764d82827bf174bcff1b371a20dda986531d50223a"
+    },
+    {
+      "native_type": "ACS::ECS::Snapshot",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ecs-snapshot.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:4511d58afccf0c1687cdca130a7b76e2d38b63127a970cd547632ccd43b13615"
+    },
+    {
+      "native_type": "ACS::EIP::EipAddress",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eip-eipaddress.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ENS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ens-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ESA::Site",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-esa-site.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:7e9a4c9c3b206783955994cf184964466589dc93f98b13451fa67ab827be2980"
+    },
+    {
+      "native_type": "ACS::ESS::ScalingGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ess-scalinggroup.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Eflo::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eflo-cluster.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:e06358e0a3c8843fd2ad472445250ac5f62e32ed4be9ee4fd8fa0e1fb11bdca4"
+    },
+    {
+      "native_type": "ACS::Eflo::Node",
+      "level": "subresource",
+      "parent_native_type": "ACS::Eflo::Cluster",
+      "reason": "node belongs to an eRDMA cluster"
+    },
+    {
+      "native_type": "ACS::Ehpc::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ehpc-cluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Eipanycast::AnycastEipAddress",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-eipanycast-anycasteipaddress.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:dd0befd84196465ec6a03f70aa9c8eb40fa28f0586430d90bf1a1d9a2f79fd8f"
+    },
+    {
+      "native_type": "ACS::Elasticsearch::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-elasticsearch-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Elasticsearch::Logstash",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-elasticsearch-logstash.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:8fcb07258db3422434dd10c954dd70581ccb24e6d9a6f9f471ce9ca0719736ab"
+    },
+    {
+      "native_type": "ACS::EmrServerlessSpark::Workspace",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-emrserverlessspark-workspace.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ExpressConnect::PhysicalConnection",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-expressconnect-physicalconnection.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ExpressConnect::VirtualBorderRouter",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-expressconnect-virtualborderrouter.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ExpressConnectRouter::ExpressConnectRouter",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-expressconnectrouter-expressconnectrouter.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::FC::Service",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-fc-service.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::GPDB::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-gpdb-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Ga::Accelerator",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ga-accelerator.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Ga::BandwidthPackage",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ga-bandwidthpackage.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:0e6b28d67cde7d4eea94c52ec73a30e45370aa52814fdef1902b6706fdc7715e"
+    },
+    {
+      "native_type": "ACS::GraphDatabase::DbInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-graphdatabase-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::HBR::HanaInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-hbr-hanainstance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:84b1fe493bbd9545a8650069c5986198a48c6a15bc9a3f5864b5d373cd4bb384"
+    },
+    {
+      "native_type": "ACS::HBR::Vault",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-hbr-vault.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::HBase::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-hbase-cluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Hologram::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-hologram-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::KMS::Key",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-kms-key.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:1af1faf46cee4e245c913af0bc405bbeb104db22eabf49fc5b887809069d8222"
+    },
+    {
+      "native_type": "ACS::Lindorm::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-lindorm-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Live::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-live-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::MSE::Cluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-mse-cluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::MSE::Gateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-mse-gateway.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:54c9dbc651bc5140549c9ee65ccadeef978b27d16248bb3d4cd3cb4d09303e6d"
+    },
+    {
+      "native_type": "ACS::MaxCompute::Project",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-maxcompute-project.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::MessageService::Queue",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-messageservice-queue.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:6e753279bc99e4efe8d3a4312eca32a6ad9f557cdfe2caa6f20b224027cb221f"
+    },
+    {
+      "native_type": "ACS::MessageService::Topic",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-messageservice-topic.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:df9d80b1138037022d1bdc5085430bb08da8bcfc59fca4e6407405202e01e72b"
+    },
+    {
+      "native_type": "ACS::MongoDB::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-mongodb-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::NAS::FileSystem",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-nas-filesystem.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::NAT::NatGateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-nat-natgateway.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::NLB::Listener",
+      "level": "subresource",
+      "parent_native_type": "ACS::NLB::LoadBalancer",
+      "reason": "listener belongs to an NLB instance"
+    },
+    {
+      "native_type": "ACS::NLB::LoadBalancer",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-nlb-loadbalancer.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::NLB::ServerGroup",
+      "level": "subresource",
+      "parent_native_type": "ACS::NLB::LoadBalancer",
+      "reason": "server group belongs to an NLB instance"
+    },
+    {
+      "native_type": "ACS::OOS::Application",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-oos-application.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::OSS::Bucket",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-oss-bucket.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::OTS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ots-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::OceanBase::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-oceanbase-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Ons::Group",
+      "level": "subresource",
+      "parent_native_type": "ACS::Ons::Instance",
+      "reason": "consumer group belongs to a Message Queue instance"
+    },
+    {
+      "native_type": "ACS::Ons::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ons-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Ons::Topic",
+      "level": "subresource",
+      "parent_native_type": "ACS::Ons::Instance",
+      "reason": "topic belongs to a Message Queue instance"
+    },
+    {
+      "native_type": "ACS::OpenSearch::AppGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-opensearch-appgroup.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::PAI::Service",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-pai-service.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::PolarDB::DBCluster",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-polardb-dbcluster.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::PrivateLink::VpcEndpoint",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-privatelink-vpcendpoint.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:31346216927927e788e08ee7794ef7d967e244272d4fd5f2fb78d52f7bda82c1"
+    },
+    {
+      "native_type": "ACS::PrivateLink::VpcEndpointService",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-privatelink-vpcendpointservice.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:8afa9dabb8ef61a7931c83337be21af92e499cfef69491d79cbec692e37e60dd"
+    },
+    {
+      "native_type": "ACS::PrivateZone::Zone",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-privatezone-zone.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::RAM::Group",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ram-group.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:8058a3b6a6bf916e29a2a2346330d4c032419337dcf165d8a742801e7dd78c94"
+    },
+    {
+      "native_type": "ACS::RAM::Policy",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ram-policy.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:1de01a2e482bf4252d99fa2592f4f3ff16e6b6c960180029514c91a7f30313b1"
+    },
+    {
+      "native_type": "ACS::RAM::Role",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ram-role.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:a5ba72ec9ecdcd9b4e2ceae8a0e24e30b476d01c8f0ed25734c14f642e97be75"
+    },
+    {
+      "native_type": "ACS::RAM::User",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ram-user.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::RDS::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-rds-dbinstance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:db44472cecc7085ea86abffdd546447566408707fb0fc7168d38457f4e7a245a"
+    },
+    {
+      "native_type": "ACS::ROS::Stack",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ros-stack.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:43e0beaf54e22c94308f418a14ce7a969c1591dd61dbb94e173f0d2f1cd8d439"
+    },
+    {
+      "native_type": "ACS::ROS::StackGroup",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-ros-stackgroup.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:624180da3b92b048081e5f9f5700ca6f3e79e7885fc469df6a8c4c155c3e5636"
+    },
+    {
+      "native_type": "ACS::RTC::Application",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-rtc-application.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::RealtimeCompute::VvpInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-realtimecompute-vvpinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::Redis::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-redis-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::ResourceManager::Account",
+      "level": "subresource",
+      "parent_native_type": "ACS::ResourceManager::ResourceDirectory",
+      "reason": "member account belongs to a resource directory"
+    },
+    {
+      "native_type": "ACS::ResourceManager::Folder",
+      "level": "subresource",
+      "parent_native_type": "ACS::ResourceManager::ResourceDirectory",
+      "reason": "folder belongs to a resource directory"
+    },
+    {
+      "native_type": "ACS::ResourceManager::ResourceDirectory",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-resourcemanager-resourcedirectory.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:74c59ff399e785cc57f54863418dd00c075e54fccd5b2b56df31eb7fa2cced55"
+    },
+    {
+      "native_type": "ACS::RocketMQ::ConsumerGroup",
+      "level": "subresource",
+      "parent_native_type": "ACS::RocketMQ::Instance",
+      "reason": "consumer group belongs to a RocketMQ instance"
+    },
+    {
+      "native_type": "ACS::RocketMQ::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-rocketmq-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::RocketMQ::Topic",
+      "level": "subresource",
+      "parent_native_type": "ACS::RocketMQ::Instance",
+      "reason": "topic belongs to a RocketMQ instance"
+    },
+    {
+      "native_type": "ACS::SCDN::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-scdn-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SDDP::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-sddp-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SLB::AccessControlList",
+      "level": "subresource",
+      "parent_native_type": "ACS::SLB::LoadBalancer",
+      "reason": "access-control list is load-balancer configuration"
+    },
+    {
+      "native_type": "ACS::SLB::CACertificate",
+      "level": "subresource",
+      "parent_native_type": "ACS::SLB::LoadBalancer",
+      "reason": "client certificate is load-balancer configuration"
+    },
+    {
+      "native_type": "ACS::SLB::LoadBalancer",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-slb-loadbalancer.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SLB::ServerCertificate",
+      "level": "subresource",
+      "parent_native_type": "ACS::SLB::LoadBalancer",
+      "reason": "server certificate is load-balancer configuration"
+    },
+    {
+      "native_type": "ACS::SLB::VServerGroup",
+      "level": "subresource",
+      "parent_native_type": "ACS::SLB::LoadBalancer",
+      "reason": "vServer group belongs to an SLB instance"
+    },
+    {
+      "native_type": "ACS::SLS::LogStore",
+      "level": "subresource",
+      "parent_native_type": "ACS::SLS::Project",
+      "reason": "Logstore belongs to an SLS project"
+    },
+    {
+      "native_type": "ACS::SLS::Project",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-sls-project.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SMS::Template",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-sms-template.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SSLCertificatesService::Certificate",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-sslcertificatesservice-certificate.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SWAS::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-swas-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::SelectDB::DBInstance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-selectdb-dbinstance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::TSDB::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-tsdb-instance.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:baa4fcbfdd50e8d5849842b9869bf963eed600a8ad84429672063afd172cd8b4"
+    },
+    {
+      "native_type": "ACS::ThreatDetection::Instance",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-threatdetection-instance.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VOD::Domain",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vod-domain.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPC::Ipv4Gateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-ipv4gateway.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:32312dce4e59fdac12a367e25e321d357809d10169cecd1e044ae47bba94d734"
+    },
+    {
+      "native_type": "ACS::VPC::Ipv6Address",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-ipv6address.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:318bf9234d76d7246514d3a8c6eafb4eb06f41f8ac4de329fc057f645e34fa04"
+    },
+    {
+      "native_type": "ACS::VPC::Ipv6Gateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-ipv6gateway.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPC::NetworkAcl",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-networkacl.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPC::PeerConnection",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-peerconnection.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:72bc58a866a7eb7a91bf113f83baebc960254d3d29eaf80e02f120d85696070b"
+    },
+    {
+      "native_type": "ACS::VPC::RouteTable",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-routetable.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPC::VPC",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-vpc.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPC::VSwitch",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpc-vswitch.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::VPN::CustomerGateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpn-customergateway.png",
+      "icon_origin": "generated",
+      "icon_source": "imagegen:2026-07-27:c644375135ce1362e7d12fc27b5b2d70e0412bd0a2366db36ab9bcef3ee18aa0"
+    },
+    {
+      "native_type": "ACS::VPN::IpsecServer",
+      "level": "subresource",
+      "parent_native_type": "ACS::VPN::VpnGateway",
+      "reason": "IPsec server is configured within a VPN gateway"
+    },
+    {
+      "native_type": "ACS::VPN::SslVpnClientCert",
+      "level": "subresource",
+      "parent_native_type": "ACS::VPN::VpnGateway",
+      "reason": "SSL client certificate belongs to a VPN gateway"
+    },
+    {
+      "native_type": "ACS::VPN::SslVpnServer",
+      "level": "subresource",
+      "parent_native_type": "ACS::VPN::VpnGateway",
+      "reason": "SSL server is configured within a VPN gateway"
+    },
+    {
+      "native_type": "ACS::VPN::VpnConnection",
+      "level": "subresource",
+      "parent_native_type": "ACS::VPN::VpnGateway",
+      "reason": "VPN connection belongs to a VPN gateway"
+    },
+    {
+      "native_type": "ACS::VPN::VpnGateway",
+      "level": "instance",
+      "icon": "/icons/alicloud/acs-vpn-vpngateway.svg",
+      "icon_origin": "official",
+      "icon_source": "https://www.iconfont.cn/user/detail?uid=6856114"
+    },
+    {
+      "native_type": "ACS::WAFV3::DefenseResource",
+      "level": "subresource",
+      "reason": "protected object belongs to the account WAF 3.0 instance"
+    }
+  ]
+}

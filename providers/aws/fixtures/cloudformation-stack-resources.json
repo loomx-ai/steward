@@ -1,0 +1,17 @@
+{
+  "request_id": "cfn-list-request-1",
+  "resources": [
+    {
+      "logical_id": "ApplicationInstance",
+      "physical_id": "i-123",
+      "native_type": "AWS::EC2::Instance",
+      "status": "CREATE_COMPLETE"
+    },
+    {
+      "logical_id": "ApplicationBucket",
+      "physical_id": "app-data-123456789012",
+      "native_type": "AWS::S3::Bucket",
+      "status": "CREATE_COMPLETE"
+    }
+  ]
+}

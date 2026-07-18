@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::Image
+  class: compute.image
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/image/region/{regionId}?imageId={nativeId}"
+  icon: image
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeImages
+    parameters:
+      RegionId: scope.location
+      ImageOwnerAlias: self
+    itemsPath: Images.Image
+    identityPath: ImageId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: ImageName
+  state: Status
+  createdAt: CreationTime
+actions:
+  delete:
+    operation: DeleteImage
+    parameters:
+      RegionId: scope.location
+      ImageId: resource.nativeId
+      Force: false
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 2
+    deletionCheckTimeoutSeconds: 120
+    read:
+      operation: DescribeImages
+      parameters:
+        RegionId: scope.location
+        ImageId: resource.nativeId
+        ImageOwnerAlias: self
+        PageSize: 1
+      itemsPath: Images.Image
+      identityPath: ImageId
+      statePath: Status

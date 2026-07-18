@@ -1,0 +1,46 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::AckOne::Cluster
+  class: container.fleet
+presentation:
+  consoleLinkTemplate: "https://cs.console.aliyun.com/"
+  displayNames:
+    zh-CN: ACK One 舰队
+    en-US: ACK One Fleet
+  icon: cluster
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.AckOne.DescribeHubClusters
+    itemsPath: Clusters
+    identityPath: ClusterInfo.ClusterId
+    statePath: ClusterInfo.State
+fields:
+  name: ClusterInfo.Name
+  state: ClusterInfo.State
+  createdAt: ClusterInfo.CreationTime
+  resourceGroupId: ClusterInfo.ResourceGroupID
+  vpcId: Network.VpcId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.AckOne.DeleteHubCluster
+    parameters:
+      ClusterId: resource.nativeId
+      Force: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.AckOne.DescribeHubClusterDetails
+      parameters:
+        ClusterId: resource.nativeId
+      itemsPath: Cluster
+      identityPath: ClusterInfo.ClusterId
+      statePath: ClusterInfo.State

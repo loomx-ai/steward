@@ -1,0 +1,37 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ResourceManager::ResourceDirectory
+  class: identity.resource_directory
+presentation:
+  consoleLinkTemplate: "https://resourcemanager.console.aliyun.com/"
+  displayNames:
+    zh-CN: 资源目录
+    en-US: Resource Directory
+  icon: application
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ResourceManager.GetResourceDirectory
+    itemsPath: ResourceDirectory
+    identityPath: ResourceDirectoryId
+    statePath: ControlPolicyStatus
+fields:
+  name: MasterAccountName
+  state: ControlPolicyStatus
+  createdAt: CreateTime
+  masterAccountId: MasterAccountId
+  rootFolderId: RootFolderId
+actions:
+  delete:
+    operation: AlibabaCloud.ResourceManager.DestroyResourceDirectory
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ResourceManager.GetResourceDirectory
+      itemsPath: ResourceDirectory
+      identityPath: ResourceDirectoryId
+      statePath: ControlPolicyStatus

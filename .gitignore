@@ -1,0 +1,69 @@
+# --- Go ---
+# Binaries and build output
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+# Test & coverage artifacts
+*.test
+coverage.out
+*.out
+# Go workspace files
+go.work
+go.work.sum
+
+# --- Node / frontend (web) ---
+web/node_modules/
+web/.vite/
+web/dist/
+web/tsconfig.tsbuildinfo
+# Built web console embedded via `make build` (-tags withassets); not committed.
+internal/webui/dist/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+node_modules/
+
+# --- Application runtime data ---
+.steward/
+tmp/
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Environment & secrets ---
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Claude Code ---
+.claude/
+
+# --- Serena ---
+.serena/
+
+# --- Superpowers design docs (local only, not tracked) ---
+docs/superpowers/
+
+# --- Isolated feature worktrees ---
+.worktrees/

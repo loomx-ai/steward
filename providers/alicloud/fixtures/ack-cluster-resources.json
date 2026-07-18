@@ -1,0 +1,33 @@
+{
+  "request_id": "describe-request-1",
+  "resources": [
+    {
+      "cluster_id": "c-a",
+      "instance_id": "ngw-a",
+      "resource_type": "ALIYUN::VPC::NatGateway",
+      "state": "CREATE_COMPLETE",
+      "auto_create": 1,
+      "creator_type": "system",
+      "delete_behavior": {"delete_by_default": true, "changeable": true}
+    },
+    {
+      "cluster_id": "c-a",
+      "instance_id": "vpc-a",
+      "resource_type": "ALIYUN::VPC::VPC",
+      "state": "CREATE_COMPLETE",
+      "auto_create": 0,
+      "creator_type": "user",
+      "delete_behavior": {"delete_by_default": false, "changeable": false}
+    },
+    {
+      "cluster_id": "c-a",
+      "instance_id": "d-unknown",
+      "resource_type": "ALIYUN::ECS::Disk",
+      "state": "CREATE_COMPLETE",
+      "delete_behavior": {"delete_by_default": false, "changeable": false}
+    }
+  ],
+  "nodes": [
+    {"instance_id": "i-node", "nodepool_id": "np-a", "source": "ess", "auto_created": true}
+  ]
+}

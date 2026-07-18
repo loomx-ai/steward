@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PolarDB::Application
+  class: application.database
+presentation:
+  consoleLinkTemplate: "https://polardb.console.aliyun.com/"
+  displayNames:
+    zh-CN: PolarDB 应用
+    en-US: PolarDB Application
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PolarDB.DescribeApplications
+    parameters:
+      RegionId: scope.location
+    itemsPath: Items.Applications
+    identityPath: ApplicationId
+    statePath: Status
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalRecordCount
+      maxPageSize: 100
+  enrich:
+    operation: AlibabaCloud.PolarDB.DescribeApplicationAttribute
+    parameters:
+      ApplicationId: resources.nativeId
+    itemsPath: $
+    identityPath: ApplicationId
+    maxBatchSize: 1
+fields:
+  name: Description
+  state: Status
+  createdAt: CreationTime
+  chargeType: PayType
+  applicationType: ApplicationType
+  dbClusterId: DBClusterId
+  polarFSInstanceId: PolarFSInstanceId
+  resourceGroupId: ResourceGroupId
+  vpcId: VPCId
+  vSwitchId: VSwitchId
+  zoneId: ZoneId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+  - type: uses
+    targetType: ACS::PolarDB::DBCluster
+    targetIdPath: dbClusterId
+actions:
+  delete:
+    operation: AlibabaCloud.PolarDB.DeleteApplication
+    parameters:
+      ApplicationId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.PolarDB.DescribeApplications
+      parameters:
+        RegionId: scope.location
+        ApplicationIds: resource.nativeId
+        PageNumber: 1
+        PageSize: 30
+      itemsPath: Items.Applications
+      identityPath: ApplicationId
+      statePath: Status

@@ -1,0 +1,26 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TrafficMarkingPolicy
+  class: network.traffic_marking_policy
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN 流量标记策略
+    en-US: CEN Traffic Marking Policy
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTrafficMarkingPolicies
+    itemsPath: TrafficMarkingPolicies
+    identityPath: TrafficMarkingPolicyId
+    statePath: TrafficMarkingPolicyStatus
+fields:
+  name: TrafficMarkingPolicyName
+  state: TrafficMarkingPolicyStatus
+  transitRouterId: TransitRouterId
+  priority: Priority

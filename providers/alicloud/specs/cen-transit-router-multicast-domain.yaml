@@ -1,0 +1,26 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::CEN::TransitRouterMulticastDomain
+  class: network.multicast_domain
+presentation:
+  consoleLinkTemplate: "https://cen.console.aliyun.com/cen/attachment/{regionId}"
+  displayNames:
+    zh-CN: CEN 组播域
+    en-US: CEN Transit Router Multicast Domain
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: cen-topology
+  list:
+    operation: AlibabaCloud.CEN.ListTransitRouterMulticastDomains
+    itemsPath: TransitRouterMulticastDomains
+    identityPath: TransitRouterMulticastDomainId
+    statePath: Status
+fields:
+  name: TransitRouterMulticastDomainName
+  state: Status
+  createdAt: CreationTime
+  transitRouterId: TransitRouterId

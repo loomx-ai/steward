@@ -1,0 +1,28 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ThreatDetection::Instance
+  class: security.security_center
+presentation:
+  consoleLinkTemplate: "https://yundun.console.aliyun.com/"
+  displayNames:
+    zh-CN: 云安全中心实例
+    en-US: Security Center Instance
+  icon: shield
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ThreatDetection.DescribeVersionConfig
+    itemsPath: $
+    identityPath: InstanceId
+    statePath: Version
+fields:
+  state: Version
+  instanceBuyType: InstanceBuyType
+  postpaid: IsPostpay
+  trial: IsTrialVersion
+  openTime: OpenTime
+  releaseTime: ReleaseTime

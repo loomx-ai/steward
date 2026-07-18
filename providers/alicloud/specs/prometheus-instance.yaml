@@ -1,0 +1,44 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ARMS::Prometheus
+  class: observability.prometheus
+presentation:
+  consoleLinkTemplate: "https://cms.console.aliyun.com/prom/instances/details?clusterId={nativeId}&regionId={regionId}"
+
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: ListPrometheusInstances
+    parameters:
+      filterRegionIds: scope.location
+    itemsPath: prometheusInstances
+    identityPath: prometheusInstanceId
+    statePath: status
+    pagination:
+      type: token
+      tokenParameter: nextToken
+      tokenPath: nextToken
+      pageSizeParameter: maxResults
+      maxPageSize: 100
+fields:
+  name: prometheusInstanceName
+  state: status
+  createdAt: createTime
+actions:
+  delete:
+    operation: DeletePrometheusInstance
+    parameters:
+      prometheusInstanceId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: GetPrometheusInstance
+      parameters:
+        prometheusInstanceId: resource.nativeId
+      itemsPath: prometheusInstance
+      identityPath: prometheusInstanceId
+      statePath: status

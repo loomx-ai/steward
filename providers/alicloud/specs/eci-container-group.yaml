@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECI::ContainerGroup
+  class: compute.container_group
+presentation:
+  consoleLinkTemplate: "https://eci.console.aliyun.com/#/eci/{regionId}/detail/{nativeId}/containers"
+  icon: container
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECI.DescribeContainerGroups
+    parameters:
+      RegionId: scope.location
+    itemsPath: ContainerGroups
+    identityPath: ContainerGroupId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: Limit
+      maxPageSize: 20
+fields:
+  name: ContainerGroupName
+  state: Status
+  createdAt: CreationTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchIds
+  - type: uses
+    targetType: ACS::ECS::SecurityGroup
+    targetIdPath: securityGroupIds
+actions:
+  delete:
+    operation: AlibabaCloud.ECI.DeleteContainerGroup
+    parameters:
+      RegionId: scope.location
+      ContainerGroupId: resource.nativeId
+      Force: false
+    idempotency: provider_token
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ECI.DescribeContainerGroups
+      parameters:
+        RegionId: scope.location
+        ContainerGroupIds: resource.nativeId
+        Limit: 1
+      itemsPath: ContainerGroups
+      identityPath: ContainerGroupId
+      statePath: Status

@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECP::Instance
+  class: compute.cloud_phone
+presentation:
+  consoleLinkTemplate: "https://cloudphone.console.aliyun.com/"
+  displayNames:
+    zh-CN: 弹性云手机实例
+    en-US: Elastic Cloud Phone Instance
+  icon: compute
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ECP.ListInstances
+    parameters:
+      RegionId: scope.location
+    itemsPath: Instances.Instance
+    identityPath: InstanceId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: InstanceName
+  state: Status
+  createdAt: CreationTime
+  expiredAt: ExpiredTime
+  chargeType: ChargeType
+  instanceType: InstanceType
+  vSwitchId: VpcAttributes.VSwitchId
+  zoneId: ZoneId
+relationships:
+  - type: uses
+    targetType: ACS::VPC::VSwitch
+    targetIdPath: vSwitchId
+actions:
+  delete:
+    operation: AlibabaCloud.ECP.DeleteInstances
+    parameters:
+      RegionId: scope.location
+      InstanceId: resources.nativeIds
+      Force: false
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ECP.ListInstances
+      parameters:
+        RegionId: scope.location
+        InstanceId: resources.nativeIds
+        MaxResults: 1
+      itemsPath: Instances.Instance
+      identityPath: InstanceId
+      statePath: Status

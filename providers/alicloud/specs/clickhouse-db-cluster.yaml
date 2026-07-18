@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ClickHouse::DBCluster
+  class: database.analytics
+presentation:
+  consoleLinkTemplate: "https://clickhouse.console.aliyun.com/"
+  icon: database
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.ClickHouse.DescribeDBClusters
+    parameters:
+      RegionId: scope.location
+    itemsPath: DBClusters.DBCluster
+    identityPath: DBClusterId
+    statePath: DBClusterStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 100
+fields:
+  name: DBClusterDescription
+  state: DBClusterStatus
+  createdAt: CreateTime
+  vpcId: VpcId
+  vSwitchId: VSwitchId
+relationships:
+  - type: member_of
+    targetType: ACS::VPC::VPC
+    targetIdPath: vpcId
+actions:
+  delete:
+    operation: AlibabaCloud.ClickHouse.DeleteDBCluster
+    parameters:
+      DBClusterId: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.ClickHouse.DescribeDBClusters
+      parameters:
+        RegionId: scope.location
+        DBClusterIds: resource.nativeId
+        PageSize: 1
+      itemsPath: DBClusters.DBCluster
+      identityPath: DBClusterId
+      statePath: DBClusterStatus

@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::RAM::Role
+  class: identity.role
+presentation:
+  consoleLinkTemplate: "https://ram.console.aliyun.com/"
+  displayNames:
+    zh-CN: RAM 角色
+    en-US: RAM Role
+  icon: role
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.RAM.ListRoles
+    itemsPath: Roles.Role
+    identityPath: RoleName
+    pagination:
+      type: token
+      tokenParameter: Marker
+      tokenPath: Marker
+      pageSizeParameter: MaxItems
+      maxPageSize: 1000
+fields:
+  name: RoleName
+  createdAt: CreateDate
+  updatedAt: UpdateDate
+  arn: Arn
+  roleId: RoleId
+actions:
+  delete:
+    operation: AlibabaCloud.RAM.DeleteRole
+    parameters:
+      RoleName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.RAM.GetRole
+      parameters:
+        RoleName: resource.nativeId
+      itemsPath: Role
+      identityPath: RoleName

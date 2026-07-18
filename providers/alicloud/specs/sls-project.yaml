@@ -1,0 +1,45 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SLS::Project
+  class: observability.logs
+presentation:
+  consoleLinkTemplate: "https://sls.console.aliyun.com/lognext/project/{nativeId}/overview?slsRegion={regionId}"
+  icon: application
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SLS.ListProject
+    itemsPath: projects
+    identityPath: projectName
+    statePath: status
+    pagination:
+      type: offset
+      offsetParameter: offset
+      pageSizeParameter: size
+      totalPath: total
+      maxPageSize: 100
+fields:
+  name: projectName
+  state: status
+  createdAt: createTime
+actions:
+  delete:
+    operation: AlibabaCloud.SLS.DeleteProject
+    parameters:
+      project: resource.nativeId
+      forceDelete: true
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SLS.ListProject
+      parameters:
+        projectName: resource.nativeId
+        offset: 0
+        size: 1
+      itemsPath: projects
+      identityPath: projectName
+      statePath: status

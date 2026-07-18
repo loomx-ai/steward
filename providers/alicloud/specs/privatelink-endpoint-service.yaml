@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::PrivateLink::VpcEndpointService
+  class: network.endpoint_service
+presentation:
+  consoleLinkTemplate: "https://vpc.console.aliyun.com/endpointservice/{regionId}/endpointservices/{nativeId}"
+  icon: network
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.PrivateLink.ListVpcEndpointServices
+    parameters:
+      RegionId: scope.location
+    itemsPath: Services
+    identityPath: ServiceId
+    statePath: ServiceStatus
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: ServiceName
+  state: ServiceStatus
+  createdAt: CreateTime
+relationships:
+  - type: depends_on
+    targetType: ACS::SLB::LoadBalancer
+    targetIdPath: slb_load_balancer_ids
+  - type: depends_on
+    targetType: ACS::ALB::LoadBalancer
+    targetIdPath: alb_load_balancer_ids
+  - type: depends_on
+    targetType: ACS::NLB::LoadBalancer
+    targetIdPath: nlb_load_balancer_ids
+  - type: depends_on
+    targetType: ACS::GWLB::LoadBalancer
+    targetIdPath: gwlb_load_balancer_ids
+  - type: depends_on
+    targetType: ACS::NAT::NatGateway
+    targetIdPath: nat_gateway_ids
+actions:
+  delete:
+    operation: AlibabaCloud.PrivateLink.DeleteVpcEndpointService
+    parameters:
+      RegionId: scope.location
+      ServiceId: resource.nativeId
+    idempotency: provider_token
+    waiter: absent
+    pollIntervalSeconds: 5
+    deletionCheckTimeoutSeconds: 600
+    read:
+      operation: AlibabaCloud.PrivateLink.ListVpcEndpointServices
+      parameters:
+        RegionId: scope.location
+        ServiceId: resource.nativeId
+        MaxResults: 1
+      itemsPath: Services
+      identityPath: ServiceId
+      statePath: ServiceStatus

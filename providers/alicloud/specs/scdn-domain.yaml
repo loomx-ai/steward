@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::SCDN::Domain
+  class: network.cdn_domain
+presentation:
+  consoleLinkTemplate: "https://scdn.console.aliyun.com/"
+  displayNames:
+    zh-CN: SCDN 安全加速域名
+    en-US: SCDN Domain
+  icon: dns
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: AlibabaCloud.SCDN.DescribeScdnUserDomains
+    itemsPath: Domains.PageData
+    identityPath: DomainName
+    statePath: DomainStatus
+    pagination:
+      type: page-number
+      pageParameter: PageNumber
+      pageSizeParameter: PageSize
+      totalPath: TotalCount
+      maxPageSize: 500
+fields:
+  name: DomainName
+  state: DomainStatus
+  createdAt: GmtCreated
+  updatedAt: GmtModified
+  resourceGroupId: ResourceGroupId
+  cname: Cname
+actions:
+  delete:
+    operation: AlibabaCloud.SCDN.DeleteScdnDomain
+    parameters:
+      DomainName: resource.nativeId
+    idempotency: readback
+    waiter: absent
+    read:
+      operation: AlibabaCloud.SCDN.DescribeScdnUserDomains
+      parameters:
+        DomainName: resource.nativeId
+        DomainSearchType: full_match
+        PageSize: 1
+      itemsPath: Domains.PageData
+      identityPath: DomainName
+      statePath: DomainStatus

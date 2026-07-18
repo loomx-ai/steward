@@ -1,0 +1,49 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: alicloud
+  nativeType: ACS::ECS::CapacityReservation
+  class: compute.capacity_reservation
+presentation:
+  consoleLinkTemplate: "https://ecs.console.aliyun.com/capacityReservation/region/{regionId}?privatePoolOptionsId={nativeId}"
+  icon: instance
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: DescribeCapacityReservations
+    parameters:
+      RegionId: scope.location
+    itemsPath: CapacityReservationSet.CapacityReservationItem
+    identityPath: PrivatePoolOptionsId
+    statePath: Status
+    pagination:
+      type: token
+      tokenParameter: NextToken
+      tokenPath: NextToken
+      pageSizeParameter: MaxResults
+      maxPageSize: 100
+fields:
+  name: PrivatePoolOptionsName
+  state: Status
+  createdAt: StartTime
+actions:
+  delete:
+    operation: ReleaseCapacityReservation
+    parameters:
+      RegionId: scope.location
+      PrivatePoolOptions.Id: resource.nativeId
+    idempotency: readback
+    waiter: terminal
+    terminalStates:
+      - Released
+    read:
+      operation: DescribeCapacityReservations
+      parameters:
+        RegionId: scope.location
+        PrivatePoolOptions.Ids: resource.nativeIdsJson
+        MaxResults: 1
+      itemsPath: CapacityReservationSet.CapacityReservationItem
+      identityPath: PrivatePoolOptionsId
+      statePath: Status
