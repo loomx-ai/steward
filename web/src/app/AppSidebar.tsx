@@ -1,4 +1,4 @@
-import { Boxes, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/AuthProvider";
 import { useActiveConnection } from "@/connections/ActiveConnectionProvider";
@@ -6,6 +6,7 @@ import { useCleanupSelection } from "@/features/panorama/CleanupSelectionContext
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { MessageKey } from "@/i18n/messages";
 import { Button } from "@/components/ui/button";
+import { StewardBrand } from "@/components/StewardBrand";
 import {
   Select,
   SelectContent,
@@ -73,13 +74,11 @@ export function AppSidebar({
         <div className="flex h-9 items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <NavLink
             to="/panorama"
+            aria-label="Steward"
             onClick={closeMobileSidebar}
             className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden rounded-md px-1 text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden"
           >
-            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
-              <Boxes className="size-4" />
-            </span>
-            <span className="truncate">Steward</span>
+            <StewardBrand className="min-w-0" />
           </NavLink>
           {(sidebarExpanded || isMobile) && (
             <Tooltip>

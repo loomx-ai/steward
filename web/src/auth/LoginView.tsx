@@ -1,12 +1,13 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { Boxes, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useAuth } from "./AuthProvider";
 import { useLocale } from "../i18n/LocaleProvider";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StewardBrand } from "@/components/StewardBrand";
 
 interface LoginLabels {
   token: string;
@@ -89,12 +90,7 @@ export function LoginForm({
   return (
     <main className="grid min-h-svh place-items-center bg-background px-5 py-10">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex items-center gap-2 text-sm font-semibold tracking-tight">
-          <span className="flex size-8 items-center justify-center rounded-lg border bg-muted text-foreground">
-            <Boxes className="size-4" />
-          </span>
-          Steward
-        </div>
+        <StewardBrand className="mb-8" />
         <div className="space-y-6">
           <header>
             <div className="mb-4 flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">

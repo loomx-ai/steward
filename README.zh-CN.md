@@ -1,4 +1,8 @@
-# Steward
+<p align="center">
+  <img src="web/public/brand/steward-symbol.svg" alt="Steward logo" width="96" height="96">
+</p>
+
+<h1 align="center">steward</h1>
 
 <p align="center">
   <em>发现、理解并安全清理云资源。</em>

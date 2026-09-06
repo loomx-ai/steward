@@ -1,4 +1,8 @@
-# Steward
+<p align="center">
+  <img src="web/public/brand/steward-symbol.svg" alt="Steward logo" width="96" height="96">
+</p>
+
+<h1 align="center">steward</h1>
 
 <p align="center">
   <em>Discover, understand, and safely clean up cloud resources.</em>
