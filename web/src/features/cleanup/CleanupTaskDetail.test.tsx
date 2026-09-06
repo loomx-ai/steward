@@ -806,8 +806,10 @@ it("continues a failed cleanup even while a resource action is active", async ()
   ).not.toBeInTheDocument();
 });
 
-it("shows the exact scheduled KMS key deletion time as a success reason", async () => {
+it("shows the exact scheduled KMS key deletion time in the local timezone as a success reason", async () => {
   const user = userEvent.setup();
+  // Serialize a local wall-clock time as UTC, matching the API response format.
+  const scheduledDeletionAt = new Date(2026, 7, 13, 19, 54, 34).toISOString();
   localStorage.setItem("steward.locale", "zh-CN");
   vi.mocked(getCleanupTask).mockResolvedValue({
     task: {
@@ -888,7 +890,7 @@ it("shows the exact scheduled KMS key deletion time as a success reason", async 
       name: "815cb574-fa98-44e5-a090-98e0f9c21514",
       capabilities: ["indexed", "actionable"],
       normalized: {
-        configuration: { DeleteDate: "2026-08-13T11:54:34Z" },
+        configuration: { DeleteDate: scheduledDeletionAt },
       },
       first_seen_at: "2026-08-06T00:00:00Z",
       last_seen_at: "2026-08-06T00:00:00Z",
@@ -915,8 +917,6 @@ it("shows the exact scheduled KMS key deletion time as a success reason", async 
   expect(
     await screen.findByText(
       "已处于计划删除，将于 2026-08-13 19:54:34 删除。",
-      {},
-      { timeout: 5000 },
     ),
   ).toBeVisible();
 });
