@@ -38,6 +38,7 @@ type Config struct {
 	PollInterval        time.Duration
 	ScanConcurrency     int
 	AuthTokens          []httptransport.TokenBinding
+	AuthMode            string
 	CredentialMasterKey string
 	CredentialSource    contracts.CredentialSource
 }
@@ -53,12 +54,28 @@ func Run(ctx context.Context, config Config) error {
 	if config.ScanConcurrency <= 0 {
 		config.ScanConcurrency = 4
 	}
-	if len(config.AuthTokens) == 0 {
-		return fmt.Errorf("server requires at least one configured bearer token")
+	authenticator, authMode, err := resolveAuthenticator(config)
+	if err != nil {
+		return err
 	}
 	repositories, err := openRepositories(config)
 	if err != nil {
 		return err
+	}
+	_, loopbackErr := httptransport.NewLocalAuthenticator(config.Addr)
+	if config.CredentialMasterKey == "" && loopbackErr == nil && (config.DBDriver == "" || config.DBDriver == "sqlite") {
+		connections, err := repositories.Connections().ListConnections(ctx, persistence.ListOptions{Limit: 1})
+		if err != nil {
+			return fmt.Errorf("check existing connections before initializing encryption: %w", err)
+		}
+		dsn := config.DSN
+		if dsn == "" {
+			dsn = filepath.Join(".steward", "steward.db")
+		}
+		config.CredentialMasterKey, err = localCredentialKey(filepath.Dir(dsn), len(connections.Items) == 0)
+		if err != nil {
+			return err
+		}
 	}
 	vault, err := credential.NewVault(config.CredentialMasterKey, repositories.Credentials())
 	if err != nil {
@@ -101,7 +118,6 @@ func Run(ctx context.Context, config Config) error {
 	if err != nil {
 		return err
 	}
-	authenticator := httptransport.NewStaticBearerAuthenticator(config.AuthTokens)
 	oauthFlows := alicloud.NewOAuthFlowManager()
 	defer func() {
 		closeCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -113,6 +129,7 @@ func Run(ctx context.Context, config Config) error {
 	apiHandler := httptransport.NewRouter(httptransport.Dependencies{
 		Repositories: repositories, CleanupTasks: planner, Connections: connectionService, Regions: regionService, RegionRefreshes: regionQueue, Scans: scanCreator, ScanControls: scanControls, NetworkTargets: registry, Topology: topologyService, Bundles: registry, Providers: registry, OAuthFlows: oauthFlows, Authenticator: authenticator,
 		SSEPollInterval: config.PollInterval,
+		AuthMode:        authMode,
 	})
 
 	actionResolver := cleanup.NewRepositoryActionResolver(repositories.Connections(), registry)
@@ -173,6 +190,36 @@ func Run(ctx context.Context, config Config) error {
 			return nil
 		}
 		return err
+	}
+}
+
+func resolveAuthenticator(config Config) (httptransport.Authenticator, string, error) {
+	mode := strings.ToLower(strings.TrimSpace(config.AuthMode))
+	if mode == "" {
+		mode = "local"
+		if len(config.AuthTokens) > 0 {
+			mode = "token"
+		}
+	}
+	switch mode {
+	case "local":
+		auth, err := httptransport.NewLocalAuthenticator(config.Addr)
+		return auth, mode, err
+	case "token", "cloud":
+		if len(config.AuthTokens) == 0 {
+			return nil, mode, fmt.Errorf("%s authentication requires a configured bearer token", mode)
+		}
+		for _, binding := range config.AuthTokens {
+			if strings.TrimSpace(binding.Token) == "" || strings.TrimSpace(binding.Principal.Subject) == "" {
+				return nil, mode, fmt.Errorf("authentication token and subject must not be empty")
+			}
+		}
+		if mode == "cloud" {
+			return httptransport.NewCloudAuthenticator(config.AuthTokens), mode, nil
+		}
+		return httptransport.NewStaticBearerAuthenticator(config.AuthTokens), mode, nil
+	default:
+		return nil, mode, fmt.Errorf("unsupported authentication mode %q: use local, token, or cloud", mode)
 	}
 }
 

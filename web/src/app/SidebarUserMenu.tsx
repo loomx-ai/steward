@@ -1,4 +1,4 @@
-import { LogOut, Settings } from "lucide-react";
+import { Boxes, LogOut, Settings } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export interface SidebarUserMenuProps {
   roles: string[];
   automaticDevelopmentSession: boolean;
   onSignOut: () => void;
+  workspaceLabel?: string;
   labels: {
     settings: string;
     signOut: string;
@@ -29,6 +30,7 @@ export function SidebarUserMenu({
   roles,
   automaticDevelopmentSession,
   onSignOut,
+  workspaceLabel,
   labels,
 }: SidebarUserMenuProps) {
   const { setOpenMobile } = useSidebar();
@@ -70,6 +72,11 @@ export function SidebarUserMenu({
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {workspaceLabel && (
+          <DropdownMenuItem asChild>
+            <a href="/workspaces"><Boxes />{workspaceLabel}</a>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <NavLink to="/settings" onClick={() => setOpenMobile(false)}>
             <Settings />

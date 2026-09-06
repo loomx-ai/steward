@@ -77,3 +77,13 @@ it("keeps automatic development sessions signed in", async () => {
     screen.queryByRole("menuitem", { name: "Sign out" }),
   ).not.toBeInTheDocument();
 });
+
+it("opens cloud workspace selection with full navigation", async () => {
+  render(<MemoryRouter><SidebarProvider><SidebarUserMenu
+    subject="alice@example.test" roles={["viewer"]} automaticDevelopmentSession={false}
+    onSignOut={vi.fn()} workspaceLabel="Workspaces"
+    labels={{ settings: "Settings", signOut: "Sign out", identityPending: "Identity pending" }}
+  /></SidebarProvider></MemoryRouter>);
+  await userEvent.setup().click(screen.getByRole("button", { name: "alice@example.test" }));
+  expect(screen.getByRole("menuitem", { name: "Workspaces" })).toHaveAttribute("href", "/workspaces");
+});

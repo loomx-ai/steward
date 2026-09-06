@@ -48,24 +48,12 @@ stop:
 dev:
 	@set -e; \
 		dev_token=$$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n'); \
-		dev_key="$${STEWARD_CREDENTIAL_MASTER_KEY:-}"; \
-		if [ -z "$$dev_key" ]; then \
-			mkdir -p .steward; \
-			dev_key_file=.steward/dev-credential-master-key; \
-			if [ -f "$$dev_key_file" ]; then \
-				dev_key=$$(tr -d '\r\n' < "$$dev_key_file"); \
-			else \
-				dev_key=$$(od -An -N32 -tx1 /dev/urandom | tr -d ' \n' | xxd -r -p | base64); \
-				umask 077; \
-				printf '%s\n' "$$dev_key" > "$$dev_key_file"; \
-			fi; \
-		fi; \
 		test $${#dev_token} -eq 64; \
 		dev_dir=$$(mktemp -d "$${TMPDIR:-/tmp}/steward-dev.XXXXXX"); \
 		api_pid=; \
 		trap 'if [ -n "$$api_pid" ]; then kill $$api_pid >/dev/null 2>&1 || true; wait $$api_pid >/dev/null 2>&1 || true; fi; rm -rf "$$dev_dir"' INT TERM EXIT; \
 		go build -o "$$dev_dir/steward" ./cmd/steward; \
-		STEWARD_AUTH_TOKEN=$$dev_token STEWARD_CREDENTIAL_MASTER_KEY=$$dev_key "$$dev_dir/steward" server start & \
+		STEWARD_AUTH_TOKEN=$$dev_token "$$dev_dir/steward" server start & \
 		api_pid=$$!; \
 		ready=0; \
 		attempt=0; \

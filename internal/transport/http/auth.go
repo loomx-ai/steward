@@ -5,7 +5,10 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"errors"
+	"fmt"
+	"net"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -25,6 +28,68 @@ var (
 type Principal struct {
 	Subject string `json:"subject"`
 	Roles   []Role `json:"roles"`
+}
+
+// LocalAuthenticator is only valid for a loopback listener. It also rejects
+// cross-origin browser requests and DNS rebinding to the local API.
+type LocalAuthenticator struct {
+	port string
+}
+
+func NewLocalAuthenticator(addr string) (*LocalAuthenticator, error) {
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil || !isLoopbackHost(host) || port == "" {
+		return nil, fmt.Errorf("local authentication requires a loopback listen address; use token or cloud authentication for network access")
+	}
+	return &LocalAuthenticator{port: port}, nil
+}
+
+func isLoopbackHost(host string) bool {
+	return host == "localhost" || net.ParseIP(host).IsLoopback()
+}
+
+func (a *LocalAuthenticator) Authenticate(request *http.Request) (Principal, error) {
+	host, port, err := net.SplitHostPort(request.Host)
+	if err != nil || !isLoopbackHost(host) || port != a.port {
+		return Principal{}, ErrUnauthenticated
+	}
+	remote, _, err := net.SplitHostPort(request.RemoteAddr)
+	if err != nil || !net.ParseIP(remote).IsLoopback() {
+		return Principal{}, ErrUnauthenticated
+	}
+	if site := request.Header.Get("Sec-Fetch-Site"); site != "" && site != "same-origin" && site != "none" {
+		return Principal{}, ErrUnauthenticated
+	}
+	if origin := request.Header.Get("Origin"); origin != "" {
+		parsed, err := url.Parse(origin)
+		if err != nil || parsed.Scheme != "http" || parsed.Host != request.Host || parsed.User != nil || parsed.Path != "" || parsed.RawQuery != "" || parsed.Fragment != "" {
+			return Principal{}, ErrUnauthenticated
+		}
+	}
+	return Principal{Subject: "local-admin", Roles: []Role{RoleAdmin}}, nil
+}
+
+// CloudAuthenticator accepts identity only from a gateway that presents the
+// workspace-specific service token. Client-supplied identity headers alone
+// never grant access.
+type CloudAuthenticator struct {
+	service *StaticBearerAuthenticator
+}
+
+func NewCloudAuthenticator(bindings []TokenBinding) *CloudAuthenticator {
+	return &CloudAuthenticator{service: NewStaticBearerAuthenticator(bindings)}
+}
+
+func (a *CloudAuthenticator) Authenticate(request *http.Request) (Principal, error) {
+	if _, err := a.service.Authenticate(request); err != nil {
+		return Principal{}, err
+	}
+	subject := strings.TrimSpace(request.Header.Get("X-Steward-Subject"))
+	role := Role(request.Header.Get("X-Steward-Role"))
+	if subject == "" || len(subject) > 256 || (role != RoleAdmin && role != RoleOperator && role != RoleViewer) {
+		return Principal{}, ErrUnauthenticated
+	}
+	return Principal{Subject: subject, Roles: []Role{role}}, nil
 }
 
 type Authenticator interface {

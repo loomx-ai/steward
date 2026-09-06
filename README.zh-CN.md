@@ -27,23 +27,36 @@ Steward 是一个开源云治理服务，提供资产盘点、拓扑分析、治
 需要 Go 1.26+、Node.js 22+ 和 npm。
 
 ```bash
-git clone git@github.com:loomx-ai/steward.git
+git clone https://github.com/loomx-ai/steward.git
 cd steward
 make install
 make dev
 ```
 
-打开 <http://127.0.0.1:5858>。开发命令会自动生成本地登录令牌和凭证加密密钥。
+打开 <http://127.0.0.1:5858>。无需注册账户或手动登录。开发代理会通过自动生成的令牌保护 API。
 
 在本地构建并运行生产服务：
 
 ```bash
-export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
-export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
 make run
 ```
 
-打开 <http://127.0.0.1:8585>，使用 bearer token 登录。SQLite 数据默认保存在 `.steward/steward.db`。
+打开 <http://127.0.0.1:8585>，直接使用，无需登录。SQLite 数据默认保存在 `.steward/steward.db`，凭证加密密钥首次启动时自动保存在 `.steward/credential-master-key`。备份时请同时保存数据库和密钥；已有数据库必须继续使用原来的密钥。
+
+### 网络部署
+
+本机模式只允许监听回环地址，并拒绝跨来源请求。需要通过网络访问时，设置 Token 认证，并在服务前配置 HTTPS：
+
+```bash
+export STEWARD_AUTH_MODE=token
+export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
+export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
+./bin/steward server start --addr 0.0.0.0:8585
+```
+
+使用配置的 Token 登录。未指定认证模式但已设置 Token 时，也会使用 Token 模式，以兼容已有部署。
+
+Steward Cloud 使用独立的账户和工作区网关。内部实例以 `STEWARD_AUTH_MODE=cloud` 运行：每个实例使用独立的服务令牌，并接收网关验证的用户身份，用于权限判断和操作审计。服务令牌不得发送到浏览器。
 
 ## 开发
 

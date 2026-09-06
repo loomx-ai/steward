@@ -32,6 +32,18 @@ import type {
 
 let accessTokenProvider: () => string | undefined = () => undefined;
 let principalObserver: (principal: Principal) => void = () => undefined;
+let unauthorizedObserver: () => void = () => undefined;
+
+export interface Session {
+  mode: "local" | "token" | "cloud";
+  authenticated: boolean;
+  principal: Principal | null;
+  display_name?: string;
+}
+
+export function getSession(): Promise<Session> {
+  return request<Session>("/api/session", { cache: "no-store" });
+}
 
 export function setAccessTokenProvider(provider: () => string | undefined) {
   accessTokenProvider = provider;
@@ -39,6 +51,10 @@ export function setAccessTokenProvider(provider: () => string | undefined) {
 
 export function setPrincipalObserver(observer: (principal: Principal) => void) {
   principalObserver = observer;
+}
+
+export function setUnauthorizedObserver(observer: () => void) {
+  unauthorizedObserver = observer;
 }
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -87,6 +103,10 @@ export class APIRequestError extends Error {
 }
 
 function observePrincipal(response: Response) {
+  if (response.status === 401) {
+    unauthorizedObserver();
+    return;
+  }
   const subject = response.headers.get("X-Steward-Subject")?.trim();
   if (!subject) return;
   const roles = (response.headers.get("X-Steward-Roles") ?? "")

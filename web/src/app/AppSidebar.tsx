@@ -56,7 +56,7 @@ export function AppSidebar({
   const { requestConnectionChange } = useCleanupSelection();
   const { t } = useLocale();
   const { isMobile, setOpenMobile } = useSidebar();
-  const subject = auth.principal?.subject ?? t("auth.authenticated");
+  const subject = auth.displayName ?? auth.principal?.subject ?? t("auth.authenticated");
   const searchLabel = t("command.open");
   const sidebarToggleLabel = sidebarExpanded
     ? t("shell.collapseSidebar")
@@ -201,6 +201,7 @@ export function AppSidebar({
           roles={auth.principal?.roles ?? []}
           automaticDevelopmentSession={auth.automaticDevelopmentSession}
           onSignOut={auth.logout}
+          workspaceLabel={auth.mode === "cloud" ? t("auth.workspaces") : undefined}
           labels={{
             settings: t("nav.settings"),
             signOut: t("auth.signOut"),

@@ -30,25 +30,45 @@ Alibaba Cloud and AWS.
 Requirements: Go 1.26+, Node.js 22+, and npm.
 
 ```bash
-git clone git@github.com:loomx-ai/steward.git
+git clone https://github.com/loomx-ai/steward.git
 cd steward
 make install
 make dev
 ```
 
-Open <http://127.0.0.1:5858>. The development command creates a local login
-token and credential-encryption key automatically.
+Open <http://127.0.0.1:5858>. No account or interactive login is required.
+The development proxy protects the API with an automatically generated token.
 
 To build and run the production server locally:
 
 ```bash
-export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
-export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
 make run
 ```
 
-Open <http://127.0.0.1:8585> and sign in with the bearer token. SQLite data is
-stored in `.steward/steward.db` by default.
+Open <http://127.0.0.1:8585> and start using Steward without logging in.
+SQLite data is stored in `.steward/steward.db`. A credential-encryption key is
+generated once in `.steward/credential-master-key`; keep it with your database
+backups. Existing databases must retain their original key.
+
+### Network deployment
+
+Local mode only listens on loopback and rejects cross-origin requests. To serve
+Steward over a network, configure token authentication and put it behind HTTPS:
+
+```bash
+export STEWARD_AUTH_MODE=token
+export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
+export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
+./bin/steward server start --addr 0.0.0.0:8585
+```
+
+Sign in using the configured token. Setting a token without an explicit mode
+also selects token authentication, preserving existing deployments.
+
+Steward Cloud uses a separate account and workspace gateway. Its private
+instances run with `STEWARD_AUTH_MODE=cloud`: each instance requires its own
+service token and accepts the gateway's verified user identity for authorization
+and auditing. These service tokens must never be distributed to browsers.
 
 ## Development
 

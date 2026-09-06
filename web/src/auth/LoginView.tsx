@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Boxes, ShieldCheck } from "lucide-react";
 import { useAuth } from "./AuthProvider";
@@ -22,7 +22,18 @@ export function LoginView() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  useEffect(() => {
+    if (auth.mode === "cloud" && !auth.authenticated)
+      window.location.assign("/auth/login");
+  }, [auth.mode, auth.authenticated]);
+
   if (auth.authenticated) return <Navigate to="/panorama" replace />;
+  if (auth.mode === "cloud")
+    return (
+      <main className="grid min-h-svh place-items-center">
+        <a href="/auth/login">{t("auth.signIn")}</a>
+      </main>
+    );
 
   return (
     <LoginForm

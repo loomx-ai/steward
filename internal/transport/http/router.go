@@ -56,6 +56,7 @@ type Dependencies struct {
 	Providers       ProviderDirectory
 	OAuthFlows      contracts.OAuthFlowService
 	Authenticator   Authenticator
+	AuthMode        string
 	SSEPollInterval time.Duration
 }
 
@@ -69,6 +70,7 @@ func NewRouter(dependencies Dependencies) http.Handler {
 	api := &API{dependencies: dependencies}
 	router := chi.NewRouter()
 	router.Use(withRequestID)
+	router.Get("/api/session", api.session)
 	router.Route("/api", func(router chi.Router) {
 		router.Use(authenticate(dependencies.Authenticator))
 		router.Get("/providers", requireRole(RoleViewer, api.listProviders))
@@ -127,6 +129,29 @@ func NewRouter(dependencies Dependencies) http.Handler {
 		})
 	})
 	return router
+}
+
+func (a *API) session(response http.ResponseWriter, request *http.Request) {
+	response.Header().Set("Cache-Control", "no-store")
+	mode := a.dependencies.AuthMode
+	if mode == "" {
+		mode = "token"
+	}
+	var principal *Principal
+	if a.dependencies.Authenticator != nil {
+		if authenticated, err := a.dependencies.Authenticator.Authenticate(request); err == nil {
+			principal = &authenticated
+		}
+	}
+	if mode == "local" && principal == nil {
+		writeError(response, http.StatusForbidden, ErrForbidden)
+		return
+	}
+	writeJSON(response, http.StatusOK, struct {
+		Mode          string     `json:"mode"`
+		Authenticated bool       `json:"authenticated"`
+		Principal     *Principal `json:"principal"`
+	}{Mode: mode, Authenticated: principal != nil, Principal: principal})
 }
 
 func (a *API) listProviders(response http.ResponseWriter, _ *http.Request) {

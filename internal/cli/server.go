@@ -44,6 +44,7 @@ func newServerStartCommand(version string) *cobra.Command {
 	var migrationsDir string
 	var statusPath string
 	var authToken string
+	var authMode string
 	var authSubject string
 	var authRole string
 	cmd := &cobra.Command{
@@ -63,12 +64,13 @@ func newServerStartCommand(version string) *cobra.Command {
 			if dbDriver == "sqlite" && dsn == "" {
 				dsn = filepath.Join(".steward", "steward.db")
 			}
-			if strings.TrimSpace(authToken) == "" {
-				return errors.New("server bearer token is required; set --auth-token or STEWARD_AUTH_TOKEN")
-			}
 			role := httptransport.Role(strings.ToLower(strings.TrimSpace(authRole)))
 			if role != httptransport.RoleViewer && role != httptransport.RoleOperator && role != httptransport.RoleAdmin {
 				return fmt.Errorf("invalid server role %q", authRole)
+			}
+			var bindings []httptransport.TokenBinding
+			if strings.TrimSpace(authToken) != "" {
+				bindings = []httptransport.TokenBinding{{Token: authToken, Principal: httptransport.Principal{Subject: authSubject, Roles: []httptransport.Role{role}}}}
 			}
 			ctx, stop := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM)
 			defer stop()
@@ -91,9 +93,8 @@ func newServerStartCommand(version string) *cobra.Command {
 				PollInterval:        2 * time.Second,
 				ScanConcurrency:     scanConcurrency,
 				CredentialMasterKey: os.Getenv("STEWARD_CREDENTIAL_MASTER_KEY"),
-				AuthTokens: []httptransport.TokenBinding{{
-					Token: authToken, Principal: httptransport.Principal{Subject: authSubject, Roles: []httptransport.Role{role}},
-				}},
+				AuthTokens:          bindings,
+				AuthMode:            authMode,
 			})
 		},
 	}
@@ -102,7 +103,8 @@ func newServerStartCommand(version string) *cobra.Command {
 	cmd.Flags().StringVar(&dsn, "db-dsn", "", "database DSN or SQLite path; defaults to STEWARD_DB_DSN")
 	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "migrations", "goose migration directory")
 	cmd.Flags().StringVar(&statusPath, "status-file", defaultStatusPath(), "server status file")
-	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), "bearer token required by the API")
+	cmd.Flags().StringVar(&authMode, "auth-mode", os.Getenv("STEWARD_AUTH_MODE"), "authentication mode: local, token, or cloud; defaults to local unless a token is configured")
+	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), "bearer token for token or cloud authentication")
 	cmd.Flags().StringVar(&authSubject, "auth-subject", envDefault("STEWARD_AUTH_SUBJECT", "local-admin"), "server-verified subject for the configured token")
 	cmd.Flags().StringVar(&authRole, "auth-role", envDefault("STEWARD_AUTH_ROLE", "admin"), "role for the configured token: viewer, operator, or admin")
 	return cmd
