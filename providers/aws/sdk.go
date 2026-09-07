@@ -9,6 +9,8 @@ import (
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	awscredentials "github.com/aws/aws-sdk-go-v2/credentials"
+	awscloudcontrol "github.com/aws/aws-sdk-go-v2/service/cloudcontrol"
+	cloudcontroltypes "github.com/aws/aws-sdk-go-v2/service/cloudcontrol/types"
 	awscfn "github.com/aws/aws-sdk-go-v2/service/cloudformation"
 	cfntypes "github.com/aws/aws-sdk-go-v2/service/cloudformation/types"
 	awsec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -70,6 +72,14 @@ func (sdkClientFactory) CloudFormation(ctx context.Context, credential contracts
 		return nil, err
 	}
 	return &cloudFormationSDK{client: awscfn.NewFromConfig(config)}, nil
+}
+
+func (sdkClientFactory) CloudControl(ctx context.Context, credential contracts.Credential, region string) (CloudControlClient, error) {
+	config, err := loadSDKConfig(ctx, credential, region)
+	if err != nil {
+		return nil, err
+	}
+	return &cloudControlSDK{client: awscloudcontrol.NewFromConfig(config)}, nil
 }
 
 func (sdkClientFactory) Network(ctx context.Context, credential contracts.Credential, region string) (NetworkClient, error) {
@@ -212,6 +222,84 @@ func (c *resourceExplorerSDK) Search(ctx context.Context, request SearchRequest)
 const timeFormat = "2006-01-02T15:04:05.999999999Z07:00"
 
 type cloudFormationSDK struct{ client *awscfn.Client }
+
+type cloudControlSDK struct{ client *awscloudcontrol.Client }
+
+func (c *cloudControlSDK) ListResources(ctx context.Context, request CloudControlListRequest) (CloudControlPage, error) {
+	input := &awscloudcontrol.ListResourcesInput{TypeName: awssdk.String(request.TypeName)}
+	if request.NextToken != "" {
+		input.NextToken = awssdk.String(request.NextToken)
+	}
+	if request.Limit > 0 {
+		input.MaxResults = awssdk.Int32(int32(request.Limit))
+	}
+	output, err := c.client.ListResources(ctx, input)
+	if err != nil {
+		return CloudControlPage{}, err
+	}
+	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
+	page := CloudControlPage{
+		RequestID: requestID, NextToken: awssdk.ToString(output.NextToken),
+		Resources: make([]CloudControlResource, 0, len(output.ResourceDescriptions)),
+	}
+	for _, resource := range output.ResourceDescriptions {
+		page.Resources = append(page.Resources, CloudControlResource{
+			Identifier: awssdk.ToString(resource.Identifier), Properties: awssdk.ToString(resource.Properties),
+		})
+	}
+	return page, nil
+}
+
+func (c *cloudControlSDK) GetResource(ctx context.Context, typeName, identifier string) (CloudControlResource, string, error) {
+	output, err := c.client.GetResource(ctx, &awscloudcontrol.GetResourceInput{
+		TypeName: awssdk.String(typeName), Identifier: awssdk.String(identifier),
+	})
+	if err != nil {
+		return CloudControlResource{}, requestIDFromNormalized(NormalizeError(err)), err
+	}
+	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
+	if output.ResourceDescription == nil {
+		return CloudControlResource{}, requestID, errors.New("AWS Cloud Control GetResource returned no resource description")
+	}
+	return CloudControlResource{
+		Identifier: awssdk.ToString(output.ResourceDescription.Identifier),
+		Properties: awssdk.ToString(output.ResourceDescription.Properties),
+	}, requestID, nil
+}
+
+func (c *cloudControlSDK) DeleteResource(ctx context.Context, typeName, identifier, clientToken string) (CloudControlProgress, string, error) {
+	output, err := c.client.DeleteResource(ctx, &awscloudcontrol.DeleteResourceInput{
+		TypeName: awssdk.String(typeName), Identifier: awssdk.String(identifier), ClientToken: awssdk.String(clientToken),
+	})
+	if err != nil {
+		return CloudControlProgress{}, requestIDFromNormalized(NormalizeError(err)), err
+	}
+	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
+	return cloudControlProgress(output.ProgressEvent), requestID, nil
+}
+
+func (c *cloudControlSDK) GetResourceRequestStatus(ctx context.Context, token string) (CloudControlProgress, string, error) {
+	output, err := c.client.GetResourceRequestStatus(ctx, &awscloudcontrol.GetResourceRequestStatusInput{RequestToken: awssdk.String(token)})
+	if err != nil {
+		return CloudControlProgress{}, requestIDFromNormalized(NormalizeError(err)), err
+	}
+	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
+	return cloudControlProgress(output.ProgressEvent), requestID, nil
+}
+
+func cloudControlProgress(value *cloudcontroltypes.ProgressEvent) CloudControlProgress {
+	if value == nil {
+		return CloudControlProgress{}
+	}
+	result := CloudControlProgress{
+		RequestToken: awssdk.ToString(value.RequestToken), Identifier: awssdk.ToString(value.Identifier),
+		Status: string(value.OperationStatus), ErrorCode: string(value.ErrorCode), Message: awssdk.ToString(value.StatusMessage),
+	}
+	if value.RetryAfter != nil {
+		result.RetryAfter = *value.RetryAfter
+	}
+	return result
+}
 
 func (c *cloudFormationSDK) ListStackResources(ctx context.Context, request ListStackResourcesRequest) (StackResourcePage, error) {
 	input := &awscfn.ListStackResourcesInput{StackName: awssdk.String(request.StackID)}

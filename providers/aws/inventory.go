@@ -305,7 +305,8 @@ func NormalizeError(err error) error {
 func errorCategory(code string, status int) execution.ErrorCategory {
 	normalized := strings.ToLower(code)
 	switch {
-	case normalized == "unsupportedoperation" || normalized == "optinrequired":
+	case normalized == "unsupportedoperation" || normalized == "unsupportedactionexception" ||
+		normalized == "typenotfoundexception" || normalized == "optinrequired":
 		return execution.ErrorUnsupported
 	case status == 429 || strings.Contains(normalized, "throttl") || strings.Contains(normalized, "toomanyrequests"):
 		return execution.ErrorThrottled
@@ -328,7 +329,7 @@ func unsupportedSummary(code string) map[string]any {
 	switch strings.ToLower(code) {
 	case "optinrequired":
 		return map[string]any{"skip_reason": string(asset.SkipProviderRegionUnavailable)}
-	case "unsupportedoperation":
+	case "unsupportedoperation", "unsupportedactionexception", "typenotfoundexception":
 		return map[string]any{"skip_reason": string(asset.SkipProductUnsupported)}
 	default:
 		return nil

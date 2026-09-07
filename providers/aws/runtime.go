@@ -24,6 +24,7 @@ type clientFactory interface {
 	DiscoverRegions(context.Context, contracts.Credential, string) ([]providerRegion, error)
 	ResourceExplorer(context.Context, contracts.Credential, string) (ResourceExplorerClient, error)
 	CloudFormation(context.Context, contracts.Credential, string) (CloudFormationClient, error)
+	CloudControl(context.Context, contracts.Credential, string) (CloudControlClient, error)
 	Network(context.Context, contracts.Credential, string) (NetworkClient, error)
 }
 
@@ -159,7 +160,10 @@ func (r *Runtime) DiscoverRegions(ctx context.Context, connectionID asset.Connec
 }
 
 func (r *Runtime) InventorySources() []contracts.InventorySource {
-	return []contracts.InventorySource{{Name: "resource-explorer", RootScopeKinds: []asset.ScopeKind{asset.ScopeAccount, asset.ScopeOrganization, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: false}}
+	return []contracts.InventorySource{
+		{Name: "resource-explorer", RootScopeKinds: []asset.ScopeKind{asset.ScopeAccount, asset.ScopeOrganization, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: false},
+		{Name: cloudControlSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true},
+	}
 }
 
 func (r *Runtime) Bundle() spec.Bundle {
@@ -179,11 +183,26 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
+	if request.Source == cloudControlSource {
+		client, err := r.factory.CloudControl(ctx, credential, cloudControlRegion(request.Scope))
+		if err != nil {
+			return contracts.InventoryBatch{}, NormalizeError(err)
+		}
+		return NewCloudControlInventory(client).List(ctx, request)
+	}
+	if request.Source != "" && request.Source != "resource-explorer" {
+		return contracts.InventoryBatch{}, fmt.Errorf("AWS inventory source %q is not supported", request.Source)
+	}
 	client, err := r.factory.ResourceExplorer(ctx, credential, request.Scope.Location)
 	if err != nil {
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
-	return NewInventory(client, r.resourceKind).List(ctx, request)
+	batch, err := NewInventory(client, r.resourceKind).List(ctx, request)
+	if err != nil || request.Source == "" || request.ResourceKind != nil {
+		return batch, err
+	}
+	batch.Items = r.withoutCloudControlItems(batch.Items)
+	return batch, nil
 }
 
 func (r *Runtime) Invoke(context.Context, contracts.Invocation) (contracts.InvocationResult, error) {
@@ -191,14 +210,24 @@ func (r *Runtime) Invoke(context.Context, contracts.Invocation) (contracts.Invoc
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if value.Identity.Provider != asset.ProviderAWS || value.Identity.NativeType != CloudFormationStackNativeType {
+	if value.Identity.Provider != asset.ProviderAWS {
 		return nil, fmt.Errorf("AWS native type %q has no action driver", value.Identity.NativeType)
 	}
-	client, err := r.CloudFormation(ctx, connectionID, value.Location)
+	if value.Identity.NativeType == CloudFormationStackNativeType {
+		client, err := r.CloudFormation(ctx, connectionID, value.Location)
+		if err != nil {
+			return nil, err
+		}
+		return NewCloudFormationAction(client), nil
+	}
+	if !r.cloudControlKind(value.Identity.NativeType) {
+		return nil, fmt.Errorf("AWS native type %q has no action driver", value.Identity.NativeType)
+	}
+	client, err := r.CloudControl(ctx, connectionID, value.Location)
 	if err != nil {
 		return nil, err
 	}
-	return NewCloudFormationAction(client), nil
+	return NewCloudControlAction(client), nil
 }
 
 func (r *Runtime) CloudFormation(ctx context.Context, connectionID asset.ConnectionID, region string) (CloudFormationClient, error) {
@@ -214,6 +243,53 @@ func (r *Runtime) CloudFormation(ctx context.Context, connectionID asset.Connect
 		return nil, NormalizeError(err)
 	}
 	return client, nil
+}
+
+func (r *Runtime) CloudControl(ctx context.Context, connectionID asset.ConnectionID, region string) (CloudControlClient, error) {
+	region = strings.TrimSpace(region)
+	if region == "" || strings.EqualFold(region, "global") {
+		region = awsRegionBootstrap
+	}
+	credential, err := r.resolveCredential(ctx, connectionID)
+	if err != nil {
+		return nil, err
+	}
+	client, err := r.factory.CloudControl(ctx, credential, region)
+	if err != nil {
+		return nil, NormalizeError(err)
+	}
+	return client, nil
+}
+
+func cloudControlRegion(scope asset.Scope) string {
+	if region := strings.TrimSpace(scope.Location); region != "" && !strings.EqualFold(region, "global") {
+		return region
+	}
+	if scope.Kind == asset.ScopeRegion {
+		if region := strings.TrimSpace(scope.NativeID); region != "" {
+			return region
+		}
+	}
+	return awsRegionBootstrap
+}
+
+func (r *Runtime) cloudControlKind(nativeType string) bool {
+	for _, compiled := range r.bundle.Specs {
+		if compiled.ResourceKind.NativeType == nativeType && compiled.Definition.Extensions.Hook == cloudControlHook {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *Runtime) withoutCloudControlItems(items []contracts.InventoryItem) []contracts.InventoryItem {
+	result := make([]contracts.InventoryItem, 0, len(items))
+	for _, item := range items {
+		if !r.cloudControlKind(item.NativeType) {
+			result = append(result, item)
+		}
+	}
+	return result
 }
 
 func (r *Runtime) resourceKind(nativeType string, scopeKind asset.ScopeKind) asset.ResourceKind {
@@ -280,5 +356,6 @@ func compileEmbeddedSpecs(providerCatalog catalog.Catalog) (spec.Bundle, error) 
 	}
 	return spec.CompileBundle(sources, providerCatalog, spec.HookRegistry{
 		"aws.cloudformation.stack": {spec.HookPreflight, spec.HookAction, spec.HookWaiter, spec.HookReadback, spec.HookLifecycle},
+		cloudControlHook:           {spec.HookPreflight, spec.HookAction, spec.HookWaiter, spec.HookReadback},
 	})
 }

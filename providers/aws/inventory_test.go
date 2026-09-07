@@ -202,6 +202,8 @@ func TestInventoryClassifiesOnlyExplicitUnsupportedErrorsAsSkippable(t *testing.
 		reason asset.SkipReason
 	}{
 		{code: "UnsupportedOperation", reason: asset.SkipProductUnsupported},
+		{code: "UnsupportedActionException", reason: asset.SkipProductUnsupported},
+		{code: "TypeNotFoundException", reason: asset.SkipProductUnsupported},
 		{code: "OptInRequired", reason: asset.SkipProviderRegionUnavailable},
 	} {
 		_, err := provideraws.NewInventory(&resourceExplorerClient{err: &provideraws.APIError{Code: test.code, Message: "unsupported", StatusCode: 400}}, nil).List(context.Background(), contracts.InventoryRequest{Scope: asset.Scope{Kind: asset.ScopeAccount, NativeID: "123456789012"}})

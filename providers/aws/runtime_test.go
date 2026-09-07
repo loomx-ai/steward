@@ -44,20 +44,36 @@ func (s *runtimeCredentialSource) Resolve(_ context.Context, connectionID asset.
 }
 
 type runtimeFactory struct {
-	accountID       string
-	principal       string
-	bootstrapRegion string
-	regions         []providerRegion
-	network         NetworkClient
-	networkRegion   string
+	accountID        string
+	principal        string
+	bootstrapRegion  string
+	regions          []providerRegion
+	network          NetworkClient
+	networkRegion    string
+	cloudControl     CloudControlClient
+	cloudRegion      string
+	resourceExplorer ResourceExplorerClient
+	explorerRegion   string
 }
 
-func (*runtimeFactory) ResourceExplorer(context.Context, contracts.Credential, string) (ResourceExplorerClient, error) {
-	return nil, errors.New("not used")
+func (f *runtimeFactory) ResourceExplorer(_ context.Context, _ contracts.Credential, region string) (ResourceExplorerClient, error) {
+	f.explorerRegion = region
+	if f.resourceExplorer == nil {
+		return nil, errors.New("not used")
+	}
+	return f.resourceExplorer, nil
 }
 
 func (*runtimeFactory) CloudFormation(context.Context, contracts.Credential, string) (CloudFormationClient, error) {
 	return nil, errors.New("not used")
+}
+
+func (f *runtimeFactory) CloudControl(_ context.Context, _ contracts.Credential, region string) (CloudControlClient, error) {
+	f.cloudRegion = region
+	if f.cloudControl == nil {
+		return nil, errors.New("not used")
+	}
+	return f.cloudControl, nil
 }
 
 func (f *runtimeFactory) Network(_ context.Context, _ contracts.Credential, region string) (NetworkClient, error) {
@@ -164,5 +180,71 @@ func TestRuntimeSearchesVPCsAndVSwitchesThroughEC2(t *testing.T) {
 	})
 	if err != nil || len(page.Items) != 1 || page.Items[0].NativeID != "subnet-1" || page.Items[0].ParentNativeID != "vpc-1" || client.lastQuery.ParentNativeID != "vpc-1" {
 		t.Fatalf("page=%#v query=%#v err=%v", page, client.lastQuery, err)
+	}
+}
+
+type runtimeCloudControlClient struct {
+	page CloudControlPage
+}
+
+func (c *runtimeCloudControlClient) ListResources(context.Context, CloudControlListRequest) (CloudControlPage, error) {
+	return c.page, nil
+}
+
+func (*runtimeCloudControlClient) GetResource(context.Context, string, string) (CloudControlResource, string, error) {
+	return CloudControlResource{}, "", errors.New("not used")
+}
+
+func (*runtimeCloudControlClient) DeleteResource(context.Context, string, string, string) (CloudControlProgress, string, error) {
+	return CloudControlProgress{}, "", errors.New("not used")
+}
+
+func (*runtimeCloudControlClient) GetResourceRequestStatus(context.Context, string) (CloudControlProgress, string, error) {
+	return CloudControlProgress{}, "", errors.New("not used")
+}
+
+type runtimeResourceExplorerClient struct {
+	page SearchPage
+}
+
+func (c *runtimeResourceExplorerClient) Search(context.Context, SearchRequest) (SearchPage, error) {
+	return c.page, nil
+}
+
+func TestRuntimeRoutesAuthoritativeCloudControlInventoryAndDeduplicatesBroadIndex(t *testing.T) {
+	source := &runtimeCredentialSource{want: "connection-a", value: contracts.Credential{Values: map[string]string{"access_key_id": "id", "secret_access_key": "secret"}}}
+	cloudClient := &runtimeCloudControlClient{page: CloudControlPage{Resources: []CloudControlResource{{Identifier: "i-1", Properties: `{"InstanceId":"i-1"}`}}}}
+	explorerClient := &runtimeResourceExplorerClient{page: SearchPage{Resources: []SearchResource{
+		{ARN: "arn:aws:ec2:us-east-1:123456789012:instance/i-1", NativeType: "AWS::EC2::Instance", Region: "us-east-1", AccountID: "123456789012"},
+		{ARN: "arn:aws:cloudformation:us-east-1:123456789012:stack/app/id", NativeType: CloudFormationStackNativeType, Region: "us-east-1", AccountID: "123456789012"},
+	}}}
+	factory := &runtimeFactory{cloudControl: cloudClient, resourceExplorer: explorerClient}
+	runtime, err := newRuntime(source, factory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var instanceKind *asset.ResourceKind
+	for _, compiled := range runtime.Bundle().Specs {
+		if compiled.ResourceKind.NativeType == "AWS::EC2::Instance" {
+			kind := compiled.ResourceKind
+			instanceKind = &kind
+			break
+		}
+	}
+	if instanceKind == nil || !instanceKind.Capabilities.Has(asset.CapabilityActionable) {
+		t.Fatalf("EC2 Cloud Control kind = %+v", instanceKind)
+	}
+	scope := asset.Scope{Kind: asset.ScopeRegion, NativeID: "us-east-1", Location: "us-east-1"}
+	cloudBatch, err := runtime.List(context.Background(), contracts.InventoryRequest{
+		ConnectionID: "connection-a", Scope: scope, Source: cloudControlSource, ResourceKind: instanceKind,
+	})
+	if err != nil || len(cloudBatch.Items) != 1 || cloudBatch.Items[0].NativeID != "i-1" || factory.cloudRegion != "us-east-1" {
+		t.Fatalf("cloud batch=%+v region=%q err=%v", cloudBatch, factory.cloudRegion, err)
+	}
+	indexBatch, err := runtime.List(context.Background(), contracts.InventoryRequest{
+		ConnectionID: "connection-a", Scope: scope, Source: "resource-explorer",
+	})
+	if err != nil || len(indexBatch.Items) != 1 || indexBatch.Items[0].NativeType != CloudFormationStackNativeType {
+		t.Fatalf("index batch=%+v err=%v", indexBatch, err)
 	}
 }

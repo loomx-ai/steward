@@ -4,11 +4,43 @@
   "source": {
     "format": "smithy",
     "uri": "providers/aws/catalog/source/smithy.json",
-    "checksum": "a8c76d5185c9cc95da06da052c107d3032c000013e81b9f782106311c7a44713",
+    "checksum": "c568567a931898dc903ba6238d7c4cd2617272af7430750947fbd4acdebb99f5",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "5d155004091f507078feab95488b8d259006d43a2aac9506247784b20683ca79",
+  "content_checksum": "75cdd01b1aa3b77dc8da350169ae58504ff437beb399a3d3844988fb0a57c428",
   "operations": [
+    {
+      "id": "com.amazonaws.cloudcontrol#DeleteResource",
+      "name": "DeleteResource",
+      "service": "com.amazonaws.cloudcontrol",
+      "method": "POST",
+      "path": "/",
+      "destructive": true
+    },
+    {
+      "id": "com.amazonaws.cloudcontrol#GetResource",
+      "name": "GetResource",
+      "service": "com.amazonaws.cloudcontrol",
+      "method": "POST",
+      "path": "/",
+      "destructive": false
+    },
+    {
+      "id": "com.amazonaws.cloudcontrol#GetResourceRequestStatus",
+      "name": "GetResourceRequestStatus",
+      "service": "com.amazonaws.cloudcontrol",
+      "method": "POST",
+      "path": "/",
+      "destructive": false
+    },
+    {
+      "id": "com.amazonaws.cloudcontrol#ListResources",
+      "name": "ListResources",
+      "service": "com.amazonaws.cloudcontrol",
+      "method": "POST",
+      "path": "/",
+      "destructive": false
+    },
     {
       "id": "com.amazonaws.cloudformation#DeleteStack",
       "name": "DeleteStack",
@@ -44,9 +76,97 @@
   ],
   "resource_types": [
     {
+      "native_type": "AWS::AccessAnalyzer::Analyzer",
+      "class": "security.analyzer",
+      "display_name": "Access Analyzer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::AmazonMQ::Broker",
+      "class": "messaging.broker",
+      "display_name": "Amazon MQ Broker",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGateway::RestApi",
+      "class": "api.gateway",
+      "display_name": "API Gateway REST API",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ApiGatewayV2::Api",
+      "class": "api.gateway",
+      "display_name": "API Gateway V2 API",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Athena::WorkGroup",
+      "class": "analytics.workgroup",
+      "display_name": "Athena Workgroup",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::AutoScaling::AutoScalingGroup",
+      "class": "compute.autoscaling_group",
+      "display_name": "Auto Scaling Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::CloudFormation::Stack",
       "class": "orchestration.stack",
       "display_name": "CloudFormation Stack",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::CloudWatch::Alarm",
+      "class": "monitoring.alarm",
+      "display_name": "CloudWatch Alarm",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::CloudWatch::CompositeAlarm",
+      "class": "monitoring.alarm",
+      "display_name": "CloudWatch Composite Alarm",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::CloudWatch::Dashboard",
+      "class": "monitoring.dashboard",
+      "display_name": "CloudWatch Dashboard",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "AWS::CodePipeline::Pipeline",
+      "class": "devops.pipeline",
+      "display_name": "CodePipeline Pipeline",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::DynamoDB::Table",
+      "class": "database.table",
+      "display_name": "DynamoDB Table",
       "scope_kinds": [
         "region"
       ]
@@ -60,6 +180,166 @@
       ]
     },
     {
+      "native_type": "AWS::EC2::InternetGateway",
+      "class": "network.internet_gateway",
+      "display_name": "EC2 Internet Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::NatGateway",
+      "class": "network.nat_gateway",
+      "display_name": "EC2 NAT Gateway",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::NetworkAcl",
+      "class": "network.acl",
+      "display_name": "EC2 Network ACL",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::NetworkInterface",
+      "class": "network.interface",
+      "display_name": "EC2 Network Interface",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::RouteTable",
+      "class": "network.route_table",
+      "display_name": "EC2 Route Table",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::SecurityGroup",
+      "class": "network.security_group",
+      "display_name": "EC2 Security Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::Subnet",
+      "class": "network.subnet",
+      "display_name": "EC2 Subnet",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::VPC",
+      "class": "network.vpc",
+      "display_name": "EC2 VPC",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::VPCEndpoint",
+      "class": "network.vpc_endpoint",
+      "display_name": "EC2 VPC Endpoint",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EC2::Volume",
+      "class": "storage.volume",
+      "display_name": "EBS Volume",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ECR::Repository",
+      "class": "container.repository",
+      "display_name": "ECR Repository",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ECS::Cluster",
+      "class": "container.cluster",
+      "display_name": "ECS Cluster",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EFS::FileSystem",
+      "class": "storage.file_system",
+      "display_name": "EFS File System",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::EKS::Cluster",
+      "class": "container.cluster",
+      "display_name": "EKS Cluster",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+      "class": "network.load_balancer",
+      "display_name": "Elastic Load Balancer",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+      "class": "network.target_group",
+      "display_name": "Load Balancer Target Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Events::EventBus",
+      "class": "messaging.event_bus",
+      "display_name": "EventBridge Event Bus",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Events::Rule",
+      "class": "messaging.event_rule",
+      "display_name": "EventBridge Rule",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::IAM::Group",
+      "class": "identity.group",
+      "display_name": "IAM Group",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "AWS::IAM::ManagedPolicy",
+      "class": "identity.policy",
+      "display_name": "IAM Managed Policy",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
       "native_type": "AWS::IAM::Role",
       "class": "identity.role",
       "display_name": "IAM Role",
@@ -68,11 +348,90 @@
       ]
     },
     {
+      "native_type": "AWS::IAM::User",
+      "class": "identity.user",
+      "display_name": "IAM User",
+      "scope_kinds": [
+        "global"
+      ]
+    },
+    {
+      "native_type": "AWS::Kinesis::Stream",
+      "class": "messaging.stream",
+      "display_name": "Kinesis Stream",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Lambda::Function",
+      "class": "compute.function",
+      "display_name": "Lambda Function",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::Logs::LogGroup",
+      "class": "observability.log_group",
+      "display_name": "CloudWatch Log Group",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::OpenSearchService::Domain",
+      "class": "search.domain",
+      "display_name": "OpenSearch Domain",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::RDS::DBCluster",
+      "class": "database.cluster",
+      "display_name": "RDS DB Cluster",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::RDS::DBInstance",
+      "class": "database.instance",
+      "display_name": "RDS DB Instance",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
       "native_type": "AWS::S3::Bucket",
       "class": "storage.bucket",
       "display_name": "S3 Bucket",
       "scope_kinds": [
-        "global",
+        "global"
+      ]
+    },
+    {
+      "native_type": "AWS::SNS::Topic",
+      "class": "messaging.topic",
+      "display_name": "SNS Topic",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::SQS::Queue",
+      "class": "messaging.queue",
+      "display_name": "SQS Queue",
+      "scope_kinds": [
+        "region"
+      ]
+    },
+    {
+      "native_type": "AWS::StepFunctions::StateMachine",
+      "class": "orchestration.workflow",
+      "display_name": "Step Functions State Machine",
+      "scope_kinds": [
         "region"
       ]
     }

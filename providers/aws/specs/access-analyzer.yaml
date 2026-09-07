@@ -1,0 +1,25 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: aws
+  nativeType: AWS::AccessAnalyzer::Analyzer
+  class: security.analyzer
+presentation:
+  displayNames:
+    en-US: Access Analyzer
+scope:
+  kind: region
+discovery:
+  source: cloud-control
+  detail:
+    operation: com.amazonaws.cloudcontrol#GetResource
+    itemsPath: ResourceDescription
+    identityPath: Identifier
+actions:
+  delete:
+    operation: com.amazonaws.cloudcontrol#DeleteResource
+    idempotency: provider_token
+    waiter: cloud_control_terminal
+    readback: cloud_control_absent
+extensions:
+  hook: aws.cloudcontrol.resource
