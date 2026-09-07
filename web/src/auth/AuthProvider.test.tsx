@@ -26,7 +26,9 @@ function SessionProbe() {
       </p>
       <button onClick={() => void auth.login("test-token")}>Sign in</button>
       <button onClick={auth.logout}>Sign out</button>
-      <button onClick={() => void listConnections().catch(() => undefined)}>Load resources</button>
+      <button onClick={() => void listConnections().catch(() => undefined)}>
+        Load resources
+      </button>
     </>
   );
 }
@@ -59,15 +61,13 @@ function response(body: unknown) {
 it("enters local mode only after the backend verifies the session", async () => {
   vi.stubGlobal(
     "fetch",
-    vi
-      .fn()
-      .mockResolvedValue(
-        response({
-          mode: "local",
-          authenticated: true,
-          principal: { subject: "local-admin", roles: ["admin"] },
-        }),
-      ),
+    vi.fn().mockResolvedValue(
+      response({
+        mode: "local",
+        authenticated: true,
+        principal: { subject: "local-admin", roles: ["admin"] },
+      }),
+    ),
   );
   renderSession();
   expect(screen.queryByText("Authenticated")).not.toBeInTheDocument();
@@ -143,10 +143,14 @@ it("fails closed and can retry after a session service error", async () => {
 });
 
 it("shows cloud identity without a browser bearer token", async () => {
-  const fetchMock = vi.fn().mockResolvedValue(response({
-    mode: "cloud", authenticated: true, display_name: "alice@example.test",
-    principal: { subject: "user-alice", roles: ["viewer"] },
-  }));
+  const fetchMock = vi.fn().mockResolvedValue(
+    response({
+      mode: "cloud",
+      authenticated: true,
+      display_name: "alice@example.test",
+      principal: { subject: "user-alice", roles: ["viewer"] },
+    }),
+  );
   vi.stubGlobal("fetch", fetchMock);
   renderSession();
   expect(await screen.findByText("cloud")).toBeVisible();
@@ -155,13 +159,25 @@ it("shows cloud identity without a browser bearer token", async () => {
 });
 
 it("drops cached data and returns to login when an API session expires", async () => {
-  vi.stubGlobal("fetch", vi.fn()
-    .mockResolvedValueOnce(response({ mode: "cloud", authenticated: true, principal: { subject: "alice", roles: ["viewer"] } }))
-    .mockResolvedValueOnce(new Response("Unauthorized", { status: 401 })));
+  vi.stubGlobal(
+    "fetch",
+    vi
+      .fn()
+      .mockResolvedValueOnce(
+        response({
+          mode: "cloud",
+          authenticated: true,
+          principal: { subject: "alice", roles: ["viewer"] },
+        }),
+      )
+      .mockResolvedValueOnce(new Response("Unauthorized", { status: 401 })),
+  );
   const cache = renderSession();
   await screen.findByText("Authenticated");
   cache.setQueryData(["resources"], ["private-resource"]);
-  await userEvent.setup().click(screen.getByRole("button", { name: "Load resources" }));
+  await userEvent
+    .setup()
+    .click(screen.getByRole("button", { name: "Load resources" }));
   expect(await screen.findByText("Anonymous")).toBeVisible();
   expect(cache.getQueryData(["resources"])).toBeUndefined();
 });

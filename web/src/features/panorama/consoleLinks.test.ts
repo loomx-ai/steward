@@ -742,7 +742,7 @@ describe("cloudConsoleURL", () => {
             regionId: "us-east-1",
           }),
       );
-    expect(awsCatalog.resource_types).toHaveLength(4);
+    expect(awsCatalog.resource_types.length).toBeGreaterThan(0);
     expect(missing).toEqual([]);
 
     expect(

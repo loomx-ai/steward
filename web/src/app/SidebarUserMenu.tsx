@@ -74,7 +74,10 @@ export function SidebarUserMenu({
         <DropdownMenuSeparator />
         {workspaceLabel && (
           <DropdownMenuItem asChild>
-            <a href="/workspaces"><Boxes />{workspaceLabel}</a>
+            <a href="/workspaces">
+              <Boxes />
+              {workspaceLabel}
+            </a>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>

@@ -57,7 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionStorage.removeItem(tokenKey);
       queryClient.clear();
       setPrincipal(null);
-      setSession((current) => current && { ...current, authenticated: false, principal: null });
+      setSession(
+        (current) =>
+          current && { ...current, authenticated: false, principal: null },
+      );
     });
     getSession()
       .then((next) => {

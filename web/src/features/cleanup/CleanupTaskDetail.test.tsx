@@ -915,9 +915,7 @@ it("shows the exact scheduled KMS key deletion time in the local timezone as a s
 
   await user.click(await screen.findByRole("tab", { name: "资源结果" }));
   expect(
-    await screen.findByText(
-      "已处于计划删除，将于 2026-08-13 19:54:34 删除。",
-    ),
+    await screen.findByText("已处于计划删除，将于 2026-08-13 19:54:34 删除。"),
   ).toBeVisible();
 });
 
