@@ -15,7 +15,7 @@ The steps connect, scan, and inspect resources. Screenshots use Alibaba Cloud sa
 You will need:
 
 - Steward running through the [quick start](../quick-start.md), or an available Steward Cloud workspace.
-- An Alibaba Cloud or AWS account you can access, with credentials that have the required read permissions.
+- An Alibaba Cloud, AWS, or Google Cloud account you can access, with credentials that have the required read permissions.
 - A regional resource you know exists and that Steward supports discovering, such as a cloud instance. Record its **region, resource type, and native resource ID**.
 
 Choose a small scope you know well. You do not need to create cloud resources or grant deletion permissions for this tutorial. Without a cloud account, explore the sample demo on the [LoomX homepage](https://loomx.ai/) to learn the inventory and relationship views; a real scan requires your own cloud connection.

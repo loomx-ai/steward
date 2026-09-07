@@ -681,6 +681,7 @@ function credentialTypeName(
       oauth: "credentials.alicloudOAuth",
       sts: "credentials.sts",
       session: "credentials.session",
+      service_account: "credentials.gcpServiceAccount",
     }[type] ?? "credentials.unknown";
   return t(key as MessageKey);
 }

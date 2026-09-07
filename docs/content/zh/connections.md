@@ -14,6 +14,7 @@ navTitle: "连接云账号"
 | --- | --- |
 | 阿里云 | AccessKey ID + AccessKey Secret<br>STS：另填 Security Token 和到期时间。 |
 | AWS | Access Key ID + Secret Access Key<br>临时凭证：另填 Session Token 和到期时间。 |
+| Google Cloud（GCP） | 项目 ID + 服务账号 JSON 密钥，参阅 [Google Cloud 接入](./gcp.md)。 |
 
 阿里云还支持浏览器授权登录；入口可用时，按授权页提示完成连接。中国站与国际站应选择与账号一致的站点。
 

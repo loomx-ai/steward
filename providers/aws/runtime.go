@@ -162,7 +162,7 @@ func (r *Runtime) DiscoverRegions(ctx context.Context, connectionID asset.Connec
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
 		{Name: "resource-explorer", RootScopeKinds: []asset.ScopeKind{asset.ScopeAccount, asset.ScopeOrganization, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: false},
-		{Name: cloudControlSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true},
+		{Name: cloudControlSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
 	}
 }
 
@@ -193,7 +193,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if request.Source != "" && request.Source != "resource-explorer" {
 		return contracts.InventoryBatch{}, fmt.Errorf("AWS inventory source %q is not supported", request.Source)
 	}
-	client, err := r.factory.ResourceExplorer(ctx, credential, request.Scope.Location)
+	client, err := r.factory.ResourceExplorer(ctx, credential, cloudControlRegion(request.Scope))
 	if err != nil {
 		return contracts.InventoryBatch{}, NormalizeError(err)
 	}
@@ -227,7 +227,22 @@ func (r *Runtime) ResolveAction(ctx context.Context, connectionID asset.Connecti
 	if err != nil {
 		return nil, err
 	}
+	if value.Identity.NativeType == "AWS::EC2::InternetGateway" {
+		network, err := r.networkClient(ctx, connectionID, value.Location)
+		if err != nil {
+			return nil, err
+		}
+		return &internetGatewayAction{CloudControlAction: NewCloudControlAction(client), network: network}, nil
+	}
 	return NewCloudControlAction(client), nil
+}
+
+func (r *Runtime) networkClient(ctx context.Context, connectionID asset.ConnectionID, region string) (NetworkClient, error) {
+	credential, err := r.resolveCredential(ctx, connectionID)
+	if err != nil {
+		return nil, err
+	}
+	return r.factory.Network(ctx, credential, region)
 }
 
 func (r *Runtime) CloudFormation(ctx context.Context, connectionID asset.ConnectionID, region string) (CloudFormationClient, error) {

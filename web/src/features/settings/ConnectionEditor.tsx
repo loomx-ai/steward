@@ -549,6 +549,7 @@ export function providerName(provider: string) {
     {
       alicloud: "Alibaba Cloud",
       aws: "AWS",
+      gcp: "Google Cloud",
     }[provider] ?? provider
   );
 }

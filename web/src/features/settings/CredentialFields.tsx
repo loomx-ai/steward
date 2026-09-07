@@ -27,6 +27,8 @@ export function CredentialFields({
             <Textarea
               id={`credential-${field.key}`}
               rows={10}
+              spellCheck={false}
+              autoCorrect="off"
               className="font-mono text-xs"
               required={field.required}
               value={values[field.key] ?? ""}

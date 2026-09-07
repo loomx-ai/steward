@@ -68,7 +68,7 @@ func TestProviderRegistryCompilesWithoutResolvingCredentials(t *testing.T) {
 	for _, descriptor := range descriptors {
 		providers = append(providers, descriptor.Provider)
 	}
-	if want := []asset.Provider{asset.ProviderAliCloud, asset.ProviderAWS}; !reflect.DeepEqual(providers, want) {
+	if want := []asset.Provider{asset.ProviderAliCloud, asset.ProviderAWS, asset.ProviderGCP}; !reflect.DeepEqual(providers, want) {
 		t.Fatalf("registered providers = %v, want %v", providers, want)
 	}
 	if len(registry.Bundles()) != len(providers) {

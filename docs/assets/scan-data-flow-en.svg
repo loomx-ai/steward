@@ -5,7 +5,7 @@
 <rect width="640" height="650" rx="14" fill="#fff"/>
 <rect x="48" y="36" width="544" height="112" rx="12" fill="#f5f6fa" stroke="#d5dbea"/>
 <text x="80" y="80" class="label">Existing cloud resources</text>
-<text x="80" y="117" class="body">Alibaba Cloud / AWS</text>
+<text x="80" y="117" class="body">Alibaba Cloud / AWS / GCP</text>
 <path d="M320 150V194" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
 <text x="344" y="178" class="small">Read APIs</text>
 <rect x="48" y="206" width="544" height="102" rx="12" fill="#f0f2ff" stroke="#8d9ae1"/>

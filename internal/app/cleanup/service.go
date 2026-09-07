@@ -166,7 +166,7 @@ func ValidateExecutionConfirmation(selectors []plan.CleanupSelector, confirmatio
 
 func requiresTypedName(selector plan.CleanupSelector) bool {
 	return selector.Kind == plan.SelectorConnection ||
-		(selector.Kind == plan.SelectorScope && (selector.ScopeKind == asset.ScopeAccount || selector.ScopeKind == asset.ScopeRegion))
+		(selector.Kind == plan.SelectorScope && (selector.ScopeKind == asset.ScopeAccount || selector.ScopeKind == asset.ScopeProject || selector.ScopeKind == asset.ScopeRegion))
 }
 
 func selectorConfirmationName(selector plan.CleanupSelector) string {

@@ -69,9 +69,9 @@ func TestInventoryLogsRawResourceExplorerRequestAndResponse(t *testing.T) {
 	}
 	if len(logs) != 2 ||
 		logs[0].kind != execution.JobLogCloudAPIRequest ||
-		logs[0].message != "call resource-explorer-2 Search" ||
+		logs[0].message != "call resource-explorer-2 ListResources" ||
 		logs[1].kind != execution.JobLogCloudAPIResponse ||
-		logs[1].message != "resource-explorer-2 Search returned" {
+		logs[1].message != "resource-explorer-2 ListResources returned" {
 		t.Fatalf("logs=%#v", logs)
 	}
 	if logs[0].payload["MaxResults"] != float64(100) || logs[0].payload["NextToken"] != "aws-page-1" {
@@ -115,7 +115,7 @@ func TestInventoryLogsResourceExplorerFailureWithoutFabricatedResponse(t *testin
 	if len(logs) != 2 ||
 		logs[1].kind != execution.JobLogCloudAPIResponse ||
 		logs[1].level != "info" ||
-		logs[1].message != "resource-explorer-2 Search failed: AccessDeniedException: denied" ||
+		logs[1].message != "resource-explorer-2 ListResources failed: AccessDeniedException: denied" ||
 		logs[1].payload != nil {
 		t.Fatalf("logs=%#v", logs)
 	}

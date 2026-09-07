@@ -1,11 +1,40 @@
 {
   "schemaVersion": 1,
   "name": "Steward",
-  "description": { "en": "Cloud inventory, resource relationships, and cleanup.", "zh": "盘点云资源、查看依赖、审查和执行清理。" },
-  "locales": { "en": { "label": "English", "lang": "en" }, "zh": { "label": "中文", "lang": "zh-CN" } },
+  "description": {
+    "en": "Cloud inventory, resource relationships, and cleanup.",
+    "zh": "盘点云资源、查看依赖、审查和执行清理。"
+  },
+  "locales": {
+    "en": {
+      "label": "English",
+      "lang": "en"
+    },
+    "zh": {
+      "label": "中文",
+      "lang": "zh-CN"
+    }
+  },
   "defaultLocale": "en",
   "license": "Apache 2.0",
-  "links": [{ "label": "Steward Cloud", "url": "https://steward.console.loomx.ai" }],
-  "navigation": ["index", "intro", "quick-start", "tutorials/first-inventory", "connections", "scans", "resources", "topology", "cleanup", "deployment"],
+  "links": [
+    {
+      "label": "Steward Cloud",
+      "url": "https://steward.console.loomx.ai"
+    }
+  ],
+  "navigation": [
+    "index",
+    "intro",
+    "quick-start",
+    "tutorials/first-inventory",
+    "connections",
+    "gcp",
+    "scans",
+    "resources",
+    "topology",
+    "cleanup",
+    "deployment"
+  ],
   "legacyAssets": "/docs/steward/"
 }

@@ -1,8 +1,11 @@
 package aws
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
 	awssdk "github.com/aws/aws-sdk-go-v2/aws"
@@ -18,7 +21,9 @@ import (
 	awsexplorer "github.com/aws/aws-sdk-go-v2/service/resourceexplorer2"
 	explorertypes "github.com/aws/aws-sdk-go-v2/service/resourceexplorer2/types"
 	awssts "github.com/aws/aws-sdk-go-v2/service/sts"
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
+	"gopkg.in/yaml.v3"
 )
 
 type sdkClientFactory struct{}
@@ -98,27 +103,55 @@ func loadSDKConfig(ctx context.Context, credential contracts.Credential, region 
 	if region != "" {
 		options = append(options, awsconfig.WithRegion(region))
 	}
-	if profile := strings.TrimSpace(credential.Values["profile"]); profile != "" {
-		options = append(options, awsconfig.WithSharedConfigProfile(profile))
-	}
 	accessKey := strings.TrimSpace(credential.Values["access_key_id"])
 	secretKey := strings.TrimSpace(credential.Values["secret_access_key"])
 	if secretKey == "" {
 		secretKey = strings.TrimSpace(credential.Values["access_key_secret"])
 	}
-	if accessKey != "" || secretKey != "" {
-		if accessKey == "" || secretKey == "" {
-			return awssdk.Config{}, errors.New("AWS static credentials require access key ID and secret access key")
-		}
-		provider := awscredentials.NewStaticCredentialsProvider(accessKey, secretKey, strings.TrimSpace(credential.Values["session_token"]))
-		options = append(options, awsconfig.WithCredentialsProvider(provider))
+	if accessKey == "" || secretKey == "" {
+		return awssdk.Config{}, errors.New("AWS static credentials require access key ID and secret access key")
 	}
+	sessionToken := strings.TrimSpace(credential.Values["session_token"])
+	if credential.Type == asset.CredentialAWSSession && sessionToken == "" {
+		return awssdk.Config{}, errors.New("AWS session credentials require a session token")
+	}
+	provider := awscredentials.NewStaticCredentialsProvider(accessKey, secretKey, sessionToken)
+	options = append(options, awsconfig.WithCredentialsProvider(provider))
 	return awsconfig.LoadDefaultConfig(ctx, options...)
 }
 
 type resourceExplorerSDK struct{ client *awsexplorer.Client }
 
 type networkSDK struct{ client *awsec2.Client }
+
+func (c *networkSDK) InternetGatewayVPCs(ctx context.Context, id string) ([]string, error) {
+	output, err := c.client.DescribeInternetGateways(ctx, &awsec2.DescribeInternetGatewaysInput{InternetGatewayIds: []string{id}})
+	if err != nil {
+		return nil, err
+	}
+	var result []string
+	for _, gateway := range output.InternetGateways {
+		for _, attachment := range gateway.Attachments {
+			if id := awssdk.ToString(attachment.VpcId); id != "" {
+				result = append(result, id)
+			}
+		}
+	}
+	return result, nil
+}
+
+func (c *networkSDK) DetachInternetGateway(ctx context.Context, id, vpcID string) error {
+	_, err := c.client.DetachInternetGateway(ctx, &awsec2.DetachInternetGatewayInput{
+		InternetGatewayId: awssdk.String(id), VpcId: awssdk.String(vpcID),
+	})
+	if err != nil {
+		var providerError *contracts.ProviderCallError
+		if errors.As(NormalizeError(err), &providerError) && providerError.Provider.Code == "Gateway.NotAttached" {
+			return nil
+		}
+	}
+	return err
+}
 
 func (c *networkSDK) ListVPCs(ctx context.Context, request NetworkListRequest) (NetworkPage, error) {
 	input := &awsec2.DescribeVpcsInput{}
@@ -194,16 +227,38 @@ func (c *resourceExplorerSDK) Search(ctx context.Context, request SearchRequest)
 	}
 	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
 	page := SearchPage{RequestID: requestID, NextToken: awssdk.ToString(output.NextToken), Resources: make([]SearchResource, 0, len(output.Resources))}
-	if raw, rawErr := contracts.CloudRawPayload(output); rawErr == nil {
+	if raw, err := contracts.CloudRawPayload(output); err == nil {
 		page.RawResponse = raw
-		if requestID != "" {
-			page.RawResponse["RequestId"] = requestID
-		}
+		page.RawResponse["RequestId"] = requestID
 	}
-	for _, resource := range output.Resources {
+	rawResources, _ := page.RawResponse["Resources"].([]any)
+	for resourceIndex, resource := range output.Resources {
 		properties := make(map[string]any, len(resource.Properties))
-		for _, property := range resource.Properties {
-			properties[awssdk.ToString(property.Name)] = property.Data
+		for propertyIndex, property := range resource.Properties {
+			var data any
+			if property.Data != nil {
+				payload, err := property.Data.MarshalSmithyDocument()
+				if err != nil {
+					return SearchPage{}, fmt.Errorf("read AWS Resource Explorer property %q: %w", awssdk.ToString(property.Name), err)
+				}
+				decoder := json.NewDecoder(bytes.NewReader(payload))
+				decoder.UseNumber()
+				if err := decoder.Decode(&data); err != nil {
+					return SearchPage{}, fmt.Errorf("decode AWS Resource Explorer property %q: %w", awssdk.ToString(property.Name), err)
+				}
+			}
+			properties[awssdk.ToString(property.Name)] = data
+			// encoding/json cannot decode Smithy documents; preserve the original
+			// AWS response shape in API logs with the decoded document inserted.
+			if resourceIndex < len(rawResources) {
+				rawResource, _ := rawResources[resourceIndex].(map[string]any)
+				rawProperties, _ := rawResource["Properties"].([]any)
+				if propertyIndex < len(rawProperties) {
+					if rawProperty, ok := rawProperties[propertyIndex].(map[string]any); ok {
+						rawProperty["Data"] = data
+					}
+				}
+			}
 		}
 		lastReported := ""
 		if resource.LastReportedAt != nil {
@@ -308,14 +363,45 @@ func (c *cloudFormationSDK) ListStackResources(ctx context.Context, request List
 	}
 	output, err := c.client.ListStackResources(ctx, input)
 	if err != nil {
+		if cloudFormationStackNotFound(err) {
+			return StackResourcePage{}, nil
+		}
 		return StackResourcePage{}, err
+	}
+	// Membership alone does not promise deletion: the template can retain a
+	// resource. Read the processed template so transforms are accounted for.
+	template, err := c.client.GetTemplate(ctx, &awscfn.GetTemplateInput{
+		StackName: input.StackName, TemplateStage: cfntypes.TemplateStageProcessed,
+	})
+	if err != nil {
+		if cloudFormationStackNotFound(err) {
+			return StackResourcePage{}, nil
+		}
+		return StackResourcePage{}, err
+	}
+	var model struct {
+		Resources map[string]struct {
+			DeletionPolicy string `yaml:"DeletionPolicy"`
+		} `yaml:"Resources"`
+	}
+	if err := yaml.Unmarshal([]byte(awssdk.ToString(template.TemplateBody)), &model); err != nil {
+		return StackResourcePage{}, fmt.Errorf("decode CloudFormation template: %w", err)
 	}
 	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
 	page := StackResourcePage{RequestID: requestID, NextToken: awssdk.ToString(output.NextToken), Resources: make([]StackResource, 0, len(output.StackResourceSummaries))}
 	for _, resource := range output.StackResourceSummaries {
+		if resource.ResourceStatus == cfntypes.ResourceStatusDeleteComplete || resource.ResourceStatus == cfntypes.ResourceStatusDeleteSkipped {
+			continue
+		}
+		definition, found := model.Resources[awssdk.ToString(resource.LogicalResourceId)]
+		policy := definition.DeletionPolicy
+		if !found {
+			policy = "Unknown"
+		}
 		page.Resources = append(page.Resources, StackResource{
 			LogicalID: awssdk.ToString(resource.LogicalResourceId), PhysicalID: awssdk.ToString(resource.PhysicalResourceId),
 			NativeType: awssdk.ToString(resource.ResourceType), Status: string(resource.ResourceStatus),
+			DeletionPolicy: policy,
 		})
 	}
 	return page, nil
@@ -324,15 +410,11 @@ func (c *cloudFormationSDK) ListStackResources(ctx context.Context, request List
 func (c *cloudFormationSDK) DescribeStack(ctx context.Context, stackID string) (StackDescription, string, error) {
 	output, err := c.client.DescribeStacks(ctx, &awscfn.DescribeStacksInput{StackName: awssdk.String(stackID)})
 	if err != nil {
-		var apiError *APIError
 		normalized := NormalizeError(err)
-		if errors.As(normalized, &apiError) {
-			return StackDescription{}, "", normalized
-		}
-		if strings.Contains(strings.ToLower(err.Error()), "does not exist") {
+		if cloudFormationStackNotFound(normalized) {
 			return StackDescription{Exists: false}, requestIDFromNormalized(normalized), nil
 		}
-		return StackDescription{}, "", err
+		return StackDescription{}, requestIDFromNormalized(normalized), normalized
 	}
 	requestID, _ := awsmiddleware.GetRequestIDMetadata(output.ResultMetadata)
 	if len(output.Stacks) == 0 {
@@ -347,6 +429,13 @@ func (c *cloudFormationSDK) DescribeStack(ctx context.Context, stackID string) (
 		Exists: true, ID: awssdk.ToString(stack.StackId), Name: awssdk.ToString(stack.StackName), Status: string(stack.StackStatus),
 		TerminationProtected: awssdk.ToBool(stack.EnableTerminationProtection), Tags: tags,
 	}, requestID, nil
+}
+
+func cloudFormationStackNotFound(err error) bool {
+	var providerError *contracts.ProviderCallError
+	return errors.As(NormalizeError(err), &providerError) && providerError.Provider.Code == "ValidationError" &&
+		strings.Contains(strings.ToLower(providerError.Provider.Message), "stack") &&
+		strings.Contains(strings.ToLower(providerError.Provider.Message), "does not exist")
 }
 
 func (c *cloudFormationSDK) DeleteStack(ctx context.Context, request DeleteStackRequest) (string, error) {

@@ -46,7 +46,8 @@ func (i Identity) Key() string {
 		i.NativeType,
 		i.NativeID,
 	}
-	if scopeKey := strings.TrimSpace(i.ScopeKey); scopeKey != "" {
+	// GCP native IDs are full resource names including project and zone/region.
+	if scopeKey := strings.TrimSpace(i.ScopeKey); scopeKey != "" && i.Provider != ProviderGCP {
 		parts = append(parts, scopeKey)
 	}
 	return strings.Join(parts, "\x00")

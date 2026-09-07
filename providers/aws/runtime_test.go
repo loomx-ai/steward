@@ -248,3 +248,10 @@ func TestRuntimeRoutesAuthoritativeCloudControlInventoryAndDeduplicatesBroadInde
 		t.Fatalf("index batch=%+v err=%v", indexBatch, err)
 	}
 }
+
+func (*runtimeNetworkClient) InternetGatewayVPCs(context.Context, string) ([]string, error) {
+	return nil, nil
+}
+func (*runtimeNetworkClient) DetachInternetGateway(context.Context, string, string) error {
+	return nil
+}

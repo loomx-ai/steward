@@ -15,6 +15,16 @@ discovery:
     operation: com.amazonaws.cloudcontrol#GetResource
     itemsPath: ResourceDescription
     identityPath: Identifier
+relationships:
+  - type: member_of
+    targetType: AWS::EC2::VPC
+    targetIdPath: vpc_id
+  - type: member_of
+    targetType: AWS::EC2::Subnet
+    targetIdPath: subnet_ids
+  - type: uses
+    targetType: AWS::EC2::SecurityGroup
+    targetIdPath: security_group_ids
 actions:
   delete:
     operation: com.amazonaws.cloudcontrol#DeleteResource

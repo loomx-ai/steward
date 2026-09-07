@@ -31,3 +31,7 @@ To focus on one resource, open its detail page and switch to Relationships.
 Before deleting a shared network or security group, check whether other instances still use it. The graph helps you find dependencies; verify them against the cleanup checks and cloud-side state.
 
 Relationships come from scanned resources and supported relationship rules. A missing edge does not prove there is no dependency. Complete the scan coverage first.
+
+## Google Cloud networks
+
+GCP VPCs are global and their subnets are regional. The same VPC can appear in multiple regional views. A regional VPC cleanup preserves the shared global network. See [Google Cloud](./gcp.md#global-vpcs-and-regional-subnets).

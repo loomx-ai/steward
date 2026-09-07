@@ -14,6 +14,7 @@ Use a dedicated RAM or IAM identity. Start with read permissions for inventory; 
 | --- | --- |
 | Alibaba Cloud | AccessKey ID + AccessKey Secret<br>STS: also supply a Security Token and expiration time. |
 | AWS | Access Key ID + Secret Access Key<br>Session credentials: also supply a Session Token and expiration time. |
+| Google Cloud (GCP) | Project ID + service account JSON key. See [Google Cloud setup](./gcp.md). |
 
 Alibaba Cloud also supports browser authorization when the login option is available. Choose the China or International site to match your account.
 

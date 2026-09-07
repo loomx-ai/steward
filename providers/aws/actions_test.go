@@ -55,7 +55,7 @@ func TestCloudFormationPreflightBlocksTerminationProtection(t *testing.T) {
 	}
 }
 
-func TestCloudFormationPreflightTreatsDeletionInProgressAsAbsent(t *testing.T) {
+func TestCloudFormationPreflightAllowsDeletionInProgress(t *testing.T) {
 	client := &actionCloudFormationClient{description: provideraws.StackDescription{
 		Exists: true, Status: "DELETE_IN_PROGRESS",
 	}}
@@ -63,7 +63,7 @@ func TestCloudFormationPreflightTreatsDeletionInProgressAsAbsent(t *testing.T) {
 	result, err := driver.Preflight(context.Background(), contracts.ActionRequest{
 		Asset: awsStackAsset(), Action: "delete", IdempotencyKey: "token",
 	})
-	if err != nil || !result.Absent || result.Allowed {
+	if err != nil || result.Absent || !result.Allowed {
 		t.Fatalf("preflight=%+v err=%v", result, err)
 	}
 	if len(client.deleteCalls) != 0 {

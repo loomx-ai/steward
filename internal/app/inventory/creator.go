@@ -214,7 +214,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 				if source.KindSpecific || !sourceSupportsScope(source, asset.ScopeRegion) {
 					continue
 				}
-				shards = append(shards, c.shard(run.ID, regionTargetKey(region.RegionID), connection.Provider, region.RegionID, scope.ID, source.Name, "", false, now))
+				shards = append(shards, c.shard(run.ID, regionTargetKey(region.RegionID), connection.Provider, region.RegionID, scope.ID, source.Name, "", source.AuthoritativeDefault, now))
 			}
 			for _, kind := range kinds {
 				source := kindSources[kind.ID]
@@ -289,7 +289,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 				if source.KindSpecific {
 					continue
 				}
-				shards = append(shards, c.shard(run.ID, globalTargetKey(), connection.Provider, "global", global.ID, source.Name, "", false, now))
+				shards = append(shards, c.shard(run.ID, globalTargetKey(), connection.Provider, "global", global.ID, source.Name, "", source.AuthoritativeDefault, now))
 			}
 			for _, kind := range kinds {
 				source := kindSources[kind.ID]
@@ -483,7 +483,7 @@ func (c *Creator) accountRoot(ctx context.Context, connection asset.CloudConnect
 	regionRoots := make([]asset.Scope, 0, 1)
 	regionGroups := make(map[string][]asset.Scope)
 	for _, scope := range scopes {
-		if scope.Kind == asset.ScopeAccount {
+		if scope.Kind == asset.ScopeAccount || (connection.Provider == asset.ProviderGCP && scope.Kind == asset.ScopeProject) {
 			if scope.SupersededByID == "" {
 				accountScopes = append(accountScopes, scope)
 			} else {
@@ -500,7 +500,7 @@ func (c *Creator) accountRoot(ctx context.Context, connection asset.CloudConnect
 	plan := accountRootPlan{regions: make(map[string]asset.Scope, len(regionGroups))}
 	if connection.Provider != asset.ProviderAliCloud {
 		if len(accountScopes) != 1 {
-			return accountRootPlan{}, fmt.Errorf("connection %q requires exactly one account root scope", connection.ID)
+			return accountRootPlan{}, fmt.Errorf("connection %q requires exactly one account or project root scope", connection.ID)
 		}
 		plan.root = accountScopes[0]
 	} else {

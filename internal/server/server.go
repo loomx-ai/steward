@@ -28,6 +28,7 @@ import (
 	"github.com/loomx-ai/steward/internal/webui"
 	"github.com/loomx-ai/steward/providers/alicloud"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
+	"github.com/loomx-ai/steward/providers/gcp"
 )
 
 type Config struct {
@@ -273,6 +274,16 @@ func providerRegistry(credentials contracts.CredentialSource) (*providerruntime.
 		return nil, err
 	}
 	if err := registry.RegisterBundle(awsRuntime.Bundle()); err != nil {
+		return nil, err
+	}
+	gcpRuntime, err := gcp.NewRuntime(credentials)
+	if err != nil {
+		return nil, err
+	}
+	if err := registry.Register(gcpRuntime); err != nil {
+		return nil, err
+	}
+	if err := registry.RegisterBundle(gcpRuntime.Bundle()); err != nil {
 		return nil, err
 	}
 	return registry, nil

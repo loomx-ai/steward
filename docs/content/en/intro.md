@@ -4,7 +4,7 @@ description: "Understand how cloud connections, scans, resource relationships, a
 navTitle: "What is Steward?"
 ---
 
-Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports Alibaba Cloud and AWS, with self-hosted deployment and invitation-only Steward Cloud.
+Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports Alibaba Cloud, AWS, and Google Cloud (GCP), with self-hosted deployment and invitation-only Steward Cloud.
 
 Use it for three kinds of work:
 
@@ -30,7 +30,7 @@ Names are convenient labels, but they can change or be reused. Identify a resour
 
 | Concept | Question it answers | Example |
 | --- | --- | --- |
-| Cloud connection | Which identity and account are you using? | An Alibaba Cloud or AWS connection |
+| Cloud connection | Which identity and account are you using? | An Alibaba Cloud, AWS, or Google Cloud connection |
 | Region | Where is the resource? | `ap-southeast-1` |
 | Resource type | What kind of resource is it? | An ECS instance, VPC, or security group |
 | Native resource ID | Which specific resource is this? | `i-demo-api01` |

@@ -2,7 +2,7 @@ import { Cloud } from "lucide-react";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 
-type CloudProvider = "alicloud" | "aws";
+type CloudProvider = "alicloud" | "aws" | "gcp";
 
 interface CloudProviderIconProps extends ComponentProps<"svg"> {
   provider?: string;
@@ -52,6 +52,10 @@ export function CloudProviderIcon({
     );
   }
 
+  if (cloudProvider === "gcp") {
+    return <Cloud {...props} {...sharedProps} data-cloud-provider="gcp" className={cn("text-provider-gcp", sharedProps.className)} />;
+  }
+
   return (
     <Cloud
       {...props}
@@ -81,9 +85,12 @@ function resolveCloudProvider(
     return "aws";
   }
 
+  if (normalizedProvider === "gcp" || normalizedProvider === "google cloud") return "gcp";
+
   if (!consoleURL) return undefined;
   try {
     const hostname = new URL(consoleURL).hostname.toLowerCase();
+    if (hostname === "console.cloud.google.com") return "gcp";
     if (
       hostname === "aliyun.com" ||
       hostname.endsWith(".aliyun.com") ||

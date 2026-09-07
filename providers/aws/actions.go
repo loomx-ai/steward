@@ -26,10 +26,11 @@ type ListStackResourcesRequest struct {
 }
 
 type StackResource struct {
-	LogicalID  string `json:"logical_id"`
-	PhysicalID string `json:"physical_id"`
-	NativeType string `json:"native_type"`
-	Status     string `json:"status"`
+	LogicalID      string `json:"logical_id"`
+	PhysicalID     string `json:"physical_id"`
+	NativeType     string `json:"native_type"`
+	Status         string `json:"status"`
+	DeletionPolicy string `json:"deletion_policy,omitempty"`
 }
 
 type StackResourcePage struct {
@@ -68,6 +69,8 @@ func NewCloudFormationAction(client CloudFormationClient) *CloudFormationAction 
 	return &CloudFormationAction{client: client}
 }
 
+func (*CloudFormationAction) DeletionCheckTimeout() time.Duration { return time.Hour }
+
 func (a *CloudFormationAction) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
 	if err := a.validate(request); err != nil {
 		return contracts.PreflightResult{}, err
@@ -79,10 +82,10 @@ func (a *CloudFormationAction) Preflight(ctx context.Context, request contracts.
 	if !description.Exists {
 		return contracts.PreflightResult{Absent: true, Reason: "stack no longer exists", Evidence: map[string]any{"provider_request_id": requestID}}, nil
 	}
-	if cloudFormationDeletionState(description.Status) {
+	if strings.EqualFold(description.Status, "DELETE_COMPLETE") {
 		return contracts.PreflightResult{
 			Absent: true,
-			Reason: "stack deletion is already in progress or complete",
+			Reason: "stack deletion is complete",
 			Evidence: map[string]any{
 				"provider_request_id": requestID, "stack_status": description.Status,
 			},
@@ -111,6 +114,13 @@ func cloudFormationDeletionState(state string) bool {
 func (a *CloudFormationAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	if err := a.validate(request); err != nil {
 		return contracts.ActionResult{}, err
+	}
+	description, requestID, err := a.client.DescribeStack(ctx, request.Asset.Identity.NativeID)
+	if err != nil {
+		return contracts.ActionResult{}, NormalizeError(err)
+	}
+	if !description.Exists || cloudFormationDeletionState(description.Status) {
+		return contracts.ActionResult{ProviderRequestID: requestID, ProviderOperationID: request.IdempotencyKey, RetryAfter: cloudFormationWaitInterval}, nil
 	}
 	providerRequestID, err := a.client.DeleteStack(ctx, DeleteStackRequest{
 		StackID: request.Asset.Identity.NativeID, ClientRequestToken: request.IdempotencyKey,
@@ -152,7 +162,7 @@ func (a *CloudFormationAction) Readback(ctx context.Context, request contracts.A
 	if !description.Exists {
 		return contracts.ReadbackResult{Exists: false, State: "absent", Data: map[string]any{"provider_request_id": requestID}}, nil
 	}
-	return contracts.ReadbackResult{Exists: true, State: description.Status, Data: map[string]any{
+	return contracts.ReadbackResult{Exists: !strings.EqualFold(description.Status, "DELETE_COMPLETE"), State: description.Status, Data: map[string]any{
 		"provider_request_id": requestID, "stack_id": description.ID, "stack_name": description.Name,
 		"termination_protected": description.TerminationProtected,
 	}}, nil

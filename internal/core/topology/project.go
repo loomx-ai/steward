@@ -147,6 +147,23 @@ func newProjector(input Input) *projector {
 			}
 		}
 	}
+	// A GCP VPC is global. Project the same boundary into each regional view;
+	// regional cleanup still selects only assets in that region and therefore
+	// never silently deletes the shared global network.
+	for _, value := range p.open {
+		if value.Identity.Provider != asset.ProviderGCP || input.Kinds[value.ResourceKindID].Class != "network.vpc" || authoritativeScopeKind(value, p.scopeByID) != asset.ScopeGlobal {
+			continue
+		}
+		for _, scope := range p.scopeByID {
+			if scope.Kind != asset.ScopeRegion {
+				continue
+			}
+			if p.knownVPCs[scope.NativeID] == nil {
+				p.knownVPCs[scope.NativeID] = map[string]asset.Asset{}
+			}
+			p.knownVPCs[scope.NativeID][value.Identity.NativeID] = value
+		}
+	}
 	p.resolvePlacements()
 	sort.SliceStable(p.warnings, func(i, j int) bool {
 		if p.warnings[i].Code != p.warnings[j].Code {
@@ -746,7 +763,7 @@ func (p *projector) scopeCleanup(scope asset.Scope) CleanupSummary {
 		blockers = 1
 	}
 	confirmation := "confirm"
-	if scope.Kind == asset.ScopeAccount || scope.Kind == asset.ScopeRegion {
+	if scope.Kind == asset.ScopeAccount || scope.Kind == asset.ScopeProject || scope.Kind == asset.ScopeRegion {
 		confirmation = "type_name"
 	}
 	return CleanupSummary{
@@ -854,6 +871,9 @@ func (p *projector) isBoundary(value asset.Asset) bool {
 }
 
 func (p *projector) participatesInNetworkPlacement(value asset.Asset) bool {
+	if value.Identity.Provider == asset.ProviderGCP && authoritativeScopeKind(value, p.scopeByID) == asset.ScopeGlobal {
+		return false
+	}
 	return p.input.Kinds[value.ResourceKindID].Class != "orchestration.stack_group"
 }
 

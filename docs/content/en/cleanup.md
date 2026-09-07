@@ -10,7 +10,7 @@ navTitle: "Resource cleanup"
 
 Add targets from Resources or Resource panorama, then create a cleanup task. You can also start a task from Cleanup. Begin with a small set of resources you have confirmed are no longer needed.
 
-Account, region, and group targets can resolve to many resources. Check the resolved list after creation, not just the target name. Creating the task does not execute deletion.
+Account, project, region, and group targets can resolve to many resources. Check the resolved list after creation, not just the target name. Creating the task does not execute deletion.
 
 <span id="review"></span>
 
@@ -38,7 +38,7 @@ Open the task's blocker details to check the resource IDs and relationship evide
 
 ## 3. Confirm execution
 
-After review, start execution and complete the confirmation dialog. Account-wide or region-wide scopes also require typing the exact target name. Submission starts deletion through the provider APIs.
+After review, start execution and complete the confirmation dialog. Account-wide, project-wide, or region-wide scopes also require typing the exact target name. Submission starts deletion through the provider APIs.
 
 Concurrency defaults to 20 and accepts 1–100. Reduce it if you encounter throttling. Execution follows dependency order and reads back results.
 
@@ -49,3 +49,5 @@ Concurrency defaults to 20 and accepts 1–100. Reduce it if you encounter throt
 Check each status in Resource results and filter Cleanup logs by resource ID to investigate failures. Pausing does not revoke requests already sent or restore deleted resources.
 
 After fixing the cause, use the task’s available continue or resume action; completed resources are not executed again. Scan afterward and check retained resources and billing. Audits record the actor, action, and result.
+
+For Google Cloud, review the [supported actions and deletion protections](./gcp.md#deletion-protections), including VM auto-delete disks, nonempty buckets, and read-only GKE clusters.

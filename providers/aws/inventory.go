@@ -1,6 +1,7 @@
 package aws
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -91,10 +92,10 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 	if request.Cursor != "" {
 		requestPayload["NextToken"] = request.Cursor
 	}
-	execution.LogCloudAPIRequest(ctx, "resource-explorer-2", "Search", rawCloudPayload(requestPayload))
+	execution.LogCloudAPIRequest(ctx, "resource-explorer-2", "ListResources", rawCloudPayload(requestPayload))
 	page, err := i.client.Search(ctx, SearchRequest{Query: query, NextToken: request.Cursor, MaxResults: limit})
 	if err != nil {
-		execution.LogCloudAPIFailure(ctx, "resource-explorer-2", "Search", err)
+		execution.LogCloudAPIFailure(ctx, "resource-explorer-2", "ListResources", err)
 		normalized := NormalizeError(err)
 		return contracts.InventoryBatch{}, normalized
 	}
@@ -114,7 +115,7 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 			"RequestId": page.RequestID, "NextToken": page.NextToken, "Resources": resources,
 		}
 	}
-	execution.LogCloudAPIResponse(ctx, "resource-explorer-2", "Search", rawCloudPayload(responsePayload))
+	execution.LogCloudAPIResponse(ctx, "resource-explorer-2", "ListResources", rawCloudPayload(responsePayload))
 	batch := contracts.InventoryBatch{
 		Items: make([]contracts.InventoryItem, 0, len(page.Resources)), NextCursor: page.NextToken,
 		RequestID: page.RequestID, Complete: page.NextToken == "",
@@ -133,9 +134,14 @@ func (i *Inventory) List(ctx context.Context, request contracts.InventoryRequest
 			return contracts.InventoryBatch{}, err
 		}
 		state, _ := record.Properties["state"].(string)
+		tags := cloudControlTags(map[string]any{"Tags": record.Properties["tags"]})
+		name := record.Name
+		if name == "" {
+			name = tags["Name"]
+		}
 		batch.Items = append(batch.Items, contracts.InventoryItem{
 			NativeType: nativeType, NativeID: record.ARN, ResourceKind: i.resolveKind(nativeType, scope.Kind), Scope: scope,
-			Name: record.Name, State: state, Location: record.Region, Tags: stringMap(record.Properties["tags"]),
+			Name: name, State: state, Location: record.Region, Tags: tags,
 			NativeAliases: []string{physicalResourceID(record.ARN)}, NetworkReferences: scalarStrings(record.Properties),
 			Normalized: map[string]any{
 				"arn": record.ARN, "accountId": record.AccountID, "service": record.Service,
@@ -233,7 +239,9 @@ func snapshot(value any) (map[string]any, error) {
 		return nil, fmt.Errorf("encode AWS inventory record: %w", err)
 	}
 	var result map[string]any
-	if err := json.Unmarshal(payload, &result); err != nil {
+	decoder := json.NewDecoder(bytes.NewReader(payload))
+	decoder.UseNumber()
+	if err := decoder.Decode(&result); err != nil {
 		return nil, fmt.Errorf("decode AWS inventory record: %w", err)
 	}
 	return result, nil

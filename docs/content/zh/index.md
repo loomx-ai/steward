@@ -14,7 +14,7 @@ Steward 帮助你盘点已有云资源、理解它们的关系，并在审查影
 - **动手完成一件事**：[第一次资源盘点](./tutorials/first-inventory.md)，从一个已知资源开始，逐步核对扫描结果。
 - **查找具体操作**：按侧边栏进入连接、扫描、查询、关系或清理指南。
 
-Steward 支持阿里云和 AWS，可在本机或服务器上运行。Steward Cloud 由 LoomX 托管，目前通过邀请开放。
+Steward 支持阿里云、AWS 和 Google Cloud（GCP），可在本机或服务器上运行。Steward Cloud 由 LoomX 托管，目前通过邀请开放。
 
 <div class="docs-start-links"><a href="./quick-start.md"><strong>自行部署</strong><span aria-hidden="true">↗</span><span>安装并启动本地服务</span></a><a href="https://steward.console.loomx.ai"><strong>Steward Cloud</strong> <span aria-hidden="true">↗</span><span>已有邀请？进入工作区</span></a></div>
 

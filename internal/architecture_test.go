@@ -126,7 +126,6 @@ func assertForbiddenDirectoriesAbsent(t *testing.T, root string) {
 		"internal/alicloud",
 		"internal/joblog",
 		"providers/azure",
-		"providers/gcp",
 	} {
 		if info, err := os.Stat(filepath.Join(root, relative)); err == nil && info.IsDir() {
 			t.Errorf("forbidden pre-terminal package remains: %s", relative)

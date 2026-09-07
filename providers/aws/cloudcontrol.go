@@ -95,37 +95,103 @@ func (i *CloudControlInventory) List(ctx context.Context, request contracts.Inve
 	for _, resource := range page.Resources {
 		identifier := strings.TrimSpace(resource.Identifier)
 		if identifier == "" {
-			continue
+			return contracts.InventoryBatch{}, fmt.Errorf("AWS Cloud Control ListResources returned an empty identifier")
 		}
-		properties, err := cloudControlModel(resource.Properties)
+		item, err := cloudControlItem(resource, *request.ResourceKind, request.Scope)
 		if err != nil {
-			return contracts.InventoryBatch{}, fmt.Errorf("decode AWS Cloud Control resource %q: %w", identifier, err)
+			return contracts.InventoryBatch{}, err
 		}
-		responseResources = append(responseResources, map[string]any{"Identifier": identifier, "Properties": properties})
-		normalized := cloneAnyMap(properties)
-		normalized["cloudControlIdentifier"] = identifier
-		name := cloudControlName(properties, identifier)
-		state := cloudControlState(properties)
-		if name != "" {
-			normalized["name"] = name
-		}
-		if state != "" {
-			normalized["state"] = state
-		}
-		batch.Items = append(batch.Items, contracts.InventoryItem{
-			NativeType: typeName, NativeID: identifier, ResourceKind: *request.ResourceKind,
-			Scope: contracts.InventoryScope{
-				Kind: request.Scope.Kind, NativeID: request.Scope.NativeID, Name: request.Scope.Name, Location: request.Scope.Location,
-			},
-			Name: name, State: state, Location: request.Scope.Location, Tags: cloudControlTags(properties),
-			Normalized: normalized, Raw: map[string]any{"TypeName": typeName, "Identifier": identifier, "Properties": properties},
-			NativeAliases: cloudControlAliases(properties, identifier), NetworkReferences: scalarStrings(properties),
-		})
+		responseResources = append(responseResources, map[string]any{"Identifier": identifier, "Properties": item.Raw["Properties"]})
+		batch.Items = append(batch.Items, item)
 	}
 	execution.LogCloudAPIResponse(ctx, "cloudcontrol", "ListResources", rawCloudPayload(map[string]any{
 		"RequestId": page.RequestID, "NextToken": page.NextToken, "TypeName": typeName, "ResourceDescriptions": responseResources,
 	}))
 	return batch, nil
+}
+
+func cloudControlItem(resource CloudControlResource, kind asset.ResourceKind, scope asset.Scope) (contracts.InventoryItem, error) {
+	identifier := strings.TrimSpace(resource.Identifier)
+	properties, err := cloudControlModel(resource.Properties)
+	if err != nil {
+		return contracts.InventoryItem{}, fmt.Errorf("decode AWS Cloud Control resource %q: %w", identifier, err)
+	}
+	location := scope.Location
+	if scope.Kind == asset.ScopeGlobal {
+		location = ""
+	} else if location == "" {
+		location = scope.NativeID
+	}
+	name, state := cloudControlName(properties, identifier), cloudControlState(properties)
+	normalized := cloneAnyMap(properties)
+	normalized["cloudControlIdentifier"] = identifier
+	if name != "" {
+		normalized["name"] = name
+	}
+	if state != "" {
+		normalized["state"] = state
+	}
+	normalizeCloudControlNetwork(normalized)
+	return contracts.InventoryItem{
+		NativeType: kind.NativeType, NativeID: identifier, ResourceKind: kind,
+		Scope: contracts.InventoryScope{Kind: scope.Kind, NativeID: scope.NativeID, Name: scope.Name, Location: location},
+		Name:  name, State: state, Location: location, Tags: cloudControlTags(properties),
+		Normalized: normalized, Raw: map[string]any{"TypeName": kind.NativeType, "Identifier": identifier, "Properties": properties},
+		NativeAliases: cloudControlAliases(properties, identifier), NetworkReferences: cloudControlNetworkReferences(normalized),
+	}, nil
+}
+
+// ListResources may return only primary identifiers. Fetch the full model before
+// projecting tags, network relationships, or detailed resource capabilities.
+// The inventory worker preserves the base batch if enrichment fails.
+func (r *Runtime) EnrichInventoryBatch(ctx context.Context, request contracts.InventoryRequest, items []contracts.InventoryItem) ([]contracts.InventoryItem, error) {
+	if request.Source != cloudControlSource || len(items) == 0 {
+		return items, nil
+	}
+	client, err := r.CloudControl(ctx, request.ConnectionID, cloudControlRegion(request.Scope))
+	if err != nil {
+		return nil, err
+	}
+	result := make([]contracts.InventoryItem, 0, len(items))
+	subnetVPCs := map[string]string{}
+	for _, item := range items {
+		execution.LogCloudAPIRequest(ctx, "cloudcontrol", "GetResource", rawCloudPayload(map[string]any{"TypeName": item.NativeType, "Identifier": item.NativeID}))
+		resource, requestID, err := client.GetResource(ctx, item.NativeType, item.NativeID)
+		if err != nil {
+			execution.LogCloudAPIFailure(ctx, "cloudcontrol", "GetResource", err)
+			if cloudControlNotFound(err) {
+				continue // Resource was deleted between list and detail requests.
+			}
+			return nil, NormalizeError(err)
+		}
+		if resource.Identifier != item.NativeID {
+			return nil, fmt.Errorf("AWS Cloud Control GetResource identifier %q does not match %q", resource.Identifier, item.NativeID)
+		}
+		detail, err := cloudControlItem(resource, item.ResourceKind, request.Scope)
+		if err != nil {
+			return nil, err
+		}
+		if err := enrichCloudControlNetwork(ctx, client, detail.Normalized, subnetVPCs); err != nil {
+			return nil, err
+		}
+		if item.NativeType == "AWS::EC2::InternetGateway" {
+			network, err := r.networkClient(ctx, request.ConnectionID, cloudControlRegion(request.Scope))
+			if err != nil {
+				return nil, err
+			}
+			vpcs, err := network.InternetGatewayVPCs(ctx, item.NativeID)
+			if err != nil {
+				return nil, NormalizeError(err)
+			}
+			if len(vpcs) == 1 {
+				detail.Normalized["vpc_id"] = vpcs[0]
+			}
+		}
+		detail.NetworkReferences = cloudControlNetworkReferences(detail.Normalized)
+		execution.LogCloudAPIResponse(ctx, "cloudcontrol", "GetResource", rawCloudPayload(map[string]any{"RequestId": requestID, "ResourceDescription": detail.Raw}))
+		result = append(result, detail)
+	}
+	return result, nil
 }
 
 func cloudControlAliases(properties map[string]any, identifier string) []string {
@@ -168,11 +234,14 @@ func cloneAnyMap(value map[string]any) map[string]any {
 }
 
 func cloudControlName(properties map[string]any, identifier string) string {
+	if name := strings.TrimSpace(cloudControlTags(properties)["Name"]); name != "" {
+		return name
+	}
 	for _, key := range []string{
 		"Name", "AlarmName", "AutoScalingGroupName", "BucketName", "ClusterName", "DBClusterIdentifier",
 		"DBInstanceIdentifier", "DashboardName", "DomainName", "EventBusName", "FileSystemId", "FunctionName",
 		"GroupName", "LogGroupName", "PipelineName", "QueueName", "RepositoryName", "RoleName", "StreamName",
-		"TableName", "TopicName", "UserName", "VpcId",
+		"TableName", "TopicName", "UserName",
 	} {
 		if value, ok := properties[key].(string); ok && strings.TrimSpace(value) != "" {
 			return strings.TrimSpace(value)
@@ -240,6 +309,8 @@ type CloudControlAction struct {
 func NewCloudControlAction(client CloudControlClient) *CloudControlAction {
 	return &CloudControlAction{client: client}
 }
+
+func (*CloudControlAction) DeletionCheckTimeout() time.Duration { return time.Hour }
 
 func (a *CloudControlAction) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
 	if err := a.validate(request); err != nil {

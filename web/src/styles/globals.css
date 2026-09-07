@@ -44,6 +44,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-provider-alicloud: var(--provider-alicloud);
   --color-provider-aws: var(--provider-aws);
+  --color-provider-gcp: var(--provider-gcp);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

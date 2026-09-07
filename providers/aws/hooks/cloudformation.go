@@ -30,7 +30,13 @@ func (h *CloudFormation) Contribute(ctx context.Context, _ asset.ScopeID, assets
 	stacks := make([]asset.Asset, 0)
 	for _, value := range assets {
 		byIdentity[value.Identity.Key()] = value
-		if physicalID, ok := value.Normalized["physicalId"].(string); ok && physicalID != "" {
+		// Cloud Control uses the primary identifier directly, including for global
+		// resources whose scope differs from their regional stack.
+		if nativeID := strings.TrimSpace(value.Identity.NativeID); nativeID != "" {
+			key := value.Identity.NativeType + "\x00" + nativeID
+			byPhysicalID[key] = append(byPhysicalID[key], value)
+		}
+		if physicalID, ok := value.Normalized["physicalId"].(string); ok && physicalID != "" && physicalID != value.Identity.NativeID {
 			key := value.Identity.NativeType + "\x00" + physicalID
 			byPhysicalID[key] = append(byPhysicalID[key], value)
 		}
@@ -56,9 +62,18 @@ func (h *CloudFormation) Contribute(ctx context.Context, _ asset.ScopeID, assets
 				if resource.NativeType == "" || resource.PhysicalID == "" {
 					continue
 				}
+				policy := graph.CleanupDelegate
+				switch resource.DeletionPolicy {
+				case "Retain", "RetainExceptOnCreate":
+					policy = graph.CleanupRetain
+				case "", "Delete", "Snapshot":
+				default:
+					policy = graph.CleanupUnknown
+				}
 				evidence := map[string]any{
 					"request_id": page.RequestID, "stack_id": stack.Identity.NativeID, "logical_id": resource.LogicalID,
 					"physical_id": resource.PhysicalID, "resource_type": resource.NativeType, "resource_status": resource.Status,
+					"deletion_policy": resource.DeletionPolicy,
 				}
 				identity := asset.Identity{
 					Provider: stack.Identity.Provider, Partition: stack.Identity.Partition, ConnectionID: stack.Identity.ConnectionID,
@@ -91,7 +106,7 @@ func (h *CloudFormation) Contribute(ctx context.Context, _ asset.ScopeID, assets
 				})
 				result.Bindings = append(result.Bindings, graph.LifecycleBinding{
 					ControllerAssetID: stack.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative,
-					Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate,
+					Ownership: graph.OwnershipExclusive, CleanupPolicy: policy,
 					DirectCleanupAllowed: true, EvidenceSource: "cloudformation:ListStackResources", Evidence: evidence, Confidence: 1,
 				})
 			}
@@ -134,7 +149,7 @@ func resolvePhysicalAsset(controller asset.Asset, candidates []asset.Asset) (ass
 		}
 		candidateAccountID, _ := candidate.Normalized["accountId"].(string)
 		candidateAccountID = strings.TrimSpace(candidateAccountID)
-		if accountID != "" && candidateAccountID != accountID {
+		if accountID != "" && candidateAccountID != "" && candidateAccountID != accountID {
 			continue
 		}
 		location := strings.TrimSpace(candidate.Location)

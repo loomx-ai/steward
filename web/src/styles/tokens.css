@@ -38,6 +38,7 @@
   --graph-lifecycle: oklch(0.55 0.18 27);
   --provider-alicloud: #ff6a00;
   --provider-aws: #232f3e;
+  --provider-gcp: #4285f4;
 }
 
 .dark {
@@ -79,4 +80,5 @@
   --graph-lifecycle: oklch(0.68 0.17 27);
   --provider-alicloud: #ff6a00;
   --provider-aws: #fff;
+  --provider-gcp: #8ab4f8;
 }
