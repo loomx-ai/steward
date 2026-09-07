@@ -1,0 +1,21 @@
+{
+  "sourceRepository": "loomx-ai/steward",
+  "sourceCommit": "4a5e9181d8b418dc02049260208d0230de76e871",
+  "viewport": {
+    "width": 1440,
+    "height": 960
+  },
+  "fixture": "screenshots/server.mjs",
+  "images": {
+    "cleanup-en.png": "72b22213b03aa0c6a3b671ea373a2768fd64168b8818f0c723d68f5155b47272",
+    "cleanup-zh.png": "cd3c772cab69093a402cf4c653a5ac72ed6d8ad7053348b6422220bc9e3de68f",
+    "inventory-en.png": "36b5719a8993159f256cdd77287ed16d0cd862b15175e0b2a856a62537e6afd8",
+    "inventory-zh.png": "7126defa3c1654772a4eaf636ea3b4c1c1d1224cea0ed47cd4590d40d7505e9d",
+    "relationships-en.png": "f2c00662409c7cd870985a39da528f7f5ad6e029deeb4c1ceaebcc08ce5edfdf",
+    "relationships-zh.png": "5737c2792e939ff13c08288707e81b315f768fc783195a1d052d0e4a830fa57e",
+    "scan-en.png": "f0fdd64e6fd15197bc11e624766f773468548ef29d82f3fd0ba75a3f8dde66f1",
+    "scan-zh.png": "2a526cccf9dcdb136c269fef01690a44ae96e610d0061a811575f15c65728db6",
+    "topology-en.png": "42dd99eec9503f55fdf25a6af2923ca0d4d81c28f490c5fd5701ab821dce3877",
+    "topology-zh.png": "1d947893d2b877107d8038d65012a2d57d98d384e3c8c8571848f1bd3cb17ed0"
+  }
+}
