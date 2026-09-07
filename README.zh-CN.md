@@ -19,6 +19,8 @@
 
 Steward 是一个开源云治理服务，提供资产盘点、拓扑分析、治理发现和受控资源清理。目前支持 Alibaba Cloud 和 AWS。
 
+[使用文档](https://loomx.ai/steward/docs) · [快速开始](https://loomx.ai/steward/docs/quick-start) · [清理指南](https://loomx.ai/steward/docs/cleanup)
+
 ## 功能
 
 - 使用云厂商原生 API 建立可搜索的资产清单。

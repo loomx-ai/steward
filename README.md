@@ -21,6 +21,8 @@ Steward is an open-source cloud governance service for inventory,
 topology, findings, and controlled resource cleanup. It currently supports
 Alibaba Cloud and AWS.
 
+[Documentation](https://loomx.ai/steward/docs) · [Quick start](https://loomx.ai/steward/docs/quick-start) · [Cleanup guide](https://loomx.ai/steward/docs/cleanup)
+
 ## Features
 
 - Build a searchable inventory from provider-native APIs.
