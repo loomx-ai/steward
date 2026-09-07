@@ -6,6 +6,6 @@
   "defaultLocale": "en",
   "license": "Apache 2.0",
   "links": [{ "label": "Steward Cloud", "url": "https://steward.console.loomx.ai" }],
-  "navigation": ["index", "quick-start", "connections", "scans", "resources", "topology", "cleanup", "deployment"],
+  "navigation": ["index", "intro", "quick-start", "tutorials/first-inventory", "connections", "scans", "resources", "topology", "cleanup", "deployment"],
   "legacyAssets": "/docs/steward/"
 }

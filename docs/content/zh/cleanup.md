@@ -20,9 +20,17 @@ navTitle: "清理资源"
 -   查看仍在使用目标的依赖资源，以及需要随所属控制器删除的资源。
 -   检查跳过项、保留项和可能继续计费的残留资源。
 
-<figure class="docs-figure"><a href="../../assets/cleanup-zh.png" target="_blank" rel="noreferrer" aria-label="交换机 application 仍被清单之外的 api-02 使用（打开原图）"><img src="../../assets/cleanup-zh.png" alt="交换机 application 仍被清单之外的 api-02 使用" width="1440" height="960"></a><figcaption>交换机 application 仍被清单之外的 api-02 使用 <span>· 示例数据，点击放大</span></figcaption></figure>
+### 例子：范围外的实例仍在使用交换机
 
-本例中的 api-02 不在清理范围内，交换机因此被阻塞。如果 api-02 必须保留，就移除交换机目标；如果它也确定需要删除，可加入依赖资源并重新审查更新后的任务。
+示例任务选择了 `api-01`、`public-gateway` 和 `application` 交换机。另一台实例 `api-02` 未被选中，但仍使用该交换机。
+
+<figure class="docs-figure"><a href="../../assets/cleanup-dependency-zh.svg" target="_blank" rel="noreferrer" aria-label="范围外的 api-02 如何阻止交换机删除（打开原图）"><img src="../../assets/cleanup-dependency-zh.svg" alt="api-01、public-gateway 和 application 交换机在清理范围内；范围外的 api-02 仍使用交换机，导致交换机删除被阻塞" width="640" height="700"></a><figcaption>示意图只展开这项阻塞涉及的资源。箭头表示使用关系，清理范围之外的依赖也会影响计划。</figcaption></figure>
+
+如果 `api-02` 必须保留，就移除交换机目标；如果它也确定需要删除，可加入依赖资源并重新审查更新后的任务。扩大选择是一项新的范围决定，不能仅为了让阻塞提示消失而加入资源。
+
+在任务中打开阻塞详情，核对具体资源 ID 和关联依据。下面的真实界面展示了同一组示例数据：
+
+<figure class="docs-figure"><a href="../../assets/cleanup-zh.png" target="_blank" rel="noreferrer" aria-label="交换机 application 仍被清单之外的 api-02 使用（打开原图）"><img src="../../assets/cleanup-zh.png" alt="交换机 application 仍被清单之外的 api-02 使用" width="1440" height="960"></a><figcaption>交换机 application 仍被清单之外的 api-02 使用 <span>· 示例数据，点击放大</span></figcaption></figure>
 
 <aside class="docs-note">扫描覆盖不完整属于警告，未必阻止执行。先补扫相关范围；不要把「没有阻塞项」当作依赖已完整发现。</aside>
 

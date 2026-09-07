@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="650" viewBox="0 0 640 650" role="img" aria-labelledby="title description" lang="zh-CN">
+<title id="title">扫描如何生成资源清单</title><desc id="description">扫描读取选定范围的云 API，保存资源观察记录，再用于资源清单和关系图。云端变更后需要重新扫描。</desc>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#202637}.label{font-size:26px;font-weight:600}.body{font-size:22px;fill:#556078}.small{font-size:21px;fill:#556078}.accent{fill:#4c60d5}.warn{fill:#99430d}</style>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#6f7aa0" stroke-width="1.6"/></marker></defs>
+<rect width="640" height="650" rx="14" fill="#fff"/>
+<rect x="48" y="36" width="544" height="112" rx="12" fill="#f5f6fa" stroke="#d5dbea"/>
+<text x="80" y="80" class="label">云账号中的已有资源</text>
+<text x="80" y="117" class="body">阿里云 / AWS</text>
+<path d="M320 150V194" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="344" y="178" class="small">读取 API</text>
+<rect x="48" y="206" width="544" height="102" rx="12" fill="#f0f2ff" stroke="#8d9ae1"/>
+<text x="80" y="247" class="label accent">扫描选定范围</text>
+<text x="80" y="282" class="body">连接 · 地域 · 资源类型</text>
+<path d="M320 310V350" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="48" y="362" width="544" height="102" rx="12" fill="#f5f6fa" stroke="#d5dbea"/>
+<text x="80" y="403" class="label">保存资源观察记录</text>
+<text x="80" y="438" class="body">属性 · 资源 ID · 最后发现时间</text>
+<path d="M320 464V490M180 520V490H460V520" fill="none" stroke="#6f7aa0" stroke-width="2"/>
+<path d="M180 506V523M460 506V523" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="48" y="536" width="264" height="64" rx="10" fill="#f0f2ff" stroke="#8d9ae1"/>
+<rect x="328" y="536" width="264" height="64" rx="10" fill="#f0f2ff" stroke="#8d9ae1"/>
+<text x="180" y="576" text-anchor="middle" class="label accent">资源清单</text>
+<text x="460" y="576" text-anchor="middle" class="label accent">资源关系</text>
+<text x="320" y="634" text-anchor="middle" class="small">云端变更后，重新扫描相关范围。</text>
+</svg>

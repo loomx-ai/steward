@@ -10,6 +10,8 @@ The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). T
 - Store images in `assets/` and link to them relative to the Markdown file. Keep screenshots at their original dimensions and include descriptive alt text and a sample-data caption.
 - A standalone `<span id="stable-id"></span>` before a heading preserves an existing anchor. The renderer applies that ID to the heading and the page's table of contents.
 - Keep implementation notes such as `localstack.md` outside `content/`; they are not published as user documentation.
+- Introductions explain the problem, working model, and useful scenarios. Tutorials state the outcome and prerequisites, use one coherent example, and include a result check after each step. Operation guides cover specific tasks and recovery.
+- Use original SVG diagrams to explain data flow or dependencies, and actual screenshots to locate those concepts in the interface. Keep labels and captions in the page language. A diagram must define arrow direction and any selection boundary; screenshots keep their original UI and sample-data provenance.
 
 Run `node docs/check.mjs` before submitting a change. CI checks navigation, translation completeness, relative links, and screenshot integrity.
 
@@ -38,3 +40,7 @@ After installing `web/` dependencies, run `node docs/screenshots/server.mjs`. To
 | `cleanup-{locale}.png` | `/cleanup/demo-cleanup`; open **View blocked resources**, then **Add dependent resources**. Capture the dialog listing `api-02`, without submitting. |
 
 Wait for the data to render. Keep the actual UI, review each language separately, and update `screenshots/source.json` when replacing an image. Never include real credentials, account identifiers, or customer data.
+
+## Concept diagrams
+
+`assets/scan-data-flow-{en,zh}.svg` explains how selected-scope scans supply inventory and relationship views. `assets/cleanup-dependency-{en,zh}.svg` explains the `api-02` vSwitch blocker using the same resource identities as the screenshot fixture. These are original, editable SVG diagrams, not application screenshots. Keep their accessible titles, descriptions, visible labels, and nearby prose consistent when the workflow changes.

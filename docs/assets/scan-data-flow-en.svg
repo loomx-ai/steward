@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="650" viewBox="0 0 640 650" role="img" aria-labelledby="title description" lang="en">
+<title id="title">How scans become inventory</title><desc id="description">A scan reads a selected scope of cloud APIs, records resource observations, and makes those records available in inventory and relationship views. Scan again after cloud-side changes.</desc>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#202637}.label{font-size:26px;font-weight:600}.body{font-size:22px;fill:#556078}.small{font-size:21px;fill:#556078}.accent{fill:#4c60d5}.warn{fill:#99430d}</style>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#6f7aa0" stroke-width="1.6"/></marker></defs>
+<rect width="640" height="650" rx="14" fill="#fff"/>
+<rect x="48" y="36" width="544" height="112" rx="12" fill="#f5f6fa" stroke="#d5dbea"/>
+<text x="80" y="80" class="label">Existing cloud resources</text>
+<text x="80" y="117" class="body">Alibaba Cloud / AWS</text>
+<path d="M320 150V194" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="344" y="178" class="small">Read APIs</text>
+<rect x="48" y="206" width="544" height="102" rx="12" fill="#f0f2ff" stroke="#8d9ae1"/>
+<text x="80" y="247" class="label accent">Scan the selected scope</text>
+<text x="80" y="282" class="body">Connection · region · resource type</text>
+<path d="M320 310V350" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="48" y="362" width="544" height="102" rx="12" fill="#f5f6fa" stroke="#d5dbea"/>
+<text x="80" y="403" class="label">Record resource observations</text>
+<text x="80" y="438" class="body">Properties · IDs · last-seen time</text>
+<path d="M320 464V490M180 520V490H460V520" fill="none" stroke="#6f7aa0" stroke-width="2"/>
+<path d="M180 506V523M460 506V523" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="48" y="536" width="264" height="64" rx="10" fill="#f0f2ff" stroke="#8d9ae1"/>
+<rect x="328" y="536" width="264" height="64" rx="10" fill="#f0f2ff" stroke="#8d9ae1"/>
+<text x="180" y="576" text-anchor="middle" class="label accent">Inventory</text>
+<text x="460" y="576" text-anchor="middle" class="label accent">Relationships</text>
+<text x="320" y="634" text-anchor="middle" class="small">Scan again after cloud-side changes.</text>
+</svg>

@@ -33,6 +33,8 @@ Press Ctrl+C to stop. On subsequent starts, use the built binary:
 
 ## Connect and scan
 
+With the server running, follow [First resource inventory](./tutorials/first-inventory.md) through the steps below, including expected results and troubleshooting.
+
 1.  Open Settings from the user menu and add a cloud connection.
 2.  Choose a provider, enter credentials, and check the region list after validation.
 3.  Select the connection, open Scans, and start with one region you use.

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="700" viewBox="0 0 640 700" role="img" aria-labelledby="title description" lang="zh-CN">
+<title id="title">选中的交换机为何被阻塞</title><desc id="description">清理范围包含 api-01、public-gateway 和 application 交换机。范围外的 api-02 仍在使用交换机，因此阻止删除。若保留 api-02，就保留交换机；若考虑扩大清理范围，先审查 api-02。</desc>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#202637}.label{font-size:26px;font-weight:600}.body{font-size:22px;fill:#556078}.small{font-size:21px;fill:#556078}.accent{fill:#4c60d5}.warn{fill:#99430d}</style>
+<defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#6f7aa0" stroke-width="1.6"/></marker><marker id="blocked" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0 0 8 4 0 8" fill="none" stroke="#b45c23" stroke-width="1.6"/></marker></defs>
+<rect width="640" height="700" rx="14" fill="#fff"/>
+<rect x="32" y="28" width="576" height="374" rx="14" fill="#f6f7fd" stroke="#8d9ae1" stroke-width="2"/>
+<text x="56" y="68" class="label accent">已选入清理范围</text>
+<rect x="56" y="96" width="248" height="70" rx="10" fill="#fff" stroke="#d5dbea"/>
+<rect x="336" y="96" width="248" height="70" rx="10" fill="#fff" stroke="#d5dbea"/>
+<text x="180" y="139" text-anchor="middle" class="label">api-01</text>
+<text x="460" y="138" text-anchor="middle" font-size="24" font-weight="600">public-gateway</text>
+<path d="M180 168V203H320M460 168V203H320V249" fill="none" stroke="#6f7aa0" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="345" y="233" class="small">使用交换机</text>
+<rect x="112" y="262" width="416" height="112" rx="12" fill="#fff6ed" stroke="#d9945a" stroke-width="2"/>
+<text x="320" y="303" text-anchor="middle" class="label">application</text>
+<text x="320" y="343" text-anchor="middle" class="body warn">交换机 · 删除被阻塞</text>
+<path d="M320 516V386" stroke="#b45c23" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#blocked)"/>
+<rect x="341" y="432" width="235" height="40" rx="6" fill="#fff"/>
+<text x="353" y="460" class="small warn">仍在使用交换机</text>
+<rect x="112" y="520" width="416" height="112" rx="12" fill="#fff" stroke="#8c95a9" stroke-width="2" stroke-dasharray="7 5"/>
+<text x="320" y="562" text-anchor="middle" class="label">api-02</text>
+<text x="320" y="600" text-anchor="middle" class="body">未选入清理范围</text>
+<text x="320" y="676" text-anchor="middle" class="small">箭头表示“使用”关系，不表示删除执行顺序。</text>
+</svg>
