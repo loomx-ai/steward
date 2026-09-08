@@ -54,6 +54,7 @@ type Operation struct {
 	OutputSchema map[string]any `json:"output_schema,omitempty"`
 	Pagination   *Pagination    `json:"pagination,omitempty"`
 	Call         *OperationCall `json:"call,omitempty"`
+	SourceURI    string         `json:"source_uri,omitempty"`
 }
 
 type ResourceType struct {
@@ -61,6 +62,16 @@ type ResourceType struct {
 	Class       string            `json:"class,omitempty"`
 	DisplayName string            `json:"display_name,omitempty"`
 	ScopeKinds  []asset.ScopeKind `json:"scope_kinds"`
+	REST        *RESTResource     `json:"rest,omitempty"`
+}
+
+// RESTResource enumerates the official methods for a resource family. Some
+// Google asset types share several regional/global API methods; recording those
+// bindings in the catalog makes routing changes part of the bundle revision.
+type RESTResource struct {
+	Collection       string   `json:"collection,omitempty"`
+	ReadOperations   []string `json:"read_operations"`
+	DeleteOperations []string `json:"delete_operations,omitempty"`
 }
 
 type Catalog struct {

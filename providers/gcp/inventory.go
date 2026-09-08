@@ -21,6 +21,10 @@ type pageCursor struct {
 }
 
 func (c *client) assetPage(ctx context.Context, cursor, nativeType string, limit int) (map[string]any, error) {
+	result, err := c.assetPageResult(ctx, cursor, nativeType, limit)
+	return result.Data, err
+}
+func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string, limit int) (contracts.InvocationResult, error) {
 	if limit < 1 || limit > 1000 {
 		limit = 500
 	}
@@ -31,32 +35,40 @@ func (c *client) assetPage(ctx context.Context, cursor, nativeType string, limit
 	if cursor != "" {
 		decoded, err := base64.RawURLEncoding.DecodeString(cursor)
 		if err != nil {
-			return nil, fmt.Errorf("invalid GCP inventory cursor")
+			return contracts.InvocationResult{}, fmt.Errorf("invalid GCP inventory cursor")
 		}
 		var page pageCursor
 		if json.Unmarshal(decoded, &page) != nil || page.Token == "" {
-			return nil, fmt.Errorf("invalid GCP inventory cursor")
+			return contracts.InvocationResult{}, fmt.Errorf("invalid GCP inventory cursor")
 		}
 		query.Set("pageToken", page.Token)
 		if page.ReadTime != "" {
 			query.Set("readTime", page.ReadTime)
 		}
 	}
-	data, err := c.request(ctx, "GET", "https://cloudasset.googleapis.com/v1/projects/"+c.project+"/assets", query)
+	result, err := c.requestResult(ctx, "GET", "https://cloudasset.googleapis.com/v1/projects/"+c.project+"/assets", query, nil)
 	if err != nil {
-		return nil, err
+		return contracts.InvocationResult{}, err
+	}
+	data := result.Data
+	if requested := query.Get("readTime"); requested != "" {
+		previous, previousErr := time.Parse(time.RFC3339Nano, requested)
+		current, currentErr := time.Parse(time.RFC3339Nano, text(data["readTime"]))
+		if previousErr != nil || currentErr != nil || !previous.Equal(current) {
+			return contracts.InvocationResult{}, fmt.Errorf("Google asset snapshot changed during pagination")
+		}
 	}
 	if _, err := time.Parse(time.RFC3339Nano, text(data["readTime"])); err != nil {
-		return nil, fmt.Errorf("Google asset response has no valid snapshot time")
+		return contracts.InvocationResult{}, fmt.Errorf("Google asset response has no valid snapshot time")
 	}
 	if assets, present := data["assets"]; present && assets != nil {
 		if _, ok := assets.([]any); !ok {
-			return nil, fmt.Errorf("Google asset response has an invalid asset list")
+			return contracts.InvocationResult{}, fmt.Errorf("Google asset response has an invalid asset list")
 		}
 	}
 	if token := text(data["nextPageToken"]); token != "" {
 		if token == query.Get("pageToken") {
-			return nil, fmt.Errorf("Google asset pagination did not advance")
+			return contracts.InvocationResult{}, fmt.Errorf("Google asset pagination did not advance")
 		}
 		readTime := text(data["readTime"])
 		if readTime == "" {
@@ -65,7 +77,8 @@ func (c *client) assetPage(ctx context.Context, cursor, nativeType string, limit
 		encoded, _ := json.Marshal(pageCursor{Token: token, ReadTime: readTime})
 		data["nextPageToken"] = base64.RawURLEncoding.EncodeToString(encoded)
 	}
-	return data, nil
+	result.NextToken = text(data["nextPageToken"])
+	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
 	if request.Source != "" && request.Source != inventorySource {
@@ -75,15 +88,19 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
+	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
+		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
 	nativeType := ""
 	if request.ResourceKind != nil {
 		nativeType = request.ResourceKind.NativeType
 	}
-	data, err := c.assetPage(ctx, request.Cursor, nativeType, request.Limit)
+	result, err := c.assetPageResult(ctx, request.Cursor, nativeType, request.Limit)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, NextCursor: text(data["nextPageToken"])}
+	data := result.Data
+	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, NextCursor: text(data["nextPageToken"]), RequestID: result.RequestID}
 	batch.Complete = batch.NextCursor == ""
 	region := request.Scope.NativeID
 	if request.Scope.Kind == asset.ScopeGlobal {
@@ -92,7 +109,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	for _, value := range array(data["assets"]) {
 		raw := object(value)
 		_, location := assetLocation(raw)
-		if region != location && !(request.NetworkTarget != nil && location == "global") {
+		if request.Scope.Kind != asset.ScopeProject && region != location && !(request.NetworkTarget != nil && location == "global") {
 			continue
 		}
 		item, err := r.inventoryItem(c, raw)
@@ -209,13 +226,8 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	if state == "" {
 		state = text(data["state"])
 	}
-	actionable := known
-	// Cluster deletion also destroys managed nodes, disks, firewall rules and
-	// routes. Keep it read-only until that ownership is represented in plans.
-	if nativeType == "container.googleapis.com/Cluster" {
-		actionable = false
-	}
-	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: normalized, Raw: raw, NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
+	actionable := known && len(kind.DeleteOperations) > 0
+	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: safePayload(normalized), Raw: safePayload(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
 }
 
 func (c *client) canonicalName(value string) string {
@@ -275,7 +287,7 @@ func references(c *client, data map[string]any) map[string][]string {
 				ref = "//pubsub.googleapis.com/" + ref
 			}
 			if target == "" {
-				for _, kind := range resourceTypes {
+				for _, kind := range allTypes() {
 					if strings.HasPrefix(ref, "//compute.googleapis.com/") && strings.Contains(ref, "/"+kind.Collection+"/") {
 						target = kind.NativeType
 						break
@@ -284,6 +296,9 @@ func references(c *client, data map[string]any) map[string][]string {
 			}
 			if target == "compute.googleapis.com/Disk" && strings.Contains(ref, "/regions/") {
 				target = "compute.googleapis.com/RegionDisk"
+			}
+			if target == "compute.googleapis.com/BackendService" && strings.Contains(ref, "/regions/") {
+				target = "compute.googleapis.com/RegionBackendService"
 			}
 			kind, known := findType(target)
 			if !known {

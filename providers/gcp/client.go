@@ -1,6 +1,7 @@
 package gcp
 
 import (
+	"bytes"
 	"context"
 	"crypto/rsa"
 	"crypto/sha256"
@@ -15,6 +16,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -84,33 +86,107 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	}
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
-	authContext := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{Transport: transport, Timeout: 30 * time.Second, CheckRedirect: noRedirect})
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"}}
 	return &client{project: project, email: key.Email, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw)), http: &http.Client{
-		Transport: &oauth2.Transport{Base: transport, Source: config.TokenSource(authContext)}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
+		Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
 }
 
 func noRedirect(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 
+// Token exchange uses the active request context, including cancellation. A
+// cached client must never retain the context of its initial validation request.
+type tokenTransport struct {
+	base   http.RoundTripper
+	config jwt.Config
+	mu     sync.Mutex
+	token  *oauth2.Token
+}
+
+func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	if err := request.Context().Err(); err != nil {
+		return nil, err
+	}
+	t.mu.Lock()
+	token := t.token
+	t.mu.Unlock()
+	if !token.Valid() {
+		ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
+		defer cancel()
+		// jwt.TokenSource currently calls Client.PostForm without a context.
+		// Bind the actual exchange request at the transport boundary as well.
+		httpClient := &http.Client{Transport: contextTransport{context: ctx, base: t.base}, CheckRedirect: noRedirect}
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, httpClient)
+		var err error
+		token, err = t.config.TokenSource(ctx).Token()
+		if err != nil {
+			return nil, err
+		}
+		if !token.Valid() {
+			return nil, fmt.Errorf("Google OAuth response has no usable access token")
+		}
+		t.mu.Lock()
+		t.token = token
+		t.mu.Unlock()
+	}
+	clone := request.Clone(request.Context())
+	token.SetAuthHeader(clone)
+	return t.base.RoundTrip(clone)
+}
+
+type contextTransport struct {
+	context context.Context
+	base    http.RoundTripper
+}
+
+func (t contextTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	return t.base.RoundTrip(request.Clone(t.context))
+}
+
 func (c *client) request(ctx context.Context, method, endpoint string, query url.Values) (map[string]any, error) {
+	result, err := c.requestResult(ctx, method, endpoint, query, nil)
+	return result.Data, err
+}
+
+func (c *client) requestResult(ctx context.Context, method, endpoint string, query url.Values, body []byte) (result contracts.InvocationResult, failure error) {
 	u, err := url.Parse(endpoint)
-	if err != nil || u.Scheme != "https" || u.User != nil || u.Port() != "" || !allowedHost(u.Hostname()) {
-		return nil, fmt.Errorf("invalid Google API endpoint")
+	if err != nil || u.Scheme != "https" || u.User != nil || u.Port() != "" || u.Fragment != "" || !allowedHost(u.Hostname()) {
+		return result, fmt.Errorf("invalid Google API endpoint")
 	}
 	if len(query) > 0 {
-		u.RawQuery = query.Encode()
+		merged := u.Query()
+		for key, values := range query {
+			merged[key] = values
+		}
+		u.RawQuery = merged.Encode()
 	}
-	req, err := http.NewRequestWithContext(ctx, method, u.String(), nil)
+	requestLog := map[string]any{"method": method, "path": u.Path, "query": u.Query()}
+	if len(body) > 0 {
+		var value any
+		if json.Unmarshal(body, &value) != nil {
+			return result, fmt.Errorf("invalid Google API request body")
+		}
+		requestLog["body"] = value
+	}
+	execution.LogCloudAPIRequest(ctx, u.Host, method, safePayload(requestLog))
+	defer func() {
+		if failure != nil {
+			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
+		}
+	}()
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), bytes.NewReader(body))
 	if err != nil {
-		return nil, err
+		return result, fmt.Errorf("invalid Google API request")
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "steward/gcp")
+	if len(body) > 0 {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	response, err := c.http.Do(req)
 	if err != nil {
 		if ctx.Err() != nil {
-			return nil, ctx.Err()
+			return result, ctx.Err()
 		}
 		var tokenError *oauth2.RetrieveError
 		if errors.As(err, &tokenError) && tokenError.Response != nil {
@@ -118,37 +194,58 @@ func (c *client) request(ctx context.Context, method, endpoint string, query url
 			if status == 400 {
 				status = http.StatusUnauthorized
 			}
-			return nil, apiError(status, "token_exchange_failed", nil, tokenError.Response.Header.Get("Retry-After"))
+			return result, apiError(status, "token_exchange_failed", nil, tokenError.Response.Header.Get("Retry-After"))
 		}
-		// OAuth responses and transport errors can contain credential material.
-		return nil, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorRetryable, Code: "transport_error", Message: contracts.SafeProviderTransportMessage}}
+		return result, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorRetryable, Code: "transport_error", Message: contracts.SafeProviderTransportMessage}}
 	}
 	defer response.Body.Close()
-	payload, err := io.ReadAll(io.LimitReader(response.Body, 32<<20+1))
-	if err != nil || len(payload) > 32<<20 {
-		return nil, fmt.Errorf("Google API response could not be read")
-	}
-	data := map[string]any{}
-	if len(payload) > 0 {
-		decoder := json.NewDecoder(strings.NewReader(string(payload)))
-		decoder.UseNumber()
-		if decoder.Decode(&data) != nil {
-			return nil, apiError(response.StatusCode, "invalid_response", nil, response.Header.Get("Retry-After"))
+	for _, header := range []string{"X-Goog-Request-Id", "X-Request-Id", "X-GUploader-UploadID"} {
+		if value := response.Header.Get(header); value != "" {
+			result.RequestID = value
+			break
 		}
 	}
-	if data == nil {
-		// Some REST implementations encode an empty DELETE response as null.
-		// GET must still return an object; deletion is confirmed by readback.
+	// Attach provenance to every structured error, including malformed payloads.
+	defer func() {
+		var call *contracts.ProviderCallError
+		if errors.As(failure, &call) {
+			call.Provider.RequestID = result.RequestID
+		}
+	}()
+	payload, err := io.ReadAll(io.LimitReader(response.Body, (32<<20)+1))
+	if err != nil || len(payload) > 32<<20 {
+		if ctx.Err() != nil {
+			return result, ctx.Err()
+		}
+		return result, apiError(response.StatusCode, "response_unreadable", nil, response.Header.Get("Retry-After"))
+	}
+	data := map[string]any{}
+	if len(bytes.TrimSpace(payload)) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(payload))
+		decoder.UseNumber()
+		if decoder.Decode(&data) != nil {
+			return result, apiError(response.StatusCode, "invalid_response", nil, response.Header.Get("Retry-After"))
+		}
+		var trailing any
+		if decoder.Decode(&trailing) != io.EOF {
+			return result, apiError(response.StatusCode, "invalid_response", nil, response.Header.Get("Retry-After"))
+		}
+	}
+	if data == nil || (len(bytes.TrimSpace(payload)) == 0 && method == http.MethodGet && response.StatusCode >= 200 && response.StatusCode < 300) {
 		if method != http.MethodDelete && response.StatusCode >= 200 && response.StatusCode < 300 {
-			return nil, apiError(response.StatusCode, "invalid_response", nil, "")
+			return result, apiError(response.StatusCode, "invalid_response", nil, "")
 		}
 		data = map[string]any{}
 	}
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
 		detail, _ := data["error"].(map[string]any)
-		return nil, apiError(response.StatusCode, text(detail["status"]), detail, response.Header.Get("Retry-After"))
+		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode})
+		return result, apiError(response.StatusCode, text(detail["status"]), detail, response.Header.Get("Retry-After"))
 	}
-	return data, nil
+	execution.LogCloudAPIResponse(ctx, u.Host, method, safePayload(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
+	result.Data = data
+	result.NextToken = text(data["nextPageToken"])
+	return result, nil
 }
 
 func allowedHost(host string) bool {
@@ -178,9 +275,17 @@ func apiError(status int, code string, detail map[string]any, retry string) erro
 	if code == "" {
 		code = strconv.Itoa(status)
 	}
-	seconds, _ := strconv.Atoi(retry)
-	if seconds < 0 || seconds > 300 {
+	seconds, err := strconv.Atoi(retry)
+	if err != nil {
+		if deadline, err := http.ParseTime(retry); err == nil {
+			seconds = int(time.Until(deadline).Seconds())
+		}
+	}
+	if seconds < 0 {
 		seconds = 0
+	}
+	if seconds > 300 {
+		seconds = 300
 	}
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: category, Code: code, Message: contracts.SafeProviderValidationMessage}, RetryAfter: time.Duration(seconds) * time.Second}
 }

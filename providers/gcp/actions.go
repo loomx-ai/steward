@@ -2,7 +2,6 @@ package gcp
 
 import (
 	"context"
-	"crypto/sha256"
 	"fmt"
 	"net/url"
 	"strings"
@@ -10,18 +9,21 @@ import (
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 type action struct {
-	client   *client
-	kind     resourceType
-	endpoint string
+	client           *client
+	kind             resourceType
+	endpoint         string
+	deleteOperation  catalog.Operation
+	deleteParameters map[string]any
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
 	kind, ok := findType(value.Identity.NativeType)
-	if !ok || value.Identity.Provider != asset.ProviderGCP || kind.NativeType == "container.googleapis.com/Cluster" {
+	if !ok || value.Identity.Provider != asset.ProviderGCP || len(kind.DeleteOperations) == 0 {
 		return nil, fmt.Errorf("GCP resource has no action driver")
 	}
 	c, err := r.resolve(ctx, id)
@@ -32,7 +34,11 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	return &action{client: c, kind: kind, endpoint: endpoint}, nil
+	operation, parameters, err := c.resourceOperation(kind, value.Identity.NativeID, "DELETE")
+	if err != nil {
+		return nil, err
+	}
+	return &action{client: c, kind: kind, endpoint: endpoint, deleteOperation: operation, deleteParameters: parameters}, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 
@@ -78,28 +84,36 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
-	query := url.Values{}
-	if strings.HasPrefix(a.kind.NativeType, "compute.googleapis.com/") && request.IdempotencyKey != "" {
-		hash := sha256.Sum256([]byte(request.IdempotencyKey))
-		hash[6] = (hash[6] & 0x0f) | 0x40
-		hash[8] = (hash[8] & 0x3f) | 0x80
-		query.Set("requestId", fmt.Sprintf("%x-%x-%x-%x-%x", hash[:4], hash[4:6], hash[6:8], hash[8:10], hash[10:16]))
+	parameters := map[string]any{}
+	for key, value := range a.deleteParameters {
+		parameters[key] = value
 	}
-	data, err := a.client.request(ctx, "DELETE", a.endpoint, query)
+	if a.deleteOperation.Call == nil {
+		return contracts.ActionResult{}, fmt.Errorf("GCP deletion has no catalog operation")
+	}
+	if token := a.deleteOperation.Call.IdempotencyParameter; token != "" && request.IdempotencyKey != "" {
+		parameters[token] = googleRequestID(request.IdempotencyKey)
+	}
+	bound, err := catalog.BindREST(a.deleteOperation, parameters)
+	if err != nil {
+		return contracts.ActionResult{}, err
+	}
+	response, err := a.client.requestResult(ctx, bound.Method, bound.URL, nil, bound.Body)
 	if isNotFound(err) {
 		return contracts.ActionResult{}, nil
 	}
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
+	data := response.Data
+	if failure := operationError(data, response.RequestID); failure != nil {
+		return contracts.ActionResult{}, failure
+	}
 	operation, err := a.operationURL(data)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	if operationError(data) != nil {
-		return contracts.ActionResult{}, operationError(data)
-	}
-	return contracts.ActionResult{ProviderOperationID: operation, Data: map[string]any{"operation": operation}, RetryAfter: 2 * time.Second}, nil
+	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: map[string]any{"operation": operation}, RetryAfter: 2 * time.Second}, nil
 }
 func (a *action) operationURL(data map[string]any) (string, error) {
 	nativeType := a.kind.NativeType
@@ -123,17 +137,21 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 			}
 		}
 		endpoint, _ := url.Parse(a.endpoint)
+		resourceScope := strings.Split(strings.Trim(endpoint.Path, "/"), "/")
+		if len(resourceScope) < 5 || resourceScope[3] != "locations" || resourceScope[4] != parts[3] {
+			return "", fmt.Errorf("Google deletion operation belongs to another location")
+		}
 		version := strings.Split(strings.TrimPrefix(endpoint.Path, "/"), "/")[0]
 		return "https://" + endpoint.Host + "/" + version + "/" + name, nil
 	}
 	return "", nil
 }
-func operationError(data map[string]any) error {
+func operationError(data map[string]any, requestID string) error {
 	detail := object(data["error"])
 	if len(detail) == 0 {
 		return nil
 	}
-	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage}}
+	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	if result.ProviderOperationID != "" {
@@ -151,12 +169,13 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 		if err != nil || expected != result.ProviderOperationID {
 			return contracts.WaitResult{}, fmt.Errorf("GCP operation identity mismatch")
 		}
-		data, err := a.client.request(ctx, "GET", expected, nil)
+		response, err := a.client.requestResult(ctx, "GET", expected, nil, nil)
 		if err != nil && !isNotFound(err) {
 			return contracts.WaitResult{}, err
 		}
 		if err == nil {
-			if failure := operationError(data); failure != nil {
+			data := response.Data
+			if failure := operationError(data, response.RequestID); failure != nil {
 				return contracts.WaitResult{}, failure
 			}
 			done := data["done"] == true || text(data["status"]) == "DONE"

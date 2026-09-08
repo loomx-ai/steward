@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/Instance
+  class: compute.instance
+presentation:
+  displayNames:
+    en-US: Compute Engine instance
+    zh-CN: 计算实例
+  consoleLinkTemplate: https://console.cloud.google.com/compute/instancesDetail/zones/{zoneId}/instances/{nativeId|suffix:/}?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: compute.instances.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: member_of
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: attached_to
+  targetType: compute.googleapis.com/Disk
+  targetIdPath: refs_compute_googleapis_com_Disk
+- type: attached_to
+  targetType: compute.googleapis.com/RegionDisk
+  targetIdPath: refs_compute_googleapis_com_RegionDisk
+actions:
+  delete:
+    operation: compute.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.instances.get
+      itemsPath: $
+      identityPath: name

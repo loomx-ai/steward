@@ -9,14 +9,14 @@ import (
 	"github.com/loomx-ai/steward/internal/core/asset"
 )
 
-func TestRunRejectsRemovedProviders(t *testing.T) {
+func TestRunRejectsUnknownProviders(t *testing.T) {
 	temporaryDirectory := t.TempDir()
 	sourcePath := filepath.Join(temporaryDirectory, "source.json")
 	if err := os.WriteFile(sourcePath, []byte(`{"paths":{}}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 
-	for _, provider := range []asset.Provider{"azure", "gcp"} {
+	for _, provider := range []asset.Provider{"unknown", "invalid"} {
 		t.Run(string(provider), func(t *testing.T) {
 			err := run(provider, "openapi", sourcePath, filepath.Join(temporaryDirectory, string(provider)+".json"))
 			if err == nil || !strings.Contains(err.Error(), "unsupported provider") {

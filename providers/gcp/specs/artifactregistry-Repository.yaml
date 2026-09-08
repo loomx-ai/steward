@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: artifactregistry.googleapis.com/Repository
+  class: storage.registry
+presentation:
+  displayNames:
+    en-US: Artifact Registry repository
+    zh-CN: 制品库
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: artifactregistry.projects.locations.repositories.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: artifactregistry.projects.locations.repositories.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: artifactregistry.projects.locations.repositories.get
+      itemsPath: $
+      identityPath: name

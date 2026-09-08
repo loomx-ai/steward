@@ -642,7 +642,7 @@ func validateOperationCall(operation catalog.Operation, usage string) error {
 		strings.TrimSpace(call.Endpoint) == "" {
 		return fmt.Errorf("%s operation %q has incomplete direct product API call metadata", usage, operation.Name)
 	}
-	if call.Style != "RPC" && call.Style != "ROA" {
+	if call.Style != "RPC" && call.Style != "ROA" && call.Style != "google-rest" && call.Style != "azure-rest" {
 		return fmt.Errorf("%s operation %q has unsupported API style %q", usage, operation.Name, call.Style)
 	}
 	if call.ParameterPosition != "" &&

@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/BackendService
+  class: network.load_balancer_backend
+presentation:
+  displayNames:
+    en-US: Backend service
+    zh-CN: 后端服务
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: compute.backendServices.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: uses
+  targetType: compute.googleapis.com/HealthCheck
+  targetIdPath: refs_compute_googleapis_com_HealthCheck
+actions:
+  delete:
+    operation: compute.backendServices.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.backendServices.get
+      itemsPath: $
+      identityPath: name

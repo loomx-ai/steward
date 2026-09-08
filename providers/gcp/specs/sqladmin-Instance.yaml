@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: sqladmin.googleapis.com/Instance
+  class: database.instance
+presentation:
+  displayNames:
+    en-US: Cloud SQL instance
+    zh-CN: Cloud SQL 实例
+  consoleLinkTemplate: https://console.cloud.google.com/sql/instances/{nativeId|suffix:/}/overview?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: sql.instances.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: sql.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: sql.instances.get
+      itemsPath: $
+      identityPath: name

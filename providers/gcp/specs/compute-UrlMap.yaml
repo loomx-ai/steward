@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/UrlMap
+  class: network.url_map
+presentation:
+  displayNames:
+    en-US: URL map
+    zh-CN: URL 映射
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: compute.urlMaps.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: compute.googleapis.com/BackendService
+  targetIdPath: refs_compute_googleapis_com_BackendService
+- type: uses
+  targetType: compute.googleapis.com/RegionBackendService
+  targetIdPath: refs_compute_googleapis_com_RegionBackendService
+actions:
+  delete:
+    operation: compute.urlMaps.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.urlMaps.get
+      itemsPath: $
+      identityPath: name

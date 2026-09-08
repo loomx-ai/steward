@@ -1,0 +1,13 @@
+{
+  "readTime": "2026-09-08T10:00:00Z",
+  "assets": [
+    {
+      "name": "//compute.googleapis.com/projects/123456/zones/us-central1-a/disks/web-boot",
+      "assetType": "compute.googleapis.com/Disk",
+      "resource": {
+        "version": "v1", "discoveryName": "Disk", "location": "us-central1-a",
+        "data": {"name": "web-boot", "status": "READY", "sizeGb": "20", "users": ["https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/web"]}
+      }
+    }
+  ]
+}

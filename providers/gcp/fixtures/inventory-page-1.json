@@ -1,0 +1,28 @@
+{
+  "readTime": "2026-09-08T10:00:00Z",
+  "nextPageToken": "page-2",
+  "assets": [
+    {
+      "name": "//compute.googleapis.com/projects/123456/global/networks/main",
+      "assetType": "compute.googleapis.com/Network",
+      "resource": {
+        "version": "v1", "discoveryName": "Network", "location": "global",
+        "data": {"name": "main", "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/main", "autoCreateSubnetworks": false}
+      }
+    },
+    {
+      "name": "//compute.googleapis.com/projects/123456/zones/us-central1-a/instances/web",
+      "assetType": "compute.googleapis.com/Instance",
+      "resource": {
+        "version": "v1", "discoveryName": "Instance", "location": "us-central1-a",
+        "data": {
+          "name": "web", "status": "RUNNING", "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+          "labels": {"environment": "test"},
+          "networkInterfaces": [{"network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/main", "subnetwork": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/subnetworks/app"}],
+          "disks": [{"source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/web-boot", "autoDelete": false}],
+          "metadata": {"items": [{"key": "startup-script", "value": "PRIVATE_SCRIPT_VALUE"}]}
+        }
+      }
+    }
+  ]
+}

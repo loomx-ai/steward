@@ -1,0 +1,660 @@
+{
+  "documents": [
+    {
+      "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "methods": [
+        "compute.addresses.delete",
+        "compute.addresses.get",
+        "compute.addresses.list",
+        "compute.backendServices.delete",
+        "compute.backendServices.get",
+        "compute.backendServices.list",
+        "compute.disks.delete",
+        "compute.disks.get",
+        "compute.disks.list",
+        "compute.firewalls.delete",
+        "compute.firewalls.get",
+        "compute.firewalls.list",
+        "compute.forwardingRules.delete",
+        "compute.forwardingRules.get",
+        "compute.forwardingRules.list",
+        "compute.globalAddresses.delete",
+        "compute.globalAddresses.get",
+        "compute.globalAddresses.list",
+        "compute.globalForwardingRules.delete",
+        "compute.globalForwardingRules.get",
+        "compute.globalForwardingRules.list",
+        "compute.globalOperations.get",
+        "compute.globalOperations.list",
+        "compute.healthChecks.delete",
+        "compute.healthChecks.get",
+        "compute.healthChecks.list",
+        "compute.images.delete",
+        "compute.images.get",
+        "compute.images.list",
+        "compute.instanceTemplates.delete",
+        "compute.instanceTemplates.get",
+        "compute.instanceTemplates.list",
+        "compute.instances.aggregatedList",
+        "compute.instances.delete",
+        "compute.instances.get",
+        "compute.instances.list",
+        "compute.instances.setDeletionProtection",
+        "compute.instances.setDiskAutoDelete",
+        "compute.networks.delete",
+        "compute.networks.get",
+        "compute.networks.list",
+        "compute.regionBackendServices.delete",
+        "compute.regionBackendServices.get",
+        "compute.regionBackendServices.list",
+        "compute.regionDisks.delete",
+        "compute.regionDisks.get",
+        "compute.regionDisks.list",
+        "compute.regionHealthChecks.delete",
+        "compute.regionHealthChecks.get",
+        "compute.regionHealthChecks.list",
+        "compute.regionInstanceTemplates.delete",
+        "compute.regionInstanceTemplates.get",
+        "compute.regionInstanceTemplates.list",
+        "compute.regionOperations.get",
+        "compute.regionOperations.list",
+        "compute.regionSslCertificates.delete",
+        "compute.regionSslCertificates.get",
+        "compute.regionSslCertificates.list",
+        "compute.regionTargetHttpProxies.delete",
+        "compute.regionTargetHttpProxies.get",
+        "compute.regionTargetHttpProxies.list",
+        "compute.regionTargetHttpsProxies.delete",
+        "compute.regionTargetHttpsProxies.get",
+        "compute.regionTargetHttpsProxies.list",
+        "compute.regionUrlMaps.delete",
+        "compute.regionUrlMaps.get",
+        "compute.regionUrlMaps.list",
+        "compute.regions.get",
+        "compute.regions.list",
+        "compute.routers.delete",
+        "compute.routers.get",
+        "compute.routers.list",
+        "compute.routes.delete",
+        "compute.routes.get",
+        "compute.routes.list",
+        "compute.snapshots.delete",
+        "compute.snapshots.get",
+        "compute.snapshots.list",
+        "compute.sslCertificates.delete",
+        "compute.sslCertificates.get",
+        "compute.sslCertificates.list",
+        "compute.subnetworks.delete",
+        "compute.subnetworks.get",
+        "compute.subnetworks.list",
+        "compute.targetHttpProxies.delete",
+        "compute.targetHttpProxies.get",
+        "compute.targetHttpProxies.list",
+        "compute.targetHttpsProxies.delete",
+        "compute.targetHttpsProxies.get",
+        "compute.targetHttpsProxies.list",
+        "compute.urlMaps.delete",
+        "compute.urlMaps.get",
+        "compute.urlMaps.list",
+        "compute.zoneOperations.get",
+        "compute.zoneOperations.list",
+        "compute.zones.get",
+        "compute.zones.list"
+      ]
+    },
+    {
+      "source_uri": "https://storage.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "storage.buckets.delete",
+        "storage.buckets.get",
+        "storage.buckets.list",
+        "storage.objects.list"
+      ]
+    },
+    {
+      "source_uri": "https://pubsub.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "pubsub.projects.subscriptions.delete",
+        "pubsub.projects.subscriptions.get",
+        "pubsub.projects.subscriptions.list",
+        "pubsub.projects.topics.delete",
+        "pubsub.projects.topics.get",
+        "pubsub.projects.topics.list"
+      ]
+    },
+    {
+      "source_uri": "https://sqladmin.googleapis.com/$discovery/rest?version=v1beta4",
+      "methods": [
+        "sql.instances.delete",
+        "sql.instances.get",
+        "sql.instances.list",
+        "sql.instances.patch",
+        "sql.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "container.projects.locations.clusters.delete",
+        "container.projects.locations.clusters.get",
+        "container.projects.locations.clusters.list",
+        "container.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "run.projects.locations.operations.get",
+        "run.projects.locations.services.delete",
+        "run.projects.locations.services.get",
+        "run.projects.locations.services.list"
+      ]
+    },
+    {
+      "source_uri": "https://artifactregistry.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "artifactregistry.projects.locations.operations.get",
+        "artifactregistry.projects.locations.repositories.delete",
+        "artifactregistry.projects.locations.repositories.get",
+        "artifactregistry.projects.locations.repositories.list"
+      ]
+    },
+    {
+      "source_uri": "https://secretmanager.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "secretmanager.projects.locations.secrets.delete",
+        "secretmanager.projects.locations.secrets.get",
+        "secretmanager.projects.locations.secrets.list",
+        "secretmanager.projects.secrets.delete",
+        "secretmanager.projects.secrets.get",
+        "secretmanager.projects.secrets.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudasset.assets.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v3",
+      "methods": [
+        "cloudresourcemanager.projects.get"
+      ]
+    }
+  ],
+  "resource_types": [
+    {
+      "native_type": "compute.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "compute.instance",
+      "display_name": "Compute Engine instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.instances.get"
+      ],
+      "delete_operations": [
+        "compute.instances.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Disk",
+      "collection": "disks",
+      "class": "storage.disk",
+      "display_name": "Persistent disk",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.disks.get"
+      ],
+      "delete_operations": [
+        "compute.disks.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/RegionDisk",
+      "collection": "disks",
+      "class": "storage.disk",
+      "display_name": "Regional persistent disk",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.regionDisks.get"
+      ],
+      "delete_operations": [
+        "compute.regionDisks.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Snapshot",
+      "collection": "snapshots",
+      "class": "storage.snapshot",
+      "display_name": "Disk snapshot",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.snapshots.get"
+      ],
+      "delete_operations": [
+        "compute.snapshots.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Image",
+      "collection": "images",
+      "class": "compute.image",
+      "display_name": "Compute image",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.images.get"
+      ],
+      "delete_operations": [
+        "compute.images.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/InstanceTemplate",
+      "collection": "instanceTemplates",
+      "class": "compute.instance_template",
+      "display_name": "Instance template",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.instanceTemplates.get",
+        "compute.regionInstanceTemplates.get"
+      ],
+      "delete_operations": [
+        "compute.instanceTemplates.delete",
+        "compute.regionInstanceTemplates.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Network",
+      "collection": "networks",
+      "class": "network.vpc",
+      "display_name": "VPC network",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.networks.get"
+      ],
+      "delete_operations": [
+        "compute.networks.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Subnetwork",
+      "collection": "subnetworks",
+      "class": "network.subnet",
+      "display_name": "VPC subnet",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.subnetworks.get"
+      ],
+      "delete_operations": [
+        "compute.subnetworks.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Firewall",
+      "collection": "firewalls",
+      "class": "network.security_group",
+      "display_name": "VPC firewall rule",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.firewalls.get"
+      ],
+      "delete_operations": [
+        "compute.firewalls.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Route",
+      "collection": "routes",
+      "class": "network.route",
+      "display_name": "VPC route",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.routes.get"
+      ],
+      "delete_operations": [
+        "compute.routes.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Router",
+      "collection": "routers",
+      "class": "network.router",
+      "display_name": "Cloud Router",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.routers.get"
+      ],
+      "delete_operations": [
+        "compute.routers.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Address",
+      "collection": "addresses",
+      "class": "network.public_ip",
+      "display_name": "Regional IP address",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.addresses.get"
+      ],
+      "delete_operations": [
+        "compute.addresses.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/GlobalAddress",
+      "collection": "addresses",
+      "class": "network.public_ip",
+      "display_name": "Global IP address",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.globalAddresses.get"
+      ],
+      "delete_operations": [
+        "compute.globalAddresses.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/ForwardingRule",
+      "collection": "forwardingRules",
+      "class": "network.load_balancer",
+      "display_name": "Regional forwarding rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.forwardingRules.get"
+      ],
+      "delete_operations": [
+        "compute.forwardingRules.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/GlobalForwardingRule",
+      "collection": "forwardingRules",
+      "class": "network.load_balancer",
+      "display_name": "Global forwarding rule",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.globalForwardingRules.get"
+      ],
+      "delete_operations": [
+        "compute.globalForwardingRules.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/BackendService",
+      "collection": "backendServices",
+      "class": "network.load_balancer_backend",
+      "display_name": "Backend service",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.backendServices.get",
+        "compute.regionBackendServices.get"
+      ],
+      "delete_operations": [
+        "compute.backendServices.delete",
+        "compute.regionBackendServices.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/HealthCheck",
+      "collection": "healthChecks",
+      "class": "network.health_check",
+      "display_name": "Health check",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.healthChecks.get",
+        "compute.regionHealthChecks.get"
+      ],
+      "delete_operations": [
+        "compute.healthChecks.delete",
+        "compute.regionHealthChecks.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/UrlMap",
+      "collection": "urlMaps",
+      "class": "network.url_map",
+      "display_name": "URL map",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.urlMaps.get",
+        "compute.regionUrlMaps.get"
+      ],
+      "delete_operations": [
+        "compute.urlMaps.delete",
+        "compute.regionUrlMaps.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetHttpProxy",
+      "collection": "targetHttpProxies",
+      "class": "network.proxy",
+      "display_name": "Target HTTP proxy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.targetHttpProxies.get",
+        "compute.regionTargetHttpProxies.get"
+      ],
+      "delete_operations": [
+        "compute.targetHttpProxies.delete",
+        "compute.regionTargetHttpProxies.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetHttpsProxy",
+      "collection": "targetHttpsProxies",
+      "class": "network.proxy",
+      "display_name": "Target HTTPS proxy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.targetHttpsProxies.get",
+        "compute.regionTargetHttpsProxies.get"
+      ],
+      "delete_operations": [
+        "compute.targetHttpsProxies.delete",
+        "compute.regionTargetHttpsProxies.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/SslCertificate",
+      "collection": "sslCertificates",
+      "class": "security.certificate",
+      "display_name": "SSL certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.sslCertificates.get",
+        "compute.regionSslCertificates.get"
+      ],
+      "delete_operations": [
+        "compute.sslCertificates.delete",
+        "compute.regionSslCertificates.delete"
+      ]
+    },
+    {
+      "native_type": "storage.googleapis.com/Bucket",
+      "collection": "buckets",
+      "class": "storage.bucket",
+      "display_name": "Cloud Storage bucket",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "storage.buckets.get"
+      ],
+      "delete_operations": [
+        "storage.buckets.delete"
+      ]
+    },
+    {
+      "native_type": "pubsub.googleapis.com/Topic",
+      "collection": "topics",
+      "class": "messaging.topic",
+      "display_name": "Pub/Sub topic",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "pubsub.projects.topics.get"
+      ],
+      "delete_operations": [
+        "pubsub.projects.topics.delete"
+      ]
+    },
+    {
+      "native_type": "pubsub.googleapis.com/Subscription",
+      "collection": "subscriptions",
+      "class": "messaging.subscription",
+      "display_name": "Pub/Sub subscription",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "pubsub.projects.subscriptions.get"
+      ],
+      "delete_operations": [
+        "pubsub.projects.subscriptions.delete"
+      ]
+    },
+    {
+      "native_type": "sqladmin.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.instance",
+      "display_name": "Cloud SQL instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "sql.instances.get"
+      ],
+      "delete_operations": [
+        "sql.instances.delete"
+      ]
+    },
+    {
+      "native_type": "container.googleapis.com/Cluster",
+      "collection": "clusters",
+      "class": "container.cluster",
+      "display_name": "GKE cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "container.projects.locations.clusters.get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "run.googleapis.com/Service",
+      "collection": "services",
+      "class": "compute.service",
+      "display_name": "Cloud Run service",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "run.projects.locations.services.get"
+      ],
+      "delete_operations": [
+        "run.projects.locations.services.delete"
+      ]
+    },
+    {
+      "native_type": "artifactregistry.googleapis.com/Repository",
+      "collection": "repositories",
+      "class": "storage.registry",
+      "display_name": "Artifact Registry repository",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "artifactregistry.projects.locations.repositories.get"
+      ],
+      "delete_operations": [
+        "artifactregistry.projects.locations.repositories.delete"
+      ]
+    },
+    {
+      "native_type": "secretmanager.googleapis.com/Secret",
+      "collection": "secrets",
+      "class": "security.secret",
+      "display_name": "Secret Manager secret",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "secretmanager.projects.secrets.get",
+        "secretmanager.projects.locations.secrets.get"
+      ],
+      "delete_operations": [
+        "secretmanager.projects.secrets.delete",
+        "secretmanager.projects.locations.secrets.delete"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/RegionBackendService",
+      "collection": "backendServices",
+      "class": "network.load_balancer_backend",
+      "display_name": "Regional backend service",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.regionBackendServices.get"
+      ],
+      "delete_operations": [
+        "compute.regionBackendServices.delete"
+      ]
+    }
+  ]
+}

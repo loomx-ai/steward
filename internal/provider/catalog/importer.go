@@ -26,6 +26,10 @@ func ImportOfficial(format string, provider asset.Provider, sourceURI string, so
 		return OpenAPIImporter{}.Import(provider, sourceURI, source)
 	case "smithy":
 		return SmithyImporter{}.Import(provider, sourceURI, source)
+	case "google-discovery":
+		return GoogleDiscoveryImporter{}.Import(provider, sourceURI, source)
+	case "azure-openapi":
+		return AzureOpenAPIImporter{}.Import(provider, sourceURI, source)
 	default:
 		return Catalog{}, fmt.Errorf("unsupported official metadata format %q", format)
 	}
@@ -55,6 +59,7 @@ type openAPIResourceType struct {
 	Class       string            `json:"class"`
 	DisplayName string            `json:"displayName"`
 	ScopeKinds  []asset.ScopeKind `json:"scopeKinds"`
+	REST        *RESTResource     `json:"rest,omitempty"`
 }
 
 func (OpenAPIImporter) Import(provider asset.Provider, sourceURI string, source []byte) (Catalog, error) {
@@ -128,6 +133,7 @@ func (OpenAPIImporter) Import(provider asset.Provider, sourceURI string, source 
 			Class:       resourceType.Class,
 			DisplayName: resourceType.DisplayName,
 			ScopeKinds:  append([]asset.ScopeKind(nil), resourceType.ScopeKinds...),
+			REST:        resourceType.REST,
 		})
 	}
 	normalize(&c)
@@ -317,6 +323,7 @@ func appendResourceTypes(c *Catalog, resourceTypes []openAPIResourceType) {
 			Class:       resourceType.Class,
 			DisplayName: resourceType.DisplayName,
 			ScopeKinds:  append([]asset.ScopeKind(nil), resourceType.ScopeKinds...),
+			REST:        resourceType.REST,
 		})
 	}
 }

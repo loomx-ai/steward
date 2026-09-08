@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: pubsub.googleapis.com/Topic
+  class: messaging.topic
+presentation:
+  displayNames:
+    en-US: Pub/Sub topic
+    zh-CN: 消息主题
+  consoleLinkTemplate: https://console.cloud.google.com/cloudpubsub/topic/detail/{nativeId|suffix:/}?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: pubsub.projects.topics.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: pubsub.projects.topics.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: pubsub.projects.topics.get
+      itemsPath: $
+      identityPath: name

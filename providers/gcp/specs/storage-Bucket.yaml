@@ -1,0 +1,47 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: storage.googleapis.com/Bucket
+  class: storage.bucket
+presentation:
+  displayNames:
+    en-US: Cloud Storage bucket
+    zh-CN: 对象存储桶
+  consoleLinkTemplate: https://console.cloud.google.com/storage/browser/{nativeId|suffix:/}?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: storage.buckets.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: storage.buckets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: storage.buckets.get
+      itemsPath: $
+      identityPath: name

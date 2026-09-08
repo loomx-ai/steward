@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	providerName := flag.String("provider", "", "cloud provider: alicloud or aws")
+	providerName := flag.String("provider", "", "cloud provider: alicloud, aws, gcp, or azure")
 	format := flag.String("format", "openapi", "official metadata format")
 	sourcePath := flag.String("source", "", "path to official metadata")
 	outputPath := flag.String("output", "", "path for deterministic generated catalog")
@@ -26,7 +26,7 @@ func run(provider asset.Provider, format, sourcePath, outputPath string) error {
 	if provider == "" || sourcePath == "" || outputPath == "" {
 		return fmt.Errorf("provider, source, and output are required")
 	}
-	if provider != asset.ProviderAliCloud && provider != asset.ProviderAWS {
+	if provider != asset.ProviderAliCloud && provider != asset.ProviderAWS && provider != asset.ProviderGCP && provider != asset.ProviderAzure {
 		return fmt.Errorf("unsupported provider %q", provider)
 	}
 	source, err := os.ReadFile(sourcePath)

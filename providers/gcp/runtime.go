@@ -49,10 +49,6 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, NetworkClosure: true}}
 }
-func (r *Runtime) Invoke(context.Context, contracts.Invocation) (contracts.InvocationResult, error) {
-	return contracts.InvocationResult{}, fmt.Errorf("GCP uses provider-owned REST operations")
-}
-
 func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {
 	data, err := c.request(ctx, "GET", "https://cloudresourcemanager.googleapis.com/v3/projects/"+c.project, nil)
 	if err != nil {

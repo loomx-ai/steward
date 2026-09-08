@@ -1,0 +1,54 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: run.googleapis.com/Service
+  class: compute.service
+presentation:
+  displayNames:
+    en-US: Cloud Run service
+    zh-CN: Cloud Run 服务
+  consoleLinkTemplate: https://console.cloud.google.com/run/detail/{regionId}/{nativeId|suffix:/}/metrics?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: run.projects.locations.services.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: member_of
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+actions:
+  delete:
+    operation: run.projects.locations.services.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: run.projects.locations.services.get
+      itemsPath: $
+      identityPath: name

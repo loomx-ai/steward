@@ -1,0 +1,51 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: pubsub.googleapis.com/Subscription
+  class: messaging.subscription
+presentation:
+  displayNames:
+    en-US: Pub/Sub subscription
+    zh-CN: 消息订阅
+  consoleLinkTemplate: https://console.cloud.google.com/cloudpubsub/subscription/detail/{nativeId|suffix:/}?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: cloud-asset-inventory
+  detail:
+    operation: pubsub.projects.subscriptions.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: uses
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+actions:
+  delete:
+    operation: pubsub.projects.subscriptions.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: pubsub.projects.subscriptions.get
+      itemsPath: $
+      identityPath: name
