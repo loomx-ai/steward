@@ -296,25 +296,46 @@ func (c *client) privateDNSRegistrationChildren(ctx context.Context, parent asse
 // independently planned link actions to finish first, including links in zones
 // outside the VNet's own resource group.
 func (c *client) virtualNetworkHasDNSLinks(ctx context.Context, id string) (bool, error) {
+	links, err := c.virtualNetworkDNSLinks(ctx, id)
+	return len(links) != 0, err
+}
+
+func (c *client) virtualNetworkDNSLinks(ctx context.Context, id string) ([]serviceChild, error) {
 	metadata, err := providerData()
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	runtime := &Runtime{bundle: metadata.bundle}
 	kind := runtime.resourceKind(privateDNSLinkType)
 	request := contracts.InventoryRequest{Source: productInventorySource, ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}}
+	result := []serviceChild{}
 	for {
 		batch, err := runtime.listProduct(ctx, c, request, nil)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		for _, link := range batch.Items {
 			if strings.EqualFold(text(object(link.Normalized["virtualNetwork"])["id"]), id) {
-				return true, nil
+				rule, _ := findType(privateDNSLinkType)
+				endpoint, err := c.resourceURL(rule, link.NativeID)
+				if err != nil {
+					return nil, err
+				}
+				live, err := c.request(ctx, "GET", endpoint)
+				if err != nil {
+					return nil, err
+				}
+				if !validResourceResponse(live, link.NativeID, privateDNSLinkType) || !strings.EqualFold(text(object(object(live.data["properties"])["virtualNetwork"])["id"]), id) {
+					return nil, fmt.Errorf("VNet DNS link membership changed")
+				}
+				if err := serviceIncarnation(asset.Asset{Normalized: link.Normalized}, live.data); err != nil {
+					return nil, err
+				}
+				result = append(result, serviceChild{id: link.NativeID, kind: privateDNSLinkType, data: live.data})
 			}
 		}
 		if batch.Complete {
-			return false, nil
+			return result, nil
 		}
 		request.Cursor = batch.NextCursor
 	}

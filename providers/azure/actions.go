@@ -265,7 +265,7 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 		return poll, err
 	}
 	read, err := a.Readback(ctx, request)
-	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
 }
 
 func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contracts.WaitResult, error) {

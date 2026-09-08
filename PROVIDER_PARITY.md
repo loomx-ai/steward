@@ -275,3 +275,14 @@ background evidence only, not acceptance evidence for this work.
   Full Go/Python tests, vet and targeted races pass. AKS nested integration,
   Uniform VHD/disk-detachment support, other parent lifecycles, remaining
   families and independent emulator/application acceptance remain open.
+
+- AKS group cleanup now recursively reviews native scale-set, private-endpoint
+  and DNS trees, including verified external disks, links and records. Native
+  detail reads supplement sparse group-index responses. Frozen scope, current
+  membership, creation/generation, permissions, locks and protections have
+  retained tests; missing external inventory remains unresolved. Resumed
+  completion requires group absence and individual 404s for all known impacts.
+  Shared DNS zones/manual records remain separate. Azure and GCP waiters no
+  longer report completion alongside readback errors. Full Go/vet and targeted
+  races pass. Remaining service families/parent lifecycles and independent
+  emulator/application acceptance are still unfinished.

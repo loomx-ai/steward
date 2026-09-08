@@ -156,3 +156,16 @@ func TestWaiterRejectsPersistedForeignOperationsAndProviderFailure(t *testing.T)
 		t.Fatalf("operation failure lost or leaked: %v", err)
 	}
 }
+
+func TestWaiterNeverReportsCompletionWhenResourceReadbackFails(t *testing.T) {
+	a := protocolAction(t, "run.googleapis.com/Service", "projects/sample-project/locations/us-central1/services/web", func(request *http.Request) (*http.Response, error) {
+		if request.Method != "GET" || !strings.HasSuffix(request.URL.Path, "/services/web") {
+			t.Fatalf("unexpected readback %s %s", request.Method, request.URL)
+		}
+		return apiResponse(request, 403, `{"error":{"code":403,"status":"PERMISSION_DENIED"}}`), nil
+	})
+	wait, err := a.Wait(context.Background(), contracts.ActionRequest{Action: "delete"}, contracts.ActionResult{})
+	if err == nil || wait.Done {
+		t.Fatalf("failed readback reported completion: %+v %v", wait, err)
+	}
+}

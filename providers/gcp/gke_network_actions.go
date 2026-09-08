@@ -337,7 +337,7 @@ func (a *action) waitGKENetwork(ctx context.Context, request contracts.ActionReq
 		}
 		if !pending {
 			read, err := a.gkeReadback(ctx, request)
-			return contracts.WaitResult{Done: !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, err
+			return contracts.WaitResult{Done: err == nil && !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, err
 		}
 	} else {
 		next, err = a.prepareGKENetwork(ctx, request)

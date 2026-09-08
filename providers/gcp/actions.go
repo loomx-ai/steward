@@ -352,7 +352,7 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 		return contracts.WaitResult{Data: data, State: text(data["phase"]), RetryAfter: 2 * time.Second}, nil
 	}
 	read, err := a.Readback(ctx, request)
-	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
 }
 
 func (a *action) waitOperation(ctx context.Context, operationID string) (contracts.WaitResult, error) {

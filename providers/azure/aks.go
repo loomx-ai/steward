@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -43,9 +44,9 @@ func inResourceGroup(id, group string) bool {
 	return strings.EqualFold(id, group) || strings.HasPrefix(strings.ToLower(id), strings.ToLower(group)+"/")
 }
 
-// Resource Manager's group list is the authority for all top-level resources,
-// including kinds without a direct delete driver. Known nested resources are
-// included from inventory as well, so they remain visible in the impact plan.
+// The native group list establishes membership for all kinds. Known resources
+// are read with their product APIs, and documented cascades are expanded until
+// every nested or external descendant has been visited.
 func (c *client) aksResources(ctx context.Context, clusterID, group string) ([]map[string]any, error) {
 	response, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
 	if isNotFound(err) {
@@ -54,7 +55,7 @@ func (c *client) aksResources(ctx context.Context, clusterID, group string) ([]m
 	if err != nil {
 		return nil, err
 	}
-	if !strings.EqualFold(text(response.data["id"]), group) {
+	if !validResourceResponse(response, group, groupType) {
 		return nil, fmt.Errorf("AKS node resource group identity mismatch")
 	}
 	if owner := text(response.data["managedBy"]); owner != "" && !strings.EqualFold(owner, clusterID) {
@@ -64,37 +65,138 @@ func (c *client) aksResources(ctx context.Context, clusterID, group string) ([]m
 	if err != nil {
 		return nil, err
 	}
-	result := []map[string]any{response.data}
 	response.data["type"] = groupType
-	seen := map[string]bool{group: true}
+	result := []map[string]any{response.data}
+	seen := map[string]map[string]any{group: response.data}
+	var visit func(map[string]any) error
+	visit = func(raw map[string]any) error {
+		id, kind, err := parseID(text(raw["id"]))
+		if err != nil || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
+			return fmt.Errorf("invalid AKS descendant identity")
+		}
+		if previous := seen[id]; previous != nil {
+			return serviceListedIncarnation(raw, previous)
+		}
+		rule, known := findType(kind)
+		if known {
+			endpoint, err := c.resourceURL(rule, id)
+			if err != nil {
+				return err
+			}
+			live, err := c.request(ctx, "GET", endpoint)
+			if err != nil {
+				return err
+			}
+			if !validResourceResponse(live, id, kind) {
+				return fmt.Errorf("AKS resource detail identity mismatch")
+			}
+			if err := serviceListedIncarnation(raw, live.data); err != nil {
+				return err
+			}
+			raw = live.data
+			raw["type"] = rule.NativeType
+		}
+		seen[id] = raw
+		result = append(result, raw)
+		if !known {
+			return nil
+		}
+		children, err := c.children(ctx, rule, raw)
+		if err != nil {
+			return err
+		}
+		if rule.NativeType == vnetType {
+			links, err := c.virtualNetworkDNSLinks(ctx, id)
+			if err != nil {
+				return err
+			}
+			for _, link := range links {
+				children = append(children, link.data)
+			}
+		}
+		for _, child := range children {
+			if !inResourceGroup(text(child["id"]), group) && !aksExternalRelation(aksNativeAsset(raw), aksNativeAsset(child)) {
+				return fmt.Errorf("AKS descendant is outside its native deletion cascade")
+			}
+			if err := visit(child); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
 	listed := map[string]bool{group: true}
 	for _, value := range values {
 		raw := object(value)
 		id, kind, err := parseID(text(raw["id"]))
-		if err != nil || !inResourceGroup(id, group) || listed[id] || !strings.EqualFold(kind, text(raw["type"])) {
+		if err != nil || !inResourceGroup(id, group) || listed[id] || !validResponseType(kind, text(raw["type"])) {
 			return nil, fmt.Errorf("invalid or duplicate AKS node resource group member")
 		}
 		listed[id] = true
-		if !seen[id] {
-			seen[id] = true
-			result = append(result, raw)
+		if err := visit(raw); err != nil {
+			return nil, err
 		}
-		if rule, known := findType(kind); known {
-			children, err := c.children(ctx, rule, raw)
-			if err != nil {
-				return nil, err
+	}
+	current, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
+	if err != nil {
+		return nil, err
+	}
+	if !validResourceResponse(current, group, groupType) || !strings.EqualFold(text(response.data["managedBy"]), text(current.data["managedBy"])) {
+		return nil, fmt.Errorf("AKS resource group ownership changed")
+	}
+	if err := serviceListedIncarnation(response.data, current.data); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// This view is used only for relationship checks; inventory still uses the full
+// normalization path and its redaction/protection rules.
+func aksNativeAsset(raw map[string]any) asset.Asset {
+	id, kind, _ := parseID(text(raw["id"]))
+	normalized := map[string]any{}
+	for key, value := range object(raw["properties"]) {
+		normalized[key] = value
+	}
+	normalized["managedBy"] = raw["managedBy"]
+	return asset.Asset{Identity: asset.Identity{NativeID: id, NativeType: kind}, Normalized: normalized}
+}
+
+func aksExternalRelation(parent, child asset.Asset) bool {
+	if strings.EqualFold(parent.Identity.NativeType, vnetType) && strings.EqualFold(child.Identity.NativeType, privateDNSLinkType) {
+		return strings.EqualFold(text(object(child.Normalized["virtualNetwork"])["id"]), parent.Identity.NativeID)
+	}
+	// Flexible VMs require independent deletion; deleting a scale set in the
+	// group does not authorize deletion of a Flexible VM in another group.
+	if strings.EqualFold(parent.Identity.NativeType, scaleSetType) && strings.EqualFold(child.Identity.NativeType, vmType) {
+		return false
+	}
+	return slices.ContainsFunc(serviceChildKinds(parent.Identity.NativeType), func(kind string) bool {
+		return strings.EqualFold(kind, child.Identity.NativeType)
+	}) && serviceChildRelation(parent, child)
+}
+
+func aksFrozenMembers(group string, assets []asset.Asset) map[string]bool {
+	members := map[string]bool{}
+	for _, value := range assets {
+		if inResourceGroup(value.Identity.NativeID, group) {
+			members[strings.ToLower(value.Identity.NativeID)] = true
+		}
+	}
+	for changed := true; changed; {
+		changed = false
+		for _, parent := range assets {
+			if !members[strings.ToLower(parent.Identity.NativeID)] {
+				continue
 			}
-			for _, child := range children {
-				childID, _, _ := parseID(text(child["id"]))
-				if seen[childID] {
-					continue
+			for _, child := range assets {
+				id := strings.ToLower(child.Identity.NativeID)
+				if !members[id] && aksExternalRelation(parent, child) {
+					members[id], changed = true, true
 				}
-				seen[childID] = true
-				result = append(result, child)
 			}
 		}
 	}
-	return result, nil
+	return members
 }
 
 func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
@@ -112,8 +214,11 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 		if err != nil {
 			return result, err
 		}
-		if !strings.EqualFold(text(response.data["id"]), cluster.Identity.NativeID) || !strings.EqualFold(text(response.data["type"]), aksType) {
+		if !validResourceResponse(response, cluster.Identity.NativeID, aksType) {
 			return result, fmt.Errorf("AKS cluster identity mismatch")
+		}
+		if err := serviceIncarnation(cluster, response.data); err != nil {
+			return result, err
 		}
 		group, err := aksNodeGroup(h.client.subscription, object(response.data["properties"]))
 		if err != nil {
@@ -128,18 +233,25 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 			return result, err
 		}
 		members := map[string]string{}
+		liveByID := map[string]map[string]any{}
 		for _, raw := range resources {
 			id, nativeType, _ := parseID(text(raw["id"]))
 			members[id] = nativeType
+			liveByID[id] = raw
 		}
 		byID := map[string]asset.Asset{}
 		for _, value := range assets {
-			if value.Identity.Provider != cluster.Identity.Provider || value.Identity.ConnectionID != cluster.Identity.ConnectionID || value.Identity.Partition != cluster.Identity.Partition || !inResourceGroup(value.Identity.NativeID, group) {
+			if value.Identity.Provider != cluster.Identity.Provider || value.Identity.ConnectionID != cluster.Identity.ConnectionID || value.Identity.Partition != cluster.Identity.Partition || (!inResourceGroup(value.Identity.NativeID, group) && members[strings.ToLower(value.Identity.NativeID)] == "") {
 				continue
 			}
 			id, nativeType, err := parseID(value.Identity.NativeID)
 			if err != nil || !strings.EqualFold(nativeType, value.Identity.NativeType) || byID[id].ID != "" {
 				return result, fmt.Errorf("invalid or ambiguous AKS managed asset")
+			}
+			if live := liveByID[id]; live != nil {
+				if err := serviceIncarnation(value, live); err != nil {
+					return result, err
+				}
 			}
 			byID[id] = value
 			members[id] = value.Identity.NativeType
@@ -164,11 +276,22 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 	return result, nil
 }
 
-// Group deletion takes precedence over a VM's Detach option. Avoid assigning a
-// second exclusive controller to an attachment deleted with the same AKS group.
-func sameAKSNodeGroup(assets []asset.Asset, controller asset.Asset, attachedID string) bool {
+// Group deletion takes precedence over per-resource lifetime policies. Resolve
+// the frozen membership once per contribution, including native external trees,
+// so an outside DNS zone cannot claim records already owned by the AKS cascade.
+type aksMemberKey struct {
+	connection    asset.ConnectionID
+	partition, id string
+}
+
+func aksKey(identity asset.Identity, nativeID string) aksMemberKey {
+	return aksMemberKey{identity.ConnectionID, identity.Partition, strings.ToLower(nativeID)}
+}
+
+func aksManagedMembers(assets []asset.Asset) map[aksMemberKey]bool {
+	result := map[aksMemberKey]bool{}
 	for _, cluster := range assets {
-		if cluster.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(cluster.Identity.NativeType, aksType) || cluster.Identity.ConnectionID != controller.Identity.ConnectionID || cluster.Identity.Partition != controller.Identity.Partition {
+		if cluster.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(cluster.Identity.NativeType, aksType) {
 			continue
 		}
 		parts := strings.Split(cluster.Identity.NativeID, "/")
@@ -176,11 +299,50 @@ func sameAKSNodeGroup(assets []asset.Asset, controller asset.Asset, attachedID s
 			continue
 		}
 		group, err := aksNodeGroup(parts[2], cluster.Normalized)
-		if err == nil && inResourceGroup(controller.Identity.NativeID, group) && inResourceGroup(attachedID, group) {
-			return true
+		if err != nil {
+			continue
+		}
+		candidates := []asset.Asset{}
+		for _, value := range assets {
+			if value.Identity.Provider == cluster.Identity.Provider && value.Identity.ConnectionID == cluster.Identity.ConnectionID && value.Identity.Partition == cluster.Identity.Partition {
+				candidates = append(candidates, value)
+			}
+		}
+		for id := range aksFrozenMembers(group, candidates) {
+			result[aksKey(cluster.Identity, id)] = true
 		}
 	}
-	return false
+	return result
+}
+
+func (a *action) aksImpacts(request contracts.ActionRequest, group string) (map[string]contracts.ActionImpact, error) {
+	root := request.Asset
+	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, aksType) {
+		return nil, serviceDenied("invalid_aks_controller")
+	}
+	impacts := map[string]contracts.ActionImpact{}
+	assets := []asset.Asset{}
+	seen := map[asset.AssetID]bool{root.ID: true}
+	for _, impact := range request.LifecycleImpacts {
+		identity := impact.Asset.Identity
+		id, kind, err := parseID(identity.NativeID)
+		if err != nil || impact.Asset.ID == "" || seen[impact.Asset.ID] || !strings.EqualFold(kind, identity.NativeType) || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || impacts[id].Asset.ID != "" || impact.ControllerID != root.ID {
+			return nil, serviceDenied("invalid_aks_lifecycle_impact")
+		}
+		if !impact.Delete {
+			return nil, serviceDenied("aks_retention_requires_moving_resource")
+		}
+		seen[impact.Asset.ID] = true
+		impacts[id] = impact
+		assets = append(assets, impact.Asset)
+	}
+	members := aksFrozenMembers(group, assets)
+	for id := range impacts {
+		if !members[id] {
+			return nil, serviceDenied("aks_external_resource_scope_changed")
+		}
+	}
+	return impacts, nil
 }
 
 func (a *action) aksPreflight(ctx context.Context, request contracts.ActionRequest, raw map[string]any, locks []any) (string, error) {
@@ -192,72 +354,89 @@ func (a *action) aksPreflight(ctx context.Context, request contracts.ActionReque
 	if err != nil || group != planned || inResourceGroup(a.id, group) {
 		return "aks_node_resource_group_changed", nil
 	}
+	if err := serviceIncarnation(request.Asset, raw); err != nil {
+		return "", err
+	}
+	impacts, err := a.aksImpacts(request, group)
+	if err != nil {
+		return "", err
+	}
 	resources, err := a.client.aksResources(ctx, a.id, group)
 	if err != nil {
 		return "", err
 	}
-	impacts := map[string]contracts.ActionImpact{}
-	for _, impact := range request.LifecycleImpacts {
-		identity := impact.Asset.Identity
-		if impact.ControllerID != request.Asset.ID {
-			continue
-		}
-		id, nativeType, err := parseID(identity.NativeID)
-		if err != nil || !strings.EqualFold(nativeType, identity.NativeType) || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !inResourceGroup(id, group) || impacts[id].Asset.ID != "" {
-			return "invalid_aks_lifecycle_impact", nil
-		}
-		if !impact.Delete {
-			return "aks_retention_requires_moving_resource", nil
-		}
-		if locked(id, locks) {
-			return "azure_management_lock", nil
-		}
-		impacts[id] = impact
-	}
+	visited, externalGroups := map[string]bool{}, map[string]bool{}
 	for _, resource := range resources {
 		id, kind, _ := parseID(text(resource["id"]))
 		impact, found := impacts[id]
 		if !found || !strings.EqualFold(impact.Asset.Identity.NativeType, kind) {
 			return "aks_resource_missing_from_plan", nil
 		}
+		visited[id] = true
+		if err := serviceIncarnation(impact.Asset, resource); err != nil {
+			return "", err
+		}
 		if locked(id, locks) {
 			return "azure_management_lock", nil
+		}
+		if !inResourceGroup(id, group) {
+			external := strings.Join(strings.Split(id, "/")[:5], "/")
+			if !externalGroups[external] {
+				current, err := a.client.request(ctx, "GET", apiURL(external, resourcesVersion))
+				if err != nil {
+					return "", err
+				}
+				if !validResourceResponse(current, external, groupType) {
+					return "", fmt.Errorf("AKS external resource group identity mismatch")
+				}
+				if text(current.data["managedBy"]) != "" {
+					return "azure_managed_resource_group", nil
+				}
+				externalGroups[external] = true
+			}
 		}
 		if rule, known := findType(kind); known {
 			if reason := protectionReason(rule, resource); reason != "" && !controllerOnlyReason(reason) {
 				return reason, nil
 			}
 		}
-		for _, tag := range []string{"steward/protected", "steward:protected"} {
-			switch strings.ToLower(text(object(resource["tags"])[tag])) {
-			case "1", "true", "yes", "on", "protected":
-				return "aks_managed_resource_protected", nil
+		for tag, value := range object(resource["tags"]) {
+			if strings.EqualFold(tag, "steward/protected") || strings.EqualFold(tag, "steward:protected") {
+				switch strings.ToLower(text(value)) {
+				case "1", "true", "yes", "on", "protected":
+					return "aks_managed_resource_protected", nil
+				}
 			}
 		}
 	}
-	// An ARM group deletion can also trigger VM/NIC attachment deletion outside
-	// that group. Check the current attachment policy rather than assuming all
-	// resources live in the node resource group.
-	for _, impact := range impacts {
-		kind, ok := findType(impact.Asset.Identity.NativeType)
-		if !ok || (kind.NativeType != vmType && kind.NativeType != nicType) {
+	for id, impact := range impacts {
+		kind, known := findType(impact.Asset.Identity.NativeType)
+		if !known {
+			continue // Unknown kinds remain contained by the native group.
+		}
+		if !visited[id] {
+			endpoint, err := a.client.resourceURL(kind, id)
+			if err != nil {
+				return "", err
+			}
+			if _, err = a.client.request(ctx, "GET", endpoint); !isNotFound(err) {
+				if err != nil {
+					return "", err
+				}
+				return "aks_resource_membership_changed", nil
+			}
+		}
+	}
+	// Group deletion also triggers native VM/NIC auto-delete policies. Until
+	// external attachment detachment/retention is modeled for AKS, require those
+	// attachments to stay within the explicitly reviewed node group.
+	for _, resource := range resources {
+		_, nativeType, _ := parseID(text(resource["id"]))
+		kind, known := findType(nativeType)
+		if !known || (kind.NativeType != vmType && kind.NativeType != nicType) {
 			continue
 		}
-		endpoint, err := a.client.resourceURL(kind, impact.Asset.Identity.NativeID)
-		if err != nil {
-			return "", err
-		}
-		current, err := a.client.request(ctx, "GET", endpoint)
-		if isNotFound(err) {
-			continue
-		}
-		if err != nil {
-			return "", err
-		}
-		if !validResourceResponse(current, impact.Asset.Identity.NativeID, kind.NativeType) {
-			return "", fmt.Errorf("AKS attachment owner identity mismatch")
-		}
-		attachments, err := resourceAttachments(a.client.subscription, kind.NativeType, object(current.data["properties"]))
+		attachments, err := resourceAttachments(a.client.subscription, kind.NativeType, object(resource["properties"]))
 		if err != nil {
 			return "", err
 		}
@@ -275,15 +454,45 @@ func (a *action) aksGroupReadback(ctx context.Context, request contracts.ActionR
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	response, err := a.client.request(ctx, "GET", apiURL(group, resourcesVersion))
-	if isNotFound(err) {
-		return contracts.ReadbackResult{Exists: false}, nil
-	}
+	impacts, err := a.aksImpacts(request, group)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	if !strings.EqualFold(text(response.data["id"]), group) {
-		return contracts.ReadbackResult{}, fmt.Errorf("AKS node resource group readback identity mismatch")
+	response, err := a.client.request(ctx, "GET", apiURL(group, resourcesVersion))
+	if !isNotFound(err) {
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		if !validResourceResponse(response, group, groupType) {
+			return contracts.ReadbackResult{}, fmt.Errorf("AKS node resource group readback identity mismatch")
+		}
+		return contracts.ReadbackResult{Exists: true, State: "deleting_node_resource_group"}, nil
 	}
-	return contracts.ReadbackResult{Exists: true, State: "deleting_node_resource_group"}, nil
+	ids := make([]string, 0, len(impacts))
+	for id := range impacts {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		kind, known := findType(impacts[id].Asset.Identity.NativeType)
+		if !known || strings.EqualFold(kind.NativeType, groupType) {
+			continue // Group absence is the authority for unknown contained kinds.
+		}
+		endpoint, err := a.client.resourceURL(kind, id)
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		live, err := a.client.request(ctx, "GET", endpoint)
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		if !validResourceResponse(live, id, kind.NativeType) {
+			return contracts.ReadbackResult{}, fmt.Errorf("AKS child readback identity mismatch")
+		}
+		return contracts.ReadbackResult{Exists: true, State: "deleting_aks_resources"}, nil
+	}
+	return contracts.ReadbackResult{Exists: false}, nil
 }

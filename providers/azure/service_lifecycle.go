@@ -180,13 +180,14 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	aksMembers := aksManagedMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {
 		return dnsExternalController(parents[i].Identity.NativeType) && !dnsExternalController(parents[j].Identity.NativeType)
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
-		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || sameAKSNodeGroup(assets, parent, parent.Identity.NativeID) {
+		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[aksKey(parent.Identity, parent.Identity.NativeID)] {
 			continue
 		}
 		kind, _ := findType(parent.Identity.NativeType)
@@ -237,6 +238,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if target == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				continue
+			}
+			if aksMembers[aksKey(target.Identity, child.id)] {
 				continue
 			}
 			if err := serviceIncarnation(*target, child.data); err != nil {

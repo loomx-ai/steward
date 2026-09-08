@@ -23,6 +23,7 @@ type aksScenario struct {
 	status                            int
 	deletes, polls, groupReads        int
 	clusterGone, groupGone            bool
+	childrenGone                      bool
 	operationFailed                   bool
 }
 
@@ -85,8 +86,14 @@ func (s *aksScenario) runtime(t *testing.T) *Runtime {
 		case "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/locks":
 			return jsonResponse(200, map[string]any{"value": s.locks}, nil), nil
 		case strings.ToLower(text(s.vm["id"])):
+			if s.childrenGone {
+				return jsonResponse(404, map[string]any{}, nil), nil
+			}
 			return jsonResponse(200, s.vm, nil), nil
 		case strings.ToLower(text(s.disk["id"])):
+			if s.childrenGone {
+				return jsonResponse(404, map[string]any{}, nil), nil
+			}
 			return jsonResponse(200, s.disk, nil), nil
 		case operation:
 			s.polls++
@@ -188,6 +195,11 @@ func TestAKSPlansNativeGroupAndUnknownResourcesAndWaitsForGroupAbsence(t *testin
 		t.Fatalf("wait prematurely succeeded: %+v %v", wait, err)
 	}
 	s.groupGone = true
+	wait, err = driver.Wait(context.Background(), request, result)
+	if err != nil || wait.Done || wait.State != "deleting_aks_resources" {
+		t.Fatalf("surviving children overlooked: %+v %v", wait, err)
+	}
+	s.childrenGone = true
 	wait, err = driver.Wait(context.Background(), request, result)
 	if err != nil || !wait.Done || s.deletes != 1 {
 		t.Fatalf("wait=%+v err=%v deletes=%d", wait, err, s.deletes)
@@ -324,6 +336,11 @@ func TestAKSAlreadyAbsentClusterDoesNotHideSurvivingNodeGroup(t *testing.T) {
 		t.Fatalf("live node group prematurely completed: %+v %v", wait, err)
 	}
 	s.groupGone = true
+	check, err = driver.Preflight(context.Background(), request)
+	if err != nil || check.Absent {
+		t.Fatalf("surviving children overlooked: %+v %v", check, err)
+	}
+	s.childrenGone = true
 	check, err = driver.Preflight(context.Background(), request)
 	if err != nil || !check.Absent {
 		t.Fatalf("absence not confirmed: %+v %v", check, err)

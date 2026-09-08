@@ -80,8 +80,9 @@ See [VM and attached-resource deletion](https://learn.microsoft.com/en-us/azure/
 for the platform's disk, NIC and public-IP deletion policies.
 
 AKS cleanup reads `properties.nodeResourceGroup` from the live cluster and lists
-that group's resources with native ARM pagination. Group names and `MC_` prefixes
-are not ownership evidence. The group, known children, and unknown resource kinds
+that group's resources with native ARM pagination. Known resources use full
+product GETs and recursive native child collections. Group names and `MC_`
+prefixes are not ownership evidence. The group, known children, and unknown resource kinds
 must be present in the inventory and reviewed impact plan. Group ownership takes
 precedence over VM/NIC `Detach` options inside the group. Live locks, protected
 tags, newly discovered resources, changed groups, and inaccessible dependent
@@ -93,8 +94,8 @@ group. A retention request is blocked at planning time; move such resources to a
 different group and rescan before deleting the cluster. Automatic VM/NIC deletion
 of attachments outside the group currently requires detaching those attachments
 first. An operation marked successful is followed by reads of both the cluster
-and its node resource group. Only confirmed group absence permits reconciliation
-of all contained resources, including kinds without independent action drivers.
+and its node resource group. Group absence covers unknown contained kinds;
+every known reviewed descendant must independently return 404 before completion.
 ARM provides no atomic snapshot-and-delete transaction for group membership;
 external writers must not add resources while a reviewed deletion is running.
 
@@ -179,9 +180,24 @@ mode, membership, VM/disk creation IDs, reciprocal ownership, generation,
 protection and complete collections are checked. Uniform unmanaged VHD deletion
 and disk detachment are not yet modeled; those configurations require detachment
 before cleanup. Retention of Uniform managed children blocks parent deletion.
-AKS integration for these nested trees remains unfinished.
+AKS group cleanup includes these nested trees and their verified external disks.
 
 The Network instance APIs retain their declared `2018-10-01` version even though
 the upstream files are stored under the `2024-05-01` source folder. Four unchanged
 official examples supplement the retained lifecycle and native-wire tests. See
 [Flexible deletion prerequisites](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machine-scale-sets/delete/vmss-operation-not-allowed).
+
+AKS review also expands documented cascades beyond the node resource group:
+Uniform instance disks, private endpoint NIC/DNS resources, and VNet private-DNS
+links with their auto-registered records. Frozen native relationships and live
+membership checks bind every external impact. Shared zones and manual DNS
+records remain independent. Native detail/generation checks prevent a sparse
+ARM group index from hiding lifecycle state, and group ownership is re-read.
+
+The same frozen AKS membership suppresses duplicate service/attachment ownership.
+Tests combine 18 nested and external impacts, retained children, stale or missing
+inventory, new extensions/records, inherited locks, external group permissions,
+changed ownership and serialized worker restart. Known resources are read after
+group absence, including external DNS records. A failed resource readback cannot
+set the waiter's completion flag. Other service-parent lifecycles and independent
+emulator/application acceptance remain open.

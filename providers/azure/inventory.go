@@ -169,6 +169,7 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 		return nil, err
 	}
 	var values []any
+	verifiedChildren := map[string]bool{}
 	if HasServiceCascade(kind.NativeType) {
 		endpoint, err := c.resourceURL(kind, id)
 		if err != nil {
@@ -181,12 +182,16 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 		if !validResourceResponse(current, id, kind.NativeType) {
 			return nil, fmt.Errorf("Azure service parent identity mismatch")
 		}
+		if err := serviceListedIncarnation(raw, current.data); err != nil {
+			return nil, err
+		}
 		children, err := c.serviceChildren(ctx, asset.Identity{NativeType: kind.NativeType, NativeID: id}, current.data)
 		if err != nil {
 			return nil, err
 		}
 		for _, child := range children {
 			values = append(values, child.data)
+			verifiedChildren[child.id] = true
 		}
 	}
 	switch kind.NativeType {
@@ -211,7 +216,7 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 	for _, value := range values {
 		child := object(value)
 		childID, childType, err := parseID(text(child["id"]))
-		if err != nil || !strings.HasPrefix(childID, id+"/") {
+		if err != nil || (!strings.HasPrefix(childID, id+"/") && !verifiedChildren[childID]) {
 			return nil, fmt.Errorf("Azure child belongs to another parent")
 		}
 		known, ok := findType(childType)
