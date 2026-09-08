@@ -23,6 +23,7 @@ const (
 	ProviderAliCloud Provider = "alicloud"
 	ProviderAWS      Provider = "aws"
 	ProviderGCP      Provider = "gcp"
+	ProviderAzure    Provider = "azure"
 )
 
 type ConnectionSite string
@@ -67,12 +68,13 @@ const (
 type CredentialType string
 
 const (
-	CredentialAliCloudAccessKey CredentialType = "access_key"
-	CredentialAliCloudSTS       CredentialType = "sts"
-	CredentialAliCloudOAuth     CredentialType = "oauth"
-	CredentialAWSAccessKey      CredentialType = "access_key"
-	CredentialAWSSession        CredentialType = "session"
-	CredentialGCPServiceAccount CredentialType = "service_account"
+	CredentialAliCloudAccessKey     CredentialType = "access_key"
+	CredentialAliCloudSTS           CredentialType = "sts"
+	CredentialAliCloudOAuth         CredentialType = "oauth"
+	CredentialAWSAccessKey          CredentialType = "access_key"
+	CredentialAWSSession            CredentialType = "session"
+	CredentialGCPServiceAccount     CredentialType = "service_account"
+	CredentialAzureServicePrincipal CredentialType = "service_principal"
 )
 
 type CloudConnection struct {

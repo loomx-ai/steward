@@ -31,7 +31,7 @@
     },
     {
       "label": {"en": "Cloud platforms", "zh": "云平台"},
-      "items": ["connections", "alicloud", "aws", "gcp"]
+      "items": ["connections", "alicloud", "aws", "gcp", "azure"]
     },
     {
       "label": {"en": "Use Steward", "zh": "使用指南"},

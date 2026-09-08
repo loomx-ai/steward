@@ -682,6 +682,7 @@ function credentialTypeName(
       sts: "credentials.sts",
       session: "credentials.session",
       service_account: "credentials.gcpServiceAccount",
+      service_principal: "credentials.azureServicePrincipal",
     }[type] ?? "credentials.unknown";
   return t(key as MessageKey);
 }

@@ -12,7 +12,7 @@
       "additionalProperties": false,
       "required": ["provider", "nativeType"],
       "properties": {
-        "provider": {"enum": ["alicloud", "aws", "gcp"]},
+        "provider": {"enum": ["alicloud", "aws", "gcp", "azure"]},
         "nativeType": {"type": "string", "minLength": 1},
         "class": {"type": "string"}
       }

@@ -46,8 +46,12 @@ func (i Identity) Key() string {
 		i.NativeType,
 		i.NativeID,
 	}
-	// GCP native IDs are full resource names including project and zone/region.
-	if scopeKey := strings.TrimSpace(i.ScopeKey); scopeKey != "" && i.Provider != ProviderGCP {
+	// GCP and Azure IDs include their full project/subscription resource path.
+	if i.Provider == ProviderAzure {
+		parts[3] = strings.ToLower(parts[3])
+		parts[4] = strings.ToLower(parts[4])
+	}
+	if scopeKey := strings.TrimSpace(i.ScopeKey); scopeKey != "" && i.Provider != ProviderGCP && i.Provider != ProviderAzure {
 		parts = append(parts, scopeKey)
 	}
 	return strings.Join(parts, "\x00")

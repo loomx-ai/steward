@@ -35,3 +35,5 @@ Scan the relevant scope after creating, moving, or deleting cloud resources, and
 <aside class="docs-note">An unscanned region or resource type is not evidence of an empty scope. Incomplete coverage can leave dependencies missing from the graph and cleanup tasks.</aside>
 
 For GCP, inventory comes from Cloud Asset Inventory and may lag behind cloud-side changes. Start with all active regions and global resources; see [Google Cloud scanning](./gcp.md).
+
+Azure inventory uses ARM and product APIs, including explicit child-resource discovery. Start with all active regions and global resources; see [Microsoft Azure](./azure.md).

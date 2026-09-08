@@ -27,6 +27,12 @@ export function cloudConsoleURL(
   if (provider === "aws") {
     return awsConsoleURL(nativeType, nativeId, regionId);
   }
+  if (provider === "azure") {
+    const parts = nativeId.split("/");
+    if (parts[0] !== "" || parts[1]?.toLowerCase() !== "subscriptions" || parts.length < 5 ||
+        parts.slice(1).some((part) => !part || part === "." || part === "..")) return undefined;
+    return "https://portal.azure.com/#resource" + parts.map(encodeURIComponent).join("/") + "/overview";
+  }
   return undefined;
 }
 

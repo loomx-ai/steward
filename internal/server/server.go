@@ -28,6 +28,7 @@ import (
 	"github.com/loomx-ai/steward/internal/webui"
 	"github.com/loomx-ai/steward/providers/alicloud"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
+	"github.com/loomx-ai/steward/providers/azure"
 	"github.com/loomx-ai/steward/providers/gcp"
 )
 
@@ -284,6 +285,16 @@ func providerRegistry(credentials contracts.CredentialSource) (*providerruntime.
 		return nil, err
 	}
 	if err := registry.RegisterBundle(gcpRuntime.Bundle()); err != nil {
+		return nil, err
+	}
+	azureRuntime, err := azure.NewRuntime(credentials)
+	if err != nil {
+		return nil, err
+	}
+	if err := registry.Register(azureRuntime); err != nil {
+		return nil, err
+	}
+	if err := registry.RegisterBundle(azureRuntime.Bundle()); err != nil {
 		return nil, err
 	}
 	return registry, nil

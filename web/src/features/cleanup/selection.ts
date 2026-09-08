@@ -54,7 +54,7 @@ export function confirmationMode(selector: {
   if (selector.kind === "connection") return "type_name";
   if (
     selector.kind === "scope" &&
-    (selector.scope_kind === "account" || selector.scope_kind === "project" || selector.scope_kind === "region")
+    (selector.scope_kind === "account" || selector.scope_kind === "project" || selector.scope_kind === "subscription" || selector.scope_kind === "region")
   ) {
     return "type_name";
   }

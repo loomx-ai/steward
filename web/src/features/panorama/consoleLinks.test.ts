@@ -32,6 +32,12 @@ const alicloudSpecs = readdirSync(
   });
 
 describe("cloudConsoleURL", () => {
+  it("preserves Azure ARM path segments while escaping resource names", () => {
+    expect(cloudConsoleURL({ provider: "azure", nativeType: "Microsoft.Network/virtualNetworks", nativeId: "/subscriptions/sub/resourceGroups/team group/providers/Microsoft.Network/virtualNetworks/vnet" }))
+      .toBe("https://portal.azure.com/#resource/subscriptions/sub/resourceGroups/team%20group/providers/Microsoft.Network/virtualNetworks/vnet/overview");
+    expect(cloudConsoleURL({ provider: "azure", nativeType: "Microsoft.Network/virtualNetworks", nativeId: "https://untrusted.example/resource" })).toBeUndefined();
+  });
+
   it("expands provider-spec templates for Alibaba Cloud detail routes", () => {
     expect(
       cloudConsoleURL({

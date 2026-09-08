@@ -35,3 +35,5 @@ navTitle: "扫描资源"
 <aside class="docs-note">扫描未覆盖的地域或资源类型，不能据此判断为空。覆盖不完整时，关系图和清理任务可能缺少依赖。</aside>
 
 GCP 清单来自 Cloud Asset Inventory，可能晚于云端实际变化。首次建议扫描全部启用地域和全局资源，参阅 [Google Cloud 扫描说明](./gcp.md)。
+
+Azure 盘点使用 ARM 和各产品 API，并显式发现支持的子资源。首次建议扫描全部启用地域和全局资源，参阅 [Microsoft Azure](./azure.md)。

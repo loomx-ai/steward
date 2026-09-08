@@ -483,7 +483,7 @@ func (c *Creator) accountRoot(ctx context.Context, connection asset.CloudConnect
 	regionRoots := make([]asset.Scope, 0, 1)
 	regionGroups := make(map[string][]asset.Scope)
 	for _, scope := range scopes {
-		if scope.Kind == asset.ScopeAccount || (connection.Provider == asset.ProviderGCP && scope.Kind == asset.ScopeProject) {
+		if scope.Kind == asset.ScopeAccount || (connection.Provider == asset.ProviderGCP && scope.Kind == asset.ScopeProject) || (connection.Provider == asset.ProviderAzure && scope.Kind == asset.ScopeSubscription) {
 			if scope.SupersededByID == "" {
 				accountScopes = append(accountScopes, scope)
 			} else {
@@ -500,7 +500,7 @@ func (c *Creator) accountRoot(ctx context.Context, connection asset.CloudConnect
 	plan := accountRootPlan{regions: make(map[string]asset.Scope, len(regionGroups))}
 	if connection.Provider != asset.ProviderAliCloud {
 		if len(accountScopes) != 1 {
-			return accountRootPlan{}, fmt.Errorf("connection %q requires exactly one account or project root scope", connection.ID)
+			return accountRootPlan{}, fmt.Errorf("connection %q requires exactly one provider root scope", connection.ID)
 		}
 		plan.root = accountScopes[0]
 	} else {

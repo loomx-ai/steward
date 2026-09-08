@@ -51,3 +51,5 @@ Check each status in Resource results and filter Cleanup logs by resource ID to 
 After fixing the cause, use the task’s available continue or resume action; completed resources are not executed again. Scan afterward and check retained resources and billing. Audits record the actor, action, and result.
 
 For Google Cloud, review the [supported actions and deletion protections](./gcp.md#deletion-protections), including VM auto-delete disks, nonempty buckets, and read-only GKE clusters.
+
+For Azure, review [cleanup protections](./azure.md#cleanup-protections), including management locks, VM attachment settings, empty storage requirements, and managed resources.

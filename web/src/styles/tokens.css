@@ -39,6 +39,7 @@
   --provider-alicloud: #ff6a00;
   --provider-aws: #232f3e;
   --provider-gcp: #4285f4;
+  --provider-azure: #0078d4;
 }
 
 .dark {
@@ -81,4 +82,5 @@
   --provider-alicloud: #ff6a00;
   --provider-aws: #fff;
   --provider-gcp: #8ab4f8;
+  --provider-azure: #50b0f0;
 }
