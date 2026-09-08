@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 64 current resource rules discover through native product List operations.
+All 66 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,7 +47,7 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 258 operations from
+Private Link and file shares. The current catalog contains 264 operations from
 49 root documents and 25 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
@@ -103,3 +103,20 @@ scope/permission changes, worker state restoration, and group absence readback.
 They are not real Azure or independent emulator verification. See Microsoft's
 [AKS deletion behavior](https://learn.microsoft.com/en-us/azure/aks/delete-cluster)
 and [node resource group lifecycle and retention](https://learn.microsoft.com/en-us/azure/aks/faq#can-i-restore-my-cluster-after-i-delete-it).
+
+Network Watcher has native packet-capture and connection-monitor rules alongside
+flow logs. Its documented parent deletion contributes all three child collections
+as reviewed impacts, with native paging, live detail reads, identity/generation
+checks and parent readback. Retaining any of these children blocks parent cleanup.
+Unlisted or unreadable children, malformed locks, changed incarnations, foreign
+impacts and protected tags cannot authorize deletion. The same child discovery
+is included when an AKS node resource group contains a Network Watcher.
+
+After native operation completion and parent absence, every planned child must
+also return 404 before reconciliation finishes. The frozen plan and operation
+state support resumed execution. Packet captures refer to their VM/scale-set and
+storage account; connection monitors refer to native endpoints and log workspaces.
+HTTP request headers and SAS query values in capture storage paths are sanitized.
+Deleting a capture session does not delete its stored capture file. See the
+[Network Watcher deletion contract](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-create)
+and [packet-capture deletion behavior](https://learn.microsoft.com/en-us/azure/network-watcher/packet-capture-manage#delete-a-packet-capture).

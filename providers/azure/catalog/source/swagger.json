@@ -29126,6 +29126,573 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "ConnectionMonitorDestination": {
+            "description": "Describes the destination of connection monitor.",
+            "properties": {
+              "address": {
+                "description": "Address of the connection monitor destination (IP or domain name).",
+                "type": "string"
+              },
+              "port": {
+                "description": "The destination port used by connection monitor.",
+                "format": "int32",
+                "maximum": 65535,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "resourceId": {
+                "description": "The ID of the resource used as the destination by connection monitor.",
+                "type": "string"
+              }
+            }
+          },
+          "ConnectionMonitorEndpoint": {
+            "description": "Describes the connection monitor endpoint.",
+            "properties": {
+              "address": {
+                "description": "Address of the connection monitor endpoint. Supported for AzureVM, ExternalAddress, ArcMachine, MMAWorkspaceMachine endpoint type.",
+                "type": "string"
+              },
+              "coverageLevel": {
+                "description": "Test coverage for the endpoint.",
+                "enum": [
+                  "Default",
+                  "Low",
+                  "BelowAverage",
+                  "Average",
+                  "AboveAverage",
+                  "Full"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "CoverageLevel"
+                }
+              },
+              "filter": {
+                "$ref": "#/definitions/ConnectionMonitorEndpointFilter",
+                "description": "Filter field is getting deprecated and should not be used. Instead use Include/Exclude scope fields for it."
+              },
+              "locationDetails": {
+                "$ref": "#/definitions/ConnectionMonitorEndpointLocationDetails",
+                "description": "Location details is optional and only being used for 'AzureArcNetwork' type endpoints, which contains region details."
+              },
+              "name": {
+                "description": "The name of the connection monitor endpoint.",
+                "type": "string"
+              },
+              "resourceId": {
+                "description": "Resource ID of the connection monitor endpoint are supported for AzureVM, AzureVMSS, AzureVNet, AzureSubnet, MMAWorkspaceMachine, MMAWorkspaceNetwork, AzureArcVM endpoint type.",
+                "type": "string"
+              },
+              "scope": {
+                "$ref": "#/definitions/ConnectionMonitorEndpointScope",
+                "description": "Endpoint scope defines which target resource to monitor in case of compound resource endpoints like VMSS, AzureSubnet, AzureVNet, MMAWorkspaceNetwork, AzureArcNetwork."
+              },
+              "subscriptionId": {
+                "description": "Subscription ID for connection monitor endpoint. It's an optional parameter which is being used for 'AzureArcNetwork' type endpoint.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The endpoint type.",
+                "enum": [
+                  "AzureVM",
+                  "AzureVNet",
+                  "AzureSubnet",
+                  "ExternalAddress",
+                  "MMAWorkspaceMachine",
+                  "MMAWorkspaceNetwork",
+                  "AzureArcVM",
+                  "AzureVMSS",
+                  "AzureArcNetwork"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "EndpointType"
+                }
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "ConnectionMonitorEndpointFilter": {
+            "description": "Describes the connection monitor endpoint filter.",
+            "properties": {
+              "items": {
+                "description": "List of items in the filter.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorEndpointFilterItem"
+                },
+                "type": "array"
+              },
+              "type": {
+                "description": "The behavior of the endpoint filter. Currently only 'Include' is supported.",
+                "enum": [
+                  "Include"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ConnectionMonitorEndpointFilterType"
+                }
+              }
+            }
+          },
+          "ConnectionMonitorEndpointFilterItem": {
+            "description": "Describes the connection monitor endpoint filter item.",
+            "properties": {
+              "address": {
+                "description": "The address of the filter item.",
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of item included in the filter. Currently only 'AgentAddress' is supported.",
+                "enum": [
+                  "AgentAddress"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ConnectionMonitorEndpointFilterItemType"
+                }
+              }
+            }
+          },
+          "ConnectionMonitorEndpointLocationDetails": {
+            "description": "Connection monitor endpoint location details only being used for 'AzureArcNetwork' type endpoints, which contains the region details.",
+            "properties": {
+              "region": {
+                "description": "Region for connection monitor endpoint.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ConnectionMonitorEndpointScope": {
+            "description": "Describes the connection monitor endpoint scope.",
+            "properties": {
+              "exclude": {
+                "description": "List of items which needs to be excluded from the endpoint scope.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorEndpointScopeItem"
+                },
+                "type": "array"
+              },
+              "include": {
+                "description": "List of items which needs to be included to the endpoint scope.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorEndpointScopeItem"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "ConnectionMonitorEndpointScopeItem": {
+            "description": "Describes the connection monitor endpoint scope item.",
+            "properties": {
+              "address": {
+                "description": "The address of the endpoint item. Supported types are IPv4/IPv6 subnet mask or IPv4/IPv6 IP address.",
+                "type": "string"
+              }
+            }
+          },
+          "ConnectionMonitorHttpConfiguration": {
+            "description": "Describes the HTTP configuration.",
+            "properties": {
+              "method": {
+                "description": "The HTTP method to use.",
+                "enum": [
+                  "Get",
+                  "Post"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "HTTPConfigurationMethod"
+                }
+              },
+              "path": {
+                "description": "The path component of the URI. For instance, \"/dir1/dir2\".",
+                "type": "string"
+              },
+              "port": {
+                "description": "The port to connect to.",
+                "format": "int32",
+                "maximum": 65535,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "preferHTTPS": {
+                "description": "Value indicating whether HTTPS is preferred over HTTP in cases where the choice is not explicit.",
+                "type": "boolean"
+              },
+              "requestHeaders": {
+                "description": "The HTTP headers to transmit with the request.",
+                "items": {
+                  "$ref": "#/definitions/HTTPHeader"
+                },
+                "type": "array"
+              },
+              "validStatusCodeRanges": {
+                "description": "HTTP status codes to consider successful. For instance, \"2xx,301-304,418\".",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "ConnectionMonitorIcmpConfiguration": {
+            "description": "Describes the ICMP configuration.",
+            "properties": {
+              "disableTraceRoute": {
+                "description": "Value indicating whether path evaluation with trace route should be disabled.",
+                "type": "boolean"
+              }
+            }
+          },
+          "ConnectionMonitorListResult": {
+            "description": "List of connection monitors.",
+            "properties": {
+              "value": {
+                "description": "Information about connection monitors.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorResult"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "ConnectionMonitorOutput": {
+            "description": "Describes a connection monitor output destination.",
+            "properties": {
+              "type": {
+                "description": "Connection monitor output destination type. Currently, only \"Workspace\" is supported.",
+                "enum": [
+                  "Workspace"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "OutputType"
+                }
+              },
+              "workspaceSettings": {
+                "$ref": "#/definitions/ConnectionMonitorWorkspaceSettings",
+                "description": "Describes the settings for producing output into a log analytics workspace."
+              }
+            }
+          },
+          "ConnectionMonitorParameters": {
+            "description": "Parameters that define the operation to create a connection monitor.",
+            "properties": {
+              "autoStart": {
+                "default": true,
+                "description": "Determines if the connection monitor will start automatically once created.",
+                "type": "boolean"
+              },
+              "destination": {
+                "$ref": "#/definitions/ConnectionMonitorDestination",
+                "description": "Describes the destination of connection monitor."
+              },
+              "endpoints": {
+                "description": "List of connection monitor endpoints.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorEndpoint"
+                },
+                "type": "array"
+              },
+              "monitoringIntervalInSeconds": {
+                "default": 60,
+                "description": "Monitoring interval in seconds.",
+                "format": "int32",
+                "maximum": 1800,
+                "minimum": 30,
+                "type": "integer"
+              },
+              "notes": {
+                "description": "Optional notes to be associated with the connection monitor.",
+                "type": "string"
+              },
+              "outputs": {
+                "description": "List of connection monitor outputs.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorOutput"
+                },
+                "type": "array"
+              },
+              "source": {
+                "$ref": "#/definitions/ConnectionMonitorSource",
+                "description": "Describes the source of connection monitor."
+              },
+              "testConfigurations": {
+                "description": "List of connection monitor test configurations.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorTestConfiguration"
+                },
+                "type": "array"
+              },
+              "testGroups": {
+                "description": "List of connection monitor test groups.",
+                "items": {
+                  "$ref": "#/definitions/ConnectionMonitorTestGroup"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "ConnectionMonitorResult": {
+            "description": "Information about the connection monitor.",
+            "properties": {
+              "etag": {
+                "description": "A unique read-only string that changes whenever the resource is updated.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "id": {
+                "description": "ID of the connection monitor.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "location": {
+                "description": "Connection monitor location.",
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the connection monitor.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/ConnectionMonitorResultProperties",
+                "description": "Properties of the connection monitor result.",
+                "x-ms-client-flatten": true
+              },
+              "tags": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Connection monitor tags.",
+                "type": "object"
+              },
+              "type": {
+                "description": "Connection monitor type.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "ConnectionMonitorResultProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ConnectionMonitorParameters"
+              }
+            ],
+            "description": "Describes the properties of a connection monitor.",
+            "properties": {
+              "connectionMonitorType": {
+                "description": "Type of connection monitor.",
+                "enum": [
+                  "MultiEndpoint",
+                  "SingleSourceDestination"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ConnectionMonitorType"
+                }
+              },
+              "monitoringStatus": {
+                "description": "The monitoring status of the connection monitor.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisioningState": {
+                "$ref": "./network.json#/definitions/ProvisioningState",
+                "description": "The provisioning state of the connection monitor.",
+                "readOnly": true
+              },
+              "startTime": {
+                "description": "The date and time when the connection monitor was started.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            }
+          },
+          "ConnectionMonitorSource": {
+            "description": "Describes the source of connection monitor.",
+            "properties": {
+              "port": {
+                "description": "The source port used by connection monitor.",
+                "format": "int32",
+                "maximum": 65535,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "resourceId": {
+                "description": "The ID of the resource used as the source by connection monitor.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "resourceId"
+            ]
+          },
+          "ConnectionMonitorSuccessThreshold": {
+            "description": "Describes the threshold for declaring a test successful.",
+            "properties": {
+              "checksFailedPercent": {
+                "description": "The maximum percentage of failed checks permitted for a test to evaluate as successful.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "roundTripTimeMs": {
+                "description": "The maximum round-trip time in milliseconds permitted for a test to evaluate as successful.",
+                "type": "number"
+              }
+            }
+          },
+          "ConnectionMonitorTcpConfiguration": {
+            "description": "Describes the TCP configuration.",
+            "properties": {
+              "destinationPortBehavior": {
+                "description": "Destination port behavior.",
+                "enum": [
+                  "None",
+                  "ListenIfAvailable"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "DestinationPortBehavior"
+                }
+              },
+              "disableTraceRoute": {
+                "description": "Value indicating whether path evaluation with trace route should be disabled.",
+                "type": "boolean"
+              },
+              "port": {
+                "description": "The port to connect to.",
+                "format": "int32",
+                "maximum": 65535,
+                "minimum": 0,
+                "type": "integer"
+              }
+            }
+          },
+          "ConnectionMonitorTestConfiguration": {
+            "description": "Describes a connection monitor test configuration.",
+            "properties": {
+              "httpConfiguration": {
+                "$ref": "#/definitions/ConnectionMonitorHttpConfiguration",
+                "description": "The parameters used to perform test evaluation over HTTP."
+              },
+              "icmpConfiguration": {
+                "$ref": "#/definitions/ConnectionMonitorIcmpConfiguration",
+                "description": "The parameters used to perform test evaluation over ICMP."
+              },
+              "name": {
+                "description": "The name of the connection monitor test configuration.",
+                "type": "string"
+              },
+              "preferredIPVersion": {
+                "description": "The preferred IP version to use in test evaluation. The connection monitor may choose to use a different version depending on other parameters.",
+                "enum": [
+                  "IPv4",
+                  "IPv6"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "PreferredIPVersion"
+                }
+              },
+              "protocol": {
+                "description": "The protocol to use in test evaluation.",
+                "enum": [
+                  "Tcp",
+                  "Http",
+                  "Icmp"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ConnectionMonitorTestConfigurationProtocol"
+                }
+              },
+              "successThreshold": {
+                "$ref": "#/definitions/ConnectionMonitorSuccessThreshold",
+                "description": "The threshold for declaring a test successful."
+              },
+              "tcpConfiguration": {
+                "$ref": "#/definitions/ConnectionMonitorTcpConfiguration",
+                "description": "The parameters used to perform test evaluation over TCP."
+              },
+              "testFrequencySec": {
+                "description": "The frequency of test evaluation, in seconds.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "name",
+              "protocol"
+            ]
+          },
+          "ConnectionMonitorTestGroup": {
+            "description": "Describes the connection monitor test group.",
+            "properties": {
+              "destinations": {
+                "description": "List of destination endpoint names.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "disable": {
+                "description": "Value indicating whether test group is disabled.",
+                "type": "boolean"
+              },
+              "name": {
+                "description": "The name of the connection monitor test group.",
+                "type": "string"
+              },
+              "sources": {
+                "description": "List of source endpoint names.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "testConfigurations": {
+                "description": "List of test configuration names.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "name",
+              "testConfigurations",
+              "sources",
+              "destinations"
+            ]
+          },
+          "ConnectionMonitorWorkspaceSettings": {
+            "description": "Describes the settings for producing output into a log analytics workspace.",
+            "properties": {
+              "workspaceResourceId": {
+                "description": "Log analytics workspace resource ID.",
+                "type": "string"
+              }
+            }
+          },
           "ErrorResponse": {
             "description": "The error object.",
             "properties": {
@@ -29246,6 +29813,19 @@
               "storageId"
             ]
           },
+          "HTTPHeader": {
+            "description": "The HTTP header.",
+            "properties": {
+              "name": {
+                "description": "The name in HTTP header.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The value in HTTP header.",
+                "type": "string"
+              }
+            }
+          },
           "NetworkWatcher": {
             "allOf": [
               {
@@ -29285,6 +29865,236 @@
                 "$ref": "./network.json#/definitions/ProvisioningState",
                 "description": "The provisioning state of the network watcher resource.",
                 "readOnly": true
+              }
+            }
+          },
+          "PacketCaptureFilter": {
+            "description": "Filter that is applied to packet capture request. Multiple filters can be applied.",
+            "properties": {
+              "localIPAddress": {
+                "description": "Local IP Address to be filtered on. Notation: \"127.0.0.1\" for single address entry. \"127.0.0.1-127.0.0.255\" for range. \"127.0.0.1;127.0.0.5\"? for multiple entries. Multiple ranges not currently supported. Mixing ranges with multiple entries not currently supported. Default = null.",
+                "type": "string"
+              },
+              "localPort": {
+                "description": "Local port to be filtered on. Notation: \"80\" for single port entry.\"80-85\" for range. \"80;443;\" for multiple entries. Multiple ranges not currently supported. Mixing ranges with multiple entries not currently supported. Default = null.",
+                "type": "string"
+              },
+              "protocol": {
+                "default": "Any",
+                "description": "Protocol to be filtered on.",
+                "enum": [
+                  "TCP",
+                  "UDP",
+                  "Any"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "PcProtocol"
+                }
+              },
+              "remoteIPAddress": {
+                "description": "Local IP Address to be filtered on. Notation: \"127.0.0.1\" for single address entry. \"127.0.0.1-127.0.0.255\" for range. \"127.0.0.1;127.0.0.5;\" for multiple entries. Multiple ranges not currently supported. Mixing ranges with multiple entries not currently supported. Default = null.",
+                "type": "string"
+              },
+              "remotePort": {
+                "description": "Remote port to be filtered on. Notation: \"80\" for single port entry.\"80-85\" for range. \"80;443;\" for multiple entries. Multiple ranges not currently supported. Mixing ranges with multiple entries not currently supported. Default = null.",
+                "type": "string"
+              }
+            }
+          },
+          "PacketCaptureListResult": {
+            "description": "List of packet capture sessions.",
+            "properties": {
+              "value": {
+                "description": "Information about packet capture sessions.",
+                "items": {
+                  "$ref": "#/definitions/PacketCaptureResult"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "PacketCaptureMachineScope": {
+            "description": "A list of AzureVMSS instances which can be included or excluded to run packet capture. If both included and excluded are empty, then the packet capture will run on all instances of AzureVMSS.",
+            "properties": {
+              "exclude": {
+                "description": "List of AzureVMSS instances which has to be excluded from the AzureVMSS from running packet capture.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "include": {
+                "description": "List of AzureVMSS instances to run packet capture on.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "PacketCaptureParameters": {
+            "description": "Parameters that define the create packet capture operation.",
+            "properties": {
+              "bytesToCapturePerPacket": {
+                "default": 0,
+                "description": "Number of bytes captured per packet, the remaining bytes are truncated.",
+                "format": "int64",
+                "maximum": 4294967295,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "captureSettings": {
+                "$ref": "#/definitions/PacketCaptureSettings",
+                "description": "The capture setting holds the 'FileCount', 'FileSizeInBytes', 'SessionTimeLimitInSeconds' values.",
+                "type": "object"
+              },
+              "continuousCapture": {
+                "description": "This continuous capture is a nullable boolean, which can hold 'null', 'true' or 'false' value. If we do not pass this parameter, it would be consider as 'null', default value is 'null'.",
+                "type": "boolean"
+              },
+              "filters": {
+                "description": "A list of packet capture filters.",
+                "items": {
+                  "$ref": "#/definitions/PacketCaptureFilter"
+                },
+                "type": "array"
+              },
+              "scope": {
+                "$ref": "#/definitions/PacketCaptureMachineScope",
+                "description": "A list of AzureVMSS instances which can be included or excluded to run packet capture. If both included and excluded are empty, then the packet capture will run on all instances of AzureVMSS."
+              },
+              "storageLocation": {
+                "$ref": "#/definitions/PacketCaptureStorageLocation",
+                "description": "The storage location for a packet capture session."
+              },
+              "target": {
+                "description": "The ID of the targeted resource, only AzureVM and AzureVMSS as target type are currently supported.",
+                "type": "string"
+              },
+              "targetType": {
+                "description": "Target type of the resource provided.",
+                "enum": [
+                  "AzureVM",
+                  "AzureVMSS"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "PacketCaptureTargetType"
+                }
+              },
+              "timeLimitInSeconds": {
+                "default": 18000,
+                "description": "Maximum duration of the capture session in seconds.",
+                "format": "int32",
+                "maximum": 18000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "totalBytesPerSession": {
+                "default": 1073741824,
+                "description": "Maximum size of the capture output.",
+                "format": "int64",
+                "maximum": 4294967295,
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "target",
+              "storageLocation"
+            ]
+          },
+          "PacketCaptureResult": {
+            "description": "Information about packet capture session.",
+            "properties": {
+              "etag": {
+                "description": "A unique read-only string that changes whenever the resource is updated.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "id": {
+                "description": "ID of the packet capture operation.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the packet capture session.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/PacketCaptureResultProperties",
+                "description": "Properties of the packet capture result.",
+                "x-ms-client-flatten": true
+              }
+            }
+          },
+          "PacketCaptureResultProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/PacketCaptureParameters"
+              }
+            ],
+            "description": "The properties of a packet capture session.",
+            "properties": {
+              "provisioningState": {
+                "$ref": "./network.json#/definitions/ProvisioningState",
+                "description": "The provisioning state of the packet capture session.",
+                "readOnly": true
+              }
+            }
+          },
+          "PacketCaptureSettings": {
+            "description": "The storage location for a packet capture session.",
+            "properties": {
+              "fileCount": {
+                "default": 10,
+                "description": "Number of file count. Default value of count is 10 and maximum number is 10000.",
+                "format": "int32",
+                "maximum": 10000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "fileSizeInBytes": {
+                "default": 104857600,
+                "description": "Number of bytes captured per packet. Default value in bytes 104857600 (100MB) and maximum in bytes 4294967295 (4GB).",
+                "format": "int64",
+                "maximum": 4294967295,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "sessionTimeLimitInSeconds": {
+                "default": 86400,
+                "description": "Maximum duration of the capture session in seconds is 604800s (7 days) for a file. Default value in second 86400s (1 day).",
+                "format": "int32",
+                "maximum": 604800,
+                "minimum": 0,
+                "type": "integer"
+              }
+            }
+          },
+          "PacketCaptureStorageLocation": {
+            "description": "The storage location for a packet capture session.",
+            "properties": {
+              "filePath": {
+                "description": "This path is invalid if 'Continuous Capture' is provided with 'true' or 'false'. A valid local path on the targeting VM. Must include the name of the capture file (*.cap). For linux virtual machine it must start with /var/captures. Required if no storage ID is provided, otherwise optional.",
+                "type": "string"
+              },
+              "localPath": {
+                "description": "This path is valid if 'Continuous Capture' is provided with 'true' or 'false' and required if no storage ID is provided, otherwise optional. Must include the name of the capture file (*.cap). For linux virtual machine it must start with /var/captures.",
+                "type": "string"
+              },
+              "storageId": {
+                "description": "The ID of the storage account to save the packet capture session. Required if no localPath or filePath is provided.",
+                "type": "string"
+              },
+              "storagePath": {
+                "description": "The URI of the storage path to save the packet capture. Must be a well-formed URI describing the location to save the packet capture.",
+                "type": "string"
               }
             }
           },
@@ -29488,6 +30298,175 @@
               }
             }
           },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors": {
+            "get": {
+              "description": "Lists all connection monitors for the specified Network Watcher.",
+              "operationId": "ConnectionMonitors_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group containing Network Watcher.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Network Watcher resource.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful connection monitor enumeration request.",
+                  "schema": {
+                    "$ref": "#/definitions/ConnectionMonitorListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./networkWatcher.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ConnectionMonitors"
+              ],
+              "x-ms-examples": {
+                "List connection monitors": {
+                  "$ref": "./examples/NetworkWatcherConnectionMonitorList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": null
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors/{connectionMonitorName}": {
+            "delete": {
+              "description": "Deletes the specified connection monitor.",
+              "operationId": "ConnectionMonitors_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group containing Network Watcher.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Network Watcher resource.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the connection monitor.",
+                  "in": "path",
+                  "name": "connectionMonitorName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted. The operation will complete asynchronously."
+                },
+                "204": {
+                  "description": "Delete successful."
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./networkWatcher.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ConnectionMonitors"
+              ],
+              "x-ms-examples": {
+                "Delete connection monitor": {
+                  "$ref": "./examples/NetworkWatcherConnectionMonitorDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets a connection monitor by name.",
+              "operationId": "ConnectionMonitors_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group containing Network Watcher.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Network Watcher resource.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the connection monitor.",
+                  "in": "path",
+                  "name": "connectionMonitorName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a connection monitor.",
+                  "schema": {
+                    "$ref": "#/definitions/ConnectionMonitorResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./networkWatcher.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ConnectionMonitors"
+              ],
+              "x-ms-examples": {
+                "Get connection monitor": {
+                  "$ref": "./examples/NetworkWatcherConnectionMonitorGet.json"
+                }
+              }
+            }
+          },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/flowLogs": {
             "get": {
               "description": "Lists all flow log resources for the specified Network Watcher.",
@@ -29653,6 +30632,175 @@
               "x-ms-examples": {
                 "Get flow log": {
                   "$ref": "./examples/NetworkWatcherFlowLogGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures": {
+            "get": {
+              "description": "Lists all packet capture sessions within the specified resource group.",
+              "operationId": "PacketCaptures_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Network Watcher resource.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful packet capture enumeration request.",
+                  "schema": {
+                    "$ref": "#/definitions/PacketCaptureListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "PacketCaptures"
+              ],
+              "x-ms-examples": {
+                "List packet captures": {
+                  "$ref": "./examples/NetworkWatcherPacketCapturesList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": null
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures/{packetCaptureName}": {
+            "delete": {
+              "description": "Deletes the specified packet capture session.",
+              "operationId": "PacketCaptures_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network watcher.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the packet capture session.",
+                  "in": "path",
+                  "name": "packetCaptureName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted and the operation will complete asynchronously."
+                },
+                "204": {
+                  "description": "Delete successful."
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "PacketCaptures"
+              ],
+              "x-ms-examples": {
+                "Delete packet capture": {
+                  "$ref": "./examples/NetworkWatcherPacketCaptureDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets a packet capture session by name.",
+              "operationId": "PacketCaptures_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network watcher.",
+                  "in": "path",
+                  "name": "networkWatcherName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the packet capture session.",
+                  "in": "path",
+                  "name": "packetCaptureName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a packet capture session.",
+                  "schema": {
+                    "$ref": "#/definitions/PacketCaptureResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "PacketCaptures"
+              ],
+              "x-ms-examples": {
+                "Get packet capture": {
+                  "$ref": "./examples/NetworkWatcherPacketCaptureGet.json"
                 }
               }
             }
@@ -52867,6 +54015,48 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Storage.FileShares_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "observability.connection_monitor",
+      "displayName": "Connection monitor",
+      "nativeType": "Microsoft.Network/networkWatchers/connectionMonitors",
+      "rest": {
+        "collection": "connectionMonitors",
+        "delete_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "observability.packet_capture",
+      "displayName": "Packet capture",
+      "nativeType": "Microsoft.Network/networkWatchers/packetCaptures",
+      "rest": {
+        "collection": "packetCaptures",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_Get"
         ]
       },
       "scopeKinds": [

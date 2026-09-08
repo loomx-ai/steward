@@ -1,0 +1,101 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/networkWatchers/packetCaptures
+  class: observability.packet_capture
+presentation:
+  displayNames:
+    en-US: Packet capture
+    zh-CN: 数据包捕获
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.PacketCaptures_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      networkWatcherName: parent.normalized.arm_parameters.networkWatcherName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.PacketCaptures_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/networkWatchers
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  targetType:
+    path: targetType
+    type: string
+  target:
+    path: target
+    type: string
+  scope:
+    path: scope
+    type: object
+  storageLocation:
+    path: storageLocation
+    type: object
+  bytesToCapturePerPacket:
+    path: bytesToCapturePerPacket
+    type: number
+  totalBytesPerSession:
+    path: totalBytesPerSession
+    type: number
+  timeLimitInSeconds:
+    path: timeLimitInSeconds
+    type: number
+  continuousCapture:
+    path: continuousCapture
+    type: boolean
+  filters:
+    path: filters
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/networkWatchers
+  targetIdPath: refs_microsoft_network_networkwatchers
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachines
+  targetIdPath: refs_microsoft_compute_virtualmachines
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.PacketCaptures_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.PacketCaptures_Get
+      itemsPath: $
+      identityPath: id

@@ -32,6 +32,8 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/firewallPolicies", "Microsoft.Network/firewallPolicies/policy", "/providers/Microsoft.Network/firewallPolicies", "2024-05-01", "eastus"},
 		{"Microsoft.Network/localNetworkGateways", "Microsoft.Network/localNetworkGateways/local", "/resourceGroups/test/providers/Microsoft.Network/localNetworkGateways", "2024-05-01", "eastus"},
 		{"Microsoft.Network/networkWatchers", "Microsoft.Network/networkWatchers/watcher", "/providers/Microsoft.Network/networkWatchers", "2024-05-01", "eastus"},
+		{"Microsoft.Network/networkWatchers/connectionMonitors", "Microsoft.Network/networkWatchers/watcher/connectionMonitors/monitor", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/connectionMonitors", "2024-05-01", "eastus"},
+		{"Microsoft.Network/networkWatchers/packetCaptures", "Microsoft.Network/networkWatchers/watcher/packetCaptures/capture", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/packetCaptures", "2024-05-01", "eastus"},
 		{"Microsoft.Network/networkWatchers/flowLogs", "Microsoft.Network/networkWatchers/watcher/flowLogs/log", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/flowLogs", "2024-05-01", "eastus"},
 		{"Microsoft.Network/privateDnsZones", "Microsoft.Network/privateDnsZones/private.example", "/providers/Microsoft.Network/privateDnsZones", "2024-06-01", "global"},
 		{"Microsoft.Network/privateLinkServices", "Microsoft.Network/privateLinkServices/service", "/providers/Microsoft.Network/privateLinkServices", "2024-05-01", "eastus"},
@@ -65,6 +67,9 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 				value := nativeResource(parent.kind, parent.name, "eastus", map[string]any{})
 				details[strings.ToLower(text(value["id"]))] = value
 				lists[strings.ToLower(root+"/providers/"+parent.kind)] = []any{value}
+			}
+			for _, collection := range []string{"flowLogs", "connectionMonitors", "packetCaptures"} {
+				lists[strings.ToLower(group+"/providers/Microsoft.Network/networkWatchers/watcher/"+collection)] = []any{}
 			}
 			details[strings.ToLower(id)] = raw
 			lists[strings.ToLower(root+tc.list)] = []any{raw}

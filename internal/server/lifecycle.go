@@ -94,6 +94,21 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}
 		for _, value := range assets {
+			if value.Identity.Provider != asset.ProviderAzure || !azure.HasServiceCascade(value.Identity.NativeType) {
+				continue
+			}
+			provider, ok := runtime.(serviceLifecycleRuntime)
+			if !ok {
+				return nil, fmt.Errorf("Azure runtime does not expose service lifecycle discovery")
+			}
+			contributor, err := provider.ServiceLifecycle(ctx, connection.ID)
+			if err != nil {
+				return nil, err
+			}
+			contributors = append(contributors, contributor)
+			break
+		}
+		for _, value := range assets {
 			if value.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(value.Identity.NativeType, "Microsoft.ContainerService/managedClusters") {
 				continue
 			}

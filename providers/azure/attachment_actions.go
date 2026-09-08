@@ -25,7 +25,7 @@ func (a *action) prepareAttachments(ctx context.Context, request contracts.Actio
 	if !validResourceResponse(live, a.id, a.kind.NativeType) {
 		return contracts.ActionResult{}, fmt.Errorf("Azure attachment preparation identity mismatch")
 	}
-	locks, err := a.client.listAll(ctx, a.client.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
+	locks, err := a.client.managementLocks(ctx)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}

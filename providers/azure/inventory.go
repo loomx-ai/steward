@@ -47,7 +47,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
-	locks, err := c.listAll(ctx, c.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
+	locks, err := c.managementLocks(ctx)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -169,6 +169,26 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 		return nil, err
 	}
 	var values []any
+	if HasServiceCascade(kind.NativeType) {
+		endpoint, err := c.resourceURL(kind, id)
+		if err != nil {
+			return nil, err
+		}
+		current, err := c.request(ctx, "GET", endpoint)
+		if err != nil {
+			return nil, err
+		}
+		if !validResourceResponse(current, id, kind.NativeType) {
+			return nil, fmt.Errorf("Azure service parent identity mismatch")
+		}
+		children, err := c.serviceChildren(ctx, asset.Identity{NativeType: kind.NativeType, NativeID: id}, current.data)
+		if err != nil {
+			return nil, err
+		}
+		for _, child := range children {
+			values = append(values, child.data)
+		}
+	}
 	switch kind.NativeType {
 	case vnetType:
 		values, err = c.listAll(ctx, id+"/subnets", kind.Version)
@@ -237,6 +257,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	normalized["tags"] = safe["tags"]
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
+	normalized["_arm_generation"] = productGeneration(raw)
 	if known {
 		_, parameters, err := c.resourceOperation(kind, id, "GET")
 		if err != nil {
@@ -367,6 +388,12 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	for _, field := range []string{"virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
 		fields[strings.ToLower(field)] = true
 	}
+	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/packetCaptures") {
+		fields["target"] = true
+	}
+	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
+		fields["resourceid"] = true
+	}
 	var visit func(any, string)
 	visit = func(value any, parent string) {
 		switch typed := value.(type) {
@@ -383,8 +410,12 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 					continue
 				}
 				switch key {
-				case "subnets", "virtualMachines", "backendIPConfigurations", "privateEndpointConnections", "source", "creationData", "imageReference":
+				case "subnets", "virtualMachines", "backendIPConfigurations", "privateEndpointConnections", "creationData", "imageReference":
 					continue
+				case "source":
+					if !strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
+						continue
+					}
 				case "ipConfigurations":
 					if strings.EqualFold(nativeType, subnetType) {
 						continue
@@ -455,8 +486,15 @@ func safeResource(value any) any {
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
-				"appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
+				"requestheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
 				continue
+			}
+			if strings.EqualFold(key, "storagePath") {
+				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
+					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
+					result[key] = endpoint.String()
+					continue
+				}
 			}
 			result[key] = safeResource(value)
 		}
@@ -496,4 +534,40 @@ func (r *Runtime) SearchNetworkTargets(ctx context.Context, query contracts.Netw
 		page.Items = append(page.Items, contracts.NetworkTargetOption{Kind: query.Kind, RegionID: query.RegionID, NativeID: item.NativeID, Name: item.Name, ParentNativeID: parent})
 	}
 	return page, nil
+}
+
+// A malformed lock entry cannot establish an unlocked resource. Subscription
+// and nested ARM locks share the same native extension suffix.
+func (c *client) managementLocks(ctx context.Context) ([]any, error) {
+	locks, err := c.listAll(ctx, c.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
+	if err != nil {
+		return nil, err
+	}
+	seen := map[string]bool{}
+	for _, value := range locks {
+		raw := object(value)
+		id := strings.ToLower(text(raw["id"]))
+		marker := "/providers/microsoft.authorization/locks/"
+		index := strings.LastIndex(id, marker)
+		level := strings.ToLower(text(object(raw["properties"])["level"]))
+		if index < len(c.root()) || !strings.HasPrefix(id, c.root()+"/") || strings.ContainsAny(id, "%?#\\\x00\r\n") || seen[id] || (level != "readonly" && level != "cannotdelete") || (text(raw["type"]) != "" && !strings.EqualFold(text(raw["type"]), "Microsoft.Authorization/locks")) {
+			return nil, fmt.Errorf("invalid Azure management lock")
+		}
+		name := strings.TrimPrefix(id[index:], marker)
+		if name == "" || strings.Contains(name, "/") {
+			return nil, fmt.Errorf("invalid Azure management lock name")
+		}
+		for _, part := range strings.Split(strings.TrimPrefix(id, "/"), "/") {
+			if part == "" || part == "." || part == ".." {
+				return nil, fmt.Errorf("invalid Azure management lock scope")
+			}
+		}
+		if id[:index] != c.root() {
+			if _, _, err := parseID(id[:index]); err != nil {
+				return nil, fmt.Errorf("invalid Azure management lock scope")
+			}
+		}
+		seen[id] = true
+	}
+	return locks, nil
 }

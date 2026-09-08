@@ -439,3 +439,23 @@ func TestGCPServiceContributorUsesExplicitConnectionOnce(t *testing.T) {
 		t.Fatal("missing service lifecycle silently accepted")
 	}
 }
+
+type azureServiceContributorRuntime struct{ serviceContributorRuntime }
+
+func (*azureServiceContributorRuntime) Provider() asset.Provider { return asset.ProviderAzure }
+func TestAzureServiceContributorUsesExplicitConnectionOnce(t *testing.T) {
+	runtime := &azureServiceContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "azure-connection", Provider: asset.ProviderAzure}
+	if _, err := resolver.ResolveContributors(context.Background(), connection, nil); err != nil || len(runtime.connections) != 0 {
+		t.Fatalf("unneeded service lookup: %v", err)
+	}
+	parent := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: connection.ID, NativeType: "Microsoft.Network/networkWatchers"}}
+	contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{parent, parent})
+	if err != nil || len(contributors) != 2 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+		t.Fatalf("service lifecycle not connected: %d %v %v", len(contributors), runtime.connections, err)
+	}
+	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{parent}); err == nil {
+		t.Fatal("missing service lifecycle silently accepted")
+	}
+}

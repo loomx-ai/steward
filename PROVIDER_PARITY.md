@@ -231,3 +231,13 @@ background evidence only, not acceptance evidence for this work.
   option. Network secret redaction, full Go tests, targeted races, vet and source
   regeneration passed. The remaining service families, parent lifecycle work,
   snapshots, emulator/application acceptance and publication remain unfinished.
+
+- Azure now has 66 rules and 264 native operations. Network Watcher includes
+  connection monitors and packet captures, and contributes reviewed deletion
+  impacts for all three native child collections. Retained tests cover root-only
+  planning, paging, unknown/new/missing members, locks, retention, incarnation
+  changes, native deletion, failed operations and recovered child absence checks.
+  AKS group discovery includes these native service children. Malformed management
+  locks now fail discovery/preflight instead of being ignored. Full Go tests,
+  offline source tests and vet pass. SQL/other parent controllers, remaining
+  service families and independent/application acceptance are still outstanding.

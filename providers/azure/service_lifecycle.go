@@ -1,0 +1,351 @@
+package azure
+
+import (
+	"context"
+	"fmt"
+	"net/url"
+	"reflect"
+	"slices"
+	"sort"
+	"strings"
+
+	"github.com/loomx-ai/steward/internal/app/governance"
+	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/core/graph"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
+)
+
+const serviceCascadeSource = "azure:service-cascade"
+const networkWatcherType = "Microsoft.Network/networkWatchers"
+
+// Native deletion semantics, not an inference from ARM path nesting.
+// https://learn.microsoft.com/azure/network-watcher/network-watcher-create
+var serviceCascadeRules = map[string][]string{
+	networkWatcherType: {
+		"Microsoft.Network/networkWatchers/flowLogs",
+		"Microsoft.Network/networkWatchers/connectionMonitors",
+		"Microsoft.Network/networkWatchers/packetCaptures",
+	},
+}
+
+func HasServiceCascade(nativeType string) bool {
+	for kind := range serviceCascadeRules {
+		if strings.EqualFold(kind, nativeType) {
+			return true
+		}
+	}
+	return false
+}
+
+func serviceChildKinds(nativeType string) []string {
+	for kind, children := range serviceCascadeRules {
+		if strings.EqualFold(kind, nativeType) {
+			return children
+		}
+	}
+	return nil
+}
+
+type serviceCascades struct{ client *client }
+
+func (r *Runtime) ServiceLifecycle(ctx context.Context, id asset.ConnectionID) (governance.Contributor, error) {
+	c, err := r.resolve(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &serviceCascades{client: c}, nil
+}
+
+type serviceChild struct {
+	kind, id string
+	data     map[string]any
+}
+
+// Each collection uses the same explicit native list rule as inventory. Read
+// every child and re-read the parent; an unreadable or changing set is not empty.
+func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
+	if !HasServiceCascade(parent.NativeType) {
+		return nil, nil
+	}
+	parentKind, _ := findType(parent.NativeType)
+	_, params, err := c.resourceOperation(parentKind, parent.NativeID, "GET")
+	if err != nil {
+		return nil, err
+	}
+	parentID, _, _ := parseID(parent.NativeID)
+	item := contracts.InventoryItem{NativeID: parentID, NativeType: parentKind.NativeType, Normalized: map[string]any{
+		"arm_parameters": params, "name": last(parentID), "resource_group": strings.Split(parentID, "/")[4],
+	}}
+	metadata, err := providerData()
+	if err != nil {
+		return nil, err
+	}
+	runtime := &Runtime{bundle: metadata.bundle}
+	var children []serviceChild
+	seen := map[string]bool{}
+	for _, childType := range serviceChildKinds(parentKind.NativeType) {
+		definition, ok := runtime.productDefinition(childType)
+		if !ok || definition.Discovery.List == nil || definition.Discovery.Parent == nil || !strings.EqualFold(definition.Discovery.Parent.NativeType, parentKind.NativeType) {
+			return nil, fmt.Errorf("Azure cascade child has no explicit parent discovery")
+		}
+		bound, err := c.bindProductList(definition.Discovery.List, text(raw["location"]), item)
+		if err != nil {
+			return nil, err
+		}
+		u, _ := url.Parse(bound.URL)
+		records, err := c.listAllURL(ctx, bound.URL, u.Path)
+		if err != nil {
+			return nil, err
+		}
+		kind, _ := findType(childType)
+		for _, value := range records {
+			record := object(value)
+			id, parsedType, err := parseID(text(record["id"]))
+			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || (text(record["type"]) != "" && !strings.EqualFold(text(record["type"]), childType)) {
+				return nil, fmt.Errorf("invalid or duplicate Azure cascade child identity")
+			}
+			seen[id] = true
+			endpoint, err := c.resourceURL(kind, id)
+			if err != nil {
+				return nil, err
+			}
+			live, err := c.request(ctx, "GET", endpoint)
+			if err != nil {
+				return nil, err
+			}
+			if !validResourceResponse(live, id, childType) {
+				return nil, fmt.Errorf("Azure cascade child read identity mismatch")
+			}
+			// Lists can omit generation fields; compare every field they do expose.
+			if err := serviceListedIncarnation(record, live.data); err != nil {
+				return nil, err
+			}
+			children = append(children, serviceChild{kind: childType, id: id, data: live.data})
+		}
+	}
+	if err := c.verifyProductParent(ctx, productTarget{ParentID: parentID, ParentType: parentKind.NativeType, Generation: productGeneration(raw)}); err != nil {
+		return nil, err
+	}
+	sort.Slice(children, func(i, j int) bool { return children[i].id < children[j].id })
+	return children, nil
+}
+
+func serviceListedIncarnation(listed, live map[string]any) error {
+	for _, field := range []string{"resourceGuid", "resourceUid", "vmId", "creationTime", "timeCreated"} {
+		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
+			return fmt.Errorf("Azure resource incarnation changed")
+		}
+	}
+	for _, field := range []string{"etag"} {
+		if expected := listed[field]; expected != nil && !reflect.DeepEqual(expected, live[field]) {
+			return fmt.Errorf("Azure resource generation changed")
+		}
+	}
+	if expected := object(listed["systemData"])["createdAt"]; expected != nil && !reflect.DeepEqual(expected, object(live["systemData"])["createdAt"]) {
+		return fmt.Errorf("Azure resource creation identity changed")
+	}
+	return nil
+}
+
+func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if expected := text(planned.Normalized["_arm_generation"]); expected != "" && expected != productGeneration(live) {
+		return serviceDenied("service_resource_generation_changed")
+	}
+	return serviceListedIncarnation(map[string]any{"properties": planned.Normalized}, live)
+}
+
+func serviceDenied(reason string) error {
+	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProtected, Code: reason, Message: contracts.SafeProviderValidationMessage}}
+}
+
+func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	for _, parent := range assets {
+		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || sameAKSNodeGroup(assets, parent, parent.Identity.NativeID) {
+			continue
+		}
+		kind, _ := findType(parent.Identity.NativeType)
+		endpoint, err := s.client.resourceURL(kind, parent.Identity.NativeID)
+		if err != nil {
+			return result, err
+		}
+		live, err := s.client.request(ctx, "GET", endpoint)
+		if err != nil {
+			return result, err
+		}
+		if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
+			return result, fmt.Errorf("Azure service parent identity mismatch")
+		}
+		if err := serviceIncarnation(parent, live.data); err != nil {
+			return result, err
+		}
+		children, err := s.client.serviceChildren(ctx, parent.Identity, live.data)
+		if err != nil {
+			return result, err
+		}
+		for _, child := range children {
+			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+			var target *asset.Asset
+			for i := range assets {
+				candidate := &assets[i]
+				if candidate.Identity.Provider == parent.Identity.Provider && candidate.Identity.ConnectionID == parent.Identity.ConnectionID && candidate.Identity.Partition == parent.Identity.Partition && strings.EqualFold(candidate.Identity.NativeType, child.kind) && strings.EqualFold(candidate.Identity.NativeID, child.id) {
+					if target != nil {
+						return result, fmt.Errorf("ambiguous Azure service child")
+					}
+					target = candidate
+				}
+			}
+			if target == nil {
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				continue
+			}
+			if err := serviceIncarnation(*target, child.data); err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+		}
+	}
+	return result, nil
+}
+
+func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]contracts.ActionImpact, error) {
+	root := request.Asset
+	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) {
+		return nil, serviceDenied("service_parent_identity_changed")
+	}
+	impacts := map[string]contracts.ActionImpact{}
+	assets := map[asset.AssetID]asset.Asset{root.ID: root}
+	for _, impact := range request.LifecycleImpacts {
+		identity := impact.Asset.Identity
+		id, kind, err := parseID(identity.NativeID)
+		if err != nil || impact.Asset.ID == "" || assets[impact.Asset.ID].Identity.NativeID != "" || impacts[id].Asset.Identity.NativeID != "" || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.EqualFold(kind, identity.NativeType) || !strings.HasPrefix(id, a.id+"/") {
+			return nil, serviceDenied("invalid_service_lifecycle_impact")
+		}
+		if !impact.Delete {
+			return nil, serviceDenied("service_child_retention_not_supported")
+		}
+		impacts[id] = impact
+		assets[impact.Asset.ID] = impact.Asset
+	}
+	for _, impact := range impacts {
+		current := impact
+		seen := map[asset.AssetID]bool{}
+		for {
+			if seen[current.Asset.ID] {
+				return nil, serviceDenied("service_child_scope_changed")
+			}
+			seen[current.Asset.ID] = true
+			parent, ok := assets[current.ControllerID]
+			kinds := serviceChildKinds(parent.Identity.NativeType)
+			if !ok || !slices.ContainsFunc(kinds, func(kind string) bool { return strings.EqualFold(kind, current.Asset.Identity.NativeType) }) || !strings.HasPrefix(strings.ToLower(current.Asset.Identity.NativeID), strings.ToLower(parent.Identity.NativeID)+"/") {
+				return nil, serviceDenied("service_child_scope_changed")
+			}
+			if parent.ID == root.ID {
+				break
+			}
+			current = impacts[strings.ToLower(parent.Identity.NativeID)]
+		}
+	}
+	return impacts, nil
+}
+
+func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any) error {
+	impacts, err := a.serviceImpacts(request)
+	if err != nil {
+		return err
+	}
+	if err := serviceIncarnation(request.Asset, live); err != nil {
+		return err
+	}
+	visited := map[string]bool{}
+	var verify func(asset.Asset, map[string]any) error
+	verify = func(parent asset.Asset, raw map[string]any) error {
+		children, err := a.client.serviceChildren(ctx, parent.Identity, raw)
+		if err != nil {
+			return err
+		}
+		for _, child := range children {
+			impact, ok := impacts[child.id]
+			if !ok || impact.ControllerID != parent.ID || !strings.EqualFold(impact.Asset.Identity.NativeType, child.kind) {
+				return serviceDenied("service_child_missing_from_plan")
+			}
+			visited[child.id] = true
+			if err := serviceIncarnation(impact.Asset, child.data); err != nil {
+				return err
+			}
+			kind, _ := findType(child.kind)
+			if locked(child.id, locks) {
+				return serviceDenied("azure_management_lock")
+			}
+			if reason := protectionReason(kind, child.data); reason != "" {
+				return serviceDenied(reason)
+			}
+			for key, value := range object(child.data["tags"]) {
+				if strings.EqualFold(key, "steward/protected") || strings.EqualFold(key, "steward:protected") {
+					switch strings.ToLower(text(value)) {
+					case "1", "true", "yes", "on", "protected":
+						return serviceDenied("service_child_protected")
+					}
+				}
+			}
+			if err := verify(impact.Asset, child.data); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := verify(request.Asset, live); err != nil {
+		return err
+	}
+	for id, impact := range impacts {
+		if visited[id] {
+			continue
+		}
+		kind, _ := findType(impact.Asset.Identity.NativeType)
+		endpoint, err := a.client.resourceURL(kind, id)
+		if err != nil {
+			return err
+		}
+		if _, err = a.client.request(ctx, "GET", endpoint); !isNotFound(err) {
+			if err != nil {
+				return err
+			}
+			return serviceDenied("service_child_membership_changed")
+		}
+	}
+	return nil
+}
+
+func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	impacts, err := a.serviceImpacts(request)
+	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	ids := make([]string, 0, len(impacts))
+	for id := range impacts {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		impact := impacts[id]
+		kind, _ := findType(impact.Asset.Identity.NativeType)
+		endpoint, err := a.client.resourceURL(kind, id)
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		current, err := a.client.request(ctx, "GET", endpoint)
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		if !validResourceResponse(current, id, kind.NativeType) {
+			return contracts.ReadbackResult{}, fmt.Errorf("Azure service child readback identity mismatch")
+		}
+		return contracts.ReadbackResult{Exists: true, State: "service_children_deleting"}, nil
+	}
+	return contracts.ReadbackResult{Exists: false}, nil
+}

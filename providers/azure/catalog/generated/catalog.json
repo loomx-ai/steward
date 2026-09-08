@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8547c896ad8d08130f757d327564f52f209633c6cd4d32f70a1f76d4beb91394",
+    "checksum": "8bc2de2bd2358f5ecf4da424e49d84fdf66ce6181d3c9908252399f167fb6ead",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2fe3c1691cb97ae2975461dd7c6f9e2f83cce8dadff96b0deebd2c7118290d27",
+  "content_checksum": "34eca7652b3a1464319b700a3a63d5d1142c61ac1458d3f0035e3c47e0043964",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -7610,6 +7610,233 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/bastionHost.json"
     },
     {
+      "id": "Azure.Microsoft.Network.ConnectionMonitors_Delete",
+      "name": "ConnectionMonitors_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors/{connectionMonitorName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionMonitorName": {
+            "description": "The name of the connection monitor.",
+            "in": "path",
+            "name": "connectionMonitorName",
+            "required": true,
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the Network Watcher resource.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group containing Network Watcher.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors/{connectionMonitorName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.ConnectionMonitors_Get",
+      "name": "ConnectionMonitors_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors/{connectionMonitorName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionMonitorName": {
+            "description": "The name of the connection monitor.",
+            "in": "path",
+            "name": "connectionMonitorName",
+            "required": true,
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the Network Watcher resource.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group containing Network Watcher.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Information about the connection monitor.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "ID of the connection monitor.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "location": {
+            "description": "Connection monitor location.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the connection monitor.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ConnectionMonitorResultProperties",
+            "description": "Properties of the connection monitor result.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Connection monitor tags.",
+            "type": "object"
+          },
+          "type": {
+            "description": "Connection monitor type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors/{connectionMonitorName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.ConnectionMonitors_List",
+      "name": "ConnectionMonitors_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the Network Watcher resource.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group containing Network Watcher.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of connection monitors.",
+        "properties": {
+          "value": {
+            "description": "Information about connection monitors.",
+            "items": {
+              "$ref": "#/definitions/ConnectionMonitorResult"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/connectionMonitors",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.DdosProtectionPlans_Delete",
       "name": "DdosProtectionPlans_Delete",
       "service": "Microsoft.Network",
@@ -11125,6 +11352,216 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkWatchers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PacketCaptures_Delete",
+      "name": "PacketCaptures_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures/{packetCaptureName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the network watcher.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "packetCaptureName": {
+            "description": "The name of the packet capture session.",
+            "in": "path",
+            "name": "packetCaptureName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures/{packetCaptureName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PacketCaptures_Get",
+      "name": "PacketCaptures_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures/{packetCaptureName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the network watcher.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "packetCaptureName": {
+            "description": "The name of the packet capture session.",
+            "in": "path",
+            "name": "packetCaptureName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Information about packet capture session.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "ID of the packet capture operation.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the packet capture session.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PacketCaptureResultProperties",
+            "description": "Properties of the packet capture result.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures/{packetCaptureName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PacketCaptures_List",
+      "name": "PacketCaptures_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkWatcherName": {
+            "description": "The name of the Network Watcher resource.",
+            "in": "path",
+            "name": "networkWatcherName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of packet capture sessions.",
+        "properties": {
+          "value": {
+            "description": "Information about packet capture sessions.",
+            "items": {
+              "$ref": "#/definitions/PacketCaptureResult"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkWatchers/{networkWatcherName}/packetCaptures",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -21186,6 +21623,27 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/networkWatchers/connectionMonitors",
+      "class": "observability.connection_monitor",
+      "display_name": "Connection monitor",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "connectionMonitors",
+        "read_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ConnectionMonitors_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/networkWatchers/flowLogs",
       "class": "observability.flow_log",
       "display_name": "Flow log",
@@ -21203,6 +21661,27 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.FlowLogs_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/networkWatchers/packetCaptures",
+      "class": "observability.packet_capture",
+      "display_name": "Packet capture",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "packetCaptures",
+        "read_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PacketCaptures_List"
         ]
       }
     },

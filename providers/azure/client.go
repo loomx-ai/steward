@@ -323,8 +323,11 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 	return items, next, res, nil
 }
 func (c *client) listAll(ctx context.Context, path, version string) ([]any, error) {
+	return c.listAllURL(ctx, apiURL(path, version), path)
+}
+
+func (c *client) listAllURL(ctx context.Context, next, path string) ([]any, error) {
 	var items []any
-	next := apiURL(path, version)
 	seen := map[string]bool{}
 	for next != "" {
 		if seen[next] {

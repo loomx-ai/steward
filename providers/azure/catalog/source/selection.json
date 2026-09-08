@@ -260,12 +260,18 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json",
       "operations": [
+        "ConnectionMonitors_Delete",
+        "ConnectionMonitors_Get",
+        "ConnectionMonitors_List",
         "FlowLogs_Delete",
         "FlowLogs_Get",
         "FlowLogs_List",
         "NetworkWatchers_Delete",
         "NetworkWatchers_Get",
-        "NetworkWatchers_ListAll"
+        "NetworkWatchers_ListAll",
+        "PacketCaptures_Delete",
+        "PacketCaptures_Get",
+        "PacketCaptures_List"
       ]
     },
     {
@@ -1703,6 +1709,44 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Storage.FileShares_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkWatchers/connectionMonitors",
+      "class": "observability.connection_monitor",
+      "display_name": "Connection monitor",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "connectionMonitors",
+      "read_operations": [
+        "Azure.Microsoft.Network.ConnectionMonitors_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ConnectionMonitors_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ConnectionMonitors_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkWatchers/packetCaptures",
+      "class": "observability.packet_capture",
+      "display_name": "Packet capture",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "packetCaptures",
+      "read_operations": [
+        "Azure.Microsoft.Network.PacketCaptures_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PacketCaptures_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PacketCaptures_List"
       ]
     }
   ]

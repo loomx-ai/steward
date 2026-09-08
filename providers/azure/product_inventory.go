@@ -268,36 +268,10 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			}
 		}
 	}
-	metadata, _ := providerData()
 	api := definition.Discovery.List
-	operation, ok := metadata.catalog.Operation(api.Operation)
-	if !ok || operation.Call.Method != "GET" || api.ItemsPath != "value" || api.IdentityPath != "id" {
-		return nil, fmt.Errorf("invalid Azure native list rule")
-	}
 	targets := []productTarget{}
 	for _, parent := range parents {
-		parameters := map[string]any{}
-		for key, value := range api.Parameters {
-			switch value {
-			case "scope.subscription":
-				parameters[key] = c.subscription
-			case "scope.location":
-				parameters[key] = request.Scope.NativeID
-			case "parent.nativeId":
-				parameters[key] = parent.NativeID
-			default:
-				if expression, ok := value.(string); ok && strings.HasPrefix(expression, "parent.normalized.") {
-					var resolved any = parent.Normalized
-					for _, part := range strings.Split(strings.TrimPrefix(expression, "parent.normalized."), ".") {
-						resolved = object(resolved)[part]
-					}
-					parameters[key] = resolved
-				} else {
-					parameters[key] = value
-				}
-			}
-		}
-		bound, err := catalog.BindREST(operation, parameters)
+		bound, err := c.bindProductList(api, request.Scope.NativeID, parent)
 		if err != nil {
 			return nil, err
 		}
@@ -328,6 +302,43 @@ func (c *client) inventoryProtection(ctx context.Context) (map[string]string, []
 		}
 		owners[id] = text(raw["managedBy"])
 	}
-	locks, err := c.listAll(ctx, c.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
+	locks, err := c.managementLocks(ctx)
 	return owners, locks, err
+}
+
+func (c *client) bindProductList(api *spec.ProductAPISpec, location string, parent contracts.InventoryItem) (catalog.RESTRequest, error) {
+	metadata, err := providerData()
+	if err != nil {
+		return catalog.RESTRequest{}, err
+	}
+	operation, ok := metadata.catalog.Operation(api.Operation)
+	if !ok || operation.Call.Method != "GET" || api.ItemsPath != "value" || api.IdentityPath != "id" {
+		return catalog.RESTRequest{}, fmt.Errorf("invalid Azure native list rule")
+	}
+	parameters := map[string]any{}
+	for key, value := range api.Parameters {
+		switch value {
+		case "scope.subscription":
+			parameters[key] = c.subscription
+		case "scope.location":
+			parameters[key] = location
+		case "parent.nativeId":
+			parameters[key] = parent.NativeID
+		default:
+			if expression, ok := value.(string); ok && strings.HasPrefix(expression, "parent.normalized.") {
+				var resolved any = parent.Normalized
+				for _, part := range strings.Split(strings.TrimPrefix(expression, "parent.normalized."), ".") {
+					resolved = object(resolved)[part]
+				}
+				parameters[key] = resolved
+			} else {
+				parameters[key] = value
+			}
+		}
+	}
+	bound, err := catalog.BindREST(operation, parameters)
+	if err != nil {
+		return catalog.RESTRequest{}, err
+	}
+	return bound, nil
 }

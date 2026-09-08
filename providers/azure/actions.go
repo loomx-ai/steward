@@ -84,6 +84,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			read, err := a.aksGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists && err == nil, Evidence: map[string]any{"aks_cluster_absent": true}}, err
 		}
+		if HasServiceCascade(a.kind.NativeType) {
+			read, err := a.serviceCascadeReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists && err == nil, Evidence: map[string]any{"service_parent_absent": true}}, err
+		}
 		return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 	}
 	if err != nil {
@@ -106,12 +110,17 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if text(group.data["managedBy"]) != "" {
 		return contracts.PreflightResult{Reason: "azure_managed_resource_group"}, nil
 	}
-	locks, err := a.client.listAll(ctx, a.client.root()+"/providers/Microsoft.Authorization/locks", locksVersion)
+	locks, err := a.client.managementLocks(ctx)
 	if err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if locked(a.id, locks) {
 		return contracts.PreflightResult{Reason: "azure_management_lock"}, nil
+	}
+	if HasServiceCascade(a.kind.NativeType) {
+		if err := a.serviceCascadePreflight(ctx, request, res.data, locks); err != nil {
+			return contracts.PreflightResult{}, err
+		}
 	}
 	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
 		if _, reason, err := a.evaluateAttachments(ctx, request, res.data, locks); reason != "" || err != nil {
@@ -161,7 +170,7 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
-	if check.Evidence["aks_cluster_absent"] == true {
+	if check.Evidence["aks_cluster_absent"] == true || check.Evidence["service_parent_absent"] == true {
 		return contracts.ActionResult{}, nil
 	}
 	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
@@ -309,6 +318,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if isNotFound(err) {
 		if a.kind.NativeType == aksType {
 			return a.aksGroupReadback(ctx, request)
+		}
+		if HasServiceCascade(a.kind.NativeType) {
+			return a.serviceCascadeReadback(ctx, request)
 		}
 		return contracts.ReadbackResult{Exists: false}, nil
 	}

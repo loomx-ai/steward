@@ -77,7 +77,7 @@ func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.C
 	if _, _, err := c.listPage(ctx, apiURL(path, resourcesVersion), path); err != nil {
 		return contracts.ConnectionIdentity{}, err
 	}
-	if _, err := c.listAll(ctx, c.root()+"/providers/Microsoft.Authorization/locks", locksVersion); err != nil {
+	if _, err := c.managementLocks(ctx); err != nil {
 		return contracts.ConnectionIdentity{}, err
 	}
 	return contracts.ConnectionIdentity{Partition: "azure", TenantID: c.tenant, Principal: c.application,
