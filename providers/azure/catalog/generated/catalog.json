@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "bd289d32be68d875d6560cec1f09ea17b9d539d9bc98fa2074371a410e8d9c04",
+    "checksum": "a893e61413efc7ef6af2611cc7d46e940a34d90a12070378b9573b3a63f43b0a",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f6a793132cd6ca055b024b048013970976b504cd1294c8b729febc4ffce38b3d",
+  "content_checksum": "c7dfbf9f9f1e71cc84285adc926475f515145a5b777160b3d5eae22bacfa307c",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -14187,6 +14187,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.App.ContainerApps_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.App.ContainerApps_ListBySubscription"
         ]
       }
     },
@@ -14202,6 +14205,9 @@
         "collection": "managedEnvironments",
         "read_operations": [
           "Azure.Microsoft.App.ManagedEnvironments_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.App.ManagedEnvironments_ListBySubscription"
         ]
       }
     },
@@ -14220,6 +14226,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Compute.AvailabilitySets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.AvailabilitySets_ListBySubscription"
         ]
       }
     },
@@ -14238,6 +14247,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Compute.Disks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Disks_List"
         ]
       }
     },
@@ -14256,6 +14268,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Compute.Images_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Images_List"
         ]
       }
     },
@@ -14274,6 +14289,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Compute.Snapshots_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Snapshots_List"
         ]
       }
     },
@@ -14289,6 +14307,9 @@
         "collection": "virtualMachineScaleSets",
         "read_operations": [
           "Azure.Microsoft.Compute.VirtualMachineScaleSets_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSets_ListAll"
         ]
       }
     },
@@ -14307,6 +14328,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Compute.VirtualMachines_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachines_ListAll"
         ]
       }
     },
@@ -14325,6 +14349,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.ContainerRegistry.Registries_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerRegistry.Registries_List"
         ]
       }
     },
@@ -14343,6 +14370,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.ContainerService.ManagedClusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.ManagedClusters_List"
         ]
       }
     },
@@ -14361,6 +14391,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.DBforMySQL.Servers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DBforMySQL.Servers_List"
         ]
       }
     },
@@ -14379,6 +14412,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.DBforPostgreSQL.Servers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DBforPostgreSQL.Servers_List"
         ]
       }
     },
@@ -14394,6 +14430,9 @@
         "collection": "vaults",
         "read_operations": [
           "Azure.Microsoft.KeyVault.Vaults_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
         ]
       }
     },
@@ -14412,6 +14451,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_ListBySubscription"
         ]
       }
     },
@@ -14430,6 +14472,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.ApplicationGateways_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ApplicationGateways_ListAll"
         ]
       }
     },
@@ -14448,6 +14493,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.LoadBalancers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.LoadBalancers_ListAll"
         ]
       }
     },
@@ -14466,6 +14514,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.NatGateways_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NatGateways_ListAll"
         ]
       }
     },
@@ -14484,6 +14535,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.NetworkInterfaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NetworkInterfaces_ListAll"
         ]
       }
     },
@@ -14502,6 +14556,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.NetworkSecurityGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NetworkSecurityGroups_ListAll"
         ]
       }
     },
@@ -14517,6 +14574,9 @@
         "collection": "privateEndpoints",
         "read_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateEndpoints_ListBySubscription"
         ]
       }
     },
@@ -14535,6 +14595,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.PublicIPAddresses_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PublicIPAddresses_ListAll"
         ]
       }
     },
@@ -14553,6 +14616,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.PublicIPPrefixes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PublicIPPrefixes_ListAll"
         ]
       }
     },
@@ -14571,6 +14637,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.RouteTables_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.RouteTables_ListAll"
         ]
       }
     },
@@ -14589,6 +14658,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.VirtualNetworks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VirtualNetworks_ListAll"
         ]
       }
     },
@@ -14607,6 +14679,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Network.Subnets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.Subnets_List"
         ]
       }
     },
@@ -14625,6 +14700,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.OperationalInsights.Workspaces_List"
         ]
       }
     },
@@ -14639,6 +14717,9 @@
         "collection": "resourceGroups",
         "read_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_Get"
+        ],
+        "list_operations": [
+          "Azure.ResourceManagementClient.ResourceGroups_List"
         ]
       }
     },
@@ -14654,6 +14735,9 @@
         "collection": "servers",
         "read_operations": [
           "Azure.Microsoft.Sql.Servers_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Sql.Servers_List"
         ]
       }
     },
@@ -14672,6 +14756,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Sql.Databases_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Sql.Databases_ListByServer"
         ]
       }
     },
@@ -14690,6 +14777,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Sql.ElasticPools_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Sql.ElasticPools_ListByServer"
         ]
       }
     },
@@ -14708,6 +14798,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Storage.StorageAccounts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Storage.StorageAccounts_List"
         ]
       }
     },
@@ -14726,6 +14819,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Storage.BlobContainers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Storage.BlobContainers_List"
         ]
       }
     },
@@ -14744,6 +14840,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Web.AppServicePlans_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.AppServicePlans_List"
         ]
       }
     },
@@ -14762,6 +14861,9 @@
         ],
         "delete_operations": [
           "Azure.Microsoft.Web.WebApps_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_List"
         ]
       }
     }

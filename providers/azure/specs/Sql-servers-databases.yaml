@@ -12,11 +12,22 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: azure-resource-manager
+  source: product-api
   detail:
     operation: Azure.Microsoft.Sql.Databases_Get
     itemsPath: $
     identityPath: id
+  list:
+    operation: Azure.Microsoft.Sql.Databases_ListByServer
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.resource_group
+      serverName: parent.normalized.name
+    itemsPath: value
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Sql/servers
 fields:
   name:
     path: name

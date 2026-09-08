@@ -12,11 +12,22 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: azure-resource-manager
+  source: product-api
   detail:
     operation: Azure.Microsoft.Storage.BlobContainers_Get
     itemsPath: $
     identityPath: id
+  list:
+    operation: Azure.Microsoft.Storage.BlobContainers_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.resource_group
+      accountName: parent.normalized.name
+    itemsPath: value
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Storage/storageAccounts
 fields:
   name:
     path: name

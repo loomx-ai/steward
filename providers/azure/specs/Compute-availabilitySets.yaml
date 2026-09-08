@@ -12,10 +12,16 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: azure-resource-manager
+  source: product-api
   detail:
     operation: Azure.Microsoft.Compute.AvailabilitySets_Get
     itemsPath: $
+    identityPath: id
+  list:
+    operation: Azure.Microsoft.Compute.AvailabilitySets_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
     identityPath: id
 fields:
   name:

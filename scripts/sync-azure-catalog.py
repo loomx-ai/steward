@@ -10,6 +10,8 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -26,22 +28,33 @@ def references(value):
             yield from references(child)
 
 
-def main():
-    directory = Path(__file__).resolve().parents[1] / "providers/azure/catalog/source"
-    selection = json.loads((directory / "selection.json").read_text())
+def fetch_source(uri):
+    parsed = urllib.parse.urlsplit(uri)
+    if (parsed.scheme != "https" or parsed.netloc != "raw.githubusercontent.com"
+            or not parsed.path.startswith("/Azure/azure-rest-api-specs/")
+            or parsed.query or parsed.fragment):
+        raise ValueError("Only official Azure REST API specification sources are accepted")
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(uri, timeout=60) as response:
+                raw = response.read(32 * 1024 * 1024 + 1)
+            break
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            transient = not isinstance(error, urllib.error.HTTPError) or error.code == 429 or error.code >= 500
+            if not transient or attempt == 3:
+                raise RuntimeError(f"Cannot refresh {uri}: {error}") from error
+            time.sleep(2 ** attempt)
+    if len(raw) > 32 * 1024 * 1024:
+        raise ValueError("Swagger source exceeds 32 MiB")
+    return raw
+
+
+def snapshot(selection):
     originals, snapshots, fingerprints = {}, {}, {}
 
     def fetch(uri):
-        parsed = urllib.parse.urlsplit(uri)
-        if (parsed.scheme != "https" or parsed.netloc != "raw.githubusercontent.com"
-                or not parsed.path.startswith("/Azure/azure-rest-api-specs/")
-                or parsed.query or parsed.fragment):
-            raise ValueError("Only official Azure REST API specification sources are accepted")
         if uri not in originals:
-            with urllib.request.urlopen(uri, timeout=60) as response:
-                raw = response.read(32 * 1024 * 1024 + 1)
-            if len(raw) > 32 * 1024 * 1024:
-                raise ValueError("Swagger source exceeds 32 MiB")
+            raw = fetch_source(uri)
             originals[uri] = json.loads(raw)
             fingerprints[uri] = hashlib.sha256(raw).hexdigest()
         return originals[uri]
@@ -95,10 +108,17 @@ def main():
     keys = {"native_type": "nativeType", "class": "class", "display_name": "displayName", "scope_kinds": "scopeKinds"}
     types = [{target: item[key] for key, target in keys.items()} for item in selection["resource_types"]]
     for target, source in zip(types, selection["resource_types"]):
-        target["rest"] = {key: source[key] for key in ("collection", "read_operations", "delete_operations")}
-    result = {"documents": documents, "x-resource-types": types}
+        target["rest"] = {key: source[key] for key in ("collection", "read_operations", "delete_operations", "list_operations")}
+    return {"documents": documents, "x-resource-types": types}
+
+
+def main():
+    directory = Path(__file__).resolve().parents[1] / "providers/azure/catalog/source"
+    selection = json.loads((directory / "selection.json").read_text())
+    result = snapshot(selection)
     (directory / "swagger.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    print(f"Saved {len(roots)} API documents and {len(documents) - len(roots)} reference documents")
+    roots = len(selection["documents"])
+    print(f"Saved {roots} API documents and {len(result['documents']) - roots} reference documents")
 
 
 if __name__ == "__main__":

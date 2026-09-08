@@ -13,6 +13,7 @@ import (
 )
 
 const inventorySource = "azure-resource-manager"
+const productInventorySource = "product-api"
 const actionHook = "azure.resource"
 const vmType = "Microsoft.Compute/virtualMachines"
 const diskType = "Microsoft.Compute/disks"
@@ -35,6 +36,7 @@ type resourceType struct {
 	Scopes           []asset.ScopeKind `json:"scope_kinds"`
 	ReadOperations   []string          `json:"read_operations"`
 	DeleteOperations []string          `json:"delete_operations"`
+	ListOperations   []string          `json:"list_operations"`
 }
 
 var both = []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}
@@ -65,7 +67,7 @@ func loadProviderData() (providerMetadata, error) {
 		if !ok || operation.Call == nil {
 			return result, fmt.Errorf("Azure resource has no valid read operation")
 		}
-		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations})
+		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations})
 	}
 	entries, err := providerFiles.ReadDir("specs")
 	if err != nil {
@@ -107,13 +109,16 @@ func loadProviderData() (providerMetadata, error) {
 		if actionable != (len(kind.DeleteOperations) > 0) || (actionable && !slices.Contains(kind.DeleteOperations, deletion.Operation)) {
 			return result, fmt.Errorf("Azure resource %q delete binding differs from spec", kind.NativeType)
 		}
-		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations} {
+		if definition.Discovery.Source != productInventorySource || definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation) {
+			return result, fmt.Errorf("Azure resource %q list binding differs from spec", kind.NativeType)
+		}
+		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {
 			for _, id := range ids {
 				operation, ok := result.catalog.Operation(id)
 				if !ok || operation.Call == nil || operation.Call.Style != "azure-rest" {
 					return result, fmt.Errorf("Azure resource %q references an unknown operation %q", kind.NativeType, id)
 				}
-				if slices.Contains(kind.ReadOperations, id) && operation.Call.Method != "GET" {
+				if (slices.Contains(kind.ReadOperations, id) || slices.Contains(kind.ListOperations, id)) && operation.Call.Method != "GET" {
 					return result, fmt.Errorf("Azure read binding %q is not a GET", id)
 				}
 				if slices.Contains(kind.DeleteOperations, id) && (operation.Call.Method != "DELETE" || !operation.Destructive) {

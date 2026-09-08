@@ -87,7 +87,7 @@ func TestInvokeUsesNativeOperationsAndRejectsForeignParameters(t *testing.T) {
 	}
 }
 
-func TestSubscriptionInventoryPagingChildrenAndVMNetworking(t *testing.T) {
+func TestLegacySubscriptionInventoryPagingChildrenAndVMNetworking(t *testing.T) {
 	root := "/subscriptions/" + testSubscription
 	subnet := resourceID(vnetType, "vnet") + "/subnets/subnet"
 	vm := nativeResource(vmType, "vm", "eastus", map[string]any{"provisioningState": "Succeeded", "networkProfile": map[string]any{"networkInterfaces": []any{map[string]any{"id": resourceID(nicType, "nic")}}}, "customData": "private-startup"})
@@ -122,7 +122,7 @@ func TestSubscriptionInventoryPagingChildrenAndVMNetworking(t *testing.T) {
 		}
 		return jsonResponse(200, data, http.Header{"X-Ms-Request-Id": {"inventory-page"}}), nil
 	})
-	request := contracts.InventoryRequest{ConnectionID: "connection", Source: inventorySource, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: testSubscription}}
+	request := contracts.InventoryRequest{ConnectionID: "connection", Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: testSubscription}}
 	first, err := r.List(context.Background(), request)
 	if err != nil {
 		t.Fatal(err)

@@ -48,7 +48,10 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 	}}}
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
-	return []contracts.InventorySource{{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, NetworkClosure: true}}
+	return []contracts.InventorySource{
+		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},
+		{Name: productInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
+	}
 }
 func (c *client) subscriptionIdentity(ctx context.Context) (map[string]any, error) {
 	res, err := c.request(ctx, "GET", apiURL(c.root(), "2022-12-01"))

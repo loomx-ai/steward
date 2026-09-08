@@ -288,11 +288,21 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 	if err != nil {
 		return nil, "", response{}, err
 	}
+	if res.status != http.StatusOK || res.data["error"] != nil {
+		return nil, "", response{}, fmt.Errorf("Azure list response is incomplete")
+	}
 	items, ok := res.data["value"].([]any)
 	if !ok {
 		return nil, "", response{}, fmt.Errorf("Azure list response has no valid value array")
 	}
-	next := text(res.data["nextLink"])
+	next := ""
+	if value, present := res.data["nextLink"]; present && value != nil {
+		var valid bool
+		next, valid = value.(string)
+		if !valid {
+			return nil, "", response{}, fmt.Errorf("Azure list nextLink is not a string")
+		}
+	}
 	if next != "" {
 		if err := c.validateURL(next); err != nil {
 			return nil, "", response{}, err

@@ -26,6 +26,25 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
+All 34 current resource rules discover through native product List operations.
+The broad subscription resource index supplies unknown kinds and cannot overwrite
+product observations. Subnets, Blob containers, SQL databases and elastic pools
+enumerate their native parents first; detail reads supply lifecycle properties,
+inherited locks, ownership and network references. Child location falls back to
+the parent only when the native response omits it.
+
+Product pagination binds the connection, subscription, selected scope and kind,
+bundle revision and ordered parent set. Changed parents, returned incarnation
+fields or etags require a fresh scan. Permission failures, missing collections,
+partial HTTP responses, malformed identities, foreign pages and pagination cycles
+fail the shard. Parent readback checks changes during child discovery. These are
+change detectors using the fields provided by ARM, not an atomic cloud snapshot.
+Network target selection uses the native VNet/Subnet collections directly.
+
+Catalog refresh retries transient failures at most four times. Offline Python
+tests preserve native operations, recursive references and source fingerprints;
+Go tests retain product wire behavior, scan authority, paging and failure cases.
+
 VM managed disks and NICs, and a NIC's public IPs, contribute native lifecycle
 impact from their `deleteOption` fields. A reviewed retention outcome changes
 the option to `Detach` before deleting the controller. VM updates use the

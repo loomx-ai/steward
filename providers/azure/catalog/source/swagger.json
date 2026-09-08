@@ -39209,6 +39209,9 @@
         "delete_operations": [
           "Azure.Microsoft.Compute.VirtualMachines_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachines_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Compute.VirtualMachines_Get"
         ]
@@ -39226,6 +39229,9 @@
         "collection": "disks",
         "delete_operations": [
           "Azure.Microsoft.Compute.Disks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Disks_List"
         ],
         "read_operations": [
           "Azure.Microsoft.Compute.Disks_Get"
@@ -39245,6 +39251,9 @@
         "delete_operations": [
           "Azure.Microsoft.Compute.Snapshots_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Snapshots_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.Compute.Snapshots_Get"
         ]
@@ -39262,6 +39271,9 @@
         "collection": "images",
         "delete_operations": [
           "Azure.Microsoft.Compute.Images_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.Images_List"
         ],
         "read_operations": [
           "Azure.Microsoft.Compute.Images_Get"
@@ -39281,6 +39293,9 @@
         "delete_operations": [
           "Azure.Microsoft.Compute.AvailabilitySets_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.AvailabilitySets_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.Compute.AvailabilitySets_Get"
         ]
@@ -39297,6 +39312,9 @@
       "rest": {
         "collection": "virtualMachineScaleSets",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSets_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Compute.VirtualMachineScaleSets_Get"
         ]
@@ -39314,6 +39332,9 @@
         "collection": "virtualNetworks",
         "delete_operations": [
           "Azure.Microsoft.Network.VirtualNetworks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VirtualNetworks_ListAll"
         ],
         "read_operations": [
           "Azure.Microsoft.Network.VirtualNetworks_Get"
@@ -39333,6 +39354,9 @@
         "delete_operations": [
           "Azure.Microsoft.Network.Subnets_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Network.Subnets_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.Subnets_Get"
         ]
@@ -39350,6 +39374,9 @@
         "collection": "networkInterfaces",
         "delete_operations": [
           "Azure.Microsoft.Network.NetworkInterfaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NetworkInterfaces_ListAll"
         ],
         "read_operations": [
           "Azure.Microsoft.Network.NetworkInterfaces_Get"
@@ -39369,6 +39396,9 @@
         "delete_operations": [
           "Azure.Microsoft.Network.NetworkSecurityGroups_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NetworkSecurityGroups_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.NetworkSecurityGroups_Get"
         ]
@@ -39386,6 +39416,9 @@
         "collection": "routeTables",
         "delete_operations": [
           "Azure.Microsoft.Network.RouteTables_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.RouteTables_ListAll"
         ],
         "read_operations": [
           "Azure.Microsoft.Network.RouteTables_Get"
@@ -39405,6 +39438,9 @@
         "delete_operations": [
           "Azure.Microsoft.Network.PublicIPAddresses_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PublicIPAddresses_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.PublicIPAddresses_Get"
         ]
@@ -39422,6 +39458,9 @@
         "collection": "publicIPPrefixes",
         "delete_operations": [
           "Azure.Microsoft.Network.PublicIPPrefixes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PublicIPPrefixes_ListAll"
         ],
         "read_operations": [
           "Azure.Microsoft.Network.PublicIPPrefixes_Get"
@@ -39441,6 +39480,9 @@
         "delete_operations": [
           "Azure.Microsoft.Network.NatGateways_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NatGateways_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.NatGateways_Get"
         ]
@@ -39458,6 +39500,9 @@
         "collection": "loadBalancers",
         "delete_operations": [
           "Azure.Microsoft.Network.LoadBalancers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.LoadBalancers_ListAll"
         ],
         "read_operations": [
           "Azure.Microsoft.Network.LoadBalancers_Get"
@@ -39477,6 +39522,9 @@
         "delete_operations": [
           "Azure.Microsoft.Network.ApplicationGateways_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ApplicationGateways_ListAll"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.ApplicationGateways_Get"
         ]
@@ -39493,6 +39541,9 @@
       "rest": {
         "collection": "privateEndpoints",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateEndpoints_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_Get"
         ]
@@ -39510,6 +39561,9 @@
         "collection": "storageAccounts",
         "delete_operations": [
           "Azure.Microsoft.Storage.StorageAccounts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Storage.StorageAccounts_List"
         ],
         "read_operations": [
           "Azure.Microsoft.Storage.StorageAccounts_GetProperties"
@@ -39529,6 +39583,9 @@
         "delete_operations": [
           "Azure.Microsoft.Storage.BlobContainers_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Storage.BlobContainers_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.Storage.BlobContainers_Get"
         ]
@@ -39545,6 +39602,9 @@
       "rest": {
         "collection": "servers",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Sql.Servers_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.Sql.Servers_Get"
         ]
@@ -39562,6 +39622,9 @@
         "collection": "databases",
         "delete_operations": [
           "Azure.Microsoft.Sql.Databases_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Sql.Databases_ListByServer"
         ],
         "read_operations": [
           "Azure.Microsoft.Sql.Databases_Get"
@@ -39581,6 +39644,9 @@
         "delete_operations": [
           "Azure.Microsoft.Sql.ElasticPools_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Sql.ElasticPools_ListByServer"
+        ],
         "read_operations": [
           "Azure.Microsoft.Sql.ElasticPools_Get"
         ]
@@ -39598,6 +39664,9 @@
         "collection": "flexibleServers",
         "delete_operations": [
           "Azure.Microsoft.DBforPostgreSQL.Servers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DBforPostgreSQL.Servers_List"
         ],
         "read_operations": [
           "Azure.Microsoft.DBforPostgreSQL.Servers_Get"
@@ -39617,6 +39686,9 @@
         "delete_operations": [
           "Azure.Microsoft.DBforMySQL.Servers_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.DBforMySQL.Servers_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.DBforMySQL.Servers_Get"
         ]
@@ -39634,6 +39706,9 @@
         "collection": "sites",
         "delete_operations": [
           "Azure.Microsoft.Web.WebApps_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_List"
         ],
         "read_operations": [
           "Azure.Microsoft.Web.WebApps_Get"
@@ -39653,6 +39728,9 @@
         "delete_operations": [
           "Azure.Microsoft.Web.AppServicePlans_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.Web.AppServicePlans_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.Web.AppServicePlans_Get"
         ]
@@ -39670,6 +39748,9 @@
         "collection": "registries",
         "delete_operations": [
           "Azure.Microsoft.ContainerRegistry.Registries_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerRegistry.Registries_List"
         ],
         "read_operations": [
           "Azure.Microsoft.ContainerRegistry.Registries_Get"
@@ -39689,6 +39770,9 @@
         "delete_operations": [
           "Azure.Microsoft.ContainerService.ManagedClusters_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.ManagedClusters_List"
+        ],
         "read_operations": [
           "Azure.Microsoft.ContainerService.ManagedClusters_Get"
         ]
@@ -39705,6 +39789,9 @@
       "rest": {
         "collection": "vaults",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.KeyVault.Vaults_Get"
         ]
@@ -39722,6 +39809,9 @@
         "collection": "workspaces",
         "delete_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.OperationalInsights.Workspaces_List"
         ],
         "read_operations": [
           "Azure.Microsoft.OperationalInsights.Workspaces_Get"
@@ -39741,6 +39831,9 @@
         "delete_operations": [
           "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Get"
         ]
@@ -39759,6 +39852,9 @@
         "delete_operations": [
           "Azure.Microsoft.App.ContainerApps_Delete"
         ],
+        "list_operations": [
+          "Azure.Microsoft.App.ContainerApps_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.App.ContainerApps_Get"
         ]
@@ -39775,6 +39871,9 @@
       "rest": {
         "collection": "managedEnvironments",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.App.ManagedEnvironments_ListBySubscription"
+        ],
         "read_operations": [
           "Azure.Microsoft.App.ManagedEnvironments_Get"
         ]
@@ -39791,6 +39890,9 @@
       "rest": {
         "collection": "resourceGroups",
         "delete_operations": [],
+        "list_operations": [
+          "Azure.ResourceManagementClient.ResourceGroups_List"
+        ],
         "read_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_Get"
         ]

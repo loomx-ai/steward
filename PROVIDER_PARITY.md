@@ -208,3 +208,15 @@ background evidence only, not acceptance evidence for this work.
   product locations for global-only and mixed-scope services. Other service
   lifecycle work, remaining families, Azure expansion and emulator/E2E acceptance
   are still open.
+
+- Azure's 34 current kinds now use native product lists, including recursive
+  Subnet, Blob container and SQL child discovery. Per-kind product shards are
+  authoritative; the broad ARM index preserves unknown kinds without replacing
+  product observations. Live details, inherited locks and managed ownership are
+  retained. Parent-bound cursors and readback reject drift, missing or unreadable
+  collections, invalid identities, partial responses and repeated pages. Network
+  selection uses VNet/Subnet product APIs and network scans include global
+  bindings. Retained protocol tests, offline source-refresh tests, full Go tests,
+  targeted race tests and vet pass; 33 official API files and 27 reference files
+  refreshed successfully. Remaining Azure families, lifecycle controllers and
+  independent emulator/application acceptance remain open.

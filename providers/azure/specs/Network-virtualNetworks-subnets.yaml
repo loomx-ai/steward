@@ -12,11 +12,22 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: azure-resource-manager
+  source: product-api
   detail:
     operation: Azure.Microsoft.Network.Subnets_Get
     itemsPath: $
     identityPath: id
+  list:
+    operation: Azure.Microsoft.Network.Subnets_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.resource_group
+      virtualNetworkName: parent.normalized.name
+    itemsPath: value
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/virtualNetworks
 fields:
   name:
     path: name

@@ -13,12 +13,18 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
+	}
+	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
+		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if request.Source == productInventorySource {
+		return r.listProduct(ctx, c, request, nil)
 	}
 	path := c.root() + "/resources"
 	endpoint := apiURL(path, resourcesVersion)
@@ -70,6 +76,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	seen := map[string]bool{}
 	appendItem := func(raw map[string]any) error {
+		if request.Source == inventorySource && r.usesProductSource(text(raw["type"])) {
+			return nil
+		}
 		item, err := r.inventoryItem(ctx, c, raw, groupOwners, locks)
 		if err != nil {
 			return err
@@ -97,10 +106,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		if raw == nil {
 			return contracts.InventoryBatch{}, fmt.Errorf("invalid Azure resource list item")
 		}
-		if region != "" && resourceRegion(raw) != region {
+		if region != "" && resourceRegion(raw) != region && !(request.NetworkTarget != nil && resourceRegion(raw) == "global") {
 			continue
 		}
 		kind, known := findType(text(raw["type"]))
+		if request.Source == inventorySource && known {
+			continue
+		}
 		if known {
 			resourceURL, err := c.resourceURL(kind, text(raw["id"]))
 			if err != nil {
@@ -447,7 +459,7 @@ func (r *Runtime) SearchNetworkTargets(ctx context.Context, query contracts.Netw
 	}
 	kind := r.resourceKind(nativeType)
 	batch, err := r.List(ctx, contracts.InventoryRequest{ConnectionID: query.ConnectionID, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: query.RegionID},
-		Source: inventorySource, ResourceKind: &kind, Cursor: query.Cursor, Limit: query.Limit})
+		Source: productInventorySource, ResourceKind: &kind, Cursor: query.Cursor, Limit: query.Limit})
 	if err != nil {
 		return contracts.NetworkTargetPage{}, err
 	}
