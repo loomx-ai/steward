@@ -119,6 +119,12 @@ func (f *managedGroupFixture) roundTrip(r *http.Request) (*http.Response, error)
 		encoded, _ := json.Marshal(value)
 		return apiResponse(r, 200, string(encoded)), nil
 	}
+	if r.URL.Host == "container.googleapis.com" && strings.HasSuffix(r.URL.Path, "/locations/-/clusters") {
+		if r.Method != "GET" || len(r.URL.Query()) != 0 {
+			f.t.Fatalf("invalid native GKE ownership lookup: %s %s", r.Method, r.URL)
+		}
+		return reply(map[string]any{"clusters": []any{}})
+	}
 	method := last(r.URL.Path)
 	if method == "listManagedInstances" || method == "listPerInstanceConfigs" {
 		if r.Method != "POST" || r.URL.Query().Get("maxResults") != "500" {

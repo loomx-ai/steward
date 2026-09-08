@@ -56,7 +56,7 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	switch connection.Provider {
 	case asset.ProviderGCP:
 		for _, value := range assets {
-			if value.Identity.Provider != asset.ProviderGCP || value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" {
+			if value.Identity.Provider != asset.ProviderGCP || (value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" && value.Identity.NativeType != "container.googleapis.com/Cluster" && value.Identity.NativeType != "container.googleapis.com/NodePool") {
 				continue
 			}
 			provider, ok := runtime.(computeLifecycleRuntime)

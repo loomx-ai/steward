@@ -171,6 +171,9 @@
         "container.projects.locations.clusters.delete",
         "container.projects.locations.clusters.get",
         "container.projects.locations.clusters.list",
+        "container.projects.locations.clusters.nodePools.delete",
+        "container.projects.locations.clusters.nodePools.get",
+        "container.projects.locations.clusters.nodePools.list",
         "container.projects.locations.operations.get"
       ]
     },
@@ -929,6 +932,24 @@
       ],
       "list_operations": [
         "compute.autoscalers.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "container.googleapis.com/NodePool",
+      "collection": "nodePools",
+      "class": "container.node_pool",
+      "display_name": "GKE node pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "container.projects.locations.clusters.nodePools.get"
+      ],
+      "delete_operations": [
+        "container.projects.locations.clusters.nodePools.delete"
+      ],
+      "list_operations": [
+        "container.projects.locations.clusters.nodePools.list"
       ]
     }
   ]

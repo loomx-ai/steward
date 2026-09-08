@@ -88,7 +88,10 @@ func (c *client) groupList(ctx context.Context, id, method, itemsPath string) ([
 }
 
 func (c *client) nativeList(ctx context.Context, operation catalog.Operation, parameters map[string]any, itemsPath string) ([]map[string]any, error) {
-	parameters["maxResults"] = 500
+	properties := object(operation.InputSchema["properties"])
+	if properties["maxResults"] != nil {
+		parameters["maxResults"] = 500
+	}
 	var result []map[string]any
 	seen := map[string]bool{}
 	for {
@@ -114,8 +117,8 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if next == "" {
 			return result, nil
 		}
-		if seen[next] {
-			return nil, fmt.Errorf("Compute lifecycle pagination did not advance")
+		if seen[next] || properties["pageToken"] == nil {
+			return nil, fmt.Errorf("Google lifecycle pagination did not advance")
 		}
 		seen[next] = true
 		parameters["pageToken"] = next
@@ -434,10 +437,18 @@ func addGroupBinding(result *governance.Contribution, assets []asset.Asset, cont
 }
 
 func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
-	result := governance.Contribution{}
+	result, gkeOwned, err := h.contributeGKE(ctx, assets)
+	if err != nil {
+		return result, err
+	}
 	managedVMs := map[asset.AssetID]bool{}
+	for _, value := range assets {
+		if gkeOwned[value.Identity.NativeID] && value.Identity.NativeType == instanceType {
+			managedVMs[value.ID] = true
+		}
+	}
 	for _, manager := range assets {
-		if manager.Identity.Provider != asset.ProviderGCP || manager.Identity.NativeType != managerType {
+		if manager.Identity.Provider != asset.ProviderGCP || manager.Identity.NativeType != managerType || gkeOwned[manager.Identity.NativeID] {
 			continue
 		}
 		kind, _ := findType(managerType)

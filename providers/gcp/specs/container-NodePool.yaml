@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: container.googleapis.com/NodePool
+  class: container.node_pool
+presentation:
+  displayNames:
+    en-US: GKE node pool
+    zh-CN: GKE 节点池
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    source: product-api
+    nativeType: container.googleapis.com/Cluster
+  list:
+    operation: container.projects.locations.clusters.nodePools.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: nodePools
+    identityPath: name
+  detail:
+    operation: container.projects.locations.clusters.nodePools.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: member_of
+  targetType: container.googleapis.com/Cluster
+  targetIdPath: refs_container_googleapis_com_Cluster
+actions:
+  delete:
+    operation: container.projects.locations.clusters.nodePools.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: container.projects.locations.clusters.nodePools.get
+      itemsPath: $
+      identityPath: name

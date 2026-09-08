@@ -335,19 +335,23 @@ func (r *computeContributorRuntime) ComputeLifecycle(_ context.Context, id asset
 }
 
 func TestGCPComputeContributorUsesExplicitConnectionAndReplacesStaticAttachments(t *testing.T) {
-	runtime := &computeContributorRuntime{}
-	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
-	connection := asset.CloudConnection{ID: "gcp-connection", Provider: asset.ProviderGCP}
-	if _, err := resolver.ResolveContributors(context.Background(), connection, nil); err != nil || len(runtime.connections) != 0 {
-		t.Fatalf("unneeded Compute credentials requested: %+v %v", runtime.connections, err)
-	}
-	group := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, NativeType: "compute.googleapis.com/InstanceGroupManager", ConnectionID: connection.ID}}
-	contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{group, group})
-	if err != nil || len(contributors) != 1 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
-		t.Fatalf("Compute lifecycle not wired once: contributors=%d connections=%+v err=%v", len(contributors), runtime.connections, err)
-	}
-	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{group}); err == nil {
-		t.Fatal("missing Compute lifecycle implementation silently accepted")
+	for _, nativeType := range []string{"compute.googleapis.com/InstanceGroupManager", "container.googleapis.com/Cluster", "container.googleapis.com/NodePool"} {
+		t.Run(nativeType, func(t *testing.T) {
+			runtime := &computeContributorRuntime{}
+			resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+			connection := asset.CloudConnection{ID: "gcp-connection", Provider: asset.ProviderGCP}
+			if _, err := resolver.ResolveContributors(context.Background(), connection, nil); err != nil || len(runtime.connections) != 0 {
+				t.Fatalf("unneeded Compute credentials requested: %+v %v", runtime.connections, err)
+			}
+			group := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, NativeType: nativeType, ConnectionID: connection.ID}}
+			contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{group, group})
+			if err != nil || len(contributors) != 1 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+				t.Fatalf("Compute lifecycle not wired once: contributors=%d connections=%+v err=%v", len(contributors), runtime.connections, err)
+			}
+			if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{group}); err == nil {
+				t.Fatal("missing Compute lifecycle implementation silently accepted")
+			}
+		})
 	}
 }
 

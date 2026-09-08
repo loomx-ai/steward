@@ -37,6 +37,10 @@ func groupImpacts(request contracts.ActionRequest) (map[groupImpactKey]contracts
 }
 
 func (a *action) plannedGroup(ctx context.Context, request contracts.ActionRequest, live map[string]any, pendingVM ...string) (managedGroup, string, error) {
+	owned, err := a.client.gkeOwnsGroup(ctx, request.Asset.Identity.NativeID)
+	if err != nil || owned {
+		return managedGroup{}, "managed_group_requires_gke_cleanup", err
+	}
 	group, err := a.client.loadManagedGroup(ctx, request.Asset.Identity.NativeID, live, pendingVM...)
 	if err != nil {
 		return group, "", err

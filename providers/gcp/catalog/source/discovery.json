@@ -32366,6 +32366,152 @@
               "https://www.googleapis.com/auth/container.read-only"
             ]
           },
+          "container.projects.locations.clusters.nodePools.delete": {
+            "description": "Deletes a node pool from a cluster.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+            "httpMethod": "DELETE",
+            "id": "container.projects.locations.clusters.nodePools.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "clusterId": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "name": {
+                "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format `projects/*/locations/*/clusters/*/nodePools/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/nodePools/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "nodePoolId": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the node pool to delete. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "projectId": {
+                "deprecated": true,
+                "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "zone": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/container"
+            ]
+          },
+          "container.projects.locations.clusters.nodePools.get": {
+            "description": "Retrieves the requested node pool.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}",
+            "httpMethod": "GET",
+            "id": "container.projects.locations.clusters.nodePools.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "clusterId": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "name": {
+                "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format `projects/*/locations/*/clusters/*/nodePools/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/nodePools/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "nodePoolId": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the node pool. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "projectId": {
+                "deprecated": true,
+                "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              },
+              "zone": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the name field.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "NodePool"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/container",
+              "https://www.googleapis.com/auth/container.read-only"
+            ]
+          },
+          "container.projects.locations.clusters.nodePools.list": {
+            "description": "Lists the node pools for a cluster.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools",
+            "httpMethod": "GET",
+            "id": "container.projects.locations.clusters.nodePools.list",
+            "parameterOrder": [
+              "parent"
+            ],
+            "parameters": {
+              "clusterId": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the parent field.",
+                "location": "query",
+                "type": "string"
+              },
+              "parent": {
+                "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format `projects/*/locations/*/clusters/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "projectId": {
+                "deprecated": true,
+                "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
+                "location": "query",
+                "type": "string"
+              },
+              "zone": {
+                "deprecated": true,
+                "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the parent field.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+parent}/nodePools",
+            "response": {
+              "$ref": "ListNodePoolsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/container",
+              "https://www.googleapis.com/auth/container.read-only"
+            ]
+          },
           "container.projects.locations.operations.get": {
             "description": "Gets the specified operation.",
             "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}",
@@ -35107,6 +35253,20 @@
                 "description": "If any zones are listed here, the list of clusters returned may be missing those zones.",
                 "items": {
                   "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ListNodePoolsResponse": {
+            "description": "ListNodePoolsResponse is the result of ListNodePoolsRequest.",
+            "id": "ListNodePoolsResponse",
+            "properties": {
+              "nodePools": {
+                "description": "A list of node pools for a cluster.",
+                "items": {
+                  "$ref": "NodePool"
                 },
                 "type": "array"
               }
@@ -38057,7 +38217,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "eb10b74a41e1b924cdd08ddd0170e7b718c3e55f94fa36a9c3bb0d9719a8d9ac",
+      "source_sha256": "b6b6d31f5601a33415885e7f7581f6bd1c5f5536f7cb58b73be99810ea1d76e7",
       "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -45309,6 +45469,26 @@
         "read_operations": [
           "compute.autoscalers.get",
           "compute.regionAutoscalers.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.node_pool",
+      "displayName": "GKE node pool",
+      "nativeType": "container.googleapis.com/NodePool",
+      "rest": {
+        "collection": "nodePools",
+        "delete_operations": [
+          "container.projects.locations.clusters.nodePools.delete"
+        ],
+        "list_operations": [
+          "container.projects.locations.clusters.nodePools.list"
+        ],
+        "read_operations": [
+          "container.projects.locations.clusters.nodePools.get"
         ]
       },
       "scopeKinds": [

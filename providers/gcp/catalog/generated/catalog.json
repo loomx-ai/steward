@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "a5f602112275908701af921794837752bd9c82a9918319736dff26958b40edb1",
+    "checksum": "c047dbb84837573d0a3062471c38d6c0e258ec41b7c3cb8c8b7de941bf9ed038",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "fdbf63309096364f1426bb3945dcc0a57e9498ab1a2c28d1058b43c9eaf2b61f",
+  "content_checksum": "f8507faf750d102c3cf8f3fc47d9dcfcd91a01a6b4b28f7dda05c20b22bc92ba",
   "operations": [
     {
       "id": "artifactregistry.projects.locations.operations.get",
@@ -38015,6 +38015,503 @@
       "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "container.projects.locations.clusters.nodePools.delete",
+      "name": "delete",
+      "service": "container",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "clusterId": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name (project, location, cluster, node pool id) of the node pool to delete. Specified in the format `projects/*/locations/*/clusters/*/nodePools/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/nodePools/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "nodePoolId": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the node pool to delete. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "projectId": {
+            "deprecated": true,
+            "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "zone": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This operation resource represents operations that may have happened or are happening on the cluster. All fields are output only.",
+        "id": "Operation",
+        "properties": {
+          "clusterConditions": {
+            "deprecated": true,
+            "description": "Which conditions caused the current cluster state. Deprecated. Use field error instead.",
+            "items": {
+              "$ref": "StatusCondition"
+            },
+            "type": "array"
+          },
+          "detail": {
+            "description": "Output only. Detailed operation progress, if available.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "endTime": {
+            "description": "Output only. The time the operation completed, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure."
+          },
+          "location": {
+            "description": "Output only. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones#available) or [region](https://cloud.google.com/compute/docs/regions-zones/regions-zones#available) in which the cluster resides.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Output only. The server-assigned ID for the operation.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "nodepoolConditions": {
+            "deprecated": true,
+            "description": "Which conditions caused the current node pool state. Deprecated. Use field error instead.",
+            "items": {
+              "$ref": "StatusCondition"
+            },
+            "type": "array"
+          },
+          "operationType": {
+            "description": "Output only. The operation type.",
+            "enum": [
+              "TYPE_UNSPECIFIED",
+              "CREATE_CLUSTER",
+              "DELETE_CLUSTER",
+              "UPGRADE_MASTER",
+              "UPGRADE_NODES",
+              "REPAIR_CLUSTER",
+              "UPDATE_CLUSTER",
+              "CREATE_NODE_POOL",
+              "DELETE_NODE_POOL",
+              "SET_NODE_POOL_MANAGEMENT",
+              "AUTO_REPAIR_NODES",
+              "AUTO_UPGRADE_NODES",
+              "SET_LABELS",
+              "SET_MASTER_AUTH",
+              "SET_NODE_POOL_SIZE",
+              "SET_NETWORK_POLICY",
+              "SET_MAINTENANCE_POLICY",
+              "RESIZE_CLUSTER",
+              "FLEET_FEATURE_UPGRADE"
+            ],
+            "enumDeprecated": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              true,
+              true,
+              true,
+              false,
+              true,
+              true,
+              false,
+              false
+            ],
+            "enumDescriptions": [
+              "Not set.",
+              "The cluster is being created. The cluster should be assumed to be unusable until the operation finishes. In the event of the operation failing, the cluster will enter the ERROR state and eventually be deleted.",
+              "The cluster is being deleted. The cluster should be assumed to be unusable as soon as this operation starts. In the event of the operation failing, the cluster will enter the ERROR state and the deletion will be automatically retried until completed.",
+              "The cluster version is being updated. Note that this includes \"upgrades\" to the same version, which are simply a recreation. This also includes [auto-upgrades](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-upgrades#upgrading_automatically). For more details, see [documentation on cluster upgrades](https://cloud.google.com/kubernetes-engine/docs/concepts/cluster-upgrades#cluster_upgrades).",
+              "A node pool is being updated. Despite calling this an \"upgrade\", this includes most forms of updates to node pools. This also includes [auto-upgrades](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-upgrades). This operation sets the progress field and may be canceled. The upgrade strategy depends on [node pool configuration](https://cloud.google.com/kubernetes-engine/docs/concepts/node-pool-upgrade-strategies). The nodes are generally still usable during this operation.",
+              "A problem has been detected with the control plane and is being repaired. This operation type is initiated by GKE. For more details, see [documentation on repairs](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance-windows-and-exclusions#repairs).",
+              "The cluster is being updated. This is a broad category of operations and includes operations that only change metadata as well as those that must recreate the entire cluster. If the control plane must be recreated, this will cause temporary downtime for zonal clusters. Some features require recreating the nodes as well. Those will be recreated as separate operations and the update may not be completely functional until the node pools recreations finish. Node recreations will generally follow [maintenance policies](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance-windows-and-exclusions). Some GKE-initiated operations use this type. This includes certain types of auto-upgrades and incident mitigations.",
+              "A node pool is being created. The node pool should be assumed to be unusable until this operation finishes. In the event of an error, the node pool may be partially created. If enabled, [node autoprovisioning](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-provisioning) may have automatically initiated such operations.",
+              "The node pool is being deleted. The node pool should be assumed to be unusable as soon as this operation starts.",
+              "The node pool's manamagent field is being updated. These operations only update metadata and may be concurrent with most other operations.",
+              "A problem has been detected with nodes and [they are being repaired](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair). This operation type is initiated by GKE, typically automatically. This operation may be concurrent with other operations and there may be multiple repairs occurring on the same node pool.",
+              "Unused. Automatic node upgrade uses UPGRADE_NODES.",
+              "Unused. Updating labels uses UPDATE_CLUSTER.",
+              "Unused. Updating master auth uses UPDATE_CLUSTER.",
+              "The node pool is being resized. With the exception of resizing to or from size zero, the node pool is generally usable during this operation.",
+              "Unused. Updating network policy uses UPDATE_CLUSTER.",
+              "Unused. Updating maintenance policy uses UPDATE_CLUSTER.",
+              "The control plane is being resized. This operation type is initiated by GKE. These operations are often performed preemptively to ensure that the control plane has sufficient resources and is not typically an indication of issues. For more details, see [documentation on resizes](https://cloud.google.com/kubernetes-engine/docs/concepts/maintenance-windows-and-exclusions#repairs).",
+              "Fleet features of GKE Enterprise are being upgraded. The cluster should be assumed to be blocked for other upgrades until the operation finishes."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "progress": {
+            "$ref": "OperationProgress",
+            "description": "Output only. Progress information for an operation.",
+            "readOnly": true
+          },
+          "selfLink": {
+            "description": "Output only. Server-defined URI for the operation. Example: `https://container.googleapis.com/v1alpha1/projects/123/locations/us-central1/operations/operation-123`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "startTime": {
+            "description": "Output only. The time the operation started, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Output only. The current status of the operation.",
+            "enum": [
+              "STATUS_UNSPECIFIED",
+              "PENDING",
+              "RUNNING",
+              "DONE",
+              "ABORTING"
+            ],
+            "enumDescriptions": [
+              "Not set.",
+              "The operation has been created.",
+              "The operation is currently running.",
+              "The operation is done, either cancelled or completed.",
+              "The operation is aborting."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "statusMessage": {
+            "deprecated": true,
+            "description": "Output only. If an error has occurred, a textual description of the error. Deprecated. Use the field error instead.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "targetLink": {
+            "description": "Output only. Server-defined URI for the target of the operation. The format of this is a URI to the resource being modified (such as a cluster, node pool, or node). For node pool repairs, there may be multiple nodes being repaired, but only one will be the target. Examples: - ## `https://container.googleapis.com/v1/projects/123/locations/us-central1/clusters/my-cluster` ## `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np` `https://container.googleapis.com/v1/projects/123/zones/us-central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`",
+            "readOnly": true,
+            "type": "string"
+          },
+          "zone": {
+            "deprecated": true,
+            "description": "Output only. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the operation is taking place. This field is deprecated, use location instead.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "container",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://container.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "container.projects.locations.clusters.nodePools.get",
+      "name": "get",
+      "service": "container",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "clusterId": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name (project, location, cluster, node pool id) of the node pool to get. Specified in the format `projects/*/locations/*/clusters/*/nodePools/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+/nodePools/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "nodePoolId": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the node pool. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "projectId": {
+            "deprecated": true,
+            "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          },
+          "zone": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the name field.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "NodePool contains the name and configuration for a cluster's node pool. Node pools are a set of nodes (i.e. VM's), with a common configuration and specification, under the control of the cluster master. They may have a set of Kubernetes labels applied to them, which may be used to reference them during pod scheduling. They may also be resized up or down, to accommodate the workload.",
+        "id": "NodePool",
+        "properties": {
+          "autopilotConfig": {
+            "$ref": "AutopilotConfig",
+            "description": "Specifies the autopilot configuration for this node pool. This field is exclusively reserved for Cluster Autoscaler."
+          },
+          "autoscaling": {
+            "$ref": "NodePoolAutoscaling",
+            "description": "Autoscaler configuration for this NodePool. Autoscaler is enabled only if a valid configuration is present."
+          },
+          "bestEffortProvisioning": {
+            "$ref": "BestEffortProvisioning",
+            "description": "Enable best effort provisioning for nodes"
+          },
+          "conditions": {
+            "description": "Output only. Which conditions caused the current node pool state.",
+            "items": {
+              "$ref": "StatusCondition"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "config": {
+            "$ref": "NodeConfig",
+            "description": "The node configuration of the pool."
+          },
+          "etag": {
+            "description": "Output only. This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "initialNodeCount": {
+            "description": "The initial node count for the pool. You must ensure that your Compute Engine [resource quota](https://cloud.google.com/compute/quotas) is sufficient for this number of instances. You must also have available firewall and routes quota.",
+            "format": "int32",
+            "type": "integer"
+          },
+          "instanceGroupUrls": {
+            "description": "Output only. The resource URLs of the [managed instance groups](https://cloud.google.com/compute/docs/instance-groups/creating-groups-of-managed-instances) associated with this node pool. During the node pool blue-green upgrade operation, the URLs contain both blue and green resources.",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "kubeletCertInfo": {
+            "$ref": "KubeletCertInfo",
+            "description": "Output only. Contains expiry information about the kubelet certificate.",
+            "readOnly": true
+          },
+          "locations": {
+            "description": "The list of Google Compute Engine [zones](https://cloud.google.com/compute/docs/zones#available) in which the NodePool's nodes should be located. If this value is unspecified during node pool creation, the [Cluster.Locations](https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters#Cluster.FIELDS.locations) value will be used, instead. Warning: changing node pool locations will result in nodes being added and/or removed.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "maintenancePolicy": {
+            "$ref": "NodePoolMaintenancePolicy",
+            "description": "Optional. Specifies the maintenance policy for the node pool."
+          },
+          "management": {
+            "$ref": "NodeManagement",
+            "description": "NodeManagement configuration for this NodePool."
+          },
+          "maxPodsConstraint": {
+            "$ref": "MaxPodsConstraint",
+            "description": "The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool."
+          },
+          "name": {
+            "description": "The name of the node pool.",
+            "type": "string"
+          },
+          "networkConfig": {
+            "$ref": "NodeNetworkConfig",
+            "description": "Networking configuration for this NodePool. If specified, it overrides the cluster-level defaults."
+          },
+          "nodeDrainConfig": {
+            "$ref": "NodeDrainConfig",
+            "description": "Specifies the node drain configuration for this node pool."
+          },
+          "placementPolicy": {
+            "$ref": "PlacementPolicy",
+            "description": "Specifies the node placement policy."
+          },
+          "podIpv4CidrSize": {
+            "description": "Output only. The pod CIDR block size per node in this node pool.",
+            "format": "int32",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "queuedProvisioning": {
+            "$ref": "QueuedProvisioning",
+            "description": "Specifies the configuration of queued provisioning."
+          },
+          "selfLink": {
+            "description": "Output only. Server-defined URL for the resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Output only. The status of the nodes in this pool instance.",
+            "enum": [
+              "STATUS_UNSPECIFIED",
+              "PROVISIONING",
+              "RUNNING",
+              "RUNNING_WITH_ERROR",
+              "RECONCILING",
+              "STOPPING",
+              "ERROR"
+            ],
+            "enumDescriptions": [
+              "Not set.",
+              "The PROVISIONING state indicates the node pool is being created.",
+              "The RUNNING state indicates the node pool has been created and is fully usable.",
+              "The RUNNING_WITH_ERROR state indicates the node pool has been created and is partially usable. Some error state has occurred and some functionality may be impaired. Customer may need to reissue a request or trigger a new update.",
+              "The RECONCILING state indicates that some work is actively being done on the node pool, such as upgrading node software. Details can be found in the `statusMessage` field.",
+              "The STOPPING state indicates the node pool is being deleted.",
+              "The ERROR state indicates the node pool may be unusable. Details can be found in the `statusMessage` field."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "statusMessage": {
+            "deprecated": true,
+            "description": "Output only. Deprecated. Use conditions instead. Additional information about the current status of this node pool instance, if available.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateInfo": {
+            "$ref": "UpdateInfo",
+            "description": "Output only. Update info contains relevant information during a node pool update.",
+            "readOnly": true
+          },
+          "upgradeSettings": {
+            "$ref": "UpgradeSettings",
+            "description": "Upgrade settings control disruption and speed of the upgrade."
+          },
+          "version": {
+            "description": "The version of Kubernetes running on this NodePool's nodes. If unspecified, it defaults as described [here](https://cloud.google.com/kubernetes-engine/versioning#specifying_node_version).",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "container",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://container.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "container.projects.locations.clusters.nodePools.list",
+      "name": "list",
+      "service": "container",
+      "method": "GET",
+      "path": "/v1/{parent}/nodePools",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "clusterId": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the cluster. This field has been deprecated and replaced by the parent field.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "The parent (project, location, cluster name) where the node pools will be listed. Specified in the format `projects/*/locations/*/clusters/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/clusters/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "projectId": {
+            "deprecated": true,
+            "description": "Deprecated. The Google Developers Console [project ID or project number](https://cloud.google.com/resource-manager/docs/creating-managing-projects). This field has been deprecated and replaced by the parent field.",
+            "location": "query",
+            "type": "string"
+          },
+          "zone": {
+            "deprecated": true,
+            "description": "Deprecated. The name of the Google Compute Engine [zone](https://cloud.google.com/compute/docs/zones#available) in which the cluster resides. This field has been deprecated and replaced by the parent field.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "ListNodePoolsResponse is the result of ListNodePoolsRequest.",
+        "id": "ListNodePoolsResponse",
+        "properties": {
+          "nodePools": {
+            "description": "A list of node pools for a cluster.",
+            "items": {
+              "$ref": "NodePool"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "container",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/nodePools",
+        "endpoint": "https://container.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "container.projects.locations.operations.get",
       "name": "get",
       "service": "container",
@@ -43579,6 +44076,26 @@
         ],
         "list_operations": [
           "container.projects.locations.clusters.list"
+        ]
+      }
+    },
+    {
+      "native_type": "container.googleapis.com/NodePool",
+      "class": "container.node_pool",
+      "display_name": "GKE node pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "nodePools",
+        "read_operations": [
+          "container.projects.locations.clusters.nodePools.get"
+        ],
+        "delete_operations": [
+          "container.projects.locations.clusters.nodePools.delete"
+        ],
+        "list_operations": [
+          "container.projects.locations.clusters.nodePools.list"
         ]
       }
     },

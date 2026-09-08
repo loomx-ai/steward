@@ -147,6 +147,10 @@ func Solve(input Input) (Result, error) {
 				nextStepOwner := effectiveStepOwner
 				nextRetention := inheritedRetention
 				if binding.CleanupPolicy == graph.CleanupDirect && inheritedRetention == "" {
+					if binding.Evidence["retention_supported"] == false && explicitlyRetained(managed, binding, input.RequestOptions[effectiveStepOwner]) {
+						blockers.add(Blocker{Code: BlockLifecycleAuthority, AssetID: managedID, ControllerID: controllerID, Message: "the provider cannot retain this resource while deleting its controller", Evidence: binding.Evidence})
+						continue
+					}
 					if binding.Authority != graph.AuthorityAuthoritative || binding.Ownership != graph.OwnershipExclusive || binding.Confidence < graph.ExecutableConfidence {
 						blockers.add(Blocker{Code: BlockDirectCleanupInvalid, AssetID: managedID, ControllerID: controllerID, Message: "direct child cleanup lacks authoritative exclusive lifecycle evidence"})
 						continue

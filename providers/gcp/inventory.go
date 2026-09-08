@@ -185,6 +185,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	for key, value := range data {
 		normalized[key] = value
 	}
+	if nativeType == clusterType || nativeType == nodePoolType {
+		labels := data["resourceLabels"]
+		if nativeType == nodePoolType {
+			labels = object(data["config"])["resourceLabels"]
+		}
+		normalized["labels"] = labels
+	}
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
@@ -220,7 +227,7 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	}
 	sort.Strings(networkRefs)
 	tags := map[string]string{}
-	for key, value := range object(data["labels"]) {
+	for key, value := range object(normalized["labels"]) {
 		if s, ok := value.(string); ok {
 			tags[key] = s
 		}
@@ -254,6 +261,11 @@ func (c *client) canonicalName(value string) string {
 
 func canonicalName(value string) string {
 	value = strings.TrimSpace(value)
+	for _, prefix := range []string{"https://container.googleapis.com/v1/", "https://container.googleapis.com/v1beta1/"} {
+		if strings.HasPrefix(value, prefix) {
+			value = "//container.googleapis.com/" + strings.TrimPrefix(value, prefix)
+		}
+	}
 	if strings.HasPrefix(value, "https://www.googleapis.com/compute/v1/") {
 		value = "//compute.googleapis.com/" + strings.TrimPrefix(value, "https://www.googleapis.com/compute/v1/")
 	}

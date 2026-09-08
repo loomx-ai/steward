@@ -31,6 +31,7 @@ type productTarget struct {
 	Parameters map[string]any      `json:"parameters"`
 	ParentType string              `json:"parent_type,omitempty"`
 	ParentID   string              `json:"parent_id,omitempty"`
+	ParentUID  string              `json:"parent_uid,omitempty"`
 }
 type productRecord struct {
 	Data     map[string]any
@@ -153,6 +154,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		item.Normalized["_inventory_source"] = productInventorySource
 		if target.ParentID != "" {
 			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
+			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
+			if nativeType == nodePoolType {
+				item.Normalized["_gke_cluster_uid"] = target.ParentUID
+			}
 		}
 		batch.Items = append(batch.Items, item)
 	}
@@ -323,7 +328,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				if _, err = catalog.BindREST(operation, resolved); err != nil {
 					return nil, err
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID})
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: text(parent.Normalized["id"])})
 			}
 		}
 	}

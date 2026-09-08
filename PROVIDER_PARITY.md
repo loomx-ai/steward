@@ -150,3 +150,12 @@ background evidence only, not acceptance evidence for this work.
   completion before effective state, cross-zone polling and resumed execution.
   These remain protocol tests; GKE, other controllers and broader service/emulator
   acceptance are still outstanding.
+- GKE node pools now use native inventory and delete operations, cluster UID and
+  node-pool etag checks, and authoritative instance-group ownership. Standard
+  pools are separate cleanup steps; Autopilot pools require cluster cleanup.
+  Native GKE operation polling and descendant absence checks survive restarts.
+  Persistent volumes are retained according to live attachment policy; native
+  node/boot-disk retention restrictions are expressed in the plan. Direct MIG
+  deletion checks GKE ownership. Retained protocol tests cover these paths and
+  their failure cases. Cluster network/load-balancer impacts and native cluster
+  deletion remain incomplete, as does the full parity/emulator acceptance scope.

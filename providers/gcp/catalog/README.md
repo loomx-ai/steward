@@ -65,6 +65,21 @@ Controller completion also requires its complementary InstanceGroup to disappear
 Regional InstanceGroup has no native standalone delete method; its absence is
 verified through the owning MIG's cleanup.
 
+GKE node pools are discovered through their native parent cluster and retain the
+cluster's unique ID. Cluster and node-pool ownership uses authoritative
+`nodePools.instanceGroupUrls`, including blue/green groups. Standard node pools
+have separate GKE deletion steps before the cluster; Autopilot pools are owned
+by the cluster. Node VMs, complementary groups and boot disks cannot be retained
+through the node-pool API. Persistent volumes follow their live attachment
+policy and appear as retained resources. The driver checks frozen incarnations,
+pool etags, protected labels and native member policies before mutation. Native
+GKE operation names, locations and targets are verified; operation completion or
+a missing pool does not close live underlying resources. Direct MIG cleanup also
+requires `container.clusters.list` to exclude active GKE ownership.
+
+Cluster network-resource and load-balancer ownership remains unfinished; cluster
+deletion is not enabled by this node-pool implementation.
+
 Reference material:
 
 - [Google Discovery directory](https://www.googleapis.com/discovery/v1/apis)
@@ -75,6 +90,10 @@ Reference material:
 - [Applying and verifying stateful configuration](https://docs.cloud.google.com/compute/docs/instance-groups/applying-viewing-removing-stateful-config-in-migs)
 - [Native per-instance configuration patch](https://docs.cloud.google.com/compute/docs/reference/rest/v1/instanceGroupManagers/patchPerInstanceConfigs)
 - [Google API resource names](https://cloud.google.com/apis/design/resource_names)
+- [GKE node pool deletion and Autopilot restrictions](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/node-pools)
+- [GKE boot disk deletion](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/hyperdisk-storage-pools)
+- [Native GKE node pool deletion](https://docs.cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters.nodePools/delete)
+- [GKE cluster deletion and persistent storage](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/deleting-a-cluster)
 - [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
 
 The checked-in tests establish metadata consistency and protocol behavior. They

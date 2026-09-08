@@ -41,7 +41,12 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	}
 	return &action{client: c, kind: kind, endpoint: endpoint, deleteOperation: operation, deleteParameters: parameters}, nil
 }
-func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
+func (a *action) DeletionCheckTimeout() time.Duration {
+	if a.isGKE() {
+		return 2 * time.Hour // Native node draining may itself wait for one hour.
+	}
+	return time.Hour
+}
 
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
@@ -50,6 +55,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
+		if a.isGKE() {
+			read, err := a.gkeReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"gke_absent": true}}, err
+		}
 		if a.kind.NativeType == managerType {
 			read, err := a.managedGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"manager_absent": true}}, err
@@ -61,6 +70,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if reason := protectionReason(a.kind.NativeType, data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
+	}
+	if a.isGKE() {
+		if reason, err := a.plannedGKE(ctx, request, data); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
 	}
 	if a.kind.NativeType == instanceType {
 		if reason, err := a.managedVMPreflight(ctx, request, data); reason != "" || err != nil {
@@ -127,7 +141,7 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
-	if check.Evidence["manager_absent"] == true {
+	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true {
 		return contracts.ActionResult{RetryAfter: 2 * time.Second}, nil
 	}
 	if a.kind.NativeType == managerType {
@@ -172,6 +186,9 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: map[string]any{"operation": operation}, RetryAfter: 2 * time.Second}, nil
 }
 func (a *action) operationURL(data map[string]any) (string, error) {
+	if a.isGKE() {
+		return a.gkeOperationURL(data)
+	}
 	nativeType := a.kind.NativeType
 	if strings.HasPrefix(nativeType, "compute.googleapis.com/") || nativeType == "sqladmin.googleapis.com/Instance" {
 		name := text(data["name"])
@@ -297,6 +314,17 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 		}
 		if err == nil {
 			data := response.Data
+			if a.isGKE() {
+				if _, err := a.gkeOperationURL(data); err != nil {
+					return contracts.WaitResult{}, err
+				}
+				if text(data["name"]) != name {
+					return contracts.WaitResult{}, fmt.Errorf("GKE returned another operation")
+				}
+				if text(data["statusMessage"]) != "" && text(data["status"]) == "DONE" {
+					return contracts.WaitResult{}, groupDenied("gke_operation_failed")
+				}
+			}
 			if failure := operationError(data, response.RequestID); failure != nil {
 				return contracts.WaitResult{}, failure
 			}
@@ -311,6 +339,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
+		if a.isGKE() {
+			return a.gkeReadback(ctx, request)
+		}
 		if a.kind.NativeType == managerType {
 			return a.managedGroupReadback(ctx, request)
 		}
