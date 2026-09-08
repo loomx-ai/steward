@@ -82,6 +82,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if locked(a.id, locks) {
 		return contracts.PreflightResult{Reason: "azure_management_lock"}, nil
 	}
+	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
+		if _, reason, err := a.evaluateAttachments(ctx, request, res.data, locks); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
+	}
 	switch a.kind.NativeType {
 	case vnetType:
 		children, err := a.client.listAll(ctx, a.id+"/subnets", a.kind.Version)
@@ -121,6 +126,13 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
+	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
+		return a.prepareAttachments(ctx, request)
+	}
+	return a.delete(ctx, request)
+}
+
+func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	headers := map[string]string{}
 	for name, value := range a.deletion.Headers {
 		headers[name] = value
@@ -138,6 +150,10 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if err := operationError(res); err != nil {
 		return contracts.ActionResult{}, err
 	}
+	return a.operationResult(res)
+}
+
+func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 	operation := res.header.Get("Azure-AsyncOperation")
 	polling := "status"
 	if operation == "" {
@@ -166,6 +182,25 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	phase := text(result.Data["phase"])
+	if phase == "prepare_attachments" {
+		return a.waitAttachmentPreparation(ctx, request, result)
+	}
+	if phase != "" {
+		if phase != "delete" || (a.kind.NativeType != vmType && a.kind.NativeType != nicType) {
+			return contracts.WaitResult{}, fmt.Errorf("invalid Azure action phase")
+		}
+		result.ProviderOperationID = text(result.Data["operation"])
+	}
+	poll, err := a.poll(ctx, result)
+	if err != nil || !poll.Done {
+		return poll, err
+	}
+	read, err := a.Readback(ctx, request)
+	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+}
+
+func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contracts.WaitResult, error) {
 	if result.ProviderOperationID != "" {
 		if err := a.validateOperationURL(result.ProviderOperationID); err != nil {
 			return contracts.WaitResult{}, err
@@ -194,8 +229,7 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 			}
 		}
 	}
-	read, err := a.Readback(ctx, request)
-	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+	return contracts.WaitResult{Done: true}, nil
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
@@ -263,32 +297,6 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	}
 	if kind.NativeType == nicType && text(object(properties["privateEndpoint"])["id"]) != "" {
 		return "azure_private_endpoint_managed_nic"
-	}
-	if kind.NativeType == vmType || kind.NativeType == nicType {
-		var autoDelete func(any) bool
-		autoDelete = func(value any) bool {
-			switch typed := value.(type) {
-			case map[string]any:
-				for key, value := range typed {
-					if key == "deleteOption" && strings.EqualFold(text(value), "Delete") {
-						return true
-					}
-					if autoDelete(value) {
-						return true
-					}
-				}
-			case []any:
-				for _, value := range typed {
-					if autoDelete(value) {
-						return true
-					}
-				}
-			}
-			return false
-		}
-		if autoDelete(properties) {
-			return "attached_resource_auto_delete_enabled"
-		}
 	}
 	if kind.NativeType == containerType && (properties["hasLegalHold"] == true || properties["hasImmutabilityPolicy"] == true) {
 		return "blob_container_retention_policy"

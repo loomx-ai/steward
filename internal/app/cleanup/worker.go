@@ -782,9 +782,34 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 	if verificationOnly {
 		providerAction = "delete"
 	}
+	plannedAsset, err := plan.PlannedAsset(step.Evidence, value)
+	if err != nil {
+		return err
+	}
 	request := contracts.ActionRequest{
-		Asset: value, Action: providerAction, Parameters: cloneRequest(step.RequestOptions),
+		Asset: plannedAsset, Action: providerAction, Parameters: cloneRequest(step.RequestOptions),
 		IdempotencyKey: resumedProviderIdempotencyKey(attempt, action),
+	}
+	if !verificationOnly {
+		for _, impact := range aggregate.ImpactItems {
+			if impact.DelegatedTo != step.ID {
+				continue
+			}
+			if impact.Expected == plan.ExpectedUnknown {
+				return fmt.Errorf("cannot execute an unknown lifecycle outcome for %q", impact.AssetID)
+			}
+			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, impact.AssetID)
+			if err != nil {
+				return err
+			}
+			managed, err = plan.PlannedAsset(impact.Evidence, managed)
+			if err != nil {
+				return err
+			}
+			request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{
+				Asset: managed, ControllerID: impact.ControllerID, Delete: impact.Expected == plan.ExpectedDelegatedDelete,
+			})
+		}
 	}
 	if verificationOnly {
 		return h.handleManagedAbsenceVerification(

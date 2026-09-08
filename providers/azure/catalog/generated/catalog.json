@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "1552c7c124d42525462c0593455577d462aa06f048b45909851b4aa124dd5ca8",
+    "checksum": "dd83259b4e921470fd6707c5b9e7b33b1ed1c5b969610b350353337a3aabd373",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4b109dadc2e095c159ceca0e6af980b737e8e8fc19842d037e1ddd1ff0fea3d4",
+  "content_checksum": "6313f83bbfe6c074f4cb376ad9985cfd573a9a991ab05646a0b450499c10e133",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -6841,6 +6841,92 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/natGateway.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.NetworkInterfaces_CreateOrUpdate",
+      "name": "NetworkInterfaces_CreateOrUpdate",
+      "service": "Microsoft.Network",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The name of the network interface.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "parameters": {
+            "description": "Parameters supplied to the create or update network interface operation.",
+            "in": "body",
+            "name": "parameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/NetworkInterface"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "A network interface in a resource group.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "extendedLocation": {
+            "$ref": "./network.json#/definitions/ExtendedLocation",
+            "description": "The extended location of the network interface."
+          },
+          "properties": {
+            "$ref": "#/definitions/NetworkInterfacePropertiesFormat",
+            "description": "Properties of the network interface.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "PUT",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/networkInterfaces/{networkInterfaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkInterface.json"
     },
     {
       "id": "Azure.Microsoft.Network.NetworkInterfaces_Delete",

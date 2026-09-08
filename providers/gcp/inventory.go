@@ -187,6 +187,7 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	}
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
+	normalized["project_number"] = c.number
 	if reason := protectionReason(nativeType, data); reason != "" {
 		normalized["cleanup_protected"] = true
 		normalized["cleanup_protection_reason"] = reason

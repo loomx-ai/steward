@@ -23326,6 +23326,76 @@
                   "$ref": "./examples/NetworkInterfaceUpdateTags.json"
                 }
               }
+            },
+            "put": {
+              "description": "Creates or updates a network interface.",
+              "operationId": "NetworkInterfaces_CreateOrUpdate",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network interface.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Parameters supplied to the create or update network interface operation.",
+                  "in": "body",
+                  "name": "parameters",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterface"
+                  }
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Update successful. The operation returns the resulting NetworkInterface resource.",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterface"
+                  }
+                },
+                "201": {
+                  "description": "Create successful. The operation returns the resulting NetworkInterface resource.",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkInterface"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "NetworkInterfaces"
+              ],
+              "x-ms-examples": {
+                "Create network interface": {
+                  "$ref": "./examples/NetworkInterfaceCreate.json"
+                },
+                "Create network interface with Gateway Load Balancer Consumer configured": {
+                  "$ref": "./examples/NetworkInterfaceCreateGatewayLoadBalancerConsumer.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              }
             }
           }
         },

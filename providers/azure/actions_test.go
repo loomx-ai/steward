@@ -57,7 +57,7 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 						return jsonResponse(202, map[string]any{}, h), nil
 					}
 					reads++
-					if reads >= 3 {
+					if reads >= 4 {
 						return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
 					}
 					return jsonResponse(200, nativeResource(vmType, "vm", "eastus", map[string]any{"provisioningState": "Succeeded"}), nil), nil
@@ -86,7 +86,7 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 					t.Fatalf("poll %d prematurely completed: %+v", i, wait)
 				}
 			}
-			if deletes != 1 || reads != 3 {
+			if deletes != 1 || reads != 4 {
 				t.Fatalf("calls deletes=%d reads=%d", deletes, reads)
 			}
 		})
@@ -101,7 +101,6 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 		locks      []any
 		reason     string
 	}{
-		{name: "vm", kind: vmType, properties: map[string]any{"storageProfile": map[string]any{"osDisk": map[string]any{"deleteOption": "Delete"}}}, reason: "attached_resource_auto_delete_enabled"},
 		{name: "disk", kind: diskType, managedBy: resourceID("Microsoft.ContainerService/managedClusters", "cluster"), reason: "azure_managed_resource"},
 		{name: "vm", kind: vmType, properties: map[string]any{}, locks: []any{map[string]any{"id": "/subscriptions/" + testSubscription + "/providers/Microsoft.Authorization/locks/protect", "properties": map[string]any{"level": "CanNotDelete"}}}, reason: "azure_management_lock"},
 	}

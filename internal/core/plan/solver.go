@@ -116,8 +116,8 @@ func Solve(input Input) (Result, error) {
 	candidateIDs := mapKeys(candidates)
 	for _, root := range candidateIDs {
 		visited := make(map[asset.AssetID]bool)
-		var walk func(asset.AssetID, asset.AssetID)
-		walk = func(controllerID, effectiveStepOwner asset.AssetID) {
+		var walk func(asset.AssetID, asset.AssetID, ExpectedOutcome)
+		walk = func(controllerID, effectiveStepOwner asset.AssetID, inheritedRetention ExpectedOutcome) {
 			if visited[controllerID] {
 				blockers.add(Blocker{Code: BlockLifecycleCycle, AssetID: controllerID, ControllerID: root, Message: "lifecycle controller graph contains a cycle"})
 				return
@@ -140,12 +140,13 @@ func Solve(input Input) (Result, error) {
 						blockers.add(lifecycleBlocker(managedID, resolveErr))
 						continue
 					}
-					if resolution.ControllerAssetID != effectiveStepOwner {
+					if resolution.ControllerAssetID != effectiveStepOwner && inheritedRetention == "" {
 						continue
 					}
 				}
 				nextStepOwner := effectiveStepOwner
-				if binding.CleanupPolicy == graph.CleanupDirect {
+				nextRetention := inheritedRetention
+				if binding.CleanupPolicy == graph.CleanupDirect && inheritedRetention == "" {
 					if binding.Authority != graph.AuthorityAuthoritative || binding.Ownership != graph.OwnershipExclusive || binding.Confidence < graph.ExecutableConfidence {
 						blockers.add(Blocker{Code: BlockDirectCleanupInvalid, AssetID: managedID, ControllerID: controllerID, Message: "direct child cleanup lacks authoritative exclusive lifecycle evidence"})
 						continue
@@ -156,6 +157,12 @@ func Solve(input Input) (Result, error) {
 					suppressed[managedID] = struct{}{}
 					stepID := ids.step(effectiveStepOwner)
 					expected := impactExpectation(binding, managed, input.RequestOptions[effectiveStepOwner])
+					if inheritedRetention != "" {
+						expected = inheritedRetention
+					}
+					if expected == ExpectedRetainExplicit || expected == ExpectedRetainShared || expected == ExpectedProviderDefaultRetain {
+						nextRetention = expected
+					}
 					impactKey := string(effectiveStepOwner) + "\x00" + string(controllerID) + "\x00" + string(managedID)
 					impact := ImpactItem{
 						ID: ids.impact(effectiveStepOwner, controllerID, managedID), CleanupTaskID: input.CleanupTaskID,
@@ -173,11 +180,11 @@ func Solve(input Input) (Result, error) {
 						}
 					}
 				}
-				walk(managedID, nextStepOwner)
+				walk(managedID, nextStepOwner, nextRetention)
 			}
 			visited[controllerID] = false
 		}
-		walk(root, root)
+		walk(root, root, "")
 	}
 
 	stepAssets := make(map[asset.AssetID]CleanupTaskStep)
@@ -340,6 +347,16 @@ func Solve(input Input) (Result, error) {
 	result.SnapshotHash, err = snapshotHash(input, selected, assets, relationships, bindings)
 	if err != nil {
 		return Result{}, err
+	}
+	for i := range result.Steps {
+		step := &result.Steps[i]
+		step.Evidence[EvidencePlannedAsset] = assets[step.AssetID]
+		step.Evidence = cloneMap(step.Evidence)
+	}
+	for i := range result.ImpactItems {
+		impact := &result.ImpactItems[i]
+		impact.Evidence[EvidencePlannedAsset] = assets[impact.AssetID]
+		impact.Evidence = cloneMap(impact.Evidence)
 	}
 	return result, nil
 }

@@ -158,6 +158,7 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkInterface.json",
       "operations": [
+        "NetworkInterfaces_CreateOrUpdate",
         "NetworkInterfaces_Delete",
         "NetworkInterfaces_Get",
         "NetworkInterfaces_List",

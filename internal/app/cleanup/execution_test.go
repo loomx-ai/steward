@@ -2642,6 +2642,64 @@ func TestACKControllerCleanupClosesTopologyWithoutSchedulingRescanOrChildDelete(
 	}
 }
 
+func TestExecutorSuppliesReviewedLifecycleOutcomesToProvider(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, _, _ := controllerExecutionFixture(t, "execution-impacts", []controllerChild{
+		{id: "keep", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate, explicitRetain: true},
+		{id: "remove", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate},
+	})
+	driver := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+	handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+		if value.ID != "ack" {
+			t.Fatalf("unexpected direct child cleanup: %s", value.ID)
+		}
+		return driver, nil
+	}))
+	if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-controller", "ack")); err != nil {
+		t.Fatal(err)
+	}
+	if len(driver.executeRequests) != 1 || len(driver.executeRequests[0].LifecycleImpacts) != 2 {
+		t.Fatalf("provider did not receive reviewed impacts: %+v", driver.executeRequests)
+	}
+	for _, impact := range driver.executeRequests[0].LifecycleImpacts {
+		if impact.ControllerID != "ack" || impact.Asset.Identity.NativeID != string(impact.Asset.ID)+"-native" || impact.Delete != (impact.Asset.ID == "remove") {
+			t.Fatalf("wrong provider impact: %+v", impact)
+		}
+	}
+}
+
+func TestExecutorKeepsReviewedAssetsWhileInventoryChangesDuringWait(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, _, _ := controllerExecutionFixture(t, "execution-frozen-assets", []controllerChild{{id: "child", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate}})
+	driver := &scriptedActionDriver{pollInterval: time.Second, readback: contracts.ReadbackResult{Exists: false}}
+	handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(context.Context, asset.Asset) (cleanup.ActionDriver, error) { return driver, nil }))
+	job := cleanupExecutionJobForAsset(t, repositories, "cln-controller", "ack")
+	var retry *cleanup.RetryError
+	if err := handler.Handle(ctx, job); !errors.As(err, &retry) {
+		t.Fatalf("expected persisted waiting action, got %v", err)
+	}
+	for _, id := range []asset.AssetID{"ack", "child"} {
+		current, err := repositories.Inventory().GetAsset(ctx, id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		current.Normalized = map[string]any{"changed_after_plan": true}
+		if err := repositories.Inventory().PutAsset(ctx, current); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := handler.Handle(ctx, job); err != nil && !errors.As(err, &retry) {
+		t.Fatal(err)
+	}
+	if len(driver.waitRequests) != 1 || len(driver.waitRequests[0].LifecycleImpacts) != 1 {
+		t.Fatalf("wait request=%+v", driver.waitRequests)
+	}
+	request := driver.waitRequests[0]
+	if request.Asset.Normalized["changed_after_plan"] != nil || request.LifecycleImpacts[0].Asset.Normalized["changed_after_plan"] != nil {
+		t.Fatalf("inventory updates changed reviewed action assets: %+v", request)
+	}
+}
+
 func TestControllerGuaranteedDeleteCompletesWithoutAuthoritativeRescan(t *testing.T) {
 	ctx := context.Background()
 	repositories, planner, created, _ := controllerExecutionFixture(t, "execution-guaranteed-delete", []controllerChild{
@@ -3044,12 +3102,14 @@ type scriptedActionDriver struct {
 	preflightCalls       int
 	executeErrors        []error
 	executeCalls         int
+	executeRequests      []contracts.ActionRequest
 	idempotencyKeys      []string
 	pollInterval         time.Duration
 	deletionCheckTimeout time.Duration
 	waitResults          []contracts.WaitResult
 	waitErrors           []error
 	waitCalls            int
+	waitRequests         []contracts.ActionRequest
 	waitHadDeadline      bool
 	readback             contracts.ReadbackResult
 	readbackErrors       []error
@@ -3128,6 +3188,7 @@ func (d *scriptedActionDriver) Preflight(context.Context, contracts.ActionReques
 
 func (d *scriptedActionDriver) Execute(_ context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	d.executeCalls++
+	d.executeRequests = append(d.executeRequests, request)
 	d.idempotencyKeys = append(d.idempotencyKeys, request.IdempotencyKey)
 	if len(d.executeErrors) > 0 {
 		err := d.executeErrors[0]
@@ -3142,8 +3203,9 @@ func (d *scriptedActionDriver) Execute(_ context.Context, request contracts.Acti
 	}, nil
 }
 
-func (d *scriptedActionDriver) Wait(ctx context.Context, _ contracts.ActionRequest, _ contracts.ActionResult) (contracts.WaitResult, error) {
+func (d *scriptedActionDriver) Wait(ctx context.Context, request contracts.ActionRequest, _ contracts.ActionResult) (contracts.WaitResult, error) {
 	d.waitCalls++
+	d.waitRequests = append(d.waitRequests, request)
 	if _, ok := ctx.Deadline(); ok {
 		d.waitHadDeadline = true
 	}

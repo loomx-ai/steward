@@ -76,7 +76,11 @@ func TestDeletionTracksNativeOperationsAndConfirmsAbsence(t *testing.T) {
 				t.Fatalf("unfinished operation treated as complete: %+v %v", wait, err)
 			}
 			wait, err = a.Wait(context.Background(), request, result)
-			if err != nil || !wait.Done || deletes != 1 || polls != 2 || reads != 2 {
+			expectedReads := 2
+			if test.kind == instanceType {
+				expectedReads = 3
+			}
+			if err != nil || !wait.Done || deletes != 1 || polls != 2 || reads != expectedReads {
 				t.Fatalf("missing final readback: wait=%+v deletes=%d polls=%d reads=%d err=%v", wait, deletes, polls, reads, err)
 			}
 		})
@@ -85,7 +89,6 @@ func TestDeletionTracksNativeOperationsAndConfirmsAbsence(t *testing.T) {
 
 func TestDeletionRechecksProtectionAndBucketOwnership(t *testing.T) {
 	for _, test := range []struct{ kind, name, resource, objects, reason string }{
-		{"compute.googleapis.com/Instance", "projects/sample-project/zones/us-central1-a/instances/web", `{"deletionProtection":true}`, "", "deletion_protection_enabled"},
 		{"sqladmin.googleapis.com/Instance", "projects/sample-project/instances/db", `{"settings":{"deletionProtectionEnabled":true}}`, "", "deletion_protection_enabled"},
 		{"storage.googleapis.com/Bucket", "sample-bucket", `{"projectNumber":"999999"}`, `{}`, "bucket_project_not_verified"},
 		{"storage.googleapis.com/Bucket", "sample-bucket", `{"projectNumber":"123456"}`, `{"items":[{"name":"file","generation":"1"}]}`, "bucket_not_empty"},

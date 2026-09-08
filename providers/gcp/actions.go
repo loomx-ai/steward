@@ -57,6 +57,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if reason := protectionReason(a.kind.NativeType, data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
+	if a.kind.NativeType == instanceType {
+		if _, reason, err := a.plannedDisks(request, data); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
+	}
 	metadata, err := providerData()
 	if err != nil {
 		return contracts.PreflightResult{}, err
@@ -104,6 +109,13 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
+	if a.kind.NativeType == instanceType {
+		return a.prepareInstance(ctx, request)
+	}
+	return a.delete(ctx, request)
+}
+
+func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	parameters := map[string]any{}
 	for key, value := range a.deleteParameters {
 		parameters[key] = value
@@ -194,6 +206,16 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	phase := text(result.Data["phase"])
+	if phase != "" {
+		if a.kind.NativeType != instanceType || (phase != "prepare_instance" && phase != "delete") {
+			return contracts.WaitResult{}, fmt.Errorf("invalid GCP action phase")
+		}
+		result.ProviderOperationID = text(result.Data["operation"])
+		if phase == "prepare_instance" && result.ProviderOperationID == "" {
+			return contracts.WaitResult{}, fmt.Errorf("missing GCP preparation operation")
+		}
+	}
 	if result.ProviderOperationID != "" {
 		// Rebuild the operation from its name and the validated resource endpoint.
 		// A persisted waiter URL cannot redirect credentials to another project/API.
@@ -224,6 +246,30 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 			}
 		}
 	}
+	if phase == "prepare_instance" {
+		applied, err := a.instancePreparationApplied(ctx, request, result)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		if !applied {
+			return contracts.WaitResult{State: "preparing_instance", RetryAfter: 2 * time.Second}, nil
+		}
+		// Continue one provider operation per job attempt. All intermediate state
+		// is persisted by the executor, including after a worker restart.
+		next, err := a.Execute(ctx, request)
+		if err != nil {
+			return contracts.WaitResult{}, err
+		}
+		data := next.Data
+		if data == nil {
+			data = map[string]any{}
+		}
+		if text(data["phase"]) == "" {
+			data["phase"] = "delete"
+		}
+		data["operation"] = next.ProviderOperationID
+		return contracts.WaitResult{Data: data, State: text(data["phase"]), RetryAfter: 2 * time.Second}, nil
+	}
 	read, err := a.Readback(ctx, request)
 	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
 }
@@ -243,15 +289,8 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 }
 
 func protectionReason(nativeType string, data map[string]any) string {
-	if data["deletionProtection"] == true || object(data["settings"])["deletionProtectionEnabled"] == true {
+	if nativeType != instanceType && (data["deletionProtection"] == true || object(data["settings"])["deletionProtectionEnabled"] == true) {
 		return "deletion_protection_enabled"
-	}
-	if nativeType == "compute.googleapis.com/Instance" {
-		for _, disk := range array(data["disks"]) {
-			if object(disk)["autoDelete"] == true {
-				return "attached_disk_auto_delete_enabled"
-			}
-		}
 	}
 	return ""
 }

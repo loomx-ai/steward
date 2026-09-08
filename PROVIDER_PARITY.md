@@ -103,3 +103,27 @@ background evidence only, not acceptance evidence for this work.
   this product-discovery step. Coverage is still incomplete: the service matrix,
   remaining GCP/Azure families, lifecycle controllers and independent emulator
   acceptance are not closed by these protocol tests.
+- GCP instance disks and Azure VM/disk/NIC/public-IP attachments now contribute
+  authoritative lifecycle bindings. Automatic deletion appears in the plan;
+  retained attachments are ordered after their controller for separate cleanup.
+  Missing attachments remain unresolved and cannot authorize a cascade.
+- The executor supplies reviewed impact outcomes and immutable planned assets
+  to provider drivers. Retaining a controller propagates to its descendants.
+  Live attachment identities/policies must match this snapshot before deletion,
+  including when inventory changes during a running cleanup.
+- Native retention changes run as persisted, resumable action phases. GCP uses
+  `setDiskAutoDelete` and disables instance deletion protection before deletion.
+  Azure updates VM deletion options and NIC/public-IP deletion options, checks
+  live child locks/ownership, and preserves NIC settings. Both wait for operation
+  completion and retention readback before deleting the controller.
+- Retained tests cover boot/data/regional disks, nested public-IP ownership,
+  explicit/native-ID retention, controller retention inheritance, worker
+  restarts, delayed readback, mutation failures, permission/lock changes, missing
+  plan impacts and configuration drift. Azure retention bodies also validate
+  against the checked-in official Swagger schemas without network access. The
+  common lifecycle contract now covers all four providers; server and executor
+  tests verify lifecycle wiring and immutable inputs. Cluster controllers,
+  remaining service families, bucket draining and emulator acceptance remain
+  unfinished.
+- Full Go tests, targeted GCP/Azure/cleanup/plan/contracts/server race tests and
+  vet passed after the attachment lifecycle and immutable-plan changes.

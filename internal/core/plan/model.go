@@ -1,11 +1,37 @@
 package plan
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
 )
+
+const EvidencePlannedAsset = "planned_asset"
+
+// PlannedAsset keeps provider preflight comparisons bound to the reviewed
+// inventory, even if a scan updates inventory while a cleanup is in progress.
+// Legacy tasks without the snapshot retain their previous behavior.
+func PlannedAsset(evidence map[string]any, current asset.Asset) (asset.Asset, error) {
+	raw, found := evidence[EvidencePlannedAsset]
+	if !found {
+		return current, nil
+	}
+	payload, err := json.Marshal(raw)
+	if err != nil {
+		return asset.Asset{}, err
+	}
+	var planned asset.Asset
+	if err := json.Unmarshal(payload, &planned); err != nil {
+		return asset.Asset{}, err
+	}
+	if planned.ID != current.ID || planned.Identity != current.Identity {
+		return asset.Asset{}, fmt.Errorf("planned asset identity does not match current inventory")
+	}
+	return planned, nil
+}
 
 type CleanupTaskID string
 type StepID string

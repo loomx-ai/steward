@@ -8,6 +8,51 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 )
 
+func TestRetainingControllerRetainsItsTransitiveChildren(t *testing.T) {
+	for _, policy := range []graph.CleanupPolicy{graph.CleanupDelegate, graph.CleanupDirect} {
+		t.Run(string(policy), func(t *testing.T) {
+			result, err := plan.Solve(plan.Input{
+				ResolvedAssetIDs:  []asset.AssetID{"vm", "nic", "ip"},
+				Assets:            []asset.Asset{actionable("vm"), actionable("nic"), actionable("ip")},
+				LifecycleBindings: []graph.LifecycleBinding{binding("vm", "nic", graph.OwnershipExclusive, graph.CleanupDelegate, 1), binding("nic", "ip", graph.OwnershipExclusive, policy, 1)},
+				RequestOptions:    map[asset.AssetID]map[string]any{"vm": {"retain_resources": []string{"nic"}}},
+			})
+			if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 2 || len(result.Steps) != 1 || result.Steps[0].AssetID != "vm" {
+				t.Fatalf("plan=%+v err=%v", result, err)
+			}
+			for _, impact := range result.ImpactItems {
+				if impact.Expected != plan.ExpectedRetainExplicit {
+					t.Fatalf("retained controller loses child: %+v", impact)
+				}
+			}
+		})
+	}
+}
+
+func TestProviderAssetsAreFrozenAtPlanningTime(t *testing.T) {
+	vm, disk := actionable("vm"), actionable("disk")
+	vm.Normalized = map[string]any{"disks": []any{map[string]any{"autoDelete": true}}}
+	disk.Normalized = map[string]any{"attached": "vm"}
+	result, err := plan.Solve(plan.Input{ResolvedAssetIDs: []asset.AssetID{"vm"}, Assets: []asset.Asset{vm, disk}, LifecycleBindings: []graph.LifecycleBinding{binding("vm", "disk", graph.OwnershipExclusive, graph.CleanupDelegate, 1)}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	vm.Normalized["disks"] = []any{}
+	disk.Normalized["attached"] = "other"
+	frozenVM, err := plan.PlannedAsset(stepForAsset(result.Steps, "vm").Evidence, vm)
+	if err != nil || len(frozenVM.Normalized["disks"].([]any)) != 1 {
+		t.Fatalf("VM snapshot changed: %+v %v", frozenVM, err)
+	}
+	frozenDisk, err := plan.PlannedAsset(result.ImpactItems[0].Evidence, disk)
+	if err != nil || frozenDisk.Normalized["attached"] != "vm" {
+		t.Fatalf("child snapshot changed: %+v %v", frozenDisk, err)
+	}
+	disk.Identity.ConnectionID = "different"
+	if _, err := plan.PlannedAsset(result.ImpactItems[0].Evidence, disk); err == nil {
+		t.Fatal("foreign identity accepted in immutable snapshot")
+	}
+}
+
 func TestSolverCollapsesACKAndManagedChildren(t *testing.T) {
 	t.Parallel()
 

@@ -242,6 +242,46 @@ func TestControllerLocationsAreUniqueSortedAndProviderScoped(t *testing.T) {
 	}
 }
 
+func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
+	for _, provider := range []asset.Provider{asset.ProviderGCP, asset.ProviderAzure} {
+		t.Run(string(provider), func(t *testing.T) {
+			controller := asset.Asset{ID: "vm", Identity: asset.Identity{Provider: provider, ConnectionID: "connection"}}
+			child := asset.Asset{ID: "disk", Identity: asset.Identity{Provider: provider, ConnectionID: "connection"}}
+			if provider == asset.ProviderGCP {
+				controller.Identity.NativeType = "compute.googleapis.com/Instance"
+				child.Identity.NativeType = "compute.googleapis.com/Disk"
+				child.Identity.NativeID = "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/disks/boot"
+				controller.Normalized = map[string]any{"project_id": "sample-project", "disks": []any{map[string]any{"source": child.Identity.NativeID, "deviceName": "boot", "autoDelete": true}}}
+			} else {
+				controller.Identity.NativeType = "Microsoft.Compute/virtualMachines"
+				child.Identity.NativeType = "Microsoft.Compute/disks"
+				child.Identity.NativeID = "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/test/providers/Microsoft.Compute/disks/boot"
+				controller.Normalized = map[string]any{"subscription_id": "11111111-1111-4111-8111-111111111111", "storageProfile": map[string]any{"osDisk": map[string]any{"managedDisk": map[string]any{"id": child.Identity.NativeID}, "deleteOption": "Delete"}}}
+			}
+			assets := []asset.Asset{controller, child}
+			contributors, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), asset.CloudConnection{ID: "connection", Provider: provider}, assets)
+			if err != nil {
+				t.Fatal(err)
+			}
+			bindings := 0
+			for _, contributor := range contributors {
+				result, err := contributor.Contribute(context.Background(), "scope", assets)
+				if err != nil {
+					t.Fatal(err)
+				}
+				for _, binding := range result.Bindings {
+					if binding.ControllerAssetID == "vm" && binding.ManagedAssetID == "disk" {
+						bindings++
+					}
+				}
+			}
+			if bindings != 1 {
+				t.Fatalf("server omitted native attachment lifecycle: %d", bindings)
+			}
+		})
+	}
+}
+
 type contributorRuntimeDirectory struct {
 	runtime contracts.Provider
 }

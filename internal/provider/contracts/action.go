@@ -13,6 +13,15 @@ type ActionRequest struct {
 	Action         string         `json:"action"`
 	Parameters     map[string]any `json:"parameters,omitempty"`
 	IdempotencyKey string         `json:"idempotency_key"`
+	// LifecycleImpacts are populated from the reviewed plan by the executor.
+	// They are not caller-supplied provider parameters.
+	LifecycleImpacts []ActionImpact `json:"lifecycle_impacts,omitempty"`
+}
+
+type ActionImpact struct {
+	Asset        asset.Asset   `json:"asset"`
+	ControllerID asset.AssetID `json:"controller_id"`
+	Delete       bool          `json:"delete"`
 }
 
 type PreflightResult struct {

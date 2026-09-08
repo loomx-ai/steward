@@ -13,6 +13,8 @@ import (
 	alihooks "github.com/loomx-ai/steward/providers/alicloud/hooks"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
 	awshooks "github.com/loomx-ai/steward/providers/aws/hooks"
+	"github.com/loomx-ai/steward/providers/azure"
+	"github.com/loomx-ai/steward/providers/gcp"
 )
 
 type lifecycleRuntimeDirectory interface {
@@ -44,6 +46,10 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 		return nil, err
 	}
 	switch connection.Provider {
+	case asset.ProviderGCP:
+		return []governance.Contributor{gcp.NewInstanceDisks()}, nil
+	case asset.ProviderAzure:
+		return []governance.Contributor{azure.NewResourceAttachments()}, nil
 	case asset.ProviderAliCloud:
 		controllerRegions, err := controllerLocations(connection.Provider, assets)
 		if err != nil {

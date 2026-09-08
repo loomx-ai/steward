@@ -20,6 +20,8 @@ import (
 	alihooks "github.com/loomx-ai/steward/providers/alicloud/hooks"
 	provideraws "github.com/loomx-ai/steward/providers/aws"
 	awshooks "github.com/loomx-ai/steward/providers/aws/hooks"
+	"github.com/loomx-ai/steward/providers/azure"
+	"github.com/loomx-ai/steward/providers/gcp"
 )
 
 func TestInventoryContractAcrossProviders(t *testing.T) {
@@ -117,13 +119,22 @@ func TestInventoryContractNormalizesPermissionAndThrottleFailures(t *testing.T) 
 	}
 }
 
-func TestLifecycleContractCollapsesACKAndCloudFormationIntoControllerOnlyActions(t *testing.T) {
+func TestLifecycleContractCollapsesManagedResourcesAcrossProviders(t *testing.T) {
+	gcpVM := lifecycleAsset("gcp-vm", asset.ProviderGCP, "compute.googleapis.com/Instance", "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/instances/vm")
+	gcpDisk := lifecycleAsset("gcp-disk", asset.ProviderGCP, "compute.googleapis.com/Disk", "//compute.googleapis.com/projects/sample-project/zones/us-central1-a/disks/boot")
+	gcpVM.Normalized = map[string]any{"project_id": "sample-project", "disks": []any{map[string]any{"source": gcpDisk.Identity.NativeID, "deviceName": "boot", "autoDelete": true}}}
+	azureRoot := "/subscriptions/11111111-1111-4111-8111-111111111111/resourceGroups/test/providers/"
+	azureVM := lifecycleAsset("azure-vm", asset.ProviderAzure, "Microsoft.Compute/virtualMachines", azureRoot+"Microsoft.Compute/virtualMachines/vm")
+	azureNIC := lifecycleAsset("azure-nic", asset.ProviderAzure, "Microsoft.Network/networkInterfaces", azureRoot+"Microsoft.Network/networkInterfaces/nic")
+	azureVM.Normalized = map[string]any{"subscription_id": "11111111-1111-4111-8111-111111111111", "networkProfile": map[string]any{"networkInterfaces": []any{map[string]any{"id": azureNIC.Identity.NativeID, "properties": map[string]any{"deleteOption": "Delete"}}}}}
 	tests := []struct {
 		name        string
 		contributor lifecycleContributor
 		controller  asset.Asset
 		managed     asset.Asset
 	}{
+		{name: "GCP instance disks", contributor: gcp.NewInstanceDisks(), controller: gcpVM, managed: gcpDisk},
+		{name: "Azure VM attachments", contributor: azure.NewResourceAttachments(), controller: azureVM, managed: azureNIC},
 		{
 			name: "ACK", contributor: alihooks.NewACK(&ackLifecycleClient{}, "cn-hangzhou"),
 			controller: lifecycleAsset("ack", asset.ProviderAliCloud, alicloud.ACKClusterNativeType, "cluster-1"),

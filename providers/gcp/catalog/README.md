@@ -39,11 +39,21 @@ material. Import jobs have no delete method. Version state/import restrictions,
 automatic rotation, remaining versions/keys and unexpired import jobs are checked
 against live APIs before deletion.
 
+Compute instance attachments use native disk `source`, `deviceName` and
+`autoDelete` fields. Boot and data disks, including regional disks, contribute
+explicit lifecycle impact. Retention uses `compute.instances.setDiskAutoDelete`;
+instance deletion protection is disabled through its native method. Preparation
+and deletion operations have separate idempotency keys and resume through the
+persisted waiter state. A completed operation must also be reflected in a live
+read before deletion proceeds. Unreviewed or changed attachments block cleanup.
+Local SSDs are integrated instance storage and have no separate disk resource.
+
 Reference material:
 
 - [Google Discovery directory](https://www.googleapis.com/discovery/v1/apis)
 - [Cloud Asset Inventory asset types](https://docs.cloud.google.com/asset-inventory/docs/asset-types)
 - [Compute REST API](https://docs.cloud.google.com/compute/docs/reference/rest/v1)
+- [Disk deletion policy](https://docs.cloud.google.com/compute/docs/disks/modify-persistent-disk)
 - [Google API resource names](https://cloud.google.com/apis/design/resource_names)
 - [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
 
