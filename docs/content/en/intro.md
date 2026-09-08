@@ -4,7 +4,7 @@ description: "Understand how cloud connections, scans, resource relationships, a
 navTitle: "What is Steward?"
 ---
 
-Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure, with self-hosted deployment and invitation-only Steward Cloud.
+Steward is a cloud resource inventory and cleanup tool. It brings existing resources into one interface so you can see what is running, how resources relate, and what a cleanup would affect. It supports Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure. You can self-host it or sign up for Steward Cloud.
 
 Use it for three kinds of work:
 

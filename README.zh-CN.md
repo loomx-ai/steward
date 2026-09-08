@@ -78,6 +78,6 @@ PostgreSQL 仓储契约测试使用 `STEWARD_TEST_POSTGRES_DSN`；未设置时�
 
 ## 许可证
 
-Copyright 2026 Prodesire
+Copyright 2026 LoomX
 
 基于 [Apache License 2.0](LICENSE) 授权。

@@ -4,7 +4,7 @@ description: "理解云连接、扫描、资源关系和清理任务如何配合
 navTitle: "认识 Steward"
 ---
 
-Steward 是云资源盘点与清理工具。它把云账号中已有的资源整理到统一界面，帮助你确认“有什么、彼此如何关联、清理会影响什么”。目前支持阿里云、AWS、Google Cloud（GCP）和 Microsoft Azure，可自行部署，也可使用受邀开放的 Steward Cloud。
+Steward 是云资源盘点与清理工具。它把云账号中已有的资源整理到统一界面，帮助你确认“有什么、彼此如何关联、清理会影响什么”。目前支持阿里云、AWS、Google Cloud（GCP）和 Microsoft Azure，可自行部署，也可注册使用 Steward Cloud。
 
 你可以用它完成三类工作：
 

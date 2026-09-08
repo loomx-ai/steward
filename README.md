@@ -92,6 +92,6 @@ change, and include tests for changed behavior.
 
 ## License
 
-Copyright 2026 Prodesire
+Copyright 2026 LoomX
 
 Licensed under the [Apache License 2.0](LICENSE).
