@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
+	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -159,4 +161,39 @@ func TestAzureReferencesCannotDisappearSilently(t *testing.T) {
 	if _, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", raw); err == nil || !strings.Contains(err.Error(), "unresolved Azure reference") {
 		t.Fatalf("missing source parameter dependency accepted: %v", err)
 	}
+}
+
+func TestAzureDNSNativeOperationNameCollisions(t *testing.T) {
+	source := restFixture(t, "azure-dns-records")
+	c, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct{ title, collection, version string }{
+		{"DnsManagementClient", "dnsZones", "2018-05-01"},
+		{"PrivateDnsManagementClient", "privateDnsZones", "2024-06-01"},
+	} {
+		for _, name := range []string{"RecordSets_Get", "RecordSets_Delete", "RecordSets_ListByType"} {
+			op := requireRESTOperation(t, c, "Azure.Microsoft.Network."+tc.title+"."+name)
+			if op.Name != name || op.Call.Version != tc.version || !strings.Contains(op.Path, "/"+tc.collection+"/") || !strings.Contains(op.SourceURI, "/"+tc.version+"/") {
+				t.Fatalf("native DNS identity/transport changed: %+v", op)
+			}
+		}
+	}
+	var set RESTDocumentSet
+	if err := json.Unmarshal(source, &set); err != nil {
+		t.Fatal(err)
+	}
+	slices.Reverse(set.Documents)
+	reordered, _ := json.Marshal(set)
+	again, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", reordered)
+	if err != nil || !reflect.DeepEqual(c.Operations, again.Operations) {
+		t.Fatalf("DNS qualification depends on source order: %v", err)
+	}
+	set.Documents = append(set.Documents, set.Documents[0])
+	duplicate, _ := json.Marshal(set)
+	if _, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", duplicate); err == nil || !strings.Contains(err.Error(), "duplicate") {
+		t.Fatalf("same-document collision accepted: %v", err)
+	}
+	assertRESTDeterministic(t, "azure-openapi", asset.ProviderAzure, source)
 }

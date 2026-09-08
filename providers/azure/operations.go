@@ -106,6 +106,16 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		if !matched {
 			continue
 		}
+		// ARM IDs are case-insensitive, but native enum values retain their
+		// declared spelling (for example DNS recordType A and AAAA).
+		for name, value := range parameters {
+			for _, allowed := range array(object(object(operation.InputSchema["properties"])[name])["enum"]) {
+				if strings.EqualFold(text(value), text(allowed)) {
+					parameters[name] = allowed
+					break
+				}
+			}
+		}
 		if _, err := catalog.BindREST(operation, parameters); err == nil {
 			return operation, parameters, nil
 		}

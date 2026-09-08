@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "06d9822feca0ceadabc19b6d923aac5cb33b909c708e2b71edfa902e55a6691c",
+    "checksum": "45206de671e4591ab6a031f8e6b0e7a66db523b1b0cbb4dea1cf3e80359637d3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "91f427492171394aed05bd2554591a9c23055cf5497c05c155fb25378cd6a5e8",
+  "content_checksum": "2fcfbf6923400d7d7aa1e1afd06578980fefae40be87efc200801da01bafd426",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -8045,6 +8045,330 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ddosProtectionPlan.json"
     },
     {
+      "id": "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete",
+      "name": "RecordSets_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The etag of the record set. Omit this value to always delete the current record set. Specify the last-seen etag value to prevent accidentally deleting any concurrent changes.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "IfMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2018-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of DNS record in this record set. Record sets of type SOA cannot be deleted (they are deleted when the DNS zone is deleted).",
+            "enum": [
+              "A",
+              "AAAA",
+              "CAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "relativeRecordSetName": {
+            "description": "The name of the record set, relative to the name of the zone.",
+            "in": "path",
+            "name": "relativeRecordSetName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Specifies the Azure subscription ID, which uniquely identifies the Microsoft Azure subscription.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "zoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "zoneName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2018-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "relativeRecordSetName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get",
+      "name": "RecordSets_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of DNS record in this record set.",
+            "enum": [
+              "A",
+              "AAAA",
+              "CAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "relativeRecordSetName": {
+            "description": "The name of the record set, relative to the name of the zone.",
+            "in": "path",
+            "name": "relativeRecordSetName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Specifies the Azure subscription ID, which uniquely identifies the Microsoft Azure subscription.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "zoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "zoneName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Describes a DNS record set (a collection of DNS records with the same name and type).",
+        "properties": {
+          "etag": {
+            "description": "The etag of the record set.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The ID of the record set.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the record set.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RecordSetProperties",
+            "description": "The properties of the record set.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The type of the record set.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2018-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "relativeRecordSetName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType",
+      "name": "RecordSets_ListByType",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$recordsetnamesuffix": {
+            "description": "The suffix label of the record set name that has to be used to filter the record set enumerations. If this parameter is specified, Enumeration will return only records that end with .\u003crecordSetNameSuffix\u003e",
+            "in": "query",
+            "name": "$recordsetnamesuffix",
+            "required": false,
+            "type": "string"
+          },
+          "$top": {
+            "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2018-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of record sets to enumerate.",
+            "enum": [
+              "A",
+              "AAAA",
+              "CAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Specifies the Azure subscription ID, which uniquely identifies the Microsoft Azure subscription.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "zoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "zoneName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response to a record set List operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The continuation token for the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Information about the record sets in the response.",
+            "items": {
+              "$ref": "#/definitions/RecordSet"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2018-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Delete",
       "name": "ExpressRouteCircuitPeerings_Delete",
       "service": "Microsoft.Network",
@@ -11569,6 +11893,548 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
     },
     {
+      "id": "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete",
+      "name": "RecordSets_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The ETag of the record set. Omit this value to always delete the current record set. Specify the last-seen ETag value to prevent accidentally deleting any concurrent changes.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "IfMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of DNS record in this record set.",
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "relativeRecordSetName": {
+            "description": "The name of the record set, relative to the name of the zone.",
+            "in": "path",
+            "name": "relativeRecordSetName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "relativeRecordSetName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get",
+      "name": "RecordSets_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of DNS record in this record set.",
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "relativeRecordSetName": {
+            "description": "The name of the record set, relative to the name of the zone.",
+            "in": "path",
+            "name": "relativeRecordSetName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Describes a DNS record set (a collection of DNS records with the same name and type) in a Private DNS zone.",
+        "properties": {
+          "etag": {
+            "description": "The ETag of the record set.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RecordSetProperties",
+            "description": "The properties of the record set.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "relativeRecordSetName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType",
+      "name": "RecordSets_ListByType",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$recordsetnamesuffix": {
+            "description": "The suffix label of the record set name to be used to filter the record set enumeration. If this parameter is specified, the returned enumeration will only contain records that end with \".\u003crecordsetnamesuffix\u003e\".",
+            "in": "query",
+            "name": "$recordsetnamesuffix",
+            "required": false,
+            "type": "string"
+          },
+          "$top": {
+            "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "recordType": {
+            "description": "The type of DNS record in this record set.",
+            "enum": [
+              "A",
+              "AAAA",
+              "CNAME",
+              "MX",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "in": "path",
+            "name": "recordType",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "RecordType"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a RecordSet list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The RecordSet items on this page",
+            "items": {
+              "$ref": "#/definitions/RecordSet"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PrivateDnsZoneGroups_Delete",
+      "name": "PrivateDnsZoneGroups_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups/{privateDnsZoneGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateDnsZoneGroupName": {
+            "description": "The name of the private dns zone group.",
+            "in": "path",
+            "name": "privateDnsZoneGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointName": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups/{privateDnsZoneGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PrivateDnsZoneGroups_Get",
+      "name": "PrivateDnsZoneGroups_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups/{privateDnsZoneGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateDnsZoneGroupName": {
+            "description": "The name of the private dns zone group.",
+            "in": "path",
+            "name": "privateDnsZoneGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointName": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "Private dns zone group resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the resource that is unique within a resource group. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PrivateDnsZoneGroupPropertiesFormat",
+            "description": "Properties of the private dns zone group.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups/{privateDnsZoneGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.PrivateDnsZoneGroups_List",
+      "name": "PrivateDnsZoneGroups_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointName": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for the ListPrivateDnsZoneGroups API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of private dns zone group resources in a private endpoint.",
+            "items": {
+              "$ref": "#/definitions/PrivateDnsZoneGroup"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.PrivateEndpoints_Delete",
       "name": "PrivateEndpoints_Delete",
       "service": "Microsoft.Network",
@@ -14601,6 +15467,272 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualNetworkGateway.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VirtualNetworkLinks_Delete",
+      "name": "VirtualNetworkLinks_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks/{virtualNetworkLinkName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The ETag of the virtual network link to the Private DNS zone. Omit this value to always delete the current zone. Specify the last-seen ETag value to prevent accidentally deleting any concurrent changes.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "IfMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the Private DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualNetworkLinkName": {
+            "description": "The name of the virtual network link.",
+            "in": "path",
+            "name": "virtualNetworkLinkName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks/{virtualNetworkLinkName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VirtualNetworkLinks_Get",
+      "name": "VirtualNetworkLinks_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks/{virtualNetworkLinkName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the Private DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualNetworkLinkName": {
+            "description": "The name of the virtual network link.",
+            "in": "path",
+            "name": "virtualNetworkLinkName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Describes a link to virtual network for a Private DNS zone.",
+        "properties": {
+          "etag": {
+            "description": "The ETag of the virtual network link.",
+            "type": "string"
+          },
+          "location": {
+            "description": "The Azure Region where the resource lives",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualNetworkLinkProperties",
+            "description": "Properties of the virtual network link to the Private DNS zone.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object",
+            "x-ms-mutability": [
+              "read",
+              "update",
+              "create"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks/{virtualNetworkLinkName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VirtualNetworkLinks_List",
+      "name": "VirtualNetworkLinks_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$top": {
+            "description": "The maximum number of virtual network links to return. If not specified, returns up to 100 virtual network links.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2024-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateZoneName": {
+            "description": "The name of the Private DNS zone (without a terminating dot).",
+            "in": "path",
+            "name": "privateZoneName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a VirtualNetworkLink list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The VirtualNetworkLink items on this page",
+            "items": {
+              "$ref": "#/definitions/VirtualNetworkLink"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json"
     },
     {
       "id": "Azure.Microsoft.Network.VirtualNetworkPeerings_Delete",
@@ -21413,6 +22545,206 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/dnsZones/A",
+      "class": "dns.record_set",
+      "display_name": "DNS A record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "A",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/AAAA",
+      "class": "dns.record_set",
+      "display_name": "DNS AAAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "AAAA",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/CAA",
+      "class": "dns.record_set",
+      "display_name": "DNS CAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "CAA",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/CNAME",
+      "class": "dns.record_set",
+      "display_name": "DNS CNAME record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "CNAME",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/MX",
+      "class": "dns.record_set",
+      "display_name": "DNS MX record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "MX",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/NS",
+      "class": "dns.record_set",
+      "display_name": "DNS NS record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "NS",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/PTR",
+      "class": "dns.record_set",
+      "display_name": "DNS PTR record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "PTR",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/SOA",
+      "class": "dns.record_set",
+      "display_name": "DNS SOA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "SOA",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/SRV",
+      "class": "dns.record_set",
+      "display_name": "DNS SRV record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "SRV",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/TXT",
+      "class": "dns.record_set",
+      "display_name": "DNS TXT record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "TXT",
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/expressRouteCircuits",
       "class": "network.physical_connection",
       "display_name": "ExpressRoute circuit",
@@ -21706,6 +23038,187 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/privateDnsZones/A",
+      "class": "dns.record_set",
+      "display_name": "Private DNS A record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "A",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/AAAA",
+      "class": "dns.record_set",
+      "display_name": "Private DNS AAAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "AAAA",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/CNAME",
+      "class": "dns.record_set",
+      "display_name": "Private DNS CNAME record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "CNAME",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/MX",
+      "class": "dns.record_set",
+      "display_name": "Private DNS MX record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "MX",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/PTR",
+      "class": "dns.record_set",
+      "display_name": "Private DNS PTR record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "PTR",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/SOA",
+      "class": "dns.record_set",
+      "display_name": "Private DNS SOA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "SOA",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/SRV",
+      "class": "dns.record_set",
+      "display_name": "Private DNS SRV record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "SRV",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/TXT",
+      "class": "dns.record_set",
+      "display_name": "Private DNS TXT record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "TXT",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "class": "dns.vpc_binding",
+      "display_name": "Private DNS virtual network link",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "virtualNetworkLinks",
+        "read_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/privateEndpoints",
       "class": "network.endpoint",
       "display_name": "Private endpoint",
@@ -21720,6 +23233,27 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "class": "dns.zone_group",
+      "display_name": "Private endpoint DNS zone group",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "privateDnsZoneGroups",
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_List"
         ]
       }
     },

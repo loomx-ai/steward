@@ -189,6 +189,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 	if err != nil {
 		return Catalog{}, err
 	}
+	titles := map[string]string{}
 	for _, upstream := range set.Documents {
 		if upstream.Dependency {
 			continue
@@ -200,6 +201,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		if document.Swagger != "2.0" || document.Info.Version == "" || document.Host != "management.azure.com" {
 			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a versioned ARM API")
 		}
+		titles[upstream.SourceURI] = document.Info.Title
 		paths := map[string]json.RawMessage{}
 		for key, value := range document.Paths {
 			paths[key] = value
@@ -279,6 +281,24 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				call.RawPathParameters = rawParameters
 				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: isDestructiveOperation(operation.ID, method), InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})
 			}
+		}
+	}
+	// Public and private DNS use the same native RecordSets operation IDs in
+	// distinct API documents. Qualify only collisions by the official document
+	// title; retain the native operationId in Name and all transport metadata.
+	counts := map[string]int{}
+	for _, operation := range c.Operations {
+		counts[operation.ID]++
+	}
+	titlePattern := regexp.MustCompile(`^[A-Za-z][A-Za-z0-9_]*$`)
+	for i := range c.Operations {
+		operation := &c.Operations[i]
+		if counts[operation.ID] > 1 {
+			title := titles[operation.SourceURI]
+			if !titlePattern.MatchString(title) {
+				return Catalog{}, fmt.Errorf("ambiguous Azure operation %q has no usable document title", operation.Name)
+			}
+			operation.ID = "Azure." + operation.Service + "." + title + "." + operation.Name
 		}
 	}
 	appendResourceTypes(&c, set.ResourceTypes)

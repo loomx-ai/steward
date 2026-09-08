@@ -128,6 +128,9 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json",
       "operations": [
+        "RecordSets_Delete",
+        "RecordSets_Get",
+        "RecordSets_ListByType",
         "Zones_Delete",
         "Zones_Get",
         "Zones_ListByResourceGroup"
@@ -277,6 +280,9 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json",
       "operations": [
+        "PrivateDnsZoneGroups_Delete",
+        "PrivateDnsZoneGroups_Get",
+        "PrivateDnsZoneGroups_List",
         "PrivateEndpoints_Delete",
         "PrivateEndpoints_Get",
         "PrivateEndpoints_List",
@@ -405,7 +411,13 @@
       "operations": [
         "PrivateZones_Delete",
         "PrivateZones_Get",
-        "PrivateZones_List"
+        "PrivateZones_List",
+        "RecordSets_Delete",
+        "RecordSets_Get",
+        "RecordSets_ListByType",
+        "VirtualNetworkLinks_Delete",
+        "VirtualNetworkLinks_Get",
+        "VirtualNetworkLinks_List"
       ]
     },
     {
@@ -1749,6 +1761,368 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.PacketCaptures_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "class": "dns.zone_group",
+      "display_name": "Private endpoint DNS zone group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateDnsZoneGroups",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsZoneGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsZoneGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsZoneGroups_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "class": "dns.vpc_binding",
+      "display_name": "Private DNS virtual network link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualNetworkLinks",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkLinks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkLinks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkLinks_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/A",
+      "class": "dns.record_set",
+      "display_name": "DNS A record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "A",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/AAAA",
+      "class": "dns.record_set",
+      "display_name": "DNS AAAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "AAAA",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/CAA",
+      "class": "dns.record_set",
+      "display_name": "DNS CAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "CAA",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/CNAME",
+      "class": "dns.record_set",
+      "display_name": "DNS CNAME record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "CNAME",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/MX",
+      "class": "dns.record_set",
+      "display_name": "DNS MX record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "MX",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/NS",
+      "class": "dns.record_set",
+      "display_name": "DNS NS record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "NS",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/PTR",
+      "class": "dns.record_set",
+      "display_name": "DNS PTR record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "PTR",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/SOA",
+      "class": "dns.record_set",
+      "display_name": "DNS SOA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "SOA",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/SRV",
+      "class": "dns.record_set",
+      "display_name": "DNS SRV record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "SRV",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones/TXT",
+      "class": "dns.record_set",
+      "display_name": "DNS TXT record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "TXT",
+      "read_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/A",
+      "class": "dns.record_set",
+      "display_name": "Private DNS A record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "A",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/AAAA",
+      "class": "dns.record_set",
+      "display_name": "Private DNS AAAA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "AAAA",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/CNAME",
+      "class": "dns.record_set",
+      "display_name": "Private DNS CNAME record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "CNAME",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/MX",
+      "class": "dns.record_set",
+      "display_name": "Private DNS MX record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "MX",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/PTR",
+      "class": "dns.record_set",
+      "display_name": "Private DNS PTR record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "PTR",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/SOA",
+      "class": "dns.record_set",
+      "display_name": "Private DNS SOA record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "SOA",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/SRV",
+      "class": "dns.record_set",
+      "display_name": "Private DNS SRV record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "SRV",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones/TXT",
+      "class": "dns.record_set",
+      "display_name": "Private DNS TXT record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "TXT",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
       ]
     }
   ]

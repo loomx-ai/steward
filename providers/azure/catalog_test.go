@@ -79,6 +79,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			nativeID := operation.Call.Path
 			for _, match := range regexp.MustCompile(`\{([^}]+)\}`).FindAllStringSubmatch(nativeID, -1) {
 				value := "stewardtest"
+				if strings.EqualFold(match[1], "recordType") {
+					value = kind.Collection
+				}
 				if strings.EqualFold(match[1], "subscriptionId") {
 					value = testSubscription
 				}

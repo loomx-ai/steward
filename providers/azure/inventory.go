@@ -190,6 +190,14 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 		}
 	}
 	switch kind.NativeType {
+	case privateDNSZoneType:
+		links, err := c.privateDNSLinks(ctx, id, raw)
+		if err != nil {
+			return nil, err
+		}
+		for _, link := range links {
+			values = append(values, link.data)
+		}
 	case vnetType:
 		values, err = c.listAll(ctx, id+"/subnets", kind.Version)
 	case storageType:
@@ -247,10 +255,21 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	groupID := strings.Join(parts[:5], "/")
 	normalized["subscription_id"] = c.subscription
 	normalized["name"] = safe["name"]
+	if isDNSRecordType(nativeType) {
+		tags := map[string]any{}
+		for key, value := range object(object(safe["properties"])["metadata"]) {
+			tags[key] = value
+		}
+		for key, value := range object(safe["tags"]) {
+			tags[key] = value
+		}
+		safe["tags"] = tags
+	}
 	normalized["tags"] = safe["tags"]
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
 	normalized["_arm_generation"] = productGeneration(raw)
+	normalized["arm_etag"] = text(raw["etag"])
 	if known {
 		_, parameters, err := c.resourceOperation(kind, id, "GET")
 		if err != nil {
@@ -329,7 +348,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["vswitch_id"] = id
 	}
 	tags := map[string]string{}
-	for key, value := range object(raw["tags"]) {
+	for key, value := range object(safe["tags"]) {
 		if s, ok := value.(string); ok {
 			tags[key] = s
 		}
@@ -378,7 +397,7 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		"loadbalancerbackendaddresspools": true, "applicationgatewaybackendaddresspools": true, "loadbalancerfrontendipconfigurations": true,
 		"serverfarmid": true, "virtualnetworksubnetid": true, "subnetresourceid": true, "managedenvironmentid": true, "environmentid": true,
 		"elasticpoolid": true, "vnetsubnetid": true, "delegatedsubnetresourceid": true, "keyvaultid": true}
-	for _, field := range []string{"virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
+	for _, field := range []string{"virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "targetresource", "privatednszoneid", "privateendpoint", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
 		fields[strings.ToLower(field)] = true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/packetCaptures") {

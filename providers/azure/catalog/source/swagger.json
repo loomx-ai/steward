@@ -17177,6 +17177,42 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "ARecord": {
+            "description": "An A record.",
+            "properties": {
+              "ipv4Address": {
+                "description": "The IPv4 address of this A record.",
+                "type": "string"
+              }
+            }
+          },
+          "AaaaRecord": {
+            "description": "An AAAA record.",
+            "properties": {
+              "ipv6Address": {
+                "description": "The IPv6 address of this AAAA record.",
+                "type": "string"
+              }
+            }
+          },
+          "CaaRecord": {
+            "description": "A CAA record.",
+            "properties": {
+              "flags": {
+                "description": "The flags for this CAA record as an integer between 0 and 255.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "tag": {
+                "description": "The tag for this CAA record.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The value for this CAA record.",
+                "type": "string"
+              }
+            }
+          },
           "CloudError": {
             "description": "An error response from the service.",
             "properties": {
@@ -17213,6 +17249,198 @@
             },
             "type": "object",
             "x-ms-external": true
+          },
+          "CnameRecord": {
+            "description": "A CNAME record.",
+            "properties": {
+              "cname": {
+                "description": "The canonical name for this CNAME record.",
+                "type": "string"
+              }
+            }
+          },
+          "MxRecord": {
+            "description": "An MX record.",
+            "properties": {
+              "exchange": {
+                "description": "The domain name of the mail host for this MX record.",
+                "type": "string"
+              },
+              "preference": {
+                "description": "The preference value for this MX record.",
+                "format": "int32",
+                "type": "integer"
+              }
+            }
+          },
+          "NsRecord": {
+            "description": "An NS record.",
+            "properties": {
+              "nsdname": {
+                "description": "The name server name for this NS record.",
+                "type": "string"
+              }
+            }
+          },
+          "PtrRecord": {
+            "description": "A PTR record.",
+            "properties": {
+              "ptrdname": {
+                "description": "The PTR target domain name for this PTR record.",
+                "type": "string"
+              }
+            }
+          },
+          "RecordSet": {
+            "description": "Describes a DNS record set (a collection of DNS records with the same name and type).",
+            "properties": {
+              "etag": {
+                "description": "The etag of the record set.",
+                "type": "string"
+              },
+              "id": {
+                "description": "The ID of the record set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the record set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/RecordSetProperties",
+                "description": "The properties of the record set.",
+                "x-ms-client-flatten": true
+              },
+              "type": {
+                "description": "The type of the record set.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "RecordSetListResult": {
+            "description": "The response to a record set List operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The continuation token for the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "Information about the record sets in the response.",
+                "items": {
+                  "$ref": "#/definitions/RecordSet"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "RecordSetProperties": {
+            "description": "Represents the properties of the records in the record set.",
+            "properties": {
+              "AAAARecords": {
+                "description": "The list of AAAA records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/AaaaRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "AaaaRecords"
+              },
+              "ARecords": {
+                "description": "The list of A records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/ARecord"
+                },
+                "type": "array"
+              },
+              "CNAMERecord": {
+                "$ref": "#/definitions/CnameRecord",
+                "description": "The CNAME record in the  record set.",
+                "x-ms-client-name": "CnameRecord"
+              },
+              "MXRecords": {
+                "description": "The list of MX records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/MxRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "MxRecords"
+              },
+              "NSRecords": {
+                "description": "The list of NS records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/NsRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "NsRecords"
+              },
+              "PTRRecords": {
+                "description": "The list of PTR records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/PtrRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "PtrRecords"
+              },
+              "SOARecord": {
+                "$ref": "#/definitions/SoaRecord",
+                "description": "The SOA record in the record set.",
+                "x-ms-client-name": "SoaRecord"
+              },
+              "SRVRecords": {
+                "description": "The list of SRV records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/SrvRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "SrvRecords"
+              },
+              "TTL": {
+                "description": "The TTL (time-to-live) of the records in the record set.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "TXTRecords": {
+                "description": "The list of TXT records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/TxtRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "TxtRecords"
+              },
+              "caaRecords": {
+                "description": "The list of CAA records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/CaaRecord"
+                },
+                "type": "array",
+                "x-ms-client-name": "CaaRecords"
+              },
+              "fqdn": {
+                "description": "Fully qualified domain name of the record set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "metadata": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The metadata attached to the record set.",
+                "type": "object"
+              },
+              "provisioningState": {
+                "description": "provisioning State of the record set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "targetResource": {
+                "$ref": "#/definitions/SubResource",
+                "description": "A reference to an azure resource from where the dns resource value is taken."
+              }
+            }
           },
           "Resource": {
             "description": "Common properties of an Azure Resource Manager resource",
@@ -17253,12 +17481,87 @@
             ],
             "x-ms-azure-resource": true
           },
+          "SoaRecord": {
+            "description": "An SOA record.",
+            "properties": {
+              "email": {
+                "description": "The email contact for this SOA record.",
+                "type": "string"
+              },
+              "expireTime": {
+                "description": "The expire time for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "host": {
+                "description": "The domain name of the authoritative name server for this SOA record.",
+                "type": "string"
+              },
+              "minimumTTL": {
+                "description": "The minimum value for this SOA record. By convention this is used to determine the negative caching duration.",
+                "format": "int64",
+                "type": "integer",
+                "x-ms-client-name": "minimumTtl"
+              },
+              "refreshTime": {
+                "description": "The refresh value for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "retryTime": {
+                "description": "The retry time for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "serialNumber": {
+                "description": "The serial number for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              }
+            }
+          },
+          "SrvRecord": {
+            "description": "An SRV record.",
+            "properties": {
+              "port": {
+                "description": "The port value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "priority": {
+                "description": "The priority value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "target": {
+                "description": "The target domain name for this SRV record.",
+                "type": "string"
+              },
+              "weight": {
+                "description": "The weight value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              }
+            }
+          },
           "SubResource": {
             "description": "A reference to a another resource",
             "properties": {
               "id": {
                 "description": "Resource Id.",
                 "type": "string"
+              }
+            }
+          },
+          "TxtRecord": {
+            "description": "A TXT record.",
+            "properties": {
+              "value": {
+                "description": "The text value of this TXT record.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             }
           },
@@ -17540,6 +17843,343 @@
               "x-ms-examples": {
                 "Get zone": {
                   "$ref": "./examples/GetZone.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}": {
+            "get": {
+              "description": "Lists the record sets of a specified type in a DNS zone.",
+              "operationId": "RecordSets_ListByType",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "zoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The type of record sets to enumerate.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets.",
+                  "format": "int32",
+                  "in": "query",
+                  "name": "$top",
+                  "required": false,
+                  "type": "integer"
+                },
+                {
+                  "description": "The suffix label of the record set name that has to be used to filter the record set enumerations. If this parameter is specified, Enumeration will return only records that end with .<recordSetNameSuffix>",
+                  "in": "query",
+                  "name": "$recordsetnamesuffix",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSetListResult"
+                  }
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "RecordSets"
+              ],
+              "x-ms-examples": {
+                "List A recordsets": {
+                  "$ref": "./examples/ListARecordset.json"
+                },
+                "List AAAA recordsets": {
+                  "$ref": "./examples/ListAAAARecordset.json"
+                },
+                "List CAA recordsets": {
+                  "$ref": "./examples/ListCaaRecordset.json"
+                },
+                "List CNAME recordsets": {
+                  "$ref": "./examples/ListCNAMERecordset.json"
+                },
+                "List MX recordsets": {
+                  "$ref": "./examples/ListMXRecordset.json"
+                },
+                "List NS recordsets": {
+                  "$ref": "./examples/ListNSRecordset.json"
+                },
+                "List PTR recordsets": {
+                  "$ref": "./examples/ListPTRRecordset.json"
+                },
+                "List SOA recordsets": {
+                  "$ref": "./examples/ListSOARecordset.json"
+                },
+                "List SRV recordsets": {
+                  "$ref": "./examples/ListSRVRecordset.json"
+                },
+                "List TXT recordsets": {
+                  "$ref": "./examples/ListTXTRecordset.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}": {
+            "delete": {
+              "description": "Deletes a record set from a DNS zone. This operation cannot be undone.",
+              "operationId": "RecordSets_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "zoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "in": "path",
+                  "name": "relativeRecordSetName",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The type of DNS record in this record set. Record sets of type SOA cannot be deleted (they are deleted when the DNS zone is deleted).",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "description": "The etag of the record set. Omit this value to always delete the current record set. Specify the last-seen etag value to prevent accidentally deleting any concurrent changes.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "IfMatch"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The record set has been deleted."
+                },
+                "204": {
+                  "description": "The record set was not found."
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "RecordSets"
+              ],
+              "x-ms-examples": {
+                "Delete A recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete AAAA recordset": {
+                  "$ref": "./examples/DeleteAAAARecordset.json"
+                },
+                "Delete CAA recordset": {
+                  "$ref": "./examples/DeleteCaaRecordset.json"
+                },
+                "Delete CNAME recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete MX recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete NS recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete PTR recordset": {
+                  "$ref": "./examples/DeletePTRRecordset.json"
+                },
+                "Delete SRV recordset": {
+                  "$ref": "./examples/DeleteSRVRecordset.json"
+                },
+                "Delete TXT recordset": {
+                  "$ref": "./examples/DeleteTXTRecordset.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets a record set.",
+              "operationId": "RecordSets_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "zoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "in": "path",
+                  "name": "relativeRecordSetName",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The type of DNS record in this record set.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSet"
+                  }
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "RecordSets"
+              ],
+              "x-ms-examples": {
+                "Get A recordset": {
+                  "$ref": "./examples/GetARecordset.json"
+                },
+                "Get AAAA recordset": {
+                  "$ref": "./examples/GetAAAARecordset.json"
+                },
+                "Get CAA recordset": {
+                  "$ref": "./examples/GetCaaRecordset.json"
+                },
+                "Get CNAME recordset": {
+                  "$ref": "./examples/GetCNAMERecordset.json"
+                },
+                "Get MX recordset": {
+                  "$ref": "./examples/GetMXRecordset.json"
+                },
+                "Get NS recordset": {
+                  "$ref": "./examples/GetNSRecordset.json"
+                },
+                "Get PTR recordset": {
+                  "$ref": "./examples/GetPTRRecordset.json"
+                },
+                "Get SOA recordset": {
+                  "$ref": "./examples/GetSOARecordset.json"
+                },
+                "Get SRV recordset": {
+                  "$ref": "./examples/GetSRVRecordset.json"
+                },
+                "Get TXT recordset": {
+                  "$ref": "./examples/GetTXTRecordset.json"
                 }
               }
             }
@@ -30834,6 +31474,95 @@
               }
             }
           },
+          "PrivateDnsZoneConfig": {
+            "description": "PrivateDnsZoneConfig resource.",
+            "properties": {
+              "name": {
+                "description": "Name of the resource that is unique within a resource group. This name can be used to access the resource.",
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/PrivateDnsZonePropertiesFormat",
+                "description": "Properties of the private dns zone configuration.",
+                "x-ms-client-flatten": true
+              }
+            }
+          },
+          "PrivateDnsZoneGroup": {
+            "allOf": [
+              {
+                "$ref": "./network.json#/definitions/SubResource"
+              }
+            ],
+            "description": "Private dns zone group resource.",
+            "properties": {
+              "etag": {
+                "description": "A unique read-only string that changes whenever the resource is updated.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the resource that is unique within a resource group. This name can be used to access the resource.",
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/PrivateDnsZoneGroupPropertiesFormat",
+                "description": "Properties of the private dns zone group.",
+                "x-ms-client-flatten": true
+              }
+            }
+          },
+          "PrivateDnsZoneGroupListResult": {
+            "description": "Response for the ListPrivateDnsZoneGroups API service call.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to get the next set of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of private dns zone group resources in a private endpoint.",
+                "items": {
+                  "$ref": "#/definitions/PrivateDnsZoneGroup"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "PrivateDnsZoneGroupPropertiesFormat": {
+            "description": "Properties of the private dns zone group.",
+            "properties": {
+              "privateDnsZoneConfigs": {
+                "description": "A collection of private dns zone configurations of the private dns zone group.",
+                "items": {
+                  "$ref": "#/definitions/PrivateDnsZoneConfig"
+                },
+                "type": "array"
+              },
+              "provisioningState": {
+                "$ref": "./network.json#/definitions/ProvisioningState",
+                "description": "The provisioning state of the private dns zone group resource.",
+                "readOnly": true
+              }
+            }
+          },
+          "PrivateDnsZonePropertiesFormat": {
+            "description": "Properties of the private dns zone configuration resource.",
+            "properties": {
+              "privateDnsZoneId": {
+                "description": "The resource id of the private dns zone.",
+                "type": "string"
+              },
+              "recordSets": {
+                "description": "A collection of information regarding a recordSet, holding information to identify private resources.",
+                "items": {
+                  "$ref": "#/definitions/RecordSet"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            }
+          },
           "PrivateEndpoint": {
             "allOf": [
               {
@@ -31034,6 +31763,39 @@
               "requestMessage": {
                 "description": "A message passed to the owner of the remote resource with this connection request. Restricted to 140 chars.",
                 "type": "string"
+              }
+            }
+          },
+          "RecordSet": {
+            "description": "A collective group of information about the record set information.",
+            "properties": {
+              "fqdn": {
+                "description": "Fqdn that resolves to private endpoint ip address.",
+                "type": "string"
+              },
+              "ipAddresses": {
+                "description": "The private ip address of the private endpoint.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "provisioningState": {
+                "$ref": "./network.json#/definitions/ProvisioningState",
+                "description": "The provisioning state of the recordset.",
+                "readOnly": true
+              },
+              "recordSetName": {
+                "description": "Recordset name.",
+                "type": "string"
+              },
+              "recordType": {
+                "description": "Resource record type.",
+                "type": "string"
+              },
+              "ttl": {
+                "description": "Recordset time to live.",
+                "type": "integer"
               }
             }
           }
@@ -31244,6 +32006,178 @@
                 },
                 "Get private endpoint with manual approval connection": {
                   "$ref": "./examples/PrivateEndpointGetForManualApproval.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups": {
+            "get": {
+              "description": "Gets all private dns zone groups in a private endpoint.",
+              "operationId": "PrivateDnsZoneGroups_List",
+              "parameters": [
+                {
+                  "description": "The name of the private endpoint.",
+                  "in": "path",
+                  "name": "privateEndpointName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a list of private dns zone group resources.",
+                  "schema": {
+                    "$ref": "#/definitions/PrivateDnsZoneGroupListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateDnsZoneGroups"
+              ],
+              "x-ms-examples": {
+                "List private endpoints in resource group": {
+                  "$ref": "./examples/PrivateEndpointDnsZoneGroupList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateEndpoints/{privateEndpointName}/privateDnsZoneGroups/{privateDnsZoneGroupName}": {
+            "delete": {
+              "description": "Deletes the specified private dns zone group.",
+              "operationId": "PrivateDnsZoneGroups_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the private endpoint.",
+                  "in": "path",
+                  "name": "privateEndpointName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the private dns zone group.",
+                  "in": "path",
+                  "name": "privateDnsZoneGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Delete successful."
+                },
+                "202": {
+                  "description": "Accepted and the operation will complete asynchronously."
+                },
+                "204": {
+                  "description": "Request successful. Resource does not exist."
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateDnsZoneGroups"
+              ],
+              "x-ms-examples": {
+                "Delete private dns zone group": {
+                  "$ref": "./examples/PrivateEndpointDnsZoneGroupDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets the private dns zone group resource by specified private dns zone group name.",
+              "operationId": "PrivateDnsZoneGroups_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the private endpoint.",
+                  "in": "path",
+                  "name": "privateEndpointName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the private dns zone group.",
+                  "in": "path",
+                  "name": "privateDnsZoneGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the resulting privateDnsZoneGroup resource.",
+                  "schema": {
+                    "$ref": "#/definitions/PrivateDnsZoneGroup"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateDnsZoneGroups"
+              ],
+              "x-ms-examples": {
+                "Get private dns zone group": {
+                  "$ref": "./examples/PrivateEndpointDnsZoneGroupGet.json"
                 }
               }
             }
@@ -41184,6 +42118,26 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "ARecord": {
+            "description": "An A record.",
+            "properties": {
+              "ipv4Address": {
+                "description": "The IPv4 address of this A record.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AaaaRecord": {
+            "description": "An AAAA record.",
+            "properties": {
+              "ipv6Address": {
+                "description": "The IPv6 address of this AAAA record.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
           "CloudError": {
             "description": "An error response from the service.",
             "properties": {
@@ -41218,6 +42172,31 @@
               "target": {
                 "description": "The target of the particular error. For example, the name of the property in error.",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "CnameRecord": {
+            "description": "A CNAME record.",
+            "properties": {
+              "cname": {
+                "description": "The canonical name for this CNAME record.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MxRecord": {
+            "description": "An MX record.",
+            "properties": {
+              "exchange": {
+                "description": "The domain name of the mail host for this MX record.",
+                "type": "string"
+              },
+              "preference": {
+                "description": "The preference value for this MX record.",
+                "format": "int32",
+                "type": "integer"
               }
             },
             "type": "object"
@@ -41374,6 +42353,365 @@
                 {
                   "name": "Canceled",
                   "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "PtrRecord": {
+            "description": "A PTR record.",
+            "properties": {
+              "ptrdname": {
+                "description": "The PTR target domain name for this PTR record.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "RecordSet": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Describes a DNS record set (a collection of DNS records with the same name and type) in a Private DNS zone.",
+            "properties": {
+              "etag": {
+                "description": "The ETag of the record set.",
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/RecordSetProperties",
+                "description": "The properties of the record set.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "RecordSetListResult": {
+            "description": "The response of a RecordSet list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The RecordSet items on this page",
+                "items": {
+                  "$ref": "#/definitions/RecordSet"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "RecordSetProperties": {
+            "description": "Represents the properties of the records in the record set.",
+            "properties": {
+              "aRecords": {
+                "description": "The list of A records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/ARecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "ipv4Address"
+                ]
+              },
+              "aaaaRecords": {
+                "description": "The list of AAAA records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/AaaaRecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "ipv6Address"
+                ]
+              },
+              "cnameRecord": {
+                "$ref": "#/definitions/CnameRecord",
+                "description": "The CNAME record in the record set."
+              },
+              "fqdn": {
+                "description": "Fully qualified domain name of the record set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "isAutoRegistered": {
+                "description": "Is the record set auto-registered in the Private DNS zone through a virtual network link?",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "metadata": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The metadata attached to the record set.",
+                "type": "object"
+              },
+              "mxRecords": {
+                "description": "The list of MX records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/MxRecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "ptrRecords": {
+                "description": "The list of PTR records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/PtrRecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "soaRecord": {
+                "$ref": "#/definitions/SoaRecord",
+                "description": "The SOA record in the record set."
+              },
+              "srvRecords": {
+                "description": "The list of SRV records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/SrvRecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "ttl": {
+                "description": "The TTL (time-to-live) of the records in the record set.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "txtRecords": {
+                "description": "The list of TXT records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/TxtRecord"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "type": "object"
+          },
+          "ResolutionPolicy": {
+            "description": "The resolution policy on the virtual network link. Only applicable for virtual network links to privatelink zones, and for A,AAAA,CNAME queries. When set to 'NxDomainRedirect', Azure DNS resolver falls back to public resolution if private dns query resolution results in non-existent domain response.",
+            "enum": [
+              "Default",
+              "NxDomainRedirect"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ResolutionPolicy",
+              "values": [
+                {
+                  "name": "Default",
+                  "value": "Default"
+                },
+                {
+                  "name": "NxDomainRedirect",
+                  "value": "NxDomainRedirect"
+                }
+              ]
+            }
+          },
+          "SoaRecord": {
+            "description": "An SOA record.",
+            "properties": {
+              "email": {
+                "description": "The email contact for this SOA record.",
+                "type": "string"
+              },
+              "expireTime": {
+                "description": "The expire time for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "host": {
+                "description": "The domain name of the authoritative name server for this SOA record.",
+                "type": "string"
+              },
+              "minimumTtl": {
+                "description": "The minimum value for this SOA record. By convention this is used to determine the negative caching duration.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "refreshTime": {
+                "description": "The refresh value for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "retryTime": {
+                "description": "The retry time for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "serialNumber": {
+                "description": "The serial number for this SOA record.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "SrvRecord": {
+            "description": "An SRV record.",
+            "properties": {
+              "port": {
+                "description": "The port value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "priority": {
+                "description": "The priority value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "target": {
+                "description": "The target domain name for this SRV record.",
+                "type": "string"
+              },
+              "weight": {
+                "description": "The weight value for this SRV record.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "SubResource": {
+            "description": "Reference to another subresource.",
+            "properties": {
+              "id": {
+                "description": "Resource ID.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "TxtRecord": {
+            "description": "A TXT record.",
+            "properties": {
+              "value": {
+                "description": "The text value of this TXT record.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "VirtualNetworkLink": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Describes a link to virtual network for a Private DNS zone.",
+            "properties": {
+              "etag": {
+                "description": "The ETag of the virtual network link.",
+                "type": "string"
+              },
+              "location": {
+                "description": "The Azure Region where the resource lives",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "properties": {
+                "$ref": "#/definitions/VirtualNetworkLinkProperties",
+                "description": "Properties of the virtual network link to the Private DNS zone.",
+                "x-ms-client-flatten": true
+              },
+              "tags": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Resource tags.",
+                "type": "object",
+                "x-ms-mutability": [
+                  "read",
+                  "update",
+                  "create"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "VirtualNetworkLinkListResult": {
+            "description": "The response of a VirtualNetworkLink list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The VirtualNetworkLink items on this page",
+                "items": {
+                  "$ref": "#/definitions/VirtualNetworkLink"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "VirtualNetworkLinkProperties": {
+            "description": "Represents the properties of the Private DNS zone.",
+            "properties": {
+              "provisioningState": {
+                "$ref": "#/definitions/ProvisioningState",
+                "description": "The provisioning state of the resource. This is a read-only property and any attempt to set this value will be ignored.",
+                "readOnly": true
+              },
+              "registrationEnabled": {
+                "description": "Is auto-registration of virtual machine records in the virtual network in the Private DNS zone enabled?",
+                "type": "boolean"
+              },
+              "resolutionPolicy": {
+                "$ref": "#/definitions/ResolutionPolicy",
+                "description": "The resolution policy on the virtual network link. Only applicable for virtual network links to privatelink zones, and for A,AAAA,CNAME queries. When set to 'NxDomainRedirect', Azure DNS resolver falls back to public resolution if private dns query resolution results in non-existent domain response."
+              },
+              "virtualNetwork": {
+                "$ref": "#/definitions/SubResource",
+                "description": "The reference of the virtual network."
+              },
+              "virtualNetworkLinkState": {
+                "$ref": "#/definitions/VirtualNetworkLinkState",
+                "description": "The status of the virtual network link to the Private DNS zone. Possible values are 'InProgress' and 'Done'. This is a read-only property and any attempt to set this value will be ignored.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "VirtualNetworkLinkState": {
+            "description": "The status of the virtual network link to the Private DNS zone. Possible values are 'InProgress' and 'Done'. This is a read-only property and any attempt to set this value will be ignored.",
+            "enum": [
+              "InProgress",
+              "Completed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "VirtualNetworkLinkState",
+              "values": [
+                {
+                  "name": "InProgress",
+                  "value": "InProgress"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
                 }
               ]
             }
@@ -41550,6 +42888,485 @@
               "x-ms-examples": {
                 "GET Private DNS Zone": {
                   "$ref": "./examples/PrivateZoneGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks": {
+            "get": {
+              "description": "Lists the virtual network links to the specified Private DNS zone.",
+              "operationId": "VirtualNetworkLinks_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Private DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The maximum number of virtual network links to return. If not specified, returns up to 100 virtual network links.",
+                  "format": "int32",
+                  "in": "query",
+                  "name": "$top",
+                  "required": false,
+                  "type": "integer"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualNetworkLinkListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualNetworkLinks"
+              ],
+              "x-ms-examples": {
+                "Get Private DNS Zone Virtual Network Links": {
+                  "$ref": "./examples/VirtualNetworkLinkList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/virtualNetworkLinks/{virtualNetworkLinkName}": {
+            "delete": {
+              "description": "Deletes a virtual network link to the specified Private DNS zone. WARNING: In case of a registration virtual network, all auto-registered DNS records in the zone for the virtual network will also be deleted. This operation cannot be undone.",
+              "operationId": "VirtualNetworkLinks_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Private DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual network link.",
+                  "in": "path",
+                  "name": "virtualNetworkLinkName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The ETag of the virtual network link to the Private DNS zone. Omit this value to always delete the current zone. Specify the last-seen ETag value to prevent accidentally deleting any concurrent changes.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "IfMatch"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualNetworkLinks"
+              ],
+              "x-ms-examples": {
+                "DELETE Private DNS Zone Virtual Network Link": {
+                  "$ref": "./examples/VirtualNetworkLinkDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets a virtual network link to the specified Private DNS zone.",
+              "operationId": "VirtualNetworkLinks_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Private DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual network link.",
+                  "in": "path",
+                  "name": "virtualNetworkLinkName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualNetworkLink"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualNetworkLinks"
+              ],
+              "x-ms-examples": {
+                "GET Private DNS Zone Virtual Network Link": {
+                  "$ref": "./examples/VirtualNetworkLinkGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}": {
+            "get": {
+              "description": "Lists the record sets of a specified type in a Private DNS zone.",
+              "operationId": "RecordSets_ListByType",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The type of DNS record in this record set.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets.",
+                  "format": "int32",
+                  "in": "query",
+                  "name": "$top",
+                  "required": false,
+                  "type": "integer"
+                },
+                {
+                  "description": "The suffix label of the record set name to be used to filter the record set enumeration. If this parameter is specified, the returned enumeration will only contain records that end with \".<recordsetnamesuffix>\".",
+                  "in": "query",
+                  "name": "$recordsetnamesuffix",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSetListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GET Private DNS Zone A Record Sets": {
+                  "$ref": "./examples/RecordSetAList.json"
+                },
+                "GET Private DNS Zone AAAA Record Sets": {
+                  "$ref": "./examples/RecordSetAAAAList.json"
+                },
+                "GET Private DNS Zone CNAME Record Sets": {
+                  "$ref": "./examples/RecordSetCNAMEList.json"
+                },
+                "GET Private DNS Zone MX Record Sets": {
+                  "$ref": "./examples/RecordSetMXList.json"
+                },
+                "GET Private DNS Zone PTR Record Sets": {
+                  "$ref": "./examples/RecordSetPTRList.json"
+                },
+                "GET Private DNS Zone SOA Record Sets": {
+                  "$ref": "./examples/RecordSetSOAList.json"
+                },
+                "GET Private DNS Zone SRV Record Sets": {
+                  "$ref": "./examples/RecordSetSRVList.json"
+                },
+                "GET Private DNS Zone TXT Record Sets": {
+                  "$ref": "./examples/RecordSetTXTList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}": {
+            "delete": {
+              "description": "Deletes a record set from a Private DNS zone. This operation cannot be undone.",
+              "operationId": "RecordSets_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The type of DNS record in this record set.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "in": "path",
+                  "name": "relativeRecordSetName",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The ETag of the record set. Omit this value to always delete the current record set. Specify the last-seen ETag value to prevent accidentally deleting any concurrent changes.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "IfMatch"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "DELETE Private DNS Zone A Record Set": {
+                  "$ref": "./examples/RecordSetADelete.json"
+                },
+                "DELETE Private DNS Zone AAAA Record Set": {
+                  "$ref": "./examples/RecordSetAAAADelete.json"
+                },
+                "DELETE Private DNS Zone CNAME Record Set": {
+                  "$ref": "./examples/RecordSetCNAMEDelete.json"
+                },
+                "DELETE Private DNS Zone MX Record Set": {
+                  "$ref": "./examples/RecordSetMXDelete.json"
+                },
+                "DELETE Private DNS Zone PTR Record Set": {
+                  "$ref": "./examples/RecordSetPTRDelete.json"
+                },
+                "DELETE Private DNS Zone SRV Record Set": {
+                  "$ref": "./examples/RecordSetSRVDelete.json"
+                },
+                "DELETE Private DNS Zone TXT Record Set": {
+                  "$ref": "./examples/RecordSetTXTDelete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets a record set.",
+              "operationId": "RecordSets_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "in": "path",
+                  "name": "privateZoneName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The type of DNS record in this record set.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "in": "path",
+                  "name": "recordType",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "RecordType"
+                  }
+                },
+                {
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "in": "path",
+                  "name": "relativeRecordSetName",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSet"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GET Private DNS Zone A Record Set": {
+                  "$ref": "./examples/RecordSetAGet.json"
+                },
+                "GET Private DNS Zone AAAA Record Set": {
+                  "$ref": "./examples/RecordSetAAAAGet.json"
+                },
+                "GET Private DNS Zone CNAME Record Set": {
+                  "$ref": "./examples/RecordSetCNAMEGet.json"
+                },
+                "GET Private DNS Zone MX Record Set": {
+                  "$ref": "./examples/RecordSetMXGet.json"
+                },
+                "GET Private DNS Zone PTR Record Set": {
+                  "$ref": "./examples/RecordSetPTRGet.json"
+                },
+                "GET Private DNS Zone SOA Record Set": {
+                  "$ref": "./examples/RecordSetSOAGet.json"
+                },
+                "GET Private DNS Zone SRV Record Set": {
+                  "$ref": "./examples/RecordSetSRVGet.json"
+                },
+                "GET Private DNS Zone TXT Record Set": {
+                  "$ref": "./examples/RecordSetTXTGet.json"
                 }
               }
             }
@@ -54063,6 +55880,408 @@
       },
       "scopeKinds": [
         "region",
+        "global"
+      ]
+    },
+    {
+      "class": "dns.zone_group",
+      "displayName": "Private endpoint DNS zone group",
+      "nativeType": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+      "rest": {
+        "collection": "privateDnsZoneGroups",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsZoneGroups_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "dns.vpc_binding",
+      "displayName": "Private DNS virtual network link",
+      "nativeType": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "rest": {
+        "collection": "virtualNetworkLinks",
+        "delete_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.VirtualNetworkLinks_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS A record set",
+      "nativeType": "Microsoft.Network/dnsZones/A",
+      "rest": {
+        "collection": "A",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS AAAA record set",
+      "nativeType": "Microsoft.Network/dnsZones/AAAA",
+      "rest": {
+        "collection": "AAAA",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS CAA record set",
+      "nativeType": "Microsoft.Network/dnsZones/CAA",
+      "rest": {
+        "collection": "CAA",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS CNAME record set",
+      "nativeType": "Microsoft.Network/dnsZones/CNAME",
+      "rest": {
+        "collection": "CNAME",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS MX record set",
+      "nativeType": "Microsoft.Network/dnsZones/MX",
+      "rest": {
+        "collection": "MX",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS NS record set",
+      "nativeType": "Microsoft.Network/dnsZones/NS",
+      "rest": {
+        "collection": "NS",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS PTR record set",
+      "nativeType": "Microsoft.Network/dnsZones/PTR",
+      "rest": {
+        "collection": "PTR",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS SOA record set",
+      "nativeType": "Microsoft.Network/dnsZones/SOA",
+      "rest": {
+        "collection": "SOA",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS SRV record set",
+      "nativeType": "Microsoft.Network/dnsZones/SRV",
+      "rest": {
+        "collection": "SRV",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "DNS TXT record set",
+      "nativeType": "Microsoft.Network/dnsZones/TXT",
+      "rest": {
+        "collection": "TXT",
+        "delete_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.DnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS A record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/A",
+      "rest": {
+        "collection": "A",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS AAAA record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/AAAA",
+      "rest": {
+        "collection": "AAAA",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS CNAME record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/CNAME",
+      "rest": {
+        "collection": "CNAME",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS MX record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/MX",
+      "rest": {
+        "collection": "MX",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS PTR record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/PTR",
+      "rest": {
+        "collection": "PTR",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS SOA record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/SOA",
+      "rest": {
+        "collection": "SOA",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS SRV record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/SRV",
+      "rest": {
+        "collection": "SRV",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "dns.record_set",
+      "displayName": "Private DNS TXT record set",
+      "nativeType": "Microsoft.Network/privateDnsZones/TXT",
+      "rest": {
+        "collection": "TXT",
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Get"
+        ]
+      },
+      "scopeKinds": [
         "global"
       ]
     }

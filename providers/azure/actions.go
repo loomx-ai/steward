@@ -56,6 +56,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 					for _, part := range strings.Split(strings.TrimPrefix(expression, "resource.normalized."), ".") {
 						resolved = object(resolved)[part]
 					}
+					if resolved == nil || resolved == "" {
+						return nil, fmt.Errorf("Azure action is missing its bound resource parameter %s", key)
+					}
 				} else if strings.HasPrefix(expression, "scope.") || strings.HasPrefix(expression, "resource.") {
 					return nil, fmt.Errorf("unsupported Azure action parameter expression")
 				}
@@ -139,6 +142,21 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		}
 		if len(children) > 0 {
 			return contracts.PreflightResult{Reason: "virtual_network_has_subnets"}, nil
+		}
+		linked, err := a.client.virtualNetworkHasDNSLinks(ctx, a.id)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		if linked {
+			return contracts.PreflightResult{Reason: "virtual_network_has_private_dns_links"}, nil
+		}
+	case privateDNSZoneType:
+		children, err := a.client.privateDNSLinks(ctx, a.id, res.data)
+		if err != nil {
+			return contracts.PreflightResult{}, err
+		}
+		if len(children) > 0 {
+			return contracts.PreflightResult{Reason: "private_dns_zone_has_virtual_network_links"}, nil
 		}
 	case storageType:
 		empty, err := a.client.storageAccountEmpty(ctx, a.id, res.data)
@@ -333,6 +351,20 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
 }
 func protectionReason(kind resourceType, raw map[string]any) string {
+	if protectedAzureTags(object(raw["tags"])) {
+		return "azure_protected_tag"
+	}
+	if isDNSRecordType(kind.NativeType) {
+		if protectedAzureTags(object(object(raw["properties"])["metadata"])) {
+			return "azure_protected_tag"
+		}
+		if object(raw["properties"])["isAutoRegistered"] == true {
+			return "azure_dns_auto_registered_record"
+		}
+		if isDNSSystemRecord(kind.NativeType, text(raw["id"])) {
+			return "azure_dns_system_record"
+		}
+	}
 	if kind.NativeType == "Microsoft.Sql/servers/databases" && strings.EqualFold(last(text(raw["id"])), "master") {
 		return "azure_system_database"
 	}
@@ -359,9 +391,21 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
-	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic", "azure_system_database":
+	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
 	default:
 		return false
 	}
+}
+
+func protectedAzureTags(tags map[string]any) bool {
+	for key, value := range tags {
+		if strings.EqualFold(key, "steward/protected") || strings.EqualFold(key, "steward:protected") {
+			switch strings.ToLower(text(value)) {
+			case "1", "true", "yes", "on", "protected":
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 66 current resource rules discover through native product List operations.
+All 86 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,7 +47,7 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 264 operations from
+Private Link and file shares. The current catalog contains 276 operations from
 49 root documents and 25 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
@@ -129,3 +129,27 @@ child permissions, locks, protected records, new members and retention requests
 are checked before server deletion; every planned child must be absent afterward.
 The service's backup/soft-delete retention remains governed by Azure; this action
 does not purge retained backups. See [logical-server lifetime semantics](https://learn.microsoft.com/en-us/azure/azure-sql/database/logical-servers).
+
+Public and private DNS records now use their native record-type collections,
+including wildcard/apex names and conditional DELETE with the scanned ETag.
+The overlapping official `RecordSets_*` operation names are qualified by the
+source document title; native operation names and wire contracts are preserved.
+DNS metadata protection applies to system and auto-registered records as well.
+Zones own their system/custom record sets; private zones require network links
+to be deleted first. VNet deletion checks links across all subscription zones.
+
+Private endpoint DNS zone groups contribute only records identified in the
+Network provider's read-only `recordSets` configuration. Exact native DNS reads
+verify their addresses, TTL, FQDN and generation, including records in another
+resource group. Registration links own their auto-registered records. Multiple
+registration links require a unique match against all linked VNet address spaces;
+overlapping, unknown or inaccessible address spaces block deletion. Manual
+records remain outside registration-link ownership. When both a zone and an
+external controller are in inventory, the external controller owns its records.
+
+The plan, live preflight and resumed readback preserve those record impacts.
+Retention, metadata protection, inherited locks, missing ETags, foreign impacts,
+changed values and conditional conflicts have retained regression tests.
+See [private endpoint DNS groups](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns-integration),
+[registration-link deletion](https://learn.microsoft.com/en-us/rest/api/dns/privatedns/virtual-network-links/delete),
+and [private DNS network-link lifetime](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links).

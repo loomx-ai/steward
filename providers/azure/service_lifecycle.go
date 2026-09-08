@@ -25,6 +25,10 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	publicDNSZoneType:       dnsChildTypes(publicDNSZoneType),
+	privateDNSZoneType:      dnsChildTypes(privateDNSZoneType),
+	privateDNSZoneGroupType: {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
+	privateDNSLinkType:      {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
 	// https://learn.microsoft.com/azure/azure-sql/database/logical-servers
 	sqlServerType: {sqlDatabaseType, "Microsoft.Sql/servers/elasticPools"},
 	networkWatcherType: {
@@ -69,10 +73,7 @@ type serviceChild struct {
 
 // Each collection uses the same explicit native list rule as inventory. Read
 // every child and re-read the parent; an unreadable or changing set is not empty.
-func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
-	if !HasServiceCascade(parent.NativeType) {
-		return nil, nil
-	}
+func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identity, raw map[string]any, childTypes []string) ([]serviceChild, error) {
 	parentKind, _ := findType(parent.NativeType)
 	_, params, err := c.resourceOperation(parentKind, parent.NativeID, "GET")
 	if err != nil {
@@ -89,7 +90,7 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	runtime := &Runtime{bundle: metadata.bundle}
 	var children []serviceChild
 	seen := map[string]bool{}
-	for _, childType := range serviceChildKinds(parentKind.NativeType) {
+	for _, childType := range childTypes {
 		definition, ok := runtime.productDefinition(childType)
 		if !ok || definition.Discovery.List == nil || definition.Discovery.Parent == nil || !strings.EqualFold(definition.Discovery.Parent.NativeType, parentKind.NativeType) {
 			return nil, fmt.Errorf("Azure cascade child has no explicit parent discovery")
@@ -166,7 +167,12 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
-	for _, parent := range assets {
+	parents := slices.Clone(assets)
+	sort.SliceStable(parents, func(i, j int) bool {
+		return dnsExternalController(parents[i].Identity.NativeType) && !dnsExternalController(parents[j].Identity.NativeType)
+	})
+	dnsOwners := map[string]asset.AssetID{}
+	for _, parent := range parents {
 		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || sameAKSNodeGroup(assets, parent, parent.Identity.NativeID) {
 			continue
 		}
@@ -190,6 +196,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			return result, err
 		}
 		for _, child := range children {
+			ownerKey := string(parent.Identity.ConnectionID) + "|" + parent.Identity.Partition + "|" + child.id
+			if dnsExternalController(parent.Identity.NativeType) {
+				if owner, exists := dnsOwners[ownerKey]; exists && owner != parent.ID {
+					return result, fmt.Errorf("ambiguous Azure DNS controller ownership")
+				}
+				dnsOwners[ownerKey] = parent.ID
+			} else if isDNSZoneType(parent.Identity.NativeType) && dnsOwners[ownerKey] != "" {
+				continue
+			}
 			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
 			var target *asset.Asset
 			for i := range assets {
@@ -225,7 +240,7 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 	for _, impact := range request.LifecycleImpacts {
 		identity := impact.Asset.Identity
 		id, kind, err := parseID(identity.NativeID)
-		if err != nil || impact.Asset.ID == "" || assets[impact.Asset.ID].Identity.NativeID != "" || impacts[id].Asset.Identity.NativeID != "" || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.EqualFold(kind, identity.NativeType) || !strings.HasPrefix(id, a.id+"/") {
+		if err != nil || impact.Asset.ID == "" || assets[impact.Asset.ID].Identity.NativeID != "" || impacts[id].Asset.Identity.NativeID != "" || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.EqualFold(kind, identity.NativeType) || !strings.HasPrefix(id, a.client.root()+"/") {
 			return nil, serviceDenied("invalid_service_lifecycle_impact")
 		}
 		if !impact.Delete {
@@ -244,7 +259,7 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 			seen[current.Asset.ID] = true
 			parent, ok := assets[current.ControllerID]
 			kinds := serviceChildKinds(parent.Identity.NativeType)
-			if !ok || !slices.ContainsFunc(kinds, func(kind string) bool { return strings.EqualFold(kind, current.Asset.Identity.NativeType) }) || !strings.HasPrefix(strings.ToLower(current.Asset.Identity.NativeID), strings.ToLower(parent.Identity.NativeID)+"/") {
+			if !ok || !slices.ContainsFunc(kinds, func(kind string) bool { return strings.EqualFold(kind, current.Asset.Identity.NativeType) }) || !serviceChildRelation(parent, current.Asset) {
 				return nil, serviceDenied("service_child_scope_changed")
 			}
 			if parent.ID == root.ID {
@@ -265,6 +280,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		return err
 	}
 	visited := map[string]bool{}
+	verifiedGroups := map[string]bool{}
 	var verify func(asset.Asset, map[string]any) error
 	verify = func(parent asset.Asset, raw map[string]any) error {
 		children, err := a.client.serviceChildren(ctx, parent.Identity, raw)
@@ -281,6 +297,20 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 				return err
 			}
 			kind, _ := findType(child.kind)
+			groupID := strings.Join(strings.Split(child.id, "/")[:5], "/")
+			if !verifiedGroups[groupID] {
+				group, err := a.client.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+				if err != nil {
+					return err
+				}
+				if !validResourceResponse(group, groupID, groupType) {
+					return fmt.Errorf("Azure cascade child group identity mismatch")
+				}
+				if text(group.data["managedBy"]) != "" {
+					return serviceDenied("azure_managed_resource_group")
+				}
+				verifiedGroups[groupID] = true
+			}
 			if locked(child.id, locks) {
 				return serviceDenied("azure_management_lock")
 			}
@@ -358,5 +388,49 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database"
+	return (strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database") ||
+		(isDNSZoneType(parent) && isDNSRecordType(child) && reason == "azure_dns_system_record") ||
+		((strings.EqualFold(parent, privateDNSLinkType) || strings.EqualFold(parent, privateDNSZoneType)) && strings.HasPrefix(strings.ToLower(child), strings.ToLower(privateDNSZoneType)+"/") && reason == "azure_dns_auto_registered_record")
+}
+
+func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
+	if !HasServiceCascade(parent.NativeType) {
+		return nil, nil
+	}
+	var children []serviceChild
+	var err error
+	switch {
+	case strings.EqualFold(parent.NativeType, privateDNSZoneGroupType):
+		children, err = c.privateDNSGroupChildren(ctx, parent, raw)
+	case strings.EqualFold(parent.NativeType, privateDNSLinkType):
+		children, err = c.privateDNSRegistrationChildren(ctx, parent, raw)
+	default:
+		return c.nativeServiceChildren(ctx, parent, raw, serviceChildKinds(parent.NativeType))
+	}
+	if err != nil {
+		return nil, err
+	}
+	if err := c.verifyProductParent(ctx, productTarget{ParentID: parent.NativeID, ParentType: parent.NativeType, Generation: productGeneration(raw)}); err != nil {
+		return nil, err
+	}
+	sort.Slice(children, func(i, j int) bool { return children[i].id < children[j].id })
+	return children, nil
+}
+
+func serviceChildRelation(parent, child asset.Asset) bool {
+	switch {
+	case strings.EqualFold(parent.Identity.NativeType, privateDNSZoneGroupType):
+		records, err := privateDNSGroupRecords(parent.Normalized)
+		if err != nil {
+			return false
+		}
+		return slices.ContainsFunc(records, func(record dnsGroupRecord) bool {
+			return strings.EqualFold(record.id, child.Identity.NativeID) && strings.EqualFold(record.kind, child.Identity.NativeType)
+		})
+	case strings.EqualFold(parent.Identity.NativeType, privateDNSLinkType):
+		zone := strings.Join(strings.Split(strings.ToLower(parent.Identity.NativeID), "/")[:9], "/")
+		return parent.Normalized["registrationEnabled"] == true && child.Normalized["isAutoRegistered"] == true && strings.HasPrefix(strings.ToLower(child.Identity.NativeID), zone+"/")
+	default:
+		return strings.HasPrefix(strings.ToLower(child.Identity.NativeID), strings.ToLower(parent.Identity.NativeID)+"/")
+	}
 }

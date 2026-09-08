@@ -1,0 +1,1474 @@
+{
+  "documents": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/common-types/resource-management/v3/types.json",
+      "source_sha256": "8f69ddbcdd8f3df61a156a129e70db08b3a03f2ec710de07f30273ec27492de3",
+      "dependency": true,
+      "document": {
+        "parameters": {
+          "ResourceGroupNameParameter": {
+            "name": "resourceGroupName",
+            "in": "path",
+            "description": "The name of the resource group. The name is case insensitive.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 90,
+            "x-ms-parameter-location": "method"
+          },
+          "SubscriptionIdParameter": {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "The ID of the target subscription.",
+            "required": true,
+            "type": "string",
+            "minLength": 1
+          },
+          "ApiVersionParameter": {
+            "name": "api-version",
+            "in": "query",
+            "description": "The API version to use for this operation.",
+            "required": true,
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "definitions": {
+          "ProxyResource": {
+            "type": "object",
+            "title": "Proxy Resource",
+            "description": "The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location",
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ]
+          },
+          "Resource": {
+            "type": "object",
+            "title": "Resource",
+            "description": "Common fields that are returned in the response for all Azure Resource Manager resources",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+                "readOnly": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the resource",
+                "readOnly": true
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+                "readOnly": true
+              },
+              "systemData": {
+                "$ref": "#/definitions/systemData",
+                "type": "object",
+                "description": "Azure Resource Manager metadata containing createdBy and modifiedBy information.",
+                "readOnly": true
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "systemData": {
+            "type": "object",
+            "description": "Metadata pertaining to creation and last modification of the resource.",
+            "properties": {
+              "createdBy": {
+                "type": "string",
+                "description": "The identity that created the resource."
+              },
+              "createdByType": {
+                "type": "string",
+                "description": "The type of identity that created the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "x-ms-enum": {
+                  "name": "createdByType",
+                  "modelAsString": true
+                }
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp of resource creation (UTC)."
+              },
+              "lastModifiedBy": {
+                "type": "string",
+                "description": "The identity that last modified the resource."
+              },
+              "lastModifiedByType": {
+                "type": "string",
+                "description": "The type of identity that last modified the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "x-ms-enum": {
+                  "name": "createdByType",
+                  "modelAsString": true
+                }
+              },
+              "lastModifiedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The timestamp of resource last modification (UTC)"
+              }
+            },
+            "readOnly": true
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json",
+      "source_sha256": "3b8431e3c7d68de805468772ecf3d85a49abbd77dc00b8f63e6ce2b670d20f57",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "DnsManagementClient",
+          "description": "The DNS Management Client.",
+          "version": "2018-05-01"
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}/{relativeRecordSetName}": {
+            "delete": {
+              "tags": [
+                "RecordSets"
+              ],
+              "operationId": "RecordSets_Delete",
+              "description": "Deletes a record set from a DNS zone. This operation cannot be undone.",
+              "parameters": [
+                {
+                  "name": "resourceGroupName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the resource group."
+                },
+                {
+                  "name": "zoneName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the DNS zone (without a terminating dot)."
+                },
+                {
+                  "name": "relativeRecordSetName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The type of DNS record in this record set. Record sets of type SOA cannot be deleted (they are deleted when the DNS zone is deleted).",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "name": "If-Match",
+                  "in": "header",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "IfMatch",
+                  "description": "The etag of the record set. Omit this value to always delete the current record set. Specify the last-seen etag value to prevent accidentally deleting any concurrent changes."
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "204": {
+                  "description": "The record set was not found."
+                },
+                "200": {
+                  "description": "The record set has been deleted."
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Delete A recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete AAAA recordset": {
+                  "$ref": "./examples/DeleteAAAARecordset.json"
+                },
+                "Delete CAA recordset": {
+                  "$ref": "./examples/DeleteCaaRecordset.json"
+                },
+                "Delete CNAME recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete MX recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete NS recordset": {
+                  "$ref": "./examples/DeleteARecordset.json"
+                },
+                "Delete PTR recordset": {
+                  "$ref": "./examples/DeletePTRRecordset.json"
+                },
+                "Delete SRV recordset": {
+                  "$ref": "./examples/DeleteSRVRecordset.json"
+                },
+                "Delete TXT recordset": {
+                  "$ref": "./examples/DeleteTXTRecordset.json"
+                }
+              }
+            },
+            "get": {
+              "tags": [
+                "RecordSets"
+              ],
+              "operationId": "RecordSets_Get",
+              "description": "Gets a record set.",
+              "parameters": [
+                {
+                  "name": "resourceGroupName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the resource group."
+                },
+                {
+                  "name": "zoneName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the DNS zone (without a terminating dot)."
+                },
+                {
+                  "name": "relativeRecordSetName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The type of DNS record in this record set.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSet"
+                  }
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "Get A recordset": {
+                  "$ref": "./examples/GetARecordset.json"
+                },
+                "Get AAAA recordset": {
+                  "$ref": "./examples/GetAAAARecordset.json"
+                },
+                "Get CAA recordset": {
+                  "$ref": "./examples/GetCaaRecordset.json"
+                },
+                "Get CNAME recordset": {
+                  "$ref": "./examples/GetCNAMERecordset.json"
+                },
+                "Get MX recordset": {
+                  "$ref": "./examples/GetMXRecordset.json"
+                },
+                "Get NS recordset": {
+                  "$ref": "./examples/GetNSRecordset.json"
+                },
+                "Get PTR recordset": {
+                  "$ref": "./examples/GetPTRRecordset.json"
+                },
+                "Get SOA recordset": {
+                  "$ref": "./examples/GetSOARecordset.json"
+                },
+                "Get SRV recordset": {
+                  "$ref": "./examples/GetSRVRecordset.json"
+                },
+                "Get TXT recordset": {
+                  "$ref": "./examples/GetTXTRecordset.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/dnsZones/{zoneName}/{recordType}": {
+            "get": {
+              "tags": [
+                "RecordSets"
+              ],
+              "operationId": "RecordSets_ListByType",
+              "description": "Lists the record sets of a specified type in a DNS zone.",
+              "parameters": [
+                {
+                  "name": "resourceGroupName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the resource group."
+                },
+                {
+                  "name": "zoneName",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The name of the DNS zone (without a terminating dot)."
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "The type of record sets to enumerate.",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CAA",
+                    "CNAME",
+                    "MX",
+                    "NS",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "name": "$top",
+                  "in": "query",
+                  "required": false,
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets."
+                },
+                {
+                  "name": "$recordsetnamesuffix",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "The suffix label of the record set name that has to be used to filter the record set enumerations. If this parameter is specified, Enumeration will return only records that end with .<recordSetNameSuffix>"
+                },
+                {
+                  "$ref": "#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSetListResult"
+                  }
+                },
+                "default": {
+                  "description": "Default response. It will be deserialized as per the Error definition.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              },
+              "x-ms-examples": {
+                "List A recordsets": {
+                  "$ref": "./examples/ListARecordset.json"
+                },
+                "List AAAA recordsets": {
+                  "$ref": "./examples/ListAAAARecordset.json"
+                },
+                "List CAA recordsets": {
+                  "$ref": "./examples/ListCaaRecordset.json"
+                },
+                "List CNAME recordsets": {
+                  "$ref": "./examples/ListCNAMERecordset.json"
+                },
+                "List MX recordsets": {
+                  "$ref": "./examples/ListMXRecordset.json"
+                },
+                "List NS recordsets": {
+                  "$ref": "./examples/ListNSRecordset.json"
+                },
+                "List PTR recordsets": {
+                  "$ref": "./examples/ListPTRRecordset.json"
+                },
+                "List SOA recordsets": {
+                  "$ref": "./examples/ListSOARecordset.json"
+                },
+                "List SRV recordsets": {
+                  "$ref": "./examples/ListSRVRecordset.json"
+                },
+                "List TXT recordsets": {
+                  "$ref": "./examples/ListTXTRecordset.json"
+                }
+              }
+            }
+          }
+        },
+        "definitions": {
+          "CloudError": {
+            "type": "object",
+            "x-ms-external": true,
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/CloudErrorBody",
+                "description": "Cloud error body."
+              }
+            },
+            "description": "An error response from the service."
+          },
+          "CloudErrorBody": {
+            "type": "object",
+            "x-ms-external": true,
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "An identifier for the error. Codes are invariant and are intended to be consumed programmatically."
+              },
+              "message": {
+                "type": "string",
+                "description": "A message describing the error, intended to be suitable for display in a user interface."
+              },
+              "target": {
+                "type": "string",
+                "description": "The target of the particular error. For example, the name of the property in error."
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/CloudErrorBody"
+                },
+                "description": "A list of additional details about the error."
+              }
+            },
+            "description": "An error response from the service."
+          },
+          "RecordSetListResult": {
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/RecordSet"
+                },
+                "description": "Information about the record sets in the response."
+              },
+              "nextLink": {
+                "type": "string",
+                "description": "The continuation token for the next page of results.",
+                "readOnly": true
+              }
+            },
+            "description": "The response to a record set List operation."
+          },
+          "RecordSet": {
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the record set.",
+                "readOnly": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the record set.",
+                "readOnly": true
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of the record set.",
+                "readOnly": true
+              },
+              "etag": {
+                "type": "string",
+                "description": "The etag of the record set."
+              },
+              "properties": {
+                "$ref": "#/definitions/RecordSetProperties",
+                "x-ms-client-flatten": true,
+                "description": "The properties of the record set."
+              }
+            },
+            "description": "Describes a DNS record set (a collection of DNS records with the same name and type).",
+            "x-ms-azure-resource": true
+          },
+          "RecordSetProperties": {
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The metadata attached to the record set."
+              },
+              "TTL": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The TTL (time-to-live) of the records in the record set."
+              },
+              "fqdn": {
+                "type": "string",
+                "description": "Fully qualified domain name of the record set.",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "type": "string",
+                "description": "provisioning State of the record set.",
+                "readOnly": true
+              },
+              "targetResource": {
+                "$ref": "#/definitions/SubResource",
+                "description": "A reference to an azure resource from where the dns resource value is taken."
+              },
+              "ARecords": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ARecord"
+                },
+                "description": "The list of A records in the record set."
+              },
+              "AAAARecords": {
+                "type": "array",
+                "x-ms-client-name": "AaaaRecords",
+                "items": {
+                  "$ref": "#/definitions/AaaaRecord"
+                },
+                "description": "The list of AAAA records in the record set."
+              },
+              "MXRecords": {
+                "type": "array",
+                "x-ms-client-name": "MxRecords",
+                "items": {
+                  "$ref": "#/definitions/MxRecord"
+                },
+                "description": "The list of MX records in the record set."
+              },
+              "NSRecords": {
+                "type": "array",
+                "x-ms-client-name": "NsRecords",
+                "items": {
+                  "$ref": "#/definitions/NsRecord"
+                },
+                "description": "The list of NS records in the record set."
+              },
+              "PTRRecords": {
+                "type": "array",
+                "x-ms-client-name": "PtrRecords",
+                "items": {
+                  "$ref": "#/definitions/PtrRecord"
+                },
+                "description": "The list of PTR records in the record set."
+              },
+              "SRVRecords": {
+                "type": "array",
+                "x-ms-client-name": "SrvRecords",
+                "items": {
+                  "$ref": "#/definitions/SrvRecord"
+                },
+                "description": "The list of SRV records in the record set."
+              },
+              "TXTRecords": {
+                "type": "array",
+                "x-ms-client-name": "TxtRecords",
+                "items": {
+                  "$ref": "#/definitions/TxtRecord"
+                },
+                "description": "The list of TXT records in the record set."
+              },
+              "CNAMERecord": {
+                "$ref": "#/definitions/CnameRecord",
+                "x-ms-client-name": "CnameRecord",
+                "description": "The CNAME record in the  record set."
+              },
+              "SOARecord": {
+                "$ref": "#/definitions/SoaRecord",
+                "x-ms-client-name": "SoaRecord",
+                "description": "The SOA record in the record set."
+              },
+              "caaRecords": {
+                "type": "array",
+                "x-ms-client-name": "CaaRecords",
+                "items": {
+                  "$ref": "#/definitions/CaaRecord"
+                },
+                "description": "The list of CAA records in the record set."
+              }
+            },
+            "description": "Represents the properties of the records in the record set."
+          },
+          "CaaRecord": {
+            "properties": {
+              "flags": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The flags for this CAA record as an integer between 0 and 255."
+              },
+              "tag": {
+                "type": "string",
+                "description": "The tag for this CAA record."
+              },
+              "value": {
+                "type": "string",
+                "description": "The value for this CAA record."
+              }
+            },
+            "description": "A CAA record."
+          },
+          "SoaRecord": {
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "The domain name of the authoritative name server for this SOA record."
+              },
+              "email": {
+                "type": "string",
+                "description": "The email contact for this SOA record."
+              },
+              "serialNumber": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The serial number for this SOA record."
+              },
+              "refreshTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The refresh value for this SOA record."
+              },
+              "retryTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The retry time for this SOA record."
+              },
+              "expireTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The expire time for this SOA record."
+              },
+              "minimumTTL": {
+                "type": "integer",
+                "format": "int64",
+                "x-ms-client-name": "minimumTtl",
+                "description": "The minimum value for this SOA record. By convention this is used to determine the negative caching duration."
+              }
+            },
+            "description": "An SOA record."
+          },
+          "CnameRecord": {
+            "properties": {
+              "cname": {
+                "type": "string",
+                "description": "The canonical name for this CNAME record."
+              }
+            },
+            "description": "A CNAME record."
+          },
+          "TxtRecord": {
+            "properties": {
+              "value": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The text value of this TXT record."
+              }
+            },
+            "description": "A TXT record."
+          },
+          "SrvRecord": {
+            "properties": {
+              "priority": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The priority value for this SRV record."
+              },
+              "weight": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The weight value for this SRV record."
+              },
+              "port": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The port value for this SRV record."
+              },
+              "target": {
+                "type": "string",
+                "description": "The target domain name for this SRV record."
+              }
+            },
+            "description": "An SRV record."
+          },
+          "PtrRecord": {
+            "properties": {
+              "ptrdname": {
+                "type": "string",
+                "description": "The PTR target domain name for this PTR record."
+              }
+            },
+            "description": "A PTR record."
+          },
+          "NsRecord": {
+            "properties": {
+              "nsdname": {
+                "type": "string",
+                "description": "The name server name for this NS record."
+              }
+            },
+            "description": "An NS record."
+          },
+          "MxRecord": {
+            "properties": {
+              "preference": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The preference value for this MX record."
+              },
+              "exchange": {
+                "type": "string",
+                "description": "The domain name of the mail host for this MX record."
+              }
+            },
+            "description": "An MX record."
+          },
+          "AaaaRecord": {
+            "properties": {
+              "ipv6Address": {
+                "type": "string",
+                "description": "The IPv6 address of this AAAA record."
+              }
+            },
+            "description": "An AAAA record."
+          },
+          "ARecord": {
+            "properties": {
+              "ipv4Address": {
+                "type": "string",
+                "description": "The IPv4 address of this A record."
+              }
+            },
+            "description": "An A record."
+          },
+          "SubResource": {
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Resource Id."
+              }
+            },
+            "description": "A reference to a another resource"
+          }
+        },
+        "parameters": {
+          "SubscriptionIdParameter": {
+            "name": "subscriptionId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Specifies the Azure subscription ID, which uniquely identifies the Microsoft Azure subscription."
+          },
+          "ApiVersionParameter": {
+            "name": "api-version",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "description": "Specifies the API version."
+          }
+        }
+      }
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json",
+      "source_sha256": "e0941be59183098a9101b47c44c3e824175beb12477f83769b4a8876fdd0c3af",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "PrivateDnsManagementClient",
+          "version": "2024-06-01",
+          "description": "The Private DNS Management Client.",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}": {
+            "get": {
+              "operationId": "RecordSets_ListByType",
+              "description": "Lists the record sets of a specified type in a Private DNS zone.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "privateZoneName",
+                  "in": "path",
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "description": "The type of DNS record in this record set.",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "name": "$top",
+                  "in": "query",
+                  "description": "The maximum number of record sets to return. If not specified, returns up to 100 record sets.",
+                  "required": false,
+                  "type": "integer",
+                  "format": "int32"
+                },
+                {
+                  "name": "$recordsetnamesuffix",
+                  "in": "query",
+                  "description": "The suffix label of the record set name to be used to filter the record set enumeration. If this parameter is specified, the returned enumeration will only contain records that end with \".<recordsetnamesuffix>\".",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSetListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GET Private DNS Zone A Record Sets": {
+                  "$ref": "./examples/RecordSetAList.json"
+                },
+                "GET Private DNS Zone AAAA Record Sets": {
+                  "$ref": "./examples/RecordSetAAAAList.json"
+                },
+                "GET Private DNS Zone CNAME Record Sets": {
+                  "$ref": "./examples/RecordSetCNAMEList.json"
+                },
+                "GET Private DNS Zone MX Record Sets": {
+                  "$ref": "./examples/RecordSetMXList.json"
+                },
+                "GET Private DNS Zone PTR Record Sets": {
+                  "$ref": "./examples/RecordSetPTRList.json"
+                },
+                "GET Private DNS Zone SOA Record Sets": {
+                  "$ref": "./examples/RecordSetSOAList.json"
+                },
+                "GET Private DNS Zone SRV Record Sets": {
+                  "$ref": "./examples/RecordSetSRVList.json"
+                },
+                "GET Private DNS Zone TXT Record Sets": {
+                  "$ref": "./examples/RecordSetTXTList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/privateDnsZones/{privateZoneName}/{recordType}/{relativeRecordSetName}": {
+            "get": {
+              "operationId": "RecordSets_Get",
+              "description": "Gets a record set.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "privateZoneName",
+                  "in": "path",
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "description": "The type of DNS record in this record set.",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "name": "relativeRecordSetName",
+                  "in": "path",
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RecordSet"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GET Private DNS Zone A Record Set": {
+                  "$ref": "./examples/RecordSetAGet.json"
+                },
+                "GET Private DNS Zone AAAA Record Set": {
+                  "$ref": "./examples/RecordSetAAAAGet.json"
+                },
+                "GET Private DNS Zone CNAME Record Set": {
+                  "$ref": "./examples/RecordSetCNAMEGet.json"
+                },
+                "GET Private DNS Zone MX Record Set": {
+                  "$ref": "./examples/RecordSetMXGet.json"
+                },
+                "GET Private DNS Zone PTR Record Set": {
+                  "$ref": "./examples/RecordSetPTRGet.json"
+                },
+                "GET Private DNS Zone SOA Record Set": {
+                  "$ref": "./examples/RecordSetSOAGet.json"
+                },
+                "GET Private DNS Zone SRV Record Set": {
+                  "$ref": "./examples/RecordSetSRVGet.json"
+                },
+                "GET Private DNS Zone TXT Record Set": {
+                  "$ref": "./examples/RecordSetTXTGet.json"
+                }
+              }
+            },
+            "delete": {
+              "operationId": "RecordSets_Delete",
+              "description": "Deletes a record set from a Private DNS zone. This operation cannot be undone.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "privateZoneName",
+                  "in": "path",
+                  "description": "The name of the DNS zone (without a terminating dot).",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "name": "recordType",
+                  "in": "path",
+                  "description": "The type of DNS record in this record set.",
+                  "required": true,
+                  "type": "string",
+                  "enum": [
+                    "A",
+                    "AAAA",
+                    "CNAME",
+                    "MX",
+                    "PTR",
+                    "SOA",
+                    "SRV",
+                    "TXT"
+                  ],
+                  "x-ms-enum": {
+                    "name": "RecordType",
+                    "modelAsString": false
+                  }
+                },
+                {
+                  "name": "relativeRecordSetName",
+                  "in": "path",
+                  "description": "The name of the record set, relative to the name of the zone.",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "name": "If-Match",
+                  "in": "header",
+                  "description": "The ETag of the record set. Omit this value to always delete the current record set. Specify the last-seen ETag value to prevent accidentally deleting any concurrent changes.",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "IfMatch"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "DELETE Private DNS Zone A Record Set": {
+                  "$ref": "./examples/RecordSetADelete.json"
+                },
+                "DELETE Private DNS Zone AAAA Record Set": {
+                  "$ref": "./examples/RecordSetAAAADelete.json"
+                },
+                "DELETE Private DNS Zone CNAME Record Set": {
+                  "$ref": "./examples/RecordSetCNAMEDelete.json"
+                },
+                "DELETE Private DNS Zone MX Record Set": {
+                  "$ref": "./examples/RecordSetMXDelete.json"
+                },
+                "DELETE Private DNS Zone PTR Record Set": {
+                  "$ref": "./examples/RecordSetPTRDelete.json"
+                },
+                "DELETE Private DNS Zone SRV Record Set": {
+                  "$ref": "./examples/RecordSetSRVDelete.json"
+                },
+                "DELETE Private DNS Zone TXT Record Set": {
+                  "$ref": "./examples/RecordSetTXTDelete.json"
+                }
+              }
+            }
+          }
+        },
+        "definitions": {
+          "CloudError": {
+            "type": "object",
+            "description": "An error response from the service.",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/CloudErrorBody",
+                "description": "Cloud error body."
+              }
+            }
+          },
+          "CloudErrorBody": {
+            "type": "object",
+            "description": "An error response from the service.",
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "An identifier for the error. Codes are invariant and are intended to be consumed programmatically."
+              },
+              "message": {
+                "type": "string",
+                "description": "A message describing the error, intended to be suitable for display in a user interface."
+              },
+              "target": {
+                "type": "string",
+                "description": "The target of the particular error. For example, the name of the property in error."
+              },
+              "details": {
+                "type": "array",
+                "description": "A list of additional details about the error.",
+                "items": {
+                  "$ref": "#/definitions/CloudErrorBody"
+                },
+                "x-ms-identifiers": [
+                  "code"
+                ]
+              }
+            }
+          },
+          "RecordSet": {
+            "type": "object",
+            "description": "Describes a DNS record set (a collection of DNS records with the same name and type) in a Private DNS zone.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/RecordSetProperties",
+                "description": "The properties of the record set.",
+                "x-ms-client-flatten": true
+              },
+              "etag": {
+                "type": "string",
+                "description": "The ETag of the record set."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ]
+          },
+          "RecordSetProperties": {
+            "type": "object",
+            "description": "Represents the properties of the records in the record set.",
+            "properties": {
+              "metadata": {
+                "type": "object",
+                "description": "The metadata attached to the record set.",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "ttl": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The TTL (time-to-live) of the records in the record set."
+              },
+              "fqdn": {
+                "type": "string",
+                "description": "Fully qualified domain name of the record set.",
+                "readOnly": true
+              },
+              "isAutoRegistered": {
+                "type": "boolean",
+                "description": "Is the record set auto-registered in the Private DNS zone through a virtual network link?",
+                "readOnly": true
+              },
+              "aRecords": {
+                "type": "array",
+                "description": "The list of A records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/ARecord"
+                },
+                "x-ms-identifiers": [
+                  "ipv4Address"
+                ]
+              },
+              "aaaaRecords": {
+                "type": "array",
+                "description": "The list of AAAA records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/AaaaRecord"
+                },
+                "x-ms-identifiers": [
+                  "ipv6Address"
+                ]
+              },
+              "cnameRecord": {
+                "$ref": "#/definitions/CnameRecord",
+                "description": "The CNAME record in the record set."
+              },
+              "mxRecords": {
+                "type": "array",
+                "description": "The list of MX records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/MxRecord"
+                },
+                "x-ms-identifiers": []
+              },
+              "ptrRecords": {
+                "type": "array",
+                "description": "The list of PTR records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/PtrRecord"
+                },
+                "x-ms-identifiers": []
+              },
+              "soaRecord": {
+                "$ref": "#/definitions/SoaRecord",
+                "description": "The SOA record in the record set."
+              },
+              "srvRecords": {
+                "type": "array",
+                "description": "The list of SRV records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/SrvRecord"
+                },
+                "x-ms-identifiers": []
+              },
+              "txtRecords": {
+                "type": "array",
+                "description": "The list of TXT records in the record set.",
+                "items": {
+                  "$ref": "#/definitions/TxtRecord"
+                },
+                "x-ms-identifiers": []
+              }
+            }
+          },
+          "TxtRecord": {
+            "type": "object",
+            "description": "A TXT record.",
+            "properties": {
+              "value": {
+                "type": "array",
+                "description": "The text value of this TXT record.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "SrvRecord": {
+            "type": "object",
+            "description": "An SRV record.",
+            "properties": {
+              "priority": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The priority value for this SRV record."
+              },
+              "weight": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The weight value for this SRV record."
+              },
+              "port": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The port value for this SRV record."
+              },
+              "target": {
+                "type": "string",
+                "description": "The target domain name for this SRV record."
+              }
+            }
+          },
+          "SoaRecord": {
+            "type": "object",
+            "description": "An SOA record.",
+            "properties": {
+              "host": {
+                "type": "string",
+                "description": "The domain name of the authoritative name server for this SOA record."
+              },
+              "email": {
+                "type": "string",
+                "description": "The email contact for this SOA record."
+              },
+              "serialNumber": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The serial number for this SOA record."
+              },
+              "refreshTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The refresh value for this SOA record."
+              },
+              "retryTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The retry time for this SOA record."
+              },
+              "expireTime": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The expire time for this SOA record."
+              },
+              "minimumTtl": {
+                "type": "integer",
+                "format": "int64",
+                "description": "The minimum value for this SOA record. By convention this is used to determine the negative caching duration."
+              }
+            }
+          },
+          "PtrRecord": {
+            "type": "object",
+            "description": "A PTR record.",
+            "properties": {
+              "ptrdname": {
+                "type": "string",
+                "description": "The PTR target domain name for this PTR record."
+              }
+            }
+          },
+          "MxRecord": {
+            "type": "object",
+            "description": "An MX record.",
+            "properties": {
+              "preference": {
+                "type": "integer",
+                "format": "int32",
+                "description": "The preference value for this MX record."
+              },
+              "exchange": {
+                "type": "string",
+                "description": "The domain name of the mail host for this MX record."
+              }
+            }
+          },
+          "CnameRecord": {
+            "type": "object",
+            "description": "A CNAME record.",
+            "properties": {
+              "cname": {
+                "type": "string",
+                "description": "The canonical name for this CNAME record."
+              }
+            }
+          },
+          "AaaaRecord": {
+            "type": "object",
+            "description": "An AAAA record.",
+            "properties": {
+              "ipv6Address": {
+                "type": "string",
+                "description": "The IPv6 address of this AAAA record."
+              }
+            }
+          },
+          "ARecord": {
+            "type": "object",
+            "description": "An A record.",
+            "properties": {
+              "ipv4Address": {
+                "type": "string",
+                "description": "The IPv4 address of this A record."
+              }
+            }
+          },
+          "RecordSetListResult": {
+            "type": "object",
+            "description": "The response of a RecordSet list operation.",
+            "properties": {
+              "value": {
+                "type": "array",
+                "description": "The RecordSet items on this page",
+                "items": {
+                  "$ref": "#/definitions/RecordSet"
+                }
+              },
+              "nextLink": {
+                "type": "string",
+                "format": "uri",
+                "description": "The link to the next page of items"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "x-resource-types": []
+}

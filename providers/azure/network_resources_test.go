@@ -36,6 +36,8 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/networkWatchers/packetCaptures", "Microsoft.Network/networkWatchers/watcher/packetCaptures/capture", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/packetCaptures", "2024-05-01", "eastus"},
 		{"Microsoft.Network/networkWatchers/flowLogs", "Microsoft.Network/networkWatchers/watcher/flowLogs/log", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/flowLogs", "2024-05-01", "eastus"},
 		{"Microsoft.Network/privateDnsZones", "Microsoft.Network/privateDnsZones/private.example", "/providers/Microsoft.Network/privateDnsZones", "2024-06-01", "global"},
+		{"Microsoft.Network/privateEndpoints/privateDnsZoneGroups", "Microsoft.Network/privateEndpoints/endpoint/privateDnsZoneGroups/default", "/resourceGroups/test/providers/Microsoft.Network/privateEndpoints/endpoint/privateDnsZoneGroups", "2024-05-01", "eastus"},
+		{"Microsoft.Network/privateDnsZones/virtualNetworkLinks", "Microsoft.Network/privateDnsZones/private.example/virtualNetworkLinks/link", "/resourceGroups/test/providers/Microsoft.Network/privateDnsZones/private.example/virtualNetworkLinks", "2024-06-01", "global"},
 		{"Microsoft.Network/privateLinkServices", "Microsoft.Network/privateLinkServices/service", "/providers/Microsoft.Network/privateLinkServices", "2024-05-01", "eastus"},
 		{"Microsoft.Network/trafficManagerProfiles", "Microsoft.Network/trafficManagerProfiles/profile", "/providers/Microsoft.Network/trafficManagerProfiles", "2022-04-01", "global"},
 		{"Microsoft.Network/virtualHubs", "Microsoft.Network/virtualHubs/hub", "/providers/Microsoft.Network/virtualHubs", "2024-05-01", "eastus"},
@@ -53,23 +55,37 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			root := "/subscriptions/" + testSubscription
 			group := root + "/resourceGroups/test"
 			id := group + "/providers/" + tc.resource
-			raw := map[string]any{"id": id, "name": last(id), "type": tc.kind, "location": tc.location, "properties": map[string]any{"provisioningState": "Succeeded"}}
+			raw := map[string]any{"id": id, "name": last(id), "type": tc.kind, "location": tc.location, "etag": "native-etag", "properties": map[string]any{"provisioningState": "Succeeded"}}
+			if tc.kind == privateDNSZoneGroupType {
+				object(raw["properties"])["privateDnsZoneConfigs"] = []any{}
+			}
+			if tc.kind == privateDNSLinkType {
+				object(raw["properties"])["registrationEnabled"] = false
+			}
 			if strings.Count(tc.kind, "/") > 1 {
 				delete(raw, "type")
 			}
 			details := map[string]map[string]any{strings.ToLower(group): {"id": group, "name": "test", "location": "eastus"}}
 			lists := map[string][]any{strings.ToLower(root + "/resourcegroups"): {details[strings.ToLower(group)]}, strings.ToLower(root + "/providers/Microsoft.Authorization/locks"): {}}
 			for _, parent := range []struct{ kind, name string }{
+				{privateDNSZoneType, "private.example"}, {"Microsoft.Network/privateEndpoints", "endpoint"},
 				{"Microsoft.Compute/capacityReservationGroups", "cg"}, {"Microsoft.Compute/hostGroups", "hg"},
 				{"Microsoft.Network/expressRouteCircuits", "circuit"}, {"Microsoft.Network/networkWatchers", "watcher"},
 				{"Microsoft.Network/virtualHubs", "hub"}, {"Microsoft.Network/vpnGateways", "vpn"}, {vnetType, "vnet"}, {storageType, "storage"},
 			} {
-				value := nativeResource(parent.kind, parent.name, "eastus", map[string]any{})
+				location := "eastus"
+				if parent.kind == privateDNSZoneType {
+					location = "global"
+				}
+				value := nativeResource(parent.kind, parent.name, location, map[string]any{})
 				details[strings.ToLower(text(value["id"]))] = value
 				lists[strings.ToLower(root+"/providers/"+parent.kind)] = []any{value}
 			}
 			for _, collection := range []string{"flowLogs", "connectionMonitors", "packetCaptures"} {
 				lists[strings.ToLower(group+"/providers/Microsoft.Network/networkWatchers/watcher/"+collection)] = []any{}
+			}
+			for _, collection := range []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "virtualNetworkLinks"} {
+				lists[strings.ToLower(id+"/"+collection)] = []any{}
 			}
 			details[strings.ToLower(id)] = raw
 			lists[strings.ToLower(root+tc.list)] = []any{raw}

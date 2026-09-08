@@ -249,3 +249,12 @@ background evidence only, not acceptance evidence for this work.
   polling and resumed descendant readback have retained protocol tests. Full Go
   tests, offline source tests, vet and targeted races pass. Other controllers,
   remaining families, independent emulators and application acceptance are open.
+
+- Azure now has 86 rules and 276 native operations, adding public/private DNS
+  record sets, private endpoint DNS zone groups and private DNS network links.
+  Native conditional deletion, system records, metadata protection, exact
+  externally managed DNS records and registration-link cascades have permanent
+  protocol tests. Tests cover overlapping VNet spaces, foreign/retained impacts,
+  source-ID collisions, protected external groups and delayed child readback.
+  Parent lifecycle integration, remaining families, independent emulators and
+  application acceptance remain open.
