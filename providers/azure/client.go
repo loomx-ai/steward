@@ -47,7 +47,26 @@ type response struct {
 func validResourceResponse(res response, nativeID, nativeType string) bool {
 	return res.status == http.StatusOK && res.data["error"] == nil &&
 		strings.EqualFold(text(res.data["id"]), nativeID) &&
-		(text(res.data["type"]) == "" || strings.EqualFold(text(res.data["type"]), nativeType))
+		validResponseType(nativeType, text(res.data["type"]))
+}
+
+// A few documented child APIs report a top-level resource type, such as
+// VMSS VM Get returning Microsoft.Compute/virtualMachines. The explicit catalog
+// alias only affects this field; ID parsing and native operation binding still
+// require the complete child identity.
+func validResponseType(nativeType, reported string) bool {
+	if reported == "" || strings.EqualFold(reported, nativeType) {
+		return true
+	}
+	kind, ok := findType(nativeType)
+	if ok {
+		for _, alias := range kind.ResponseTypes {
+			if strings.EqualFold(alias, reported) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {

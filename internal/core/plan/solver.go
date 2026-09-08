@@ -76,6 +76,20 @@ func Solve(input Input) (Result, error) {
 		}
 		if resolution.ControllerAssetID != id {
 			if _, selectedController := selectedSet[resolution.ControllerAssetID]; !selectedController {
+				// A selected intermediate controller can itself be an authorized
+				// direct action. Its descendants remain delegated to that action.
+				selectedIntermediate := false
+				for i, binding := range resolution.Chain {
+					if _, selected := selectedSet[binding.ControllerAssetID]; selected {
+						if _, allowed := directCleanupFallback(resolution.Chain[i+1:]); allowed {
+							selectedIntermediate = true
+							break
+						}
+					}
+				}
+				if selectedIntermediate {
+					continue
+				}
 				if skipWithoutSelectedController(resolution.Chain) {
 					result.Warnings = append(result.Warnings, Warning{
 						Code: WarningManagedByControllerSkipped, AssetID: id,
@@ -127,6 +141,7 @@ func Solve(input Input) (Result, error) {
 	candidateIDs := mapKeys(candidates)
 	for _, root := range candidateIDs {
 		visited := make(map[asset.AssetID]bool)
+		var retentionOptions []map[string]any
 		var walk func(asset.AssetID, asset.AssetID, ExpectedOutcome)
 		walk = func(controllerID, effectiveStepOwner asset.AssetID, inheritedRetention ExpectedOutcome) {
 			if visited[controllerID] {
@@ -134,6 +149,8 @@ func Solve(input Input) (Result, error) {
 				return
 			}
 			visited[controllerID] = true
+			retentionOptions = append(retentionOptions, input.RequestOptions[controllerID])
+			defer func() { retentionOptions = retentionOptions[:len(retentionOptions)-1] }()
 			children := byController[controllerID]
 			if len(children) > 0 {
 				controllerRoots[effectiveStepOwner] = true
@@ -157,8 +174,12 @@ func Solve(input Input) (Result, error) {
 				}
 				nextStepOwner := effectiveStepOwner
 				nextRetention := inheritedRetention
+				retainRequested := false
+				for _, options := range retentionOptions {
+					retainRequested = retainRequested || explicitlyRetained(managed, binding, options)
+				}
 				if binding.CleanupPolicy == graph.CleanupDirect && inheritedRetention == "" {
-					if binding.Evidence["retention_supported"] == false && explicitlyRetained(managed, binding, input.RequestOptions[effectiveStepOwner]) {
+					if binding.Evidence["retention_supported"] == false && retainRequested {
 						blockers.add(Blocker{Code: BlockLifecycleAuthority, AssetID: managedID, ControllerID: controllerID, Message: "the provider cannot retain this resource while deleting its controller", Evidence: binding.Evidence})
 						continue
 					}
@@ -172,6 +193,9 @@ func Solve(input Input) (Result, error) {
 					suppressed[managedID] = struct{}{}
 					stepID := ids.step(effectiveStepOwner)
 					expected := impactExpectation(binding, managed, input.RequestOptions[effectiveStepOwner])
+					if retainRequested && (expected == ExpectedDelegatedDelete || expected == ExpectedProviderDefaultRetain) {
+						expected = ExpectedRetainExplicit
+					}
 					if inheritedRetention != "" {
 						expected = inheritedRetention
 					}
@@ -182,6 +206,12 @@ func Solve(input Input) (Result, error) {
 						}
 					}
 					impactKey := string(effectiveStepOwner) + "\x00" + string(controllerID) + "\x00" + string(managedID)
+					// A separately selected direct child can visit the same impact
+					// again. An ancestor's explicit retention must survive that walk.
+					if prior := impactByKey[impactKey]; prior.Expected == ExpectedRetainExplicit && (expected == ExpectedDelegatedDelete || expected == ExpectedProviderDefaultRetain) {
+						expected = ExpectedRetainExplicit
+						nextRetention = expected
+					}
 					impact := ImpactItem{
 						ID: ids.impact(effectiveStepOwner, controllerID, managedID), CleanupTaskID: input.CleanupTaskID,
 						AssetID: managedID, ControllerID: controllerID, DelegatedTo: stepID,
@@ -429,18 +459,19 @@ func skipWithoutSelectedController(chain []graph.LifecycleBinding) bool {
 }
 
 func directCleanupFallback(chain []graph.LifecycleBinding) (graph.LifecycleBinding, bool) {
-	if len(chain) != 1 {
+	if len(chain) == 0 {
 		return graph.LifecycleBinding{}, false
 	}
-	binding := chain[0]
-	if !binding.DirectCleanupAllowed ||
-		binding.Authority != graph.AuthorityAuthoritative ||
-		binding.Ownership != graph.OwnershipExclusive ||
-		binding.CleanupPolicy != graph.CleanupDelegate ||
-		binding.Confidence < graph.ExecutableConfidence {
-		return graph.LifecycleBinding{}, false
+	for _, binding := range chain {
+		if !binding.DirectCleanupAllowed ||
+			binding.Authority != graph.AuthorityAuthoritative ||
+			binding.Ownership != graph.OwnershipExclusive ||
+			binding.CleanupPolicy != graph.CleanupDelegate ||
+			binding.Confidence < graph.ExecutableConfidence {
+			return graph.LifecycleBinding{}, false
+		}
 	}
-	return binding, true
+	return chain[0], true
 }
 
 func managedControllerEvidence(resolution graph.AuthorityResolution) map[string]any {

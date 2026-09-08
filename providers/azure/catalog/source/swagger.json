@@ -11218,6 +11218,25 @@
               }
             }
           },
+          "VirtualMachineScaleSetExtensionListResult": {
+            "description": "The List VM scale set extension operation response.",
+            "properties": {
+              "nextLink": {
+                "description": "The uri to fetch the next page of VM scale set extensions. Call ListNext() with this to fetch the next page of VM scale set extensions.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of VM scale set extensions.",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineScaleSetExtension"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
           "VirtualMachineScaleSetExtensionProfile": {
             "description": "Describes a virtual machine scale set extension profile.",
             "properties": {
@@ -12444,6 +12463,236 @@
               }
             }
           },
+          "VirtualMachineScaleSetVM": {
+            "allOf": [
+              {
+                "$ref": "../../common-types/v1/common.json#/definitions/Resource"
+              }
+            ],
+            "description": "Describes a virtual machine scale set virtual machine.",
+            "properties": {
+              "etag": {
+                "description": "Etag is property returned in Update/Get response of the VMSS VM, so that customer can supply it in the header to ensure optimistic updates.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "identity": {
+                "$ref": "./virtualMachine.json#/definitions/VirtualMachineIdentity",
+                "description": "The identity of the virtual machine, if configured."
+              },
+              "instanceId": {
+                "description": "The virtual machine instance ID.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "plan": {
+                "$ref": "./computeRPCommon.json#/definitions/Plan",
+                "description": "Specifies information about the marketplace image used to create the virtual machine. This element is only used for marketplace images. Before you can use a marketplace image from an API, you must enable the image for programmatic use.  In the Azure portal, find the marketplace image that you want to use and then click **Want to deploy programmatically, Get Started ->**. Enter any required information and then click **Save**."
+              },
+              "properties": {
+                "$ref": "#/definitions/VirtualMachineScaleSetVMProperties",
+                "x-ms-client-flatten": true
+              },
+              "resources": {
+                "description": "The virtual machine child extension resources.",
+                "items": {
+                  "$ref": "./virtualMachine.json#/definitions/VirtualMachineExtension"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "sku": {
+                "$ref": "./computeRPCommon.json#/definitions/Sku",
+                "description": "The virtual machine SKU.",
+                "readOnly": true
+              },
+              "zones": {
+                "description": "The virtual machine zones.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            }
+          },
+          "VirtualMachineScaleSetVMExtension": {
+            "allOf": [
+              {
+                "$ref": "../../common-types/v1/common.json#/definitions/SubResourceReadOnly"
+              }
+            ],
+            "description": "Describes a VMSS VM Extension.",
+            "properties": {
+              "location": {
+                "description": "The location of the extension.",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "name": {
+                "description": "The name of the extension.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "./virtualMachine.json#/definitions/VirtualMachineExtensionProperties",
+                "x-ms-client-flatten": true
+              },
+              "type": {
+                "description": "Resource type",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "x-ms-azure-resource": true
+          },
+          "VirtualMachineScaleSetVMExtensionsListResult": {
+            "description": "The List VMSS VM Extension operation response",
+            "properties": {
+              "value": {
+                "description": "The list of VMSS VM extensions",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineScaleSetVMExtension"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "VirtualMachineScaleSetVMInstanceView": {
+            "description": "The instance view of a virtual machine scale set VM.",
+            "properties": {
+              "assignedHost": {
+                "description": "Resource id of the dedicated host, on which the virtual machine is allocated through automatic placement, when the virtual machine is associated with a dedicated host group that has automatic placement enabled. Minimum api-version: 2020-06-01.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "bootDiagnostics": {
+                "$ref": "./computeRPCommon.json#/definitions/BootDiagnosticsInstanceView",
+                "description": "Boot Diagnostics is a debugging feature which allows you to view Console Output and Screenshot to diagnose VM status. You can easily view the output of your console log. Azure also enables you to see a screenshot of the VM from the hypervisor."
+              },
+              "computerName": {
+                "description": "Specifies the host OS name of the virtual machine. <br><br> This name cannot be updated after the VM is created. <br><br> **Max-length (Windows):** 15 characters <br><br> **Max-length (Linux):** 64 characters. <br><br> For naming conventions and restrictions see [Azure infrastructure services implementation guidelines](https://docs.microsoft.com/azure/virtual-machines/virtual-machines-linux-infrastructure-subscription-accounts-guidelines?toc=%2fazure%2fvirtual-machines%2flinux%2ftoc.json#1-naming-conventions).",
+                "type": "string"
+              },
+              "disks": {
+                "description": "The disks information.",
+                "items": {
+                  "$ref": "./computeRPCommon.json#/definitions/DiskInstanceView"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "extensions": {
+                "description": "The extensions information.",
+                "items": {
+                  "$ref": "./virtualMachine.json#/definitions/VirtualMachineExtensionInstanceView"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name",
+                  "type"
+                ]
+              },
+              "hyperVGeneration": {
+                "description": "The hypervisor generation of the Virtual Machine [V1, V2]",
+                "enum": [
+                  "V1",
+                  "V2"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "HyperVGeneration"
+                }
+              },
+              "maintenanceRedeployStatus": {
+                "$ref": "./computeRPCommon.json#/definitions/MaintenanceRedeployStatus",
+                "description": "The Maintenance Operation status on the virtual machine."
+              },
+              "osName": {
+                "description": "The Operating System running on the hybrid machine.",
+                "type": "string"
+              },
+              "osVersion": {
+                "description": "The version of Operating System running on the hybrid machine.",
+                "type": "string"
+              },
+              "placementGroupId": {
+                "description": "The placement group in which the VM is running. If the VM is deallocated it will not have a placementGroupId.",
+                "type": "string"
+              },
+              "platformFaultDomain": {
+                "description": "The Fault Domain count.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "platformUpdateDomain": {
+                "description": "The Update Domain count.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "rdpThumbPrint": {
+                "description": "The Remote desktop certificate thumbprint.",
+                "type": "string"
+              },
+              "statuses": {
+                "description": "The resource status information.",
+                "items": {
+                  "$ref": "./computeRPCommon.json#/definitions/InstanceViewStatus"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "vmAgent": {
+                "$ref": "./virtualMachine.json#/definitions/VirtualMachineAgentInstanceView",
+                "description": "The VM Agent running on the virtual machine."
+              },
+              "vmHealth": {
+                "$ref": "./virtualMachine.json#/definitions/VirtualMachineHealthStatus",
+                "description": "The health status for the VM.",
+                "readOnly": true
+              }
+            }
+          },
+          "VirtualMachineScaleSetVMListResult": {
+            "description": "The List Virtual Machine Scale Set VMs operation response.",
+            "properties": {
+              "nextLink": {
+                "description": "The uri to fetch the next page of Virtual Machine Scale Set VMs. Call ListNext() with this to fetch the next page of VMSS VMs",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of virtual machine scale sets VMs.",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineScaleSetVM"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "VirtualMachineScaleSetVMNetworkProfileConfiguration": {
+            "description": "Describes a virtual machine scale set VM network profile.",
+            "properties": {
+              "networkInterfaceConfigurations": {
+                "description": "The list of network configurations.",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineScaleSetNetworkConfiguration"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              }
+            }
+          },
           "VirtualMachineScaleSetVMProfile": {
             "description": "Describes a virtual machine scale set virtual machine profile.",
             "properties": {
@@ -12520,6 +12769,103 @@
               "userData": {
                 "description": "UserData for the virtual machines in the scale set, which must be base-64 encoded. Customer should not pass any secrets in here. Minimum api-version: 2021-03-01.",
                 "type": "string"
+              }
+            }
+          },
+          "VirtualMachineScaleSetVMProperties": {
+            "description": "Describes the properties of a virtual machine scale set virtual machine.",
+            "properties": {
+              "additionalCapabilities": {
+                "$ref": "./computeRPCommon.json#/definitions/AdditionalCapabilities",
+                "description": "Specifies additional capabilities enabled or disabled on the virtual machine in the scale set. For instance: whether the virtual machine has the capability to support attaching managed data disks with UltraSSD_LRS storage account type."
+              },
+              "availabilitySet": {
+                "$ref": "../../common-types/v1/common.json#/definitions/SubResource",
+                "description": "Specifies information about the availability set that the virtual machine should be assigned to. Virtual machines specified in the same availability set are allocated to different nodes to maximize availability. For more information about availability sets, see [Availability sets overview](https://docs.microsoft.com/azure/virtual-machines/availability-set-overview). For more information on Azure planned maintenance, see [Maintenance and updates for Virtual Machines in Azure](https://docs.microsoft.com/azure/virtual-machines/maintenance-and-updates). Currently, a VM can only be added to availability set at creation time. An existing VM cannot be added to an availability set."
+              },
+              "diagnosticsProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/DiagnosticsProfile",
+                "description": "Specifies the boot diagnostic settings state. Minimum api-version: 2015-06-15."
+              },
+              "hardwareProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/HardwareProfile",
+                "description": "Specifies the hardware settings for the virtual machine."
+              },
+              "instanceView": {
+                "$ref": "#/definitions/VirtualMachineScaleSetVMInstanceView",
+                "description": "The virtual machine instance view.",
+                "readOnly": true
+              },
+              "latestModelApplied": {
+                "description": "Specifies whether the latest model has been applied to the virtual machine.",
+                "readOnly": true,
+                "type": "boolean"
+              },
+              "licenseType": {
+                "description": "Specifies that the image or disk that is being used was licensed on-premises. <br><br> Possible values for Windows Server operating system are: <br><br> Windows_Client <br><br> Windows_Server <br><br> Possible values for Linux Server operating system are: <br><br> RHEL_BYOS (for RHEL) <br><br> SLES_BYOS (for SUSE) <br><br> For more information, see [Azure Hybrid Use Benefit for Windows Server](https://docs.microsoft.com/azure/virtual-machines/windows/hybrid-use-benefit-licensing) <br><br> [Azure Hybrid Use Benefit for Linux Server](https://docs.microsoft.com/azure/virtual-machines/linux/azure-hybrid-benefit-linux) <br><br> Minimum api-version: 2015-06-15",
+                "type": "string"
+              },
+              "modelDefinitionApplied": {
+                "description": "Specifies whether the model applied to the virtual machine is the model of the virtual machine scale set or the customized model for the virtual machine.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "networkProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/NetworkProfile",
+                "description": "Specifies the network interfaces of the virtual machine."
+              },
+              "networkProfileConfiguration": {
+                "$ref": "#/definitions/VirtualMachineScaleSetVMNetworkProfileConfiguration",
+                "description": "Specifies the network profile configuration of the virtual machine."
+              },
+              "osProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/OSProfile",
+                "description": "Specifies the operating system settings for the virtual machine."
+              },
+              "protectionPolicy": {
+                "$ref": "#/definitions/VirtualMachineScaleSetVMProtectionPolicy",
+                "description": "Specifies the protection policy of the virtual machine."
+              },
+              "provisioningState": {
+                "description": "The provisioning state, which only appears in the response.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "securityProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/SecurityProfile",
+                "description": "Specifies the Security related profile settings for the virtual machine."
+              },
+              "storageProfile": {
+                "$ref": "./computeRPCommon.json#/definitions/StorageProfile",
+                "description": "Specifies the storage settings for the virtual machine disks."
+              },
+              "timeCreated": {
+                "description": "Specifies the time at which the Virtual Machine resource was created. Minimum api-version: 2021-11-01.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "userData": {
+                "description": "UserData for the VM, which must be base-64 encoded. Customer should not pass any secrets in here. Minimum api-version: 2021-03-01",
+                "type": "string"
+              },
+              "vmId": {
+                "description": "Azure VM unique ID.",
+                "readOnly": true,
+                "type": "string"
+              }
+            }
+          },
+          "VirtualMachineScaleSetVMProtectionPolicy": {
+            "description": "The protection policy of a virtual machine scale set VM.",
+            "properties": {
+              "protectFromScaleIn": {
+                "description": "Indicates that the virtual machine scale set VM shouldn't be considered for deletion during a scale-in operation.",
+                "type": "boolean"
+              },
+              "protectFromScaleSetActions": {
+                "description": "Indicates that model updates or actions (including scale-in) initiated on the virtual machine scale set should not be applied to the virtual machine scale set VM.",
+                "type": "boolean"
               }
             }
           },
@@ -12629,6 +12975,84 @@
                   "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSet_List_MinimumSet_Gen.json"
                 }
               },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines": {
+            "get": {
+              "description": "Gets a list of all virtual machines in a VM scale sets.",
+              "operationId": "VirtualMachineScaleSetVMs_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The filter to apply to the operation. Allowed values are 'startswith(instanceView/statuses/code, 'PowerState') eq true', 'properties/latestModelApplied eq true', 'properties/latestModelApplied eq false'.",
+                  "in": "query",
+                  "name": "$filter",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "description": "The list parameters. Allowed values are 'instanceView', 'instanceView/statuses'.",
+                  "in": "query",
+                  "name": "$select",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply to the operation. Allowed values are 'instanceView'.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetVMListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMs"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineScaleSetVM_List_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_List_MaximumSet_Gen.json"
+                },
+                "VirtualMachineScaleSetVM_List_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_List_MinimumSet_Gen.json"
+                }
+              },
+              "x-ms-odata": "#/definitions/VirtualMachineScaleSetVM",
               "x-ms-pageable": {
                 "nextLinkName": "nextLink"
               }
@@ -12841,6 +13265,533 @@
                 }
               },
               "x-ms-long-running-operation": true
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions": {
+            "get": {
+              "description": "Gets a list of all extensions in a VM scale set.",
+              "operationId": "VirtualMachineScaleSetExtensions_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set containing the extension.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetExtensionListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineScaleSetExtension_List_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_List_MaximumSet_Gen.json"
+                },
+                "VirtualMachineScaleSetExtension_List_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_List_MinimumSet_Gen.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}": {
+            "delete": {
+              "description": "The operation to delete the extension.",
+              "operationId": "VirtualMachineScaleSetExtensions_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set where the extension should be deleted.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set extension.",
+                  "in": "path",
+                  "name": "vmssExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "202": {
+                  "description": "Accepted"
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineScaleSetExtension_Delete_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_Delete_MaximumSet_Gen.json"
+                },
+                "VirtualMachineScaleSetExtension_Delete_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_Delete_MinimumSet_Gen.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "The operation to get the extension.",
+              "operationId": "VirtualMachineScaleSetExtensions_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set containing the extension.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set extension.",
+                  "in": "path",
+                  "name": "vmssExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetExtension"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineScaleSetExtension_Get_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_Get_MaximumSet_Gen.json"
+                },
+                "VirtualMachineScaleSetExtension_Get_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetExtension_Get_MinimumSet_Gen.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}": {
+            "delete": {
+              "description": "Deletes a virtual machine from a VM scale set.",
+              "operationId": "VirtualMachineScaleSetVMs_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The instance ID of the virtual machine.",
+                  "in": "path",
+                  "name": "instanceId",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Optional parameter to force delete a virtual machine from a VM scale set. (Feature in Preview)",
+                  "in": "query",
+                  "name": "forceDeletion",
+                  "required": false,
+                  "type": "boolean"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "202": {
+                  "description": "Accepted"
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMs"
+              ],
+              "x-ms-examples": {
+                "Force Delete a virtual machine from a VM scale set.": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_Delete_Force.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "Gets a virtual machine from a VM scale set.",
+              "operationId": "VirtualMachineScaleSetVMs_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The instance ID of the virtual machine.",
+                  "in": "path",
+                  "name": "instanceId",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation. 'InstanceView' will retrieve the instance view of the virtual machine. 'UserData' will retrieve the UserData of the virtual machine.",
+                  "enum": [
+                    "instanceView",
+                    "userData"
+                  ],
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-enum": {
+                    "modelAsString": false,
+                    "name": "InstanceViewTypes"
+                  }
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetVM"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMs"
+              ],
+              "x-ms-examples": {
+                "Get VM scale set VM with UserData": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_Get_WithUserData.json"
+                },
+                "Get VM scale set VM with VMSizeProperties": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_Get_WithVMSizeProperties.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions": {
+            "get": {
+              "description": "The operation to get all extensions of an instance in Virtual Machine Scaleset.",
+              "operationId": "VirtualMachineScaleSetVMExtensions_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The instance ID of the virtual machine.",
+                  "in": "path",
+                  "name": "instanceId",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetVMExtensionsListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMExtensions"
+              ],
+              "x-ms-examples": {
+                "List extensions in Vmss instance.": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVMExtension_List.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions/{vmExtensionName}": {
+            "delete": {
+              "description": "The operation to delete the VMSS VM extension.",
+              "operationId": "VirtualMachineScaleSetVMExtensions_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The instance ID of the virtual machine.",
+                  "in": "path",
+                  "name": "instanceId",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine extension.",
+                  "in": "path",
+                  "name": "vmExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "202": {
+                  "description": "Accepted"
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMExtensions"
+              ],
+              "x-ms-examples": {
+                "Delete VirtualMachineScaleSet VM extension.": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVMExtension_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "The operation to get the VMSS VM extension.",
+              "operationId": "VirtualMachineScaleSetVMExtensions_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the VM scale set.",
+                  "in": "path",
+                  "name": "vmScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The instance ID of the virtual machine.",
+                  "in": "path",
+                  "name": "instanceId",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine extension.",
+                  "in": "path",
+                  "name": "vmExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineScaleSetVMExtension"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineScaleSetVMExtensions"
+              ],
+              "x-ms-examples": {
+                "Get VirtualMachineScaleSet VM extension.": {
+                  "$ref": "./examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVMExtension_Get.json"
+                }
+              }
             }
           }
         },
@@ -28360,6 +29311,20 @@
             "required": true,
             "type": "string"
           },
+          "ApiVersionVmssParameter": {
+            "description": "Client API version.",
+            "enum": [
+              "2017-03-30"
+            ],
+            "in": "query",
+            "name": "api-version",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ApiVersion"
+            }
+          },
           "SubscriptionIdParameter": {
             "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
             "in": "path",
@@ -28510,6 +29475,23 @@
               "type": {
                 "description": "Resource type.",
                 "type": "string"
+              }
+            }
+          },
+          "NetworkInterfaceIPConfigurationListResult": {
+            "description": "Response for list ip configurations API service call.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to get the next set of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of ip configurations.",
+                "items": {
+                  "$ref": "#/definitions/NetworkInterfaceIPConfiguration"
+                },
+                "type": "array"
               }
             }
           },
@@ -40335,6 +41317,480 @@
       },
       "source_sha256": "6220238b792ce425e1c117a4b69bb36f44072aac24820cf7ba4d2c95e553adc2",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "host": "management.azure.com",
+        "info": {
+          "description": "The Microsoft Azure Network management API provides a RESTful set of web services that interact with Microsoft Azure Networks service to manage your network resources. The API has entities that capture the relationship between an end user and the Microsoft Azure Networks service.",
+          "title": "NetworkManagementClient",
+          "version": "2018-10-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces": {
+            "get": {
+              "description": "Gets information about all network interfaces in a virtual machine in a virtual machine scale set.",
+              "operationId": "NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a list of NetworkInterface resources.",
+                  "schema": {
+                    "$ref": "./networkInterface.json#/definitions/NetworkInterfaceListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "NetworkInterfaces"
+              ],
+              "x-ms-examples": {
+                "List virtual machine scale set vm network interfaces": {
+                  "$ref": "./examples/VmssVmNetworkInterfaceList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}": {
+            "get": {
+              "description": "Get the specified network interface in a virtual machine scale set.",
+              "operationId": "NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network interface.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "Expands referenced resources.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the resulting NetworkInterface resource.",
+                  "schema": {
+                    "$ref": "./networkInterface.json#/definitions/NetworkInterface"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "NetworkInterfaces"
+              ],
+              "x-ms-examples": {
+                "Get virtual machine scale set network interface": {
+                  "$ref": "./examples/VmssNetworkInterfaceGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations": {
+            "get": {
+              "description": "Get the specified network interface ip configuration in a virtual machine scale set.",
+              "operationId": "NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network interface.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "Expands referenced resources.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the list of resulting NetworkInterfaceIPConfigurations resources.",
+                  "schema": {
+                    "$ref": "./networkInterface.json#/definitions/NetworkInterfaceIPConfigurationListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "NetworkInterfaces"
+              ],
+              "x-ms-examples": {
+                "List virtual machine scale set network interface ip configurations": {
+                  "$ref": "./examples/VmssNetworkInterfaceIpConfigList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations/{ipConfigurationName}": {
+            "get": {
+              "description": "Get the specified network interface ip configuration in a virtual machine scale set.",
+              "operationId": "NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network interface.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ip configuration.",
+                  "in": "path",
+                  "name": "ipConfigurationName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "Expands referenced resources.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the resulting NetworkInterfaceIPConfiguration resource.",
+                  "schema": {
+                    "$ref": "./networkInterface.json#/definitions/NetworkInterfaceIPConfiguration"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "NetworkInterfaces"
+              ],
+              "x-ms-examples": {
+                "Get virtual machine scale set network interface": {
+                  "$ref": "./examples/VmssNetworkInterfaceIpConfigGet.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "a75947dd33ba573bbab7c72a69ede3a0d43d02ccbddb6cb5f7dc16b3cd1300f7",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "host": "management.azure.com",
+        "info": {
+          "description": "The Microsoft Azure Network management API provides a RESTful set of web services that interact with Microsoft Azure Networks service to manage your network resources. The API has entities that capture the relationship between an end user and the Microsoft Azure Networks service.",
+          "title": "NetworkManagementClient",
+          "version": "2018-10-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses": {
+            "get": {
+              "description": "Gets information about all public IP addresses in a virtual machine IP configuration in a virtual machine scale set.",
+              "operationId": "PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The network interface name.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The IP configuration name.",
+                  "in": "path",
+                  "name": "ipConfigurationName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns a list of PublicIPAddress resources.",
+                  "schema": {
+                    "$ref": "./publicIpAddress.json#/definitions/PublicIPAddressListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "ListVMSSVMPublicIP": {
+                  "$ref": "./examples/VmssVmPublicIpList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses/{publicIpAddressName}": {
+            "get": {
+              "description": "Get the specified public IP address in a virtual machine scale set.",
+              "operationId": "PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine scale set.",
+                  "in": "path",
+                  "name": "virtualMachineScaleSetName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The virtual machine index.",
+                  "in": "path",
+                  "name": "virtualmachineIndex",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the network interface.",
+                  "in": "path",
+                  "name": "networkInterfaceName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the IP configuration.",
+                  "in": "path",
+                  "name": "ipConfigurationName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the public IP Address.",
+                  "in": "path",
+                  "name": "publicIpAddressName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionVmssParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "Expands referenced resources.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the resulting PublicIPAddress resource.",
+                  "schema": {
+                    "$ref": "./publicIpAddress.json#/definitions/PublicIPAddress"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GetVMSSPublicIP": {
+                  "$ref": "./examples/VmssPublicIpGet.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "ea5042b2f0c18dd192b8ce8f1b521215df6c04e20a57d0c9563554d9a91e1eaf",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssPublicIpAddress.json"
     },
     {
       "dependency": true,
@@ -54622,7 +56078,9 @@
       "nativeType": "Microsoft.Compute/virtualMachineScaleSets",
       "rest": {
         "collection": "virtualMachineScaleSets",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSets_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Compute.VirtualMachineScaleSets_ListAll"
         ],
@@ -56285,6 +57743,126 @@
       },
       "scopeKinds": [
         "global"
+      ]
+    },
+    {
+      "class": "compute.instance",
+      "displayName": "Scale set virtual machine",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+      "rest": {
+        "collection": "virtualMachines",
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Get"
+        ],
+        "response_types": [
+          "Microsoft.Compute/virtualMachines"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "compute.extension",
+      "displayName": "Scale set extension",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+      "rest": {
+        "collection": "extensions",
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "compute.extension",
+      "displayName": "Scale set VM extension",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/extensions",
+      "rest": {
+        "collection": "extensions",
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get"
+        ],
+        "response_types": [
+          "Microsoft.Compute/virtualMachines/extensions"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.nic",
+      "displayName": "Scale set network interface",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces",
+      "rest": {
+        "collection": "networkInterfaces",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces"
+        ],
+        "read_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.ip_config",
+      "displayName": "Scale set IP configuration",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations",
+      "rest": {
+        "collection": "ipConfigurations",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations"
+        ],
+        "read_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.eip",
+      "displayName": "Scale set public IP address",
+      "nativeType": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations/publicIPAddresses",
+      "rest": {
+        "collection": "publicIPAddresses",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress"
+        ]
+      },
+      "scopeKinds": [
+        "region"
       ]
     }
   ]

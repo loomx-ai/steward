@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces
+  class: network.nic
+presentation:
+  displayNames:
+    en-US: Scale set network interface
+    zh-CN: 规模集网卡
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      virtualMachineScaleSetName: parent.normalized.arm_parameters.vmScaleSetName
+      virtualmachineIndex: parent.normalized.arm_parameters.instanceId
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  ipConfigurations:
+    path: ipConfigurations
+    type: array
+  networkSecurityGroup:
+    path: networkSecurityGroup
+    type: object
+  virtualMachine:
+    path: virtualMachine
+    type: object
+  dnsSettings:
+    path: dnsSettings
+    type: object
+  macAddress:
+    path: macAddress
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets_virtualmachines
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/networkSecurityGroups
+  targetIdPath: refs_microsoft_network_networksecuritygroups

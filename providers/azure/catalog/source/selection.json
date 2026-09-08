@@ -98,6 +98,15 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json",
       "operations": [
+        "VirtualMachineScaleSetExtensions_Delete",
+        "VirtualMachineScaleSetExtensions_Get",
+        "VirtualMachineScaleSetExtensions_List",
+        "VirtualMachineScaleSetVMExtensions_Delete",
+        "VirtualMachineScaleSetVMExtensions_Get",
+        "VirtualMachineScaleSetVMExtensions_List",
+        "VirtualMachineScaleSetVMs_Delete",
+        "VirtualMachineScaleSetVMs_Get",
+        "VirtualMachineScaleSetVMs_List",
         "VirtualMachineScaleSets_Delete",
         "VirtualMachineScaleSets_Get",
         "VirtualMachineScaleSets_List",
@@ -387,6 +396,22 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json",
+      "operations": [
+        "NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration",
+        "NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface",
+        "NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations",
+        "NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssPublicIpAddress.json",
+      "operations": [
+        "PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress",
+        "PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json",
       "operations": [
         "Workspaces_Delete",
@@ -630,7 +655,9 @@
       "read_operations": [
         "Azure.Microsoft.Compute.VirtualMachineScaleSets_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSets_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.Compute.VirtualMachineScaleSets_ListAll"
       ]
@@ -2125,6 +2152,114 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_ListByType"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+      "class": "compute.instance",
+      "display_name": "Scale set virtual machine",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "virtualMachines",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_List"
+      ],
+      "response_types": [
+        "Microsoft.Compute/virtualMachines"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+      "class": "compute.extension",
+      "display_name": "Scale set extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "extensions",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/extensions",
+      "class": "compute.extension",
+      "display_name": "Scale set VM extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "extensions",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_List"
+      ],
+      "response_types": [
+        "Microsoft.Compute/virtualMachines/extensions"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces",
+      "class": "network.nic",
+      "display_name": "Scale set network interface",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "networkInterfaces",
+      "read_operations": [
+        "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations",
+      "class": "network.ip_config",
+      "display_name": "Scale set IP configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "ipConfigurations",
+      "read_operations": [
+        "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations/publicIPAddresses",
+      "class": "network.eip",
+      "display_name": "Scale set public IP address",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "publicIPAddresses",
+      "read_operations": [
+        "Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses"
       ]
     }
   ]

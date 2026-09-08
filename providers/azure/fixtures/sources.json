@@ -8,5 +8,25 @@
     "file": "PublicIpAddressGet.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/PublicIpAddressGet.json",
     "source_sha256": "641d2423480c76830c72508e40975c4e1877ae7215902f8e4d77d958363cb0e7"
+  },
+  {
+    "file": "VirtualMachineScaleSetVM_Get_WithUserData.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/examples/virtualMachineScaleSetExamples/VirtualMachineScaleSetVM_Get_WithUserData.json",
+    "source_sha256": "ba0dadb5653561d22a574ada82031379acf6c8d19eb10d8b3a34f25909109c7a"
+  },
+  {
+    "file": "VmssNetworkInterfaceGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/VmssNetworkInterfaceGet.json",
+    "source_sha256": "6daf79eecdfafeabfdeabfc5d65935206c8dbbafcca53dffddb0f29872f0eee1"
+  },
+  {
+    "file": "VmssNetworkInterfaceIpConfigGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/VmssNetworkInterfaceIpConfigGet.json",
+    "source_sha256": "706913579ecd8ed1302d1691ace32e15ba9e95b44b2d1be6907a30a1186c8da7"
+  },
+  {
+    "file": "VmssPublicIpGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/VmssPublicIpGet.json",
+    "source_sha256": "7d61c1a161cc8d2a8d06a49a9b95b1e9bd22b126642160c3f17307d0c75c32cd"
   }
 ]

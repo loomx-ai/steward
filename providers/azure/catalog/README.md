@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 86 current resource rules discover through native product List operations.
+All 92 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,8 +47,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 276 operations from
-49 root documents and 25 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 291 operations from
+51 root documents and 25 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -164,3 +164,24 @@ validation. A missing endpoint still requires all planned NICs, DNS zone groups
 and records to return 404, including after a worker restart. The private DNS
 zone and manual records remain independent resources. Retaining a managed NIC,
 group or record blocks deletion of its endpoint.
+
+VM scale sets now expose native Uniform instances, root/instance extensions,
+instance NICs, IP configurations and public IPs. Uniform deletion reviews and
+verifies the full instance, managed-disk and network tree. Managed network types
+have only native GET/List operations and are restricted to their owning cascade.
+Only explicitly selected response-type aliases permit the standard VM type in
+native nested-instance responses; the full ARM path remains mandatory.
+
+Flexible instances use standard VM APIs and must be deleted before their scale
+set. The planner preserves that order and passes disk retention through to each
+instance action, including after serialized execution resumes. Live orchestration
+mode, membership, VM/disk creation IDs, reciprocal ownership, generation,
+protection and complete collections are checked. Uniform unmanaged VHD deletion
+and disk detachment are not yet modeled; those configurations require detachment
+before cleanup. Retention of Uniform managed children blocks parent deletion.
+AKS integration for these nested trees remains unfinished.
+
+The Network instance APIs retain their declared `2018-10-01` version even though
+the upstream files are stored under the `2024-05-01` source folder. Four unchanged
+official examples supplement the retained lifecycle and native-wire tests. See
+[Flexible deletion prerequisites](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machine-scale-sets/delete/vmss-operation-not-allowed).

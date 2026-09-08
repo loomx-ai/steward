@@ -42,6 +42,33 @@ fields:
   tags:
     path: tags
     type: object
+  orchestrationMode:
+    path: orchestrationMode
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  sku:
+    path: sku
+    type: object
+  overprovision:
+    path: overprovision
+    type: boolean
+  upgradePolicy:
+    path: upgradePolicy
+    type: object
+  scaleInPolicy:
+    path: scaleInPolicy
+    type: object
+  automaticRepairsPolicy:
+    path: automaticRepairsPolicy
+    type: object
+  singlePlacementGroup:
+    path: singlePlacementGroup
+    type: boolean
+  virtualMachineProfile:
+    path: virtualMachineProfile
+    type: object
 extensions:
   hook: azure.resource
 relationships:
@@ -69,3 +96,13 @@ relationships:
 - type: depends_on
   targetType: Microsoft.Compute/capacityReservationGroups
   targetIdPath: refs_microsoft_compute_capacityreservationgroups
+actions:
+  delete:
+    operation: Azure.Microsoft.Compute.VirtualMachineScaleSets_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Compute.VirtualMachineScaleSets_Get
+      itemsPath: $
+      identityPath: id

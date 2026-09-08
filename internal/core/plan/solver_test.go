@@ -36,6 +36,55 @@ func TestDirectControllerFallbackIncludesItsTransitiveImpacts(t *testing.T) {
 	}
 }
 
+func TestNestedDirectFallbackRespectsEveryOwnerAndSelectedController(t *testing.T) {
+	outer := binding("scale-set", "vm", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	outer.DirectCleanupAllowed = true
+	inner := binding("vm", "extension", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	inner.DirectCleanupAllowed = true
+	disk := binding("vm", "disk", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	input := plan.Input{Assets: []asset.Asset{actionable("scale-set"), actionable("vm"), actionable("extension"), actionable("disk")}, ResolvedAssetIDs: []asset.AssetID{"extension"}, LifecycleBindings: []graph.LifecycleBinding{outer, inner, disk}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 1 || result.Steps[0].AssetID != "extension" || string(result.Steps[0].Action) != "delete" {
+		t.Fatalf("nested direct cleanup failed: %+v %v", result, err)
+	}
+	input.ResolvedAssetIDs = []asset.AssetID{"vm", "extension", "disk"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 2 || len(result.Warnings) != 1 {
+		t.Fatalf("selected intermediate controller lost children: %+v %v", result, err)
+	}
+	for _, step := range result.Steps {
+		if step.AssetID != "vm" && step.Action != plan.ActionVerifyManagedAbsent {
+			t.Fatalf("child got a second delete action: %+v", step)
+		}
+	}
+	input.LifecycleBindings[0].DirectCleanupAllowed = false
+	input.ResolvedAssetIDs = []asset.AssetID{"extension"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) == 0 || len(result.Steps) != 0 {
+		t.Fatalf("ancestor direct-cleanup restriction bypassed: %+v %v", result, err)
+	}
+}
+
+func TestRetentionFollowsDirectChildrenAcrossExecutionSteps(t *testing.T) {
+	for _, parentID := range []asset.AssetID{"a-scale-set", "z-scale-set"} {
+		t.Run(string(parentID), func(t *testing.T) {
+			member := binding(parentID, "vm", graph.OwnershipExclusive, graph.CleanupDirect, 1)
+			member.Evidence = map[string]any{"retention_supported": false}
+			disk := binding("vm", "disk", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			input := plan.Input{Assets: []asset.Asset{actionable(parentID), actionable("vm"), actionable("disk")}, ResolvedAssetIDs: []asset.AssetID{parentID, "vm"}, LifecycleBindings: []graph.LifecycleBinding{member, disk}, RequestOptions: map[asset.AssetID]map[string]any{parentID: {"retain_resources": []string{"disk"}}}}
+			result, err := plan.Solve(input)
+			if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 1 || result.ImpactItems[0].Expected != plan.ExpectedRetainExplicit || result.ImpactItems[0].DelegatedTo != stepForAsset(result.Steps, "vm").ID {
+				t.Fatalf("direct child lost ancestor retention: %+v %v", result, err)
+			}
+			input.RequestOptions[parentID]["retain_resources"] = []string{"vm"}
+			result, err = plan.Solve(input)
+			if err != nil || len(result.Blockers) == 0 {
+				t.Fatalf("unsupported member retention accepted: %+v %v", result, err)
+			}
+		})
+	}
+}
+
 func TestRetainingControllerRetainsItsTransitiveChildren(t *testing.T) {
 	for _, policy := range []graph.CleanupPolicy{graph.CleanupDelegate, graph.CleanupDirect} {
 		t.Run(string(policy), func(t *testing.T) {

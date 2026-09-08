@@ -120,6 +120,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if locked(a.id, locks) {
 		return contracts.PreflightResult{Reason: "azure_management_lock"}, nil
 	}
+	if err := a.validateScaleSetVMOwner(ctx, request, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if HasServiceCascade(a.kind.NativeType) {
 		if err := a.serviceCascadePreflight(ctx, request, res.data, locks); err != nil {
 			return contracts.PreflightResult{}, err
@@ -377,8 +380,11 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 		}
 	}
 	properties := object(raw["properties"])
-	if kind.NativeType == vmType && text(object(properties["virtualMachineScaleSet"])["id"]) != "" {
-		return "azure_scale_set_managed_vm"
+	if kind.NativeType == scaleSetNICType || kind.NativeType == scaleSetIPConfigType || kind.NativeType == scaleSetPublicIPType {
+		return "azure_scale_set_managed_network"
+	}
+	if (kind.NativeType == scaleSetVMType || kind.NativeType == vmType) && (object(properties["protectionPolicy"])["protectFromScaleSetActions"] == true || object(properties["protectionPolicy"])["protectFromScaleIn"] == true) {
+		return "azure_scale_set_instance_protected"
 	}
 	if kind.NativeType == nicType && text(object(properties["privateEndpoint"])["id"]) != "" {
 		return "azure_private_endpoint_managed_nic"
@@ -391,7 +397,7 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
-	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
+	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
 	default:
 		return false

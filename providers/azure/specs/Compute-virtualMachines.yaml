@@ -48,6 +48,12 @@ fields:
   osType:
     path: storageProfile.osDisk.osType
     type: string
+  virtualMachineScaleSet:
+    path: virtualMachineScaleSet
+    type: object
+  protectionPolicy:
+    path: protectionPolicy
+    type: object
 extensions:
   hook: azure.resource
 relationships:
@@ -78,6 +84,9 @@ relationships:
 - type: depends_on
   targetType: Microsoft.Compute/capacityReservationGroups
   targetIdPath: refs_microsoft_compute_capacityreservationgroups
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets
 actions:
   delete:
     operation: Azure.Microsoft.Compute.VirtualMachines_Delete

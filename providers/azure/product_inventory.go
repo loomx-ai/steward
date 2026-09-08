@@ -129,7 +129,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	for _, value := range values {
 		raw := object(value)
 		id, parsedType, err := parseID(text(raw["id"]))
-		if err != nil || !strings.EqualFold(parsedType, kind.NativeType) || (text(raw["type"]) != "" && !strings.EqualFold(text(raw["type"]), kind.NativeType)) || seen[id] {
+		if err != nil || !strings.EqualFold(parsedType, kind.NativeType) || !validResponseType(kind.NativeType, text(raw["type"])) || seen[id] {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 		}
 		seen[id] = true
@@ -209,7 +209,7 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 
 func productGeneration(raw map[string]any) string {
 	properties := object(raw["properties"])
-	values := []any{object(raw["systemData"])["createdAt"], properties["resourceGuid"], properties["resourceUid"], properties["vmId"], properties["creationTime"], properties["timeCreated"], properties["creationDate"], properties["databaseId"]}
+	values := []any{object(raw["systemData"])["createdAt"], properties["resourceGuid"], properties["resourceUid"], properties["uniqueId"], properties["vmId"], properties["creationTime"], properties["timeCreated"], properties["creationDate"], properties["databaseId"]}
 	// Not every ARM provider exposes a creation identifier. Keep its etag as a
 	// conservative change detector where available.
 	values = append(values, raw["etag"])
@@ -271,6 +271,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if definition.Metadata.NativeType == scaleSetVMType {
+			mode, err := scaleSetMode(parent.Normalized)
+			if err != nil {
+				return nil, err
+			}
+			if mode == "Flexible" {
+				continue
+			}
+		}
 		bound, err := c.bindProductList(api, request.Scope.NativeID, parent)
 		if err != nil {
 			return nil, err

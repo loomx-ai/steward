@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/extensions
+  class: compute.extension
+presentation:
+  displayNames:
+    en-US: Scale set VM extension
+    zh-CN: 规模集虚拟机扩展
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      vmScaleSetName: parent.normalized.arm_parameters.vmScaleSetName
+      instanceId: parent.normalized.arm_parameters.instanceId
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  publisher:
+    path: publisher
+    type: string
+  extensionType:
+    path: type
+    type: string
+  typeHandlerVersion:
+    path: typeHandlerVersion
+    type: string
+  autoUpgradeMinorVersion:
+    path: autoUpgradeMinorVersion
+    type: boolean
+  enableAutomaticUpgrade:
+    path: enableAutomaticUpgrade
+    type: boolean
+  provisionAfterExtensions:
+    path: provisionAfterExtensions
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets_virtualmachines
+actions:
+  delete:
+    operation: Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get
+      itemsPath: $
+      identityPath: id

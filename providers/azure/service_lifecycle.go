@@ -25,6 +25,10 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	scaleSetType:            {scaleSetVMType, scaleSetExtensionType, vmType},
+	scaleSetVMType:          {scaleSetVMExtensionType, scaleSetNICType, diskType},
+	scaleSetNICType:         {scaleSetIPConfigType},
+	scaleSetIPConfigType:    {scaleSetPublicIPType},
 	privateEndpointType:     {nicType, privateDNSZoneGroupType},
 	publicDNSZoneType:       dnsChildTypes(publicDNSZoneType),
 	privateDNSZoneType:      dnsChildTypes(privateDNSZoneType),
@@ -70,6 +74,7 @@ func (r *Runtime) ServiceLifecycle(ctx context.Context, id asset.ConnectionID) (
 type serviceChild struct {
 	kind, id string
 	data     map[string]any
+	direct   bool
 }
 
 // Each collection uses the same explicit native list rule as inventory. Read
@@ -109,7 +114,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 		for _, value := range records {
 			record := object(value)
 			id, parsedType, err := parseID(text(record["id"]))
-			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || (text(record["type"]) != "" && !strings.EqualFold(text(record["type"]), childType)) {
+			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || !validResponseType(childType, text(record["type"])) {
 				return nil, fmt.Errorf("invalid or duplicate Azure cascade child identity")
 			}
 			seen[id] = true
@@ -139,7 +144,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 }
 
 func serviceListedIncarnation(listed, live map[string]any) error {
-	for _, field := range []string{"resourceGuid", "resourceUid", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId"} {
 		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
 			return fmt.Errorf("Azure resource incarnation changed")
 		}
@@ -156,6 +161,13 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if strings.EqualFold(planned.Identity.NativeType, scaleSetType) {
+		expected, expectedErr := scaleSetMode(planned.Normalized)
+		actual, actualErr := scaleSetMode(object(live["properties"]))
+		if expectedErr != nil || actualErr != nil || expected != actual {
+			return serviceDenied("scale_set_orchestration_changed")
+		}
+	}
 	if expected := text(planned.Normalized["_arm_generation"]); expected != "" && expected != productGeneration(live) {
 		return serviceDenied("service_resource_generation_changed")
 	}
@@ -207,6 +219,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				continue
 			}
 			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+			policy := graph.CleanupDelegate
+			if child.direct {
+				policy = graph.CleanupDirect
+				delete(evidence, graph.LifecycleEvidenceControllerDeleteGuaranteed)
+				delete(evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
+			}
 			var target *asset.Asset
 			for i := range assets {
 				candidate := &assets[i]
@@ -224,7 +242,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			childKind, known := findType(child.kind)
+			directAllowed := known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: policy, DirectCleanupAllowed: directAllowed, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
@@ -289,6 +309,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			return err
 		}
 		for _, child := range children {
+			if child.direct {
+				return serviceDenied("service_child_requires_prior_deletion")
+			}
 			impact, ok := impacts[child.id]
 			if !ok || impact.ControllerID != parent.ID || !strings.EqualFold(impact.Asset.Identity.NativeType, child.kind) {
 				return serviceDenied("service_child_missing_from_plan")
@@ -389,7 +412,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (strings.EqualFold(parent, privateEndpointType) && strings.EqualFold(child, nicType) && reason == "azure_private_endpoint_managed_nic") ||
+	return (strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
+		((strings.EqualFold(child, scaleSetNICType) || strings.EqualFold(child, scaleSetIPConfigType) || strings.EqualFold(child, scaleSetPublicIPType)) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_scale_set_managed_network") ||
+		(strings.EqualFold(parent, privateEndpointType) && strings.EqualFold(child, nicType) && reason == "azure_private_endpoint_managed_nic") ||
 		(strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database") ||
 		(isDNSZoneType(parent) && isDNSRecordType(child) && reason == "azure_dns_system_record") ||
 		((strings.EqualFold(parent, privateDNSLinkType) || strings.EqualFold(parent, privateDNSZoneType)) && strings.HasPrefix(strings.ToLower(child), strings.ToLower(privateDNSZoneType)+"/") && reason == "azure_dns_auto_registered_record")
@@ -402,6 +427,10 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var children []serviceChild
 	var err error
 	switch {
+	case strings.EqualFold(parent.NativeType, scaleSetType):
+		children, err = c.scaleSetChildren(ctx, parent, raw)
+	case strings.EqualFold(parent.NativeType, scaleSetVMType):
+		children, err = c.uniformVMChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, privateEndpointType):
 		children, err = c.privateEndpointChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, privateDNSZoneGroupType):
@@ -423,6 +452,11 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 
 func serviceChildRelation(parent, child asset.Asset) bool {
 	switch {
+	case strings.EqualFold(parent.Identity.NativeType, scaleSetVMType) && strings.EqualFold(child.Identity.NativeType, diskType):
+		return uniformVMDiskRelation(parent, child)
+	case strings.EqualFold(parent.Identity.NativeType, scaleSetType) && strings.EqualFold(child.Identity.NativeType, vmType):
+		mode, err := scaleSetMode(parent.Normalized)
+		return err == nil && mode == "Flexible" && strings.EqualFold(text(object(child.Normalized["virtualMachineScaleSet"])["id"]), parent.Identity.NativeID)
 	case strings.EqualFold(parent.Identity.NativeType, privateEndpointType) && strings.EqualFold(child.Identity.NativeType, nicType):
 		return privateEndpointNICRelation(parent, child)
 	case strings.EqualFold(parent.Identity.NativeType, privateDNSZoneGroupType):

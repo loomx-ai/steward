@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "2417ff8c6214597d38ac051e3aaedaf18ee464ae28926dd8de53413f6c423700",
+    "checksum": "f83e385041834a62db98292522aed44cf49fa0fe0730093fd9e205e33fd0dcda",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "3a6b55e87f504f75bfb101cb76c5bf07bbee1e8c0e40185e2f04bba039ab318a",
+  "content_checksum": "004ea2e99fec74c440a54f80ec74ca8736f97eb3e454ef1d2bb59492cc1a4b1d",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -3166,6 +3166,223 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/image.json"
     },
     {
+      "id": "Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress",
+      "name": "PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses/{publicIpAddressName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Expands referenced resources.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "ipConfigurationName": {
+            "description": "The name of the IP configuration.",
+            "in": "path",
+            "name": "ipConfigurationName",
+            "required": true,
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The name of the network interface.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "publicIpAddressName": {
+            "description": "The name of the public IP Address.",
+            "in": "path",
+            "name": "publicIpAddressName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "Public IP address resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "extendedLocation": {
+            "$ref": "./network.json#/definitions/ExtendedLocation",
+            "description": "The extended location of the public ip address."
+          },
+          "properties": {
+            "$ref": "#/definitions/PublicIPAddressPropertiesFormat",
+            "description": "Public IP address properties.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/PublicIPAddressSku",
+            "description": "The public IP address SKU."
+          },
+          "zones": {
+            "description": "A list of availability zones denoting the IP allocated for the resource needs to come from.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses/{publicIpAddressName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssPublicIpAddress.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses",
+      "name": "PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "ipConfigurationName": {
+            "description": "The IP configuration name.",
+            "in": "path",
+            "name": "ipConfigurationName",
+            "required": true,
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The network interface name.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for ListPublicIpAddresses API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of public IP addresses that exists in a resource group.",
+            "items": {
+              "$ref": "#/definitions/PublicIPAddress"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipconfigurations/{ipConfigurationName}/publicipaddresses",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssPublicIpAddress.json"
+    },
+    {
       "id": "Azure.Microsoft.Compute.Snapshots_Delete",
       "name": "Snapshots_Delete",
       "service": "Microsoft.Compute",
@@ -3725,6 +3942,777 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/sshPublicKey.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Delete",
+      "name": "VirtualMachineScaleSetExtensions_Delete",
+      "service": "Microsoft.Compute",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set where the extension should be deleted.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "vmssExtensionName": {
+            "description": "The name of the VM scale set extension.",
+            "in": "path",
+            "name": "vmssExtensionName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Get",
+      "name": "VirtualMachineScaleSetExtensions_Get",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set containing the extension.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "vmssExtensionName": {
+            "description": "The name of the VM scale set extension.",
+            "in": "path",
+            "name": "vmssExtensionName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../common-types/v1/common.json#/definitions/SubResourceReadOnly"
+          }
+        ],
+        "description": "Describes a Virtual Machine Scale Set Extension.",
+        "properties": {
+          "name": {
+            "description": "The name of the extension.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualMachineScaleSetExtensionProperties",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Resource type",
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions/{vmssExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_List",
+      "name": "VirtualMachineScaleSetExtensions_List",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set containing the extension.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List VM scale set extension operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The uri to fetch the next page of VM scale set extensions. Call ListNext() with this to fetch the next page of VM scale set extensions.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of VM scale set extensions.",
+            "items": {
+              "$ref": "#/definitions/VirtualMachineScaleSetExtension"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Delete",
+      "name": "VirtualMachineScaleSetVMExtensions_Delete",
+      "service": "Microsoft.Compute",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions/{vmExtensionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "instanceId": {
+            "description": "The instance ID of the virtual machine.",
+            "in": "path",
+            "name": "instanceId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmExtensionName": {
+            "description": "The name of the virtual machine extension.",
+            "in": "path",
+            "name": "vmExtensionName",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions/{vmExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get",
+      "name": "VirtualMachineScaleSetVMExtensions_Get",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions/{vmExtensionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "instanceId": {
+            "description": "The instance ID of the virtual machine.",
+            "in": "path",
+            "name": "instanceId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmExtensionName": {
+            "description": "The name of the virtual machine extension.",
+            "in": "path",
+            "name": "vmExtensionName",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../common-types/v1/common.json#/definitions/SubResourceReadOnly"
+          }
+        ],
+        "description": "Describes a VMSS VM Extension.",
+        "properties": {
+          "location": {
+            "description": "The location of the extension.",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "name": {
+            "description": "The name of the extension.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "./virtualMachine.json#/definitions/VirtualMachineExtensionProperties",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Resource type",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions/{vmExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_List",
+      "name": "VirtualMachineScaleSetVMExtensions_List",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "instanceId": {
+            "description": "The instance ID of the virtual machine.",
+            "in": "path",
+            "name": "instanceId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List VMSS VM Extension operation response",
+        "properties": {
+          "value": {
+            "description": "The list of VMSS VM extensions",
+            "items": {
+              "$ref": "#/definitions/VirtualMachineScaleSetVMExtension"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}/extensions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Delete",
+      "name": "VirtualMachineScaleSetVMs_Delete",
+      "service": "Microsoft.Compute",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "forceDeletion": {
+            "description": "Optional parameter to force delete a virtual machine from a VM scale set. (Feature in Preview)",
+            "in": "query",
+            "name": "forceDeletion",
+            "required": false,
+            "type": "boolean"
+          },
+          "instanceId": {
+            "description": "The instance ID of the virtual machine.",
+            "in": "path",
+            "name": "instanceId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Get",
+      "name": "VirtualMachineScaleSetVMs_Get",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation. 'InstanceView' will retrieve the instance view of the virtual machine. 'UserData' will retrieve the UserData of the virtual machine.",
+            "enum": [
+              "instanceView",
+              "userData"
+            ],
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "InstanceViewTypes"
+            }
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "instanceId": {
+            "description": "The instance ID of the virtual machine.",
+            "in": "path",
+            "name": "instanceId",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "vmScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../common-types/v1/common.json#/definitions/Resource"
+          }
+        ],
+        "description": "Describes a virtual machine scale set virtual machine.",
+        "properties": {
+          "etag": {
+            "description": "Etag is property returned in Update/Get response of the VMSS VM, so that customer can supply it in the header to ensure optimistic updates.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "./virtualMachine.json#/definitions/VirtualMachineIdentity",
+            "description": "The identity of the virtual machine, if configured."
+          },
+          "instanceId": {
+            "description": "The virtual machine instance ID.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "plan": {
+            "$ref": "./computeRPCommon.json#/definitions/Plan",
+            "description": "Specifies information about the marketplace image used to create the virtual machine. This element is only used for marketplace images. Before you can use a marketplace image from an API, you must enable the image for programmatic use.  In the Azure portal, find the marketplace image that you want to use and then click **Want to deploy programmatically, Get Started -\u003e**. Enter any required information and then click **Save**."
+          },
+          "properties": {
+            "$ref": "#/definitions/VirtualMachineScaleSetVMProperties",
+            "x-ms-client-flatten": true
+          },
+          "resources": {
+            "description": "The virtual machine child extension resources.",
+            "items": {
+              "$ref": "./virtualMachine.json#/definitions/VirtualMachineExtension"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "sku": {
+            "$ref": "./computeRPCommon.json#/definitions/Sku",
+            "description": "The virtual machine SKU.",
+            "readOnly": true
+          },
+          "zones": {
+            "description": "The virtual machine zones.",
+            "items": {
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualMachines/{instanceId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_List",
+      "name": "VirtualMachineScaleSetVMs_List",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply to the operation. Allowed values are 'instanceView'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "$filter": {
+            "description": "The filter to apply to the operation. Allowed values are 'startswith(instanceView/statuses/code, 'PowerState') eq true', 'properties/latestModelApplied eq true', 'properties/latestModelApplied eq false'.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "$select": {
+            "description": "The list parameters. Allowed values are 'instanceView', 'instanceView/statuses'.",
+            "in": "query",
+            "name": "$select",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the VM scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List Virtual Machine Scale Set VMs operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The uri to fetch the next page of Virtual Machine Scale Set VMs. Call ListNext() with this to fetch the next page of VMSS VMs",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of virtual machine scale sets VMs.",
+            "items": {
+              "$ref": "#/definitions/VirtualMachineScaleSetVM"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ]
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json"
     },
     {
       "id": "Azure.Microsoft.Compute.VirtualMachineScaleSets_Delete",
@@ -22026,6 +23014,389 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Resources/subscriptions/stable/2022-12-01/subscriptions.json"
+    },
+    {
+      "id": "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration",
+      "name": "NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration",
+      "service": "microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations/{ipConfigurationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Expands referenced resources.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "ipConfigurationName": {
+            "description": "The name of the ip configuration.",
+            "in": "path",
+            "name": "ipConfigurationName",
+            "required": true,
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The name of the network interface.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "IPConfiguration in a network interface.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource that is unique within a resource group. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/NetworkInterfaceIPConfigurationPropertiesFormat",
+            "description": "Network interface IP configuration properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Resource type.",
+            "type": "string"
+          }
+        }
+      },
+      "call": {
+        "product": "microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations/{ipConfigurationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
+    },
+    {
+      "id": "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface",
+      "name": "NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface",
+      "service": "microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Expands referenced resources.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The name of the network interface.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/Resource"
+          }
+        ],
+        "description": "A network interface in a resource group.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "extendedLocation": {
+            "$ref": "./network.json#/definitions/ExtendedLocation",
+            "description": "The extended location of the network interface."
+          },
+          "properties": {
+            "$ref": "#/definitions/NetworkInterfacePropertiesFormat",
+            "description": "Properties of the network interface.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
+    },
+    {
+      "id": "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations",
+      "name": "NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations",
+      "service": "microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "Expands referenced resources.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "networkInterfaceName": {
+            "description": "The name of the network interface.",
+            "in": "path",
+            "name": "networkInterfaceName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for list ip configurations API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of ip configurations.",
+            "items": {
+              "$ref": "#/definitions/NetworkInterfaceIPConfiguration"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces/{networkInterfaceName}/ipConfigurations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
+    },
+    {
+      "id": "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces",
+      "name": "NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces",
+      "service": "microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "virtualMachineScaleSetName": {
+            "description": "The name of the virtual machine scale set.",
+            "in": "path",
+            "name": "virtualMachineScaleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "virtualmachineIndex": {
+            "description": "The virtual machine index.",
+            "in": "path",
+            "name": "virtualmachineIndex",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for the ListNetworkInterface API service call.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of network interfaces in a resource group.",
+            "items": {
+              "$ref": "#/definitions/NetworkInterface"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "microsoft.Compute",
+        "version": "2018-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.Compute/virtualMachineScaleSets/{virtualMachineScaleSetName}/virtualMachines/{virtualmachineIndex}/networkInterfaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
     }
   ],
   "resource_types": [
@@ -22270,8 +23641,128 @@
         "read_operations": [
           "Azure.Microsoft.Compute.VirtualMachineScaleSets_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSets_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Compute.VirtualMachineScaleSets_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+      "class": "compute.extension",
+      "display_name": "Scale set extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "extensions",
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines",
+      "class": "compute.instance",
+      "display_name": "Scale set virtual machine",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "virtualMachines",
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMs_List"
+        ],
+        "response_types": [
+          "Microsoft.Compute/virtualMachines"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/extensions",
+      "class": "compute.extension",
+      "display_name": "Scale set VM extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "extensions",
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineScaleSetVMExtensions_List"
+        ],
+        "response_types": [
+          "Microsoft.Compute/virtualMachines/extensions"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces",
+      "class": "network.nic",
+      "display_name": "Scale set network interface",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "networkInterfaces",
+        "read_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetNetworkInterface"
+        ],
+        "list_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetVMNetworkInterfaces"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations",
+      "class": "network.ip_config",
+      "display_name": "Scale set IP configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "ipConfigurations",
+        "read_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration"
+        ],
+        "list_operations": [
+          "Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations/publicIPAddresses",
+      "class": "network.eip",
+      "display_name": "Scale set public IP address",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "publicIPAddresses",
+        "read_operations": [
+          "Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses"
         ]
       }
     },

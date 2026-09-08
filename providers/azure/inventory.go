@@ -246,7 +246,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	for key, value := range object(safe["properties"]) {
 		normalized[key] = value
 	}
-	for _, key := range []string{"sku", "kind", "zones", "managedBy"} {
+	for _, key := range []string{"sku", "kind", "zones", "managedBy", "instanceId"} {
 		if value, ok := safe[key]; ok {
 			normalized[key] = value
 		}
@@ -397,7 +397,7 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		"loadbalancerbackendaddresspools": true, "applicationgatewaybackendaddresspools": true, "loadbalancerfrontendipconfigurations": true,
 		"serverfarmid": true, "virtualnetworksubnetid": true, "subnetresourceid": true, "managedenvironmentid": true, "environmentid": true,
 		"elasticpoolid": true, "vnetsubnetid": true, "delegatedsubnetresourceid": true, "keyvaultid": true}
-	for _, field := range []string{"virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "targetresource", "privatednszoneid", "privateendpoint", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
+	for _, field := range []string{"virtualmachinescaleset", "virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "targetresource", "privatednszoneid", "privateendpoint", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
 		fields[strings.ToLower(field)] = true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/packetCaptures") {
@@ -495,6 +495,9 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
+			if strings.EqualFold(key, "settings") && typed["typeHandlerVersion"] != nil {
+				continue
+			}
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",

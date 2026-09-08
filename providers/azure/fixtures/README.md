@@ -1,6 +1,7 @@
 # Azure protocol fixtures
 
-`VirtualMachine_Get.json` and `PublicIpAddressGet.json` are unchanged examples
+The VM, public-IP, Uniform scale-set VM and scale-set NIC/IP-configuration/
+public-IP JSON files are unchanged examples
 from Microsoft's versioned `Azure/azure-rest-api-specs` repository. `sources.json`
 records their exact URLs and original SHA-256 values. Tests replace only example
 subscription/name placeholders in memory so ARM identities satisfy validation.

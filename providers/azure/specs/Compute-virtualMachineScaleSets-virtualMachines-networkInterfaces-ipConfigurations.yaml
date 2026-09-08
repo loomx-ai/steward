@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations
+  class: network.ip_config
+presentation:
+  displayNames:
+    en-US: Scale set IP configuration
+    zh-CN: 规模集 IP 配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.microsoft.Compute.NetworkInterfaces_ListVirtualMachineScaleSetIpConfigurations
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      virtualMachineScaleSetName: parent.normalized.arm_parameters.virtualMachineScaleSetName
+      virtualmachineIndex: parent.normalized.arm_parameters.virtualmachineIndex
+      networkInterfaceName: parent.normalized.arm_parameters.networkInterfaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.microsoft.Compute.NetworkInterfaces_GetVirtualMachineScaleSetIpConfiguration
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  privateIPAddress:
+    path: privateIPAddress
+    type: string
+  privateIPAddressVersion:
+    path: privateIPAddressVersion
+    type: string
+  privateIPAllocationMethod:
+    path: privateIPAllocationMethod
+    type: string
+  subnet:
+    path: subnet
+    type: object
+  publicIPAddress:
+    path: publicIPAddress
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets_virtualmachines_networkinterfaces
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/loadBalancers
+  targetIdPath: refs_microsoft_network_loadbalancers
+- type: depends_on
+  targetType: Microsoft.Network/applicationGateways
+  targetIdPath: refs_microsoft_network_applicationgateways

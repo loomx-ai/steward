@@ -120,6 +120,7 @@ type dnsScenario struct {
 	version      map[string]string
 	status       map[string]int
 	deleteStatus int
+	handle       func(*http.Request) (*http.Response, bool)
 }
 
 func newDNSScenario() *dnsScenario {
@@ -134,12 +135,17 @@ func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 	t.Helper()
 	return protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		id := strings.ToLower(req.URL.Path)
+		if version := s.version[id]; version != "" && req.URL.Query().Get("api-version") != version {
+			t.Fatalf("wrong native resource API version %s", req.URL)
+		}
+		if s.handle != nil {
+			if response, handled := s.handle(req); handled {
+				return response, nil
+			}
+		}
 		if req.Method == "DELETE" {
 			if s.records[id] == nil {
 				t.Fatalf("unexpected DNS controller delete %s", req.URL)
-			}
-			if version := s.version[id]; version != "" && req.URL.Query().Get("api-version") != version {
-				t.Fatalf("wrong DNS native delete version %s", req.URL)
 			}
 			if strings.Contains(id, "/virtualnetworklinks/") && req.Header.Get("If-Match") != text(s.records[id]["etag"]) {
 				t.Fatal("link lost conditional deletion")
@@ -218,15 +224,28 @@ func dnsRequest(t *testing.T, r *Runtime, assets []asset.Asset, root asset.Asset
 	if err != nil || len(result.Blockers) > 0 {
 		t.Fatalf("DNS plan=%+v %v", result, err)
 	}
+	return servicePlanRequest(result, assets, root), input
+}
+
+func servicePlanRequest(result plan.Result, assets []asset.Asset, root asset.Asset) contracts.ActionRequest {
 	request := contracts.ActionRequest{Asset: root, Action: "delete"}
+	var stepID plan.StepID
+	for _, step := range result.Steps {
+		if step.AssetID == root.ID && step.Action == "delete" {
+			stepID, request.Parameters = step.ID, step.RequestOptions
+		}
+	}
 	for _, impact := range result.ImpactItems {
+		if impact.DelegatedTo != stepID {
+			continue
+		}
 		for _, value := range assets {
 			if value.ID == impact.AssetID {
 				request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{Asset: value, ControllerID: impact.ControllerID, Delete: impact.Expected == plan.ExpectedDelegatedDelete})
 			}
 		}
 	}
-	return request, input
+	return request
 }
 
 func TestPublicDNSZoneOwnsSystemAndCustomRecordSets(t *testing.T) {

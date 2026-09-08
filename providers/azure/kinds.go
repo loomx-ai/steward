@@ -37,6 +37,7 @@ type resourceType struct {
 	ReadOperations   []string          `json:"read_operations"`
 	DeleteOperations []string          `json:"delete_operations"`
 	ListOperations   []string          `json:"list_operations"`
+	ResponseTypes    []string          `json:"response_types,omitempty"`
 }
 
 var both = []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}
@@ -67,7 +68,7 @@ func loadProviderData() (providerMetadata, error) {
 		if !ok || operation.Call == nil {
 			return result, fmt.Errorf("Azure resource has no valid read operation")
 		}
-		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations})
+		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations, ResponseTypes: kind.REST.ResponseTypes})
 	}
 	entries, err := providerFiles.ReadDir("specs")
 	if err != nil {

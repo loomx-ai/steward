@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations/publicIPAddresses
+  class: network.eip
+presentation:
+  displayNames:
+    en-US: Scale set public IP address
+    zh-CN: 规模集公网 IP
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      virtualMachineScaleSetName: parent.normalized.arm_parameters.virtualMachineScaleSetName
+      virtualmachineIndex: parent.normalized.arm_parameters.virtualmachineIndex
+      networkInterfaceName: parent.normalized.arm_parameters.networkInterfaceName
+      ipConfigurationName: parent.normalized.arm_parameters.ipConfigurationName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  ipAddress:
+    path: ipAddress
+    type: string
+  publicIPAllocationMethod:
+    path: publicIPAllocationMethod
+    type: string
+  publicIPAddressVersion:
+    path: publicIPAddressVersion
+    type: string
+  dnsSettings:
+    path: dnsSettings
+    type: object
+  ipConfiguration:
+    path: ipConfiguration
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachineScaleSets/virtualMachines/networkInterfaces/ipConfigurations
+  targetIdPath: refs_microsoft_compute_virtualmachinescalesets_virtualmachines_networkinterfaces_ipconfigurations

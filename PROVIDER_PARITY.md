@@ -266,3 +266,12 @@ background evidence only, not acceptance evidence for this work.
   This enables an existing rule; the catalog still has 86 rules/276 operations.
   VM scale sets, other parent lifecycles, remaining service families and full
   emulator/application acceptance remain unfinished.
+
+- Azure now has 92 rules and 291 native operations. VM scale sets support
+  reviewed Uniform instance/disk/network/extension cascades and Flexible VM
+  prerequisite deletion. Flexible disk retention flows through direct VM steps
+  and native conditional preparation, with serialized restart tests. Native
+  response aliases remain restricted to explicitly selected kinds and full IDs.
+  Full Go/Python tests, vet and targeted races pass. AKS nested integration,
+  Uniform VHD/disk-detachment support, other parent lifecycles, remaining
+  families and independent emulator/application acceptance remain open.
