@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/networkInterfaces
+  class: network.interface
+presentation:
+  displayNames:
+    en-US: Network interface
+    zh-CN: 网络接口
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-resource-manager
+  detail:
+    operation: Azure.Microsoft.Network.NetworkInterfaces_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: member_of
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: uses
+  targetType: Microsoft.Network/networkSecurityGroups
+  targetIdPath: refs_microsoft_network_networksecuritygroups
+- type: uses
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: uses
+  targetType: Microsoft.Network/loadBalancers
+  targetIdPath: refs_microsoft_network_loadbalancers
+- type: uses
+  targetType: Microsoft.Network/applicationGateways
+  targetIdPath: refs_microsoft_network_applicationgateways
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.NetworkInterfaces_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.NetworkInterfaces_Get
+      itemsPath: $
+      identityPath: id

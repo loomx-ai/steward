@@ -77,3 +77,14 @@ background evidence only, not acceptance evidence for this work.
   service mapping/coverage, product discovery, lifecycle contributions, shared
   contracts, independent emulators, full end-to-end verification, documentation,
   and publication remain outstanding.
+- Azure now uses 34 explicit YAML specs and 167 native operations from 33
+  versioned ARM Swagger documents, with 27 transitive reference documents.
+  Every resource's read/delete binding is exercised. The transport retains
+  request IDs, sanitizes API logs and results, separates ARM/Storage OAuth
+  audiences, and binds token refresh to the current request's cancellation.
+- Azure retained tests cover subscription-wide and regional scans, child
+  discovery, VM network closure, official VM/public-IP examples, pagination
+  boundaries, inherited locks, protected ownership, Blob versions and snapshots,
+  Storage account children, all three LRO headers, final absence, and operation
+  URL ownership. These remain protocol evidence. The initial read-only controller
+  restrictions and auto-delete restrictions still need lifecycle implementation.

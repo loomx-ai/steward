@@ -75,7 +75,7 @@ func TestRESTImportRejectsWrongProviderAndInvalidSources(t *testing.T) {
 			}
 			set.Documents = append(set.Documents, set.Documents[0])
 			duplicate, _ := json.Marshal(set)
-			if _, err := ImportOfficial(test.format, test.provider, "fixture", duplicate); err == nil || !strings.Contains(err.Error(), "duplicate REST operation") {
+			if _, err := ImportOfficial(test.format, test.provider, "fixture", duplicate); err == nil || !strings.Contains(err.Error(), "duplicate") {
 				t.Fatalf("duplicate operations accepted: %v", err)
 			}
 			set.Documents = set.Documents[:1]
@@ -146,5 +146,17 @@ func assertRESTDeterministic(t *testing.T, format string, provider asset.Provide
 		if _, err := UnmarshalGenerated(encoded); err != nil {
 			t.Fatalf("generated catalog fails checksum/readback: %v", err)
 		}
+	}
+}
+
+func TestAzureReferencesCannotDisappearSilently(t *testing.T) {
+	var set RESTDocumentSet
+	if err := json.Unmarshal(restFixture(t, "azure-public-ip"), &set); err != nil {
+		t.Fatal(err)
+	}
+	set.Documents = set.Documents[:1]
+	raw, _ := json.Marshal(set)
+	if _, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", raw); err == nil || !strings.Contains(err.Error(), "unresolved Azure reference") {
+		t.Fatalf("missing source parameter dependency accepted: %v", err)
 	}
 }

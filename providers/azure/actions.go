@@ -3,11 +3,13 @@ package azure
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/execution"
+	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -15,6 +17,8 @@ type action struct {
 	client       *client
 	kind         resourceType
 	id, endpoint string
+	location     string
+	deletion     catalog.RESTRequest
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
@@ -31,7 +35,19 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		return nil, err
 	}
 	nativeID, _, _ := parseID(value.Identity.NativeID)
-	return &action{client: c, kind: kind, id: nativeID, endpoint: endpoint}, nil
+	operation, parameters, err := c.resourceOperation(kind, value.Identity.NativeID, "DELETE")
+	if err != nil {
+		return nil, err
+	}
+	if kind.NativeType == "Microsoft.Web/sites" {
+		// Keep deletion of the App Service plan an explicit plan action.
+		parameters["deleteEmptyServerFarm"] = false
+	}
+	deletion, err := catalog.BindREST(operation, parameters)
+	if err != nil {
+		return nil, err
+	}
+	return &action{client: c, kind: kind, id: nativeID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location)}, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
@@ -105,20 +121,21 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
-	endpoint := a.endpoint
-	if a.kind.NativeType == "Microsoft.Web/sites" {
-		// Azure otherwise deletes an empty App Service plan as a side effect.
-		// Its lifecycle must remain an explicit, separately selected action.
-		endpoint += "&deleteEmptyServerFarm=false"
+	headers := map[string]string{}
+	for name, value := range a.deletion.Headers {
+		headers[name] = value
 	}
-	res, err := a.client.request(ctx, "DELETE", endpoint)
+	if request.IdempotencyKey != "" {
+		headers["x-ms-client-request-id"] = azureRequestID(request.IdempotencyKey)
+	}
+	res, err := a.client.requestBody(ctx, a.deletion.Method, a.deletion.URL, a.deletion.Body, headers)
 	if isNotFound(err) {
 		return contracts.ActionResult{}, nil
 	}
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	if err := operationError(res.data); err != nil {
+	if err := operationError(res); err != nil {
 		return contracts.ActionResult{}, err
 	}
 	operation := res.header.Get("Azure-AsyncOperation")
@@ -131,30 +148,37 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		polling = "location"
 	}
 	if operation != "" {
-		if err := a.client.validateURL(operation); err != nil {
+		if err := a.validateOperationURL(operation); err != nil {
 			return contracts.ActionResult{}, err
 		}
 	}
-	return contracts.ActionResult{ProviderOperationID: operation, Data: map[string]any{"polling": polling}, RetryAfter: retryAfter(res.header)}, nil
+	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: map[string]any{"polling": polling}, RetryAfter: retryAfter(res.header)}, nil
 }
-func operationError(data map[string]any) error {
+func operationError(response response) error {
+	data := response.data
 	state := strings.ToLower(text(data["status"]))
 	if state == "" {
 		state = strings.ToLower(text(object(data["properties"])["provisioningState"]))
 	}
 	if state == "failed" || state == "canceled" || state == "cancelled" || len(object(data["error"])) > 0 {
-		return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage}}
+		return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: response.requestID}}
 	}
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	if result.ProviderOperationID != "" {
+		if err := a.validateOperationURL(result.ProviderOperationID); err != nil {
+			return contracts.WaitResult{}, err
+		}
+		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
+			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
+		}
 		res, err := a.client.request(ctx, "GET", result.ProviderOperationID)
 		if err != nil && !isNotFound(err) {
 			return contracts.WaitResult{}, err
 		}
 		if err == nil {
-			if err := operationError(res.data); err != nil {
+			if err := operationError(res); err != nil {
 				return contracts.WaitResult{}, err
 			}
 			state := text(res.data["status"])
@@ -172,6 +196,41 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	}
 	read, err := a.Readback(ctx, request)
 	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+}
+
+func (a *action) validateOperationURL(endpoint string) error {
+	if err := a.client.validateURL(endpoint); err != nil {
+		return err
+	}
+	u, _ := url.Parse(endpoint)
+	parts := strings.Split(strings.ToLower(u.Path), "/")
+	namespace := strings.ToLower(strings.Split(a.kind.NativeType, "/")[0])
+	resourceParts := strings.Split(a.id, "/")
+	found := false
+	for i, part := range parts {
+		if i+1 >= len(parts) {
+			continue
+		}
+		switch part {
+		case "providers":
+			if parts[i+1] != namespace {
+				return fmt.Errorf("Azure operation belongs to another resource provider")
+			}
+			found = true
+		case "resourcegroups":
+			if len(resourceParts) < 5 || parts[i+1] != resourceParts[4] {
+				return fmt.Errorf("Azure operation belongs to another resource group")
+			}
+		case "locations":
+			if a.location != "" && a.location != "global" && parts[i+1] != a.location {
+				return fmt.Errorf("Azure operation belongs to another region")
+			}
+		}
+	}
+	if !found {
+		return fmt.Errorf("Azure operation has no resource provider")
+	}
+	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	res, err := a.client.request(ctx, "GET", a.endpoint)

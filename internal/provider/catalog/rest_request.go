@@ -12,9 +12,10 @@ import (
 // RESTRequest is bound only from checked-in API metadata. Credential selection
 // and project/subscription ownership remain the provider runtime's responsibility.
 type RESTRequest struct {
-	Method string
-	URL    string
-	Body   []byte
+	Method  string
+	URL     string
+	Body    []byte
+	Headers map[string]string
 }
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
@@ -77,8 +78,16 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			continue
 		}
 		if pattern, ok := property["pattern"].(string); ok {
-			rule, err := regexp.Compile(pattern)
 			text, isString := value.(string)
+			// Azure MySQL uses an ECMAScript trailing-hyphen lookbehind.
+			// Its anchored equivalent needs no backtracking regex engine.
+			if strings.HasSuffix(pattern, "(?<!-)$") {
+				if strings.HasSuffix(text, "-") {
+					return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
+				}
+				pattern = strings.TrimSuffix(pattern, "(?<!-)$") + "$"
+			}
+			rule, err := regexp.Compile(pattern)
 			if err != nil || !isString || !rule.MatchString(text) {
 				return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
 			}
@@ -98,6 +107,21 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			if err != nil {
 				return RESTRequest{}, fmt.Errorf("invalid REST request body")
 			}
+			continue
+		}
+		if position == "header" {
+			text, ok := value.(string)
+			if !ok || strings.ContainsAny(text, "\r\n\x00") {
+				return RESTRequest{}, fmt.Errorf("invalid header parameter %q", name)
+			}
+			switch strings.ToLower(name) {
+			case "authorization", "proxy-authorization", "cookie", "host":
+				return RESTRequest{}, fmt.Errorf("credential headers cannot be supplied as operation parameters")
+			}
+			if result.Headers == nil {
+				result.Headers = map[string]string{}
+			}
+			result.Headers[name] = text
 			continue
 		}
 		if position != "query" {

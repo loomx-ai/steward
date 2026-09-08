@@ -1,0 +1,12 @@
+[
+  {
+    "file": "VirtualMachine_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/examples/virtualMachineExamples/VirtualMachine_Get.json",
+    "source_sha256": "4cdb65289deac7a4f17ef71d7a236d72e41d351a74657ddce392686c91a138d5"
+  },
+  {
+    "file": "PublicIpAddressGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/PublicIpAddressGet.json",
+    "source_sha256": "641d2423480c76830c72508e40975c4e1877ae7215902f8e4d77d958363cb0e7"
+  }
+]

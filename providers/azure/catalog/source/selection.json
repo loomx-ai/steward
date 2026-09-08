@@ -1,0 +1,867 @@
+{
+  "documents": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2024-03-01/ContainerApps.json",
+      "operations": [
+        "ContainerApps_Delete",
+        "ContainerApps_Get",
+        "ContainerApps_ListByResourceGroup",
+        "ContainerApps_ListBySubscription",
+        "ContainerApps_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2024-03-01/ManagedEnvironments.json",
+      "operations": [
+        "ManagedEnvironments_Delete",
+        "ManagedEnvironments_Get",
+        "ManagedEnvironments_ListByResourceGroup",
+        "ManagedEnvironments_ListBySubscription",
+        "ManagedEnvironments_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-03-02/DiskRP.json",
+      "operations": [
+        "Disks_Delete",
+        "Disks_Get",
+        "Disks_List",
+        "Disks_ListByResourceGroup",
+        "Disks_Update",
+        "Snapshots_Delete",
+        "Snapshots_Get",
+        "Snapshots_List",
+        "Snapshots_ListByResourceGroup",
+        "Snapshots_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/availabilitySet.json",
+      "operations": [
+        "AvailabilitySets_Delete",
+        "AvailabilitySets_Get",
+        "AvailabilitySets_List",
+        "AvailabilitySets_ListBySubscription",
+        "AvailabilitySets_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/image.json",
+      "operations": [
+        "Images_Delete",
+        "Images_Get",
+        "Images_List",
+        "Images_ListByResourceGroup",
+        "Images_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json",
+      "operations": [
+        "VirtualMachines_Delete",
+        "VirtualMachines_Get",
+        "VirtualMachines_List",
+        "VirtualMachines_ListAll",
+        "VirtualMachines_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachineScaleSet.json",
+      "operations": [
+        "VirtualMachineScaleSets_Delete",
+        "VirtualMachineScaleSets_Get",
+        "VirtualMachineScaleSets_List",
+        "VirtualMachineScaleSets_ListAll",
+        "VirtualMachineScaleSets_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/Registry/stable/2023-07-01/containerregistry.json",
+      "operations": [
+        "Registries_Delete",
+        "Registries_Get",
+        "Registries_List",
+        "Registries_ListByResourceGroup",
+        "Registries_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/containerservice/resource-manager/Microsoft.ContainerService/aks/stable/2024-02-01/managedClusters.json",
+      "operations": [
+        "ManagedClusters_Delete",
+        "ManagedClusters_Get",
+        "ManagedClusters_List",
+        "ManagedClusters_ListByResourceGroup",
+        "ManagedClusters_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json",
+      "operations": [
+        "Vaults_Delete",
+        "Vaults_Get",
+        "Vaults_ListByResourceGroup",
+        "Vaults_ListBySubscription",
+        "Vaults_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/msi/resource-manager/Microsoft.ManagedIdentity/ManagedIdentity/stable/2023-01-31/ManagedIdentity.json",
+      "operations": [
+        "UserAssignedIdentities_Delete",
+        "UserAssignedIdentities_Get",
+        "UserAssignedIdentities_ListByResourceGroup",
+        "UserAssignedIdentities_ListBySubscription",
+        "UserAssignedIdentities_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/mysql/resource-manager/Microsoft.DBforMySQL/FlexibleServers/stable/2023-12-30/FlexibleServers.json",
+      "operations": [
+        "Servers_Delete",
+        "Servers_Get",
+        "Servers_List",
+        "Servers_ListByResourceGroup",
+        "Servers_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/applicationGateway.json",
+      "operations": [
+        "ApplicationGateways_Delete",
+        "ApplicationGateways_Get",
+        "ApplicationGateways_List",
+        "ApplicationGateways_ListAll",
+        "ApplicationGateways_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/loadBalancer.json",
+      "operations": [
+        "LoadBalancers_Delete",
+        "LoadBalancers_Get",
+        "LoadBalancers_List",
+        "LoadBalancers_ListAll",
+        "LoadBalancers_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/natGateway.json",
+      "operations": [
+        "NatGateways_Delete",
+        "NatGateways_Get",
+        "NatGateways_List",
+        "NatGateways_ListAll",
+        "NatGateways_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkInterface.json",
+      "operations": [
+        "NetworkInterfaces_Delete",
+        "NetworkInterfaces_Get",
+        "NetworkInterfaces_List",
+        "NetworkInterfaces_ListAll",
+        "NetworkInterfaces_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkSecurityGroup.json",
+      "operations": [
+        "NetworkSecurityGroups_Delete",
+        "NetworkSecurityGroups_Get",
+        "NetworkSecurityGroups_List",
+        "NetworkSecurityGroups_ListAll",
+        "NetworkSecurityGroups_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json",
+      "operations": [
+        "PrivateEndpoints_Delete",
+        "PrivateEndpoints_Get",
+        "PrivateEndpoints_List",
+        "PrivateEndpoints_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/publicIpAddress.json",
+      "operations": [
+        "PublicIPAddresses_Delete",
+        "PublicIPAddresses_Get",
+        "PublicIPAddresses_List",
+        "PublicIPAddresses_ListAll",
+        "PublicIPAddresses_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/publicIpPrefix.json",
+      "operations": [
+        "PublicIPPrefixes_Delete",
+        "PublicIPPrefixes_Get",
+        "PublicIPPrefixes_List",
+        "PublicIPPrefixes_ListAll",
+        "PublicIPPrefixes_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/routeTable.json",
+      "operations": [
+        "RouteTables_Delete",
+        "RouteTables_Get",
+        "RouteTables_List",
+        "RouteTables_ListAll",
+        "RouteTables_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualNetwork.json",
+      "operations": [
+        "Subnets_Delete",
+        "Subnets_Get",
+        "Subnets_List",
+        "VirtualNetworks_Delete",
+        "VirtualNetworks_Get",
+        "VirtualNetworks_List",
+        "VirtualNetworks_ListAll",
+        "VirtualNetworks_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json",
+      "operations": [
+        "Workspaces_Delete",
+        "Workspaces_Get",
+        "Workspaces_List",
+        "Workspaces_ListByResourceGroup",
+        "Workspaces_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/postgresql/resource-manager/Microsoft.DBforPostgreSQL/stable/2024-08-01/FlexibleServers.json",
+      "operations": [
+        "Servers_Delete",
+        "Servers_Get",
+        "Servers_List",
+        "Servers_ListByResourceGroup",
+        "Servers_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Resources/resources/stable/2021-04-01/resources.json",
+      "operations": [
+        "ResourceGroups_Delete",
+        "ResourceGroups_Get",
+        "ResourceGroups_List",
+        "ResourceGroups_Update",
+        "Resources_List",
+        "Resources_ListByResourceGroup"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/resources/resource-manager/Microsoft.Resources/subscriptions/stable/2022-12-01/subscriptions.json",
+      "operations": [
+        "Subscriptions_Get",
+        "Subscriptions_ListLocations"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/Databases.json",
+      "operations": [
+        "Databases_Delete",
+        "Databases_Get",
+        "Databases_ListByServer",
+        "Databases_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/ElasticPools.json",
+      "operations": [
+        "ElasticPools_Delete",
+        "ElasticPools_Get",
+        "ElasticPools_ListByServer",
+        "ElasticPools_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/Servers.json",
+      "operations": [
+        "Servers_Delete",
+        "Servers_Get",
+        "Servers_List",
+        "Servers_ListByResourceGroup",
+        "Servers_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/blob.json",
+      "operations": [
+        "BlobContainers_Delete",
+        "BlobContainers_Get",
+        "BlobContainers_List",
+        "BlobContainers_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/storage.json",
+      "operations": [
+        "StorageAccounts_Delete",
+        "StorageAccounts_GetProperties",
+        "StorageAccounts_List",
+        "StorageAccounts_ListByResourceGroup",
+        "StorageAccounts_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/AppServicePlans.json",
+      "operations": [
+        "AppServicePlans_Delete",
+        "AppServicePlans_Get",
+        "AppServicePlans_List",
+        "AppServicePlans_ListByResourceGroup",
+        "AppServicePlans_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json",
+      "operations": [
+        "WebApps_Delete",
+        "WebApps_Get",
+        "WebApps_List",
+        "WebApps_ListByResourceGroup",
+        "WebApps_Update"
+      ]
+    }
+  ],
+  "resource_types": [
+    {
+      "native_type": "Microsoft.Compute/virtualMachines",
+      "class": "compute.instance",
+      "display_name": "Azure virtual machine",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualMachines",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachines_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachines_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/disks",
+      "class": "storage.disk",
+      "display_name": "Managed disk",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "disks",
+      "read_operations": [
+        "Azure.Microsoft.Compute.Disks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.Disks_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/snapshots",
+      "class": "storage.snapshot",
+      "display_name": "Disk snapshot",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "snapshots",
+      "read_operations": [
+        "Azure.Microsoft.Compute.Snapshots_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.Snapshots_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/images",
+      "class": "compute.image",
+      "display_name": "Managed image",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "images",
+      "read_operations": [
+        "Azure.Microsoft.Compute.Images_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.Images_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/availabilitySets",
+      "class": "compute.availability_set",
+      "display_name": "Availability set",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "availabilitySets",
+      "read_operations": [
+        "Azure.Microsoft.Compute.AvailabilitySets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.AvailabilitySets_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachineScaleSets",
+      "class": "compute.scale_group",
+      "display_name": "Virtual machine scale set",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualMachineScaleSets",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineScaleSets_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.Network/virtualNetworks",
+      "class": "network.vpc",
+      "display_name": "Virtual network",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualNetworks",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualNetworks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualNetworks_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualNetworks/subnets",
+      "class": "network.subnet",
+      "display_name": "Virtual network subnet",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "subnets",
+      "read_operations": [
+        "Azure.Microsoft.Network.Subnets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.Subnets_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkInterfaces",
+      "class": "network.interface",
+      "display_name": "Network interface",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkInterfaces",
+      "read_operations": [
+        "Azure.Microsoft.Network.NetworkInterfaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.NetworkInterfaces_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkSecurityGroups",
+      "class": "network.security_group",
+      "display_name": "Network security group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkSecurityGroups",
+      "read_operations": [
+        "Azure.Microsoft.Network.NetworkSecurityGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.NetworkSecurityGroups_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/routeTables",
+      "class": "network.route_table",
+      "display_name": "Route table",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "routeTables",
+      "read_operations": [
+        "Azure.Microsoft.Network.RouteTables_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.RouteTables_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/publicIPAddresses",
+      "class": "network.public_ip",
+      "display_name": "Public IP address",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "publicIPAddresses",
+      "read_operations": [
+        "Azure.Microsoft.Network.PublicIPAddresses_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PublicIPAddresses_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/publicIPPrefixes",
+      "class": "network.public_ip_prefix",
+      "display_name": "Public IP prefix",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "publicIPPrefixes",
+      "read_operations": [
+        "Azure.Microsoft.Network.PublicIPPrefixes_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PublicIPPrefixes_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/natGateways",
+      "class": "network.nat_gateway",
+      "display_name": "NAT gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "natGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.NatGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.NatGateways_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/loadBalancers",
+      "class": "network.load_balancer",
+      "display_name": "Load balancer",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "loadBalancers",
+      "read_operations": [
+        "Azure.Microsoft.Network.LoadBalancers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.LoadBalancers_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/applicationGateways",
+      "class": "network.load_balancer",
+      "display_name": "Application gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "applicationGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.ApplicationGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ApplicationGateways_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateEndpoints",
+      "class": "network.endpoint",
+      "display_name": "Private endpoint",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateEndpoints_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.Storage/storageAccounts",
+      "class": "storage.account",
+      "display_name": "Storage account",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "storageAccounts",
+      "read_operations": [
+        "Azure.Microsoft.Storage.StorageAccounts_GetProperties"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Storage.StorageAccounts_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "class": "storage.bucket",
+      "display_name": "Blob container",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "containers",
+      "read_operations": [
+        "Azure.Microsoft.Storage.BlobContainers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Storage.BlobContainers_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Sql/servers",
+      "class": "database.server",
+      "display_name": "SQL logical server",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "servers",
+      "read_operations": [
+        "Azure.Microsoft.Sql.Servers_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.Sql/servers/databases",
+      "class": "database.instance",
+      "display_name": "SQL database",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "databases",
+      "read_operations": [
+        "Azure.Microsoft.Sql.Databases_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Sql.Databases_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Sql/servers/elasticPools",
+      "class": "database.pool",
+      "display_name": "SQL elastic pool",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "elasticPools",
+      "read_operations": [
+        "Azure.Microsoft.Sql.ElasticPools_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Sql.ElasticPools_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DBforPostgreSQL/flexibleServers",
+      "class": "database.instance",
+      "display_name": "PostgreSQL flexible server",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "flexibleServers",
+      "read_operations": [
+        "Azure.Microsoft.DBforPostgreSQL.Servers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DBforPostgreSQL.Servers_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DBforMySQL/flexibleServers",
+      "class": "database.instance",
+      "display_name": "MySQL flexible server",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "flexibleServers",
+      "read_operations": [
+        "Azure.Microsoft.DBforMySQL.Servers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DBforMySQL.Servers_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites",
+      "class": "compute.service",
+      "display_name": "App Service or Function App",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "sites",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/serverfarms",
+      "class": "compute.service_plan",
+      "display_name": "App Service plan",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "serverfarms",
+      "read_operations": [
+        "Azure.Microsoft.Web.AppServicePlans_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.AppServicePlans_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ContainerRegistry/registries",
+      "class": "storage.registry",
+      "display_name": "Container registry",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "registries",
+      "read_operations": [
+        "Azure.Microsoft.ContainerRegistry.Registries_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerRegistry.Registries_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ContainerService/managedClusters",
+      "class": "container.cluster",
+      "display_name": "AKS cluster",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "managedClusters",
+      "read_operations": [
+        "Azure.Microsoft.ContainerService.ManagedClusters_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.KeyVault/vaults",
+      "class": "security.vault",
+      "display_name": "Key Vault",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "vaults",
+      "read_operations": [
+        "Azure.Microsoft.KeyVault.Vaults_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.OperationalInsights/workspaces",
+      "class": "observability.workspace",
+      "display_name": "Log Analytics workspace",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.OperationalInsights.Workspaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.OperationalInsights.Workspaces_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+      "class": "security.identity",
+      "display_name": "User-assigned managed identity",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "userAssignedIdentities",
+      "read_operations": [
+        "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.App/containerApps",
+      "class": "compute.service",
+      "display_name": "Container App",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "containerApps",
+      "read_operations": [
+        "Azure.Microsoft.App.ContainerApps_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.App.ContainerApps_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.App/managedEnvironments",
+      "class": "compute.environment",
+      "display_name": "Container Apps environment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "managedEnvironments",
+      "read_operations": [
+        "Azure.Microsoft.App.ManagedEnvironments_Get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.Resources/resourceGroups",
+      "class": "organization.resource_group",
+      "display_name": "Resource group",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "resourceGroups",
+      "read_operations": [
+        "Azure.ResourceManagementClient.ResourceGroups_Get"
+      ],
+      "delete_operations": []
+    }
+  ]
+}

@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/loomx-ai/steward/internal/core/execution"
 )
 
 func (c *client) storageAccountEmpty(ctx context.Context, id string, raw map[string]any) (bool, error) {
@@ -40,7 +42,7 @@ func (c *client) storageAccountEmpty(ctx context.Context, id string, raw map[str
 	}
 	return true, nil
 }
-func (c *client) blobContainerEmpty(ctx context.Context, id string) (bool, error) {
+func (c *client) blobContainerEmpty(ctx context.Context, id string) (empty bool, failure error) {
 	parts := strings.Split(id, "/")
 	if len(parts) != 13 || !storageNamePattern.MatchString(parts[8]) || parts[9] != "blobservices" || parts[10] != "default" || parts[11] != "containers" {
 		return false, fmt.Errorf("invalid Azure blob container identity")
@@ -59,6 +61,12 @@ func (c *client) blobContainerEmpty(ctx context.Context, id string) (bool, error
 		return false, err
 	}
 	req.Header.Set("x-ms-version", "2023-11-03")
+	execution.LogCloudAPIRequest(ctx, "azure-storage", "ListBlobs", map[string]any{"account": parts[8], "container": parts[12], "include": "versions,snapshots,deleted,deletedwithversions,uncommittedblobs", "max_results": 1})
+	defer func() {
+		if failure != nil {
+			execution.LogCloudAPIFailure(ctx, "azure-storage", "ListBlobs", failure)
+		}
+	}()
 	res, err := c.storageHTTP.Do(req)
 	if err != nil {
 		return false, transportError(ctx, err)
@@ -75,7 +83,10 @@ func (c *client) blobContainerEmpty(ctx context.Context, id string) (bool, error
 	}
 	payload, err := io.ReadAll(io.LimitReader(res.Body, (1<<20)+1))
 	if err != nil || len(payload) > 1<<20 {
-		return false, fmt.Errorf("Azure blob listing could not be read")
+		if ctx.Err() != nil {
+			return false, ctx.Err()
+		}
+		return false, apiError(res.StatusCode, "storage_response_unreadable", res.Header)
 	}
 	var listing struct {
 		XMLName xml.Name `xml:"EnumerationResults"`
@@ -86,7 +97,9 @@ func (c *client) blobContainerEmpty(ctx context.Context, id string) (bool, error
 		NextMarker *string `xml:"NextMarker"`
 	}
 	if xml.Unmarshal(payload, &listing) != nil || listing.Blobs == nil || listing.NextMarker == nil {
-		return false, fmt.Errorf("invalid Azure blob enumeration response")
+		return false, apiError(res.StatusCode, "storage_invalid_response", res.Header)
 	}
-	return len(listing.Blobs.Blob) == 0 && len(listing.Blobs.Prefix) == 0 && strings.TrimSpace(*listing.NextMarker) == "", nil
+	empty = len(listing.Blobs.Blob) == 0 && len(listing.Blobs.Prefix) == 0 && strings.TrimSpace(*listing.NextMarker) == ""
+	execution.LogCloudAPIResponse(ctx, "azure-storage", "ListBlobs", map[string]any{"request_id": requestID(res.Header), "empty": empty, "status_code": res.StatusCode})
+	return empty, nil
 }

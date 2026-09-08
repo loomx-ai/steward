@@ -80,3 +80,23 @@ func TestRESTBindingEscapesNamesAndRejectsMalformedInput(t *testing.T) {
 		}
 	}
 }
+
+func TestRESTNativeHeaderAndAzureNameValidation(t *testing.T) {
+	operation := Operation{ID: "Azure.fixture", Call: &OperationCall{Style: "azure-rest", Endpoint: "https://management.azure.com", Method: "DELETE", Path: "/subscriptions/{subscriptionId}/servers/{name}", Version: "2024-01-01"}, InputSchema: map[string]any{"properties": map[string]any{
+		"subscriptionId": map[string]any{"in": "path"}, "name": map[string]any{"in": "path", "pattern": "^[a-z0-9][-a-z0-9]*(?<!-)$"}, "If-Match": map[string]any{"in": "header"}, "api-version": map[string]any{"in": "query"},
+	}}}
+	params := map[string]any{"subscriptionId": "sub", "name": "valid-name", "If-Match": "etag-1"}
+	request, err := BindREST(operation, params)
+	if err != nil || request.Headers["If-Match"] != "etag-1" {
+		t.Fatalf("native header=%+v %v", request, err)
+	}
+	params["name"] = "trailing-"
+	if _, err := BindREST(operation, params); err == nil {
+		t.Error("Azure MySQL trailing hyphen accepted")
+	}
+	params["name"] = "valid"
+	params["If-Match"] = "unsafe\r\nAuthorization: injected"
+	if _, err := BindREST(operation, params); err == nil {
+		t.Error("header injection accepted")
+	}
+}

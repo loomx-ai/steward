@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/url"
 	"sort"
 	"strings"
 
@@ -28,7 +29,11 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		endpoint = string(decoded)
 	}
-	values, next, err := c.listPage(ctx, endpoint, path)
+	u, parseErr := url.Parse(endpoint)
+	if parseErr != nil || u.Query().Get("api-version") != resourcesVersion {
+		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory cursor changed API version")
+	}
+	values, next, provenance, err := c.listPageResult(ctx, endpoint, path)
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -49,13 +54,19 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		groupOwners[id] = text(group["managedBy"])
 	}
-	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: next == ""}
+	batch := contracts.InventoryBatch{Items: []contracts.InventoryItem{}, Complete: next == "", RequestID: provenance.requestID}
 	if next != "" {
 		batch.NextCursor = base64.RawURLEncoding.EncodeToString([]byte(next))
 	}
 	region := strings.ToLower(request.Scope.NativeID)
 	if request.Scope.Kind == asset.ScopeGlobal {
 		region = "global"
+	}
+	if request.Scope.Kind == asset.ScopeSubscription {
+		if !strings.EqualFold(request.Scope.NativeID, c.subscription) {
+			return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+		}
+		region = ""
 	}
 	seen := map[string]bool{}
 	appendItem := func(raw map[string]any) error {
@@ -72,7 +83,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		return nil
 	}
-	if region == "global" && request.Cursor == "" {
+	if (region == "global" || region == "") && request.Cursor == "" {
 		for _, value := range groups {
 			raw := object(value)
 			raw["type"] = groupType
@@ -86,7 +97,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		if raw == nil {
 			return contracts.InventoryBatch{}, fmt.Errorf("invalid Azure resource list item")
 		}
-		if resourceRegion(raw) != region {
+		if region != "" && resourceRegion(raw) != region {
 			continue
 		}
 		kind, known := findType(text(raw["type"]))
@@ -107,7 +118,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			}
 			raw = detail.data
 			if text(raw["location"]) == "" {
-				raw["location"] = region
+				raw["location"] = resourceRegion(object(value))
 			}
 		}
 		if err := appendItem(raw); err != nil {
@@ -131,7 +142,9 @@ func resourceRegion(raw map[string]any) string {
 	if strings.EqualFold(text(raw["type"]), groupType) {
 		return "global"
 	}
-	location := strings.ToLower(text(raw["location"]))
+	// ARM documents can return either the canonical location or its spaced
+	// display form (for example the official VM Get example uses "West US").
+	location := strings.ReplaceAll(strings.ToLower(text(raw["location"])), " ", "")
 	if location == "" {
 		return "global"
 	}
@@ -194,7 +207,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if region == "global" {
 		scope = contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global", Location: "global"}
 	}
-	safe := object(safeResource(raw))
+	safe := safePayload(raw)
 	normalized := map[string]any{}
 	for key, value := range object(safe["properties"]) {
 		normalized[key] = value
@@ -207,6 +220,8 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	parts := strings.Split(id, "/")
 	groupID := strings.Join(parts[:5], "/")
 	normalized["subscription_id"] = c.subscription
+	normalized["name"] = safe["name"]
+	normalized["tags"] = safe["tags"]
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
 	if zones := array(raw["zones"]); len(zones) > 0 {
@@ -400,7 +415,7 @@ func safeResource(value any) any {
 		for key, value := range typed {
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
-				"appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault":
+				"appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
 				continue
 			}
 			result[key] = safeResource(value)

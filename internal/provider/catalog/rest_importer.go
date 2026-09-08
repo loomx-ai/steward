@@ -24,6 +24,7 @@ type RESTDocumentSet struct {
 type RESTSourceDocument struct {
 	SourceURI    string          `json:"source_uri"`
 	SourceSHA256 string          `json:"source_sha256"`
+	Dependency   bool            `json:"dependency,omitempty"`
 	Document     json.RawMessage `json:"document"`
 }
 
@@ -183,7 +184,14 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		return Catalog{}, err
 	}
 	c := newCatalog(provider, "azure-openapi", sourceURI, source)
+	resolver, err := newAzureReferenceResolver(set)
+	if err != nil {
+		return Catalog{}, err
+	}
 	for _, upstream := range set.Documents {
+		if upstream.Dependency {
+			continue
+		}
 		var document azureSwagger
 		if err := json.Unmarshal(upstream.Document, &document); err != nil {
 			return Catalog{}, fmt.Errorf("decode Azure OpenAPI document: %w", err)
@@ -225,12 +233,19 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				}
 				service := azureService(path, document.Info.Title)
 				properties := map[string]any{}
+				rawParameters := []string{}
 				for _, parameter := range append(common, operation.Parameters...) {
-					if ref, ok := parameter["$ref"].(string); ok && strings.HasPrefix(ref, "#/parameters/") {
-						parameter = document.Parameters[strings.TrimPrefix(ref, "#/parameters/")]
+					parameter, err = resolver.resolve(parameter, upstream.SourceURI)
+					if err != nil {
+						return Catalog{}, err
 					}
 					if name, ok := parameter["name"].(string); ok {
 						properties[name] = parameter
+						if parameter["in"] == "path" && parameter["x-ms-skip-url-encoding"] == true {
+							rawParameters = append(rawParameters, name)
+						}
+					} else {
+						return Catalog{}, fmt.Errorf("Azure operation %q has an unnamed parameter", operation.ID)
 					}
 				}
 				for _, parameter := range restPathParameter.FindAllStringSubmatch(path, -1) {
@@ -243,8 +258,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				for _, status := range []string{"200", "201", "202", "204"} {
 					if response, exists := operation.Responses[status]; exists {
 						output = response.Schema
-						if ref, ok := output["$ref"].(string); ok && strings.HasPrefix(ref, "#/definitions/") {
-							output = document.Definitions[strings.TrimPrefix(ref, "#/definitions/")]
+						output, err = resolver.resolve(output, upstream.SourceURI)
+						if err != nil {
+							return Catalog{}, err
 						}
 						break
 					}
@@ -259,12 +275,68 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				}
 				fullPath := strings.TrimRight(document.BasePath, "/") + path
 				call := &OperationCall{Product: service, Version: document.Info.Version, Style: "azure-rest", Protocol: "HTTPS", Method: strings.ToUpper(method), Path: fullPath, Endpoint: "https://management.azure.com", ParameterPosition: "query", BodyType: "json"}
+				call.RawPathParameters = rawParameters
 				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: isDestructiveOperation(operation.ID, method), InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})
 			}
 		}
 	}
 	appendResourceTypes(&c, set.ResourceTypes)
 	return finishRESTCatalog(c)
+}
+
+// Azure splits parameters and schemas across versioned files. Resolve only
+// references supplied in the checked-in document set; generation never fetches
+// URLs or silently drops a required parameter when a dependency is missing.
+type azureReferenceResolver map[string]map[string]any
+
+func newAzureReferenceResolver(set RESTDocumentSet) (azureReferenceResolver, error) {
+	result := azureReferenceResolver{}
+	for _, source := range set.Documents {
+		if _, exists := result[source.SourceURI]; exists {
+			return nil, fmt.Errorf("duplicate Azure source document %q", source.SourceURI)
+		}
+		var value map[string]any
+		if err := json.Unmarshal(source.Document, &value); err != nil {
+			return nil, err
+		}
+		result[source.SourceURI] = value
+	}
+	return result, nil
+}
+
+func (r azureReferenceResolver) resolve(value map[string]any, baseURI string) (map[string]any, error) {
+	seen := map[string]bool{}
+	for {
+		ref, ok := value["$ref"].(string)
+		if !ok {
+			return value, nil
+		}
+		base, _ := url.Parse(baseURI)
+		relative, err := url.Parse(ref)
+		if err != nil {
+			return nil, fmt.Errorf("invalid Azure reference")
+		}
+		absolute := base.ResolveReference(relative)
+		if seen[absolute.String()] {
+			return nil, fmt.Errorf("cyclic Azure root reference")
+		}
+		seen[absolute.String()] = true
+		fragment := absolute.Fragment
+		absolute.Fragment = ""
+		baseURI = absolute.String()
+		var target any = r[baseURI]
+		for _, part := range strings.Split(strings.TrimPrefix(fragment, "/"), "/") {
+			object, ok := target.(map[string]any)
+			if !ok {
+				return nil, fmt.Errorf("unresolved Azure reference %q", ref)
+			}
+			target = object[strings.NewReplacer("~1", "/", "~0", "~").Replace(part)]
+		}
+		value, ok = target.(map[string]any)
+		if !ok {
+			return nil, fmt.Errorf("unresolved Azure reference %q", ref)
+		}
+	}
 }
 
 var restPathParameter = regexp.MustCompile(`\{(\+?)([A-Za-z0-9_]+)\}`)

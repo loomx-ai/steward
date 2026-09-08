@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/natGateways
+  class: network.nat_gateway
+presentation:
+  displayNames:
+    en-US: NAT gateway
+    zh-CN: NAT 网关
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-resource-manager
+  detail:
+    operation: Azure.Microsoft.Network.NatGateways_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: uses
+  targetType: Microsoft.Network/publicIPPrefixes
+  targetIdPath: refs_microsoft_network_publicipprefixes
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.NatGateways_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.NatGateways_Get
+      itemsPath: $
+      identityPath: id

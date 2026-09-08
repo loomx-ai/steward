@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/virtualMachineScaleSets
+  class: compute.scale_group
+presentation:
+  displayNames:
+    en-US: Virtual machine scale set
+    zh-CN: 虚拟机规模集
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-resource-manager
+  detail:
+    operation: Azure.Microsoft.Compute.VirtualMachineScaleSets_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: member_of
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: member_of
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: uses
+  targetType: Microsoft.Network/networkSecurityGroups
+  targetIdPath: refs_microsoft_network_networksecuritygroups
+- type: uses
+  targetType: Microsoft.Network/loadBalancers
+  targetIdPath: refs_microsoft_network_loadbalancers
+- type: uses
+  targetType: Microsoft.Network/applicationGateways
+  targetIdPath: refs_microsoft_network_applicationgateways
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities

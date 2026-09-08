@@ -1,6 +1,7 @@
 package azure
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -12,6 +13,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -34,9 +36,10 @@ type client struct {
 	fingerprint                       [32]byte
 }
 type response struct {
-	data   map[string]any
-	header http.Header
-	status int
+	data      map[string]any
+	header    http.Header
+	status    int
+	requestID string
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
@@ -50,18 +53,54 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 		(credential.ExpiresAt != nil && !credential.ExpiresAt.After(time.Now())) {
 		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "A subscription ID, tenant ID, application ID, and client secret are required.", nil)
 	}
-	authContext := context.WithValue(context.Background(), oauth2.HTTPClient, &http.Client{Transport: transport, Timeout: 30 * time.Second, CheckRedirect: noRedirect})
 	makeHTTP := func(scope string) *http.Client {
 		config := clientcredentials.Config{ClientID: application, ClientSecret: secret,
 			TokenURL: "https://login.microsoftonline.com/" + tenant + "/oauth2/v2.0/token",
 			Scopes:   []string{scope}, AuthStyle: oauth2.AuthStyleInParams}
-		return &http.Client{Transport: &oauth2.Transport{Base: transport, Source: config.TokenSource(authContext)}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}
+		return &http.Client{Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect}
 	}
 	// Only the supplied service principal is used. No ambient Azure CLI, managed
 	// identity, executable credential, or user-selected token endpoint is allowed.
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
 		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default")}, nil
+}
+
+// Cache the token, while binding every refresh to the active request context.
+// ARM and Storage use separate transports so tokens never cross audiences.
+type tokenTransport struct {
+	base   http.RoundTripper
+	config clientcredentials.Config
+	mu     sync.Mutex
+	token  *oauth2.Token
+}
+
+func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
+	if err := request.Context().Err(); err != nil {
+		return nil, err
+	}
+	t.mu.Lock()
+	token := t.token
+	t.mu.Unlock()
+	if !token.Valid() {
+		ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
+		defer cancel()
+		ctx = context.WithValue(ctx, oauth2.HTTPClient, &http.Client{Transport: t.base, CheckRedirect: noRedirect})
+		var err error
+		token, err = t.config.TokenSource(ctx).Token()
+		if err != nil {
+			return nil, err
+		}
+		if !token.Valid() {
+			return nil, fmt.Errorf("Azure OAuth response has no usable access token")
+		}
+		t.mu.Lock()
+		t.token = token
+		t.mu.Unlock()
+	}
+	clone := request.Clone(request.Context())
+	token.SetAuthHeader(clone)
+	return t.base.RoundTrip(clone)
 }
 func noRedirect(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
 func (c *client) root() string                        { return "/subscriptions/" + c.subscription }
@@ -83,42 +122,96 @@ func (c *client) validateURL(endpoint string) error {
 	return nil
 }
 func (c *client) request(ctx context.Context, method, endpoint string) (response, error) {
+	return c.requestBody(ctx, method, endpoint, nil, nil)
+}
+
+func (c *client) requestBody(ctx context.Context, method, endpoint string, body []byte, headers map[string]string) (out response, failure error) {
 	if err := c.validateURL(endpoint); err != nil {
 		return response{}, err
 	}
-	req, err := http.NewRequestWithContext(ctx, method, endpoint, nil)
+	u, _ := url.Parse(endpoint)
+	requestLog := map[string]any{"method": method, "path": u.Path, "query": u.Query()}
+	if len(body) > 0 {
+		var value any
+		if json.Unmarshal(body, &value) != nil {
+			return out, fmt.Errorf("invalid Azure API request body")
+		}
+		requestLog["body"] = value
+	}
+	execution.LogCloudAPIRequest(ctx, u.Host, method, safePayload(requestLog))
+	defer func() {
+		if failure != nil {
+			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
+		}
+	}()
+	req, err := http.NewRequestWithContext(ctx, method, endpoint, bytes.NewReader(body))
 	if err != nil {
 		return response{}, err
 	}
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("User-Agent", "steward/azure")
+	if len(body) > 0 {
+		req.Header.Set("Content-Type", "application/json")
+	}
+	for name, value := range headers {
+		req.Header.Set(name, value)
+	}
 	res, err := c.http.Do(req)
 	if err != nil {
 		return response{}, transportError(ctx, err)
 	}
 	defer res.Body.Close()
+	out = response{data: map[string]any{}, header: res.Header, status: res.StatusCode, requestID: requestID(res.Header)}
 	payload, err := io.ReadAll(io.LimitReader(res.Body, (32<<20)+1))
 	if err != nil || len(payload) > 32<<20 {
-		return response{}, fmt.Errorf("Azure response could not be read")
+		if ctx.Err() != nil {
+			return out, ctx.Err()
+		}
+		return out, apiError(res.StatusCode, "response_unreadable", res.Header)
 	}
-	out := response{data: map[string]any{}, header: res.Header, status: res.StatusCode}
-	if len(payload) > 0 {
-		decoder := json.NewDecoder(strings.NewReader(string(payload)))
+	if len(bytes.TrimSpace(payload)) > 0 {
+		decoder := json.NewDecoder(bytes.NewReader(payload))
 		decoder.UseNumber()
 		if decoder.Decode(&out.data) != nil {
-			return response{}, apiError(res.StatusCode, "invalid_response", res.Header)
+			return out, apiError(res.StatusCode, "invalid_response", res.Header)
+		}
+		var trailing any
+		if decoder.Decode(&trailing) != io.EOF {
+			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 	}
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return response{}, apiError(res.StatusCode, text(object(out.data["error"])["code"]), res.Header)
+		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": out.requestID, "status_code": out.status})
+		return out, apiError(res.StatusCode, text(object(out.data["error"])["code"]), res.Header)
 	}
-	if out.data == nil {
-		if method != http.MethodDelete {
-			return response{}, fmt.Errorf("Azure returned an invalid JSON object")
+	if out.data == nil || len(bytes.TrimSpace(payload)) == 0 {
+		// LRO Location polling may finish with 204, and an accepted operation
+		// may return 202 without a body. An empty ordinary resource GET fails.
+		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent {
+			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 		out.data = map[string]any{}
 	}
+	execution.LogCloudAPIResponse(ctx, u.Host, method, safePayload(map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}))
 	return out, nil
+}
+
+func requestID(header http.Header) string {
+	for _, name := range []string{"x-ms-request-id", "x-ms-correlation-request-id", "request-id"} {
+		if value := header.Get(name); value != "" {
+			return value
+		}
+	}
+	return ""
+}
+
+func operationLocation(header http.Header) string {
+	for _, name := range []string{"Azure-AsyncOperation", "Operation-Location", "Location"} {
+		if value := header.Get(name); value != "" {
+			return value
+		}
+	}
+	return ""
 }
 func transportError(ctx context.Context, err error) error {
 	if ctx.Err() != nil {
@@ -156,12 +249,19 @@ func apiError(status int, code string, header http.Header) error {
 	if code == "ScopeLocked" {
 		category = execution.ErrorProtected
 	}
-	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: category, Code: code, Message: contracts.SafeProviderValidationMessage}, RetryAfter: retryAfter(header)}
+	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: category, Code: code, Message: contracts.SafeProviderValidationMessage, RequestID: requestID(header)}, RetryAfter: retryAfter(header)}
 }
 func retryAfter(header http.Header) time.Duration {
 	seconds, err := strconv.Atoi(header.Get("Retry-After"))
-	if err != nil || seconds < 1 {
-		return 2 * time.Second
+	if err != nil {
+		if deadline, parseErr := http.ParseTime(header.Get("Retry-After")); parseErr == nil {
+			seconds = int(time.Until(deadline).Seconds())
+		} else {
+			return 2 * time.Second
+		}
+	}
+	if seconds < 0 {
+		seconds = 0
 	}
 	if seconds > 300 {
 		seconds = 300
@@ -173,32 +273,36 @@ func isNotFound(err error) bool {
 	return errors.As(err, &call) && call.Provider.Category == execution.ErrorNotFound
 }
 func (c *client) listPage(ctx context.Context, endpoint, collection string) ([]any, string, error) {
+	items, next, _, err := c.listPageResult(ctx, endpoint, collection)
+	return items, next, err
+}
+func (c *client) listPageResult(ctx context.Context, endpoint, collection string) ([]any, string, response, error) {
 	if err := c.validateURL(endpoint); err != nil {
-		return nil, "", err
+		return nil, "", response{}, err
 	}
 	u, _ := url.Parse(endpoint)
 	if !strings.EqualFold(u.Path, collection) {
-		return nil, "", fmt.Errorf("Azure pagination changed collection")
+		return nil, "", response{}, fmt.Errorf("Azure pagination changed collection")
 	}
 	res, err := c.request(ctx, "GET", endpoint)
 	if err != nil {
-		return nil, "", err
+		return nil, "", response{}, err
 	}
 	items, ok := res.data["value"].([]any)
 	if !ok {
-		return nil, "", fmt.Errorf("Azure list response has no valid value array")
+		return nil, "", response{}, fmt.Errorf("Azure list response has no valid value array")
 	}
 	next := text(res.data["nextLink"])
 	if next != "" {
 		if err := c.validateURL(next); err != nil {
-			return nil, "", err
+			return nil, "", response{}, err
 		}
 		nu, _ := url.Parse(next)
-		if !strings.EqualFold(nu.Path, collection) || next == endpoint {
-			return nil, "", fmt.Errorf("Azure pagination did not advance within its collection")
+		if !strings.EqualFold(nu.Path, collection) || next == endpoint || nu.Query().Get("api-version") != u.Query().Get("api-version") {
+			return nil, "", response{}, fmt.Errorf("Azure pagination did not advance within its collection")
 		}
 	}
-	return items, next, nil
+	return items, next, res, nil
 }
 func (c *client) listAll(ctx context.Context, path, version string) ([]any, error) {
 	var items []any
@@ -259,11 +363,4 @@ func parseID(value string) (string, string, error) {
 		kind += "/" + parts[i]
 	}
 	return id, kind, nil
-}
-func (c *client) resourceURL(kind resourceType, nativeID string) (string, error) {
-	id, nativeType, err := parseID(nativeID)
-	if err != nil || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(nativeType, kind.NativeType) {
-		return "", fmt.Errorf("Azure resource identity does not match its subscription and type")
-	}
-	return apiURL(id, kind.Version), nil
 }
