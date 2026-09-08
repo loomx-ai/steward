@@ -12,13 +12,15 @@ navTitle: "连接云账号"
 
 | 云厂商 | 可用凭证 |
 | --- | --- |
-| 阿里云 | AccessKey ID + AccessKey Secret<br>STS：另填 Security Token 和到期时间。 |
-| AWS | Access Key ID + Secret Access Key<br>临时凭证：另填 Session Token 和到期时间。 |
-| Google Cloud（GCP） | 项目 ID + 服务账号 JSON 密钥，参阅 [Google Cloud 接入](./gcp.md)。 |
+| [阿里云](./alicloud.md) | AccessKey ID + AccessKey Secret<br>STS：另填 Security Token 和到期时间。 |
+| [AWS](./aws.md) | Access Key ID + Secret Access Key<br>临时凭证：另填 Session Token 和到期时间。 |
+| [Google Cloud（GCP）](./gcp.md) | 项目 ID + 服务账号 JSON 密钥。 |
 
 阿里云还支持浏览器授权登录；入口可用时，按授权页提示完成连接。中国站与国际站应选择与账号一致的站点。
 
 验证通过只代表身份有效，不代表所有资源 API 都已授权。扫描中的权限错误需要逐项处理。
+
+各云指南分别说明权限、地域与全局资源、首次扫描、清理限制和常见问题。先完成对应云的接入检查，再扩大资源范围。
 
 <span id="add"></span>
 

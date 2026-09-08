@@ -8,9 +8,16 @@ const root=path.dirname(fileURLToPath(import.meta.url));
 const site=JSON.parse(await readFile(path.join(root,'site.json'),'utf8'));
 async function files(dir) {const result=[];for(const entry of await readdir(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);assert.ok(!entry.isSymbolicLink(),'Docs must not contain symlinks');if(entry.isDirectory())result.push(...await files(file));else result.push(file);}return result.sort();}
 assert.equal(site.schemaVersion,1);
-assert.equal(new Set(site.navigation).size,site.navigation.length);
-assert.equal(site.navigation[0],'index');
-const expected=Object.keys(site.locales).flatMap(locale=>site.navigation.map(slug=>`content/${locale}/${slug}.md`)).sort();
+const navigation=site.navigation.flatMap(entry=>{
+  if(typeof entry === 'string')return [entry];
+  assert.ok(Object.keys(site.locales).every(locale=>typeof entry.label?.[locale] === 'string' && entry.label[locale].trim()),'Navigation sections need translated labels');
+  assert.ok(Array.isArray(entry.items) && entry.items.length,'Navigation sections need chapters');
+  return entry.items;
+});
+assert.ok(navigation.every(slug=>typeof slug === 'string' && /^[a-z0-9-]+(?:\/[a-z0-9-]+)*$/.test(slug)),'Invalid chapter path');
+assert.equal(new Set(navigation).size,navigation.length);
+assert.equal(navigation[0],'index');
+const expected=Object.keys(site.locales).flatMap(locale=>navigation.map(slug=>`content/${locale}/${slug}.md`)).sort();
 assert.deepEqual((await files(path.join(root,'content'))).map(file=>path.relative(root,file)),expected);
 for(const file of expected) {
   const text=await readFile(path.join(root,file),'utf8');

@@ -25,16 +25,22 @@
   ],
   "navigation": [
     "index",
-    "intro",
-    "quick-start",
-    "tutorials/first-inventory",
-    "connections",
-    "gcp",
-    "scans",
-    "resources",
-    "topology",
-    "cleanup",
-    "deployment"
+    {
+      "label": {"en": "Get started", "zh": "开始使用"},
+      "items": ["intro", "quick-start", "tutorials/first-inventory"]
+    },
+    {
+      "label": {"en": "Cloud platforms", "zh": "云平台"},
+      "items": ["connections", "alicloud", "aws", "gcp"]
+    },
+    {
+      "label": {"en": "Use Steward", "zh": "使用指南"},
+      "items": ["scans", "resources", "topology", "cleanup"]
+    },
+    {
+      "label": {"en": "Deployment", "zh": "部署与运维"},
+      "items": ["deployment"]
+    }
   ],
   "legacyAssets": "/docs/steward/"
 }

@@ -18,6 +18,12 @@ Steward supports Alibaba Cloud, AWS, and Google Cloud (GCP). Run it on your own 
 
 <div class="docs-start-links"><a href="./quick-start.md"><strong>Self-host Steward</strong><span aria-hidden="true">↗</span><span>Install and start a local server</span></a><a href="https://steward.console.loomx.ai"><strong>Steward Cloud</strong> <span aria-hidden="true">↗</span><span>Have an invitation? Open your workspace</span></a></div>
 
+## Connect your cloud
+
+Choose your platform for credentials, permissions, inventory coverage, and cleanup considerations.
+
+<div class="docs-cloud-links"><a href="./alicloud.md"><strong>Alibaba Cloud</strong><span>RAM, STS, and browser authorization</span></a><a href="./aws.md"><strong>AWS</strong><span>IAM, resource discovery, and stacks</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>Projects, service accounts, and global networks</span></a></div>
+
 <span id="workflow"></span>
 
 ## Common operations

@@ -18,6 +18,12 @@ Steward 支持阿里云、AWS 和 Google Cloud（GCP），可在本机或服务�
 
 <div class="docs-start-links"><a href="./quick-start.md"><strong>自行部署</strong><span aria-hidden="true">↗</span><span>安装并启动本地服务</span></a><a href="https://steward.console.loomx.ai"><strong>Steward Cloud</strong> <span aria-hidden="true">↗</span><span>已有邀请？进入工作区</span></a></div>
 
+## 连接你的云平台
+
+选择云平台，查看凭证、权限、盘点范围和清理注意事项。
+
+<div class="docs-cloud-links"><a href="./alicloud.md"><strong>阿里云</strong><span>RAM、STS 与浏览器授权</span></a><a href="./aws.md"><strong>AWS</strong><span>IAM、资源发现与资源栈</span></a><a href="./gcp.md"><strong>Google Cloud</strong><span>项目、服务账号与全局网络</span></a></div>
+
 <span id="workflow"></span>
 
 ## 常用操作

@@ -5,7 +5,7 @@ The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). T
 ## Edit the guide
 
 - Edit one Markdown file per chapter and language in `content/en` and `content/zh`.
-- `site.json` defines the product name, supported languages, and ordered chapter paths. Add each chapter in every supported language.
+- `site.json` defines the product name, supported languages, and ordered navigation. Entries are chapter paths or sections with a translated `label` and an `items` array of chapter paths. Add every chapter and section label in every supported language. Navigation order also determines previous/next links; list each chapter once.
 - Use relative Markdown links, such as `./connections.md` or `../index.md#start`. The site resolves them within the selected product, version, and language.
 - Store images in `assets/` and link to them relative to the Markdown file. Keep screenshots at their original dimensions and include descriptive alt text and a sample-data caption.
 - A standalone `<span id="stable-id"></span>` before a heading preserves an existing anchor. The renderer applies that ID to the heading and the page's table of contents.

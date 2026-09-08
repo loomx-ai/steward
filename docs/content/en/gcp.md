@@ -11,11 +11,20 @@ Each GCP connection accesses one project with a service account JSON key. The se
 1. Enable **Cloud Asset Inventory**, **Cloud Resource Manager**, and **Compute Engine API** in the target project. Enable the relevant product API before using its cleanup actions.
 2. Grant the service account `cloudasset.assets.listResource`, `resourcemanager.projects.get`, and `compute.regions.list` on the target project. These permissions support inventory and region discovery. Add the product's resource-read, deletion, and operation-status permissions only for resources you intend to clean up. Bucket cleanup also requires `storage.objects.list`.
 3. Open **Settings → Cloud connections → Add connection**, choose **Google Cloud**, and enter the **Project ID** and the service account's **JSON key**.
-4. Validate the connection, refresh its regions, and run **All active regions + global** for the first inventory.
+4. Validate the connection, refresh its regions, and verify the result with the first-scan steps below.
 
 Steward validates project access and the inventory permission. A successful connection check does not prove that every cleanup API is allowed. Keys are encrypted using the deployment's credential-encryption key. Use **Replace credential** when rotating a key; the target project must remain the same.
 
 Steward accepts service account JSON keys for the standard Google Cloud endpoints. It does not use ambient `gcloud` credentials or credentials from the machine's metadata service. See Google's [service account key guidance](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys) and [Cloud Asset Inventory list permissions](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list).
+
+## Run your first scan
+
+1. Switch to the new Google Cloud connection and confirm the target project ID.
+2. Scan a region containing a known resource, such as a VM in `us-central1`.
+3. Resolve permission or disabled-API failures in scan details, then confirm the resource's name, project, region, and zone.
+4. After this check, run **All active regions + global** for complete inventory. Global VPCs and global addresses require the global scope.
+
+**Success check:** Expected resources appear under the correct project and location, with no unresolved scan failures. Cloud Asset Inventory has collection delays, so newly created resources may require another scan later.
 
 ## Inventory and supported cleanup
 
@@ -52,3 +61,16 @@ A **regional VPC cleanup group** selects resources in that region and retains th
 - **GKE:** Cluster deletion can remove managed nodes and other resources. Clusters remain read-only until those ownership effects can be represented in cleanup plans.
 
 Review the actual selection and [cleanup results](./cleanup.md) before proceeding. Product permissions, retention policies, dependencies, and provider-side changes can still prevent an action.
+
+## Troubleshooting
+
+| Symptom | What to check |
+| --- | --- |
+| The JSON key cannot be validated | Use a complete service account JSON key; confirm that the account is enabled and the key has not been revoked. |
+| A disabled API or `SERVICE_DISABLED` error | Enable the API named in the error in the target project, then retry. |
+| Validation or scanning returns `403` | Check the service account's target-project grants, including for cross-project accounts, and any organization policies. |
+| A newly created resource is missing | Verify the project and region, resolve failed scan items, and rescan after Cloud Asset Inventory updates. |
+| Multiple VMs have the same name | Compare projects and zones; different locations have distinct full resource names. |
+| Protection settings block cleanup | Inspect the reported VM, Cloud SQL, disk `autoDelete`, or bucket condition; changing a local record does not resolve it. |
+
+Next: [Scan resources](./scans.md) · [Resource relationships](./topology.md) · [Clean up resources](./cleanup.md)
