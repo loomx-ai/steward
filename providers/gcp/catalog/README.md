@@ -21,7 +21,12 @@ parameters, and source provenance. Resource bindings enumerate the actual
 global/regional methods and participate in the catalog and spec revisions.
 Resource rules live in `../specs`, with explicit dependency targets and readback
 operations. Runtime path matching checks those bindings and the selected project
-before constructing a request.
+before constructing a request. Some Media CDN and Cloud Multicast methods are
+omitted from anonymous Discovery responses. Their method/message declarations
+come from the official Cloud SDK archive, verified by SHA-256 and parsed without
+execution. These operations explicitly record `source_format: google-cloud-sdk`;
+[source members and provenance](source/sdk/README.md) are retained for offline
+conversion tests and deterministic refresh.
 
 Known resource kinds use their native product list methods. Compute aggregate
 responses are routed by their actual zonal/regional/global identity; child kinds
@@ -32,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 127 explicit resource rules and 552 selected methods
-from 44 official Discovery documents. Extended Compute rules cover VPN and
+The current catalog has 143 explicit resource rules and 597 selected methods
+from 44 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -41,7 +46,8 @@ Spanner, Cloud Tasks/Functions, Filestore, AlloyDB, Managed Kafka, API Gateway,
 Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
 Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
-Cloud NGFW, VPC Flow Logs, Network Services and Storage Transfer. Registration and wire tests do not close the full parity matrix.
+Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
+Storage Transfer. Registration and wire tests do not close the full parity matrix.
 
 Cloud DNS record identity includes both the fully qualified name and the record
 type, including wildcard names. BigQuery binds scalar project/dataset/table IDs
@@ -72,7 +78,17 @@ enabled only after these checks. Nested children must disappear after their
 parent; a missing parent does not prove completion. The native API does not
 support keeping these children while deleting their container, and the plan
 reports that restriction. Additional child kinds and other product controllers
-remain part of the unfinished parity work.
+remain part of the unfinished parity work. NCC hub groups, tables and routes
+are native managed objects without independent DELETE methods. They have
+inventory rules and reviewed Hub ownership; nested route absence is verified
+before Hub cleanup completes. Retained tests cover a root-only Hub selection,
+unsupported retention, unreviewed children and recovery after parent absence.
+
+Regional network scans also execute global product bindings, including types
+with a single method serving regional and global resources. Media CDN origin,
+failover/keyset/certificate/secret dependencies and multicast domain, activation,
+association, internal-range and VPC dependencies retain native identity formats.
+Structured service state and creation-time incarnation checks are preserved.
 
 IAM custom-role `deleted` and Logging bucket `DELETE_REQUESTED` are native soft
 deletion states. Inventory skips those records and readback reports

@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/MulticastGroupRangeActivation
+  class: network.multicast_activation
+presentation:
+  displayNames:
+    en-US: Multicast range activation
+    zh-CN: 组播范围激活
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.multicastGroupRangeActivations.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: multicastGroupRangeActivations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.multicastGroupRangeActivations.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  ipCidrRange:
+    path: ipCidrRange
+    type: string
+  multicastDomainActivation:
+    path: multicastDomainActivation
+    type: string
+  multicastGroupRange:
+    path: multicastGroupRange
+    type: string
+  logConfig:
+    path: logConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkservices.googleapis.com/MulticastDomainActivation
+  targetIdPath: refs_networkservices_googleapis_com_MulticastDomainActivation
+- type: depends_on
+  targetType: networkservices.googleapis.com/MulticastGroupRange
+  targetIdPath: refs_networkservices_googleapis_com_MulticastGroupRange
+actions:
+  delete:
+    operation: networkservices.projects.locations.multicastGroupRangeActivations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.multicastGroupRangeActivations.get
+      itemsPath: $
+      identityPath: name

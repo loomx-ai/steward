@@ -240,16 +240,25 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	if name == "" {
 		name = last(nativeID)
 	}
-	state := text(data["status"])
-	if state == "" {
-		state = text(data["state"])
-	}
+	state := resourceState(data)
 	actionable := known && len(kind.DeleteOperations) > 0
 	if actionable {
 		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")
 		actionable = err == nil
 	}
 	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: safePayload(normalized), Raw: safePayload(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
+}
+
+func resourceState(data map[string]any) string {
+	for _, field := range []string{"status", "state"} {
+		if state := text(data[field]); state != "" {
+			return state
+		}
+		if state := text(object(data[field])["state"]); state != "" {
+			return state
+		}
+	}
+	return ""
 }
 
 func (c *client) canonicalName(value string) string {
@@ -311,6 +320,12 @@ func references(c *client, data map[string]any) map[string][]string {
 		"backupVault": "backupdr.googleapis.com/BackupVault", "backupPlan": "backupdr.googleapis.com/BackupPlan", "dataSource": "backupdr.googleapis.com/DataSource",
 		"firewallEndpoint": "networksecurity.googleapis.com/FirewallEndpoint", "hub": "networkconnectivity.googleapis.com/Hub", "vpcNetwork": "compute.googleapis.com/Network", "subnet": "compute.googleapis.com/Subnetwork", "vpnTunnel": "compute.googleapis.com/VpnTunnel",
 		"pubsubTopic": "pubsub.googleapis.com/Topic", "virtualMachine": instanceType,
+		"adminNetwork": "compute.googleapis.com/Network", "nccHub": "networkconnectivity.googleapis.com/Hub", "reservedInternalRange": "networkconnectivity.googleapis.com/InternalRange",
+		"multicastDomainGroup": "networkservices.googleapis.com/MulticastDomainGroup", "multicastDomain": "networkservices.googleapis.com/MulticastDomain", "multicastDomainActivation": "networkservices.googleapis.com/MulticastDomainActivation",
+		"multicastGroupRange": "networkservices.googleapis.com/MulticastGroupRange", "multicastGroupRangeActivation": "networkservices.googleapis.com/MulticastGroupRangeActivation",
+		"multicastProducerAssociation": "networkservices.googleapis.com/MulticastProducerAssociation", "multicastConsumerAssociation": "networkservices.googleapis.com/MulticastConsumerAssociation", "placementPolicy": "compute.googleapis.com/ResourcePolicy",
+		"origin": "networkservices.googleapis.com/EdgeCacheOrigin", "failoverOrigin": "networkservices.googleapis.com/EdgeCacheOrigin", "keyset": "networkservices.googleapis.com/EdgeCacheKeyset", "signedRequestKeyset": "networkservices.googleapis.com/EdgeCacheKeyset", "edgeSslCertificates": "certificatemanager.googleapis.com/Certificate",
+		"secretVersion": "secretmanager.googleapis.com/Secret", "secretAccessKeyVersion": "secretmanager.googleapis.com/Secret",
 	} {
 		fields[key] = target
 	}
@@ -318,6 +333,13 @@ func references(c *client, data map[string]any) map[string][]string {
 		switch typed := value.(type) {
 		case map[string]any:
 			for child, v := range typed {
+				if child == "linkedVpnTunnels" || child == "linkedInterconnectAttachments" {
+					key := "vpnTunnel"
+					if child == "linkedInterconnectAttachments" {
+						key = "interconnectAttachment"
+					}
+					visit(object(v)["uris"], key)
+				}
 				visit(v, child)
 			}
 		case []any:
@@ -330,6 +352,27 @@ func references(c *client, data map[string]any) map[string][]string {
 				return
 			}
 			ref := c.canonicalName(typed)
+			if key == "edgeSslCertificates" && !strings.Contains(ref, "/") {
+				ref = "projects/" + c.project + "/locations/global/certificates/" + ref
+			}
+			if key == "edgeSecurityPolicy" && !strings.Contains(ref, "/") {
+				ref = "projects/" + c.project + "/global/securityPolicies/" + ref
+			}
+			if target == "networkservices.googleapis.com/EdgeCacheOrigin" || target == "networkservices.googleapis.com/EdgeCacheKeyset" {
+				if !strings.Contains(ref, "/") {
+					collection := "edgeCacheOrigins"
+					if target == "networkservices.googleapis.com/EdgeCacheKeyset" {
+						collection = "edgeCacheKeysets"
+					}
+					ref = "projects/" + c.project + "/locations/global/" + collection + "/" + ref
+				}
+			}
+			if target == "secretmanager.googleapis.com/Secret" {
+				parts := strings.Split(ref, "/")
+				if len(parts) >= 4 && parts[len(parts)-2] == "versions" {
+					ref = strings.Join(parts[:len(parts)-2], "/")
+				}
+			}
 			if key == "service" && strings.Contains(ref, "/locations/") && strings.Contains(ref, "/services/") {
 				target = "run.googleapis.com/Service"
 			}
@@ -340,6 +383,7 @@ func references(c *client, data map[string]any) map[string][]string {
 				ref = "//" + strings.Split(target, "/")[0] + "/" + ref
 			}
 			if target == "compute.googleapis.com/Network" || target == "compute.googleapis.com/Subnetwork" {
+				ref = strings.Replace(ref, "/locations/global/networks/", "/global/networks/", 1)
 				if strings.HasPrefix(ref, "projects/") {
 					ref = "//compute.googleapis.com/" + ref
 				}
@@ -395,6 +439,15 @@ func references(c *client, data map[string]any) map[string][]string {
 		}
 	}
 	visit(data, "")
+	if kind, ok := findType(text(data["resourceType"])); ok && text(data["resource"]) != "" {
+		fields["backupWorkload"] = kind.NativeType
+		visit(text(data["resource"]), "backupWorkload")
+	}
+	if origin := text(data["originAddress"]); strings.HasPrefix(origin, "gs://") {
+		visit(strings.TrimPrefix(origin, "gs://"), "bucketName")
+	} else if strings.HasSuffix(origin, ".storage.googleapis.com") {
+		visit(strings.TrimSuffix(origin, ".storage.googleapis.com"), "bucketName")
+	}
 	// These services encode a dependency's type in an adjacent field or URI
 	// prefix. Only recognized formats enter the same project-bound validator.
 	resource := object(data["resourceSpec"])

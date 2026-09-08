@@ -308,6 +308,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			continue
 		}
 		targetLocations := locations
+		if onlyGlobal {
+			targetLocations = []string{"global"}
+		}
 		var serviceLocations []string
 		serviceLocationList := false
 		if regional && !onlyGlobal && request.Scope.Kind != asset.ScopeGlobal {
@@ -347,6 +350,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 					targetLocations = append(targetLocations, location)
 				}
 			}
+		}
+		if request.Scope.Kind == asset.ScopeRegion && request.NetworkTarget != nil && regional && slices.Contains(kind.Scopes, asset.ScopeGlobal) && !slices.Contains(targetLocations, "global") {
+			targetLocations = append(targetLocations, "global")
 		}
 		for _, location := range targetLocations {
 			for _, parent := range parents {

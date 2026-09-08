@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/EdgeCacheKeyset
+  class: security.cdn_keyset
+presentation:
+  displayNames:
+    en-US: Media CDN keyset
+    zh-CN: Media CDN 密钥集
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.edgeCacheKeysets.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: edgeCacheKeysets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.edgeCacheKeysets.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  publicKeys:
+    path: publicKeys
+    type: array
+  validationSharedKeys:
+    path: validationSharedKeys
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: secretmanager.googleapis.com/Secret
+  targetIdPath: refs_secretmanager_googleapis_com_Secret
+actions:
+  delete:
+    operation: networkservices.projects.locations.edgeCacheKeysets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.edgeCacheKeysets.get
+      itemsPath: $
+      identityPath: name

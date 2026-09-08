@@ -87,6 +87,20 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"networkservices.googleapis.com/Gateway", "v1", regional + "gateways/web", regional + "gateways", "gateways", "us-central1", regional + "operations/delete", `{}`},
 		{"securitycenter.googleapis.com/NotificationConfig", "v1", p + "notificationConfigs/alerts", p + "notificationConfigs", "notificationConfigs", "global", "", `{}`},
 		{"storagetransfer.googleapis.com/AgentPool", "v1", p + "agentPools/copy", p + "agentPools", "agentPools", "global", "", `{}`},
+
+		{"networkservices.googleapis.com/EdgeCacheService", "v1", global + "edgeCacheServices/site", global + "edgeCacheServices", "edgeCacheServices", "global", global + "operations/delete", `{}`},
+		{"networkservices.googleapis.com/EdgeCacheOrigin", "v1", global + "edgeCacheOrigins/static", global + "edgeCacheOrigins", "edgeCacheOrigins", "global", global + "operations/delete", `{}`},
+		{"networkservices.googleapis.com/EdgeCacheKeyset", "v1", global + "edgeCacheKeysets/tokens", global + "edgeCacheKeysets", "edgeCacheKeysets", "global", global + "operations/delete", `{}`},
+		{"networkservices.googleapis.com/MulticastDomain", "v1", global + "multicastDomains/market", global + "multicastDomains", "multicastDomains", "global", global + "operations/delete", `{"uniqueId":"domain-uid","state":{"state":"ACTIVE"}}`},
+		{"networkservices.googleapis.com/MulticastDomainGroup", "v1", global + "multicastDomainGroups/group", global + "multicastDomainGroups", "multicastDomainGroups", "global", global + "operations/delete", `{"uniqueId":"group-uid"}`},
+		{"networkservices.googleapis.com/MulticastGroupRange", "v1", global + "multicastGroupRanges/range", global + "multicastGroupRanges", "multicastGroupRanges", "global", global + "operations/delete", `{"uniqueId":"range-uid"}`},
+		{"networkservices.googleapis.com/MulticastDomainActivation", "v1", p + "locations/us-central1-a/multicastDomainActivations/domain", p + "locations/us-central1-a/multicastDomainActivations", "multicastDomainActivations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"activation-uid"}`},
+		{"networkservices.googleapis.com/MulticastGroupRangeActivation", "v1", p + "locations/us-central1-a/multicastGroupRangeActivations/range", p + "locations/us-central1-a/multicastGroupRangeActivations", "multicastGroupRangeActivations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"activation-uid"}`},
+		{"networkservices.googleapis.com/MulticastProducerAssociation", "v1", p + "locations/us-central1-a/multicastProducerAssociations/producer", p + "locations/us-central1-a/multicastProducerAssociations", "multicastProducerAssociations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"association-uid"}`},
+		{"networkservices.googleapis.com/MulticastGroupProducerActivation", "v1", p + "locations/us-central1-a/multicastGroupProducerActivations/producer", p + "locations/us-central1-a/multicastGroupProducerActivations", "multicastGroupProducerActivations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"activation-uid"}`},
+		{"networkservices.googleapis.com/MulticastConsumerAssociation", "v1", p + "locations/us-central1-a/multicastConsumerAssociations/consumer", p + "locations/us-central1-a/multicastConsumerAssociations", "multicastConsumerAssociations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"association-uid"}`},
+		{"networkservices.googleapis.com/MulticastGroupConsumerActivation", "v1", p + "locations/us-central1-a/multicastGroupConsumerActivations/consumer", p + "locations/us-central1-a/multicastGroupConsumerActivations", "multicastGroupConsumerActivations", "us-central1", p + "locations/us-central1-a/operations/delete", `{"uniqueId":"activation-uid"}`},
+		{"networkconnectivity.googleapis.com/InternalRange", "v1", global + "internalRanges/multicast", global + "internalRanges", "internalRanges", "global", global + "operations/delete", `{"ipCidrRange":"239.0.0.0/23"}`},
 	} {
 		t.Run(test.kind+"/"+test.region, func(t *testing.T) {
 			host := strings.Split(test.kind, "/")[0]
@@ -106,7 +120,15 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 				}
 				var response any = data
 				if r.URL.Path == "/"+test.version+"/projects/sample-project/locations" && r.Method == "GET" {
-					return apiResponse(r, 200, `{"locations":[{"name":"projects/sample-project/locations/`+test.region+`","locationId":"`+test.region+`"}]}`), nil
+					location := test.region
+					parts := strings.Split(test.name, "/")
+					for i, part := range parts {
+						if part == "locations" && i+1 < len(parts) {
+							location = parts[i+1]
+							break
+						}
+					}
+					return apiResponse(r, 200, `{"locations":[{"name":"projects/sample-project/locations/`+location+`","locationId":"`+location+`"}]}`), nil
 				}
 				switch {
 				case r.URL.Path == listPath && r.Method == "GET":
@@ -151,6 +173,9 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 						}
 					}
 				default:
+					if test.kind == "networkconnectivity.googleapis.com/Hub" && (r.URL.Path == targetPath+"/groups" || r.URL.Path == targetPath+"/routeTables") && r.Method == "GET" {
+						return apiResponse(r, 200, `{}`), nil
+					}
 					childCollection := map[string]string{"spanner.googleapis.com/Instance": "databases", "alloydb.googleapis.com/Cluster": "instances", "servicedirectory.googleapis.com/Namespace": "services", "servicedirectory.googleapis.com/Service": "endpoints"}[test.kind]
 					if test.kind == "managedkafka.googleapis.com/Cluster" {
 						childCollection = "topics"
@@ -176,6 +201,9 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 				t.Fatalf("list=%+v error=%v", batch, err)
 			}
 			item := batch.Items[0]
+			if test.kind == "networkservices.googleapis.com/MulticastDomain" && item.State != "ACTIVE" {
+				t.Fatalf("structured multicast state lost: %s", item.State)
+			}
 			if item.NativeID != "//"+host+"/"+test.name || item.Actionable == nil || !*item.Actionable {
 				t.Fatalf("invalid identity/action: %+v", item)
 			}
@@ -520,5 +548,46 @@ func TestManagedServiceDependencyFormatsAndSecrets(t *testing.T) {
 	encoded, _ := json.Marshal(safePayload(data))
 	if strings.Contains(string(encoded), "SECRET_") || !strings.Contains(string(encoded), "cryptoKeyName") {
 		t.Fatalf("DLP secret redaction: %s", encoded)
+	}
+}
+
+func TestMediaCDNAndMulticastNativeDependencies(t *testing.T) {
+	c := &client{project: "sample-project", number: "123456"}
+	for _, test := range []struct{ data, kind, name string }{
+		{`{"adminNetwork":"projects/123456/locations/global/networks/admin"}`, "compute.googleapis.com/Network", "projects/sample-project/global/networks/admin"},
+		{`{"connection":{"nccHub":"projects/sample-project/locations/global/hubs/transit"}}`, "networkconnectivity.googleapis.com/Hub", "projects/sample-project/locations/global/hubs/transit"},
+		{`{"multicastDomainGroup":"projects/sample-project/locations/global/multicastDomainGroups/group"}`, "networkservices.googleapis.com/MulticastDomainGroup", "projects/sample-project/locations/global/multicastDomainGroups/group"},
+		{`{"multicastDomain":"projects/sample-project/locations/global/multicastDomains/market"}`, "networkservices.googleapis.com/MulticastDomain", "projects/sample-project/locations/global/multicastDomains/market"},
+		{`{"reservedInternalRange":"projects/sample-project/locations/global/internalRanges/range"}`, "networkconnectivity.googleapis.com/InternalRange", "projects/sample-project/locations/global/internalRanges/range"},
+		{`{"multicastDomainActivation":"projects/sample-project/locations/us-central1-a/multicastDomainActivations/domain"}`, "networkservices.googleapis.com/MulticastDomainActivation", "projects/sample-project/locations/us-central1-a/multicastDomainActivations/domain"},
+		{`{"multicastGroupRange":"projects/sample-project/locations/global/multicastGroupRanges/range"}`, "networkservices.googleapis.com/MulticastGroupRange", "projects/sample-project/locations/global/multicastGroupRanges/range"},
+		{`{"multicastGroupRangeActivation":"projects/sample-project/locations/us-central1-a/multicastGroupRangeActivations/range"}`, "networkservices.googleapis.com/MulticastGroupRangeActivation", "projects/sample-project/locations/us-central1-a/multicastGroupRangeActivations/range"},
+		{`{"multicastProducerAssociation":"projects/sample-project/locations/us-central1-a/multicastProducerAssociations/producer"}`, "networkservices.googleapis.com/MulticastProducerAssociation", "projects/sample-project/locations/us-central1-a/multicastProducerAssociations/producer"},
+		{`{"multicastConsumerAssociation":"projects/sample-project/locations/us-central1-a/multicastConsumerAssociations/consumer"}`, "networkservices.googleapis.com/MulticastConsumerAssociation", "projects/sample-project/locations/us-central1-a/multicastConsumerAssociations/consumer"},
+		{`{"placementPolicy":"projects/sample-project/regions/us-central1/resourcePolicies/placement"}`, "compute.googleapis.com/ResourcePolicy", "projects/sample-project/regions/us-central1/resourcePolicies/placement"},
+		{`{"routing":{"pathMatchers":[{"routeRules":[{"origin":"storage"}]}]}}`, "networkservices.googleapis.com/EdgeCacheOrigin", "projects/sample-project/locations/global/edgeCacheOrigins/storage"},
+		{`{"failoverOrigin":"secondary"}`, "networkservices.googleapis.com/EdgeCacheOrigin", "projects/sample-project/locations/global/edgeCacheOrigins/secondary"},
+		{`{"signedRequestKeyset":"signed"}`, "networkservices.googleapis.com/EdgeCacheKeyset", "projects/sample-project/locations/global/edgeCacheKeysets/signed"},
+		{`{"keyset":"projects/123456/locations/global/edgeCacheKeysets/response"}`, "networkservices.googleapis.com/EdgeCacheKeyset", "projects/sample-project/locations/global/edgeCacheKeysets/response"},
+		{`{"edgeSslCertificates":["media-cert"]}`, "certificatemanager.googleapis.com/Certificate", "projects/sample-project/locations/global/certificates/media-cert"},
+		{`{"edgeSecurityPolicy":"armor"}`, "compute.googleapis.com/SecurityPolicy", "projects/sample-project/global/securityPolicies/armor"},
+		{`{"originAddress":"gs://media-bucket"}`, "storage.googleapis.com/Bucket", "media-bucket"},
+		{`{"originAddress":"media-bucket.storage.googleapis.com"}`, "storage.googleapis.com/Bucket", "media-bucket"},
+		{`{"validationSharedKeys":[{"secretVersion":"projects/123456/secrets/key/versions/1"}]}`, "secretmanager.googleapis.com/Secret", "projects/sample-project/secrets/key"},
+		{`{"awsV4Authentication":{"secretAccessKeyVersion":"projects/sample-project/secrets/aws/versions/latest"}}`, "secretmanager.googleapis.com/Secret", "projects/sample-project/secrets/aws"},
+		{`{"linkedVpnTunnels":{"uris":["projects/sample-project/regions/us-central1/vpnTunnels/vpn"]}}`, "compute.googleapis.com/VpnTunnel", "projects/sample-project/regions/us-central1/vpnTunnels/vpn"},
+		{`{"linkedInterconnectAttachments":{"uris":["projects/sample-project/regions/us-central1/interconnectAttachments/private"]}}`, "compute.googleapis.com/InterconnectAttachment", "projects/sample-project/regions/us-central1/interconnectAttachments/private"},
+		{`{"resourceType":"compute.googleapis.com/Instance","resource":"projects/123456/zones/us-central1-a/instances/vm"}`, "compute.googleapis.com/Instance", "projects/sample-project/zones/us-central1-a/instances/vm"},
+	} {
+		var data map[string]any
+		_ = json.Unmarshal([]byte(test.data), &data)
+		refs := references(c, data)[test.kind]
+		if len(refs) != 1 || refs[0] != "//"+strings.Split(test.kind, "/")[0]+"/"+test.name {
+			t.Fatalf("native dependency lost: %s -> %v", test.data, refs)
+		}
+	}
+	encoded, _ := json.Marshal(safePayload(map[string]any{"headerAction": map[string]any{"requestHeadersToAdd": []any{map[string]any{"headerName": "Authorization", "headerValue": "SECRET_AUTH"}}}, "customRequestHeaders": []any{"Authorization: SECRET_VALUE"}}))
+	if strings.Contains(string(encoded), "SECRET_") {
+		t.Fatalf("custom header secret persisted: %s", encoded)
 	}
 }

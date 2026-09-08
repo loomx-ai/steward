@@ -75,7 +75,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if resourceSoftDeleted(a.kind.NativeType, data) {
 		return contracts.PreflightResult{Allowed: true, Absent: true, Evidence: map[string]any{"state": "soft_deleted"}}, nil
 	}
-	for _, field := range []string{"uid", "uniqueId"} {
+	for _, field := range []string{"uid", "uniqueId", "createTime", "creationTime"} {
 		if original := text(request.Asset.Normalized[field]); original != "" && original != text(data[field]) {
 			return contracts.PreflightResult{Reason: "resource_identity_changed"}, nil
 		}
@@ -419,11 +419,7 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if resourceSoftDeleted(a.kind.NativeType, data) {
 		return contracts.ReadbackResult{Exists: false, State: "soft_deleted"}, nil
 	}
-	state := text(data["status"])
-	if state == "" {
-		state = text(data["state"])
-	}
-	return contracts.ReadbackResult{Exists: true, State: state}, nil
+	return contracts.ReadbackResult{Exists: true, State: resourceState(data)}, nil
 }
 
 func protectionReason(nativeType string, data map[string]any) string {

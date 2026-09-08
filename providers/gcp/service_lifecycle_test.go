@@ -283,3 +283,115 @@ func TestDatabaseAndBrokerCascadesRequireReviewedNativeChildren(t *testing.T) {
 		})
 	}
 }
+
+func TestNCCHubOwnsNativeReadOnlyTablesGroupsAndRoutes(t *testing.T) {
+	const root = "projects/sample-project/locations/global/hubs/transit"
+	const host = "networkconnectivity.googleapis.com"
+	records := []struct{ id, kind, name string }{
+		{"hub", "Hub", root}, {"group", "Group", root + "/groups/default"},
+		{"table", "RouteTable", root + "/routeTables/default"}, {"route", "Route", root + "/routeTables/default/routes/subnet"},
+	}
+	var values []asset.Asset
+	for _, r := range records {
+		caps := asset.CapabilitySet{}
+		if r.id == "hub" {
+			caps = asset.CapabilitySet{asset.CapabilityActionable}
+		}
+		values = append(values, asset.Asset{ID: asset.AssetID(r.id), Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: "connection", NativeType: host + "/" + r.kind, NativeID: "//" + host + "/" + r.name}, Capabilities: caps, Normalized: map[string]any{"name": r.name, "uid": r.id + "-uid"}})
+	}
+	deleted, childrenGone := false, false
+	writes := 0
+	transport := func(r *http.Request) (*http.Response, error) {
+		if r.URL.Host != host {
+			t.Fatalf("foreign NCC request %s", r.URL)
+		}
+		if r.Method == "DELETE" {
+			if r.URL.Path != "/v1/"+root {
+				t.Fatalf("read-only NCC child deletion invented: %s", r.URL)
+			}
+			deleted = true
+			writes++
+			return apiResponse(r, 200, `{"name":"projects/sample-project/locations/global/operations/delete"}`), nil
+		}
+		if r.Method != "GET" {
+			t.Fatalf("unexpected NCC method %s", r.Method)
+		}
+		if r.URL.Path == "/v1/projects/sample-project/locations/global/operations/delete" {
+			return apiResponse(r, 200, `{"done":true}`), nil
+		}
+		for i, value := range values {
+			if r.URL.Path == "/v1/"+text(value.Normalized["name"]) {
+				if (i == 0 && deleted) || (i > 0 && childrenGone) {
+					return apiResponse(r, 404, `{}`), nil
+				}
+				raw, _ := json.Marshal(value.Normalized)
+				return apiResponse(r, 200, string(raw)), nil
+			}
+		}
+		var body any
+		switch r.URL.Path {
+		case "/v1/projects/sample-project/locations/global/hubs":
+			body = map[string]any{"hubs": []any{values[0].Normalized}}
+		case "/v1/" + root + "/groups":
+			body = map[string]any{"groups": []any{values[1].Normalized}}
+		case "/v1/" + root + "/routeTables":
+			body = map[string]any{"routeTables": []any{values[2].Normalized}}
+		case "/v1/" + root + "/routeTables/default/routes":
+			body = map[string]any{"routes": []any{values[3].Normalized}}
+		default:
+			t.Fatalf("unexpected NCC path %s", r.URL)
+		}
+		raw, _ := json.Marshal(body)
+		return apiResponse(r, 200, string(raw)), nil
+	}
+	runtime := protocolRuntime(t, transport)
+	for _, kind := range []string{"Group", "RouteTable", "Route"} {
+		page, err := runtime.List(context.Background(), productRequest(runtime, host+"/"+kind, "global"))
+		if err != nil || len(page.Items) != 1 || page.Items[0].Actionable == nil || *page.Items[0].Actionable {
+			t.Fatalf("NCC intrinsic inventory %s: %+v %v", kind, page, err)
+		}
+	}
+	c := &client{project: "sample-project", number: "123456", http: &http.Client{Transport: roundTripFunc(transport)}}
+	contribution, err := (&serviceCascades{client: c}).Contribute(context.Background(), "scope", values)
+	if err != nil || len(contribution.Bindings) != 3 {
+		t.Fatalf("NCC ownership %+v %v", contribution, err)
+	}
+	input := plan.Input{CleanupTaskID: "cleanup", Assets: values, ResolvedAssetIDs: []asset.AssetID{"hub"}, Relationships: contribution.Relationships, LifecycleBindings: contribution.Bindings}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.Steps) != 1 || len(result.ImpactItems) != 3 {
+		t.Fatalf("NCC root-only plan %+v %v", result, err)
+	}
+	request := contracts.ActionRequest{Action: "delete", Asset: values[0]}
+	driver := protocolAction(t, host+"/Hub", root, transport)
+	if _, err = driver.Execute(context.Background(), request); err == nil || writes != 0 {
+		t.Fatal("unreviewed NCC child set deleted")
+	}
+	for i := 1; i < len(values); i++ {
+		controller := values[0].ID
+		if i == 3 {
+			controller = values[2].ID
+		}
+		request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{ControllerID: controller, Asset: values[i], Delete: true})
+	}
+	actionResult, err := driver.Execute(context.Background(), request)
+	if err != nil || writes != 1 {
+		t.Fatalf("reviewed NCC delete %v writes=%d", err, writes)
+	}
+	wait, err := driver.Wait(context.Background(), request, actionResult)
+	if err != nil || wait.Done {
+		t.Fatalf("NCC parent absence hid existing children %+v %v", wait, err)
+	}
+	childrenGone = true
+	encoded, _ := json.Marshal(request)
+	var restored contracts.ActionRequest
+	_ = json.Unmarshal(encoded, &restored)
+	wait, err = protocolAction(t, host+"/Hub", root, transport).Wait(context.Background(), restored, actionResult)
+	if err != nil || !wait.Done || writes != 1 {
+		t.Fatalf("NCC recovery %+v %v", wait, err)
+	}
+	input.RequestOptions = map[asset.AssetID]map[string]any{"hub": {"retain_resources": []string{"route"}}}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) == 0 {
+		t.Fatalf("native NCC route retention accepted %+v %v", result, err)
+	}
+}

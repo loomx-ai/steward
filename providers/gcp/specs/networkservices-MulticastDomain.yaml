@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/MulticastDomain
+  class: network.multicast_domain
+presentation:
+  displayNames:
+    en-US: Multicast domain
+    zh-CN: 组播域
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.multicastDomains.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: multicastDomains
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.multicastDomains.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  adminNetwork:
+    path: adminNetwork
+    type: string
+  connection:
+    path: connection
+    type: object
+  multicastDomainGroup:
+    path: multicastDomainGroup
+    type: string
+  ullMulticastDomain:
+    path: ullMulticastDomain
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: networkservices.googleapis.com/MulticastDomainGroup
+  targetIdPath: refs_networkservices_googleapis_com_MulticastDomainGroup
+- type: depends_on
+  targetType: networkconnectivity.googleapis.com/Hub
+  targetIdPath: refs_networkconnectivity_googleapis_com_Hub
+actions:
+  delete:
+    operation: networkservices.projects.locations.multicastDomains.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.multicastDomains.get
+      itemsPath: $
+      identityPath: name

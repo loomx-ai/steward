@@ -23,12 +23,14 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
-	"bigtableadmin.googleapis.com/Instance":     {children: []string{"bigtableadmin.googleapis.com/Cluster", "bigtableadmin.googleapis.com/Table"}},
-	"managedkafka.googleapis.com/Cluster":       {children: []string{"managedkafka.googleapis.com/Topic"}},
-	"spanner.googleapis.com/Instance":           {children: []string{"spanner.googleapis.com/Database"}},
-	"alloydb.googleapis.com/Cluster":            {children: []string{"alloydb.googleapis.com/Instance"}, forceParameter: "force"},
-	"servicedirectory.googleapis.com/Namespace": {children: []string{"servicedirectory.googleapis.com/Service"}},
-	"servicedirectory.googleapis.com/Service":   {children: []string{"servicedirectory.googleapis.com/Endpoint"}},
+	"bigtableadmin.googleapis.com/Instance":         {children: []string{"bigtableadmin.googleapis.com/Cluster", "bigtableadmin.googleapis.com/Table"}},
+	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic"}},
+	"spanner.googleapis.com/Instance":               {children: []string{"spanner.googleapis.com/Database"}},
+	"alloydb.googleapis.com/Cluster":                {children: []string{"alloydb.googleapis.com/Instance"}, forceParameter: "force"},
+	"servicedirectory.googleapis.com/Namespace":     {children: []string{"servicedirectory.googleapis.com/Service"}},
+	"servicedirectory.googleapis.com/Service":       {children: []string{"servicedirectory.googleapis.com/Endpoint"}},
+	"networkconnectivity.googleapis.com/Hub":        {children: []string{"networkconnectivity.googleapis.com/Group", "networkconnectivity.googleapis.com/RouteTable"}},
+	"networkconnectivity.googleapis.com/RouteTable": {children: []string{"networkconnectivity.googleapis.com/Route"}},
 }
 
 func HasServiceCascade(nativeType string) bool { _, ok := serviceCascadeRules[nativeType]; return ok }

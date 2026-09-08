@@ -1,0 +1,99 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/EdgeCacheOrigin
+  class: network.cdn_origin
+presentation:
+  displayNames:
+    en-US: Media CDN origin
+    zh-CN: Media CDN 源站
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.edgeCacheOrigins.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: edgeCacheOrigins
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.edgeCacheOrigins.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  originAddress:
+    path: originAddress
+    type: string
+  failoverOrigin:
+    path: failoverOrigin
+    type: string
+  protocol:
+    path: protocol
+    type: string
+  port:
+    path: port
+    type: number
+  maxAttempts:
+    path: maxAttempts
+    type: number
+  retryConditions:
+    path: retryConditions
+    type: array
+  timeout:
+    path: timeout
+    type: object
+  originOverrideAction:
+    path: originOverrideAction
+    type: object
+  originRedirect:
+    path: originRedirect
+    type: object
+  flexShielding:
+    path: flexShielding
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkservices.googleapis.com/EdgeCacheOrigin
+  targetIdPath: refs_networkservices_googleapis_com_EdgeCacheOrigin
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: secretmanager.googleapis.com/Secret
+  targetIdPath: refs_secretmanager_googleapis_com_Secret
+actions:
+  delete:
+    operation: networkservices.projects.locations.edgeCacheOrigins.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.edgeCacheOrigins.get
+      itemsPath: $
+      identityPath: name

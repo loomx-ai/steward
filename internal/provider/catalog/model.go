@@ -55,6 +55,7 @@ type Operation struct {
 	Pagination   *Pagination    `json:"pagination,omitempty"`
 	Call         *OperationCall `json:"call,omitempty"`
 	SourceURI    string         `json:"source_uri,omitempty"`
+	SourceFormat string         `json:"source_format,omitempty"`
 }
 
 type ResourceType struct {

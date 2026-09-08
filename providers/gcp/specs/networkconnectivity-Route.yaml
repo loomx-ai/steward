@@ -1,0 +1,92 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkconnectivity.googleapis.com/Route
+  class: network.route
+presentation:
+  displayNames:
+    en-US: NCC hub route
+    zh-CN: NCC 枢纽路由
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkconnectivity.projects.locations.global.hubs.routeTables.routes.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: routes
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkconnectivity.projects.locations.global.hubs.routeTables.routes.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: networkconnectivity.googleapis.com/RouteTable
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  description:
+    path: description
+    type: string
+  ipCidrRange:
+    path: ipCidrRange
+    type: string
+  type:
+    path: type
+    type: string
+  location:
+    path: location
+    type: string
+  priority:
+    path: priority
+    type: string
+  spoke:
+    path: spoke
+    type: string
+  nextHopSpoke:
+    path: nextHopSpoke
+    type: object
+  nextHopVpcNetwork:
+    path: nextHopVpcNetwork
+    type: object
+  nextHopVpnTunnel:
+    path: nextHopVpnTunnel
+    type: object
+  nextHopRouterApplianceInstance:
+    path: nextHopRouterApplianceInstance
+    type: object
+  nextHopInterconnectAttachment:
+    path: nextHopInterconnectAttachment
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkconnectivity.googleapis.com/RouteTable
+  targetIdPath: refs_networkconnectivity_googleapis_com_RouteTable

@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkconnectivity.googleapis.com/Group
+  class: network.routing_group
+presentation:
+  displayNames:
+    en-US: NCC hub group
+    zh-CN: NCC 枢纽分组
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkconnectivity.projects.locations.global.hubs.groups.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: groups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkconnectivity.projects.locations.global.hubs.groups.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: networkconnectivity.googleapis.com/Hub
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  description:
+    path: description
+    type: string
+  routeTable:
+    path: routeTable
+    type: string
+  autoAccept:
+    path: autoAccept
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkconnectivity.googleapis.com/Hub
+  targetIdPath: refs_networkconnectivity_googleapis_com_Hub

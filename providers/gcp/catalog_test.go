@@ -50,7 +50,8 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			}
 		}
 		for _, relation := range compiled.Definition.Relationships {
-			if relation.TargetType == kind.NativeType {
+			// An origin can explicitly reference a different origin for failover.
+			if relation.TargetType == kind.NativeType && kind.NativeType != "networkservices.googleapis.com/EdgeCacheOrigin" {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}

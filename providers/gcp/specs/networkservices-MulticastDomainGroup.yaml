@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/MulticastDomainGroup
+  class: network.multicast_group
+presentation:
+  displayNames:
+    en-US: Multicast domain group
+    zh-CN: 组播域组
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.multicastDomainGroups.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: multicastDomainGroups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.multicastDomainGroups.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  multicastDomains:
+    path: multicastDomains
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: networkservices.projects.locations.multicastDomainGroups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.multicastDomainGroups.get
+      itemsPath: $
+      identityPath: name

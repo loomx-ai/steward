@@ -197,3 +197,14 @@ background evidence only, not acceptance evidence for this work.
   has bounded retries with offline tests in CI. Parent prerequisites and cascades
   for these additional products, remaining mapped services, Azure expansion and
   independent/full-application acceptance remain outstanding.
+
+- GCP now has 143 kinds and 597 methods. The official, checksum-pinned Cloud SDK
+  supplies 36 Media CDN/Multicast methods missing from anonymous Discovery; an
+  offline AST conversion preserves native paths, message types, maps and enums
+  and records distinct SDK provenance. Twelve service rules plus internal ranges
+  and NCC managed groups/tables/routes have retained wire/dependency tests. NCC
+  Hub cleanup verifies reviewed nested intrinsic resources, including root-only
+  selection and recovery after parent absence. Network scans now include global
+  product locations for global-only and mixed-scope services. Other service
+  lifecycle work, remaining families, Azure expansion and emulator/E2E acceptance
+  are still open.

@@ -1,0 +1,90 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkconnectivity.googleapis.com/InternalRange
+  class: network.ipam_range
+presentation:
+  displayNames:
+    en-US: Reserved internal range
+    zh-CN: 预留内部地址范围
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkconnectivity.projects.locations.internalRanges.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: internalRanges
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkconnectivity.projects.locations.internalRanges.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  network:
+    path: network
+    type: string
+  ipCidrRange:
+    path: ipCidrRange
+    type: string
+  prefixLength:
+    path: prefixLength
+    type: number
+  usage:
+    path: usage
+    type: string
+  peering:
+    path: peering
+    type: string
+  immutable:
+    path: immutable
+    type: boolean
+  overlaps:
+    path: overlaps
+    type: array
+  users:
+    path: users
+    type: array
+  allocationOptions:
+    path: allocationOptions
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: networkconnectivity.projects.locations.internalRanges.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkconnectivity.projects.locations.internalRanges.get
+      itemsPath: $
+      identityPath: name

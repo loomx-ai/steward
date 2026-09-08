@@ -24,6 +24,7 @@ type RESTDocumentSet struct {
 type RESTSourceDocument struct {
 	SourceURI    string          `json:"source_uri"`
 	SourceSHA256 string          `json:"source_sha256"`
+	SourceFormat string          `json:"source_format,omitempty"`
 	Dependency   bool            `json:"dependency,omitempty"`
 	Document     json.RawMessage `json:"document"`
 }
@@ -99,7 +100,7 @@ func (GoogleDiscoveryImporter) Import(provider asset.Provider, sourceURI string,
 					call.IdempotencyParameter = "requestId"
 				}
 				output := discoverySchema(method.Response, document.Schemas)
-				c.Operations = append(c.Operations, Operation{ID: method.ID, Name: lastRESTSegment(method.ID, "."), Service: document.Name, Method: call.Method, Path: path, Destructive: isDestructiveOperation(lastRESTSegment(method.ID, "."), call.Method), InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: discoveryPagination(method, output), Call: call, SourceURI: upstream.SourceURI})
+				c.Operations = append(c.Operations, Operation{ID: method.ID, Name: lastRESTSegment(method.ID, "."), Service: document.Name, Method: call.Method, Path: path, Destructive: isDestructiveOperation(lastRESTSegment(method.ID, "."), call.Method), InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: discoveryPagination(method, output), Call: call, SourceURI: upstream.SourceURI, SourceFormat: upstream.SourceFormat})
 			}
 			for _, child := range resource.Resources {
 				if err := walk(child); err != nil {

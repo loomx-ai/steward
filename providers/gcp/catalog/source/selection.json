@@ -715,7 +715,16 @@
       "methods": [
         "networkconnectivity.projects.locations.global.hubs.delete",
         "networkconnectivity.projects.locations.global.hubs.get",
+        "networkconnectivity.projects.locations.global.hubs.groups.get",
+        "networkconnectivity.projects.locations.global.hubs.groups.list",
         "networkconnectivity.projects.locations.global.hubs.list",
+        "networkconnectivity.projects.locations.global.hubs.routeTables.get",
+        "networkconnectivity.projects.locations.global.hubs.routeTables.list",
+        "networkconnectivity.projects.locations.global.hubs.routeTables.routes.get",
+        "networkconnectivity.projects.locations.global.hubs.routeTables.routes.list",
+        "networkconnectivity.projects.locations.internalRanges.delete",
+        "networkconnectivity.projects.locations.internalRanges.get",
+        "networkconnectivity.projects.locations.internalRanges.list",
         "networkconnectivity.projects.locations.list",
         "networkconnectivity.projects.locations.operations.get",
         "networkconnectivity.projects.locations.spokes.delete",
@@ -3116,6 +3125,334 @@
       ],
       "list_operations": [
         "storagetransfer.projects.agentPools.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/EdgeCacheService",
+      "collection": "edgeCacheServices",
+      "class": "network.cdn",
+      "display_name": "Media CDN service",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.edgeCacheServices.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.edgeCacheServices.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.edgeCacheServices.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/EdgeCacheOrigin",
+      "collection": "edgeCacheOrigins",
+      "class": "network.cdn_origin",
+      "display_name": "Media CDN origin",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.edgeCacheOrigins.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.edgeCacheOrigins.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.edgeCacheOrigins.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/EdgeCacheKeyset",
+      "collection": "edgeCacheKeysets",
+      "class": "security.cdn_keyset",
+      "display_name": "Media CDN keyset",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.edgeCacheKeysets.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.edgeCacheKeysets.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.edgeCacheKeysets.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastDomain",
+      "collection": "multicastDomains",
+      "class": "network.multicast_domain",
+      "display_name": "Multicast domain",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastDomains.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastDomains.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastDomains.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastDomainGroup",
+      "collection": "multicastDomainGroups",
+      "class": "network.multicast_group",
+      "display_name": "Multicast domain group",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastDomainGroups.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastDomainGroups.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastDomainGroups.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastDomainActivation",
+      "collection": "multicastDomainActivations",
+      "class": "network.multicast_activation",
+      "display_name": "Multicast domain activation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastDomainActivations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastDomainActivations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastDomainActivations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastGroupRange",
+      "collection": "multicastGroupRanges",
+      "class": "network.multicast_range",
+      "display_name": "Multicast group range",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastGroupRanges.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastGroupRanges.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastGroupRanges.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastGroupRangeActivation",
+      "collection": "multicastGroupRangeActivations",
+      "class": "network.multicast_activation",
+      "display_name": "Multicast range activation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastGroupRangeActivations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastGroupRangeActivations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastGroupRangeActivations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastProducerAssociation",
+      "collection": "multicastProducerAssociations",
+      "class": "network.multicast_attachment",
+      "display_name": "Multicast producer association",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastProducerAssociations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastProducerAssociations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastProducerAssociations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastGroupProducerActivation",
+      "collection": "multicastGroupProducerActivations",
+      "class": "network.multicast_activation",
+      "display_name": "Multicast producer activation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastGroupProducerActivations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastGroupProducerActivations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastGroupProducerActivations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastConsumerAssociation",
+      "collection": "multicastConsumerAssociations",
+      "class": "network.multicast_attachment",
+      "display_name": "Multicast consumer association",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastConsumerAssociations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastConsumerAssociations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastConsumerAssociations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/MulticastGroupConsumerActivation",
+      "collection": "multicastGroupConsumerActivations",
+      "class": "network.multicast_activation",
+      "display_name": "Multicast consumer activation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.multicastGroupConsumerActivations.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.multicastGroupConsumerActivations.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.multicastGroupConsumerActivations.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/InternalRange",
+      "collection": "internalRanges",
+      "class": "network.ipam_range",
+      "display_name": "Reserved internal range",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.internalRanges.get"
+      ],
+      "delete_operations": [
+        "networkconnectivity.projects.locations.internalRanges.delete"
+      ],
+      "list_operations": [
+        "networkconnectivity.projects.locations.internalRanges.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/RouteTable",
+      "collection": "routeTables",
+      "class": "network.route_table",
+      "display_name": "NCC hub route table",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.global.hubs.routeTables.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "networkconnectivity.projects.locations.global.hubs.routeTables.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/Group",
+      "collection": "groups",
+      "class": "network.routing_group",
+      "display_name": "NCC hub group",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.global.hubs.groups.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "networkconnectivity.projects.locations.global.hubs.groups.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/Route",
+      "collection": "routes",
+      "class": "network.route",
+      "display_name": "NCC hub route",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.global.hubs.routeTables.routes.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "networkconnectivity.projects.locations.global.hubs.routeTables.routes.list"
+      ]
+    }
+  ],
+  "sdk_documents": [
+    {
+      "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+      "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
+      "client_path": "lib/googlecloudsdk/generated_clients/apis/networkservices/v1/networkservices_v1_client.py",
+      "messages_path": "lib/googlecloudsdk/generated_clients/apis/networkservices/v1/networkservices_v1_messages.py",
+      "methods": [
+        "networkservices.projects.locations.edgeCacheServices.list",
+        "networkservices.projects.locations.edgeCacheServices.get",
+        "networkservices.projects.locations.edgeCacheServices.delete",
+        "networkservices.projects.locations.edgeCacheOrigins.list",
+        "networkservices.projects.locations.edgeCacheOrigins.get",
+        "networkservices.projects.locations.edgeCacheOrigins.delete",
+        "networkservices.projects.locations.edgeCacheKeysets.list",
+        "networkservices.projects.locations.edgeCacheKeysets.get",
+        "networkservices.projects.locations.edgeCacheKeysets.delete",
+        "networkservices.projects.locations.multicastDomains.list",
+        "networkservices.projects.locations.multicastDomains.get",
+        "networkservices.projects.locations.multicastDomains.delete",
+        "networkservices.projects.locations.multicastDomainGroups.list",
+        "networkservices.projects.locations.multicastDomainGroups.get",
+        "networkservices.projects.locations.multicastDomainGroups.delete",
+        "networkservices.projects.locations.multicastDomainActivations.list",
+        "networkservices.projects.locations.multicastDomainActivations.get",
+        "networkservices.projects.locations.multicastDomainActivations.delete",
+        "networkservices.projects.locations.multicastGroupRanges.list",
+        "networkservices.projects.locations.multicastGroupRanges.get",
+        "networkservices.projects.locations.multicastGroupRanges.delete",
+        "networkservices.projects.locations.multicastGroupRangeActivations.list",
+        "networkservices.projects.locations.multicastGroupRangeActivations.get",
+        "networkservices.projects.locations.multicastGroupRangeActivations.delete",
+        "networkservices.projects.locations.multicastProducerAssociations.list",
+        "networkservices.projects.locations.multicastProducerAssociations.get",
+        "networkservices.projects.locations.multicastProducerAssociations.delete",
+        "networkservices.projects.locations.multicastGroupProducerActivations.list",
+        "networkservices.projects.locations.multicastGroupProducerActivations.get",
+        "networkservices.projects.locations.multicastGroupProducerActivations.delete",
+        "networkservices.projects.locations.multicastConsumerAssociations.list",
+        "networkservices.projects.locations.multicastConsumerAssociations.get",
+        "networkservices.projects.locations.multicastConsumerAssociations.delete",
+        "networkservices.projects.locations.multicastGroupConsumerActivations.list",
+        "networkservices.projects.locations.multicastGroupConsumerActivations.get",
+        "networkservices.projects.locations.multicastGroupConsumerActivations.delete"
       ]
     }
   ]

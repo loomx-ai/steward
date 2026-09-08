@@ -1,0 +1,99 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/EdgeCacheService
+  class: network.cdn
+presentation:
+  displayNames:
+    en-US: Media CDN service
+    zh-CN: Media CDN 服务
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.edgeCacheServices.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: edgeCacheServices
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.edgeCacheServices.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  disableHttp2:
+    path: disableHttp2
+    type: boolean
+  disableQuic:
+    path: disableQuic
+    type: boolean
+  edgeSecurityPolicy:
+    path: edgeSecurityPolicy
+    type: string
+  edgeSslCertificates:
+    path: edgeSslCertificates
+    type: array
+  ipv4Addresses:
+    path: ipv4Addresses
+    type: array
+  ipv6Addresses:
+    path: ipv6Addresses
+    type: array
+  logConfig:
+    path: logConfig
+    type: object
+  requireTls:
+    path: requireTls
+    type: boolean
+  routing:
+    path: routing
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: certificatemanager.googleapis.com/Certificate
+  targetIdPath: refs_certificatemanager_googleapis_com_Certificate
+- type: depends_on
+  targetType: compute.googleapis.com/SecurityPolicy
+  targetIdPath: refs_compute_googleapis_com_SecurityPolicy
+- type: depends_on
+  targetType: networkservices.googleapis.com/EdgeCacheOrigin
+  targetIdPath: refs_networkservices_googleapis_com_EdgeCacheOrigin
+- type: depends_on
+  targetType: networkservices.googleapis.com/EdgeCacheKeyset
+  targetIdPath: refs_networkservices_googleapis_com_EdgeCacheKeyset
+actions:
+  delete:
+    operation: networkservices.projects.locations.edgeCacheServices.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.edgeCacheServices.get
+      itemsPath: $
+      identityPath: name

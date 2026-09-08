@@ -7,6 +7,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/loomx-ai/steward/internal/core/asset"
 )
 
 func TestProductLocationsFanoutNativeZonesAndMultiRegions(t *testing.T) {
@@ -108,5 +110,52 @@ func TestProductCursorBindsNativeLocationSet(t *testing.T) {
 	changed = true
 	if _, err = runtime.List(context.Background(), request); err == nil || lists != 1 {
 		t.Fatalf("changed native location cursor accepted: calls=%d %v", lists, err)
+	}
+}
+
+func TestRegionalNetworkScanIncludesGlobalServiceBindings(t *testing.T) {
+	for _, test := range []struct {
+		kind, collection string
+		want             []string
+	}{
+		{"networkconnectivity.googleapis.com/Hub", "hubs", []string{"global"}},
+		{"certificatemanager.googleapis.com/Certificate", "certificates", []string{"us-central1", "global"}},
+		{"apphub.googleapis.com/Application", "applications", []string{"us-central1", "global"}},
+	} {
+		t.Run(test.kind, func(t *testing.T) {
+			var listed []string
+			runtime := protocolRuntime(t, func(r *http.Request) (*http.Response, error) {
+				if r.Method != "GET" || r.URL.Host != strings.Split(test.kind, "/")[0] {
+					t.Fatalf("foreign service request %s", r.URL)
+				}
+				if r.URL.Path == "/v1/projects/sample-project/locations" {
+					return apiResponse(r, 200, `{"locations":[{"name":"projects/sample-project/locations/us-central1"}]}`), nil
+				}
+				parts := strings.Split(r.URL.Path, "/")
+				if len(parts) != 7 || parts[6] != test.collection {
+					t.Fatalf("incorrect global service endpoint %s", r.URL)
+				}
+				location := parts[5]
+				listed = append(listed, location)
+				return apiResponse(r, 200, `{"`+test.collection+`":[{"name":"projects/sample-project/locations/`+location+`/`+test.collection+`/resource"}]}`), nil
+			})
+			request := productRequest(runtime, test.kind, "us-central1")
+			request.NetworkTarget = &asset.ScanTarget{Kind: asset.ScanTargetVPC, RegionID: "us-central1", NativeID: "//compute.googleapis.com/projects/sample-project/global/networks/main"}
+			count := 0
+			for {
+				page, err := runtime.List(context.Background(), request)
+				if err != nil {
+					t.Fatal(err)
+				}
+				count += len(page.Items)
+				if page.Complete {
+					break
+				}
+				request.Cursor = page.NextCursor
+			}
+			if !slices.Equal(listed, test.want) || count != len(test.want) {
+				t.Fatalf("global network closure omitted: %v count=%d", listed, count)
+			}
+		})
 	}
 }

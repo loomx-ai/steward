@@ -1,0 +1,93 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/MulticastGroupRange
+  class: network.multicast_range
+presentation:
+  displayNames:
+    en-US: Multicast group range
+    zh-CN: 组播组范围
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.multicastGroupRanges.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: multicastGroupRanges
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.multicastGroupRanges.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  multicastDomain:
+    path: multicastDomain
+    type: string
+  ipCidrRange:
+    path: ipCidrRange
+    type: string
+  distributionScope:
+    path: distributionScope
+    type: string
+  requireExplicitAccept:
+    path: requireExplicitAccept
+    type: boolean
+  consumerAcceptList:
+    path: consumerAcceptList
+    type: array
+  reservedInternalRange:
+    path: reservedInternalRange
+    type: string
+  logConfig:
+    path: logConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkservices.googleapis.com/MulticastDomain
+  targetIdPath: refs_networkservices_googleapis_com_MulticastDomain
+- type: depends_on
+  targetType: networkconnectivity.googleapis.com/InternalRange
+  targetIdPath: refs_networkconnectivity_googleapis_com_InternalRange
+actions:
+  delete:
+    operation: networkservices.projects.locations.multicastGroupRanges.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.multicastGroupRanges.get
+      itemsPath: $
+      identityPath: name
