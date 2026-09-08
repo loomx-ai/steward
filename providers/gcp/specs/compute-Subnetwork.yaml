@@ -12,11 +12,24 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: compute.subnetworks.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: compute.subnetworks.list
+    parameters:
+      project: scope.project
+      region: scope.location
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
 fields:
   name:
     path: name

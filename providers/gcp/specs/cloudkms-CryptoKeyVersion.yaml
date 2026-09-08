@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudkms.googleapis.com/CryptoKeyVersion
+  class: security.key_version
+presentation:
+  displayNames:
+    en-US: Cloud KMS key version
+    zh-CN: KMS 密钥版本
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: cryptoKeyVersions
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: cloudkms.googleapis.com/CryptoKey
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get
+      itemsPath: $
+      identityPath: name
+    preconditions:
+    - path: state
+      allowedValues:
+      - DESTROYED
+      - IMPORT_FAILED
+      - GENERATION_FAILED
+      reason: key_version_not_ready_for_deletion

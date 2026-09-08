@@ -10,13 +10,25 @@ presentation:
     zh-CN: 后端服务
   consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
 scope:
-  kind: region
+  kind: global
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: compute.backendServices.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: compute.backendServices.list
+    parameters:
+      project: scope.project
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
 fields:
   name:
     path: name

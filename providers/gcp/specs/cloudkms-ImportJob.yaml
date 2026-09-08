@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudkms.googleapis.com/ImportJob
+  class: security.key_import
+presentation:
+  displayNames:
+    en-US: Cloud KMS import job
+    zh-CN: KMS 导入任务
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: cloudkms.projects.locations.keyRings.importJobs.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: importJobs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail:
+    operation: cloudkms.projects.locations.keyRings.importJobs.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: cloudkms.googleapis.com/KeyRing
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/KeyRing
+  targetIdPath: refs_cloudkms_googleapis_com_KeyRing

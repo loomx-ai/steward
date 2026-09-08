@@ -637,3 +637,174 @@ type capturedJobLog struct {
 	message string
 	payload map[string]any
 }
+
+type networkProductAdapter struct {
+	kinds       map[asset.ResourceKindID]asset.ResourceKind
+	failBackend bool
+}
+
+func (a *networkProductAdapter) InventorySources() []contracts.InventorySource {
+	return []contracts.InventorySource{{Name: "product-api", AuthoritativeDefault: true}}
+}
+func (a *networkProductAdapter) List(_ context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
+	if request.NetworkTarget == nil || request.ResourceKind == nil {
+		return contracts.InventoryBatch{}, errors.New("missing network/kind selection")
+	}
+	kind := a.kinds[request.ResourceKind.ID]
+	name, dependency := "backend", "network"
+	switch kind.ID {
+	case "kind-worker":
+		if a.failBackend {
+			return contracts.InventoryBatch{}, errors.New("backend API unavailable")
+		}
+	case "kind-map":
+		name, dependency = "map", "backend"
+	case "kind-proxy":
+		name, dependency = "proxy", "map"
+	}
+	return contracts.InventoryBatch{Items: []contracts.InventoryItem{{NativeType: kind.NativeType, NativeID: name, ResourceKind: kind, Name: name, NetworkReferences: []string{dependency}, Normalized: map[string]any{"dependency": dependency}}}, Complete: true}, nil
+}
+
+func TestNetworkScanClosesAcrossProductShardsAndPreservesAssetsOnPartialFailure(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	now := time.Date(2026, 9, 8, 1, 0, 0, 0, time.UTC)
+	seedScanWorker(t, repositories, now)
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	run.ScopeMode = asset.ScanSelectedNetworks
+	target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+	run.Targets = []asset.ScanTarget{target}
+	if err = repositories.Inventory().PutScanRun(ctx, run); err != nil {
+		t.Fatal(err)
+	}
+	kinds := map[asset.ResourceKindID]asset.ResourceKind{"kind-worker": workerKind()}
+	for _, suffix := range []string{"map", "proxy"} {
+		kind := workerKind()
+		kind.ID = asset.ResourceKindID("kind-" + suffix)
+		kind.NativeType = "TEST::" + suffix
+		kinds[kind.ID] = kind
+		if err = repositories.Inventory().PutResourceKind(ctx, kind); err != nil {
+			t.Fatal(err)
+		}
+	}
+	// Place the proxy first: no shard order can substitute for target closure.
+	ids := []string{"shard-proxy", "shard-map", "shard-worker"}
+	for i, kindID := range []asset.ResourceKindID{"kind-proxy", "kind-map", "kind-worker"} {
+		shard := asset.ScanShard{ID: asset.ScanShardID(ids[i]), ScanRunID: run.ID, Provider: asset.ProviderAliCloud, ScopeID: "scope-worker", TargetKey: target.Key, ResourceKindID: kindID, Source: "product-api", Authoritative: true, Status: asset.ShardPending, CreatedAt: now}
+		if err = repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+			t.Fatal(err)
+		}
+	}
+	adapter := &networkProductAdapter{kinds: kinds}
+	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
+	handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter: adapter}, service)
+	job := execution.Job{ID: "network-job", Type: execution.JobScan, Payload: map[string]any{"scan_shard_ids": ids}}
+	for attempt := 0; attempt < 3; attempt++ {
+		if attempt > 0 {
+			now = now.Add(time.Hour)
+			current, err := repositories.Inventory().GetScanRun(ctx, run.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			current.Status = asset.ScanPending
+			current.FinishedAt = nil
+			current.RetryGeneration++
+			if err = repositories.Inventory().PutScanRun(ctx, current); err != nil {
+				t.Fatal(err)
+			}
+			for _, id := range ids {
+				shard, err := repositories.Inventory().GetScanShard(ctx, asset.ScanShardID(id))
+				if err != nil {
+					t.Fatal(err)
+				}
+				// Keep successful statuses to exercise the target-resume path. Only the
+				// failed source must be explicitly reset before a retry is authorized.
+				if shard.Status == asset.ShardFailed {
+					shard.Status = asset.ShardPending
+				}
+				shard.RetryGeneration = current.RetryGeneration
+				if err = repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					t.Fatal(err)
+				}
+			}
+		}
+		adapter.failBackend = attempt == 1
+		err = handler.Handle(ctx, job)
+		if (err != nil) != (attempt == 1) {
+			t.Fatalf("attempt %d err=%v", attempt, err)
+		}
+		page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 100})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(page.Items) != 3 {
+			t.Fatalf("attempt %d lost a cross-kind dependent: %+v", attempt, page.Items)
+		}
+		for _, item := range page.Items {
+			if item.ClosedAt != nil {
+				t.Fatalf("attempt %d falsely closed %s", attempt, item.Name)
+			}
+		}
+		proxy, err := repositories.Inventory().GetScanShard(ctx, "shard-proxy")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if proxy.Status != asset.ShardSucceeded || proxy.Authoritative != (attempt != 1) {
+			t.Fatalf("attempt %d proxy coverage=%+v", attempt, proxy)
+		}
+	}
+}
+
+func TestNonAuthoritativeNetworkSourceCannotClosePreviousObservations(t *testing.T) {
+	ctx := context.Background()
+	repositories := openInventoryWorkerRepositories(t)
+	now := time.Date(2026, 9, 8, 1, 0, 0, 0, time.UTC)
+	seedScanWorker(t, repositories, now)
+	run, err := repositories.Inventory().GetScanRun(ctx, "run-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	run.ScopeMode = asset.ScanSelectedNetworks
+	target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+	run.Targets = []asset.ScanTarget{target}
+	if err = repositories.Inventory().PutScanRun(ctx, run); err != nil {
+		t.Fatal(err)
+	}
+	shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.TargetKey = target.Key
+	shard.Authoritative = false
+	if err = repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+		t.Fatal(err)
+	}
+	connection, err := repositories.Connections().GetConnection(ctx, run.ConnectionID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	service := inventory.NewService(repositories.Inventory(), inventory.WithClock(func() time.Time { return now }))
+	item := contracts.InventoryItem{NativeType: workerKind().NativeType, NativeID: "old", ResourceKind: workerKind(), NetworkReferences: []string{"network"}}
+	if err = service.ProjectBatch(ctx, &shard, connection, contracts.InventoryBatch{Items: []contracts.InventoryItem{item}}, inventory.ProjectionOptions{ObservedAt: now}); err != nil {
+		t.Fatal(err)
+	}
+	// A new shard sees none of those resources after ownership moves to product
+	// inventory. Broad inventory is not evidence that they disappeared.
+	next := shard
+	next.ID = "new-shard"
+	next.Coverage = asset.Coverage{}
+	next.Status = asset.ShardRunning
+	if err = repositories.Inventory().PutScanShard(ctx, next); err != nil {
+		t.Fatal(err)
+	}
+	if err = service.FinishShard(ctx, &next, asset.ShardSucceeded, ""); err != nil {
+		t.Fatal(err)
+	}
+	page, err := repositories.Inventory().ListAssets(ctx, persistence.ListOptions{Limit: 10})
+	if err != nil || len(page.Items) != 1 || page.Items[0].ClosedAt != nil {
+		t.Fatalf("nonauthoritative source closed old observation: %+v err=%v", page, err)
+	}
+}

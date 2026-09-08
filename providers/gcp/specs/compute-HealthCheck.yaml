@@ -12,11 +12,23 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: compute.healthChecks.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: compute.healthChecks.aggregatedList
+    parameters:
+      project: scope.project
+    itemsPath: items.*.healthChecks
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
 fields:
   name:
     path: name

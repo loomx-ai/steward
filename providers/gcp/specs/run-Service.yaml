@@ -12,11 +12,23 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: run.projects.locations.services.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: run.projects.locations.services.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: services
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 500
 fields:
   name:
     path: name

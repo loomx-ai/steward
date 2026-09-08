@@ -2,6 +2,7 @@ package gcp
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -81,7 +82,7 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -90,6 +91,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
+	if request.Source == productInventorySource {
+		return r.listProduct(ctx, c, request, nil)
 	}
 	nativeType := ""
 	if request.ResourceKind != nil {
@@ -108,6 +112,11 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	for _, value := range array(data["assets"]) {
 		raw := object(value)
+		// A broad CAI scan indexes unknown kinds. Known kinds have a separate
+		// authoritative product shard, so stale CAI data cannot overwrite it.
+		if request.Source == inventorySource && r.usesProductSource(text(raw["assetType"])) {
+			continue
+		}
 		_, location := assetLocation(raw)
 		if request.Scope.Kind != asset.ScopeProject && region != location && !(request.NetworkTarget != nil && location == "global") {
 			continue
@@ -322,30 +331,46 @@ func references(c *client, data map[string]any) map[string][]string {
 	return result
 }
 
+type networkCursor struct {
+	Filter string `json:"filter"`
+	Page   string `json:"page"`
+}
+
 func (r *Runtime) SearchNetworkTargets(ctx context.Context, query contracts.NetworkTargetQuery) (contracts.NetworkTargetPage, error) {
-	c, err := r.resolve(ctx, query.ConnectionID)
-	if err != nil {
-		return contracts.NetworkTargetPage{}, err
-	}
 	nativeType := "compute.googleapis.com/Network"
+	scope := asset.Scope{Kind: asset.ScopeGlobal, NativeID: "global"}
 	if query.Kind == asset.ScanTargetVSwitch {
 		nativeType = "compute.googleapis.com/Subnetwork"
+		if !segmentPattern.MatchString(query.RegionID) {
+			return contracts.NetworkTargetPage{}, fmt.Errorf("GCP subnet search requires a region")
+		}
+		scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: query.RegionID}
 	} else if query.Kind != asset.ScanTargetVPC {
 		return contracts.NetworkTargetPage{}, fmt.Errorf("unsupported GCP network target")
 	}
-	data, err := c.assetPage(ctx, query.Cursor, nativeType, query.Limit)
+	kind := r.resourceKind(nativeType)
+	filter := query
+	filter.Cursor = ""
+	filter.Limit = 0
+	encoded, _ := json.Marshal(filter)
+	fingerprint := fmt.Sprintf("%x", sha256.Sum256(encoded))
+	cursor := networkCursor{Filter: fingerprint}
+	if query.Cursor != "" {
+		decoded, err := base64.RawURLEncoding.DecodeString(query.Cursor)
+		if err != nil || json.Unmarshal(decoded, &cursor) != nil || cursor.Filter != fingerprint || cursor.Page == "" {
+			return contracts.NetworkTargetPage{}, fmt.Errorf("GCP network cursor does not match this search")
+		}
+	}
+	batch, err := r.List(ctx, contracts.InventoryRequest{ConnectionID: query.ConnectionID, Source: productInventorySource, ResourceKind: &kind, Scope: scope, Cursor: cursor.Page, Limit: query.Limit})
 	if err != nil {
 		return contracts.NetworkTargetPage{}, err
 	}
-	page := contracts.NetworkTargetPage{Items: []contracts.NetworkTargetOption{}, NextCursor: text(data["nextPageToken"])}
-	for _, raw := range array(data["assets"]) {
-		item, err := r.inventoryItem(c, object(raw))
-		if err != nil {
-			return contracts.NetworkTargetPage{}, err
-		}
-		if query.Kind == asset.ScanTargetVSwitch && item.Scope.NativeID != query.RegionID {
-			continue
-		}
+	page := contracts.NetworkTargetPage{Items: []contracts.NetworkTargetOption{}, RequestID: batch.RequestID}
+	if batch.NextCursor != "" {
+		encoded, _ := json.Marshal(networkCursor{Filter: fingerprint, Page: batch.NextCursor})
+		page.NextCursor = base64.RawURLEncoding.EncodeToString(encoded)
+	}
+	for _, item := range batch.Items {
 		parent := text(item.Normalized["vpc_id"])
 		if query.ParentNativeID != "" && parent != query.ParentNativeID {
 			continue

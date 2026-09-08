@@ -12,11 +12,24 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: compute.forwardingRules.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: compute.forwardingRules.list
+    parameters:
+      region: scope.location
+      project: scope.project
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
 fields:
   name:
     path: name

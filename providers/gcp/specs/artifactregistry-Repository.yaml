@@ -12,11 +12,23 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: artifactregistry.projects.locations.repositories.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: artifactregistry.projects.locations.repositories.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: repositories
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 500
 fields:
   name:
     path: name

@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -31,12 +32,16 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	for name, raw := range properties {
 		property := object(raw)
 		if name == "project" || name == "projectId" || name == "userProject" {
+			expected, alternate := c.project, c.number
+			if slices.Contains(operation.Call.RawPathParameters, name) {
+				expected, alternate = "projects/"+c.project, "projects/"+c.number
+			}
 			value, present := parameters[name]
 			if !present && property["required"] == true {
-				parameters[name] = c.project
+				parameters[name] = expected
 				continue
 			}
-			if present && value != c.project && value != c.number {
+			if present && value != expected && value != alternate {
 				return contracts.InvocationResult{}, fmt.Errorf("GCP invocation belongs to another project")
 			}
 		}

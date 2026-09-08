@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudkms.googleapis.com/CryptoKey
+  class: security.key
+presentation:
+  displayNames:
+    en-US: Cloud KMS key
+    zh-CN: KMS 密钥
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: cryptoKeys
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: cloudkms.googleapis.com/KeyRing
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/KeyRing
+  targetIdPath: refs_cloudkms_googleapis_com_KeyRing
+actions:
+  delete:
+    operation: cloudkms.projects.locations.keyRings.cryptoKeys.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: cloudkms.projects.locations.keyRings.cryptoKeys.get
+      itemsPath: $
+      identityPath: name

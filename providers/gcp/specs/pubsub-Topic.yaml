@@ -12,11 +12,23 @@ presentation:
 scope:
   kind: global
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: pubsub.projects.topics.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: pubsub.projects.topics.list
+    parameters:
+      project: scope.projectPath
+    itemsPath: topics
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 500
 fields:
   name:
     path: name

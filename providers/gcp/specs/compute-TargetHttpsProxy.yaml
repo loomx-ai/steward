@@ -12,11 +12,23 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: compute.targetHttpsProxies.get
     itemsPath: $
     identityPath: name
+  list:
+    operation: compute.targetHttpsProxies.aggregatedList
+    parameters:
+      project: scope.project
+    itemsPath: items.*.targetHttpsProxies
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
 fields:
   name:
     path: name

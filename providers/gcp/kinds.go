@@ -3,6 +3,7 @@ package gcp
 import (
 	"embed"
 	"fmt"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
@@ -14,6 +15,7 @@ import (
 
 const inventorySource = "cloud-asset-inventory"
 const actionHook = "gcp.resource"
+const productInventorySource = "product-api"
 
 //go:generate go run ../../cmd/cataloggen -provider gcp -format google-discovery -source catalog/source/discovery.json -output catalog/generated/catalog.json
 //go:embed catalog/generated/catalog.json specs/*.yaml
@@ -25,6 +27,7 @@ type resourceType struct {
 	Scopes           []asset.ScopeKind `json:"scope_kinds"`
 	ReadOperations   []string          `json:"read_operations"`
 	DeleteOperations []string          `json:"delete_operations"`
+	ListOperations   []string          `json:"list_operations"`
 }
 
 var both = []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}
@@ -33,6 +36,7 @@ type providerMetadata struct {
 	catalog catalog.Catalog
 	bundle  spec.Bundle
 	kinds   []resourceType
+	hosts   map[string]bool
 }
 
 var providerData = sync.OnceValues(loadProviderData)
@@ -47,11 +51,22 @@ func loadProviderData() (providerMetadata, error) {
 	if err != nil {
 		return result, err
 	}
+	result.hosts = make(map[string]bool)
+	for _, operation := range result.catalog.Operations {
+		if operation.Call == nil {
+			continue
+		}
+		endpoint, err := url.Parse(operation.Call.Endpoint)
+		if err != nil || endpoint.Scheme != "https" || endpoint.User != nil || endpoint.Port() != "" || !strings.HasSuffix(endpoint.Hostname(), ".googleapis.com") {
+			return result, fmt.Errorf("GCP catalog operation %q has an invalid origin", operation.ID)
+		}
+		result.hosts[endpoint.Hostname()] = true
+	}
 	for _, kind := range result.catalog.ResourceTypes {
 		if kind.REST == nil {
 			return result, fmt.Errorf("GCP resource %q has no REST binding", kind.NativeType)
 		}
-		result.kinds = append(result.kinds, resourceType{NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations})
+		result.kinds = append(result.kinds, resourceType{NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations})
 	}
 	entries, err := providerFiles.ReadDir("specs")
 	if err != nil {
@@ -93,7 +108,10 @@ func loadProviderData() (providerMetadata, error) {
 		if actionable != (len(kind.DeleteOperations) > 0) || (actionable && !slices.Contains(kind.DeleteOperations, deletion.Operation)) {
 			return result, fmt.Errorf("GCP resource %q delete binding differs from spec", kind.NativeType)
 		}
-		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations} {
+		if definition.Discovery.Source == productInventorySource && (definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation)) {
+			return result, fmt.Errorf("GCP resource %q list binding differs from spec", kind.NativeType)
+		}
+		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {
 			for _, id := range ids {
 				operation, ok := result.catalog.Operation(id)
 				if !ok || operation.Call == nil || operation.Call.Style != "google-rest" {

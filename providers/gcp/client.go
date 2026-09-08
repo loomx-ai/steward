@@ -249,11 +249,8 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 }
 
 func allowedHost(host string) bool {
-	switch host {
-	case "cloudresourcemanager.googleapis.com", "cloudasset.googleapis.com", "compute.googleapis.com", "storage.googleapis.com", "pubsub.googleapis.com", "sqladmin.googleapis.com", "container.googleapis.com", "run.googleapis.com", "artifactregistry.googleapis.com", "secretmanager.googleapis.com":
-		return true
-	}
-	return false
+	metadata, err := providerData()
+	return err == nil && metadata.hosts[host]
 }
 
 func apiError(status int, code string, detail map[string]any, retry string) error {

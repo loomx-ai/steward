@@ -88,3 +88,18 @@ background evidence only, not acceptance evidence for this work.
   Storage account children, all three LRO headers, final absence, and operation
   URL ownership. These remain protocol evidence. The initial read-only controller
   restrictions and auto-delete restrictions still need lifecycle implementation.
+- GCP now has 34 explicit rules and 155 official methods from 11 API documents.
+  Known kinds use native product lists, including Compute aggregate scopes,
+  separate Secret Manager endpoints, and recursive KMS parents. Product cursors
+  reject changed scopes, parent sets and token cycles; incomplete responses fail
+  their shard. Live network selection uses Compute directly.
+- Network scans now calculate membership across all product shards, include
+  global network resources, retain source authority, and preserve observations
+  when a failed source makes the network closure incomplete. Retrying a failed
+  network target includes its successful sources to rebuild the whole closure.
+  Retained application tests cover cross-kind chains, partial failure, retry and
+  protection against false absence during inventory-source migration.
+- Full Go tests, targeted GCP/inventory/catalog/spec race tests and vet passed for
+  this product-discovery step. Coverage is still incomplete: the service matrix,
+  remaining GCP/Azure families, lifecycle controllers and independent emulator
+  acceptance are not closed by these protocol tests.

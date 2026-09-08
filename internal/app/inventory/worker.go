@@ -25,6 +25,13 @@ type ScanHandler struct {
 	clock        func() time.Time
 }
 
+type networkProjection struct {
+	shard      asset.ScanShard
+	connection asset.CloudConnection
+	target     asset.ScanTarget
+	items      []contracts.InventoryItem
+}
+
 func NewScanHandler(repositories persistence.Repositories, runtimes RuntimeRegistry, service *Service) *ScanHandler {
 	return &ScanHandler{repositories: repositories, runtimes: runtimes, service: service, clock: func() time.Time { return time.Now().UTC() }}
 }
@@ -37,8 +44,9 @@ func (h *ScanHandler) Handle(ctx context.Context, job execution.Job) error {
 	execution.LogJob(ctx, "info", fmt.Sprintf("scan target started with %s", countNoun(len(shardIDs), "source")))
 	var run *asset.ScanRun
 	shardErrors := make([]error, 0)
+	network := make([]networkProjection, 0)
 	for index, shardID := range shardIDs {
-		current, err := h.handleShard(ctx, shardID)
+		current, err := h.handleShard(ctx, shardID, &network)
 		if current != nil {
 			run = current
 		}
@@ -84,6 +92,9 @@ func (h *ScanHandler) Handle(ctx context.Context, job execution.Job) error {
 	if err := h.checkTaskControl(ctx, run, nil); err != nil {
 		return err
 	}
+	if err := h.projectNetworkTarget(ctx, run, network, len(shardErrors) == 0); err != nil {
+		return errors.Join(err, h.finishRunIfTerminal(ctx, run))
+	}
 	if err := h.finishRunIfTerminal(ctx, run); err != nil {
 		return err
 	}
@@ -111,7 +122,7 @@ func (h *ScanHandler) shardFailedTerminally(ctx context.Context, shardID asset.S
 	return shard.Status == asset.ShardFailed, nil
 }
 
-func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID) (*asset.ScanRun, error) {
+func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID, network *[]networkProjection) (*asset.ScanRun, error) {
 	shard, err := h.repositories.Inventory().GetScanShard(ctx, shardID)
 	if err != nil {
 		return nil, err
@@ -123,7 +134,10 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	if err := h.checkTaskControl(ctx, &run, &shard); err != nil {
 		return &run, err
 	}
-	if shard.Status == asset.ShardSucceeded || shard.Status == asset.ShardSkipped || shard.Status == asset.ShardFailed {
+	// Network membership depends on every source in the target. Re-read prior
+	// successes when resuming a target: previously excluded candidates may now
+	// connect through resources discovered by a source that had failed.
+	if (shard.Status == asset.ShardSucceeded && run.ScopeMode != asset.ScanSelectedNetworks) || shard.Status == asset.ShardSkipped || shard.Status == asset.ShardFailed {
 		if shard.Status == asset.ShardFailed {
 			return &run, fmt.Errorf("scan shard %q already failed: %s", shard.ID, shard.Coverage.FailureReason)
 		}
@@ -153,6 +167,18 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	adapter, err := h.runtimes.ResolveInventory(shard.Provider)
 	if err != nil {
 		return &run, err
+	}
+	if run.ScopeMode == asset.ScanSelectedNetworks {
+		if provider, ok := adapter.(interface {
+			InventorySources() []contracts.InventorySource
+		}); ok {
+			for _, source := range provider.InventorySources() {
+				if source.Name == shard.Source {
+					shard.Authoritative = source.AuthoritativeDefault
+					break
+				}
+			}
+		}
 	}
 	now := h.clock()
 	if shard.StartedAt == nil {
@@ -263,25 +289,8 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		cursor = batch.NextCursor
 	}
 	if networkTarget != nil {
-		filtered := FilterNetworkClosure(*networkTarget, collected)
-		for start := 0; start < len(filtered); start += MaxBatchSize {
-			end := start + MaxBatchSize
-			if end > len(filtered) {
-				end = len(filtered)
-			}
-			batch := contracts.InventoryBatch{Items: filtered[start:end], Complete: end == len(filtered)}
-			if err := h.service.ProjectBatch(ctx, &shard, connection, batch, ProjectionOptions{ObservedAt: h.clock()}); err != nil {
-				finishErr := h.service.FinishShard(ctx, &shard, asset.ShardFailed, err.Error())
-				if finishErr == nil {
-					finishErr = h.finishRunIfTerminal(ctx, &run)
-				}
-				return &run, errors.Join(err, finishErr)
-			}
-			logProjectedInventoryBatch(ctx, shard, nativeType, batch)
-			if err := h.checkTaskControl(ctx, &run, &shard); err != nil {
-				return &run, err
-			}
-		}
+		*network = append(*network, networkProjection{shard: shard, connection: connection, target: *networkTarget, items: collected})
+		return &run, nil
 	}
 	if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, ""); err != nil {
 		return &run, err
@@ -290,6 +299,64 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		return &run, err
 	}
 	return &run, nil
+}
+
+// Close network membership across all product shards before projecting any of
+// them. Filtering each kind separately loses chains such as network -> backend
+// -> URL map -> proxy, even when every provider response is complete.
+func (h *ScanHandler) projectNetworkTarget(ctx context.Context, run *asset.ScanRun, projections []networkProjection, complete bool) error {
+	if len(projections) == 0 {
+		return nil
+	}
+	target := projections[0].target
+	var candidates []contracts.InventoryItem
+	for _, projection := range projections {
+		if projection.connection.ID != run.ConnectionID || projection.shard.ScanRunID != run.ID || projection.target.Key != target.Key {
+			return fmt.Errorf("network scan job contains unrelated targets")
+		}
+		candidates = append(candidates, projection.items...)
+	}
+	members := make(map[string]bool)
+	for _, item := range FilterNetworkClosure(target, candidates) {
+		members[item.NativeType+"\x00"+item.NativeID] = true
+	}
+	for _, projection := range projections {
+		shard := projection.shard
+		if err := h.checkTaskControl(ctx, run, &shard); err != nil {
+			return err
+		}
+		connection, err := h.repositories.Connections().GetConnection(ctx, projection.connection.ID)
+		if err != nil {
+			return err
+		}
+		if connection.Status != asset.ConnectionActive {
+			return fmt.Errorf("%w: connection %q is not active", asset.ErrConnectionNotValidated, connection.ID)
+		}
+		filtered := make([]contracts.InventoryItem, 0)
+		for _, item := range projection.items {
+			if members[item.NativeType+"\x00"+item.NativeID] {
+				filtered = append(filtered, item)
+			}
+		}
+		// A missing source may hide a dependency chain. Preserve observations
+		// from successful sources but do not infer absence from that closure.
+		shard.Authoritative = shard.Authoritative && complete
+		for start := 0; start < len(filtered); start += MaxBatchSize {
+			end := min(start+MaxBatchSize, len(filtered))
+			batch := contracts.InventoryBatch{Items: filtered[start:end], Complete: end == len(filtered)}
+			if err := h.service.ProjectBatch(ctx, &shard, connection, batch, ProjectionOptions{ObservedAt: h.clock()}); err != nil {
+				return errors.Join(err, h.service.FinishShard(ctx, &shard, asset.ShardFailed, err.Error()))
+			}
+			logProjectedInventoryBatch(ctx, shard, string(shard.ResourceKindID), batch)
+			if err := h.checkTaskControl(ctx, run, &shard); err != nil {
+				return err
+			}
+		}
+		if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, ""); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (h *ScanHandler) projectFallbackInventoryBatch(

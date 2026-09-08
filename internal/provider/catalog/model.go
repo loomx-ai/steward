@@ -72,6 +72,7 @@ type RESTResource struct {
 	Collection       string   `json:"collection,omitempty"`
 	ReadOperations   []string `json:"read_operations"`
 	DeleteOperations []string `json:"delete_operations,omitempty"`
+	ListOperations   []string `json:"list_operations,omitempty"`
 }
 
 type Catalog struct {

@@ -2,45 +2,41 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: storage.googleapis.com/Bucket
-  class: storage.bucket
+  nativeType: cloudkms.googleapis.com/KeyRing
+  class: security.key_ring
 presentation:
   displayNames:
-    en-US: Cloud Storage bucket
-    zh-CN: 对象存储桶
-  consoleLinkTemplate: https://console.cloud.google.com/storage/browser/{nativeId|suffix:/}?project={projectId}
+    en-US: Cloud KMS key ring
+    zh-CN: KMS 密钥环
 scope:
-  kind: global
+  kind: region
 discovery:
   source: product-api
-  detail:
-    operation: storage.buckets.get
-    itemsPath: $
-    identityPath: name
   list:
-    operation: storage.buckets.list
+    operation: cloudkms.projects.locations.keyRings.list
     parameters:
-      project: scope.project
-    itemsPath: items
+      parent: scope.locationParent
+    itemsPath: keyRings
     identityPath: name
     pagination:
       type: token
       tokenParameter: pageToken
       tokenPath: nextPageToken
-      pageSizeParameter: maxResults
-      maxPageSize: 500
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail:
+    operation: cloudkms.projects.locations.keyRings.get
+    itemsPath: $
+    identityPath: name
 fields:
   name:
     path: name
     type: string
   state:
-    path: status
+    path: state
     type: string
   projectId:
     path: project_id
-    type: string
-  zoneId:
-    path: zone_id
     type: string
   labels:
     path: labels
@@ -49,11 +45,11 @@ extensions:
   hook: gcp.resource
 actions:
   delete:
-    operation: storage.buckets.delete
+    operation: cloudkms.projects.locations.keyRings.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: storage.buckets.get
+      operation: cloudkms.projects.locations.keyRings.get
       itemsPath: $
       identityPath: name

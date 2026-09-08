@@ -374,8 +374,8 @@ func TestCreatorAddsDirectNetworkProductShardsForSelectedNetworks(t *testing.T) 
 	kindsByTarget := make(map[string][]asset.ResourceKindID)
 	for _, shard := range created.Shards {
 		kindsByTarget[shard.TargetKey] = append(kindsByTarget[shard.TargetKey], shard.ResourceKindID)
-		if !shard.Authoritative {
-			t.Fatalf("selected-network shard is not authoritative: %+v", shard)
+		if shard.Authoritative != (shard.Source == "product-api") {
+			t.Fatalf("selected-network shard changed its source's authority: %+v", shard)
 		}
 	}
 	if got := kindsByTarget["vpc:cn-hangzhou:vpc-a"]; !reflect.DeepEqual(
@@ -998,4 +998,18 @@ func (connectionConflictRepository) PutConnectionIfCredentialUnchanged(
 
 func (connectionConflictRepository) PutConnectionIfUnchanged(context.Context, asset.CloudConnection, time.Time) error {
 	return persistence.ErrConflict
+}
+
+func TestCreatorIncludesGlobalKindsInNativeNetworkClosure(t *testing.T) {
+	repositories, _, now := creatorFixture(t)
+	native := asset.ResourceKind{ID: "alicloud:global-network", Provider: asset.ProviderAliCloud, NativeType: "TEST::GlobalNetwork", Class: "network.vpc", ScopeKinds: []asset.ScopeKind{asset.ScopeGlobal}, Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: "test"}
+	directory := creatorDirectory{sources: []contracts.InventorySource{{Name: "product-api", RootScopeKinds: []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, AuthoritativeDefault: true, NetworkClosure: true}}, bundle: spec.Bundle{Provider: asset.ProviderAliCloud, Specs: []spec.CompiledSpec{{Definition: spec.ResourceKindSpec{Discovery: spec.DiscoverySpec{Source: "product-api"}}, ResourceKind: native}}}}
+	creator, err := inventory.NewCreator(repositories, directory, inventory.WithCreatorClock(func() time.Time { return now }))
+	if err != nil {
+		t.Fatal(err)
+	}
+	created, err := creator.Create(context.Background(), inventory.ScanCreationRequest{ConnectionID: "connection-a", RequestedBy: "alice", ScopeMode: asset.ScanSelectedNetworks, NetworkTargets: []inventory.NetworkTargetRequest{{Kind: asset.ScanTargetVPC, RegionID: "cn-hangzhou", NativeID: "vpc-a"}}})
+	if err != nil || len(created.Shards) != 1 || created.Shards[0].ResourceKindID != native.ID {
+		t.Fatalf("global network kind was omitted: %+v err=%v", created, err)
+	}
 }

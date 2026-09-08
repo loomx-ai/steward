@@ -117,7 +117,7 @@ func retryTemplates(
 		for _, source := range sources {
 			if !source.KindSpecific && sourceSupportsScope(source, scopeKind) {
 				result = append(result, retryShardTemplate{
-					source: source.Name, authoritative: false,
+					source: source.Name, authoritative: source.AuthoritativeDefault,
 				})
 			}
 		}

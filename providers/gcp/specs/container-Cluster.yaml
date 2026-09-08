@@ -12,10 +12,16 @@ presentation:
 scope:
   kind: region
 discovery:
-  source: cloud-asset-inventory
+  source: product-api
   detail:
     operation: container.projects.locations.clusters.get
     itemsPath: $
+    identityPath: name
+  list:
+    operation: container.projects.locations.clusters.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: clusters
     identityPath: name
 fields:
   name:

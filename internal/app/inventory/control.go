@@ -226,8 +226,16 @@ func (s *ControlService) Retry(ctx context.Context, id asset.ScanTaskID, actor s
 		}
 		generation := task.RetryGeneration + 1
 		byTarget := make(map[string][]string)
+		networkRetries := make(map[string]bool)
+		if task.ScopeMode == asset.ScanSelectedNetworks {
+			for _, shard := range shards {
+				if shard.Status == asset.ShardFailed || shard.Status == asset.ShardBlocked {
+					networkRetries[shard.TargetKey] = true
+				}
+			}
+		}
 		for _, shard := range shards {
-			if shard.Status != asset.ShardFailed && shard.Status != asset.ShardBlocked {
+			if shard.Status != asset.ShardFailed && shard.Status != asset.ShardBlocked && !(shard.Status == asset.ShardSucceeded && networkRetries[shard.TargetKey]) {
 				continue
 			}
 			if _, desired := desiredSignatures[retryScanShardSignature(shard)]; managedPlan && !desired {

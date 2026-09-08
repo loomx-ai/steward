@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
@@ -55,6 +56,25 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if reason := protectionReason(a.kind.NativeType, data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
+	}
+	metadata, err := providerData()
+	if err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	for _, compiled := range metadata.bundle.Specs {
+		if compiled.ResourceKind.NativeType != a.kind.NativeType {
+			continue
+		}
+		for _, condition := range compiled.Definition.Actions[request.Action].Preconditions {
+			if !slices.Contains(condition.AllowedValues, fmt.Sprint(productValue(data, condition.Path))) {
+				return contracts.PreflightResult{Reason: condition.Reason}, nil
+			}
+		}
+	}
+	if strings.HasPrefix(a.kind.NativeType, "cloudkms.googleapis.com/") {
+		if reason, err := a.kmsPreflight(ctx, data); err != nil || reason != "" {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
 	}
 	if a.kind.NativeType == "storage.googleapis.com/Bucket" {
 		// A bucket's globally unique name has no project component.
@@ -125,8 +145,11 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 		parts := strings.Split(a.endpoint, "/")
 		return strings.Join(parts[:len(parts)-2], "/") + "/operations/" + name, nil
 	}
-	if nativeType == "run.googleapis.com/Service" || nativeType == "artifactregistry.googleapis.com/Repository" {
+	if a.regionalOperation() {
 		name := text(data["name"])
+		if name == "" && data["done"] == true {
+			return "", nil
+		}
 		parts := strings.Split(name, "/")
 		if len(parts) != 6 || parts[0] != "projects" || (parts[1] != a.client.project && parts[1] != a.client.number) || parts[2] != "locations" || parts[4] != "operations" {
 			return "", fmt.Errorf("Google API omitted a valid deletion operation")
@@ -141,10 +164,27 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 		if len(resourceScope) < 5 || resourceScope[3] != "locations" || resourceScope[4] != parts[3] {
 			return "", fmt.Errorf("Google deletion operation belongs to another location")
 		}
-		version := strings.Split(strings.TrimPrefix(endpoint.Path, "/"), "/")[0]
-		return "https://" + endpoint.Host + "/" + version + "/" + name, nil
+		metadata, err := providerData()
+		if err != nil {
+			return "", err
+		}
+		for _, operation := range metadata.catalog.Operations {
+			if operation.Call == nil || operation.Call.Product != a.deleteOperation.Call.Product || !strings.HasSuffix(operation.ID, ".operations.get") || len(operation.Call.RawPathParameters) != 1 {
+				continue
+			}
+			bound, err := catalog.BindREST(operation, map[string]any{operation.Call.RawPathParameters[0]: name})
+			if err == nil {
+				return bound.URL, nil
+			}
+		}
+		return "", fmt.Errorf("GCP deletion operation has no catalog polling method")
 	}
 	return "", nil
+}
+
+func (a *action) regionalOperation() bool {
+	_, hasDone := object(a.deleteOperation.OutputSchema["properties"])["done"]
+	return hasDone
 }
 func operationError(data map[string]any, requestID string) error {
 	detail := object(data["error"])
@@ -162,7 +202,7 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 			return contracts.WaitResult{}, fmt.Errorf("invalid GCP operation")
 		}
 		name := last(endpoint.Path)
-		if a.kind.NativeType == "run.googleapis.com/Service" || a.kind.NativeType == "artifactregistry.googleapis.com/Repository" {
+		if a.regionalOperation() {
 			name = strings.TrimPrefix(strings.TrimPrefix(endpoint.Path, "/"), strings.Split(strings.TrimPrefix(endpoint.Path, "/"), "/")[0]+"/")
 		}
 		expected, err := a.operationURL(map[string]any{"name": name})
@@ -195,7 +235,11 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	return contracts.ReadbackResult{Exists: true, State: text(data["status"])}, nil
+	state := text(data["status"])
+	if state == "" {
+		state = text(data["state"])
+	}
+	return contracts.ReadbackResult{Exists: true, State: state}, nil
 }
 
 func protectionReason(nativeType string, data map[string]any) string {

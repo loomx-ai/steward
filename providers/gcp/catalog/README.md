@@ -23,12 +23,29 @@ Resource rules live in `../specs`, with explicit dependency targets and readback
 operations. Runtime path matching checks those bindings and the selected project
 before constructing a request.
 
+Known resource kinds use their native product list methods. Compute aggregate
+responses are routed by their actual zonal/regional/global identity; child kinds
+use explicit parent discovery. Product cursors bind the connection, scope, rule
+revision, list targets and parent identities. Partial-result warnings and
+unreachable locations fail the shard. Cloud Asset Inventory remains a broad,
+non-authoritative index for kinds without product rules; it does not overwrite
+or close the resources owned by product shards. Network target selection uses
+live Compute list methods.
+
+Cloud KMS rules include key rings, keys, versions and import jobs. The supported
+delete operation removes eligible resource records and polls the native
+operation before checking absence. It does not schedule destruction of key
+material. Import jobs have no delete method. Version state/import restrictions,
+automatic rotation, remaining versions/keys and unexpired import jobs are checked
+against live APIs before deletion.
+
 Reference material:
 
 - [Google Discovery directory](https://www.googleapis.com/discovery/v1/apis)
 - [Cloud Asset Inventory asset types](https://docs.cloud.google.com/asset-inventory/docs/asset-types)
 - [Compute REST API](https://docs.cloud.google.com/compute/docs/reference/rest/v1)
 - [Google API resource names](https://cloud.google.com/apis/design/resource_names)
+- [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
 
 The checked-in tests establish metadata consistency and protocol behavior. They
 do not establish live permissions, eventual inventory consistency, service

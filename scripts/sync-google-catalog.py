@@ -71,7 +71,7 @@ def main():
     keys = {"native_type": "nativeType", "class": "class", "display_name": "displayName", "scope_kinds": "scopeKinds"}
     types = [{target: item[key] for key, target in keys.items()} for item in selection["resource_types"]]
     for target, source in zip(types, selection["resource_types"]):
-        target["rest"] = {key: source[key] for key in ("collection", "read_operations", "delete_operations")}
+        target["rest"] = {key: source[key] for key in ("collection", "read_operations", "delete_operations", "list_operations") if key in source}
     result = {"documents": documents, "x-resource-types": types}
     (directory / "discovery.json").write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
     print(f"Saved {len(documents)} official documents with {sum(len(d['document']['methods']) for d in documents)} methods")

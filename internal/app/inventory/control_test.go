@@ -578,3 +578,64 @@ func TestScanControlRetryRejectsUnverifiedConnection(t *testing.T) {
 		t.Fatalf("Retry() error = %v, want ErrConnectionNotValidated", err)
 	}
 }
+
+func TestNetworkRetryRequeuesSuccessfulSourcesNeededForClosure(t *testing.T) {
+	ctx := context.Background()
+	repositories, creator, now := creatorFixture(t)
+	created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection-a", RequestedBy: "alice", ScopeMode: asset.ScanSelectedNetworks, NetworkTargets: []inventory.NetworkTargetRequest{{Kind: asset.ScanTargetVPC, RegionID: "cn-hangzhou", NativeID: "vpc-a"}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	task := created.ScanRun
+	task.Status = asset.ScanFailed
+	task.CompletionStatus = asset.ScanPartial
+	task.FinishedAt = &now
+	if err = repositories.Inventory().PutScanRun(ctx, task); err != nil {
+		t.Fatal(err)
+	}
+	failed := created.Shards[0]
+	failed.Status = asset.ShardFailed
+	failed.Coverage.FailureReason = "provider error"
+	if err = repositories.Inventory().PutScanShard(ctx, failed); err != nil {
+		t.Fatal(err)
+	}
+	successful := failed
+	successful.ID = "successful-network-source"
+	successful.Status = asset.ShardSucceeded
+	successful.Coverage.Complete = true
+	successful.Coverage.FailureReason = ""
+	successful.Source = "product-api"
+	if err = repositories.Inventory().PutScanShard(ctx, successful); err != nil {
+		t.Fatal(err)
+	}
+	controller, err := inventory.NewControlService(repositories)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = controller.Retry(ctx, task.ID, "alice"); err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []asset.ScanShardID{failed.ID, successful.ID} {
+		shard, err := repositories.Inventory().GetScanShard(ctx, id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if shard.Status != asset.ShardPending || shard.RetryGeneration != 1 || shard.Coverage.Complete {
+			t.Fatalf("network source omitted from retry: %+v", shard)
+		}
+	}
+	jobs, err := repositories.Jobs().ListJobsByAggregate(ctx, "scan_task", string(task.ID))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, job := range jobs {
+		if job.RetryGeneration == 1 && job.Type == execution.JobScan {
+			ids, ok := job.Payload["scan_shard_ids"].([]any)
+			if !ok || len(ids) != 2 {
+				t.Fatalf("retry job omitted closure source: %+v", job.Payload)
+			}
+			return
+		}
+	}
+	t.Fatal("network retry job missing")
+}

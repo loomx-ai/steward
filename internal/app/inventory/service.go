@@ -538,7 +538,7 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 				updatedShard.Coverage.SkipReason = asset.SkipProductUnsupported
 			}
 		}
-		if updatedShard.Coverage.Complete {
+		if updatedShard.Coverage.Complete && updatedShard.Authoritative {
 			seenIDs, err := repository.ListAssetIDsObservedByShard(ctx, updatedShard.ID)
 			if err != nil {
 				return err

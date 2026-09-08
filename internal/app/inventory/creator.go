@@ -251,13 +251,13 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 			run.Targets = append(run.Targets, target)
 			for _, source := range sources {
 				if !source.KindSpecific && sourceSupportsScope(source, asset.ScopeRegion) {
-					shards = append(shards, c.shard(run.ID, target.Key, connection.Provider, target.RegionID, scope.ID, source.Name, "", true, now))
+					shards = append(shards, c.shard(run.ID, target.Key, connection.Provider, target.RegionID, scope.ID, source.Name, "", source.AuthoritativeDefault, now))
 				}
 			}
 			for _, kind := range kinds {
 				source := kindSources[kind.ID]
 				if !source.KindSpecific ||
-					!kindSupportsScope(kind, asset.ScopeRegion) ||
+					!(kindSupportsScope(kind, asset.ScopeRegion) || (source.NetworkClosure && kindSupportsScope(kind, asset.ScopeGlobal))) ||
 					!sourceSupportsScope(source, asset.ScopeRegion) ||
 					!networkSourceKindMatchesTarget(source, kind, target.Kind) {
 					continue
@@ -270,7 +270,7 @@ func (c *Creator) Create(ctx context.Context, request ScanCreationRequest) (Scan
 					scope.ID,
 					source.Name,
 					kind.ID,
-					true,
+					source.AuthoritativeDefault,
 					now,
 				))
 			}

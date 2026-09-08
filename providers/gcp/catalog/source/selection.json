@@ -9,6 +9,7 @@
         "compute.backendServices.delete",
         "compute.backendServices.get",
         "compute.backendServices.list",
+        "compute.disks.aggregatedList",
         "compute.disks.delete",
         "compute.disks.get",
         "compute.disks.list",
@@ -26,12 +27,14 @@
         "compute.globalForwardingRules.list",
         "compute.globalOperations.get",
         "compute.globalOperations.list",
+        "compute.healthChecks.aggregatedList",
         "compute.healthChecks.delete",
         "compute.healthChecks.get",
         "compute.healthChecks.list",
         "compute.images.delete",
         "compute.images.get",
         "compute.images.list",
+        "compute.instanceTemplates.aggregatedList",
         "compute.instanceTemplates.delete",
         "compute.instanceTemplates.get",
         "compute.instanceTemplates.list",
@@ -81,18 +84,22 @@
         "compute.snapshots.delete",
         "compute.snapshots.get",
         "compute.snapshots.list",
+        "compute.sslCertificates.aggregatedList",
         "compute.sslCertificates.delete",
         "compute.sslCertificates.get",
         "compute.sslCertificates.list",
         "compute.subnetworks.delete",
         "compute.subnetworks.get",
         "compute.subnetworks.list",
+        "compute.targetHttpProxies.aggregatedList",
         "compute.targetHttpProxies.delete",
         "compute.targetHttpProxies.get",
         "compute.targetHttpProxies.list",
+        "compute.targetHttpsProxies.aggregatedList",
         "compute.targetHttpsProxies.delete",
         "compute.targetHttpsProxies.get",
         "compute.targetHttpsProxies.list",
+        "compute.urlMaps.aggregatedList",
         "compute.urlMaps.delete",
         "compute.urlMaps.get",
         "compute.urlMaps.list",
@@ -181,6 +188,27 @@
       "methods": [
         "cloudresourcemanager.projects.get"
       ]
+    },
+    {
+      "source_uri": "https://cloudkms.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudkms.projects.locations.get",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.delete",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.delete",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.get",
+        "cloudkms.projects.locations.keyRings.cryptoKeys.list",
+        "cloudkms.projects.locations.keyRings.delete",
+        "cloudkms.projects.locations.keyRings.get",
+        "cloudkms.projects.locations.keyRings.importJobs.get",
+        "cloudkms.projects.locations.keyRings.importJobs.list",
+        "cloudkms.projects.locations.keyRings.list",
+        "cloudkms.projects.locations.list",
+        "cloudkms.projects.locations.operations.get"
+      ]
     }
   ],
   "resource_types": [
@@ -197,6 +225,9 @@
       ],
       "delete_operations": [
         "compute.instances.delete"
+      ],
+      "list_operations": [
+        "compute.instances.aggregatedList"
       ]
     },
     {
@@ -212,6 +243,9 @@
       ],
       "delete_operations": [
         "compute.disks.delete"
+      ],
+      "list_operations": [
+        "compute.disks.aggregatedList"
       ]
     },
     {
@@ -227,6 +261,9 @@
       ],
       "delete_operations": [
         "compute.regionDisks.delete"
+      ],
+      "list_operations": [
+        "compute.regionDisks.list"
       ]
     },
     {
@@ -242,6 +279,9 @@
       ],
       "delete_operations": [
         "compute.snapshots.delete"
+      ],
+      "list_operations": [
+        "compute.snapshots.list"
       ]
     },
     {
@@ -257,6 +297,9 @@
       ],
       "delete_operations": [
         "compute.images.delete"
+      ],
+      "list_operations": [
+        "compute.images.list"
       ]
     },
     {
@@ -275,6 +318,9 @@
       "delete_operations": [
         "compute.instanceTemplates.delete",
         "compute.regionInstanceTemplates.delete"
+      ],
+      "list_operations": [
+        "compute.instanceTemplates.aggregatedList"
       ]
     },
     {
@@ -290,6 +336,9 @@
       ],
       "delete_operations": [
         "compute.networks.delete"
+      ],
+      "list_operations": [
+        "compute.networks.list"
       ]
     },
     {
@@ -305,6 +354,9 @@
       ],
       "delete_operations": [
         "compute.subnetworks.delete"
+      ],
+      "list_operations": [
+        "compute.subnetworks.list"
       ]
     },
     {
@@ -320,6 +372,9 @@
       ],
       "delete_operations": [
         "compute.firewalls.delete"
+      ],
+      "list_operations": [
+        "compute.firewalls.list"
       ]
     },
     {
@@ -335,6 +390,9 @@
       ],
       "delete_operations": [
         "compute.routes.delete"
+      ],
+      "list_operations": [
+        "compute.routes.list"
       ]
     },
     {
@@ -350,6 +408,9 @@
       ],
       "delete_operations": [
         "compute.routers.delete"
+      ],
+      "list_operations": [
+        "compute.routers.list"
       ]
     },
     {
@@ -365,6 +426,9 @@
       ],
       "delete_operations": [
         "compute.addresses.delete"
+      ],
+      "list_operations": [
+        "compute.addresses.list"
       ]
     },
     {
@@ -380,6 +444,9 @@
       ],
       "delete_operations": [
         "compute.globalAddresses.delete"
+      ],
+      "list_operations": [
+        "compute.globalAddresses.list"
       ]
     },
     {
@@ -395,6 +462,9 @@
       ],
       "delete_operations": [
         "compute.forwardingRules.delete"
+      ],
+      "list_operations": [
+        "compute.forwardingRules.list"
       ]
     },
     {
@@ -410,6 +480,9 @@
       ],
       "delete_operations": [
         "compute.globalForwardingRules.delete"
+      ],
+      "list_operations": [
+        "compute.globalForwardingRules.list"
       ]
     },
     {
@@ -418,16 +491,16 @@
       "class": "network.load_balancer_backend",
       "display_name": "Backend service",
       "scope_kinds": [
-        "region",
         "global"
       ],
       "read_operations": [
-        "compute.backendServices.get",
-        "compute.regionBackendServices.get"
+        "compute.backendServices.get"
       ],
       "delete_operations": [
-        "compute.backendServices.delete",
-        "compute.regionBackendServices.delete"
+        "compute.backendServices.delete"
+      ],
+      "list_operations": [
+        "compute.backendServices.list"
       ]
     },
     {
@@ -446,6 +519,9 @@
       "delete_operations": [
         "compute.healthChecks.delete",
         "compute.regionHealthChecks.delete"
+      ],
+      "list_operations": [
+        "compute.healthChecks.aggregatedList"
       ]
     },
     {
@@ -464,6 +540,9 @@
       "delete_operations": [
         "compute.urlMaps.delete",
         "compute.regionUrlMaps.delete"
+      ],
+      "list_operations": [
+        "compute.urlMaps.aggregatedList"
       ]
     },
     {
@@ -482,6 +561,9 @@
       "delete_operations": [
         "compute.targetHttpProxies.delete",
         "compute.regionTargetHttpProxies.delete"
+      ],
+      "list_operations": [
+        "compute.targetHttpProxies.aggregatedList"
       ]
     },
     {
@@ -500,6 +582,9 @@
       "delete_operations": [
         "compute.targetHttpsProxies.delete",
         "compute.regionTargetHttpsProxies.delete"
+      ],
+      "list_operations": [
+        "compute.targetHttpsProxies.aggregatedList"
       ]
     },
     {
@@ -518,6 +603,9 @@
       "delete_operations": [
         "compute.sslCertificates.delete",
         "compute.regionSslCertificates.delete"
+      ],
+      "list_operations": [
+        "compute.sslCertificates.aggregatedList"
       ]
     },
     {
@@ -533,6 +621,9 @@
       ],
       "delete_operations": [
         "storage.buckets.delete"
+      ],
+      "list_operations": [
+        "storage.buckets.list"
       ]
     },
     {
@@ -548,6 +639,9 @@
       ],
       "delete_operations": [
         "pubsub.projects.topics.delete"
+      ],
+      "list_operations": [
+        "pubsub.projects.topics.list"
       ]
     },
     {
@@ -563,6 +657,9 @@
       ],
       "delete_operations": [
         "pubsub.projects.subscriptions.delete"
+      ],
+      "list_operations": [
+        "pubsub.projects.subscriptions.list"
       ]
     },
     {
@@ -578,6 +675,9 @@
       ],
       "delete_operations": [
         "sql.instances.delete"
+      ],
+      "list_operations": [
+        "sql.instances.list"
       ]
     },
     {
@@ -591,7 +691,10 @@
       "read_operations": [
         "container.projects.locations.clusters.get"
       ],
-      "delete_operations": []
+      "delete_operations": [],
+      "list_operations": [
+        "container.projects.locations.clusters.list"
+      ]
     },
     {
       "native_type": "run.googleapis.com/Service",
@@ -606,6 +709,9 @@
       ],
       "delete_operations": [
         "run.projects.locations.services.delete"
+      ],
+      "list_operations": [
+        "run.projects.locations.services.list"
       ]
     },
     {
@@ -621,6 +727,9 @@
       ],
       "delete_operations": [
         "artifactregistry.projects.locations.repositories.delete"
+      ],
+      "list_operations": [
+        "artifactregistry.projects.locations.repositories.list"
       ]
     },
     {
@@ -639,6 +748,10 @@
       "delete_operations": [
         "secretmanager.projects.secrets.delete",
         "secretmanager.projects.locations.secrets.delete"
+      ],
+      "list_operations": [
+        "secretmanager.projects.secrets.list",
+        "secretmanager.projects.locations.secrets.list"
       ]
     },
     {
@@ -654,6 +767,83 @@
       ],
       "delete_operations": [
         "compute.regionBackendServices.delete"
+      ],
+      "list_operations": [
+        "compute.regionBackendServices.list"
+      ]
+    },
+    {
+      "native_type": "cloudkms.googleapis.com/KeyRing",
+      "collection": "keyRings",
+      "class": "security.key_ring",
+      "display_name": "Cloud KMS key ring",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "cloudkms.projects.locations.keyRings.get"
+      ],
+      "delete_operations": [
+        "cloudkms.projects.locations.keyRings.delete"
+      ],
+      "list_operations": [
+        "cloudkms.projects.locations.keyRings.list"
+      ]
+    },
+    {
+      "native_type": "cloudkms.googleapis.com/CryptoKey",
+      "collection": "cryptoKeys",
+      "class": "security.key",
+      "display_name": "Cloud KMS key",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.get"
+      ],
+      "delete_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.delete"
+      ],
+      "list_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.list"
+      ]
+    },
+    {
+      "native_type": "cloudkms.googleapis.com/CryptoKeyVersion",
+      "collection": "cryptoKeyVersions",
+      "class": "security.key_version",
+      "display_name": "Cloud KMS key version",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.get"
+      ],
+      "delete_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.delete"
+      ],
+      "list_operations": [
+        "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.list"
+      ]
+    },
+    {
+      "native_type": "cloudkms.googleapis.com/ImportJob",
+      "collection": "importJobs",
+      "class": "security.key_import",
+      "display_name": "Cloud KMS import job",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "cloudkms.projects.locations.keyRings.importJobs.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "cloudkms.projects.locations.keyRings.importJobs.list"
       ]
     }
   ]
