@@ -2745,6 +2745,43 @@ func TestControllerGuaranteedDeleteCompletesWithoutAuthoritativeRescan(t *testin
 	}
 }
 
+func TestControllerVerifiedScopeAbsenceClosesChildrenWithoutChildDrivers(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, created, _ := controllerExecutionFixture(t, "execution-verified-scope", []controllerChild{
+		{id: "unknown-child", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate, controllerVerifiesAbsence: true},
+		{id: "node-group", ownership: graph.OwnershipExclusive, policy: graph.CleanupDelegate, controllerVerifiesAbsence: true},
+	})
+	driver := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false, State: "scope_absent"}}
+	handler := cleanup.NewExecutionHandler(planner, cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+		if value.ID != "ack" {
+			t.Fatalf("child driver resolved although its containing scope was verified absent: %s", value.ID)
+		}
+		return driver, nil
+	}))
+	if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-controller", "ack")); err != nil {
+		t.Fatal(err)
+	}
+	for _, id := range []asset.AssetID{"unknown-child", "node-group"} {
+		value, err := repositories.Inventory().GetAsset(ctx, id)
+		if err != nil || value.ClosedAt == nil || value.DeletedAt == nil {
+			t.Fatalf("verified scope member remains active: %s err=%v", id, err)
+		}
+	}
+	aggregate, err := repositories.CleanupTasks().GetTask(ctx, "cln-controller")
+	if err != nil || len(aggregate.Steps) != 1 {
+		t.Fatalf("unexpected child verification jobs: steps=%d err=%v", len(aggregate.Steps), err)
+	}
+	for _, impact := range aggregate.ImpactItems {
+		if impact.Result != plan.ImpactDeletedByController {
+			t.Fatalf("verified impact not closed: %+v", impact)
+		}
+	}
+	stored, err := repositories.Executions().GetExecution(ctx, created.ID)
+	if err != nil || stored.Status != execution.ExecutionSucceeded {
+		t.Fatalf("scope cleanup did not complete: %+v %v", stored, err)
+	}
+}
+
 func TestManagedVerificationMarksStillPresentAndContinueReadsOnce(t *testing.T) {
 	ctx := context.Background()
 	repositories, planner, created, now := controllerExecutionFixture(
@@ -3247,6 +3284,7 @@ type controllerChild struct {
 	waitForAbsence             bool
 	controllerDeleteGuaranteed bool
 	controllerIntegrated       bool
+	controllerVerifiesAbsence  bool
 }
 
 func directExecutionFixture(t *testing.T, executionID string) (persistence.Repositories, *cleanup.Service, execution.ExecutionAttempt, time.Time) {
@@ -3304,6 +3342,9 @@ func controllerExecutionFixture(t *testing.T, executionID string, children []con
 		if child.controllerIntegrated {
 			binding.Evidence["lifecycle_kind"] = "vpc_system_route_table"
 			binding.Evidence[graph.LifecycleEvidenceControllerIntegratedResource] = true
+		}
+		if child.controllerVerifiesAbsence {
+			binding.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
 		}
 		bindings = append(bindings, binding)
 		if child.explicitRetain {

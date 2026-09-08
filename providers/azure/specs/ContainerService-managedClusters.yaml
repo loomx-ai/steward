@@ -44,6 +44,16 @@ fields:
     type: string
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.ContainerService.ManagedClusters_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ContainerService.ManagedClusters_Get
+      itemsPath: $
+      identityPath: id
 relationships:
 - type: member_of
   targetType: Microsoft.Network/virtualNetworks

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "dd83259b4e921470fd6707c5b9e7b33b1ed1c5b969610b350353337a3aabd373",
+    "checksum": "bd289d32be68d875d6560cec1f09ea17b9d539d9bc98fa2074371a410e8d9c04",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6313f83bbfe6c074f4cb376ad9985cfd573a9a991ab05646a0b450499c10e133",
+  "content_checksum": "f6a793132cd6ca055b024b048013970976b504cd1294c8b729febc4ffce38b3d",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -14340,6 +14340,9 @@
         "collection": "managedClusters",
         "read_operations": [
           "Azure.Microsoft.ContainerService.ManagedClusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.ManagedClusters_Delete"
         ]
       }
     },

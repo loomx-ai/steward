@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 	"github.com/loomx-ai/steward/internal/provider/spec"
@@ -284,6 +285,42 @@ func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
 
 type contributorRuntimeDirectory struct {
 	runtime contracts.Provider
+}
+
+type clusterContributorRuntime struct {
+	connections []asset.ConnectionID
+}
+
+func (*clusterContributorRuntime) Provider() asset.Provider { return asset.ProviderAzure }
+func (*clusterContributorRuntime) Invoke(context.Context, contracts.Invocation) (contracts.InvocationResult, error) {
+	panic("contributor discovery cannot mutate resources")
+}
+func (r *clusterContributorRuntime) ClusterLifecycle(_ context.Context, id asset.ConnectionID) (governance.Contributor, error) {
+	r.connections = append(r.connections, id)
+	return emptyClusterContributor{}, nil
+}
+
+type emptyClusterContributor struct{}
+
+func (emptyClusterContributor) Contribute(context.Context, asset.ScopeID, []asset.Asset) (governance.Contribution, error) {
+	return governance.Contribution{}, nil
+}
+
+func TestAzureClusterContributorUsesExplicitConnectionOnlyWhenRequired(t *testing.T) {
+	runtime := &clusterContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderAzure}
+	if _, err := resolver.ResolveContributors(context.Background(), connection, nil); err != nil || len(runtime.connections) != 0 {
+		t.Fatalf("unneeded cluster API credentials requested: %+v %v", runtime.connections, err)
+	}
+	cluster := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: "Microsoft.ContainerService/managedClusters", ConnectionID: connection.ID}}
+	contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{cluster, cluster})
+	if err != nil || len(contributors) != 2 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+		t.Fatalf("cluster discovery not wired exactly once: contributors=%d connections=%+v err=%v", len(contributors), runtime.connections, err)
+	}
+	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{cluster}); err == nil {
+		t.Fatal("missing cluster lifecycle implementation silently accepted")
+	}
 }
 
 func (d contributorRuntimeDirectory) Resolve(asset.Provider) (contracts.Provider, error) {

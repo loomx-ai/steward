@@ -39686,7 +39686,9 @@
       "nativeType": "Microsoft.ContainerService/managedClusters",
       "rest": {
         "collection": "managedClusters",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.ManagedClusters_Delete"
+        ],
         "read_operations": [
           "Azure.Microsoft.ContainerService.ManagedClusters_Get"
         ]

@@ -50,12 +50,17 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	return &action{client: c, kind: kind, id: nativeID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location)}, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
-func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
+func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
 	res, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
+		if a.kind.NativeType == aksType {
+			read, err := a.aksGroupReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists && err == nil, Evidence: map[string]any{"aks_cluster_absent": true}}, err
+		}
 		return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 	}
 	if err != nil {
@@ -88,6 +93,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		}
 	}
 	switch a.kind.NativeType {
+	case aksType:
+		if reason, err := a.aksPreflight(ctx, request, res.data, locks); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
 	case vnetType:
 		children, err := a.client.listAll(ctx, a.id+"/subnets", a.kind.Version)
 		if err != nil {
@@ -124,6 +133,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProtected, Code: check.Reason, Message: contracts.SafeProviderValidationMessage}}
 	}
 	if check.Absent {
+		return contracts.ActionResult{}, nil
+	}
+	if check.Evidence["aks_cluster_absent"] == true {
 		return contracts.ActionResult{}, nil
 	}
 	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
@@ -269,6 +281,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	res, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
+		if a.kind.NativeType == aksType {
+			return a.aksGroupReadback(ctx, request)
+		}
 		return contracts.ReadbackResult{Exists: false}, nil
 	}
 	if err != nil {
@@ -302,4 +317,13 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 		return "blob_container_retention_policy"
 	}
 	return ""
+}
+
+func controllerOnlyReason(reason string) bool {
+	switch reason {
+	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic":
+		return true
+	default:
+		return false
+	}
 }

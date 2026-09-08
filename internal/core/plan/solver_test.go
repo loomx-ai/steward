@@ -29,6 +29,27 @@ func TestRetainingControllerRetainsItsTransitiveChildren(t *testing.T) {
 	}
 }
 
+func TestNonRetainableChildCanRemainWithRetainedController(t *testing.T) {
+	parent := binding("parent", "cluster", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	child := binding("cluster", "node", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	child.Evidence = map[string]any{"retention_supported": false}
+	input := plan.Input{Assets: []asset.Asset{actionable("parent"), actionable("cluster"), actionable("node")}, ResolvedAssetIDs: []asset.AssetID{"parent"}, LifecycleBindings: []graph.LifecycleBinding{parent, child}, RequestOptions: map[asset.AssetID]map[string]any{"parent": {"retain_resources": []string{"cluster"}}}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 {
+		t.Fatalf("retained cluster incorrectly blocked: blockers=%+v err=%v", result.Blockers, err)
+	}
+	for _, impact := range result.ImpactItems {
+		if impact.Expected != plan.ExpectedRetainExplicit {
+			t.Fatalf("retained cluster loses nodes: %+v", impact)
+		}
+	}
+	input.RequestOptions["parent"]["retain_resources"] = []string{"node"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 1 || result.Blockers[0].AssetID != "node" {
+		t.Fatalf("unavailable child retention accepted: blockers=%+v err=%v", result.Blockers, err)
+	}
+}
+
 func TestProviderAssetsAreFrozenAtPlanningTime(t *testing.T) {
 	vm, disk := actionable("vm"), actionable("disk")
 	vm.Normalized = map[string]any{"disks": []any{map[string]any{"autoDelete": true}}}

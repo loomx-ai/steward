@@ -162,6 +162,9 @@ func Solve(input Input) (Result, error) {
 					}
 					if expected == ExpectedRetainExplicit || expected == ExpectedRetainShared || expected == ExpectedProviderDefaultRetain {
 						nextRetention = expected
+						if supported, exists := binding.Evidence["retention_supported"].(bool); exists && !supported && inheritedRetention == "" {
+							blockers.add(Blocker{Code: BlockLifecycleAuthority, AssetID: managedID, ControllerID: controllerID, Message: "the provider cannot retain this resource while deleting its controller", Evidence: binding.Evidence})
+						}
 					}
 					impactKey := string(effectiveStepOwner) + "\x00" + string(controllerID) + "\x00" + string(managedID)
 					impact := ImpactItem{

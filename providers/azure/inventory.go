@@ -228,14 +228,21 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
 	reason := protectionReason(kind, raw)
-	if groupOwners[groupID] != "" {
+	if groupOwners[groupID] != "" && (reason == "" || controllerOnlyReason(reason)) {
 		reason = "azure_managed_resource_group"
 	}
 	if locked(id, locks) {
 		reason = "azure_management_lock"
 	}
 	if reason != "" {
-		normalized["cleanup_protected"] = true
+		// Provider ownership restricts direct deletion. It must not prohibit
+		// deletion through the reviewed owning controller. Locks and retention
+		// policies still protect both direct and delegated cleanup.
+		if controllerOnlyReason(reason) {
+			normalized["cleanup_controller_only"] = true
+		} else {
+			normalized["cleanup_protected"] = true
+		}
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)

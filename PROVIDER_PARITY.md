@@ -127,3 +127,15 @@ background evidence only, not acceptance evidence for this work.
   unfinished.
 - Full Go tests, targeted GCP/Azure/cleanup/plan/contracts/server race tests and
   vet passed after the attachment lifecycle and immutable-plan changes.
+- AKS has native deletion and an authoritative node-resource-group contributor.
+  Its impact plan includes unknown resource kinds and known nested resources;
+  live group membership, locks, tags, identity/ownership and permissions are
+  checked before deletion. Unsupported retention is blocked during planning.
+  Controller readback must verify the complete node group is absent before the
+  executor closes contained assets without independent resource drivers.
+- GCP/Azure preflight errors now distinguish a missing dependent collection from
+  a missing deletion target. Retained tests cover this boundary, native AKS
+  paging, new resources, missing/foreign impacts, delayed node group deletion,
+  failed operations and restart behavior. AKS external attachment retention,
+  other controllers, GCP cluster lifecycle and the broader acceptance scope
+  remain unfinished.

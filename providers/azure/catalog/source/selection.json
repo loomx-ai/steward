@@ -773,7 +773,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.ManagedClusters_Get"
       ],
-      "delete_operations": []
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.ManagedClusters_Delete"
+      ]
     },
     {
       "native_type": "Microsoft.KeyVault/vaults",

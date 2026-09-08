@@ -746,7 +746,7 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 		execution.LogJob(
 			ctx,
 			"info",
-			"controller-integrated resource inherits the controller deletion result; provider readback is suppressed",
+			"controller verified managed resource absence; separate resource readback is suppressed",
 		)
 		if err := h.completeControllerIntegratedVerification(
 			ctx,

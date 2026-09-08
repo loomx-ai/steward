@@ -29,6 +29,10 @@ type cloudFormationRuntime interface {
 	CloudFormation(context.Context, asset.ConnectionID, string) (provideraws.CloudFormationClient, error)
 }
 
+type clusterLifecycleRuntime interface {
+	ClusterLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
+}
+
 type lifecycleContributorResolver struct {
 	runtimes lifecycleRuntimeDirectory
 }
@@ -49,7 +53,23 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	case asset.ProviderGCP:
 		return []governance.Contributor{gcp.NewInstanceDisks()}, nil
 	case asset.ProviderAzure:
-		return []governance.Contributor{azure.NewResourceAttachments()}, nil
+		contributors := []governance.Contributor{azure.NewResourceAttachments()}
+		for _, value := range assets {
+			if value.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(value.Identity.NativeType, "Microsoft.ContainerService/managedClusters") {
+				continue
+			}
+			provider, ok := runtime.(clusterLifecycleRuntime)
+			if !ok {
+				return nil, fmt.Errorf("Azure runtime does not expose cluster lifecycle discovery")
+			}
+			contributor, err := provider.ClusterLifecycle(ctx, connection.ID)
+			if err != nil {
+				return nil, err
+			}
+			contributors = append(contributors, contributor)
+			break
+		}
+		return contributors, nil
 	case asset.ProviderAliCloud:
 		controllerRegions, err := controllerLocations(connection.Provider, assets)
 		if err != nil {

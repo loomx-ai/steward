@@ -144,6 +144,31 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 	}
 }
 
+func TestPreflightDistinguishesMissingTargetFromMissingRelatedGroup(t *testing.T) {
+	for _, targetGone := range []bool{true, false} {
+		value := actionAsset(diskType, "disk")
+		r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+			if strings.EqualFold(req.URL.Path, value.Identity.NativeID) && !targetGone {
+				return jsonResponse(200, nativeResource(diskType, "disk", "eastus", nil), nil), nil
+			}
+			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
+		})
+		driver, err := r.ResolveAction(context.Background(), "connection", value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		check, err := driver.Preflight(context.Background(), contracts.ActionRequest{Asset: value, Action: "delete"})
+		var call *contracts.ProviderCallError
+		if targetGone {
+			if err != nil || !check.Absent {
+				t.Fatalf("actual absence lost: %+v %v", check, err)
+			}
+		} else if !errors.As(err, &call) || call.Provider.Category != execution.ErrorDependencyViolation || check.Absent {
+			t.Fatalf("related group absence closed live disk: %+v %v", check, err)
+		}
+	}
+}
+
 func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 	value := actionAsset("Microsoft.Web/sites", "web")
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {

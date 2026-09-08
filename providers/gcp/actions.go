@@ -43,7 +43,8 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 
-func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (contracts.PreflightResult, error) {
+func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}

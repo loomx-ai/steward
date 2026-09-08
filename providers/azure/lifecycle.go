@@ -134,6 +134,9 @@ func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, asset
 			return result, err
 		}
 		for _, attachment := range attachments {
+			if sameAKSNodeGroup(assets, controller, attachment.id) {
+				continue
+			}
 			evidence := map[string]any{"resource_type": attachment.kind, "instance_id": attachment.id, "attachment_slot": attachment.slot, "delete_by_default": attachment.delete, "lifecycle_kind": "azure_attached_resource_delete"}
 			var managed *asset.Asset
 			for i := range assets {

@@ -197,13 +197,18 @@ func TestInventoryManagedGroupAndInheritedLocks(t *testing.T) {
 	id := strings.ToLower(resourceID(diskType, "disk"))
 	group := c.root() + "/resourcegroups/test"
 	item, err := r.inventoryItem(context.Background(), c, raw, map[string]string{group: "controller"}, nil)
-	if err != nil || item.Normalized["cleanup_protection_reason"] != "azure_managed_resource_group" {
+	if err != nil || item.Normalized["cleanup_protection_reason"] != "azure_managed_resource_group" || item.Normalized["cleanup_controller_only"] != true || item.Normalized["cleanup_protected"] == true {
 		t.Fatalf("managed group=%+v %v", item, err)
 	}
 	locks := []any{map[string]any{"id": group + "/providers/Microsoft.Authorization/locks/retain", "properties": map[string]any{"level": "CanNotDelete"}}}
 	item, err = r.inventoryItem(context.Background(), c, raw, nil, locks)
-	if err != nil || item.Normalized["cleanup_protection_reason"] != "azure_management_lock" || !locked(id, locks) {
+	if err != nil || item.Normalized["cleanup_protection_reason"] != "azure_management_lock" || item.Normalized["cleanup_protected"] != true || !locked(id, locks) {
 		t.Fatalf("inherited lock=%+v %v", item, err)
+	}
+	container := map[string]any{"id": resourceID(storageType, "storage") + "/blobServices/default/containers/held", "type": containerType, "properties": map[string]any{"hasLegalHold": true}}
+	item, err = r.inventoryItem(context.Background(), c, container, map[string]string{group: "controller"}, nil)
+	if err != nil || item.Normalized["cleanup_protection_reason"] != "blob_container_retention_policy" || item.Normalized["cleanup_protected"] != true {
+		t.Fatalf("managed group hides retention protection: %+v %v", item, err)
 	}
 }
 

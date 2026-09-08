@@ -65,12 +65,17 @@ const (
 	ManagedVerificationRetryOnceRequestKey = "_managed_verification_retry_once"
 )
 
-// ControllerDeletionImpliesAbsence identifies resources that are an inseparable
-// part of their controller rather than independently managed cloud resources.
+// ControllerDeletionImpliesAbsence identifies inseparable controller resources
+// and cascades whose provider driver verifies the complete containing scope is
+// absent before completing its own readback. A documented deletion guarantee
+// alone does not suppress independent child verification.
 // The lifecycle-kind fallback keeps cleanup tasks created before the explicit
 // evidence flag compatible with the current execution semantics.
 func ControllerDeletionImpliesAbsence(evidence map[string]any) bool {
 	if integrated, _ := evidence[graph.LifecycleEvidenceControllerIntegratedResource].(bool); integrated {
+		return true
+	}
+	if verified, _ := evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence].(bool); verified {
 		return true
 	}
 	lifecycleKind, _ := evidence["lifecycle_kind"].(string)

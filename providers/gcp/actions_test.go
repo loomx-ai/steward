@@ -117,6 +117,20 @@ func TestDeletionRechecksProtectionAndBucketOwnership(t *testing.T) {
 	}
 }
 
+func TestBucketChildCollectionNotFoundDoesNotProveBucketAbsence(t *testing.T) {
+	a := protocolAction(t, "storage.googleapis.com/Bucket", "sample-bucket", func(request *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(request.URL.Path, "/o") {
+			return apiResponse(request, 404, `{"error":{"code":404,"status":"NOT_FOUND"}}`), nil
+		}
+		return apiResponse(request, 200, `{"projectNumber":"123456"}`), nil
+	})
+	check, err := a.Preflight(context.Background(), contracts.ActionRequest{Action: "delete"})
+	var call *contracts.ProviderCallError
+	if !errors.As(err, &call) || call.Provider.Category != execution.ErrorDependencyViolation || check.Absent {
+		t.Fatalf("missing object collection mistaken for bucket absence: %+v %v", check, err)
+	}
+}
+
 func TestWaiterRejectsPersistedForeignOperationsAndProviderFailure(t *testing.T) {
 	var calls int
 	a := protocolAction(t, "run.googleapis.com/Service", "projects/sample-project/locations/us-central1/services/web", func(request *http.Request) (*http.Response, error) {

@@ -43,3 +43,28 @@ schemas and exercise delayed readback and restart behavior.
 
 See [VM and attached-resource deletion](https://learn.microsoft.com/en-us/azure/virtual-machines/delete)
 for the platform's disk, NIC and public-IP deletion policies.
+
+AKS cleanup reads `properties.nodeResourceGroup` from the live cluster and lists
+that group's resources with native ARM pagination. Group names and `MC_` prefixes
+are not ownership evidence. The group, known children, and unknown resource kinds
+must be present in the inventory and reviewed impact plan. Group ownership takes
+precedence over VM/NIC `Detach` options inside the group. Live locks, protected
+tags, newly discovered resources, changed groups, and inaccessible dependent
+collections block deletion. A missing dependent collection is not proof that
+the cluster is absent.
+
+The pinned AKS deletion API cannot retain resources inside the node resource
+group. A retention request is blocked at planning time; move such resources to a
+different group and rescan before deleting the cluster. Automatic VM/NIC deletion
+of attachments outside the group currently requires detaching those attachments
+first. An operation marked successful is followed by reads of both the cluster
+and its node resource group. Only confirmed group absence permits reconciliation
+of all contained resources, including kinds without independent action drivers.
+ARM provides no atomic snapshot-and-delete transaction for group membership;
+external writers must not add resources while a reviewed deletion is running.
+
+These tests establish protocol behavior, including pagination, retention, child
+scope/permission changes, worker state restoration, and group absence readback.
+They are not real Azure or independent emulator verification. See Microsoft's
+[AKS deletion behavior](https://learn.microsoft.com/en-us/azure/aks/delete-cluster)
+and [node resource group lifecycle and retention](https://learn.microsoft.com/en-us/azure/aks/faq#can-i-restore-my-cluster-after-i-delete-it).
