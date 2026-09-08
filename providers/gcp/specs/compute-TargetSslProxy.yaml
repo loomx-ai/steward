@@ -72,6 +72,9 @@ relationships:
 - type: depends_on
   targetType: compute.googleapis.com/SslPolicy
   targetIdPath: refs_compute_googleapis_com_SslPolicy
+- type: depends_on
+  targetType: certificatemanager.googleapis.com/CertificateMap
+  targetIdPath: refs_certificatemanager_googleapis_com_CertificateMap
 actions:
   delete:
     operation: compute.targetSslProxies.delete

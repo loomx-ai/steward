@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataplex.googleapis.com/Zone
+  class: data.lake_zone
+presentation:
+  displayNames:
+    en-US: Dataplex zone
+    zh-CN: Dataplex 数据区域
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataplex.projects.locations.lakes.zones.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: zones
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataplex.projects.locations.lakes.zones.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataplex.googleapis.com/Lake
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  description:
+    path: description
+    type: string
+  type:
+    path: type
+    type: string
+  resourceSpec:
+    path: resourceSpec
+    type: object
+  discoverySpec:
+    path: discoverySpec
+    type: object
+  assetStatus:
+    path: assetStatus
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataplex.googleapis.com/Lake
+  targetIdPath: refs_dataplex_googleapis_com_Lake
+actions:
+  delete:
+    operation: dataplex.projects.locations.lakes.zones.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataplex.projects.locations.lakes.zones.get
+      itemsPath: $
+      identityPath: name

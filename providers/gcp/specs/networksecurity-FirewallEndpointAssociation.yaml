@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networksecurity.googleapis.com/FirewallEndpointAssociation
+  class: security.firewall_attachment
+presentation:
+  displayNames:
+    en-US: Cloud NGFW endpoint association
+    zh-CN: 云 NGFW 端点关联
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networksecurity.projects.locations.firewallEndpointAssociations.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: firewallEndpointAssociations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networksecurity.projects.locations.firewallEndpointAssociations.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  network:
+    path: network
+    type: string
+  firewallEndpoint:
+    path: firewallEndpoint
+    type: string
+  tlsInspectionPolicy:
+    path: tlsInspectionPolicy
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: networksecurity.googleapis.com/FirewallEndpoint
+  targetIdPath: refs_networksecurity_googleapis_com_FirewallEndpoint
+actions:
+  delete:
+    operation: networksecurity.projects.locations.firewallEndpointAssociations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networksecurity.projects.locations.firewallEndpointAssociations.get
+      itemsPath: $
+      identityPath: name

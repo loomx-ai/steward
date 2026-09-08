@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networksecurity.googleapis.com/FirewallEndpoint
+  class: security.firewall_endpoint
+presentation:
+  displayNames:
+    en-US: Cloud NGFW endpoint
+    zh-CN: 云 NGFW 端点
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networksecurity.projects.locations.firewallEndpoints.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: firewallEndpoints
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networksecurity.projects.locations.firewallEndpoints.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  associatedNetworks:
+    path: associatedNetworks
+    type: array
+  associations:
+    path: associations
+    type: array
+  endpointSettings:
+    path: endpointSettings
+    type: object
+  billingProjectId:
+    path: billingProjectId
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: networksecurity.projects.locations.firewallEndpoints.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networksecurity.projects.locations.firewallEndpoints.get
+      itemsPath: $
+      identityPath: name

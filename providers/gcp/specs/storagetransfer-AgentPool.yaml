@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: storagetransfer.googleapis.com/AgentPool
+  class: data.transfer_pool
+presentation:
+  displayNames:
+    en-US: Storage Transfer agent pool
+    zh-CN: 存储传输代理池
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: storagetransfer.projects.agentPools.list
+    parameters:
+      projectId: scope.project
+    itemsPath: agentPools
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: storagetransfer.projects.agentPools.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  bandwidthLimit:
+    path: bandwidthLimit
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: storagetransfer.projects.agentPools.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: storagetransfer.projects.agentPools.get
+      itemsPath: $
+      identityPath: name

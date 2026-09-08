@@ -542,6 +542,235 @@
         "monitoring.projects.uptimeCheckConfigs.get",
         "monitoring.projects.uptimeCheckConfigs.list"
       ]
+    },
+    {
+      "source_uri": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "aiplatform.projects.locations.customJobs.operations.get",
+        "aiplatform.projects.locations.dataLabelingJobs.operations.get",
+        "aiplatform.projects.locations.datasets.annotationSpecs.operations.get",
+        "aiplatform.projects.locations.datasets.dataItems.annotations.operations.get",
+        "aiplatform.projects.locations.datasets.dataItems.operations.get",
+        "aiplatform.projects.locations.datasets.operations.get",
+        "aiplatform.projects.locations.datasets.savedQueries.operations.get",
+        "aiplatform.projects.locations.deploymentResourcePools.operations.get",
+        "aiplatform.projects.locations.endpoints.delete",
+        "aiplatform.projects.locations.endpoints.get",
+        "aiplatform.projects.locations.endpoints.list",
+        "aiplatform.projects.locations.endpoints.operations.get",
+        "aiplatform.projects.locations.featureGroups.features.operations.get",
+        "aiplatform.projects.locations.featureGroups.operations.get",
+        "aiplatform.projects.locations.featureOnlineStores.featureViews.operations.get",
+        "aiplatform.projects.locations.featureOnlineStores.operations.get",
+        "aiplatform.projects.locations.featurestores.entityTypes.features.operations.get",
+        "aiplatform.projects.locations.featurestores.entityTypes.operations.get",
+        "aiplatform.projects.locations.featurestores.operations.get",
+        "aiplatform.projects.locations.hyperparameterTuningJobs.operations.get",
+        "aiplatform.projects.locations.indexEndpoints.operations.get",
+        "aiplatform.projects.locations.indexes.operations.get",
+        "aiplatform.projects.locations.list",
+        "aiplatform.projects.locations.memoryBanks.memories.operations.get",
+        "aiplatform.projects.locations.memoryBanks.operations.get",
+        "aiplatform.projects.locations.metadataStores.artifacts.operations.get",
+        "aiplatform.projects.locations.metadataStores.contexts.operations.get",
+        "aiplatform.projects.locations.metadataStores.executions.operations.get",
+        "aiplatform.projects.locations.metadataStores.operations.get",
+        "aiplatform.projects.locations.migratableResources.operations.get",
+        "aiplatform.projects.locations.modelDeploymentMonitoringJobs.operations.get",
+        "aiplatform.projects.locations.models.evaluations.operations.get",
+        "aiplatform.projects.locations.models.operations.get",
+        "aiplatform.projects.locations.notebookExecutionJobs.operations.get",
+        "aiplatform.projects.locations.notebookRuntimeTemplates.operations.get",
+        "aiplatform.projects.locations.notebookRuntimes.operations.get",
+        "aiplatform.projects.locations.onlineEvaluators.operations.get",
+        "aiplatform.projects.locations.operations.get",
+        "aiplatform.projects.locations.persistentResources.operations.get",
+        "aiplatform.projects.locations.pipelineJobs.operations.get",
+        "aiplatform.projects.locations.ragCorpora.operations.get",
+        "aiplatform.projects.locations.ragCorpora.ragFiles.operations.get",
+        "aiplatform.projects.locations.ragEngineConfig.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.memories.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.sandboxEnvironmentSnapshots.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.sandboxEnvironmentTemplates.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.sandboxEnvironments.operations.get",
+        "aiplatform.projects.locations.reasoningEngines.sessions.operations.get",
+        "aiplatform.projects.locations.schedules.operations.get",
+        "aiplatform.projects.locations.semanticGovernancePolicies.operations.get",
+        "aiplatform.projects.locations.servingProfiles.operations.get",
+        "aiplatform.projects.locations.skills.operations.get",
+        "aiplatform.projects.locations.specialistPools.operations.get",
+        "aiplatform.projects.locations.studies.operations.get",
+        "aiplatform.projects.locations.studies.trials.operations.get",
+        "aiplatform.projects.locations.taskStores.operations.get",
+        "aiplatform.projects.locations.tensorboards.experiments.operations.get",
+        "aiplatform.projects.locations.tensorboards.experiments.runs.operations.get",
+        "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.operations.get",
+        "aiplatform.projects.locations.tensorboards.operations.get",
+        "aiplatform.projects.locations.trainingPipelines.operations.get",
+        "aiplatform.projects.locations.tuningJobs.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://apphub.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "apphub.projects.locations.applications.delete",
+        "apphub.projects.locations.applications.get",
+        "apphub.projects.locations.applications.list",
+        "apphub.projects.locations.applications.services.delete",
+        "apphub.projects.locations.applications.services.get",
+        "apphub.projects.locations.applications.services.list",
+        "apphub.projects.locations.applications.workloads.delete",
+        "apphub.projects.locations.applications.workloads.get",
+        "apphub.projects.locations.applications.workloads.list",
+        "apphub.projects.locations.list",
+        "apphub.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://backupdr.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "backupdr.projects.locations.backupPlanAssociations.delete",
+        "backupdr.projects.locations.backupPlanAssociations.get",
+        "backupdr.projects.locations.backupPlanAssociations.list",
+        "backupdr.projects.locations.backupPlans.delete",
+        "backupdr.projects.locations.backupPlans.get",
+        "backupdr.projects.locations.backupPlans.list",
+        "backupdr.projects.locations.backupVaults.dataSources.backups.delete",
+        "backupdr.projects.locations.backupVaults.dataSources.backups.get",
+        "backupdr.projects.locations.backupVaults.dataSources.backups.list",
+        "backupdr.projects.locations.backupVaults.dataSources.get",
+        "backupdr.projects.locations.backupVaults.dataSources.list",
+        "backupdr.projects.locations.backupVaults.dataSources.remove",
+        "backupdr.projects.locations.backupVaults.delete",
+        "backupdr.projects.locations.backupVaults.get",
+        "backupdr.projects.locations.backupVaults.list",
+        "backupdr.projects.locations.list",
+        "backupdr.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://dataplex.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "dataplex.projects.locations.lakes.delete",
+        "dataplex.projects.locations.lakes.get",
+        "dataplex.projects.locations.lakes.list",
+        "dataplex.projects.locations.lakes.zones.assets.delete",
+        "dataplex.projects.locations.lakes.zones.assets.get",
+        "dataplex.projects.locations.lakes.zones.assets.list",
+        "dataplex.projects.locations.lakes.zones.delete",
+        "dataplex.projects.locations.lakes.zones.get",
+        "dataplex.projects.locations.lakes.zones.list",
+        "dataplex.projects.locations.list",
+        "dataplex.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://datastream.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "datastream.projects.locations.connectionProfiles.delete",
+        "datastream.projects.locations.connectionProfiles.get",
+        "datastream.projects.locations.connectionProfiles.list",
+        "datastream.projects.locations.list",
+        "datastream.projects.locations.operations.get",
+        "datastream.projects.locations.privateConnections.delete",
+        "datastream.projects.locations.privateConnections.get",
+        "datastream.projects.locations.privateConnections.list",
+        "datastream.projects.locations.streams.delete",
+        "datastream.projects.locations.streams.get",
+        "datastream.projects.locations.streams.list"
+      ]
+    },
+    {
+      "source_uri": "https://dlp.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "dlp.projects.locations.deidentifyTemplates.delete",
+        "dlp.projects.locations.deidentifyTemplates.get",
+        "dlp.projects.locations.deidentifyTemplates.list",
+        "dlp.projects.locations.inspectTemplates.delete",
+        "dlp.projects.locations.inspectTemplates.get",
+        "dlp.projects.locations.inspectTemplates.list"
+      ]
+    },
+    {
+      "source_uri": "https://domains.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "domains.projects.locations.list",
+        "domains.projects.locations.operations.get",
+        "domains.projects.locations.registrations.delete",
+        "domains.projects.locations.registrations.get",
+        "domains.projects.locations.registrations.list"
+      ]
+    },
+    {
+      "source_uri": "https://iap.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "iap.projects.iap_tunnel.locations.destGroups.delete",
+        "iap.projects.iap_tunnel.locations.destGroups.get",
+        "iap.projects.iap_tunnel.locations.destGroups.list"
+      ]
+    },
+    {
+      "source_uri": "https://networkconnectivity.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "networkconnectivity.projects.locations.global.hubs.delete",
+        "networkconnectivity.projects.locations.global.hubs.get",
+        "networkconnectivity.projects.locations.global.hubs.list",
+        "networkconnectivity.projects.locations.list",
+        "networkconnectivity.projects.locations.operations.get",
+        "networkconnectivity.projects.locations.spokes.delete",
+        "networkconnectivity.projects.locations.spokes.get",
+        "networkconnectivity.projects.locations.spokes.list"
+      ]
+    },
+    {
+      "source_uri": "https://networkmanagement.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "networkmanagement.projects.locations.global.operations.get",
+        "networkmanagement.projects.locations.list",
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.delete",
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.get",
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.list"
+      ]
+    },
+    {
+      "source_uri": "https://networksecurity.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "networksecurity.projects.locations.firewallEndpointAssociations.delete",
+        "networksecurity.projects.locations.firewallEndpointAssociations.get",
+        "networksecurity.projects.locations.firewallEndpointAssociations.list",
+        "networksecurity.projects.locations.firewallEndpoints.delete",
+        "networksecurity.projects.locations.firewallEndpoints.get",
+        "networksecurity.projects.locations.firewallEndpoints.list",
+        "networksecurity.projects.locations.list",
+        "networksecurity.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://networkservices.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "networkservices.projects.locations.gateways.delete",
+        "networkservices.projects.locations.gateways.get",
+        "networkservices.projects.locations.gateways.list",
+        "networkservices.projects.locations.list",
+        "networkservices.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://securitycenter.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "securitycenter.projects.notificationConfigs.delete",
+        "securitycenter.projects.notificationConfigs.get",
+        "securitycenter.projects.notificationConfigs.list"
+      ]
+    },
+    {
+      "source_uri": "https://storagetransfer.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "storagetransfer.projects.agentPools.delete",
+        "storagetransfer.projects.agentPools.get",
+        "storagetransfer.projects.agentPools.list"
+      ]
     }
   ],
   "resource_types": [
@@ -2395,6 +2624,498 @@
       ],
       "list_operations": [
         "monitoring.projects.uptimeCheckConfigs.list"
+      ]
+    },
+    {
+      "native_type": "aiplatform.googleapis.com/Endpoint",
+      "collection": "endpoints",
+      "class": "ai.endpoint",
+      "display_name": "Vertex AI endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "aiplatform.projects.locations.endpoints.get"
+      ],
+      "delete_operations": [
+        "aiplatform.projects.locations.endpoints.delete"
+      ],
+      "list_operations": [
+        "aiplatform.projects.locations.endpoints.list"
+      ]
+    },
+    {
+      "native_type": "apphub.googleapis.com/Application",
+      "collection": "applications",
+      "class": "resource.application",
+      "display_name": "App Hub application",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "apphub.projects.locations.applications.get"
+      ],
+      "delete_operations": [
+        "apphub.projects.locations.applications.delete"
+      ],
+      "list_operations": [
+        "apphub.projects.locations.applications.list"
+      ]
+    },
+    {
+      "native_type": "apphub.googleapis.com/Service",
+      "collection": "services",
+      "class": "resource.application_service",
+      "display_name": "App Hub service",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "apphub.projects.locations.applications.services.get"
+      ],
+      "delete_operations": [
+        "apphub.projects.locations.applications.services.delete"
+      ],
+      "list_operations": [
+        "apphub.projects.locations.applications.services.list"
+      ]
+    },
+    {
+      "native_type": "apphub.googleapis.com/Workload",
+      "collection": "workloads",
+      "class": "resource.application_workload",
+      "display_name": "App Hub workload",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "apphub.projects.locations.applications.workloads.get"
+      ],
+      "delete_operations": [
+        "apphub.projects.locations.applications.workloads.delete"
+      ],
+      "list_operations": [
+        "apphub.projects.locations.applications.workloads.list"
+      ]
+    },
+    {
+      "native_type": "backupdr.googleapis.com/BackupPlan",
+      "collection": "backupPlans",
+      "class": "backup.plan",
+      "display_name": "Backup and DR plan",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "backupdr.projects.locations.backupPlans.get"
+      ],
+      "delete_operations": [
+        "backupdr.projects.locations.backupPlans.delete"
+      ],
+      "list_operations": [
+        "backupdr.projects.locations.backupPlans.list"
+      ]
+    },
+    {
+      "native_type": "backupdr.googleapis.com/BackupPlanAssociation",
+      "collection": "backupPlanAssociations",
+      "class": "backup.policy_attachment",
+      "display_name": "Backup plan association",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "backupdr.projects.locations.backupPlanAssociations.get"
+      ],
+      "delete_operations": [
+        "backupdr.projects.locations.backupPlanAssociations.delete"
+      ],
+      "list_operations": [
+        "backupdr.projects.locations.backupPlanAssociations.list"
+      ]
+    },
+    {
+      "native_type": "backupdr.googleapis.com/BackupVault",
+      "collection": "backupVaults",
+      "class": "backup.vault",
+      "display_name": "Backup vault",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "backupdr.projects.locations.backupVaults.get"
+      ],
+      "delete_operations": [
+        "backupdr.projects.locations.backupVaults.delete"
+      ],
+      "list_operations": [
+        "backupdr.projects.locations.backupVaults.list"
+      ]
+    },
+    {
+      "native_type": "backupdr.googleapis.com/DataSource",
+      "collection": "dataSources",
+      "class": "backup.source",
+      "display_name": "Backup data source",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.get"
+      ],
+      "delete_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.remove"
+      ],
+      "list_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.list"
+      ]
+    },
+    {
+      "native_type": "backupdr.googleapis.com/Backup",
+      "collection": "backups",
+      "class": "backup.recovery_point",
+      "display_name": "Backup recovery point",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.backups.get"
+      ],
+      "delete_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.backups.delete"
+      ],
+      "list_operations": [
+        "backupdr.projects.locations.backupVaults.dataSources.backups.list"
+      ]
+    },
+    {
+      "native_type": "dataplex.googleapis.com/Lake",
+      "collection": "lakes",
+      "class": "data.lake",
+      "display_name": "Dataplex lake",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataplex.projects.locations.lakes.get"
+      ],
+      "delete_operations": [
+        "dataplex.projects.locations.lakes.delete"
+      ],
+      "list_operations": [
+        "dataplex.projects.locations.lakes.list"
+      ]
+    },
+    {
+      "native_type": "dataplex.googleapis.com/Zone",
+      "collection": "zones",
+      "class": "data.lake_zone",
+      "display_name": "Dataplex zone",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataplex.projects.locations.lakes.zones.get"
+      ],
+      "delete_operations": [
+        "dataplex.projects.locations.lakes.zones.delete"
+      ],
+      "list_operations": [
+        "dataplex.projects.locations.lakes.zones.list"
+      ]
+    },
+    {
+      "native_type": "dataplex.googleapis.com/Asset",
+      "collection": "assets",
+      "class": "data.lake_asset",
+      "display_name": "Dataplex asset",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataplex.projects.locations.lakes.zones.assets.get"
+      ],
+      "delete_operations": [
+        "dataplex.projects.locations.lakes.zones.assets.delete"
+      ],
+      "list_operations": [
+        "dataplex.projects.locations.lakes.zones.assets.list"
+      ]
+    },
+    {
+      "native_type": "datastream.googleapis.com/Stream",
+      "collection": "streams",
+      "class": "data.replication",
+      "display_name": "Datastream stream",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "datastream.projects.locations.streams.get"
+      ],
+      "delete_operations": [
+        "datastream.projects.locations.streams.delete"
+      ],
+      "list_operations": [
+        "datastream.projects.locations.streams.list"
+      ]
+    },
+    {
+      "native_type": "datastream.googleapis.com/ConnectionProfile",
+      "collection": "connectionProfiles",
+      "class": "data.connection",
+      "display_name": "Datastream connection profile",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "datastream.projects.locations.connectionProfiles.get"
+      ],
+      "delete_operations": [
+        "datastream.projects.locations.connectionProfiles.delete"
+      ],
+      "list_operations": [
+        "datastream.projects.locations.connectionProfiles.list"
+      ]
+    },
+    {
+      "native_type": "datastream.googleapis.com/PrivateConnection",
+      "collection": "privateConnections",
+      "class": "network.private_connection",
+      "display_name": "Datastream private connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "datastream.projects.locations.privateConnections.get"
+      ],
+      "delete_operations": [
+        "datastream.projects.locations.privateConnections.delete"
+      ],
+      "list_operations": [
+        "datastream.projects.locations.privateConnections.list"
+      ]
+    },
+    {
+      "native_type": "dlp.googleapis.com/DeidentifyTemplate",
+      "collection": "deidentifyTemplates",
+      "class": "security.deidentify_template",
+      "display_name": "Sensitive Data Protection de-identification template",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "dlp.projects.locations.deidentifyTemplates.get"
+      ],
+      "delete_operations": [
+        "dlp.projects.locations.deidentifyTemplates.delete"
+      ],
+      "list_operations": [
+        "dlp.projects.locations.deidentifyTemplates.list"
+      ]
+    },
+    {
+      "native_type": "dlp.googleapis.com/InspectTemplate",
+      "collection": "inspectTemplates",
+      "class": "security.inspect_template",
+      "display_name": "Sensitive Data Protection inspection template",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "dlp.projects.locations.inspectTemplates.get"
+      ],
+      "delete_operations": [
+        "dlp.projects.locations.inspectTemplates.delete"
+      ],
+      "list_operations": [
+        "dlp.projects.locations.inspectTemplates.list"
+      ]
+    },
+    {
+      "native_type": "domains.googleapis.com/Registration",
+      "collection": "registrations",
+      "class": "dns.registration",
+      "display_name": "Cloud Domains registration",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "domains.projects.locations.registrations.get"
+      ],
+      "delete_operations": [
+        "domains.projects.locations.registrations.delete"
+      ],
+      "list_operations": [
+        "domains.projects.locations.registrations.list"
+      ]
+    },
+    {
+      "native_type": "iap.googleapis.com/TunnelDestGroup",
+      "collection": "destGroups",
+      "class": "network.tunnel_destination",
+      "display_name": "IAP tunnel destination group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "iap.projects.iap_tunnel.locations.destGroups.get"
+      ],
+      "delete_operations": [
+        "iap.projects.iap_tunnel.locations.destGroups.delete"
+      ],
+      "list_operations": [
+        "iap.projects.iap_tunnel.locations.destGroups.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/Hub",
+      "collection": "hubs",
+      "class": "network.transit_hub",
+      "display_name": "Network Connectivity Center hub",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.global.hubs.get"
+      ],
+      "delete_operations": [
+        "networkconnectivity.projects.locations.global.hubs.delete"
+      ],
+      "list_operations": [
+        "networkconnectivity.projects.locations.global.hubs.list"
+      ]
+    },
+    {
+      "native_type": "networkconnectivity.googleapis.com/Spoke",
+      "collection": "spokes",
+      "class": "network.transit_attachment",
+      "display_name": "Network Connectivity Center spoke",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "networkconnectivity.projects.locations.spokes.get"
+      ],
+      "delete_operations": [
+        "networkconnectivity.projects.locations.spokes.delete"
+      ],
+      "list_operations": [
+        "networkconnectivity.projects.locations.spokes.list"
+      ]
+    },
+    {
+      "native_type": "networkmanagement.googleapis.com/VpcFlowLogsConfig",
+      "collection": "vpcFlowLogsConfigs",
+      "class": "observability.flow_log",
+      "display_name": "VPC Flow Logs configuration",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.get"
+      ],
+      "delete_operations": [
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.delete"
+      ],
+      "list_operations": [
+        "networkmanagement.projects.locations.vpcFlowLogsConfigs.list"
+      ]
+    },
+    {
+      "native_type": "networksecurity.googleapis.com/FirewallEndpoint",
+      "collection": "firewallEndpoints",
+      "class": "security.firewall_endpoint",
+      "display_name": "Cloud NGFW endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networksecurity.projects.locations.firewallEndpoints.get"
+      ],
+      "delete_operations": [
+        "networksecurity.projects.locations.firewallEndpoints.delete"
+      ],
+      "list_operations": [
+        "networksecurity.projects.locations.firewallEndpoints.list"
+      ]
+    },
+    {
+      "native_type": "networksecurity.googleapis.com/FirewallEndpointAssociation",
+      "collection": "firewallEndpointAssociations",
+      "class": "security.firewall_attachment",
+      "display_name": "Cloud NGFW endpoint association",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networksecurity.projects.locations.firewallEndpointAssociations.get"
+      ],
+      "delete_operations": [
+        "networksecurity.projects.locations.firewallEndpointAssociations.delete"
+      ],
+      "list_operations": [
+        "networksecurity.projects.locations.firewallEndpointAssociations.list"
+      ]
+    },
+    {
+      "native_type": "networkservices.googleapis.com/Gateway",
+      "collection": "gateways",
+      "class": "network.service_gateway",
+      "display_name": "Network Services gateway",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "networkservices.projects.locations.gateways.get"
+      ],
+      "delete_operations": [
+        "networkservices.projects.locations.gateways.delete"
+      ],
+      "list_operations": [
+        "networkservices.projects.locations.gateways.list"
+      ]
+    },
+    {
+      "native_type": "securitycenter.googleapis.com/NotificationConfig",
+      "collection": "notificationConfigs",
+      "class": "security.notification",
+      "display_name": "Security Command Center notification",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "securitycenter.projects.notificationConfigs.get"
+      ],
+      "delete_operations": [
+        "securitycenter.projects.notificationConfigs.delete"
+      ],
+      "list_operations": [
+        "securitycenter.projects.notificationConfigs.list"
+      ]
+    },
+    {
+      "native_type": "storagetransfer.googleapis.com/AgentPool",
+      "collection": "agentPools",
+      "class": "data.transfer_pool",
+      "display_name": "Storage Transfer agent pool",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "storagetransfer.projects.agentPools.get"
+      ],
+      "delete_operations": [
+        "storagetransfer.projects.agentPools.delete"
+      ],
+      "list_operations": [
+        "storagetransfer.projects.agentPools.list"
       ]
     }
   ]

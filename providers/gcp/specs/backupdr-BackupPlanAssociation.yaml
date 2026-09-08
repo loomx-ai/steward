@@ -1,0 +1,93 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: backupdr.googleapis.com/BackupPlanAssociation
+  class: backup.policy_attachment
+presentation:
+  displayNames:
+    en-US: Backup plan association
+    zh-CN: 备份计划关联
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: backupdr.projects.locations.backupPlanAssociations.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: backupPlanAssociations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: backupdr.projects.locations.backupPlanAssociations.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  resourceType:
+    path: resourceType
+    type: string
+  resource:
+    path: resource
+    type: string
+  backupPlan:
+    path: backupPlan
+    type: string
+  dataSource:
+    path: dataSource
+    type: string
+  backupPlanRevisionId:
+    path: backupPlanRevisionId
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: backupdr.googleapis.com/BackupPlan
+  targetIdPath: refs_backupdr_googleapis_com_BackupPlan
+- type: depends_on
+  targetType: backupdr.googleapis.com/DataSource
+  targetIdPath: refs_backupdr_googleapis_com_DataSource
+- type: depends_on
+  targetType: compute.googleapis.com/Instance
+  targetIdPath: refs_compute_googleapis_com_Instance
+- type: depends_on
+  targetType: compute.googleapis.com/Disk
+  targetIdPath: refs_compute_googleapis_com_Disk
+- type: depends_on
+  targetType: sqladmin.googleapis.com/Instance
+  targetIdPath: refs_sqladmin_googleapis_com_Instance
+- type: depends_on
+  targetType: alloydb.googleapis.com/Cluster
+  targetIdPath: refs_alloydb_googleapis_com_Cluster
+- type: depends_on
+  targetType: file.googleapis.com/Instance
+  targetIdPath: refs_file_googleapis_com_Instance
+actions:
+  delete:
+    operation: backupdr.projects.locations.backupPlanAssociations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: backupdr.projects.locations.backupPlanAssociations.get
+      itemsPath: $
+      identityPath: name

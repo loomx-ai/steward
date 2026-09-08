@@ -60,6 +60,33 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 		{"logging.googleapis.com/LogSink", "v2", p + "sinks/audit", p + "sinks", "sinks", "global", "", `{"name":"audit"}`},
 		{"monitoring.googleapis.com/Dashboard", "v1", p + "dashboards/overview", p + "dashboards", "dashboards", "global", "", `{}`},
 		{"monitoring.googleapis.com/UptimeCheckConfig", "v3", p + "uptimeCheckConfigs/public", p + "uptimeCheckConfigs", "uptimeCheckConfigs", "global", "", `{}`},
+
+		{"aiplatform.googleapis.com/Endpoint", "v1", regional + "endpoints/predict", regional + "endpoints", "endpoints", "us-central1", regional + "operations/delete", `{}`},
+		{"apphub.googleapis.com/Application", "v1", global + "applications/shop", global + "applications", "applications", "global", global + "operations/delete", `{"uid":"application-uid"}`},
+		{"apphub.googleapis.com/Service", "v1", global + "applications/shop/services/web", global + "applications/shop/services", "services", "global", global + "operations/delete", `{"uid":"service-uid"}`},
+		{"apphub.googleapis.com/Workload", "v1", global + "applications/shop/workloads/worker", global + "applications/shop/workloads", "workloads", "global", global + "operations/delete", `{"uid":"workload-uid"}`},
+		{"backupdr.googleapis.com/BackupPlan", "v1", regional + "backupPlans/daily", p + "locations/-/backupPlans", "backupPlans", "us-central1", regional + "operations/delete", `{}`},
+		{"backupdr.googleapis.com/BackupPlanAssociation", "v1", regional + "backupPlanAssociations/vm", p + "locations/-/backupPlanAssociations", "backupPlanAssociations", "us-central1", regional + "operations/delete", `{}`},
+		{"backupdr.googleapis.com/BackupVault", "v1", regional + "backupVaults/vault", p + "locations/-/backupVaults", "backupVaults", "us-central1", regional + "operations/delete", `{"uid":"vault-uid","deletable":true}`},
+		{"backupdr.googleapis.com/DataSource", "v1", regional + "backupVaults/vault/dataSources/vm", regional + "backupVaults/vault/dataSources", "dataSources", "us-central1", regional + "operations/delete", `{"dataSourceBackupApplianceApplication":{"applicationName":"vm"}}`},
+		{"backupdr.googleapis.com/Backup", "v1", regional + "backupVaults/vault/dataSources/vm/backups/day", regional + "backupVaults/vault/dataSources/vm/backups", "backups", "us-central1", regional + "operations/delete", `{"enforcedRetentionEndTime":"2000-01-01T00:00:00Z"}`},
+		{"dataplex.googleapis.com/Lake", "v1", regional + "lakes/data", regional + "lakes", "lakes", "us-central1", regional + "operations/delete", `{"uid":"lake-uid"}`},
+		{"dataplex.googleapis.com/Zone", "v1", regional + "lakes/data/zones/raw", regional + "lakes/data/zones", "zones", "us-central1", regional + "operations/delete", `{"uid":"zone-uid"}`},
+		{"dataplex.googleapis.com/Asset", "v1", regional + "lakes/data/zones/raw/assets/bucket", regional + "lakes/data/zones/raw/assets", "assets", "us-central1", regional + "operations/delete", `{"uid":"asset-uid"}`},
+		{"datastream.googleapis.com/Stream", "v1", regional + "streams/cdc", regional + "streams", "streams", "us-central1", regional + "operations/delete", `{}`},
+		{"datastream.googleapis.com/ConnectionProfile", "v1", regional + "connectionProfiles/postgres", regional + "connectionProfiles", "connectionProfiles", "us-central1", regional + "operations/delete", `{}`},
+		{"datastream.googleapis.com/PrivateConnection", "v1", regional + "privateConnections/peering", regional + "privateConnections", "privateConnections", "us-central1", regional + "operations/delete", `{}`},
+		{"dlp.googleapis.com/DeidentifyTemplate", "v2", global + "deidentifyTemplates/mask", global + "deidentifyTemplates", "deidentifyTemplates", "global", "", `{}`},
+		{"dlp.googleapis.com/InspectTemplate", "v2", regional + "inspectTemplates/pii", regional + "inspectTemplates", "inspectTemplates", "us-central1", "", `{}`},
+		{"domains.googleapis.com/Registration", "v1", p + "locations/global/registrations/example-com", p + "locations/global/registrations", "registrations", "global", p + "locations/global/operations/delete", `{"state":"EXPIRED"}`},
+		{"networkconnectivity.googleapis.com/Hub", "v1", global + "hubs/transit", global + "hubs", "hubs", "global", global + "operations/delete", `{"uniqueId":"hub-uid"}`},
+		{"networkconnectivity.googleapis.com/Spoke", "v1", global + "spokes/vpc", p + "locations/-/spokes", "spokes", "global", global + "operations/delete", `{"uniqueId":"spoke-uid"}`},
+		{"networkmanagement.googleapis.com/VpcFlowLogsConfig", "v1", global + "vpcFlowLogsConfigs/audit", global + "vpcFlowLogsConfigs", "vpcFlowLogsConfigs", "global", global + "operations/delete", `{}`},
+		{"networksecurity.googleapis.com/FirewallEndpoint", "v1", p + "locations/us-central1-a/firewallEndpoints/inspect", p + "locations/-/firewallEndpoints", "firewallEndpoints", "us-central1", p + "locations/us-central1-a/operations/delete", `{}`},
+		{"networksecurity.googleapis.com/FirewallEndpointAssociation", "v1", p + "locations/us-central1-a/firewallEndpointAssociations/vpc", p + "locations/-/firewallEndpointAssociations", "firewallEndpointAssociations", "us-central1", p + "locations/us-central1-a/operations/delete", `{}`},
+		{"networkservices.googleapis.com/Gateway", "v1", regional + "gateways/web", regional + "gateways", "gateways", "us-central1", regional + "operations/delete", `{}`},
+		{"securitycenter.googleapis.com/NotificationConfig", "v1", p + "notificationConfigs/alerts", p + "notificationConfigs", "notificationConfigs", "global", "", `{}`},
+		{"storagetransfer.googleapis.com/AgentPool", "v1", p + "agentPools/copy", p + "agentPools", "agentPools", "global", "", `{}`},
 	} {
 		t.Run(test.kind+"/"+test.region, func(t *testing.T) {
 			host := strings.Split(test.kind, "/")[0]
@@ -78,6 +105,9 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 					t.Fatalf("foreign native host: %s", r.URL)
 				}
 				var response any = data
+				if r.URL.Path == "/"+test.version+"/projects/sample-project/locations" && r.Method == "GET" {
+					return apiResponse(r, 200, `{"locations":[{"name":"projects/sample-project/locations/`+test.region+`","locationId":"`+test.region+`"}]}`), nil
+				}
 				switch {
 				case r.URL.Path == listPath && r.Method == "GET":
 					response = map[string]any{test.items: []any{data}}
@@ -87,7 +117,13 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 					if test.kind == "bigquery.googleapis.com/Dataset" && r.URL.Query().Get("all") != "true" {
 						t.Fatalf("hidden datasets omitted: %s", r.URL)
 					}
-				case r.URL.Path == targetPath && r.Method == "DELETE":
+				case (r.URL.Path == targetPath && r.Method == "DELETE") || (test.kind == "backupdr.googleapis.com/DataSource" && r.URL.Path == targetPath+":remove" && r.Method == "POST"):
+					if test.kind == "backupdr.googleapis.com/DataSource" {
+						var body map[string]any
+						if json.NewDecoder(r.Body).Decode(&body) != nil || body["requestId"] != googleRequestID("service-delete") {
+							t.Fatal("native remove request body missing")
+						}
+					}
 					if deleted {
 						t.Fatal("duplicate delete")
 					}
@@ -177,6 +213,12 @@ func TestServiceResourceWireLifecycles(t *testing.T) {
 // and a project-scoped Bigtable parent for a cluster located in a zone.
 func serviceParentFixture(host, path string) (string, bool) {
 	fixtures := map[string]string{
+		"apphub.googleapis.com/v1/projects/sample-project/locations/global/applications":                          `{"applications":[{"name":"projects/sample-project/locations/global/applications/shop"}]}`,
+		"backupdr.googleapis.com/v1/projects/sample-project/locations/-/backupVaults":                             `{"backupVaults":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault"}]}`,
+		"backupdr.googleapis.com/v1/projects/sample-project/locations/us-central1/backupVaults/vault/dataSources": `{"dataSources":[{"name":"projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/vm"}]}`,
+		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes":                          `{"lakes":[{"name":"projects/sample-project/locations/us-central1/lakes/data"}]}`,
+		"dataplex.googleapis.com/v1/projects/sample-project/locations/us-central1/lakes/data/zones":               `{"zones":[{"name":"projects/sample-project/locations/us-central1/lakes/data/zones/raw"}]}`,
+
 		"dns.googleapis.com/dns/v1/projects/sample-project/managedZones":                                            `{"managedZones":[{"name":"example","dnsName":"example.com."}]}`,
 		"bigquery.googleapis.com/bigquery/v2/projects/sample-project/datasets":                                      `{"datasets":[{"datasetReference":{"projectId":"sample-project","datasetId":"warehouse"},"location":"US"}]}`,
 		"bigtableadmin.googleapis.com/v2/projects/sample-project/instances":                                         `{"instances":[{"name":"projects/sample-project/instances/wide"}]}`,
@@ -366,5 +408,117 @@ func TestServiceSecretsAndProjectReferences(t *testing.T) {
 	data["apiConfig"] = "projects/foreign-project/locations/global/apis/orders/configs/v1"
 	if len(references(c, data)["apigateway.googleapis.com/ApiConfig"]) != 0 {
 		t.Fatal("foreign project reference accepted")
+	}
+}
+
+func TestIAPTunnelUsesProjectNumberAndCanonicalIdentity(t *testing.T) {
+	const native = "projects/123456/iap_tunnel/locations/us-central1/destGroups/private"
+	const canonical = "projects/sample-project/iap_tunnel/locations/us-central1/destGroups/private"
+	deleted := false
+	transport := func(r *http.Request) (*http.Response, error) {
+		if r.URL.Host != "iap.googleapis.com" {
+			t.Fatalf("foreign IAP request: %s", r.URL)
+		}
+		switch {
+		case r.Method == "GET" && r.URL.Path == "/v1/projects/123456/iap_tunnel/locations/us-central1/destGroups":
+			return apiResponse(r, 200, `{"tunnelDestGroups":[{"name":"`+native+`","cidrs":["10.0.0.0/8"]}]}`), nil
+		case r.Method == "GET" && r.URL.Path == "/v1/"+native:
+			if deleted {
+				return apiResponse(r, 404, `{}`), nil
+			}
+			return apiResponse(r, 200, `{"name":"`+native+`"}`), nil
+		case r.Method == "DELETE" && r.URL.Path == "/v1/"+native:
+			deleted = true
+			return apiResponse(r, 200, `{}`), nil
+		default:
+			t.Fatalf("IAP scope changed: %s %s", r.Method, r.URL)
+			return nil, nil
+		}
+	}
+	runtime := protocolRuntime(t, transport)
+	page, err := runtime.List(context.Background(), productRequest(runtime, "iap.googleapis.com/TunnelDestGroup", "us-central1"))
+	if err != nil || len(page.Items) != 1 || page.Items[0].NativeID != "//iap.googleapis.com/"+canonical {
+		t.Fatalf("IAP identity: %+v %v", page, err)
+	}
+	driver := protocolAction(t, "iap.googleapis.com/TunnelDestGroup", canonical, transport)
+	request := contracts.ActionRequest{Action: "delete"}
+	result, err := driver.Execute(context.Background(), request)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wait, err := driver.Wait(context.Background(), request, result)
+	if err != nil || !wait.Done || !deleted {
+		t.Fatalf("IAP delete %+v %v", wait, err)
+	}
+}
+
+func TestBackupRetentionLocksAndRegistrationStates(t *testing.T) {
+	const backup = "projects/sample-project/locations/us-central1/backupVaults/vault/dataSources/source/backups/day"
+	for _, test := range []struct{ name, body, reason string }{
+		{"retention", `{"enforcedRetentionEndTime":"2999-01-01T00:00:00Z"}`, "backup_retention_active"},
+		{"malformed_retention", `{"enforcedRetentionEndTime":"bad"}`, "backup_retention_active"},
+		{"service_lock", `{"serviceLocks":[{"lockUntilTime":"2999-01-01T00:00:00Z"}]}`, "backup_locked"},
+		{"appliance_lock", `{"backupApplianceLocks":[{"lockUntilTime":"2999-01-01T00:00:00Z"}]}`, "backup_locked"},
+		{"invalid_lock", `{"serviceLocks":[{}]}`, "backup_locked"},
+		{"expired", `{"enforcedRetentionEndTime":"2000-01-01T00:00:00Z","serviceLocks":[{"lockUntilTime":"2000-01-01T00:00:00Z"}]}`, ""},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			driver := protocolAction(t, "backupdr.googleapis.com/Backup", backup, func(r *http.Request) (*http.Response, error) {
+				if r.Method != "GET" {
+					t.Fatal("protected backup mutated")
+				}
+				return apiResponse(r, 200, test.body), nil
+			})
+			check, err := driver.Preflight(context.Background(), contracts.ActionRequest{Action: "delete"})
+			if err != nil || check.Reason != test.reason || check.Allowed != (test.reason == "") {
+				t.Fatalf("backup protection %+v %v", check, err)
+			}
+		})
+	}
+	for _, state := range []string{"ACTIVE", "SUSPENDED", "REGISTRATION_PENDING", "EXPORTED", "EXPIRED", "REGISTRATION_FAILED", "TRANSFER_FAILED"} {
+		driver := protocolAction(t, "domains.googleapis.com/Registration", "projects/sample-project/locations/global/registrations/example-com", func(r *http.Request) (*http.Response, error) {
+			return apiResponse(r, 200, `{"state":"`+state+`"}`), nil
+		})
+		check, err := driver.Preflight(context.Background(), contracts.ActionRequest{Action: "delete"})
+		allowed := state == "EXPORTED" || state == "EXPIRED" || state == "REGISTRATION_FAILED" || state == "TRANSFER_FAILED"
+		if err != nil || check.Allowed != allowed {
+			t.Fatalf("registration %s %+v %v", state, check, err)
+		}
+	}
+}
+
+func TestManagedServiceDependencyFormatsAndSecrets(t *testing.T) {
+	c := &client{project: "sample-project", number: "123456"}
+	for _, test := range []struct{ data, kind, id string }{
+		{`{"sourceConfig":{"sourceConnectionProfile":"projects/123456/locations/us-central1/connectionProfiles/db"}}`, "datastream.googleapis.com/ConnectionProfile", "projects/sample-project/locations/us-central1/connectionProfiles/db"},
+		{`{"destinationConfig":{"destinationConnectionProfile":"projects/sample-project/locations/us-central1/connectionProfiles/warehouse"}}`, "datastream.googleapis.com/ConnectionProfile", "projects/sample-project/locations/us-central1/connectionProfiles/warehouse"},
+		{`{"privateConnectivity":{"privateConnection":"projects/sample-project/locations/us-central1/privateConnections/private"}}`, "datastream.googleapis.com/PrivateConnection", "projects/sample-project/locations/us-central1/privateConnections/private"},
+		{`{"hub":"projects/sample-project/locations/global/hubs/transit"}`, "networkconnectivity.googleapis.com/Hub", "projects/sample-project/locations/global/hubs/transit"},
+		{`{"firewallEndpoint":"projects/sample-project/locations/us-central1-a/firewallEndpoints/inspect"}`, "networksecurity.googleapis.com/FirewallEndpoint", "projects/sample-project/locations/us-central1-a/firewallEndpoints/inspect"},
+		{`{"resourceSpec":{"type":"STORAGE_BUCKET","name":"projects/123456/buckets/archive"}}`, "storage.googleapis.com/Bucket", "archive"},
+		{`{"resourceSpec":{"type":"BIGQUERY_DATASET","name":"projects/123456/datasets/events"}}`, "bigquery.googleapis.com/Dataset", "projects/sample-project/datasets/events"},
+		{`{"destination":"pubsub.googleapis.com/projects/123456/topics/audit"}`, "pubsub.googleapis.com/Topic", "projects/sample-project/topics/audit"},
+		{`{"destination":"logging.googleapis.com/projects/sample-project/locations/global/buckets/archive"}`, "logging.googleapis.com/LogBucket", "projects/sample-project/locations/global/buckets/archive"},
+		{`{"destination":"bigquery.googleapis.com/projects/sample-project/datasets/archive"}`, "bigquery.googleapis.com/Dataset", "projects/sample-project/datasets/archive"},
+		{`{"destination":"storage.googleapis.com/archive"}`, "storage.googleapis.com/Bucket", "archive"},
+		{`{"serviceAccount":"123456-compute@developer.gserviceaccount.com"}`, "iam.googleapis.com/ServiceAccount", "projects/sample-project/serviceAccounts/123456-compute@developer.gserviceaccount.com"},
+		{`{"resourceSpec":{"type":"STORAGE_BUCKET","name":"projects/foreign-project/buckets/archive"}}`, "storage.googleapis.com/Bucket", ""},
+		{`{"sourceConfig":{"sourceConnectionProfile":"projects/foreign-project/locations/us-central1/connectionProfiles/db"}}`, "datastream.googleapis.com/ConnectionProfile", ""},
+	} {
+		var data map[string]any
+		_ = json.Unmarshal([]byte(test.data), &data)
+		refs := references(c, data)[test.kind]
+		if test.id == "" {
+			if len(refs) != 0 {
+				t.Fatalf("foreign service dependency: %v", refs)
+			}
+		} else if len(refs) != 1 || refs[0] != "//"+strings.Split(test.kind, "/")[0]+"/"+test.id {
+			t.Fatalf("missing native relationship: %s %v", test.data, refs)
+		}
+	}
+	data := map[string]any{"deidentifyConfig": map[string]any{"cryptoKey": map[string]any{"unwrapped": map[string]any{"key": "SECRET_DLP"}, "kmsWrapped": map[string]any{"wrappedKey": "SECRET_WRAPPED", "cryptoKeyName": "projects/sample-project/locations/global/keyRings/ring/cryptoKeys/kek"}}}}
+	encoded, _ := json.Marshal(safePayload(data))
+	if strings.Contains(string(encoded), "SECRET_") || !strings.Contains(string(encoded), "cryptoKeyName") {
+		t.Fatalf("DLP secret redaction: %s", encoded)
 	}
 }

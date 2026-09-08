@@ -306,6 +306,11 @@ func references(c *client, data map[string]any) map[string][]string {
 		"apiConfig": "apigateway.googleapis.com/ApiConfig", "certificates": "certificatemanager.googleapis.com/Certificate", "certificateMap": "certificatemanager.googleapis.com/CertificateMap",
 		"gkeCluster": "container.googleapis.com/Cluster", "resourceLink": "container.googleapis.com/Cluster",
 		"gatewayServiceAccount": "iam.googleapis.com/ServiceAccount", "serviceAccount": "iam.googleapis.com/ServiceAccount", "serviceAccountEmail": "iam.googleapis.com/ServiceAccount",
+		"customerManagedEncryptionKey": "cloudkms.googleapis.com/CryptoKey", "cryptoKeyName": "cloudkms.googleapis.com/CryptoKey",
+		"sourceConnectionProfile": "datastream.googleapis.com/ConnectionProfile", "destinationConnectionProfile": "datastream.googleapis.com/ConnectionProfile", "privateConnection": "datastream.googleapis.com/PrivateConnection",
+		"backupVault": "backupdr.googleapis.com/BackupVault", "backupPlan": "backupdr.googleapis.com/BackupPlan", "dataSource": "backupdr.googleapis.com/DataSource",
+		"firewallEndpoint": "networksecurity.googleapis.com/FirewallEndpoint", "hub": "networkconnectivity.googleapis.com/Hub", "vpcNetwork": "compute.googleapis.com/Network", "subnet": "compute.googleapis.com/Subnetwork", "vpnTunnel": "compute.googleapis.com/VpnTunnel",
+		"pubsubTopic": "pubsub.googleapis.com/Topic", "virtualMachine": instanceType,
 	} {
 		fields[key] = target
 	}
@@ -328,7 +333,7 @@ func references(c *client, data map[string]any) map[string][]string {
 			if key == "service" && strings.Contains(ref, "/locations/") && strings.Contains(ref, "/services/") {
 				target = "run.googleapis.com/Service"
 			}
-			if target == "iam.googleapis.com/ServiceAccount" && strings.HasSuffix(ref, "@"+c.project+".iam.gserviceaccount.com") && !strings.Contains(ref, "/") {
+			if target == "iam.googleapis.com/ServiceAccount" && (strings.HasSuffix(ref, "@"+c.project+".iam.gserviceaccount.com") || ref == c.number+"-compute@developer.gserviceaccount.com") && !strings.Contains(ref, "/") {
 				ref = "projects/" + c.project + "/serviceAccounts/" + ref
 			}
 			if strings.HasPrefix(ref, "projects/") && target != "" {
@@ -373,6 +378,7 @@ func references(c *client, data map[string]any) map[string][]string {
 					target = "compute.googleapis.com/HttpsHealthCheck"
 				}
 			}
+			ref = c.canonicalName(ref)
 			kind, known := findType(target)
 			if !known {
 				return
@@ -389,6 +395,26 @@ func references(c *client, data map[string]any) map[string][]string {
 		}
 	}
 	visit(data, "")
+	// These services encode a dependency's type in an adjacent field or URI
+	// prefix. Only recognized formats enter the same project-bound validator.
+	resource := object(data["resourceSpec"])
+	resourceParts := strings.Split(text(resource["name"]), "/")
+	if len(resourceParts) == 4 && resourceParts[0] == "projects" && (resourceParts[1] == c.project || resourceParts[1] == c.number) {
+		if resource["type"] == "STORAGE_BUCKET" && resourceParts[2] == "buckets" {
+			visit(resourceParts[3], "bucketName")
+		}
+		if resource["type"] == "BIGQUERY_DATASET" && resourceParts[2] == "datasets" {
+			fields["datasetResource"] = "bigquery.googleapis.com/Dataset"
+			visit(text(resource["name"]), "datasetResource")
+		}
+	}
+	for _, target := range []string{"storage.googleapis.com/Bucket", "bigquery.googleapis.com/Dataset", "pubsub.googleapis.com/Topic", "logging.googleapis.com/LogBucket"} {
+		host := strings.Split(target, "/")[0]
+		if destination := text(data["destination"]); strings.HasPrefix(destination, host+"/") {
+			fields["sinkDestination"] = target
+			visit("//"+destination, "sinkDestination")
+		}
+	}
 	// Sole-tenant placement and specific reservation affinity use native names
 	// instead of selfLinks. Resolve them within this VM's actual zone only.
 	if zone := last(text(data["zone"])); zone != "" && strings.Contains(text(data["selfLink"]), "/instances/") {

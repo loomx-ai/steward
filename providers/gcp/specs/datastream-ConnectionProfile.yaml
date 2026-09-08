@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: datastream.googleapis.com/ConnectionProfile
+  class: data.connection
+presentation:
+  displayNames:
+    en-US: Datastream connection profile
+    zh-CN: Datastream 连接配置
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: datastream.projects.locations.connectionProfiles.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: connectionProfiles
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: datastream.projects.locations.connectionProfiles.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  privateConnectivity:
+    path: privateConnectivity
+    type: object
+  staticServiceIpConnectivity:
+    path: staticServiceIpConnectivity
+    type: object
+  gcsProfile:
+    path: gcsProfile
+    type: object
+  bigqueryProfile:
+    path: bigqueryProfile
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: datastream.googleapis.com/PrivateConnection
+  targetIdPath: refs_datastream_googleapis_com_PrivateConnection
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+actions:
+  delete:
+    operation: datastream.projects.locations.connectionProfiles.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: datastream.projects.locations.connectionProfiles.get
+      itemsPath: $
+      identityPath: name

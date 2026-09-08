@@ -19,6 +19,8 @@ func TestKMSParentFanoutPagingDependenciesAndDrift(t *testing.T) {
 	r := protocolRuntime(t, func(request *http.Request) (*http.Response, error) {
 		var data map[string]any
 		switch request.URL.Path {
+		case "/v1/projects/sample-project/locations":
+			data = map[string]any{"locations": []any{map[string]any{"name": parent, "locationId": "us-central1"}}}
 		case "/v1/" + parent + "/keyRings":
 			data = map[string]any{"keyRings": []any{map[string]any{"name": parent + "/keyRings/ring"}}}
 			if changed {
@@ -74,6 +76,9 @@ func TestKMSCursorRejectsChangedChildParentsAndForeignParents(t *testing.T) {
 	changed := false
 	calls := 0
 	r := protocolRuntime(t, func(request *http.Request) (*http.Response, error) {
+		if request.URL.Path == "/v1/projects/sample-project/locations" {
+			return apiResponse(request, 200, `{"locations":[{"name":"projects/sample-project/locations/us-central1"}]}`), nil
+		}
 		if strings.HasSuffix(request.URL.Path, "/keyRings") {
 			name := parent
 			if changed {

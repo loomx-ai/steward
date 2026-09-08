@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: securitycenter.googleapis.com/NotificationConfig
+  class: security.notification
+presentation:
+  displayNames:
+    en-US: Security Command Center notification
+    zh-CN: 安全指挥中心通知配置
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: securitycenter.projects.notificationConfigs.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: notificationConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: securitycenter.projects.notificationConfigs.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  description:
+    path: description
+    type: string
+  pubsubTopic:
+    path: pubsubTopic
+    type: string
+  serviceAccount:
+    path: serviceAccount
+    type: string
+  streamingConfig:
+    path: streamingConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+actions:
+  delete:
+    operation: securitycenter.projects.notificationConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: securitycenter.projects.notificationConfigs.get
+      itemsPath: $
+      identityPath: name

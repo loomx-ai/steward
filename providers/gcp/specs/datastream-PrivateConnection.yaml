@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: datastream.googleapis.com/PrivateConnection
+  class: network.private_connection
+presentation:
+  displayNames:
+    en-US: Datastream private connection
+    zh-CN: Datastream 专用连接
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: datastream.projects.locations.privateConnections.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: privateConnections
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: datastream.projects.locations.privateConnections.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  vpcPeeringConfig:
+    path: vpcPeeringConfig
+    type: object
+  pscInterfaceConfig:
+    path: pscInterfaceConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/NetworkAttachment
+  targetIdPath: refs_compute_googleapis_com_NetworkAttachment
+actions:
+  delete:
+    operation: datastream.projects.locations.privateConnections.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: datastream.projects.locations.privateConnections.get
+      itemsPath: $
+      identityPath: name

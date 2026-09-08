@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: apphub.googleapis.com/Application
+  class: resource.application
+presentation:
+  displayNames:
+    en-US: App Hub application
+    zh-CN: App Hub 应用
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: apphub.projects.locations.applications.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: applications
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: apphub.projects.locations.applications.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  uid:
+    path: uid
+    type: string
+  description:
+    path: description
+    type: string
+  scope:
+    path: scope
+    type: object
+  attributes:
+    path: attributes
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: apphub.projects.locations.applications.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: apphub.projects.locations.applications.get
+      itemsPath: $
+      identityPath: name

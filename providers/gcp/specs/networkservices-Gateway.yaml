@@ -1,0 +1,96 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkservices.googleapis.com/Gateway
+  class: network.service_gateway
+presentation:
+  displayNames:
+    en-US: Network Services gateway
+    zh-CN: 网络服务网关
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networkservices.projects.locations.gateways.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: gateways
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkservices.projects.locations.gateways.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  type:
+    path: type
+    type: string
+  addresses:
+    path: addresses
+    type: array
+  ports:
+    path: ports
+    type: array
+  scope:
+    path: scope
+    type: string
+  serverTlsPolicy:
+    path: serverTlsPolicy
+    type: string
+  certificateUrls:
+    path: certificateUrls
+    type: array
+  gatewaySecurityPolicy:
+    path: gatewaySecurityPolicy
+    type: string
+  network:
+    path: network
+    type: string
+  subnetwork:
+    path: subnetwork
+    type: string
+  routingMode:
+    path: routingMode
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: certificatemanager.googleapis.com/Certificate
+  targetIdPath: refs_certificatemanager_googleapis_com_Certificate
+actions:
+  delete:
+    operation: networkservices.projects.locations.gateways.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkservices.projects.locations.gateways.get
+      itemsPath: $
+      identityPath: name

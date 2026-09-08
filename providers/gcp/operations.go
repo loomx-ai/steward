@@ -94,6 +94,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if host == "iap.googleapis.com" {
+		name = strings.Replace(name, "projects/"+c.project+"/", "projects/"+c.number+"/", 1)
+	}
 	parts := strings.Split(name, "/")
 	for i, part := range parts {
 		validRecordName := kind.NativeType == dnsRecordSetType && i == len(parts)-2 && dnsRecordName(part)
@@ -110,7 +113,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	}
 	for _, id := range ids {
 		operation, ok := metadata.catalog.Operation(id)
-		if !ok || operation.Call == nil || operation.Call.Method != method {
+		if !ok || operation.Call == nil || (operation.Call.Method != method && !(method == "DELETE" && operation.Call.Method == "POST" && operation.Destructive)) {
 			continue
 		}
 		parameters := map[string]any{}

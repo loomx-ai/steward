@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: backupdr.googleapis.com/BackupPlan
+  class: backup.plan
+presentation:
+  displayNames:
+    en-US: Backup and DR plan
+    zh-CN: 备份和灾难恢复计划
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: backupdr.projects.locations.backupPlans.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: backupPlans
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: backupdr.projects.locations.backupPlans.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  backupVault:
+    path: backupVault
+    type: string
+  resourceType:
+    path: resourceType
+    type: string
+  backupRules:
+    path: backupRules
+    type: array
+  revisionId:
+    path: revisionId
+    type: string
+  backupVaultServiceAccount:
+    path: backupVaultServiceAccount
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: backupdr.googleapis.com/BackupVault
+  targetIdPath: refs_backupdr_googleapis_com_BackupVault
+actions:
+  delete:
+    operation: backupdr.projects.locations.backupPlans.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: backupdr.projects.locations.backupPlans.get
+      itemsPath: $
+      identityPath: name

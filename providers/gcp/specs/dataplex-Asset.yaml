@@ -1,0 +1,90 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataplex.googleapis.com/Asset
+  class: data.lake_asset
+presentation:
+  displayNames:
+    en-US: Dataplex asset
+    zh-CN: Dataplex 数据资产
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataplex.projects.locations.lakes.zones.assets.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: assets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataplex.projects.locations.lakes.zones.assets.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataplex.googleapis.com/Zone
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  description:
+    path: description
+    type: string
+  resourceSpec:
+    path: resourceSpec
+    type: object
+  discoverySpec:
+    path: discoverySpec
+    type: object
+  resourceStatus:
+    path: resourceStatus
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataplex.googleapis.com/Zone
+  targetIdPath: refs_dataplex_googleapis_com_Zone
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: bigquery.googleapis.com/Dataset
+  targetIdPath: refs_bigquery_googleapis_com_Dataset
+actions:
+  delete:
+    operation: dataplex.projects.locations.lakes.zones.assets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataplex.projects.locations.lakes.zones.assets.get
+      itemsPath: $
+      identityPath: name

@@ -32,14 +32,16 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 100 explicit resource rules and 393 selected methods
-from 30 official Discovery documents. Extended Compute rules cover VPN and
+The current catalog has 127 explicit resource rules and 552 selected methods
+from 44 official Discovery documents. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
 Spanner, Cloud Tasks/Functions, Filestore, AlloyDB, Managed Kafka, API Gateway,
 Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
-Monitoring. Registration and wire tests do not close the full parity matrix.
+Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
+Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
+Cloud NGFW, VPC Flow Logs, Network Services and Storage Transfer. Registration and wire tests do not close the full parity matrix.
 
 Cloud DNS record identity includes both the fully qualified name and the record
 type, including wildcard names. BigQuery binds scalar project/dataset/table IDs
@@ -48,7 +50,18 @@ included. Project-wide data resources retain their logical global scope and
 physical location metadata, including BigQuery multi-regions and Firestore's
 default database. Bigtable lists use their documented views and fail on
 `failedLocations`. Global API Gateway and Certificate Manager parents are not
-fanned out to Compute regions. Child cursors bind available native parent UIDs.
+fanned out to Compute regions. Child cursors bind available native parent UIDs. Where selected native location
+methods exist, service lists use those locations and map zones to their scan
+region. Project fanout includes service multi-regions; malformed, foreign,
+duplicate, cyclic or partial location results cannot establish absence.
+
+Backup and DR data-source removal binds its documented POST `:remove` method
+and request-ID body. Backup retention timestamps and unexpired appliance/service
+locks block deletion. Cloud Domains accepts the documented terminal registration
+states only. IAP uses project numbers on the wire and canonical project IDs in
+inventory. DLP raw/wrapped key material is redacted. Catalog refresh retries
+transient transport/429/5xx failures with a finite budget; offline Python tests
+cover retries, permanent failures and native schema preservation.
 
 Native cascades for Bigtable and Spanner instances, AlloyDB clusters, Kafka
 clusters and Service Directory namespaces/services contribute reviewed child

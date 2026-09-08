@@ -292,7 +292,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 		regional := false
 		for _, value := range parameters {
-			if value == "scope.location" || value == "scope.locationParent" {
+			if value == "scope.location" || value == "scope.locationParent" || value == "scope.iapTunnelLocationParent" {
 				regional = true
 			}
 		}
@@ -308,9 +308,18 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			continue
 		}
 		targetLocations := locations
+		var serviceLocations []string
+		serviceLocationList := false
+		if regional && !onlyGlobal && request.Scope.Kind != asset.ScopeGlobal {
+			var err error
+			serviceLocations, serviceLocationList, err = c.productLocations(ctx, operation)
+			if err != nil {
+				return nil, err
+			}
+		}
 		if request.Scope.Kind == asset.ScopeProject {
 			targetLocations = []string{"global"}
-			if regional && !onlyGlobal {
+			if regional && !onlyGlobal && !serviceLocationList {
 				if !regionLookup {
 					var err error
 					regions, err = r.DiscoverRegions(ctx, request.ConnectionID)
@@ -325,6 +334,17 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				}
 				if slices.Contains(kind.Scopes, asset.ScopeGlobal) && !slices.Contains(targetLocations, "global") {
 					targetLocations = append(targetLocations, "global")
+				}
+			}
+		}
+		if serviceLocationList {
+			targetLocations = nil
+			for _, location := range serviceLocations {
+				if location == "global" && !slices.Contains(kind.Scopes, asset.ScopeGlobal) {
+					continue
+				}
+				if request.Scope.Kind == asset.ScopeProject || regionOf(location) == request.Scope.NativeID {
+					targetLocations = append(targetLocations, location)
 				}
 			}
 		}
@@ -348,6 +368,41 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 	}
 	return targets, nil
+}
+
+// Product location lists include zonal and multi-region service locations that
+// Compute cannot enumerate. An unreadable/partial list is never an empty shard.
+func (c *client) productLocations(ctx context.Context, resource catalog.Operation) ([]string, bool, error) {
+	metadata, err := providerData()
+	if err != nil {
+		return nil, false, err
+	}
+	for _, operation := range metadata.catalog.Operations {
+		if operation.Call == nil || operation.ID != resource.Call.Product+".projects.locations.list" || operation.Call.Version != resource.Call.Version {
+			continue
+		}
+		records, err := c.nativeList(ctx, operation, map[string]any{"name": "projects/" + c.project}, "locations")
+		if err != nil {
+			return nil, true, err
+		}
+		var locations []string
+		seen := map[string]bool{}
+		for _, record := range records {
+			name := text(record["name"])
+			location := text(record["locationId"])
+			if location == "" {
+				location = last(name)
+			}
+			if !segmentPattern.MatchString(location) || location == "." || location == ".." || strings.Contains(location, "/") || seen[location] || (name != "projects/"+c.project+"/locations/"+location && name != "projects/"+c.number+"/locations/"+location) {
+				return nil, true, fmt.Errorf("invalid or duplicate GCP product location")
+			}
+			seen[location] = true
+			locations = append(locations, location)
+		}
+		sort.Strings(locations)
+		return locations, true, nil
+	}
+	return nil, false, nil
 }
 
 func cloneParameters(input map[string]any) map[string]any {
@@ -375,6 +430,8 @@ func productParameters(input map[string]any, c *client, location string, parent 
 			result[key] = "projects/" + c.project + "/locations/" + location
 		case "scope.allLocationsParent":
 			result[key] = "projects/" + c.project + "/locations/-"
+		case "scope.iapTunnelLocationParent":
+			result[key] = "projects/" + c.number + "/iap_tunnel/locations/" + location
 		case "parent.nativeId":
 			result[key] = strings.TrimPrefix(parent.NativeID, "//"+strings.Split(parent.NativeType, "/")[0]+"/")
 		default:

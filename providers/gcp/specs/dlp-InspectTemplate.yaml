@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dlp.googleapis.com/InspectTemplate
+  class: security.inspect_template
+presentation:
+  displayNames:
+    en-US: Sensitive Data Protection inspection template
+    zh-CN: 敏感数据检查模板
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dlp.projects.locations.inspectTemplates.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: inspectTemplates
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dlp.projects.locations.inspectTemplates.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  description:
+    path: description
+    type: string
+  inspectConfig:
+    path: inspectConfig
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: dlp.projects.locations.inspectTemplates.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dlp.projects.locations.inspectTemplates.get
+      itemsPath: $
+      identityPath: name
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey

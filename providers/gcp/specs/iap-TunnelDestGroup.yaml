@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: iap.googleapis.com/TunnelDestGroup
+  class: network.tunnel_destination
+presentation:
+  displayNames:
+    en-US: IAP tunnel destination group
+    zh-CN: IAP 隧道目标组
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: iap.projects.iap_tunnel.locations.destGroups.list
+    parameters:
+      parent: scope.iapTunnelLocationParent
+    itemsPath: tunnelDestGroups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: iap.projects.iap_tunnel.locations.destGroups.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  cidrs:
+    path: cidrs
+    type: array
+  fqdns:
+    path: fqdns
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: iap.projects.iap_tunnel.locations.destGroups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: iap.projects.iap_tunnel.locations.destGroups.get
+      itemsPath: $
+      identityPath: name

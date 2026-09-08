@@ -9,6 +9,8 @@ import concurrent.futures
 import hashlib
 import json
 from pathlib import Path
+import time
+import urllib.error
 import urllib.request
 import urllib.parse
 
@@ -36,8 +38,16 @@ def fetch(selection):
     origin = urllib.parse.urlsplit(uri)
     if origin.scheme != "https" or not origin.hostname.endswith(".googleapis.com") or origin.username or origin.port:
         raise ValueError("Only official Google Discovery sources are accepted")
-    with urllib.request.urlopen(uri, timeout=60) as response:
-        raw = response.read(32 * 1024 * 1024 + 1)
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(uri, timeout=60) as response:
+                raw = response.read(32 * 1024 * 1024 + 1)
+            break
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+            transient = not isinstance(error, urllib.error.HTTPError) or error.code == 429 or error.code >= 500
+            if not transient or attempt == 3:
+                raise RuntimeError(f"Cannot refresh {uri}: {error}") from error
+            time.sleep(2 ** attempt)
     if len(raw) > 32 * 1024 * 1024:
         raise ValueError("Discovery response exceeds 32 MiB")
     source = json.loads(raw)

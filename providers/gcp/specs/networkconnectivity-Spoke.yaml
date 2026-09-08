@@ -1,0 +1,108 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: networkconnectivity.googleapis.com/Spoke
+  class: network.transit_attachment
+presentation:
+  displayNames:
+    en-US: Network Connectivity Center spoke
+    zh-CN: 网络连接中心辐条
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: networkconnectivity.projects.locations.spokes.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: spokes
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: networkconnectivity.projects.locations.spokes.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  hub:
+    path: hub
+    type: string
+  linkedVpcNetwork:
+    path: linkedVpcNetwork
+    type: object
+  linkedProducerVpcNetwork:
+    path: linkedProducerVpcNetwork
+    type: object
+  linkedRouterApplianceInstances:
+    path: linkedRouterApplianceInstances
+    type: object
+  linkedVpnTunnels:
+    path: linkedVpnTunnels
+    type: object
+  linkedInterconnectAttachments:
+    path: linkedInterconnectAttachments
+    type: object
+  group:
+    path: group
+    type: string
+  spokeType:
+    path: spokeType
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: networkconnectivity.googleapis.com/Hub
+  targetIdPath: refs_networkconnectivity_googleapis_com_Hub
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/VpnTunnel
+  targetIdPath: refs_compute_googleapis_com_VpnTunnel
+- type: depends_on
+  targetType: compute.googleapis.com/InterconnectAttachment
+  targetIdPath: refs_compute_googleapis_com_InterconnectAttachment
+- type: depends_on
+  targetType: compute.googleapis.com/Instance
+  targetIdPath: refs_compute_googleapis_com_Instance
+actions:
+  delete:
+    operation: networkconnectivity.projects.locations.spokes.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: networkconnectivity.projects.locations.spokes.get
+      itemsPath: $
+      identityPath: name

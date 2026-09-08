@@ -120,7 +120,7 @@ func loadProviderData() (providerMetadata, error) {
 				if slices.Contains(kind.ReadOperations, id) && operation.Call.Method != "GET" {
 					return result, fmt.Errorf("GCP read binding %q is not a GET", id)
 				}
-				if slices.Contains(kind.DeleteOperations, id) && (operation.Call.Method != "DELETE" || !operation.Destructive) {
+				if slices.Contains(kind.DeleteOperations, id) && ((operation.Call.Method != "DELETE" && operation.Call.Method != "POST") || !operation.Destructive) {
 					return result, fmt.Errorf("GCP delete binding %q is not destructive", id)
 				}
 			}

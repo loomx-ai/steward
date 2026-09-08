@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: domains.googleapis.com/Registration
+  class: dns.registration
+presentation:
+  displayNames:
+    en-US: Cloud Domains registration
+    zh-CN: Cloud Domains 域名注册
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: domains.projects.locations.registrations.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: registrations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: domains.projects.locations.registrations.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  domainName:
+    path: domainName
+    type: string
+  expireTime:
+    path: expireTime
+    type: string
+  dnsSettings:
+    path: dnsSettings
+    type: object
+  managementSettings:
+    path: managementSettings
+    type: object
+  domainProperties:
+    path: domainProperties
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: domains.projects.locations.registrations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: domains.projects.locations.registrations.get
+      itemsPath: $
+      identityPath: name
+    preconditions:
+    - path: state
+      allowedValues:
+      - EXPORTED
+      - EXPIRED
+      - REGISTRATION_FAILED
+      - TRANSFER_FAILED
+      reason: domain_registration_state_not_deletable

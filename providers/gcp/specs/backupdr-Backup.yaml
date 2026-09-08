@@ -1,0 +1,93 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: backupdr.googleapis.com/Backup
+  class: backup.recovery_point
+presentation:
+  displayNames:
+    en-US: Backup recovery point
+    zh-CN: 备份恢复点
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: backupdr.projects.locations.backupVaults.dataSources.backups.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: backups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: backupdr.projects.locations.backupVaults.dataSources.backups.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: backupdr.googleapis.com/DataSource
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  backupType:
+    path: backupType
+    type: string
+  consistencyTime:
+    path: consistencyTime
+    type: string
+  resourceSizeBytes:
+    path: resourceSizeBytes
+    type: string
+  enforcedRetentionEndTime:
+    path: enforcedRetentionEndTime
+    type: string
+  expireTime:
+    path: expireTime
+    type: string
+  serviceLocks:
+    path: serviceLocks
+    type: array
+  backupApplianceLocks:
+    path: backupApplianceLocks
+    type: array
+  gcpResource:
+    path: gcpResource
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: backupdr.googleapis.com/DataSource
+  targetIdPath: refs_backupdr_googleapis_com_DataSource
+actions:
+  delete:
+    operation: backupdr.projects.locations.backupVaults.dataSources.backups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: backupdr.projects.locations.backupVaults.dataSources.backups.get
+      itemsPath: $
+      identityPath: name

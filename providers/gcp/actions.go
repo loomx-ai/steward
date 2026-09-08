@@ -212,6 +212,13 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	if token := a.deleteOperation.Call.IdempotencyParameter; token != "" && request.IdempotencyKey != "" {
 		parameters[token] = googleRequestID(request.IdempotencyKey)
 	}
+	if a.kind.NativeType == "backupdr.googleapis.com/DataSource" {
+		body := map[string]any{}
+		if request.IdempotencyKey != "" {
+			body["requestId"] = googleRequestID(request.IdempotencyKey)
+		}
+		parameters["body"] = body
+	}
 	bound, err := catalog.BindREST(a.deleteOperation, parameters)
 	if err != nil {
 		return contracts.ActionResult{}, err
@@ -428,6 +435,22 @@ func protectionReason(nativeType string, data map[string]any) string {
 	}
 	if nativeType == "logging.googleapis.com/LogBucket" && (data["locked"] == true || data["name"] != nil && last(text(data["name"])) == "_Required") {
 		return "log_bucket_retention_locked"
+	}
+	if nativeType == "backupdr.googleapis.com/Backup" {
+		for _, field := range []string{"serviceLocks", "backupApplianceLocks"} {
+			for _, lock := range array(data[field]) {
+				end, err := time.Parse(time.RFC3339Nano, text(object(lock)["lockUntilTime"]))
+				if err != nil || time.Now().Before(end) {
+					return "backup_locked"
+				}
+			}
+		}
+		if value := text(data["enforcedRetentionEndTime"]); value != "" {
+			end, err := time.Parse(time.RFC3339Nano, value)
+			if err != nil || time.Now().Before(end) {
+				return "backup_retention_active"
+			}
+		}
 	}
 	return ""
 }

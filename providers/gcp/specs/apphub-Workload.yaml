@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: apphub.googleapis.com/Workload
+  class: resource.application_workload
+presentation:
+  displayNames:
+    en-US: App Hub workload
+    zh-CN: App Hub 工作负载
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: apphub.projects.locations.applications.workloads.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: workloads
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: apphub.projects.locations.applications.workloads.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: apphub.googleapis.com/Application
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  description:
+    path: description
+    type: string
+  workloadProperties:
+    path: workloadProperties
+    type: object
+  workloadReference:
+    path: workloadReference
+    type: object
+  discoveredWorkload:
+    path: discoveredWorkload
+    type: string
+  attributes:
+    path: attributes
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: apphub.googleapis.com/Application
+  targetIdPath: refs_apphub_googleapis_com_Application
+actions:
+  delete:
+    operation: apphub.projects.locations.applications.workloads.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: apphub.projects.locations.applications.workloads.get
+      itemsPath: $
+      identityPath: name

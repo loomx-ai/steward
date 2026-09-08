@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dlp.googleapis.com/DeidentifyTemplate
+  class: security.deidentify_template
+presentation:
+  displayNames:
+    en-US: Sensitive Data Protection de-identification template
+    zh-CN: 敏感数据去标识化模板
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dlp.projects.locations.deidentifyTemplates.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: deidentifyTemplates
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dlp.projects.locations.deidentifyTemplates.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  description:
+    path: description
+    type: string
+  deidentifyConfig:
+    path: deidentifyConfig
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: dlp.projects.locations.deidentifyTemplates.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dlp.projects.locations.deidentifyTemplates.get
+      itemsPath: $
+      identityPath: name
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey

@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: datastream.googleapis.com/Stream
+  class: data.replication
+presentation:
+  displayNames:
+    en-US: Datastream stream
+    zh-CN: Datastream 数据流
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: datastream.projects.locations.streams.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: streams
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: datastream.projects.locations.streams.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  customerManagedEncryptionKey:
+    path: customerManagedEncryptionKey
+    type: string
+  sourceConfig:
+    path: sourceConfig
+    type: object
+  destinationConfig:
+    path: destinationConfig
+    type: object
+  backfillAll:
+    path: backfillAll
+    type: object
+  backfillNone:
+    path: backfillNone
+    type: object
+  errors:
+    path: errors
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: datastream.googleapis.com/ConnectionProfile
+  targetIdPath: refs_datastream_googleapis_com_ConnectionProfile
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: datastream.projects.locations.streams.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: datastream.projects.locations.streams.get
+      itemsPath: $
+      identityPath: name

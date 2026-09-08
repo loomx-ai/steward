@@ -186,3 +186,14 @@ background evidence only, not acceptance evidence for this work.
   the remaining service matrix, Azure expansion, independent emulators and full
   application acceptance remain unfinished. No publication is implied by this
   intermediate implementation checkpoint.
+
+- GCP now has 127 explicit kinds, 552 native methods and 44 upstream documents.
+  Twenty-seven additional rules include application metadata, AI endpoints,
+  backup plans/vaults/sources/backups, data lakes/replication, DLP, domain
+  registration, IAP and network services. Retained tests exercise each native
+  path, custom POST deletion, terminal states, retention/lock expiry, dependency
+  formats, numeric projects, location paging/fanout/drift and DLP key redaction.
+  Product location lists supplement Compute where available; metadata refresh
+  has bounded retries with offline tests in CI. Parent prerequisites and cascades
+  for these additional products, remaining mapped services, Azure expansion and
+  independent/full-application acceptance remain outstanding.

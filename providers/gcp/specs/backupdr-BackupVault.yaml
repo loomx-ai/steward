@@ -1,0 +1,86 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: backupdr.googleapis.com/BackupVault
+  class: backup.vault
+presentation:
+  displayNames:
+    en-US: Backup vault
+    zh-CN: 备份保险库
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: backupdr.projects.locations.backupVaults.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: backupVaults
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: backupdr.projects.locations.backupVaults.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  description:
+    path: description
+    type: string
+  backupMinimumEnforcedRetentionDuration:
+    path: backupMinimumEnforcedRetentionDuration
+    type: string
+  backupCount:
+    path: backupCount
+    type: string
+  deletable:
+    path: deletable
+    type: boolean
+  encryptionConfig:
+    path: encryptionConfig
+    type: object
+  accessRestriction:
+    path: accessRestriction
+    type: string
+  serviceAccount:
+    path: serviceAccount
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: backupdr.projects.locations.backupVaults.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: backupdr.projects.locations.backupVaults.get
+      itemsPath: $
+      identityPath: name
