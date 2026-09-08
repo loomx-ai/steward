@@ -2,26 +2,26 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.Web/sites
-  class: compute.service
+  nativeType: Microsoft.Network/bastionHosts
+  class: security.bastion_host
 presentation:
   displayNames:
-    en-US: App Service or Function App
-    zh-CN: App Service 或 Function App
+    en-US: Bastion host
+    zh-CN: 堡垒主机
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
   kind: region
 discovery:
   source: product-api
-  detail:
-    operation: Azure.Microsoft.Web.WebApps_Get
-    itemsPath: $
-    identityPath: id
   list:
-    operation: Azure.Microsoft.Web.WebApps_List
+    operation: Azure.Microsoft.Network.BastionHosts_List
     parameters:
       subscriptionId: scope.subscription
     itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.BastionHosts_Get
+    itemsPath: $
     identityPath: id
 fields:
   name:
@@ -42,30 +42,37 @@ fields:
   tags:
     path: tags
     type: object
+  dnsName:
+    path: dnsName
+    type: string
+  scaleUnits:
+    path: scaleUnits
+    type: number
+  enableTunneling:
+    path: enableTunneling
+    type: boolean
+  enableIpConnect:
+    path: enableIpConnect
+    type: boolean
 extensions:
   hook: azure.resource
 relationships:
-- type: uses
-  targetType: Microsoft.Web/serverfarms
-  targetIdPath: refs_microsoft_web_serverfarms
-- type: member_of
-  targetType: Microsoft.Network/virtualNetworks
-  targetIdPath: refs_microsoft_network_virtualnetworks
-- type: member_of
+- type: depends_on
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: depends_on
   targetType: Microsoft.Network/virtualNetworks/subnets
   targetIdPath: refs_microsoft_network_virtualnetworks_subnets
-- type: uses
-  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
-  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
 actions:
   delete:
-    operation: Azure.Microsoft.Web.WebApps_Delete
-    parameters:
-      deleteEmptyServerFarm: false
+    operation: Azure.Microsoft.Network.BastionHosts_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.Web.WebApps_Get
+      operation: Azure.Microsoft.Network.BastionHosts_Get
       itemsPath: $
       identityPath: id

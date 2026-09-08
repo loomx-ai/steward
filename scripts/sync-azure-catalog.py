@@ -7,6 +7,7 @@ ordinary build and catalog tests use the checked-in files without networking.
 """
 
 import copy
+import concurrent.futures
 import hashlib
 import json
 from pathlib import Path
@@ -52,11 +53,20 @@ def fetch_source(uri):
 def snapshot(selection):
     originals, snapshots, fingerprints = {}, {}, {}
 
+    def download(uri):
+        raw = fetch_source(uri)
+        return uri, json.loads(raw), hashlib.sha256(raw).hexdigest()
+
+    # Root documents are independent. Resolve their shared references only
+    # after this bounded download batch so each URI is still read once.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as executor:
+        uris = sorted({entry["source_uri"] for entry in selection["documents"]})
+        for uri, original, fingerprint in executor.map(download, uris):
+            originals[uri], fingerprints[uri] = original, fingerprint
+
     def fetch(uri):
         if uri not in originals:
-            raw = fetch_source(uri)
-            originals[uri] = json.loads(raw)
-            fingerprints[uri] = hashlib.sha256(raw).hexdigest()
+            _, originals[uri], fingerprints[uri] = download(uri)
         return originals[uri]
 
     pending = []

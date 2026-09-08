@@ -69,6 +69,15 @@ relationships:
 - type: uses
   targetType: Microsoft.ManagedIdentity/userAssignedIdentities
   targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: depends_on
+  targetType: Microsoft.Compute/hostGroups
+  targetIdPath: refs_microsoft_compute_hostgroups
+- type: depends_on
+  targetType: Microsoft.Compute/hostGroups/hosts
+  targetIdPath: refs_microsoft_compute_hostgroups_hosts
+- type: depends_on
+  targetType: Microsoft.Compute/capacityReservationGroups
+  targetIdPath: refs_microsoft_compute_capacityreservationgroups
 actions:
   delete:
     operation: Azure.Microsoft.Compute.VirtualMachines_Delete

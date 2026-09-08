@@ -220,3 +220,14 @@ background evidence only, not acceptance evidence for this work.
   targeted race tests and vet pass; 33 official API files and 27 reference files
   refreshed successfully. Remaining Azure families, lifecycle controllers and
   independent emulator/application acceptance remain open.
+
+- Azure now contains 64 explicit rules and 258 native operations from 49 root
+  Swagger documents and 25 reference documents. Thirty additions cover network,
+  DNS, capacity/hosts and file shares, with literal native CRUD wire tests,
+  multi-level parent parameters, typed properties and dependency references.
+  Native optional `type` fields are supported without accepting foreign IDs,
+  wrong types or partial responses; resource-group read identity is also checked.
+  File-share deletion preserves snapshots with the native `$include=none`
+  option. Network secret redaction, full Go tests, targeted races, vet and source
+  regeneration passed. The remaining service families, parent lifecycle work,
+  snapshots, emulator/application acceptance and publication remain unfinished.

@@ -1,0 +1,95 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/networkWatchers/flowLogs
+  class: observability.flow_log
+presentation:
+  displayNames:
+    en-US: Flow log
+    zh-CN: 流日志
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.FlowLogs_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      networkWatcherName: parent.normalized.arm_parameters.networkWatcherName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.FlowLogs_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/networkWatchers
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  enabled:
+    path: enabled
+    type: boolean
+  retentionPolicy:
+    path: retentionPolicy
+    type: object
+  format:
+    path: format
+    type: object
+  flowAnalyticsConfiguration:
+    path: flowAnalyticsConfiguration
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/networkWatchers
+  targetIdPath: refs_microsoft_network_networkwatchers
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: depends_on
+  targetType: Microsoft.Network/networkSecurityGroups
+  targetIdPath: refs_microsoft_network_networksecuritygroups
+- type: depends_on
+  targetType: Microsoft.Network/networkInterfaces
+  targetIdPath: refs_microsoft_network_networkinterfaces
+- type: depends_on
+  targetType: Microsoft.Compute/virtualMachines
+  targetIdPath: refs_microsoft_compute_virtualmachines
+- type: depends_on
+  targetType: Microsoft.OperationalInsights/workspaces
+  targetIdPath: refs_microsoft_operationalinsights_workspaces
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.FlowLogs_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.FlowLogs_Get
+      itemsPath: $
+      identityPath: id

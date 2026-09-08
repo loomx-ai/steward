@@ -42,6 +42,14 @@ type response struct {
 	requestID string
 }
 
+// ARM child responses may omit type. The full ID has already been bound to the
+// expected native operation; a present type must still agree with that binding.
+func validResourceResponse(res response, nativeID, nativeType string) bool {
+	return res.status == http.StatusOK && res.data["error"] == nil &&
+		strings.EqualFold(text(res.data["id"]), nativeID) &&
+		(text(res.data["type"]) == "" || strings.EqualFold(text(res.data["type"]), nativeType))
+}
+
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
 	subscription := strings.ToLower(strings.TrimSpace(credential.Values["subscription_id"]))
 	tenant := strings.ToLower(strings.TrimSpace(credential.Values["tenant_id"]))

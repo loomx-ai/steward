@@ -1,0 +1,83 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/expressRouteCircuits/peerings
+  class: network.virtual_border_router
+presentation:
+  displayNames:
+    en-US: ExpressRoute peering
+    zh-CN: ExpressRoute 对等互连
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.ExpressRouteCircuitPeerings_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      circuitName: parent.normalized.arm_parameters.circuitName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/expressRouteCircuits
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  peeringType:
+    path: peeringType
+    type: string
+  peerASN:
+    path: peerASN
+    type: number
+  azureASN:
+    path: azureASN
+    type: number
+  vlanId:
+    path: vlanId
+    type: number
+  primaryPeerAddressPrefix:
+    path: primaryPeerAddressPrefix
+    type: string
+  secondaryPeerAddressPrefix:
+    path: secondaryPeerAddressPrefix
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/expressRouteCircuits
+  targetIdPath: refs_microsoft_network_expressroutecircuits
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Get
+      itemsPath: $
+      identityPath: id

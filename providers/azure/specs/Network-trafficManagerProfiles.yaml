@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/trafficManagerProfiles
+  class: dns.gtm_instance
+presentation:
+  displayNames:
+    en-US: Traffic Manager profile
+    zh-CN: 流量管理器配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.Profiles_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.Profiles_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  profileStatus:
+    path: profileStatus
+    type: string
+  trafficRoutingMethod:
+    path: trafficRoutingMethod
+    type: string
+  dnsConfig:
+    path: dnsConfig
+    type: object
+  monitorConfig:
+    path: monitorConfig
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+- type: depends_on
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: depends_on
+  targetType: Microsoft.Network/trafficManagerProfiles
+  targetIdPath: refs_microsoft_network_trafficmanagerprofiles
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.Profiles_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.Profiles_Get
+      itemsPath: $
+      identityPath: id

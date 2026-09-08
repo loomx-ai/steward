@@ -1,0 +1,85 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/virtualNetworkGateways
+  class: network.vpn_gateway
+presentation:
+  displayNames:
+    en-US: Virtual network gateway
+    zh-CN: 虚拟网络网关
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.VirtualNetworkGateways_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.VirtualNetworkGateways_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Resources/resourceGroups
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  gatewayType:
+    path: gatewayType
+    type: string
+  vpnType:
+    path: vpnType
+    type: string
+  activeActive:
+    path: activeActive
+    type: boolean
+  enableBgp:
+    path: enableBgp
+    type: boolean
+  bgpSettings:
+    path: bgpSettings
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.VirtualNetworkGateways_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.VirtualNetworkGateways_Get
+      itemsPath: $
+      identityPath: id

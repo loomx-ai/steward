@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/virtualHubs/hubVirtualNetworkConnections
+  class: network.vpc_attachment
+presentation:
+  displayNames:
+    en-US: Virtual hub VNet connection
+    zh-CN: 虚拟中心 VNet 连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.HubVirtualNetworkConnections_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      virtualHubName: parent.normalized.arm_parameters.virtualHubName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.HubVirtualNetworkConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/virtualHubs
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  enableInternetSecurity:
+    path: enableInternetSecurity
+    type: boolean
+  routingConfiguration:
+    path: routingConfiguration
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/virtualHubs
+  targetIdPath: refs_microsoft_network_virtualhubs
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+- type: depends_on
+  targetType: Microsoft.Network/virtualHubs/hubRouteTables
+  targetIdPath: refs_microsoft_network_virtualhubs_hubroutetables
+- type: depends_on
+  targetType: Microsoft.Network/virtualHubs/routeMaps
+  targetIdPath: refs_microsoft_network_virtualhubs_routemaps
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.HubVirtualNetworkConnections_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.HubVirtualNetworkConnections_Get
+      itemsPath: $
+      identityPath: id

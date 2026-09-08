@@ -2,27 +2,31 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.Network/virtualNetworks
-  class: network.vpc
+  nativeType: Microsoft.Network/dnsZones
+  class: dns.zone
 presentation:
   displayNames:
-    en-US: Virtual network
-    zh-CN: 虚拟网络
+    en-US: DNS zone
+    zh-CN: DNS 区域
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
-  kind: region
+  kind: global
 discovery:
   source: product-api
-  detail:
-    operation: Azure.Microsoft.Network.VirtualNetworks_Get
-    itemsPath: $
-    identityPath: id
   list:
-    operation: Azure.Microsoft.Network.VirtualNetworks_ListAll
+    operation: Azure.Microsoft.Network.Zones_ListByResourceGroup
     parameters:
       subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
     itemsPath: value
     identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.Zones_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Resources/resourceGroups
 fields:
   name:
     path: name
@@ -42,22 +46,28 @@ fields:
   tags:
     path: tags
     type: object
-  addressSpace:
-    path: addressSpace
-    type: object
+  zoneType:
+    path: zoneType
+    type: string
+  numberOfRecordSets:
+    path: numberOfRecordSets
+    type: number
+  maxNumberOfRecordSets:
+    path: maxNumberOfRecordSets
+    type: number
+  nameServers:
+    path: nameServers
+    type: array
 extensions:
   hook: azure.resource
+relationships: []
 actions:
   delete:
-    operation: Azure.Microsoft.Network.VirtualNetworks_Delete
+    operation: Azure.Microsoft.Network.Zones_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.Network.VirtualNetworks_Get
+      operation: Azure.Microsoft.Network.Zones_Get
       itemsPath: $
       identityPath: id
-relationships:
-- type: depends_on
-  targetType: Microsoft.Network/ddosProtectionPlans
-  targetIdPath: refs_microsoft_network_ddosprotectionplans

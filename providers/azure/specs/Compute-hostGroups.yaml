@@ -2,26 +2,26 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.Network/virtualNetworks
-  class: network.vpc
+  nativeType: Microsoft.Compute/hostGroups
+  class: compute.host_group
 presentation:
   displayNames:
-    en-US: Virtual network
-    zh-CN: 虚拟网络
+    en-US: Dedicated host group
+    zh-CN: 专用主机组
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
   kind: region
 discovery:
   source: product-api
-  detail:
-    operation: Azure.Microsoft.Network.VirtualNetworks_Get
-    itemsPath: $
-    identityPath: id
   list:
-    operation: Azure.Microsoft.Network.VirtualNetworks_ListAll
+    operation: Azure.Microsoft.Compute.DedicatedHostGroups_ListBySubscription
     parameters:
       subscriptionId: scope.subscription
     itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Compute.DedicatedHostGroups_Get
+    itemsPath: $
     identityPath: id
 fields:
   name:
@@ -42,22 +42,22 @@ fields:
   tags:
     path: tags
     type: object
-  addressSpace:
-    path: addressSpace
-    type: object
+  platformFaultDomainCount:
+    path: platformFaultDomainCount
+    type: number
+  supportAutomaticPlacement:
+    path: supportAutomaticPlacement
+    type: boolean
 extensions:
   hook: azure.resource
+relationships: []
 actions:
   delete:
-    operation: Azure.Microsoft.Network.VirtualNetworks_Delete
+    operation: Azure.Microsoft.Compute.DedicatedHostGroups_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.Network.VirtualNetworks_Get
+      operation: Azure.Microsoft.Compute.DedicatedHostGroups_Get
       itemsPath: $
       identityPath: id
-relationships:
-- type: depends_on
-  targetType: Microsoft.Network/ddosProtectionPlans
-  targetIdPath: refs_microsoft_network_ddosprotectionplans

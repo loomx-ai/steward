@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/privateLinkServices
+  class: network.endpoint_service
+presentation:
+  displayNames:
+    en-US: Private Link service
+    zh-CN: 专用链接服务
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.PrivateLinkServices_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.PrivateLinkServices_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  alias:
+    path: alias
+    type: string
+  fqdns:
+    path: fqdns
+    type: array
+  visibility:
+    path: visibility
+    type: object
+  autoApproval:
+    path: autoApproval
+    type: object
+  enableProxyProtocol:
+    path: enableProxyProtocol
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/loadBalancers
+  targetIdPath: refs_microsoft_network_loadbalancers
+- type: depends_on
+  targetType: Microsoft.Network/publicIPAddresses
+  targetIdPath: refs_microsoft_network_publicipaddresses
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.PrivateLinkServices_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.PrivateLinkServices_Get
+      itemsPath: $
+      identityPath: id

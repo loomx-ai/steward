@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 34 current resource rules discover through native product List operations.
+All 64 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -44,6 +44,22 @@ Network target selection uses the native VNet/Subnet collections directly.
 Catalog refresh retries transient failures at most four times. Offline Python
 tests preserve native operations, recursive references and source fingerprints;
 Go tests retain product wire behavior, scan authority, paging and failure cases.
+
+Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
+VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
+Private Link and file shares. The current catalog contains 258 operations from
+49 root documents and 25 reference documents. Parent path parameters preserve
+the API's actual spelling and hierarchy, including resource-group-only lists.
+Native detail responses may omit `type`; their full bound identity and any
+present type must agree, and partial detail responses cannot authorize deletion.
+
+Firewall inheritance, nested Traffic Manager endpoints and native network
+references have explicit relationships. VPN, ExpressRoute and RADIUS secret
+fields are removed from inventory and API logs. File-share deletion explicitly
+uses `$include=none`, preserving snapshots until their independent lifecycle is
+modeled. Service-parent cascade/prerequisite handling and the remaining service
+families are still incomplete; these protocol checks do not close publication
+or independent emulator acceptance.
 
 VM managed disks and NICs, and a NIC's public IPs, contribute native lifecycle
 impact from their `deleteOption` fields. A reviewed retention outcome changes

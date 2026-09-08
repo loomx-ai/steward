@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/localNetworkGateways
+  class: network.customer_gateway
+presentation:
+  displayNames:
+    en-US: Local network gateway
+    zh-CN: 本地网络网关
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.LocalNetworkGateways_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.LocalNetworkGateways_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Resources/resourceGroups
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  gatewayIpAddress:
+    path: gatewayIpAddress
+    type: string
+  fqdn:
+    path: fqdn
+    type: string
+  localNetworkAddressSpace:
+    path: localNetworkAddressSpace
+    type: object
+  bgpSettings:
+    path: bgpSettings
+    type: object
+extensions:
+  hook: azure.resource
+relationships: []
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.LocalNetworkGateways_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.LocalNetworkGateways_Get
+      itemsPath: $
+      identityPath: id

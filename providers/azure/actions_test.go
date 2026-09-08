@@ -117,7 +117,7 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 				case strings.EqualFold(req.URL.Path, value.Identity.NativeID):
 					return jsonResponse(200, raw, nil), nil
 				case strings.HasSuffix(strings.ToLower(req.URL.Path), "/resourcegroups/test"):
-					return jsonResponse(200, map[string]any{}, nil), nil
+					return jsonResponse(200, map[string]any{"id": req.URL.Path}, nil), nil
 				case strings.HasSuffix(req.URL.Path, "/locks"):
 					locks := test.locks
 					if locks == nil {
@@ -184,7 +184,7 @@ func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 		if strings.HasSuffix(req.URL.Path, "/locks") {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
-		return jsonResponse(200, map[string]any{}, nil), nil
+		return jsonResponse(200, map[string]any{"id": req.URL.Path}, nil), nil
 	})
 	driver, err := r.ResolveAction(context.Background(), "connection", value)
 	if err != nil {

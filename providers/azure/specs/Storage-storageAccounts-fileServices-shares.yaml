@@ -1,0 +1,88 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Storage/storageAccounts/fileServices/shares
+  class: storage.filesystem
+presentation:
+  displayNames:
+    en-US: Azure file share
+    zh-CN: Azure 文件共享
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Storage.FileShares_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Storage.FileShares_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Storage/storageAccounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  shareQuota:
+    path: shareQuota
+    type: number
+  accessTier:
+    path: accessTier
+    type: string
+  enabledProtocols:
+    path: enabledProtocols
+    type: string
+  rootSquash:
+    path: rootSquash
+    type: string
+  leaseState:
+    path: leaseState
+    type: string
+  leaseStatus:
+    path: leaseStatus
+    type: string
+  lastModifiedTime:
+    path: lastModifiedTime
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+actions:
+  delete:
+    operation: Azure.Microsoft.Storage.FileShares_Delete
+    parameters:
+      $include: none
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Storage.FileShares_Get
+      itemsPath: $
+      identityPath: id

@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Compute/capacityReservationGroups/capacityReservations
+  class: compute.capacity_reservation
+presentation:
+  displayNames:
+    en-US: Capacity reservation
+    zh-CN: 容量预留
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Compute.CapacityReservations_ListByCapacityReservationGroup
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      capacityReservationGroupName: parent.normalized.arm_parameters.capacityReservationGroupName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Compute.CapacityReservations_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Compute/capacityReservationGroups
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  reservationId:
+    path: reservationId
+    type: string
+  timeCreated:
+    path: timeCreated
+    type: string
+  provisioningTime:
+    path: provisioningTime
+    type: string
+  platformFaultDomainCount:
+    path: platformFaultDomainCount
+    type: number
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Compute/capacityReservationGroups
+  targetIdPath: refs_microsoft_compute_capacityreservationgroups
+actions:
+  delete:
+    operation: Azure.Microsoft.Compute.CapacityReservations_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Compute.CapacityReservations_Get
+      itemsPath: $
+      identityPath: id

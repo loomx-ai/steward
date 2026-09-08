@@ -237,7 +237,7 @@ func (a *action) evaluateAttachments(ctx context.Context, request contracts.Acti
 			if err != nil {
 				return "", err
 			}
-			if !strings.EqualFold(text(response.data["id"]), child.id) || !strings.EqualFold(text(response.data["type"]), child.kind) {
+			if !validResourceResponse(response, child.id, child.kind) {
 				return "", fmt.Errorf("Azure cascade read identity mismatch")
 			}
 			if reason := protectionReason(kind, response.data); reason != "" {

@@ -253,7 +253,7 @@ func TestAzureRetentionSurvivesWorkerRestartAndPreservesNICSettings(t *testing.T
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
 		if strings.HasSuffix(strings.ToLower(r.URL.Path), "/resourcegroups/test") {
-			return jsonResponse(200, map[string]any{}, nil), nil
+			return jsonResponse(200, map[string]any{"id": r.URL.Path}, nil), nil
 		}
 		for name, resource := range live {
 			if !strings.EqualFold(r.URL.Path, text(resource["id"])) {
@@ -410,7 +410,7 @@ func TestAzureCascadePreflightRejectsMissingImpactDriftAndLiveLocks(t *testing.T
 					return jsonResponse(200, map[string]any{"value": locks}, nil), nil
 				}
 				if strings.HasSuffix(strings.ToLower(r.URL.Path), "/resourcegroups/test") {
-					group := map[string]any{}
+					group := map[string]any{"id": r.URL.Path}
 					if mode == "child-managed-group" {
 						group["managedBy"] = resourceID("Microsoft.ContainerService/managedClusters", "cluster")
 					}
@@ -479,7 +479,7 @@ func TestAzureRetainedNICWaitsForReadbackAndKeepsPublicIPWithoutMutation(t *test
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				}
 				if strings.HasSuffix(strings.ToLower(r.URL.Path), "/resourcegroups/test") {
-					return jsonResponse(200, map[string]any{}, nil), nil
+					return jsonResponse(200, map[string]any{"id": r.URL.Path}, nil), nil
 				}
 				for _, resource := range live {
 					if strings.EqualFold(r.URL.Path, text(resource["id"])) {

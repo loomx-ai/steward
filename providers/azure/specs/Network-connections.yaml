@@ -1,0 +1,88 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/connections
+  class: network.vpn_connection
+presentation:
+  displayNames:
+    en-US: VPN connection
+    zh-CN: VPN 连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.VirtualNetworkGatewayConnections_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.VirtualNetworkGatewayConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Resources/resourceGroups
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  connectionType:
+    path: connectionType
+    type: string
+  connectionProtocol:
+    path: connectionProtocol
+    type: string
+  connectionStatus:
+    path: connectionStatus
+    type: string
+  routingWeight:
+    path: routingWeight
+    type: number
+  enableBgp:
+    path: enableBgp
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworkGateways
+  targetIdPath: refs_microsoft_network_virtualnetworkgateways
+- type: depends_on
+  targetType: Microsoft.Network/localNetworkGateways
+  targetIdPath: refs_microsoft_network_localnetworkgateways
+- type: depends_on
+  targetType: Microsoft.Network/expressRouteCircuits
+  targetIdPath: refs_microsoft_network_expressroutecircuits
+- type: depends_on
+  targetType: Microsoft.Network/expressRouteCircuits/peerings
+  targetIdPath: refs_microsoft_network_expressroutecircuits_peerings
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.VirtualNetworkGatewayConnections_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.VirtualNetworkGatewayConnections_Get
+      itemsPath: $
+      identityPath: id

@@ -46,6 +46,28 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/capacityReservation.json",
+      "operations": [
+        "CapacityReservationGroups_Delete",
+        "CapacityReservationGroups_Get",
+        "CapacityReservationGroups_ListBySubscription",
+        "CapacityReservations_Delete",
+        "CapacityReservations_Get",
+        "CapacityReservations_ListByCapacityReservationGroup"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/dedicatedHost.json",
+      "operations": [
+        "DedicatedHostGroups_Delete",
+        "DedicatedHostGroups_Get",
+        "DedicatedHostGroups_ListBySubscription",
+        "DedicatedHosts_Delete",
+        "DedicatedHosts_Get",
+        "DedicatedHosts_ListByHostGroup"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/image.json",
       "operations": [
         "Images_Delete",
@@ -53,6 +75,14 @@
         "Images_List",
         "Images_ListByResourceGroup",
         "Images_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/sshPublicKey.json",
+      "operations": [
+        "SshPublicKeys_Delete",
+        "SshPublicKeys_Get",
+        "SshPublicKeys_ListBySubscription"
       ]
     },
     {
@@ -96,6 +126,14 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/dns/resource-manager/Microsoft.Network/Dns/stable/2018-05-01/dns.json",
+      "operations": [
+        "Zones_Delete",
+        "Zones_Get",
+        "Zones_ListByResourceGroup"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json",
       "operations": [
         "Vaults_Delete",
@@ -133,6 +171,49 @@
         "ApplicationGateways_List",
         "ApplicationGateways_ListAll",
         "ApplicationGateways_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/azureFirewall.json",
+      "operations": [
+        "AzureFirewalls_Delete",
+        "AzureFirewalls_Get",
+        "AzureFirewalls_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/bastionHost.json",
+      "operations": [
+        "BastionHosts_Delete",
+        "BastionHosts_Get",
+        "BastionHosts_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/ddosProtectionPlan.json",
+      "operations": [
+        "DdosProtectionPlans_Delete",
+        "DdosProtectionPlans_Get",
+        "DdosProtectionPlans_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/expressRouteCircuit.json",
+      "operations": [
+        "ExpressRouteCircuitPeerings_Delete",
+        "ExpressRouteCircuitPeerings_Get",
+        "ExpressRouteCircuitPeerings_List",
+        "ExpressRouteCircuits_Delete",
+        "ExpressRouteCircuits_Get",
+        "ExpressRouteCircuits_ListAll"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/firewallPolicy.json",
+      "operations": [
+        "FirewallPolicies_Delete",
+        "FirewallPolicies_Get",
+        "FirewallPolicies_ListAll"
       ]
     },
     {
@@ -177,12 +258,31 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json",
+      "operations": [
+        "FlowLogs_Delete",
+        "FlowLogs_Get",
+        "FlowLogs_List",
+        "NetworkWatchers_Delete",
+        "NetworkWatchers_Get",
+        "NetworkWatchers_ListAll"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateEndpoint.json",
       "operations": [
         "PrivateEndpoints_Delete",
         "PrivateEndpoints_Get",
         "PrivateEndpoints_List",
         "PrivateEndpoints_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/privateLinkService.json",
+      "operations": [
+        "PrivateLinkServices_Delete",
+        "PrivateLinkServices_Get",
+        "PrivateLinkServices_ListBySubscription"
       ]
     },
     {
@@ -221,11 +321,57 @@
         "Subnets_Delete",
         "Subnets_Get",
         "Subnets_List",
+        "VirtualNetworkPeerings_Delete",
+        "VirtualNetworkPeerings_Get",
+        "VirtualNetworkPeerings_List",
         "VirtualNetworks_Delete",
         "VirtualNetworks_Get",
         "VirtualNetworks_List",
         "VirtualNetworks_ListAll",
         "VirtualNetworks_UpdateTags"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualNetworkGateway.json",
+      "operations": [
+        "LocalNetworkGateways_Delete",
+        "LocalNetworkGateways_Get",
+        "LocalNetworkGateways_List",
+        "VirtualNetworkGatewayConnections_Delete",
+        "VirtualNetworkGatewayConnections_Get",
+        "VirtualNetworkGatewayConnections_List",
+        "VirtualNetworkGateways_Delete",
+        "VirtualNetworkGateways_Get",
+        "VirtualNetworkGateways_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json",
+      "operations": [
+        "ExpressRouteGateways_Delete",
+        "ExpressRouteGateways_Get",
+        "ExpressRouteGateways_ListBySubscription",
+        "HubRouteTables_Delete",
+        "HubRouteTables_Get",
+        "HubRouteTables_List",
+        "HubVirtualNetworkConnections_Delete",
+        "HubVirtualNetworkConnections_Get",
+        "HubVirtualNetworkConnections_List",
+        "RouteMaps_Delete",
+        "RouteMaps_Get",
+        "RouteMaps_List",
+        "VirtualHubs_Delete",
+        "VirtualHubs_Get",
+        "VirtualHubs_List",
+        "VirtualWans_Delete",
+        "VirtualWans_Get",
+        "VirtualWans_List",
+        "VpnConnections_Delete",
+        "VpnConnections_Get",
+        "VpnConnections_ListByVpnGateway",
+        "VpnGateways_Delete",
+        "VpnGateways_Get",
+        "VpnGateways_List"
       ]
     },
     {
@@ -246,6 +392,14 @@
         "Servers_List",
         "Servers_ListByResourceGroup",
         "Servers_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/privatedns/resource-manager/Microsoft.Network/PrivateDns/stable/2024-06-01/privatedns.json",
+      "operations": [
+        "PrivateZones_Delete",
+        "PrivateZones_Get",
+        "PrivateZones_List"
       ]
     },
     {
@@ -304,6 +458,14 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/file.json",
+      "operations": [
+        "FileShares_Delete",
+        "FileShares_Get",
+        "FileShares_List"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/storage.json",
       "operations": [
         "StorageAccounts_Delete",
@@ -311,6 +473,14 @@
         "StorageAccounts_List",
         "StorageAccounts_ListByResourceGroup",
         "StorageAccounts_Update"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/trafficmanager/resource-manager/Microsoft.Network/TrafficManager/stable/2022-04-01/trafficmanager.json",
+      "operations": [
+        "Profiles_Delete",
+        "Profiles_Get",
+        "Profiles_ListBySubscription"
       ]
     },
     {
@@ -966,6 +1136,573 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.ResourceManagementClient.ResourceGroups_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/capacityReservationGroups",
+      "class": "compute.reservation_group",
+      "display_name": "Capacity reservation group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "capacityReservationGroups",
+      "read_operations": [
+        "Azure.Microsoft.Compute.CapacityReservationGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.CapacityReservationGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.CapacityReservationGroups_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/capacityReservationGroups/capacityReservations",
+      "class": "compute.capacity_reservation",
+      "display_name": "Capacity reservation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "capacityReservations",
+      "read_operations": [
+        "Azure.Microsoft.Compute.CapacityReservations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.CapacityReservations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.CapacityReservations_ListByCapacityReservationGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/hostGroups",
+      "class": "compute.host_group",
+      "display_name": "Dedicated host group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hostGroups",
+      "read_operations": [
+        "Azure.Microsoft.Compute.DedicatedHostGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.DedicatedHostGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.DedicatedHostGroups_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/hostGroups/hosts",
+      "class": "compute.dedicated_host",
+      "display_name": "Dedicated host",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hosts",
+      "read_operations": [
+        "Azure.Microsoft.Compute.DedicatedHosts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.DedicatedHosts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.DedicatedHosts_ListByHostGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/sshPublicKeys",
+      "class": "security.key_pair",
+      "display_name": "SSH public key",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "sshPublicKeys",
+      "read_operations": [
+        "Azure.Microsoft.Compute.SshPublicKeys_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.SshPublicKeys_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.SshPublicKeys_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/azureFirewalls",
+      "class": "security.firewall",
+      "display_name": "Azure Firewall",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "azureFirewalls",
+      "read_operations": [
+        "Azure.Microsoft.Network.AzureFirewalls_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.AzureFirewalls_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.AzureFirewalls_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/bastionHosts",
+      "class": "security.bastion_host",
+      "display_name": "Bastion host",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "bastionHosts",
+      "read_operations": [
+        "Azure.Microsoft.Network.BastionHosts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.BastionHosts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.BastionHosts_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/connections",
+      "class": "network.vpn_connection",
+      "display_name": "VPN connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "connections",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGatewayConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGatewayConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGatewayConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/ddosProtectionPlans",
+      "class": "security.ddos_protection",
+      "display_name": "DDoS protection plan",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "ddosProtectionPlans",
+      "read_operations": [
+        "Azure.Microsoft.Network.DdosProtectionPlans_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.DdosProtectionPlans_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.DdosProtectionPlans_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/dnsZones",
+      "class": "dns.zone",
+      "display_name": "DNS zone",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "dnsZones",
+      "read_operations": [
+        "Azure.Microsoft.Network.Zones_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.Zones_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.Zones_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/expressRouteCircuits",
+      "class": "network.physical_connection",
+      "display_name": "ExpressRoute circuit",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "expressRouteCircuits",
+      "read_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuits_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuits_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuits_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/expressRouteCircuits/peerings",
+      "class": "network.virtual_border_router",
+      "display_name": "ExpressRoute peering",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "peerings",
+      "read_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuitPeerings_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ExpressRouteCircuitPeerings_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/expressRouteGateways",
+      "class": "network.express_connect_router",
+      "display_name": "ExpressRoute gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "expressRouteGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.ExpressRouteGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ExpressRouteGateways_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ExpressRouteGateways_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/firewallPolicies",
+      "class": "security.firewall",
+      "display_name": "Firewall policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "firewallPolicies",
+      "read_operations": [
+        "Azure.Microsoft.Network.FirewallPolicies_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.FirewallPolicies_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.FirewallPolicies_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/localNetworkGateways",
+      "class": "network.customer_gateway",
+      "display_name": "Local network gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "localNetworkGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.LocalNetworkGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.LocalNetworkGateways_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.LocalNetworkGateways_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkWatchers",
+      "class": "observability.monitoring_environment",
+      "display_name": "Network Watcher",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkWatchers",
+      "read_operations": [
+        "Azure.Microsoft.Network.NetworkWatchers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.NetworkWatchers_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.NetworkWatchers_ListAll"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/networkWatchers/flowLogs",
+      "class": "observability.flow_log",
+      "display_name": "Flow log",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "flowLogs",
+      "read_operations": [
+        "Azure.Microsoft.Network.FlowLogs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.FlowLogs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.FlowLogs_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateDnsZones",
+      "class": "dns.private_zone",
+      "display_name": "Private DNS zone",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "privateDnsZones",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateZones_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateZones_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateZones_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/privateLinkServices",
+      "class": "network.endpoint_service",
+      "display_name": "Private Link service",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateLinkServices",
+      "read_operations": [
+        "Azure.Microsoft.Network.PrivateLinkServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.PrivateLinkServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.PrivateLinkServices_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/trafficManagerProfiles",
+      "class": "dns.gtm_instance",
+      "display_name": "Traffic Manager profile",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "trafficManagerProfiles",
+      "read_operations": [
+        "Azure.Microsoft.Network.Profiles_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.Profiles_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.Profiles_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualHubs",
+      "class": "network.transit_router",
+      "display_name": "Virtual hub",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualHubs",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualHubs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualHubs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualHubs_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualHubs/hubRouteTables",
+      "class": "network.route_table",
+      "display_name": "Virtual hub route table",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hubRouteTables",
+      "read_operations": [
+        "Azure.Microsoft.Network.HubRouteTables_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.HubRouteTables_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.HubRouteTables_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualHubs/hubVirtualNetworkConnections",
+      "class": "network.vpc_attachment",
+      "display_name": "Virtual hub VNet connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hubVirtualNetworkConnections",
+      "read_operations": [
+        "Azure.Microsoft.Network.HubVirtualNetworkConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.HubVirtualNetworkConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.HubVirtualNetworkConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualHubs/routeMaps",
+      "class": "network.route_policy",
+      "display_name": "Route map",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "routeMaps",
+      "read_operations": [
+        "Azure.Microsoft.Network.RouteMaps_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.RouteMaps_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.RouteMaps_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualNetworkGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "Virtual network gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualNetworkGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGateways_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkGateways_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+      "class": "network.peer_connection",
+      "display_name": "VNet peering",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualNetworkPeerings",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkPeerings_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkPeerings_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualNetworkPeerings_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/virtualWans",
+      "class": "network.cloud_enterprise_network",
+      "display_name": "Virtual WAN",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "virtualWans",
+      "read_operations": [
+        "Azure.Microsoft.Network.VirtualWans_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VirtualWans_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VirtualWans_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/vpnGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "Virtual WAN VPN gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "vpnGateways",
+      "read_operations": [
+        "Azure.Microsoft.Network.VpnGateways_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VpnGateways_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VpnGateways_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/vpnGateways/vpnConnections",
+      "class": "network.vpn_connection",
+      "display_name": "Virtual WAN VPN connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "vpnConnections",
+      "read_operations": [
+        "Azure.Microsoft.Network.VpnConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.VpnConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.VpnConnections_ListByVpnGateway"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+      "class": "storage.filesystem",
+      "display_name": "Azure file share",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "shares",
+      "read_operations": [
+        "Azure.Microsoft.Storage.FileShares_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Storage.FileShares_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Storage.FileShares_List"
       ]
     }
   ]

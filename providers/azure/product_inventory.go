@@ -149,7 +149,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
-		if detail.status != 200 || detail.data["error"] != nil || !strings.EqualFold(text(detail.data["id"]), id) || (text(detail.data["type"]) != "" && !strings.EqualFold(text(detail.data["type"]), kind.NativeType)) {
+		if !validResourceResponse(detail, id, kind.NativeType) {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
@@ -230,7 +230,7 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if err != nil {
 		return err
 	}
-	if current.status != 200 || current.data["error"] != nil || !strings.EqualFold(text(current.data["id"]), target.ParentID) || (text(current.data["type"]) != "" && !strings.EqualFold(text(current.data["type"]), target.ParentType)) || productGeneration(current.data) != target.Generation {
+	if !validResourceResponse(current, target.ParentID, target.ParentType) || productGeneration(current.data) != target.Generation {
 		return fmt.Errorf("Azure product parent changed during child discovery")
 	}
 	return nil

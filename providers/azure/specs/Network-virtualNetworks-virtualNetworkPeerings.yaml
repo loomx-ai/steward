@@ -1,0 +1,83 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/virtualNetworks/virtualNetworkPeerings
+  class: network.peer_connection
+presentation:
+  displayNames:
+    en-US: VNet peering
+    zh-CN: VNet 对等互连
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.VirtualNetworkPeerings_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      virtualNetworkName: parent.normalized.arm_parameters.virtualNetworkName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.VirtualNetworkPeerings_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/virtualNetworks
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  peeringState:
+    path: peeringState
+    type: string
+  peeringSyncLevel:
+    path: peeringSyncLevel
+    type: string
+  allowVirtualNetworkAccess:
+    path: allowVirtualNetworkAccess
+    type: boolean
+  allowForwardedTraffic:
+    path: allowForwardedTraffic
+    type: boolean
+  allowGatewayTransit:
+    path: allowGatewayTransit
+    type: boolean
+  useRemoteGateways:
+    path: useRemoteGateways
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.VirtualNetworkPeerings_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.VirtualNetworkPeerings_Get
+      itemsPath: $
+      identityPath: id

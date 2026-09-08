@@ -39,9 +39,32 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	if kind.NativeType == "Microsoft.Web/sites" {
-		// Keep deletion of the App Service plan an explicit plan action.
-		parameters["deleteEmptyServerFarm"] = false
+	definition, _ := r.productDefinition(kind.NativeType)
+	for key, supplied := range definition.Actions["delete"].Parameters {
+		resolved := supplied
+		if expression, ok := supplied.(string); ok {
+			switch expression {
+			case "scope.subscription":
+				resolved = c.subscription
+			case "scope.location":
+				resolved = value.Location
+			case "resource.nativeId":
+				resolved = nativeID
+			default:
+				if strings.HasPrefix(expression, "resource.normalized.") {
+					resolved = value.Normalized
+					for _, part := range strings.Split(strings.TrimPrefix(expression, "resource.normalized."), ".") {
+						resolved = object(resolved)[part]
+					}
+				} else if strings.HasPrefix(expression, "scope.") || strings.HasPrefix(expression, "resource.") {
+					return nil, fmt.Errorf("unsupported Azure action parameter expression")
+				}
+			}
+		}
+		if bound, exists := parameters[key]; exists && bound != resolved {
+			return nil, fmt.Errorf("Azure action parameters cannot change the resource identity")
+		}
+		parameters[key] = resolved
 	}
 	deletion, err := catalog.BindREST(operation, parameters)
 	if err != nil {
@@ -66,7 +89,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err != nil {
 		return contracts.PreflightResult{}, err
 	}
-	if !strings.EqualFold(text(res.data["id"]), a.id) || !strings.EqualFold(text(res.data["type"]), a.kind.NativeType) {
+	if !validResourceResponse(res, a.id, a.kind.NativeType) {
 		return contracts.PreflightResult{}, fmt.Errorf("Azure preflight identity mismatch")
 	}
 	if reason := protectionReason(a.kind, res.data); reason != "" {
@@ -76,6 +99,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	group, err := a.client.request(ctx, "GET", apiURL(strings.Join(parts[:5], "/"), resourcesVersion))
 	if err != nil {
 		return contracts.PreflightResult{}, err
+	}
+	if !validResourceResponse(group, strings.Join(parts[:5], "/"), groupType) {
+		return contracts.PreflightResult{}, fmt.Errorf("Azure resource group identity mismatch")
 	}
 	if text(group.data["managedBy"]) != "" {
 		return contracts.PreflightResult{Reason: "azure_managed_resource_group"}, nil

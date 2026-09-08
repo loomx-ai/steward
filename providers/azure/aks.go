@@ -254,7 +254,7 @@ func (a *action) aksPreflight(ctx context.Context, request contracts.ActionReque
 		if err != nil {
 			return "", err
 		}
-		if !strings.EqualFold(text(current.data["id"]), impact.Asset.Identity.NativeID) || !strings.EqualFold(text(current.data["type"]), kind.NativeType) {
+		if !validResourceResponse(current, impact.Asset.Identity.NativeID, kind.NativeType) {
 			return "", fmt.Errorf("AKS attachment owner identity mismatch")
 		}
 		attachments, err := resourceAttachments(a.client.subscription, kind.NativeType, object(current.data["properties"]))

@@ -52,7 +52,9 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			}
 		}
 		for _, relation := range compiled.Definition.Relationships {
-			if relation.TargetType == kind.NativeType {
+			// Native firewall inheritance and nested Traffic Manager endpoints
+			// reference another resource of the same kind.
+			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}

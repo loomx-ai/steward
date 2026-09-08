@@ -125,10 +125,11 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			if !strings.EqualFold(text(detail.data["id"]), text(raw["id"])) || !strings.EqualFold(text(detail.data["type"]), kind.NativeType) {
+			if !validResourceResponse(detail, text(raw["id"]), kind.NativeType) {
 				return contracts.InventoryBatch{}, fmt.Errorf("Azure resource detail identity mismatch")
 			}
 			raw = detail.data
+			raw["type"] = kind.NativeType
 			if text(raw["location"]) == "" {
 				raw["location"] = resourceRegion(object(value))
 			}
@@ -236,6 +237,15 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	normalized["tags"] = safe["tags"]
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
+	if known {
+		_, parameters, err := c.resourceOperation(kind, id, "GET")
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		// Native child List operations reuse their parent's path parameters,
+		// including multiple ancestor names and provider-specific spelling.
+		normalized["arm_parameters"] = parameters
+	}
 	if zones := array(raw["zones"]); len(zones) > 0 {
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
@@ -351,9 +361,12 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	fields := map[string]bool{"subnet": true, "virtualnetwork": true, "networksecuritygroup": true, "routetable": true, "natgateway": true,
 		"publicipaddress": true, "publicipaddresses": true, "publicipprefix": true, "publicipprefixes": true,
 		"networkinterfaces": true, "manageddisk": true, "availabilityset": true, "diskencryptionset": true,
-		"loadbalancerbackendaddresspools": true, "applicationgatewaybackendaddresspools": true,
+		"loadbalancerbackendaddresspools": true, "applicationgatewaybackendaddresspools": true, "loadbalancerfrontendipconfigurations": true,
 		"serverfarmid": true, "virtualnetworksubnetid": true, "subnetresourceid": true, "managedenvironmentid": true, "environmentid": true,
 		"elasticpoolid": true, "vnetsubnetid": true, "delegatedsubnetresourceid": true, "keyvaultid": true}
+	for _, field := range []string{"virtualnetworkgateway1", "virtualnetworkgateway2", "localnetworkgateway2", "peer", "expressroutecircuit", "expressroutecircuitpeering", "virtualhub", "virtualwan", "remotenetwork", "remotevirtualnetwork", "firewallpolicy", "basepolicy", "ddosprotectionplan", "host", "hostgroup", "capacityreservationgroup", "targetresourceid", "storageid", "workspaceResourceId", "associatedroutetable", "routemap", "outboundroutemap", "inboundroutemap"} {
+		fields[strings.ToLower(field)] = true
+	}
 	var visit func(any, string)
 	visit = func(value any, parent string) {
 		switch typed := value.(type) {
@@ -362,6 +375,13 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 				add(text(typed["id"]))
 			}
 			for key, value := range typed {
+				// Propagated route tables use an ids array inside a named object.
+				if strings.EqualFold(parent, "propagatedRouteTables") && strings.EqualFold(key, "ids") {
+					for _, id := range array(value) {
+						add(text(id))
+					}
+					continue
+				}
 				switch key {
 				case "subnets", "virtualMachines", "backendIPConfigurations", "privateEndpointConnections", "source", "creationData", "imageReference":
 					continue
@@ -434,6 +454,7 @@ func safeResource(value any) any {
 		for key, value := range typed {
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
+				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
 				"appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
 				continue
 			}
