@@ -1,0 +1,90 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: alloydb.googleapis.com/Cluster
+  class: database.postgresql
+presentation:
+  displayNames:
+    en-US: AlloyDB cluster
+    zh-CN: AlloyDB 集群
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: alloydb.projects.locations.clusters.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: clusters
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: alloydb.projects.locations.clusters.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  clusterType:
+    path: clusterType
+    type: string
+  databaseVersion:
+    path: databaseVersion
+    type: string
+  networkConfig:
+    path: networkConfig
+    type: object
+  encryptionConfig:
+    path: encryptionConfig
+    type: object
+  automatedBackupPolicy:
+    path: automatedBackupPolicy
+    type: object
+  continuousBackupConfig:
+    path: continuousBackupConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: alloydb.projects.locations.clusters.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: alloydb.projects.locations.clusters.get
+      itemsPath: $
+      identityPath: name

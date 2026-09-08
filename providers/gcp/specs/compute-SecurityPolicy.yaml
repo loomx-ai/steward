@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/SecurityPolicy
+  class: security.ddos_protection
+presentation:
+  displayNames:
+    en-US: Cloud Armor security policy
+    zh-CN: Cloud Armor 安全策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.securityPolicies.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.securityPolicies.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.securityPolicies
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  type:
+    path: type
+    type: string
+  rules:
+    path: rules
+    type: array
+  adaptiveProtectionConfig:
+    path: adaptiveProtectionConfig
+    type: object
+  ddosProtectionConfig:
+    path: ddosProtectionConfig
+    type: object
+  advancedOptionsConfig:
+    path: advancedOptionsConfig
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.securityPolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.securityPolicies.get
+      itemsPath: $
+      identityPath: name

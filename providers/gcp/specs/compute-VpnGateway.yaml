@@ -1,0 +1,85 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/VpnGateway
+  class: network.vpn_gateway
+presentation:
+  displayNames:
+    en-US: HA VPN gateway
+    zh-CN: 高可用 VPN 网关
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.vpnGateways.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.vpnGateways.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.vpnGateways
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  network:
+    path: network
+    type: string
+  stackType:
+    path: stackType
+    type: string
+  vpnInterfaces:
+    path: vpnInterfaces
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/InterconnectAttachment
+  targetIdPath: refs_compute_googleapis_com_InterconnectAttachment
+actions:
+  delete:
+    operation: compute.vpnGateways.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.vpnGateways.get
+      itemsPath: $
+      identityPath: name

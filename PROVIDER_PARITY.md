@@ -170,3 +170,19 @@ background evidence only, not acceptance evidence for this work.
   bundle has 42 specs and 200 selected methods. Full Go tests passed for this
   step. Shared-VPC host and multi-cluster/custom-controller coverage, broader
   service families, independent emulators and final publication remain open.
+
+- The GCP catalog now contains 100 explicit resource specs and 393 native
+  methods from 30 official documents. Nineteen Compute rules and 39 managed
+  service rules extend coverage across networking, capacity, databases, identity,
+  DNS, API gateways, service discovery and observability. Retained wire tests
+  cover every added type, relevant regional/global variants, DNS composite names,
+  BigQuery scalar/project/parent identity, Firestore default names, soft deletion,
+  partial lists, parent generations and secret-bearing service settings.
+- Bigtable, Spanner, AlloyDB, Kafka and Service Directory have reviewed native
+  child cascades, live list/read validation, protected/retained-child checks and
+  descendant readback after parent absence. The server resolves these contributors
+  through the explicit GCP connection. Nested plan and serialized-recovery tests
+  are retained. Remaining child kinds, other service controllers, bucket draining,
+  the remaining service matrix, Azure expansion, independent emulators and full
+  application acceptance remain unfinished. No publication is implied by this
+  intermediate implementation checkpoint.

@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/NodeTemplate
+  class: compute.dedicated_host
+presentation:
+  displayNames:
+    en-US: Sole-tenant node template
+    zh-CN: 独占租户节点模板
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.nodeTemplates.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.nodeTemplates.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.nodeTemplates
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  nodeType:
+    path: nodeType
+    type: string
+  nodeAffinityLabels:
+    path: nodeAffinityLabels
+    type: object
+  cpuOvercommitType:
+    path: cpuOvercommitType
+    type: string
+  disks:
+    path: disks
+    type: array
+  accelerators:
+    path: accelerators
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.nodeTemplates.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.nodeTemplates.get
+      itemsPath: $
+      identityPath: name

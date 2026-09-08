@@ -1,0 +1,88 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/Reservation
+  class: compute.capacity_reservation
+presentation:
+  displayNames:
+    en-US: Capacity reservation
+    zh-CN: 容量预留
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.reservations.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.reservations.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.reservations
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  specificReservation:
+    path: specificReservation
+    type: object
+  specificReservationRequired:
+    path: specificReservationRequired
+    type: boolean
+  shareSettings:
+    path: shareSettings
+    type: object
+  commitment:
+    path: commitment
+    type: string
+  resourcePolicies:
+    path: resourcePolicies
+    type: object
+  deleteAtTime:
+    path: deleteAtTime
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/ResourcePolicy
+  targetIdPath: refs_compute_googleapis_com_ResourcePolicy
+actions:
+  delete:
+    operation: compute.reservations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.reservations.get
+      itemsPath: $
+      identityPath: name

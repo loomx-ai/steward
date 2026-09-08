@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/TargetTcpProxy
+  class: network.load_balancer_proxy
+presentation:
+  displayNames:
+    en-US: TCP proxy
+    zh-CN: TCP 代理
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.targetTcpProxies.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.targetTcpProxies.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.targetTcpProxies
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  service:
+    path: service
+    type: string
+  proxyHeader:
+    path: proxyHeader
+    type: string
+  proxyBind:
+    path: proxyBind
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/BackendService
+  targetIdPath: refs_compute_googleapis_com_BackendService
+- type: depends_on
+  targetType: compute.googleapis.com/RegionBackendService
+  targetIdPath: refs_compute_googleapis_com_RegionBackendService
+actions:
+  delete:
+    operation: compute.targetTcpProxies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.targetTcpProxies.get
+      itemsPath: $
+      identityPath: name

@@ -123,6 +123,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	operation, _ := metadata.catalog.Operation(target.API.Operation)
 	seenIDs := map[string]bool{}
 	for _, record := range records {
+		if resourceSoftDeleted(nativeType, record.Data) {
+			continue
+		}
 		id, err := c.productIdentity(kind, operation, parameters, target.API.IdentityPath, record)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
@@ -233,6 +236,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		parentRequest := request
 		parentRequest.ResourceKind = &parentKind
 		parentRequest.Cursor = ""
+		if parentType, ok := findType(parent.NativeType); ok && len(parentType.Scopes) == 1 && parentType.Scopes[0] == asset.ScopeGlobal && request.Scope.Kind == asset.ScopeRegion {
+			parentRequest.Scope = asset.Scope{Kind: asset.ScopeProject, NativeID: c.project}
+		}
 		for {
 			page, err := r.listProduct(ctx, c, parentRequest, ancestors)
 			if err != nil {
@@ -271,7 +277,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				switch name {
 				case "project", "projectId":
 					parameters[name] = "scope.project"
-					if slices.Contains(operation.Call.RawPathParameters, name) {
+					if slices.Contains(operation.Call.RawPathParameters, name) && strings.HasPrefix(text(property["pattern"]), "^projects/") {
 						parameters[name] = "scope.projectPath"
 					}
 				case "parent":
@@ -304,7 +310,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		targetLocations := locations
 		if request.Scope.Kind == asset.ScopeProject {
 			targetLocations = []string{"global"}
-			if regional {
+			if regional && !onlyGlobal {
 				if !regionLookup {
 					var err error
 					regions, err = r.DiscoverRegions(ctx, request.ConnectionID)
@@ -317,6 +323,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				for _, region := range regions {
 					targetLocations = append(targetLocations, region.RegionID)
 				}
+				if slices.Contains(kind.Scopes, asset.ScopeGlobal) && !slices.Contains(targetLocations, "global") {
+					targetLocations = append(targetLocations, "global")
+				}
 			}
 		}
 		for _, location := range targetLocations {
@@ -328,7 +337,13 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				if _, err = catalog.BindREST(operation, resolved); err != nil {
 					return nil, err
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: text(parent.Normalized["id"])})
+				parentUID := ""
+				for _, field := range []string{"uid", "uniqueId", "id"} {
+					if parentUID = text(parent.Normalized[field]); parentUID != "" {
+						break
+					}
+				}
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID})
 			}
 		}
 	}
@@ -433,7 +448,7 @@ func productRecords(data map[string]any, path string) ([]productRecord, error) {
 	return result, err
 }
 func checkListCompleteness(data map[string]any) error {
-	for _, key := range []string{"unreachable", "unreachables", "missingZones"} {
+	for _, key := range []string{"unreachable", "unreachables", "unreachableLocations", "failedLocations", "missingZones"} {
 		if value, present := data[key]; present && value != nil {
 			values, ok := value.([]any)
 			if !ok || len(values) > 0 {
@@ -473,6 +488,18 @@ func checkListCompleteness(data map[string]any) error {
 }
 
 func (c *client) productIdentity(kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord) (string, error) {
+	if kind.NativeType == "bigquery.googleapis.com/Dataset" || kind.NativeType == "bigquery.googleapis.com/Table" {
+		reference := object(record.Data["datasetReference"])
+		if kind.NativeType == "bigquery.googleapis.com/Table" {
+			reference = object(record.Data["tableReference"])
+			if reference["datasetId"] != parameters["datasetId"] {
+				return "", fmt.Errorf("BigQuery table belongs to another dataset")
+			}
+		}
+		if reference["projectId"] != c.project && reference["projectId"] != c.number {
+			return "", fmt.Errorf("BigQuery resource belongs to another project")
+		}
+	}
 	name := text(productValue(record.Data, identityPath))
 	if name == "" {
 		name = text(record.Data["name"])
@@ -504,7 +531,7 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 	if strings.HasPrefix(name, "projects/") {
 		return c.canonicalName("//" + host + "/" + name), nil
 	}
-	if !segmentPattern.MatchString(name) || name == "." || name == ".." {
+	if (!segmentPattern.MatchString(name) && !(kind.NativeType == dnsRecordSetType && dnsRecordName(name))) || name == "." || name == ".." {
 		return "", fmt.Errorf("invalid GCP resource name")
 	}
 	if host == "storage.googleapis.com" {
@@ -536,7 +563,23 @@ func (c *client) productIdentity(kind resourceType, operation catalog.Operation,
 	if index < 0 {
 		return "", fmt.Errorf("GCP list URL has no project path")
 	}
-	return c.canonicalName("//" + host + path[index:] + "/" + name), nil
+	id := "//" + host + path[index:] + "/" + name
+	// Cloud DNS addresses a record set by both its fully qualified name and
+	// record type; A and AAAA records at the same name are distinct resources.
+	if kind.NativeType == dnsRecordSetType {
+		recordType := text(record.Data["type"])
+		if !dnsRecordName(name) || !segmentPattern.MatchString(recordType) || recordType == "." || recordType == ".." {
+			return "", fmt.Errorf("invalid Cloud DNS record identity")
+		}
+		id += "/" + recordType
+	}
+	return c.canonicalName(id), nil
+}
+
+const dnsRecordSetType = "dns.googleapis.com/ResourceRecordSet"
+
+func dnsRecordName(name string) bool {
+	return len(name) <= 255 && strings.HasSuffix(name, ".") && name != "." && segmentPattern.MatchString(strings.TrimPrefix(name, "*."))
 }
 func (c *client) otherProductKind(kind resourceType, id string) bool {
 	for _, other := range allTypes() {

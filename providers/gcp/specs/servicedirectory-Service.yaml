@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: servicedirectory.googleapis.com/Service
+  class: service_discovery.service
+presentation:
+  displayNames:
+    en-US: Service Directory service
+    zh-CN: 服务目录服务
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: servicedirectory.projects.locations.namespaces.services.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: services
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: servicedirectory.projects.locations.namespaces.services.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: servicedirectory.googleapis.com/Namespace
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  uid:
+    path: uid
+    type: string
+  annotations:
+    path: annotations
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: servicedirectory.googleapis.com/Namespace
+  targetIdPath: refs_servicedirectory_googleapis_com_Namespace
+actions:
+  delete:
+    operation: servicedirectory.projects.locations.namespaces.services.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: servicedirectory.projects.locations.namespaces.services.get
+      itemsPath: $
+      identityPath: name

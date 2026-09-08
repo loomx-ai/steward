@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: certificatemanager.googleapis.com/CertificateMap
+  class: security.certificate_map
+presentation:
+  displayNames:
+    en-US: Certificate map
+    zh-CN: 证书映射
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: certificatemanager.projects.locations.certificateMaps.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: certificateMaps
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: certificatemanager.projects.locations.certificateMaps.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  gclbTargets:
+    path: gclbTargets
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: certificatemanager.projects.locations.certificateMaps.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: certificatemanager.projects.locations.certificateMaps.get
+      itemsPath: $
+      identityPath: name

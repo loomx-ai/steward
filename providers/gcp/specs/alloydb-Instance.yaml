@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: alloydb.googleapis.com/Instance
+  class: database.instance
+presentation:
+  displayNames:
+    en-US: AlloyDB instance
+    zh-CN: AlloyDB 实例
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: alloydb.projects.locations.clusters.instances.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: instances
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: alloydb.projects.locations.clusters.instances.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: alloydb.googleapis.com/Cluster
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  instanceType:
+    path: instanceType
+    type: string
+  machineConfig:
+    path: machineConfig
+    type: object
+  networkConfig:
+    path: networkConfig
+    type: object
+  availabilityType:
+    path: availabilityType
+    type: string
+  readPoolConfig:
+    path: readPoolConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: alloydb.googleapis.com/Cluster
+  targetIdPath: refs_alloydb_googleapis_com_Cluster
+actions:
+  delete:
+    operation: alloydb.projects.locations.clusters.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: alloydb.projects.locations.clusters.instances.get
+      itemsPath: $
+      identityPath: name

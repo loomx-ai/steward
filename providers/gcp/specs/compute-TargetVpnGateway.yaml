@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/TargetVpnGateway
+  class: network.vpn_gateway
+presentation:
+  displayNames:
+    en-US: Classic VPN gateway
+    zh-CN: 经典 VPN 网关
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.targetVpnGateways.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.targetVpnGateways.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.targetVpnGateways
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  network:
+    path: network
+    type: string
+  forwardingRules:
+    path: forwardingRules
+    type: array
+  tunnels:
+    path: tunnels
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: compute.targetVpnGateways.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.targetVpnGateways.get
+      itemsPath: $
+      identityPath: name

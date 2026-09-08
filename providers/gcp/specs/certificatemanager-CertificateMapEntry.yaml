@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: certificatemanager.googleapis.com/CertificateMapEntry
+  class: security.certificate_map_entry
+presentation:
+  displayNames:
+    en-US: Certificate map entry
+    zh-CN: 证书映射条目
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: certificatemanager.projects.locations.certificateMaps.certificateMapEntries.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: certificateMapEntries
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: certificatemanager.projects.locations.certificateMaps.certificateMapEntries.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: certificatemanager.googleapis.com/CertificateMap
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  hostname:
+    path: hostname
+    type: string
+  matcher:
+    path: matcher
+    type: string
+  certificates:
+    path: certificates
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: certificatemanager.googleapis.com/CertificateMap
+  targetIdPath: refs_certificatemanager_googleapis_com_CertificateMap
+- type: depends_on
+  targetType: certificatemanager.googleapis.com/Certificate
+  targetIdPath: refs_certificatemanager_googleapis_com_Certificate
+actions:
+  delete:
+    operation: certificatemanager.projects.locations.certificateMaps.certificateMapEntries.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: certificatemanager.projects.locations.certificateMaps.certificateMapEntries.get
+      itemsPath: $
+      identityPath: name

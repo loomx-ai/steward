@@ -1,0 +1,93 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: redis.googleapis.com/Instance
+  class: database.redis
+presentation:
+  displayNames:
+    en-US: Memorystore Redis instance
+    zh-CN: Redis 实例
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: redis.projects.locations.instances.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: instances
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: redis.projects.locations.instances.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  tier:
+    path: tier
+    type: string
+  redisVersion:
+    path: redisVersion
+    type: string
+  memorySizeGb:
+    path: memorySizeGb
+    type: number
+  authorizedNetwork:
+    path: authorizedNetwork
+    type: string
+  authEnabled:
+    path: authEnabled
+    type: boolean
+  transitEncryptionMode:
+    path: transitEncryptionMode
+    type: string
+  connectMode:
+    path: connectMode
+    type: string
+  replicaCount:
+    path: replicaCount
+    type: number
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: redis.projects.locations.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: redis.projects.locations.instances.get
+      itemsPath: $
+      identityPath: name

@@ -246,6 +246,20 @@ func TestCompileInventoryBackedFanoutParent(t *testing.T) {
 	if _, err := spec.Compile([]byte(unknownNativeType), compilerCatalog(), nil); err == nil {
 		t.Fatal("inventory-backed parent with unknown native type must fail compilation")
 	}
+	for _, expression := range []string{"parent.normalized.name", "parent.normalized.datasetReference.datasetId"} {
+		child := strings.Replace(source, "RegionId: scope.location", "RegionId: "+expression, 1)
+		if _, err := spec.Compile([]byte(child), compilerCatalog(), nil); err != nil {
+			t.Fatalf("native child binding %q: %v", expression, err)
+		}
+		withoutParent := strings.Replace(string(directProductSource()), "RegionId: scope.location", "RegionId: "+expression, 1)
+		if _, err := spec.Compile([]byte(withoutParent), compilerCatalog(), nil); err == nil {
+			t.Fatal("parent field expression requires declared parent discovery")
+		}
+	}
+	invalidPath := strings.Replace(source, "RegionId: scope.location", "RegionId: parent.normalized.datasetReference..datasetId", 1)
+	if _, err := spec.Compile([]byte(invalidPath), compilerCatalog(), nil); err == nil {
+		t.Fatal("malformed parent field expression accepted")
+	}
 }
 
 func TestCompileActionDeletionProtection(t *testing.T) {

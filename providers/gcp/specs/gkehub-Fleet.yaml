@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: gkehub.googleapis.com/Fleet
+  class: container.fleet
+presentation:
+  displayNames:
+    en-US: GKE fleet
+    zh-CN: GKE 舰队
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: gkehub.projects.locations.fleets.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: fleets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: gkehub.projects.locations.fleets.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  defaultClusterConfig:
+    path: defaultClusterConfig
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: gkehub.projects.locations.fleets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: gkehub.projects.locations.fleets.get
+      itemsPath: $
+      identityPath: name

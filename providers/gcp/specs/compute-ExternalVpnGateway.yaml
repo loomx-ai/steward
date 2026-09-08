@@ -1,0 +1,74 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/ExternalVpnGateway
+  class: network.customer_gateway
+presentation:
+  displayNames:
+    en-US: External VPN gateway
+    zh-CN: 外部 VPN 网关
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  detail:
+    operation: compute.externalVpnGateways.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.externalVpnGateways.list
+    parameters:
+      project: scope.project
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  redundancyType:
+    path: redundancyType
+    type: string
+  interfaces:
+    path: interfaces
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.externalVpnGateways.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.externalVpnGateways.get
+      itemsPath: $
+      identityPath: name

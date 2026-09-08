@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudtasks.googleapis.com/Queue
+  class: messaging.queue
+presentation:
+  displayNames:
+    en-US: Cloud Tasks queue
+    zh-CN: Cloud Tasks 队列
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: cloudtasks.projects.locations.queues.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: queues
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: cloudtasks.projects.locations.queues.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  rateLimits:
+    path: rateLimits
+    type: object
+  retryConfig:
+    path: retryConfig
+    type: object
+  stackdriverLoggingConfig:
+    path: stackdriverLoggingConfig
+    type: object
+  httpTarget:
+    path: httpTarget
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: cloudtasks.projects.locations.queues.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: cloudtasks.projects.locations.queues.get
+      itemsPath: $
+      identityPath: name

@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: servicedirectory.googleapis.com/Endpoint
+  class: service_discovery.endpoint
+presentation:
+  displayNames:
+    en-US: Service Directory endpoint
+    zh-CN: 服务目录端点
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: servicedirectory.projects.locations.namespaces.services.endpoints.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: endpoints
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: servicedirectory.projects.locations.namespaces.services.endpoints.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: servicedirectory.googleapis.com/Service
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  uid:
+    path: uid
+    type: string
+  address:
+    path: address
+    type: string
+  port:
+    path: port
+    type: number
+  network:
+    path: network
+    type: string
+  annotations:
+    path: annotations
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: servicedirectory.googleapis.com/Service
+  targetIdPath: refs_servicedirectory_googleapis_com_Service
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: servicedirectory.projects.locations.namespaces.services.endpoints.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: servicedirectory.projects.locations.namespaces.services.endpoints.get
+      itemsPath: $
+      identityPath: name

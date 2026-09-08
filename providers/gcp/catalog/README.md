@@ -32,6 +32,44 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
+The current catalog has 100 explicit resource rules and 393 selected methods
+from 30 official Discovery documents. Extended Compute rules cover VPN and
+Interconnect, Private Service Connect, reservations and sole-tenant resources,
+network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
+variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
+Spanner, Cloud Tasks/Functions, Filestore, AlloyDB, Managed Kafka, API Gateway,
+Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
+Monitoring. Registration and wire tests do not close the full parity matrix.
+
+Cloud DNS record identity includes both the fully qualified name and the record
+type, including wildcard names. BigQuery binds scalar project/dataset/table IDs
+and verifies the response's project and parent dataset; hidden datasets are
+included. Project-wide data resources retain their logical global scope and
+physical location metadata, including BigQuery multi-regions and Firestore's
+default database. Bigtable lists use their documented views and fail on
+`failedLocations`. Global API Gateway and Certificate Manager parents are not
+fanned out to Compute regions. Child cursors bind available native parent UIDs.
+
+Native cascades for Bigtable and Spanner instances, AlloyDB clusters, Kafka
+clusters and Service Directory namespaces/services contribute reviewed child
+impacts. Child discovery includes all pages and fresh reads. Execution verifies
+the current child set, available incarnation/etag fields, deletion protection,
+labels and reviewed retention decisions. AlloyDB's native `force` parameter is
+enabled only after these checks. Nested children must disappear after their
+parent; a missing parent does not prove completion. The native API does not
+support keeping these children while deleting their container, and the plan
+reports that restriction. Additional child kinds and other product controllers
+remain part of the unfinished parity work.
+
+IAM custom-role `deleted` and Logging bucket `DELETE_REQUESTED` are native soft
+deletion states. Inventory skips those records and readback reports
+`soft_deleted`; it does not claim immediate physical purge. Firestore, Bigtable,
+Spanner, Filestore and Redis deletion protection, locked/required log buckets and
+system-managed service-account keys block direct cleanup. Kafka's
+`__remote_log_metadata` topic requires cluster cleanup. Fleet membership deletion
+through this API is supported only for its documented Google Cloud GKE endpoint.
+Private key data, HTTP header maps and Redis authentication strings are redacted.
+
 Cloud KMS rules include key rings, keys, versions and import jobs. The supported
 delete operation removes eligible resource records and polls the native
 operation before checking absence. It does not schedule destruction of key
@@ -128,6 +166,13 @@ Reference material:
 - [GKE firewall reconciliation settings](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/user-managed-firewall-rules)
 - [Native ingress-gce cleanup implementation](https://github.com/kubernetes/ingress-gce/tree/93bdce86f8426bf4f2129c30de9923698351e04d/pkg/l4/resources)
 - [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
+- [Spanner instance deletion](https://docs.cloud.google.com/spanner/docs/reference/rest/v1/projects.instances/delete)
+- [Bigtable instance deletion](https://docs.cloud.google.com/bigtable/docs/deleting-instance)
+- [AlloyDB cluster cascade parameter](https://docs.cloud.google.com/alloydb/docs/reference/rest/v1/projects.locations.clusters/delete)
+- [Managed Kafka cluster deletion](https://docs.cloud.google.com/managed-service-for-apache-kafka/docs/delete-cluster)
+- [Service Directory namespace cascade](https://docs.cloud.google.com/service-directory/docs/reference/rest/v1/projects.locations.namespaces/delete)
+- [IAM custom-role soft deletion](https://docs.cloud.google.com/iam/docs/reference/rest/v1/projects.roles/delete)
+- [Logging bucket deletion](https://docs.cloud.google.com/logging/docs/reference/v2/rest/v2/projects.locations.buckets/delete)
 
 The checked-in tests establish metadata consistency and protocol behavior. They
 do not establish live permissions, eventual inventory consistency, service

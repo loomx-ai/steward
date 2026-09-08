@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: spanner.googleapis.com/Database
+  class: database.database
+presentation:
+  displayNames:
+    en-US: Spanner database
+    zh-CN: Spanner 数据库
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: spanner.projects.instances.databases.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: databases
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: spanner.projects.instances.databases.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: spanner.googleapis.com/Instance
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  databaseDialect:
+    path: databaseDialect
+    type: string
+  enableDropProtection:
+    path: enableDropProtection
+    type: boolean
+  encryptionConfig:
+    path: encryptionConfig
+    type: object
+  versionRetentionPeriod:
+    path: versionRetentionPeriod
+    type: string
+  defaultLeader:
+    path: defaultLeader
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: spanner.googleapis.com/Instance
+  targetIdPath: refs_spanner_googleapis_com_Instance
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: spanner.projects.instances.databases.dropDatabase
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: spanner.projects.instances.databases.get
+      itemsPath: $
+      identityPath: name

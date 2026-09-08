@@ -1,0 +1,109 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/VpnTunnel
+  class: network.vpn_connection
+presentation:
+  displayNames:
+    en-US: VPN tunnel
+    zh-CN: VPN 隧道
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.vpnTunnels.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.vpnTunnels.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.vpnTunnels
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  detailedStatus:
+    path: detailedStatus
+    type: string
+  ikeVersion:
+    path: ikeVersion
+    type: number
+  peerIp:
+    path: peerIp
+    type: string
+  router:
+    path: router
+    type: string
+  vpnGateway:
+    path: vpnGateway
+    type: string
+  targetVpnGateway:
+    path: targetVpnGateway
+    type: string
+  peerExternalGateway:
+    path: peerExternalGateway
+    type: string
+  localTrafficSelector:
+    path: localTrafficSelector
+    type: array
+  remoteTrafficSelector:
+    path: remoteTrafficSelector
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Router
+  targetIdPath: refs_compute_googleapis_com_Router
+- type: depends_on
+  targetType: compute.googleapis.com/VpnGateway
+  targetIdPath: refs_compute_googleapis_com_VpnGateway
+- type: depends_on
+  targetType: compute.googleapis.com/TargetVpnGateway
+  targetIdPath: refs_compute_googleapis_com_TargetVpnGateway
+- type: depends_on
+  targetType: compute.googleapis.com/ExternalVpnGateway
+  targetIdPath: refs_compute_googleapis_com_ExternalVpnGateway
+actions:
+  delete:
+    operation: compute.vpnTunnels.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.vpnTunnels.get
+      itemsPath: $
+      identityPath: name

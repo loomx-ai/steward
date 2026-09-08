@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/NetworkFirewallPolicy
+  class: network.acl
+presentation:
+  displayNames:
+    en-US: Network firewall policy
+    zh-CN: 网络防火墙策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.networkFirewallPolicies.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.networkFirewallPolicies.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.firewallPolicies
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  policyType:
+    path: policyType
+    type: string
+  associations:
+    path: associations
+    type: array
+  ruleTupleCount:
+    path: ruleTupleCount
+    type: number
+  rules:
+    path: rules
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: compute.networkFirewallPolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.networkFirewallPolicies.get
+      itemsPath: $
+      identityPath: name

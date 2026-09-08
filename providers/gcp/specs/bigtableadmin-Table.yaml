@@ -1,0 +1,73 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: bigtableadmin.googleapis.com/Table
+  class: database.table
+presentation:
+  displayNames:
+    en-US: Bigtable table
+    zh-CN: Bigtable 表
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: bigtableadmin.projects.instances.tables.list
+    parameters:
+      parent: parent.nativeId
+      view: REPLICATION_VIEW
+    itemsPath: tables
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: bigtableadmin.projects.instances.tables.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: bigtableadmin.googleapis.com/Instance
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  deletionProtection:
+    path: deletionProtection
+    type: boolean
+  columnFamilies:
+    path: columnFamilies
+    type: object
+  clusterStates:
+    path: clusterStates
+    type: object
+  granularity:
+    path: granularity
+    type: string
+  automatedBackupPolicy:
+    path: automatedBackupPolicy
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: bigtableadmin.googleapis.com/Instance
+  targetIdPath: refs_bigtableadmin_googleapis_com_Instance
+actions:
+  delete:
+    operation: bigtableadmin.projects.instances.tables.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: bigtableadmin.projects.instances.tables.get
+      itemsPath: $
+      identityPath: name

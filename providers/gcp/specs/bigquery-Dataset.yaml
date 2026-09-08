@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: bigquery.googleapis.com/Dataset
+  class: database.analytics
+presentation:
+  displayNames:
+    en-US: BigQuery dataset
+    zh-CN: BigQuery 数据集
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: bigquery.datasets.list
+    parameters:
+      projectId: scope.project
+      all: true
+    itemsPath: datasets
+    identityPath: datasetReference.datasetId
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 100
+  detail:
+    operation: bigquery.datasets.get
+    itemsPath: $
+    identityPath: datasetReference.datasetId
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  datasetReference:
+    path: datasetReference
+    type: object
+  friendlyName:
+    path: friendlyName
+    type: string
+  location:
+    path: location
+    type: string
+  description:
+    path: description
+    type: string
+  defaultTableExpirationMs:
+    path: defaultTableExpirationMs
+    type: string
+  defaultEncryptionConfiguration:
+    path: defaultEncryptionConfiguration
+    type: object
+  storageBillingModel:
+    path: storageBillingModel
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: bigquery.datasets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: bigquery.datasets.get
+      itemsPath: $
+      identityPath: datasetReference.datasetId

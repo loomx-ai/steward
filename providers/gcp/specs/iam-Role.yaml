@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: iam.googleapis.com/Role
+  class: identity.policy
+presentation:
+  displayNames:
+    en-US: IAM custom role
+    zh-CN: IAM 自定义角色
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: iam.projects.roles.list
+    parameters:
+      parent: scope.projectPath
+      view: FULL
+    itemsPath: roles
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: iam.projects.roles.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  etag:
+    path: etag
+    type: string
+  title:
+    path: title
+    type: string
+  description:
+    path: description
+    type: string
+  includedPermissions:
+    path: includedPermissions
+    type: array
+  stage:
+    path: stage
+    type: string
+  deleted:
+    path: deleted
+    type: boolean
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: iam.projects.roles.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: iam.projects.roles.get
+      itemsPath: $
+      identityPath: name

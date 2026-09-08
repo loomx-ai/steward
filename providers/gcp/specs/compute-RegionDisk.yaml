@@ -58,3 +58,7 @@ actions:
       operation: compute.regionDisks.get
       itemsPath: $
       identityPath: name
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/ResourcePolicy
+  targetIdPath: refs_compute_googleapis_com_ResourcePolicy

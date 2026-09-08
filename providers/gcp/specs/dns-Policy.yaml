@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dns.googleapis.com/Policy
+  class: dns.resolver_rule
+presentation:
+  displayNames:
+    en-US: Cloud DNS policy
+    zh-CN: DNS 策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: dns.policies.list
+    parameters:
+      project: scope.project
+    itemsPath: policies
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 100
+  detail:
+    operation: dns.policies.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  id:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  networks:
+    path: networks
+    type: array
+  enableInboundForwarding:
+    path: enableInboundForwarding
+    type: boolean
+  enableLogging:
+    path: enableLogging
+    type: boolean
+  alternativeNameServerConfig:
+    path: alternativeNameServerConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: dns.policies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dns.policies.get
+      itemsPath: $
+      identityPath: name

@@ -60,6 +60,9 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/NetworkEndpointGroup
   targetIdPath: refs_compute_googleapis_com_NetworkEndpointGroup
+- type: depends_on
+  targetType: compute.googleapis.com/SecurityPolicy
+  targetIdPath: refs_compute_googleapis_com_SecurityPolicy
 actions:
   delete:
     operation: compute.backendServices.delete

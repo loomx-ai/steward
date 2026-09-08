@@ -412,3 +412,30 @@ func TestAlibabaContributorResolverAddsStaticAndACKContributors(t *testing.T) {
 		t.Fatalf("contributors = %d, want twelve Alibaba static contributors and one ACK", len(contributors))
 	}
 }
+
+type serviceContributorRuntime struct{ connections []asset.ConnectionID }
+
+func (*serviceContributorRuntime) Provider() asset.Provider { return asset.ProviderGCP }
+func (*serviceContributorRuntime) Invoke(context.Context, contracts.Invocation) (contracts.InvocationResult, error) {
+	panic("service contributor cannot mutate resources")
+}
+func (r *serviceContributorRuntime) ServiceLifecycle(_ context.Context, id asset.ConnectionID) (governance.Contributor, error) {
+	r.connections = append(r.connections, id)
+	return emptyClusterContributor{}, nil
+}
+func TestGCPServiceContributorUsesExplicitConnectionOnce(t *testing.T) {
+	runtime := &serviceContributorRuntime{}
+	resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+	connection := asset.CloudConnection{ID: "gcp-connection", Provider: asset.ProviderGCP}
+	if _, err := resolver.ResolveContributors(context.Background(), connection, nil); err != nil || len(runtime.connections) != 0 {
+		t.Fatalf("unneeded service lookup: %v", err)
+	}
+	parent := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderGCP, ConnectionID: connection.ID, NativeType: "servicedirectory.googleapis.com/Namespace"}}
+	contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{parent, parent})
+	if err != nil || len(contributors) != 2 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+		t.Fatalf("service lifecycle not connected: %d %v %v", len(contributors), runtime.connections, err)
+	}
+	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{parent}); err == nil {
+		t.Fatal("missing service lifecycle silently accepted")
+	}
+}

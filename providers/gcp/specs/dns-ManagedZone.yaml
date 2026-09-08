@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dns.googleapis.com/ManagedZone
+  class: dns.zone
+presentation:
+  displayNames:
+    en-US: Cloud DNS managed zone
+    zh-CN: DNS 托管区域
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: dns.managedZones.list
+    parameters:
+      project: scope.project
+    itemsPath: managedZones
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 100
+  detail:
+    operation: dns.managedZones.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  id:
+    path: id
+    type: string
+  dnsName:
+    path: dnsName
+    type: string
+  description:
+    path: description
+    type: string
+  visibility:
+    path: visibility
+    type: string
+  privateVisibilityConfig:
+    path: privateVisibilityConfig
+    type: object
+  forwardingConfig:
+    path: forwardingConfig
+    type: object
+  peeringConfig:
+    path: peeringConfig
+    type: object
+  dnssecConfig:
+    path: dnssecConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+actions:
+  delete:
+    operation: dns.managedZones.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dns.managedZones.get
+      itemsPath: $
+      identityPath: name

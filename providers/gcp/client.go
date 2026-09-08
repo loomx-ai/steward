@@ -29,7 +29,7 @@ import (
 const tokenURL = "https://oauth2.googleapis.com/token"
 
 var projectPattern = regexp.MustCompile(`^[a-z][a-z0-9-]{4,61}[a-z0-9]$|^[0-9]+$`)
-var segmentPattern = regexp.MustCompile(`^[A-Za-z0-9_.:@-]+$`)
+var segmentPattern = regexp.MustCompile(`^[A-Za-z0-9_.:@()-]+$`)
 
 type client struct {
 	http        *http.Client

@@ -1,0 +1,88 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/BackendBucket
+  class: network.load_balancer_backend
+presentation:
+  displayNames:
+    en-US: Backend bucket
+    zh-CN: 后端存储桶
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.backendBuckets.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.backendBuckets.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.backendBuckets
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  bucketName:
+    path: bucketName
+    type: string
+  enableCdn:
+    path: enableCdn
+    type: boolean
+  cdnPolicy:
+    path: cdnPolicy
+    type: object
+  edgeSecurityPolicy:
+    path: edgeSecurityPolicy
+    type: string
+  loadBalancingScheme:
+    path: loadBalancingScheme
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/SecurityPolicy
+  targetIdPath: refs_compute_googleapis_com_SecurityPolicy
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+actions:
+  delete:
+    operation: compute.backendBuckets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.backendBuckets.get
+      itemsPath: $
+      identityPath: name

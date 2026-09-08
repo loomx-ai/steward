@@ -1,0 +1,74 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/UptimeCheckConfig
+  class: observability.uptime_check
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring uptime check
+    zh-CN: 云监控正常运行时间检查
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.projects.uptimeCheckConfigs.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: uptimeCheckConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: monitoring.projects.uptimeCheckConfigs.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  monitoredResource:
+    path: monitoredResource
+    type: object
+  resourceGroup:
+    path: resourceGroup
+    type: object
+  httpCheck:
+    path: httpCheck
+    type: object
+  tcpCheck:
+    path: tcpCheck
+    type: object
+  period:
+    path: period
+    type: string
+  timeout:
+    path: timeout
+    type: string
+  selectedRegions:
+    path: selectedRegions
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.projects.uptimeCheckConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: monitoring.projects.uptimeCheckConfigs.get
+      itemsPath: $
+      identityPath: name

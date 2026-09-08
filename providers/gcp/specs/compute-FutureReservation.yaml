@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/FutureReservation
+  class: compute.elasticity_assurance
+presentation:
+  displayNames:
+    en-US: Future reservation
+    zh-CN: 未来容量预留
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.futureReservations.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.futureReservations.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.futureReservations
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  planningStatus:
+    path: planningStatus
+    type: string
+  timeWindow:
+    path: timeWindow
+    type: object
+  specificSkuProperties:
+    path: specificSkuProperties
+    type: object
+  shareSettings:
+    path: shareSettings
+    type: object
+  autoDeleteAutoCreatedReservations:
+    path: autoDeleteAutoCreatedReservations
+    type: boolean
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.futureReservations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.futureReservations.get
+      itemsPath: $
+      identityPath: name

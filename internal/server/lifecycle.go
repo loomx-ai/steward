@@ -37,6 +37,10 @@ type computeLifecycleRuntime interface {
 	ComputeLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
 }
 
+type serviceLifecycleRuntime interface {
+	ServiceLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
+}
+
 type lifecycleContributorResolver struct {
 	runtimes lifecycleRuntimeDirectory
 }
@@ -55,6 +59,7 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	}
 	switch connection.Provider {
 	case asset.ProviderGCP:
+		contributors := []governance.Contributor{gcp.NewInstanceDisks()}
 		for _, value := range assets {
 			if value.Identity.Provider != asset.ProviderGCP || (value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" && value.Identity.NativeType != "container.googleapis.com/Cluster" && value.Identity.NativeType != "container.googleapis.com/NodePool") {
 				continue
@@ -67,9 +72,25 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 			if err != nil {
 				return nil, err
 			}
-			return []governance.Contributor{contributor}, nil
+			contributors = []governance.Contributor{contributor}
+			break
 		}
-		return []governance.Contributor{gcp.NewInstanceDisks()}, nil
+		for _, value := range assets {
+			if value.Identity.Provider != asset.ProviderGCP || !gcp.HasServiceCascade(value.Identity.NativeType) {
+				continue
+			}
+			provider, ok := runtime.(serviceLifecycleRuntime)
+			if !ok {
+				return nil, fmt.Errorf("GCP runtime does not expose service lifecycle discovery")
+			}
+			contributor, err := provider.ServiceLifecycle(ctx, connection.ID)
+			if err != nil {
+				return nil, err
+			}
+			contributors = append(contributors, contributor)
+			break
+		}
+		return contributors, nil
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}
 		for _, value := range assets {

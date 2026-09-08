@@ -54,6 +54,9 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/RegionBackendService
   targetIdPath: refs_compute_googleapis_com_RegionBackendService
+- type: depends_on
+  targetType: compute.googleapis.com/BackendBucket
+  targetIdPath: refs_compute_googleapis_com_BackendBucket
 actions:
   delete:
     operation: compute.urlMaps.delete

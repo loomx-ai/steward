@@ -1,0 +1,97 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/InterconnectAttachment
+  class: network.virtual_border_router
+presentation:
+  displayNames:
+    en-US: VLAN attachment
+    zh-CN: VLAN 附件
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.interconnectAttachments.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.interconnectAttachments.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.interconnectAttachments
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  type:
+    path: type
+    type: string
+  bandwidth:
+    path: bandwidth
+    type: string
+  router:
+    path: router
+    type: string
+  interconnect:
+    path: interconnect
+    type: string
+  vlanTag8021q:
+    path: vlanTag8021q
+    type: number
+  edgeAvailabilityDomain:
+    path: edgeAvailabilityDomain
+    type: string
+  stackType:
+    path: stackType
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Router
+  targetIdPath: refs_compute_googleapis_com_Router
+- type: depends_on
+  targetType: compute.googleapis.com/Interconnect
+  targetIdPath: refs_compute_googleapis_com_Interconnect
+actions:
+  delete:
+    operation: compute.interconnectAttachments.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.interconnectAttachments.get
+      itemsPath: $
+      identityPath: name

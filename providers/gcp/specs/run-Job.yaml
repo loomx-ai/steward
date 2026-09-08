@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: run.googleapis.com/Job
+  class: compute.job
+presentation:
+  displayNames:
+    en-US: Cloud Run job
+    zh-CN: Cloud Run 作业
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: run.projects.locations.jobs.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: jobs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: run.projects.locations.jobs.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  template:
+    path: template
+    type: object
+  executionCount:
+    path: executionCount
+    type: number
+  latestCreatedExecution:
+    path: latestCreatedExecution
+    type: object
+  launchStage:
+    path: launchStage
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+actions:
+  delete:
+    operation: run.projects.locations.jobs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: run.projects.locations.jobs.get
+      itemsPath: $
+      identityPath: name

@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: gkehub.googleapis.com/Membership
+  class: container.membership
+presentation:
+  displayNames:
+    en-US: GKE fleet membership
+    zh-CN: GKE 舰队成员
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: gkehub.projects.locations.memberships.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: resources
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: gkehub.projects.locations.memberships.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: object
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  uniqueId:
+    path: uniqueId
+    type: string
+  description:
+    path: description
+    type: string
+  endpoint:
+    path: endpoint
+    type: object
+  membershipType:
+    path: membershipType
+    type: string
+  clusterTier:
+    path: clusterTier
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: container.googleapis.com/Cluster
+  targetIdPath: refs_container_googleapis_com_Cluster
+- type: depends_on
+  targetType: gkehub.googleapis.com/Fleet
+  targetIdPath: refs_gkehub_googleapis_com_Fleet
+actions:
+  delete:
+    operation: gkehub.projects.locations.memberships.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: gkehub.projects.locations.memberships.get
+      itemsPath: $
+      identityPath: name

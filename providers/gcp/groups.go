@@ -113,7 +113,14 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		for _, record := range records {
 			result = append(result, record.Data)
 		}
-		next := text(response.Data["nextPageToken"])
+		next := ""
+		if token, present := response.Data["nextPageToken"]; present && token != nil {
+			var valid bool
+			next, valid = token.(string)
+			if !valid {
+				return nil, fmt.Errorf("native GCP list returned an invalid page token")
+			}
+		}
 		if next == "" {
 			return result, nil
 		}

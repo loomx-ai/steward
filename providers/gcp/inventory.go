@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -134,7 +135,7 @@ func assetLocation(raw map[string]any) (string, string) {
 	resource := object(raw["resource"])
 	data := object(resource["data"])
 	location := text(resource["location"])
-	for _, key := range []string{"zone", "region", "location"} {
+	for _, key := range []string{"zone", "region", "location", "locationId"} {
 		if location == "" {
 			location = last(text(data[key]))
 		}
@@ -290,6 +291,24 @@ func references(c *client, data map[string]any) map[string][]string {
 	fields["healthCheck"] = "compute.googleapis.com/HealthCheck"
 	fields["group"] = ""
 	fields["instances"] = instanceType
+	for key, target := range map[string]string{
+		"subnetworks": "Subnetwork", "natSubnets": "Subnetwork", "attachmentTarget": "Network",
+		"router": "Router", "vpnGateway": "VpnGateway", "targetVpnGateway": "TargetVpnGateway", "peerExternalGateway": "ExternalVpnGateway",
+		"interconnect": "Interconnect", "interconnectAttachment": "InterconnectAttachment", "networkAttachment": "NetworkAttachment", "nodeTemplate": "NodeTemplate", "resourcePolicies": "ResourcePolicy",
+		"targetService": "ForwardingRule", "sslPolicy": "SslPolicy", "securityPolicy": "SecurityPolicy", "edgeSecurityPolicy": "SecurityPolicy",
+	} {
+		fields[key] = "compute.googleapis.com/" + target
+	}
+	fields["bucketName"] = "storage.googleapis.com/Bucket"
+	for key, target := range map[string]string{
+		"authorizedNetwork": "compute.googleapis.com/Network", "networkUri": "compute.googleapis.com/Network", "networkUrl": "compute.googleapis.com/Network",
+		"kmsKeyName": "cloudkms.googleapis.com/CryptoKey", "kmsKey": "cloudkms.googleapis.com/CryptoKey", "customerManagedKey": "cloudkms.googleapis.com/CryptoKey",
+		"apiConfig": "apigateway.googleapis.com/ApiConfig", "certificates": "certificatemanager.googleapis.com/Certificate", "certificateMap": "certificatemanager.googleapis.com/CertificateMap",
+		"gkeCluster": "container.googleapis.com/Cluster", "resourceLink": "container.googleapis.com/Cluster",
+		"gatewayServiceAccount": "iam.googleapis.com/ServiceAccount", "serviceAccount": "iam.googleapis.com/ServiceAccount", "serviceAccountEmail": "iam.googleapis.com/ServiceAccount",
+	} {
+		fields[key] = target
+	}
 	visit = func(value any, key string) {
 		switch typed := value.(type) {
 		case map[string]any:
@@ -306,6 +325,15 @@ func references(c *client, data map[string]any) map[string][]string {
 				return
 			}
 			ref := c.canonicalName(typed)
+			if key == "service" && strings.Contains(ref, "/locations/") && strings.Contains(ref, "/services/") {
+				target = "run.googleapis.com/Service"
+			}
+			if target == "iam.googleapis.com/ServiceAccount" && strings.HasSuffix(ref, "@"+c.project+".iam.gserviceaccount.com") && !strings.Contains(ref, "/") {
+				ref = "projects/" + c.project + "/serviceAccounts/" + ref
+			}
+			if strings.HasPrefix(ref, "projects/") && target != "" {
+				ref = "//" + strings.Split(target, "/")[0] + "/" + ref
+			}
 			if target == "compute.googleapis.com/Network" || target == "compute.googleapis.com/Subnetwork" {
 				if strings.HasPrefix(ref, "projects/") {
 					ref = "//compute.googleapis.com/" + ref
@@ -316,6 +344,9 @@ func references(c *client, data map[string]any) map[string][]string {
 			}
 			if target == "pubsub.googleapis.com/Topic" && strings.HasPrefix(ref, "projects/") {
 				ref = "//pubsub.googleapis.com/" + ref
+			}
+			if target == "storage.googleapis.com/Bucket" && !strings.Contains(ref, "/") {
+				ref = "//storage.googleapis.com/" + ref
 			}
 			if target == "" {
 				for _, kind := range allTypes() {
@@ -330,6 +361,9 @@ func references(c *client, data map[string]any) map[string][]string {
 			}
 			if target == "compute.googleapis.com/BackendService" && strings.Contains(ref, "/regions/") {
 				target = "compute.googleapis.com/RegionBackendService"
+			}
+			if target == "compute.googleapis.com/BackendService" && strings.Contains(ref, "/backendBuckets/") {
+				target = "compute.googleapis.com/BackendBucket"
 			}
 			if target == "compute.googleapis.com/HealthCheck" {
 				if strings.Contains(ref, "/httpHealthChecks/") {
@@ -355,6 +389,40 @@ func references(c *client, data map[string]any) map[string][]string {
 		}
 	}
 	visit(data, "")
+	// Sole-tenant placement and specific reservation affinity use native names
+	// instead of selfLinks. Resolve them within this VM's actual zone only.
+	if zone := last(text(data["zone"])); zone != "" && strings.Contains(text(data["selfLink"]), "/instances/") {
+		affinities := array(object(data["scheduling"])["nodeAffinities"])
+		reservation := object(data["reservationAffinity"])
+		if reservation["consumeReservationType"] == "SPECIFIC_RESERVATION" {
+			affinities = append(slices.Clone(affinities), reservation)
+		}
+		for _, raw := range affinities {
+			affinity := object(raw)
+			target, collection := "", ""
+			if affinity["key"] == "compute.googleapis.com/node-group-name" && affinity["operator"] == "IN" {
+				target, collection = "compute.googleapis.com/NodeGroup", "nodeGroups"
+			} else if affinity["key"] == "compute.googleapis.com/reservation-name" {
+				target, collection = "compute.googleapis.com/Reservation", "reservations"
+			}
+			kind, known := findType(target)
+			if !known {
+				continue
+			}
+			for _, raw := range array(affinity["values"]) {
+				id := c.canonicalName(text(raw))
+				if !strings.Contains(id, "/") {
+					id = "//compute.googleapis.com/projects/" + c.project + "/zones/" + zone + "/" + collection + "/" + id
+				}
+				if strings.HasPrefix(id, "projects/") {
+					id = "//compute.googleapis.com/" + id
+				}
+				if _, err := c.resourceURL(kind, id); err == nil && !slices.Contains(result[target], id) {
+					result[target] = append(result[target], id)
+				}
+			}
+		}
+	}
 	for _, values := range result {
 		sort.Strings(values)
 	}

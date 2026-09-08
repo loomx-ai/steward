@@ -23,3 +23,12 @@ immutable plans, resumed cleanup, failed operations, late protection and final
 readback. These tests do not emulate a running GKE controller. The ownership
 rules are cross-checked against the pinned ingress-gce source linked from the
 catalog README and official GKE documentation.
+
+`compute_resources_test.go` and `service_resources_test.go` retain independent
+native path/response cases for extended Compute scopes and the additional
+database, identity, networking and managed-service rules. They exercise product
+listing, composite/scalar identities, live protection, soft deletion, LRO polling,
+final absence, parent cursor generations, incomplete responses and redaction.
+`service_lifecycle_test.go` also solves actual impact plans, rejects unreviewed or
+retained cascade members, and checks descendants after a parent disappears and
+the driver restarts. These are protocol fixtures, not emulator evidence.

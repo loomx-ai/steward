@@ -63,10 +63,22 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			read, err := a.managedGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"manager_absent": true}}, err
 		}
+		if HasServiceCascade(a.kind.NativeType) {
+			read, err := a.serviceCascadeReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"service_parent_absent": true}}, err
+		}
 		return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 	}
 	if err != nil {
 		return contracts.PreflightResult{}, err
+	}
+	if resourceSoftDeleted(a.kind.NativeType, data) {
+		return contracts.PreflightResult{Allowed: true, Absent: true, Evidence: map[string]any{"state": "soft_deleted"}}, nil
+	}
+	for _, field := range []string{"uid", "uniqueId"} {
+		if original := text(request.Asset.Normalized[field]); original != "" && original != text(data[field]) {
+			return contracts.PreflightResult{Reason: "resource_identity_changed"}, nil
+		}
 	}
 	if strings.HasPrefix(a.kind.NativeType, "compute.googleapis.com/") && text(request.Asset.Normalized["id"]) != "" && text(request.Asset.Normalized["id"]) != text(data["id"]) {
 		return contracts.PreflightResult{Reason: "resource_identity_changed"}, nil
@@ -76,6 +88,15 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if reason := protectionReason(a.kind.NativeType, data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
+	}
+	if a.kind.NativeType == "managedkafka.googleapis.com/Topic" && last(text(data["name"])) == "__remote_log_metadata" {
+		return contracts.PreflightResult{Reason: "internal_topic_requires_cluster_cleanup"}, nil
+	}
+	if a.kind.NativeType == "gkehub.googleapis.com/Membership" && len(object(object(data["endpoint"])["gkeCluster"])) == 0 {
+		return contracts.PreflightResult{Reason: "membership_requires_native_cluster_unregister"}, nil
+	}
+	if err := a.serviceCascadePreflight(ctx, request, data); err != nil {
+		return contracts.PreflightResult{}, err
 	}
 	if a.isGKE() {
 		if reason, err := a.plannedGKE(ctx, request, data); reason != "" || err != nil {
@@ -152,7 +173,7 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if check.Absent {
 		return contracts.ActionResult{}, nil
 	}
-	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true {
+	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true || check.Evidence["service_parent_absent"] == true {
 		if a.kind.NativeType == clusterType {
 			return gkePhase("gke_delete"), nil
 		}
@@ -177,6 +198,16 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	}
 	if a.deleteOperation.Call == nil {
 		return contracts.ActionResult{}, fmt.Errorf("GCP deletion has no catalog operation")
+	}
+	if parameter := serviceCascadeRules[a.kind.NativeType].forceParameter; parameter != "" {
+		// Execute has just verified the complete live child set against the
+		// reviewed plan. Only documented native cascade switches are enabled.
+		parameters[parameter] = true
+	}
+	if property := object(object(a.deleteOperation.InputSchema["properties"])["etag"]); property != nil {
+		if etag := text(request.Asset.Normalized["etag"]); etag != "" {
+			parameters["etag"] = etag
+		}
 	}
 	if token := a.deleteOperation.Call.IdempotencyParameter; token != "" && request.IdempotencyKey != "" {
 		parameters[token] = googleRequestID(request.IdempotencyKey)
@@ -221,7 +252,7 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 			return "", nil
 		}
 		parts := strings.Split(name, "/")
-		if len(parts) != 6 || parts[0] != "projects" || (parts[1] != a.client.project && parts[1] != a.client.number) || parts[2] != "locations" || parts[4] != "operations" {
+		if len(parts) < 4 || parts[0] != "projects" || (parts[1] != a.client.project && parts[1] != a.client.number) || parts[len(parts)-2] != "operations" {
 			return "", fmt.Errorf("Google API omitted a valid deletion operation")
 		}
 		for _, part := range parts {
@@ -230,16 +261,21 @@ func (a *action) operationURL(data map[string]any) (string, error) {
 			}
 		}
 		endpoint, _ := url.Parse(a.endpoint)
-		resourceScope := strings.Split(strings.Trim(endpoint.Path, "/"), "/")
-		if len(resourceScope) < 5 || resourceScope[3] != "locations" || resourceScope[4] != parts[3] {
-			return "", fmt.Errorf("Google deletion operation belongs to another location")
+		index := strings.Index(endpoint.Path, "/projects/")
+		if index < 0 {
+			return "", fmt.Errorf("Google deletion target has no project scope")
+		}
+		resourceName := a.client.canonicalName("//" + endpoint.Host + endpoint.Path[index:])
+		operationParent := a.client.canonicalName("//" + endpoint.Host + "/" + strings.Join(parts[:len(parts)-2], "/"))
+		if resourceName != operationParent && !strings.HasPrefix(resourceName, operationParent+"/") {
+			return "", fmt.Errorf("Google deletion operation belongs to another resource scope")
 		}
 		metadata, err := providerData()
 		if err != nil {
 			return "", err
 		}
 		for _, operation := range metadata.catalog.Operations {
-			if operation.Call == nil || operation.Call.Product != a.deleteOperation.Call.Product || !strings.HasSuffix(operation.ID, ".operations.get") || len(operation.Call.RawPathParameters) != 1 {
+			if operation.Call == nil || operation.Call.Product != a.deleteOperation.Call.Product || operation.Call.Version != a.deleteOperation.Call.Version || !strings.HasSuffix(operation.ID, ".operations.get") || len(operation.Call.RawPathParameters) != 1 {
 				continue
 			}
 			bound, err := catalog.BindREST(operation, map[string]any{operation.Call.RawPathParameters[0]: name})
@@ -365,10 +401,16 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 		if a.kind.NativeType == managerType {
 			return a.managedGroupReadback(ctx, request)
 		}
+		if HasServiceCascade(a.kind.NativeType) {
+			return a.serviceCascadeReadback(ctx, request)
+		}
 		return contracts.ReadbackResult{Exists: false}, nil
 	}
 	if err != nil {
 		return contracts.ReadbackResult{}, err
+	}
+	if resourceSoftDeleted(a.kind.NativeType, data) {
+		return contracts.ReadbackResult{Exists: false, State: "soft_deleted"}, nil
 	}
 	state := text(data["status"])
 	if state == "" {
@@ -381,5 +423,15 @@ func protectionReason(nativeType string, data map[string]any) string {
 	if nativeType != instanceType && (data["deletionProtection"] == true || object(data["settings"])["deletionProtectionEnabled"] == true) {
 		return "deletion_protection_enabled"
 	}
+	if data["deleteProtectionState"] == "DELETE_PROTECTION_ENABLED" || data["enableDropProtection"] == true || data["deletionProtectionEnabled"] == true {
+		return "deletion_protection_enabled"
+	}
+	if nativeType == "logging.googleapis.com/LogBucket" && (data["locked"] == true || data["name"] != nil && last(text(data["name"])) == "_Required") {
+		return "log_bucket_retention_locked"
+	}
 	return ""
+}
+
+func resourceSoftDeleted(nativeType string, data map[string]any) bool {
+	return nativeType == "iam.googleapis.com/Role" && data["deleted"] == true || nativeType == "logging.googleapis.com/LogBucket" && data["lifecycleState"] == "DELETE_REQUESTED"
 }

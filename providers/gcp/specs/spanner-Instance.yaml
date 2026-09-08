@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: spanner.googleapis.com/Instance
+  class: database.distributed_sql
+presentation:
+  displayNames:
+    en-US: Spanner instance
+    zh-CN: Spanner 实例
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: spanner.projects.instances.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: instances
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: spanner.projects.instances.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  config:
+    path: config
+    type: string
+  nodeCount:
+    path: nodeCount
+    type: number
+  processingUnits:
+    path: processingUnits
+    type: number
+  instanceType:
+    path: instanceType
+    type: string
+  edition:
+    path: edition
+    type: string
+  autoscalingConfig:
+    path: autoscalingConfig
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: spanner.projects.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: spanner.projects.instances.get
+      itemsPath: $
+      identityPath: name

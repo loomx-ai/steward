@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/Dashboard
+  class: observability.dashboard
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring dashboard
+    zh-CN: 云监控仪表板
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.projects.dashboards.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: dashboards
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: monitoring.projects.dashboards.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+  etag:
+    path: etag
+    type: string
+  displayName:
+    path: displayName
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.projects.dashboards.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: monitoring.projects.dashboards.get
+      itemsPath: $
+      identityPath: name

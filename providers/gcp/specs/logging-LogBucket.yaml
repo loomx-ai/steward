@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: logging.googleapis.com/LogBucket
+  class: observability.log_store
+presentation:
+  displayNames:
+    en-US: Cloud Logging bucket
+    zh-CN: 云日志存储桶
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: logging.projects.locations.buckets.list
+    parameters:
+      parent: scope.allLocationsParent
+    itemsPath: buckets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: logging.projects.locations.buckets.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  lifecycleState:
+    path: lifecycleState
+    type: string
+  locked:
+    path: locked
+    type: boolean
+  retentionDays:
+    path: retentionDays
+    type: number
+  analyticsEnabled:
+    path: analyticsEnabled
+    type: boolean
+  cmekSettings:
+    path: cmekSettings
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: logging.projects.locations.buckets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: logging.projects.locations.buckets.get
+      itemsPath: $
+      identityPath: name

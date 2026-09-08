@@ -9,6 +9,9 @@
         "compute.autoscalers.aggregatedList",
         "compute.autoscalers.delete",
         "compute.autoscalers.get",
+        "compute.backendBuckets.aggregatedList",
+        "compute.backendBuckets.delete",
+        "compute.backendBuckets.get",
         "compute.backendServices.delete",
         "compute.backendServices.get",
         "compute.backendServices.list",
@@ -16,12 +19,18 @@
         "compute.disks.delete",
         "compute.disks.get",
         "compute.disks.list",
+        "compute.externalVpnGateways.delete",
+        "compute.externalVpnGateways.get",
+        "compute.externalVpnGateways.list",
         "compute.firewalls.delete",
         "compute.firewalls.get",
         "compute.firewalls.list",
         "compute.forwardingRules.delete",
         "compute.forwardingRules.get",
         "compute.forwardingRules.list",
+        "compute.futureReservations.aggregatedList",
+        "compute.futureReservations.delete",
+        "compute.futureReservations.get",
         "compute.globalAddresses.delete",
         "compute.globalAddresses.get",
         "compute.globalAddresses.list",
@@ -67,14 +76,34 @@
         "compute.instances.list",
         "compute.instances.setDeletionProtection",
         "compute.instances.setDiskAutoDelete",
+        "compute.interconnectAttachments.aggregatedList",
+        "compute.interconnectAttachments.delete",
+        "compute.interconnectAttachments.get",
+        "compute.interconnects.delete",
+        "compute.interconnects.get",
+        "compute.interconnects.list",
+        "compute.networkAttachments.aggregatedList",
+        "compute.networkAttachments.delete",
+        "compute.networkAttachments.get",
         "compute.networkEndpointGroups.aggregatedList",
         "compute.networkEndpointGroups.delete",
         "compute.networkEndpointGroups.get",
+        "compute.networkFirewallPolicies.aggregatedList",
+        "compute.networkFirewallPolicies.delete",
+        "compute.networkFirewallPolicies.get",
         "compute.networks.delete",
         "compute.networks.get",
         "compute.networks.list",
+        "compute.nodeGroups.aggregatedList",
+        "compute.nodeGroups.delete",
+        "compute.nodeGroups.get",
+        "compute.nodeTemplates.aggregatedList",
+        "compute.nodeTemplates.delete",
+        "compute.nodeTemplates.get",
         "compute.regionAutoscalers.delete",
         "compute.regionAutoscalers.get",
+        "compute.regionBackendBuckets.delete",
+        "compute.regionBackendBuckets.get",
         "compute.regionBackendServices.delete",
         "compute.regionBackendServices.get",
         "compute.regionBackendServices.list",
@@ -98,28 +127,48 @@
         "compute.regionInstanceTemplates.list",
         "compute.regionNetworkEndpointGroups.delete",
         "compute.regionNetworkEndpointGroups.get",
+        "compute.regionNetworkFirewallPolicies.delete",
+        "compute.regionNetworkFirewallPolicies.get",
         "compute.regionOperations.get",
         "compute.regionOperations.list",
+        "compute.regionSecurityPolicies.delete",
+        "compute.regionSecurityPolicies.get",
         "compute.regionSslCertificates.delete",
         "compute.regionSslCertificates.get",
         "compute.regionSslCertificates.list",
+        "compute.regionSslPolicies.delete",
+        "compute.regionSslPolicies.get",
         "compute.regionTargetHttpProxies.delete",
         "compute.regionTargetHttpProxies.get",
         "compute.regionTargetHttpProxies.list",
         "compute.regionTargetHttpsProxies.delete",
         "compute.regionTargetHttpsProxies.get",
         "compute.regionTargetHttpsProxies.list",
+        "compute.regionTargetTcpProxies.delete",
+        "compute.regionTargetTcpProxies.get",
         "compute.regionUrlMaps.delete",
         "compute.regionUrlMaps.get",
         "compute.regionUrlMaps.list",
         "compute.regions.get",
         "compute.regions.list",
+        "compute.reservations.aggregatedList",
+        "compute.reservations.delete",
+        "compute.reservations.get",
+        "compute.resourcePolicies.aggregatedList",
+        "compute.resourcePolicies.delete",
+        "compute.resourcePolicies.get",
         "compute.routers.delete",
         "compute.routers.get",
         "compute.routers.list",
         "compute.routes.delete",
         "compute.routes.get",
         "compute.routes.list",
+        "compute.securityPolicies.aggregatedList",
+        "compute.securityPolicies.delete",
+        "compute.securityPolicies.get",
+        "compute.serviceAttachments.aggregatedList",
+        "compute.serviceAttachments.delete",
+        "compute.serviceAttachments.get",
         "compute.snapshots.delete",
         "compute.snapshots.get",
         "compute.snapshots.list",
@@ -127,6 +176,9 @@
         "compute.sslCertificates.delete",
         "compute.sslCertificates.get",
         "compute.sslCertificates.list",
+        "compute.sslPolicies.aggregatedList",
+        "compute.sslPolicies.delete",
+        "compute.sslPolicies.get",
         "compute.subnetworks.delete",
         "compute.subnetworks.get",
         "compute.subnetworks.list",
@@ -141,10 +193,25 @@
         "compute.targetPools.aggregatedList",
         "compute.targetPools.delete",
         "compute.targetPools.get",
+        "compute.targetSslProxies.delete",
+        "compute.targetSslProxies.get",
+        "compute.targetSslProxies.list",
+        "compute.targetTcpProxies.aggregatedList",
+        "compute.targetTcpProxies.delete",
+        "compute.targetTcpProxies.get",
+        "compute.targetVpnGateways.aggregatedList",
+        "compute.targetVpnGateways.delete",
+        "compute.targetVpnGateways.get",
         "compute.urlMaps.aggregatedList",
         "compute.urlMaps.delete",
         "compute.urlMaps.get",
         "compute.urlMaps.list",
+        "compute.vpnGateways.aggregatedList",
+        "compute.vpnGateways.delete",
+        "compute.vpnGateways.get",
+        "compute.vpnTunnels.aggregatedList",
+        "compute.vpnTunnels.delete",
+        "compute.vpnTunnels.get",
         "compute.zoneOperations.get",
         "compute.zoneOperations.list",
         "compute.zones.get",
@@ -196,6 +263,9 @@
     {
       "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2",
       "methods": [
+        "run.projects.locations.jobs.delete",
+        "run.projects.locations.jobs.get",
+        "run.projects.locations.jobs.list",
         "run.projects.locations.operations.get",
         "run.projects.locations.services.delete",
         "run.projects.locations.services.get",
@@ -253,6 +323,224 @@
         "cloudkms.projects.locations.keyRings.list",
         "cloudkms.projects.locations.list",
         "cloudkms.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://redis.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "redis.projects.locations.clusters.delete",
+        "redis.projects.locations.clusters.get",
+        "redis.projects.locations.clusters.list",
+        "redis.projects.locations.instances.delete",
+        "redis.projects.locations.instances.get",
+        "redis.projects.locations.instances.list",
+        "redis.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://dns.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "dns.managedZones.delete",
+        "dns.managedZones.get",
+        "dns.managedZones.list",
+        "dns.policies.delete",
+        "dns.policies.get",
+        "dns.policies.list",
+        "dns.resourceRecordSets.delete",
+        "dns.resourceRecordSets.get",
+        "dns.resourceRecordSets.list"
+      ]
+    },
+    {
+      "source_uri": "https://bigquery.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "bigquery.datasets.delete",
+        "bigquery.datasets.get",
+        "bigquery.datasets.list",
+        "bigquery.tables.delete",
+        "bigquery.tables.get",
+        "bigquery.tables.list"
+      ]
+    },
+    {
+      "source_uri": "https://firestore.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "firestore.projects.databases.delete",
+        "firestore.projects.databases.get",
+        "firestore.projects.databases.list",
+        "firestore.projects.databases.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://bigtableadmin.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "bigtableadmin.projects.instances.clusters.delete",
+        "bigtableadmin.projects.instances.clusters.get",
+        "bigtableadmin.projects.instances.clusters.list",
+        "bigtableadmin.projects.instances.delete",
+        "bigtableadmin.projects.instances.get",
+        "bigtableadmin.projects.instances.list",
+        "bigtableadmin.projects.instances.tables.delete",
+        "bigtableadmin.projects.instances.tables.get",
+        "bigtableadmin.projects.instances.tables.list"
+      ]
+    },
+    {
+      "source_uri": "https://spanner.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "spanner.projects.instances.databases.dropDatabase",
+        "spanner.projects.instances.databases.get",
+        "spanner.projects.instances.databases.list",
+        "spanner.projects.instances.delete",
+        "spanner.projects.instances.get",
+        "spanner.projects.instances.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudtasks.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "cloudtasks.projects.locations.queues.delete",
+        "cloudtasks.projects.locations.queues.get",
+        "cloudtasks.projects.locations.queues.list"
+      ]
+    },
+    {
+      "source_uri": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "cloudfunctions.projects.locations.functions.delete",
+        "cloudfunctions.projects.locations.functions.get",
+        "cloudfunctions.projects.locations.functions.list",
+        "cloudfunctions.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://file.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "file.projects.locations.instances.delete",
+        "file.projects.locations.instances.get",
+        "file.projects.locations.instances.list",
+        "file.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://alloydb.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "alloydb.projects.locations.clusters.delete",
+        "alloydb.projects.locations.clusters.get",
+        "alloydb.projects.locations.clusters.instances.delete",
+        "alloydb.projects.locations.clusters.instances.get",
+        "alloydb.projects.locations.clusters.instances.list",
+        "alloydb.projects.locations.clusters.list",
+        "alloydb.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "managedkafka.projects.locations.clusters.delete",
+        "managedkafka.projects.locations.clusters.get",
+        "managedkafka.projects.locations.clusters.list",
+        "managedkafka.projects.locations.clusters.topics.delete",
+        "managedkafka.projects.locations.clusters.topics.get",
+        "managedkafka.projects.locations.clusters.topics.list",
+        "managedkafka.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://apigateway.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "apigateway.projects.locations.apis.configs.delete",
+        "apigateway.projects.locations.apis.configs.get",
+        "apigateway.projects.locations.apis.configs.list",
+        "apigateway.projects.locations.apis.delete",
+        "apigateway.projects.locations.apis.get",
+        "apigateway.projects.locations.apis.list",
+        "apigateway.projects.locations.gateways.delete",
+        "apigateway.projects.locations.gateways.get",
+        "apigateway.projects.locations.gateways.list",
+        "apigateway.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://certificatemanager.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.delete",
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.get",
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.list",
+        "certificatemanager.projects.locations.certificateMaps.delete",
+        "certificatemanager.projects.locations.certificateMaps.get",
+        "certificatemanager.projects.locations.certificateMaps.list",
+        "certificatemanager.projects.locations.certificates.delete",
+        "certificatemanager.projects.locations.certificates.get",
+        "certificatemanager.projects.locations.certificates.list",
+        "certificatemanager.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://iam.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "iam.projects.roles.delete",
+        "iam.projects.roles.get",
+        "iam.projects.roles.list",
+        "iam.projects.serviceAccounts.delete",
+        "iam.projects.serviceAccounts.get",
+        "iam.projects.serviceAccounts.keys.delete",
+        "iam.projects.serviceAccounts.keys.get",
+        "iam.projects.serviceAccounts.keys.list",
+        "iam.projects.serviceAccounts.list"
+      ]
+    },
+    {
+      "source_uri": "https://gkehub.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "gkehub.projects.locations.fleets.delete",
+        "gkehub.projects.locations.fleets.get",
+        "gkehub.projects.locations.fleets.list",
+        "gkehub.projects.locations.memberships.delete",
+        "gkehub.projects.locations.memberships.get",
+        "gkehub.projects.locations.memberships.list",
+        "gkehub.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://servicedirectory.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "servicedirectory.projects.locations.namespaces.delete",
+        "servicedirectory.projects.locations.namespaces.get",
+        "servicedirectory.projects.locations.namespaces.list",
+        "servicedirectory.projects.locations.namespaces.services.delete",
+        "servicedirectory.projects.locations.namespaces.services.endpoints.delete",
+        "servicedirectory.projects.locations.namespaces.services.endpoints.get",
+        "servicedirectory.projects.locations.namespaces.services.endpoints.list",
+        "servicedirectory.projects.locations.namespaces.services.get",
+        "servicedirectory.projects.locations.namespaces.services.list"
+      ]
+    },
+    {
+      "source_uri": "https://logging.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "logging.projects.locations.buckets.delete",
+        "logging.projects.locations.buckets.get",
+        "logging.projects.locations.buckets.list",
+        "logging.projects.sinks.delete",
+        "logging.projects.sinks.get",
+        "logging.projects.sinks.list"
+      ]
+    },
+    {
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "monitoring.projects.dashboards.delete",
+        "monitoring.projects.dashboards.get",
+        "monitoring.projects.dashboards.list"
+      ]
+    },
+    {
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v3",
+      "methods": [
+        "monitoring.projects.uptimeCheckConfigs.delete",
+        "monitoring.projects.uptimeCheckConfigs.get",
+        "monitoring.projects.uptimeCheckConfigs.list"
       ]
     }
   ],
@@ -1045,6 +1333,1068 @@
       ],
       "list_operations": [
         "compute.networkEndpointGroups.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/ExternalVpnGateway",
+      "collection": "externalVpnGateways",
+      "class": "network.customer_gateway",
+      "display_name": "External VPN gateway",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.externalVpnGateways.get"
+      ],
+      "delete_operations": [
+        "compute.externalVpnGateways.delete"
+      ],
+      "list_operations": [
+        "compute.externalVpnGateways.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/FutureReservation",
+      "collection": "futureReservations",
+      "class": "compute.elasticity_assurance",
+      "display_name": "Future reservation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.futureReservations.get"
+      ],
+      "delete_operations": [
+        "compute.futureReservations.delete"
+      ],
+      "list_operations": [
+        "compute.futureReservations.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Interconnect",
+      "collection": "interconnects",
+      "class": "network.physical_connection",
+      "display_name": "Cloud Interconnect",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.interconnects.get"
+      ],
+      "delete_operations": [
+        "compute.interconnects.delete"
+      ],
+      "list_operations": [
+        "compute.interconnects.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/InterconnectAttachment",
+      "collection": "interconnectAttachments",
+      "class": "network.virtual_border_router",
+      "display_name": "VLAN attachment",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.interconnectAttachments.get"
+      ],
+      "delete_operations": [
+        "compute.interconnectAttachments.delete"
+      ],
+      "list_operations": [
+        "compute.interconnectAttachments.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NetworkAttachment",
+      "collection": "networkAttachments",
+      "class": "network.endpoint",
+      "display_name": "Network attachment",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.networkAttachments.get"
+      ],
+      "delete_operations": [
+        "compute.networkAttachments.delete"
+      ],
+      "list_operations": [
+        "compute.networkAttachments.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NetworkFirewallPolicy",
+      "collection": "firewallPolicies",
+      "class": "network.acl",
+      "display_name": "Network firewall policy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "read_operations": [
+        "compute.networkFirewallPolicies.get",
+        "compute.regionNetworkFirewallPolicies.get"
+      ],
+      "delete_operations": [
+        "compute.networkFirewallPolicies.delete",
+        "compute.regionNetworkFirewallPolicies.delete"
+      ],
+      "list_operations": [
+        "compute.networkFirewallPolicies.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NodeGroup",
+      "collection": "nodeGroups",
+      "class": "compute.dedicated_host",
+      "display_name": "Sole-tenant node group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.nodeGroups.get"
+      ],
+      "delete_operations": [
+        "compute.nodeGroups.delete"
+      ],
+      "list_operations": [
+        "compute.nodeGroups.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NodeTemplate",
+      "collection": "nodeTemplates",
+      "class": "compute.dedicated_host",
+      "display_name": "Sole-tenant node template",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.nodeTemplates.get"
+      ],
+      "delete_operations": [
+        "compute.nodeTemplates.delete"
+      ],
+      "list_operations": [
+        "compute.nodeTemplates.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Reservation",
+      "collection": "reservations",
+      "class": "compute.capacity_reservation",
+      "display_name": "Capacity reservation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.reservations.get"
+      ],
+      "delete_operations": [
+        "compute.reservations.delete"
+      ],
+      "list_operations": [
+        "compute.reservations.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/ResourcePolicy",
+      "collection": "resourcePolicies",
+      "class": "storage.snapshot_policy",
+      "display_name": "Resource policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.resourcePolicies.get"
+      ],
+      "delete_operations": [
+        "compute.resourcePolicies.delete"
+      ],
+      "list_operations": [
+        "compute.resourcePolicies.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/SecurityPolicy",
+      "collection": "securityPolicies",
+      "class": "security.ddos_protection",
+      "display_name": "Cloud Armor security policy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "read_operations": [
+        "compute.securityPolicies.get",
+        "compute.regionSecurityPolicies.get"
+      ],
+      "delete_operations": [
+        "compute.securityPolicies.delete",
+        "compute.regionSecurityPolicies.delete"
+      ],
+      "list_operations": [
+        "compute.securityPolicies.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/ServiceAttachment",
+      "collection": "serviceAttachments",
+      "class": "network.endpoint_service",
+      "display_name": "Private Service Connect service attachment",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.serviceAttachments.get"
+      ],
+      "delete_operations": [
+        "compute.serviceAttachments.delete"
+      ],
+      "list_operations": [
+        "compute.serviceAttachments.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetVpnGateway",
+      "collection": "targetVpnGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "Classic VPN gateway",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.targetVpnGateways.get"
+      ],
+      "delete_operations": [
+        "compute.targetVpnGateways.delete"
+      ],
+      "list_operations": [
+        "compute.targetVpnGateways.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/VpnGateway",
+      "collection": "vpnGateways",
+      "class": "network.vpn_gateway",
+      "display_name": "HA VPN gateway",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.vpnGateways.get"
+      ],
+      "delete_operations": [
+        "compute.vpnGateways.delete"
+      ],
+      "list_operations": [
+        "compute.vpnGateways.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/VpnTunnel",
+      "collection": "vpnTunnels",
+      "class": "network.vpn_connection",
+      "display_name": "VPN tunnel",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.vpnTunnels.get"
+      ],
+      "delete_operations": [
+        "compute.vpnTunnels.delete"
+      ],
+      "list_operations": [
+        "compute.vpnTunnels.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetTcpProxy",
+      "collection": "targetTcpProxies",
+      "class": "network.load_balancer_proxy",
+      "display_name": "TCP proxy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "read_operations": [
+        "compute.targetTcpProxies.get",
+        "compute.regionTargetTcpProxies.get"
+      ],
+      "delete_operations": [
+        "compute.targetTcpProxies.delete",
+        "compute.regionTargetTcpProxies.delete"
+      ],
+      "list_operations": [
+        "compute.targetTcpProxies.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetSslProxy",
+      "collection": "targetSslProxies",
+      "class": "network.load_balancer_proxy",
+      "display_name": "SSL proxy",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.targetSslProxies.get"
+      ],
+      "delete_operations": [
+        "compute.targetSslProxies.delete"
+      ],
+      "list_operations": [
+        "compute.targetSslProxies.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/BackendBucket",
+      "collection": "backendBuckets",
+      "class": "network.load_balancer_backend",
+      "display_name": "Backend bucket",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "read_operations": [
+        "compute.backendBuckets.get",
+        "compute.regionBackendBuckets.get"
+      ],
+      "delete_operations": [
+        "compute.backendBuckets.delete",
+        "compute.regionBackendBuckets.delete"
+      ],
+      "list_operations": [
+        "compute.backendBuckets.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/SslPolicy",
+      "collection": "sslPolicies",
+      "class": "security.tls_policy",
+      "display_name": "SSL policy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "read_operations": [
+        "compute.sslPolicies.get",
+        "compute.regionSslPolicies.get"
+      ],
+      "delete_operations": [
+        "compute.sslPolicies.delete",
+        "compute.regionSslPolicies.delete"
+      ],
+      "list_operations": [
+        "compute.sslPolicies.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "redis.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.redis",
+      "display_name": "Memorystore Redis instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "redis.projects.locations.instances.get"
+      ],
+      "delete_operations": [
+        "redis.projects.locations.instances.delete"
+      ],
+      "list_operations": [
+        "redis.projects.locations.instances.list"
+      ]
+    },
+    {
+      "native_type": "redis.googleapis.com/Cluster",
+      "collection": "clusters",
+      "class": "database.redis",
+      "display_name": "Memorystore Redis cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "redis.projects.locations.clusters.get"
+      ],
+      "delete_operations": [
+        "redis.projects.locations.clusters.delete"
+      ],
+      "list_operations": [
+        "redis.projects.locations.clusters.list"
+      ]
+    },
+    {
+      "native_type": "dns.googleapis.com/ManagedZone",
+      "collection": "managedZones",
+      "class": "dns.zone",
+      "display_name": "Cloud DNS managed zone",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "dns.managedZones.get"
+      ],
+      "delete_operations": [
+        "dns.managedZones.delete"
+      ],
+      "list_operations": [
+        "dns.managedZones.list"
+      ]
+    },
+    {
+      "native_type": "dns.googleapis.com/Policy",
+      "collection": "policies",
+      "class": "dns.resolver_rule",
+      "display_name": "Cloud DNS policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "dns.policies.get"
+      ],
+      "delete_operations": [
+        "dns.policies.delete"
+      ],
+      "list_operations": [
+        "dns.policies.list"
+      ]
+    },
+    {
+      "native_type": "dns.googleapis.com/ResourceRecordSet",
+      "collection": "rrsets",
+      "class": "dns.record",
+      "display_name": "Cloud DNS record set",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "dns.resourceRecordSets.get"
+      ],
+      "delete_operations": [
+        "dns.resourceRecordSets.delete"
+      ],
+      "list_operations": [
+        "dns.resourceRecordSets.list"
+      ]
+    },
+    {
+      "native_type": "bigquery.googleapis.com/Dataset",
+      "collection": "datasets",
+      "class": "database.analytics",
+      "display_name": "BigQuery dataset",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "bigquery.datasets.get"
+      ],
+      "delete_operations": [
+        "bigquery.datasets.delete"
+      ],
+      "list_operations": [
+        "bigquery.datasets.list"
+      ]
+    },
+    {
+      "native_type": "bigquery.googleapis.com/Table",
+      "collection": "tables",
+      "class": "database.table",
+      "display_name": "BigQuery table",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "bigquery.tables.get"
+      ],
+      "delete_operations": [
+        "bigquery.tables.delete"
+      ],
+      "list_operations": [
+        "bigquery.tables.list"
+      ]
+    },
+    {
+      "native_type": "firestore.googleapis.com/Database",
+      "collection": "databases",
+      "class": "database.document",
+      "display_name": "Firestore database",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "firestore.projects.databases.get"
+      ],
+      "delete_operations": [
+        "firestore.projects.databases.delete"
+      ],
+      "list_operations": [
+        "firestore.projects.databases.list"
+      ]
+    },
+    {
+      "native_type": "bigtableadmin.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.column",
+      "display_name": "Bigtable instance",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "bigtableadmin.projects.instances.get"
+      ],
+      "delete_operations": [
+        "bigtableadmin.projects.instances.delete"
+      ],
+      "list_operations": [
+        "bigtableadmin.projects.instances.list"
+      ]
+    },
+    {
+      "native_type": "bigtableadmin.googleapis.com/Cluster",
+      "collection": "clusters",
+      "class": "database.cluster",
+      "display_name": "Bigtable cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "bigtableadmin.projects.instances.clusters.get"
+      ],
+      "delete_operations": [
+        "bigtableadmin.projects.instances.clusters.delete"
+      ],
+      "list_operations": [
+        "bigtableadmin.projects.instances.clusters.list"
+      ]
+    },
+    {
+      "native_type": "bigtableadmin.googleapis.com/Table",
+      "collection": "tables",
+      "class": "database.table",
+      "display_name": "Bigtable table",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "bigtableadmin.projects.instances.tables.get"
+      ],
+      "delete_operations": [
+        "bigtableadmin.projects.instances.tables.delete"
+      ],
+      "list_operations": [
+        "bigtableadmin.projects.instances.tables.list"
+      ]
+    },
+    {
+      "native_type": "spanner.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.distributed_sql",
+      "display_name": "Spanner instance",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "spanner.projects.instances.get"
+      ],
+      "delete_operations": [
+        "spanner.projects.instances.delete"
+      ],
+      "list_operations": [
+        "spanner.projects.instances.list"
+      ]
+    },
+    {
+      "native_type": "spanner.googleapis.com/Database",
+      "collection": "databases",
+      "class": "database.database",
+      "display_name": "Spanner database",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "spanner.projects.instances.databases.get"
+      ],
+      "delete_operations": [
+        "spanner.projects.instances.databases.dropDatabase"
+      ],
+      "list_operations": [
+        "spanner.projects.instances.databases.list"
+      ]
+    },
+    {
+      "native_type": "cloudtasks.googleapis.com/Queue",
+      "collection": "queues",
+      "class": "messaging.queue",
+      "display_name": "Cloud Tasks queue",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "cloudtasks.projects.locations.queues.get"
+      ],
+      "delete_operations": [
+        "cloudtasks.projects.locations.queues.delete"
+      ],
+      "list_operations": [
+        "cloudtasks.projects.locations.queues.list"
+      ]
+    },
+    {
+      "native_type": "cloudfunctions.googleapis.com/CloudFunction",
+      "collection": "functions",
+      "class": "compute.function",
+      "display_name": "Cloud Run function",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "cloudfunctions.projects.locations.functions.get"
+      ],
+      "delete_operations": [
+        "cloudfunctions.projects.locations.functions.delete"
+      ],
+      "list_operations": [
+        "cloudfunctions.projects.locations.functions.list"
+      ]
+    },
+    {
+      "native_type": "file.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "storage.file_system",
+      "display_name": "Filestore instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "file.projects.locations.instances.get"
+      ],
+      "delete_operations": [
+        "file.projects.locations.instances.delete"
+      ],
+      "list_operations": [
+        "file.projects.locations.instances.list"
+      ]
+    },
+    {
+      "native_type": "alloydb.googleapis.com/Cluster",
+      "collection": "clusters",
+      "class": "database.postgresql",
+      "display_name": "AlloyDB cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "alloydb.projects.locations.clusters.get"
+      ],
+      "delete_operations": [
+        "alloydb.projects.locations.clusters.delete"
+      ],
+      "list_operations": [
+        "alloydb.projects.locations.clusters.list"
+      ]
+    },
+    {
+      "native_type": "alloydb.googleapis.com/Instance",
+      "collection": "instances",
+      "class": "database.instance",
+      "display_name": "AlloyDB instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "alloydb.projects.locations.clusters.instances.get"
+      ],
+      "delete_operations": [
+        "alloydb.projects.locations.clusters.instances.delete"
+      ],
+      "list_operations": [
+        "alloydb.projects.locations.clusters.instances.list"
+      ]
+    },
+    {
+      "native_type": "managedkafka.googleapis.com/Cluster",
+      "collection": "clusters",
+      "class": "messaging.broker",
+      "display_name": "Managed Kafka cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "managedkafka.projects.locations.clusters.get"
+      ],
+      "delete_operations": [
+        "managedkafka.projects.locations.clusters.delete"
+      ],
+      "list_operations": [
+        "managedkafka.projects.locations.clusters.list"
+      ]
+    },
+    {
+      "native_type": "managedkafka.googleapis.com/Topic",
+      "collection": "topics",
+      "class": "messaging.topic",
+      "display_name": "Managed Kafka topic",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "managedkafka.projects.locations.clusters.topics.get"
+      ],
+      "delete_operations": [
+        "managedkafka.projects.locations.clusters.topics.delete"
+      ],
+      "list_operations": [
+        "managedkafka.projects.locations.clusters.topics.list"
+      ]
+    },
+    {
+      "native_type": "apigateway.googleapis.com/Api",
+      "collection": "apis",
+      "class": "network.api",
+      "display_name": "API Gateway API",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "apigateway.projects.locations.apis.get"
+      ],
+      "delete_operations": [
+        "apigateway.projects.locations.apis.delete"
+      ],
+      "list_operations": [
+        "apigateway.projects.locations.apis.list"
+      ]
+    },
+    {
+      "native_type": "apigateway.googleapis.com/ApiConfig",
+      "collection": "configs",
+      "class": "network.api_config",
+      "display_name": "API Gateway configuration",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "apigateway.projects.locations.apis.configs.get"
+      ],
+      "delete_operations": [
+        "apigateway.projects.locations.apis.configs.delete"
+      ],
+      "list_operations": [
+        "apigateway.projects.locations.apis.configs.list"
+      ]
+    },
+    {
+      "native_type": "apigateway.googleapis.com/Gateway",
+      "collection": "gateways",
+      "class": "network.api_gateway",
+      "display_name": "API Gateway gateway",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "apigateway.projects.locations.gateways.get"
+      ],
+      "delete_operations": [
+        "apigateway.projects.locations.gateways.delete"
+      ],
+      "list_operations": [
+        "apigateway.projects.locations.gateways.list"
+      ]
+    },
+    {
+      "native_type": "certificatemanager.googleapis.com/Certificate",
+      "collection": "certificates",
+      "class": "security.certificate",
+      "display_name": "Certificate Manager certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "certificatemanager.projects.locations.certificates.get"
+      ],
+      "delete_operations": [
+        "certificatemanager.projects.locations.certificates.delete"
+      ],
+      "list_operations": [
+        "certificatemanager.projects.locations.certificates.list"
+      ]
+    },
+    {
+      "native_type": "certificatemanager.googleapis.com/CertificateMap",
+      "collection": "certificateMaps",
+      "class": "security.certificate_map",
+      "display_name": "Certificate map",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "certificatemanager.projects.locations.certificateMaps.get"
+      ],
+      "delete_operations": [
+        "certificatemanager.projects.locations.certificateMaps.delete"
+      ],
+      "list_operations": [
+        "certificatemanager.projects.locations.certificateMaps.list"
+      ]
+    },
+    {
+      "native_type": "certificatemanager.googleapis.com/CertificateMapEntry",
+      "collection": "certificateMapEntries",
+      "class": "security.certificate_map_entry",
+      "display_name": "Certificate map entry",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.get"
+      ],
+      "delete_operations": [
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.delete"
+      ],
+      "list_operations": [
+        "certificatemanager.projects.locations.certificateMaps.certificateMapEntries.list"
+      ]
+    },
+    {
+      "native_type": "iam.googleapis.com/ServiceAccount",
+      "collection": "serviceAccounts",
+      "class": "identity.role",
+      "display_name": "IAM service account",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "iam.projects.serviceAccounts.get"
+      ],
+      "delete_operations": [
+        "iam.projects.serviceAccounts.delete"
+      ],
+      "list_operations": [
+        "iam.projects.serviceAccounts.list"
+      ]
+    },
+    {
+      "native_type": "iam.googleapis.com/ServiceAccountKey",
+      "collection": "keys",
+      "class": "security.key_pair",
+      "display_name": "IAM service account key",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "iam.projects.serviceAccounts.keys.get"
+      ],
+      "delete_operations": [
+        "iam.projects.serviceAccounts.keys.delete"
+      ],
+      "list_operations": [
+        "iam.projects.serviceAccounts.keys.list"
+      ]
+    },
+    {
+      "native_type": "iam.googleapis.com/Role",
+      "collection": "roles",
+      "class": "identity.policy",
+      "display_name": "IAM custom role",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "iam.projects.roles.get"
+      ],
+      "delete_operations": [
+        "iam.projects.roles.delete"
+      ],
+      "list_operations": [
+        "iam.projects.roles.list"
+      ]
+    },
+    {
+      "native_type": "gkehub.googleapis.com/Fleet",
+      "collection": "fleets",
+      "class": "container.fleet",
+      "display_name": "GKE fleet",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "gkehub.projects.locations.fleets.get"
+      ],
+      "delete_operations": [
+        "gkehub.projects.locations.fleets.delete"
+      ],
+      "list_operations": [
+        "gkehub.projects.locations.fleets.list"
+      ]
+    },
+    {
+      "native_type": "gkehub.googleapis.com/Membership",
+      "collection": "memberships",
+      "class": "container.membership",
+      "display_name": "GKE fleet membership",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "gkehub.projects.locations.memberships.get"
+      ],
+      "delete_operations": [
+        "gkehub.projects.locations.memberships.delete"
+      ],
+      "list_operations": [
+        "gkehub.projects.locations.memberships.list"
+      ]
+    },
+    {
+      "native_type": "run.googleapis.com/Job",
+      "collection": "jobs",
+      "class": "compute.job",
+      "display_name": "Cloud Run job",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "run.projects.locations.jobs.get"
+      ],
+      "delete_operations": [
+        "run.projects.locations.jobs.delete"
+      ],
+      "list_operations": [
+        "run.projects.locations.jobs.list"
+      ]
+    },
+    {
+      "native_type": "servicedirectory.googleapis.com/Namespace",
+      "collection": "namespaces",
+      "class": "service_discovery.namespace",
+      "display_name": "Service Directory namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "servicedirectory.projects.locations.namespaces.get"
+      ],
+      "delete_operations": [
+        "servicedirectory.projects.locations.namespaces.delete"
+      ],
+      "list_operations": [
+        "servicedirectory.projects.locations.namespaces.list"
+      ]
+    },
+    {
+      "native_type": "servicedirectory.googleapis.com/Service",
+      "collection": "services",
+      "class": "service_discovery.service",
+      "display_name": "Service Directory service",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "servicedirectory.projects.locations.namespaces.services.get"
+      ],
+      "delete_operations": [
+        "servicedirectory.projects.locations.namespaces.services.delete"
+      ],
+      "list_operations": [
+        "servicedirectory.projects.locations.namespaces.services.list"
+      ]
+    },
+    {
+      "native_type": "servicedirectory.googleapis.com/Endpoint",
+      "collection": "endpoints",
+      "class": "service_discovery.endpoint",
+      "display_name": "Service Directory endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "servicedirectory.projects.locations.namespaces.services.endpoints.get"
+      ],
+      "delete_operations": [
+        "servicedirectory.projects.locations.namespaces.services.endpoints.delete"
+      ],
+      "list_operations": [
+        "servicedirectory.projects.locations.namespaces.services.endpoints.list"
+      ]
+    },
+    {
+      "native_type": "logging.googleapis.com/LogBucket",
+      "collection": "buckets",
+      "class": "observability.log_store",
+      "display_name": "Cloud Logging bucket",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "logging.projects.locations.buckets.get"
+      ],
+      "delete_operations": [
+        "logging.projects.locations.buckets.delete"
+      ],
+      "list_operations": [
+        "logging.projects.locations.buckets.list"
+      ]
+    },
+    {
+      "native_type": "logging.googleapis.com/LogSink",
+      "collection": "sinks",
+      "class": "security.audit_trail",
+      "display_name": "Cloud Logging sink",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "logging.projects.sinks.get"
+      ],
+      "delete_operations": [
+        "logging.projects.sinks.delete"
+      ],
+      "list_operations": [
+        "logging.projects.sinks.list"
+      ]
+    },
+    {
+      "native_type": "monitoring.googleapis.com/Dashboard",
+      "collection": "dashboards",
+      "class": "observability.dashboard",
+      "display_name": "Cloud Monitoring dashboard",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "monitoring.projects.dashboards.get"
+      ],
+      "delete_operations": [
+        "monitoring.projects.dashboards.delete"
+      ],
+      "list_operations": [
+        "monitoring.projects.dashboards.list"
+      ]
+    },
+    {
+      "native_type": "monitoring.googleapis.com/UptimeCheckConfig",
+      "collection": "uptimeCheckConfigs",
+      "class": "observability.uptime_check",
+      "display_name": "Cloud Monitoring uptime check",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "monitoring.projects.uptimeCheckConfigs.get"
+      ],
+      "delete_operations": [
+        "monitoring.projects.uptimeCheckConfigs.delete"
+      ],
+      "list_operations": [
+        "monitoring.projects.uptimeCheckConfigs.list"
       ]
     }
   ]

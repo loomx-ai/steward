@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/ResourcePolicy
+  class: storage.snapshot_policy
+presentation:
+  displayNames:
+    en-US: Resource policy
+    zh-CN: 资源策略
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.resourcePolicies.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.resourcePolicies.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.resourcePolicies
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  snapshotSchedulePolicy:
+    path: snapshotSchedulePolicy
+    type: object
+  instanceSchedulePolicy:
+    path: instanceSchedulePolicy
+    type: object
+  groupPlacementPolicy:
+    path: groupPlacementPolicy
+    type: object
+  diskConsistencyGroupPolicy:
+    path: diskConsistencyGroupPolicy
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.resourcePolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.resourcePolicies.get
+      itemsPath: $
+      identityPath: name

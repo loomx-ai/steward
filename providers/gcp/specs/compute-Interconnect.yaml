@@ -1,0 +1,86 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/Interconnect
+  class: network.physical_connection
+presentation:
+  displayNames:
+    en-US: Cloud Interconnect
+    zh-CN: 云互联
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  detail:
+    operation: compute.interconnects.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.interconnects.list
+    parameters:
+      project: scope.project
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  labels:
+    path: labels
+    type: object
+  interconnectType:
+    path: interconnectType
+    type: string
+  linkType:
+    path: linkType
+    type: string
+  location:
+    path: location
+    type: string
+  operationalStatus:
+    path: operationalStatus
+    type: string
+  requestedLinkCount:
+    path: requestedLinkCount
+    type: number
+  provisionedLinkCount:
+    path: provisionedLinkCount
+    type: number
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.interconnects.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.interconnects.get
+      itemsPath: $
+      identityPath: name

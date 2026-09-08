@@ -1,0 +1,91 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/ServiceAttachment
+  class: network.endpoint_service
+presentation:
+  displayNames:
+    en-US: Private Service Connect service attachment
+    zh-CN: Private Service Connect 服务附件
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  detail:
+    operation: compute.serviceAttachments.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.serviceAttachments.aggregatedList
+    parameters:
+      project: scope.project
+      includeAllScopes: true
+    itemsPath: items.*.serviceAttachments
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  targetService:
+    path: targetService
+    type: string
+  natSubnets:
+    path: natSubnets
+    type: array
+  connectionPreference:
+    path: connectionPreference
+    type: string
+  connectedEndpoints:
+    path: connectedEndpoints
+    type: array
+  consumerAcceptLists:
+    path: consumerAcceptLists
+    type: array
+  consumerRejectLists:
+    path: consumerRejectLists
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/ForwardingRule
+  targetIdPath: refs_compute_googleapis_com_ForwardingRule
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+actions:
+  delete:
+    operation: compute.serviceAttachments.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.serviceAttachments.get
+      itemsPath: $
+      identityPath: name

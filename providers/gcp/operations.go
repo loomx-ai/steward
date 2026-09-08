@@ -33,7 +33,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		property := object(raw)
 		if name == "project" || name == "projectId" || name == "userProject" {
 			expected, alternate := c.project, c.number
-			if slices.Contains(operation.Call.RawPathParameters, name) {
+			if slices.Contains(operation.Call.RawPathParameters, name) && strings.HasPrefix(text(property["pattern"]), "^projects/") {
 				expected, alternate = "projects/"+c.project, "projects/"+c.number
 			}
 			value, present := parameters[name]
@@ -48,6 +48,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	}
 	for _, name := range operation.Call.RawPathParameters {
 		value, _ := parameters[name].(string)
+		// Discovery's {+parameter} controls URI expansion. BigQuery also uses
+		// it for scalar project/dataset IDs; it does not always mean a full name.
+		if !strings.Contains(value, "/") && !strings.HasPrefix(text(object(properties[name])["pattern"]), "^projects/") {
+			continue
+		}
 		parts := strings.Split(value, "/")
 		if len(parts) < 2 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) {
 			return contracts.InvocationResult{}, fmt.Errorf("GCP invocation resource belongs to another project")
@@ -90,8 +95,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
 	parts := strings.Split(name, "/")
-	for _, part := range parts {
-		if !segmentPattern.MatchString(part) || part == "." || part == ".." {
+	for i, part := range parts {
+		validRecordName := kind.NativeType == dnsRecordSetType && i == len(parts)-2 && dnsRecordName(part)
+		if (!segmentPattern.MatchString(part) && !validRecordName) || part == "." || part == ".." {
 			return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource path")
 		}
 	}

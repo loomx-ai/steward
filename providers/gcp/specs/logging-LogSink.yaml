@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: logging.googleapis.com/LogSink
+  class: security.audit_trail
+presentation:
+  displayNames:
+    en-US: Cloud Logging sink
+    zh-CN: 云日志路由接收器
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: logging.projects.sinks.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: sinks
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: logging.projects.sinks.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  description:
+    path: description
+    type: string
+  destination:
+    path: destination
+    type: string
+  filter:
+    path: filter
+    type: string
+  writerIdentity:
+    path: writerIdentity
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+  includeChildren:
+    path: includeChildren
+    type: boolean
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: bigquery.googleapis.com/Dataset
+  targetIdPath: refs_bigquery_googleapis_com_Dataset
+- type: depends_on
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+- type: depends_on
+  targetType: logging.googleapis.com/LogBucket
+  targetIdPath: refs_logging_googleapis_com_LogBucket
+actions:
+  delete:
+    operation: logging.projects.sinks.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: logging.projects.sinks.get
+      itemsPath: $
+      identityPath: name

@@ -1,0 +1,76 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: bigtableadmin.googleapis.com/Cluster
+  class: database.cluster
+presentation:
+  displayNames:
+    en-US: Bigtable cluster
+    zh-CN: Bigtable 集群
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: bigtableadmin.projects.instances.clusters.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: clusters
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+  detail:
+    operation: bigtableadmin.projects.instances.clusters.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: bigtableadmin.googleapis.com/Instance
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  location:
+    path: location
+    type: string
+  serveNodes:
+    path: serveNodes
+    type: number
+  nodeScalingFactor:
+    path: nodeScalingFactor
+    type: string
+  defaultStorageType:
+    path: defaultStorageType
+    type: string
+  encryptionConfig:
+    path: encryptionConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: bigtableadmin.googleapis.com/Instance
+  targetIdPath: refs_bigtableadmin_googleapis_com_Instance
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: bigtableadmin.projects.instances.clusters.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: bigtableadmin.projects.instances.clusters.get
+      itemsPath: $
+      identityPath: name

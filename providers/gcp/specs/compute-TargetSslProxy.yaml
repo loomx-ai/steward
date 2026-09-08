@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/TargetSslProxy
+  class: network.load_balancer_proxy
+presentation:
+  displayNames:
+    en-US: SSL proxy
+    zh-CN: SSL 代理
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  detail:
+    operation: compute.targetSslProxies.get
+    itemsPath: $
+    identityPath: name
+  list:
+    operation: compute.targetSslProxies.list
+    parameters:
+      project: scope.project
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  resourceId:
+    path: id
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  service:
+    path: service
+    type: string
+  sslCertificates:
+    path: sslCertificates
+    type: array
+  sslPolicy:
+    path: sslPolicy
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/BackendService
+  targetIdPath: refs_compute_googleapis_com_BackendService
+- type: depends_on
+  targetType: compute.googleapis.com/SslCertificate
+  targetIdPath: refs_compute_googleapis_com_SslCertificate
+- type: depends_on
+  targetType: compute.googleapis.com/SslPolicy
+  targetIdPath: refs_compute_googleapis_com_SslPolicy
+actions:
+  delete:
+    operation: compute.targetSslProxies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: compute.targetSslProxies.get
+      itemsPath: $
+      identityPath: name

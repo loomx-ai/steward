@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: bigtableadmin.googleapis.com/Instance
+  class: database.column
+presentation:
+  displayNames:
+    en-US: Bigtable instance
+    zh-CN: Bigtable 实例
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: bigtableadmin.projects.instances.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: instances
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+  detail:
+    operation: bigtableadmin.projects.instances.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  labels:
+    path: labels
+    type: object
+  createTime:
+    path: createTime
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  type:
+    path: type
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: bigtableadmin.projects.instances.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: bigtableadmin.projects.instances.get
+      itemsPath: $
+      identityPath: name

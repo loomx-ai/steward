@@ -88,6 +88,8 @@ func plannedGKENetwork(value asset.Asset) (gkeNetworkSnapshot, error) {
 
 func gkeNetworkKind(kind string) bool {
 	switch kind {
+	case "compute.googleapis.com/SslPolicy", "compute.googleapis.com/SecurityPolicy", "compute.googleapis.com/BackendBucket":
+		return true
 	case "compute.googleapis.com/ForwardingRule", "compute.googleapis.com/GlobalForwardingRule", "compute.googleapis.com/TargetHttpProxy", "compute.googleapis.com/TargetHttpsProxy", "compute.googleapis.com/TargetTcpProxy", "compute.googleapis.com/TargetSslProxy", "compute.googleapis.com/UrlMap", "compute.googleapis.com/BackendService", "compute.googleapis.com/RegionBackendService", "compute.googleapis.com/HealthCheck", "compute.googleapis.com/HttpHealthCheck", "compute.googleapis.com/HttpsHealthCheck", "compute.googleapis.com/TargetPool", negType, instanceGroupType, "compute.googleapis.com/SslCertificate", "compute.googleapis.com/Address", "compute.googleapis.com/GlobalAddress", "compute.googleapis.com/Firewall", "compute.googleapis.com/Route":
 		return true
 	}
@@ -349,11 +351,14 @@ func (c *client) gkeNetwork(ctx context.Context, root asset.Asset, live map[stri
 				}
 			}
 			resource.Phase = "cluster"
-		case "compute.googleapis.com/SslCertificate":
+		case "compute.googleapis.com/SslCertificate", "compute.googleapis.com/SslPolicy", "compute.googleapis.com/SecurityPolicy", "compute.googleapis.com/BackendBucket":
 			// Classify certificates after the complete frontend chain is available.
 			resource.Delete = false
 		}
 		resources[id] = resource
+		if kind == "compute.googleapis.com/BackendBucket" {
+			return nil // Its user-owned storage bucket is not a GKE deletion impact.
+		}
 		for target, ids := range references(c, data) {
 			for _, child := range ids {
 				if err := walk(target, child); err != nil {

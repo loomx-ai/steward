@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: firestore.googleapis.com/Database
+  class: database.document
+presentation:
+  displayNames:
+    en-US: Firestore database
+    zh-CN: Firestore 数据库
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: firestore.projects.databases.list
+    parameters:
+      parent: scope.projectPath
+    itemsPath: databases
+    identityPath: name
+  detail:
+    operation: firestore.projects.databases.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  etag:
+    path: etag
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  uid:
+    path: uid
+    type: string
+  locationId:
+    path: locationId
+    type: string
+  type:
+    path: type
+    type: string
+  databaseEdition:
+    path: databaseEdition
+    type: string
+  deleteProtectionState:
+    path: deleteProtectionState
+    type: string
+  concurrencyMode:
+    path: concurrencyMode
+    type: string
+  pointInTimeRecoveryEnablement:
+    path: pointInTimeRecoveryEnablement
+    type: string
+  cmekConfig:
+    path: cmekConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: firestore.projects.databases.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: firestore.projects.databases.get
+      itemsPath: $
+      identityPath: name

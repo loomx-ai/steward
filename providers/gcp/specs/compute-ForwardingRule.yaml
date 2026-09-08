@@ -67,6 +67,18 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/TargetHttpsProxy
   targetIdPath: refs_compute_googleapis_com_TargetHttpsProxy
+- type: depends_on
+  targetType: compute.googleapis.com/ServiceAttachment
+  targetIdPath: refs_compute_googleapis_com_ServiceAttachment
+- type: depends_on
+  targetType: compute.googleapis.com/TargetTcpProxy
+  targetIdPath: refs_compute_googleapis_com_TargetTcpProxy
+- type: depends_on
+  targetType: compute.googleapis.com/TargetSslProxy
+  targetIdPath: refs_compute_googleapis_com_TargetSslProxy
+- type: depends_on
+  targetType: compute.googleapis.com/TargetVpnGateway
+  targetIdPath: refs_compute_googleapis_com_TargetVpnGateway
 actions:
   delete:
     operation: compute.forwardingRules.delete

@@ -1,0 +1,70 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dns.googleapis.com/ResourceRecordSet
+  class: dns.record
+presentation:
+  displayNames:
+    en-US: Cloud DNS record set
+    zh-CN: DNS 记录集
+  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: dns.resourceRecordSets.list
+    parameters:
+      project: scope.project
+      managedZone: parent.normalized.name
+    itemsPath: rrsets
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 100
+  detail:
+    operation: dns.resourceRecordSets.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dns.googleapis.com/ManagedZone
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  type:
+    path: type
+    type: string
+  ttl:
+    path: ttl
+    type: number
+  rrdatas:
+    path: rrdatas
+    type: array
+  routingPolicy:
+    path: routingPolicy
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dns.googleapis.com/ManagedZone
+  targetIdPath: refs_dns_googleapis_com_ManagedZone
+actions:
+  delete:
+    operation: dns.resourceRecordSets.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dns.resourceRecordSets.get
+      itemsPath: $
+      identityPath: name

@@ -774,6 +774,9 @@ func validateParameterExpressions(
 				return fmt.Errorf("%s parameter %q cannot reference %q", usage, parameter, text)
 			}
 		default:
+			if parentExpressions && strings.HasPrefix(text, "parent.normalized.") && resourceNormalizedPathPattern.MatchString(strings.TrimPrefix(text, "parent.normalized.")) {
+				continue
+			}
 			if normalizedExpressions &&
 				strings.HasPrefix(text, "resource.normalized.") &&
 				resourceNormalizedPathPattern.MatchString(
