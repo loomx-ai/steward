@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "45206de671e4591ab6a031f8e6b0e7a66db523b1b0cbb4dea1cf3e80359637d3",
+    "checksum": "2417ff8c6214597d38ac051e3aaedaf18ee464ae28926dd8de53413f6c423700",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2fcfbf6923400d7d7aa1e1afd06578980fefae40be87efc200801da01bafd426",
+  "content_checksum": "3a6b55e87f504f75bfb101cb76c5bf07bbee1e8c0e40185e2f04bba039ab318a",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -23230,6 +23230,9 @@
         "collection": "privateEndpoints",
         "read_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateEndpoints_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_ListBySubscription"

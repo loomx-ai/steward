@@ -36,6 +36,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/networkWatchers/packetCaptures", "Microsoft.Network/networkWatchers/watcher/packetCaptures/capture", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/packetCaptures", "2024-05-01", "eastus"},
 		{"Microsoft.Network/networkWatchers/flowLogs", "Microsoft.Network/networkWatchers/watcher/flowLogs/log", "/resourceGroups/test/providers/Microsoft.Network/networkWatchers/watcher/flowLogs", "2024-05-01", "eastus"},
 		{"Microsoft.Network/privateDnsZones", "Microsoft.Network/privateDnsZones/private.example", "/providers/Microsoft.Network/privateDnsZones", "2024-06-01", "global"},
+		{"Microsoft.Network/privateEndpoints", "Microsoft.Network/privateEndpoints/endpoint", "/providers/Microsoft.Network/privateEndpoints", "2024-05-01", "eastus"},
 		{"Microsoft.Network/privateEndpoints/privateDnsZoneGroups", "Microsoft.Network/privateEndpoints/endpoint/privateDnsZoneGroups/default", "/resourceGroups/test/providers/Microsoft.Network/privateEndpoints/endpoint/privateDnsZoneGroups", "2024-05-01", "eastus"},
 		{"Microsoft.Network/privateDnsZones/virtualNetworkLinks", "Microsoft.Network/privateDnsZones/private.example/virtualNetworkLinks/link", "/resourceGroups/test/providers/Microsoft.Network/privateDnsZones/private.example/virtualNetworkLinks", "2024-06-01", "global"},
 		{"Microsoft.Network/privateLinkServices", "Microsoft.Network/privateLinkServices/service", "/providers/Microsoft.Network/privateLinkServices", "2024-05-01", "eastus"},
@@ -56,6 +57,9 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			group := root + "/resourceGroups/test"
 			id := group + "/providers/" + tc.resource
 			raw := map[string]any{"id": id, "name": last(id), "type": tc.kind, "location": tc.location, "etag": "native-etag", "properties": map[string]any{"provisioningState": "Succeeded"}}
+			if tc.kind == privateEndpointType {
+				object(raw["properties"])["networkInterfaces"] = []any{}
+			}
 			if tc.kind == privateDNSZoneGroupType {
 				object(raw["properties"])["privateDnsZoneConfigs"] = []any{}
 			}
@@ -84,7 +88,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			for _, collection := range []string{"flowLogs", "connectionMonitors", "packetCaptures"} {
 				lists[strings.ToLower(group+"/providers/Microsoft.Network/networkWatchers/watcher/"+collection)] = []any{}
 			}
-			for _, collection := range []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "virtualNetworkLinks"} {
+			for _, collection := range []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "virtualNetworkLinks", "privateDnsZoneGroups"} {
 				lists[strings.ToLower(id+"/"+collection)] = []any{}
 			}
 			details[strings.ToLower(id)] = raw

@@ -54851,7 +54851,9 @@
       "nativeType": "Microsoft.Network/privateEndpoints",
       "rest": {
         "collection": "privateEndpoints",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.Network.PrivateEndpoints_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Network.PrivateEndpoints_ListBySubscription"
         ],

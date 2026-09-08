@@ -153,3 +153,14 @@ changed values and conditional conflicts have retained regression tests.
 See [private endpoint DNS groups](https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns-integration),
 [registration-link deletion](https://learn.microsoft.com/en-us/rest/api/dns/privatedns/virtual-network-links/delete),
 and [private DNS network-link lifetime](https://learn.microsoft.com/en-us/azure/dns/private-dns-virtual-network-links).
+
+Private endpoints support native deletion with a reviewed NIC → endpoint and
+record → DNS zone group → endpoint ownership tree. The read-only native
+`networkInterfaces` collection and each NIC's reciprocal `privateEndpoint.id`
+must agree. NIC generation, live IP configurations, groups, management locks
+and protection are checked before deletion; unexpected public-IP attachments
+cannot be silently cascaded. DNS records retain their exact external-group
+validation. A missing endpoint still requires all planned NICs, DNS zone groups
+and records to return 404, including after a worker restart. The private DNS
+zone and manual records remain independent resources. Retaining a managed NIC,
+group or record blocks deletion of its endpoint.

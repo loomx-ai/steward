@@ -25,6 +25,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	privateEndpointType:     {nicType, privateDNSZoneGroupType},
 	publicDNSZoneType:       dnsChildTypes(publicDNSZoneType),
 	privateDNSZoneType:      dnsChildTypes(privateDNSZoneType),
 	privateDNSZoneGroupType: {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
@@ -388,7 +389,8 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database") ||
+	return (strings.EqualFold(parent, privateEndpointType) && strings.EqualFold(child, nicType) && reason == "azure_private_endpoint_managed_nic") ||
+		(strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database") ||
 		(isDNSZoneType(parent) && isDNSRecordType(child) && reason == "azure_dns_system_record") ||
 		((strings.EqualFold(parent, privateDNSLinkType) || strings.EqualFold(parent, privateDNSZoneType)) && strings.HasPrefix(strings.ToLower(child), strings.ToLower(privateDNSZoneType)+"/") && reason == "azure_dns_auto_registered_record")
 }
@@ -400,6 +402,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var children []serviceChild
 	var err error
 	switch {
+	case strings.EqualFold(parent.NativeType, privateEndpointType):
+		children, err = c.privateEndpointChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, privateDNSZoneGroupType):
 		children, err = c.privateDNSGroupChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, privateDNSLinkType):
@@ -419,6 +423,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 
 func serviceChildRelation(parent, child asset.Asset) bool {
 	switch {
+	case strings.EqualFold(parent.Identity.NativeType, privateEndpointType) && strings.EqualFold(child.Identity.NativeType, nicType):
+		return privateEndpointNICRelation(parent, child)
 	case strings.EqualFold(parent.Identity.NativeType, privateDNSZoneGroupType):
 		records, err := privateDNSGroupRecords(parent.Normalized)
 		if err != nil {

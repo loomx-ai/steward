@@ -42,6 +42,24 @@ fields:
   tags:
     path: tags
     type: object
+  networkInterfaces:
+    path: networkInterfaces
+    type: array
+  privateLinkServiceConnections:
+    path: privateLinkServiceConnections
+    type: array
+  manualPrivateLinkServiceConnections:
+    path: manualPrivateLinkServiceConnections
+    type: array
+  customDnsConfigs:
+    path: customDnsConfigs
+    type: array
+  ipConfigurations:
+    path: ipConfigurations
+    type: array
+  customNetworkInterfaceName:
+    path: customNetworkInterfaceName
+    type: string
 extensions:
   hook: azure.resource
 relationships:
@@ -51,3 +69,13 @@ relationships:
 - type: member_of
   targetType: Microsoft.Network/virtualNetworks/subnets
   targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.PrivateEndpoints_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.PrivateEndpoints_Get
+      itemsPath: $
+      identityPath: id

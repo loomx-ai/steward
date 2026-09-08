@@ -258,3 +258,11 @@ background evidence only, not acceptance evidence for this work.
   source-ID collisions, protected external groups and delayed child readback.
   Parent lifecycle integration, remaining families, independent emulators and
   application acceptance remain open.
+
+- Private Endpoint deletion now includes its native managed NIC and DNS zone
+  group/record tree. Live reciprocal ownership, generation, locks, missing/new
+  descendants, protected values, retention and resumed per-child absence have
+  retained protocol tests. Standalone managed-NIC deletion remains prohibited.
+  This enables an existing rule; the catalog still has 86 rules/276 operations.
+  VM scale sets, other parent lifecycles, remaining service families and full
+  emulator/application acceptance remain unfinished.
