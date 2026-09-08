@@ -159,3 +159,14 @@ background evidence only, not acceptance evidence for this work.
   deletion checks GKE ownership. Retained protocol tests cover these paths and
   their failure cases. Cluster network/load-balancer impacts and native cluster
   deletion remain incomplete, as does the full parity/emulator acceptance scope.
+
+- GKE cluster cleanup now records a Kubernetes network snapshot and native
+  Compute impacts, waits for Gateway/Ingress/Service finalizers, and cleans only
+  planned leftovers before/after native cluster deletion as appropriate.
+  Real local TLS/OAuth tests cover certificate and endpoint validation, native
+  API bodies, paging, incarnation/configuration drift, finalizers, generated
+  certificates, NEGs, zero-node template ownership, protected resources, retained
+  IPs/certificates, operation failure and serialized recovery. The current GCP
+  bundle has 42 specs and 200 selected methods. Full Go tests passed for this
+  step. Shared-VPC host and multi-cluster/custom-controller coverage, broader
+  service families, independent emulators and final publication remain open.

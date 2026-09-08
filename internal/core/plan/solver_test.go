@@ -8,6 +8,34 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 )
 
+func TestDirectControllerFallbackIncludesItsTransitiveImpacts(t *testing.T) {
+	parent := binding("cluster", "pool", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	parent.DirectCleanupAllowed = true
+	child := binding("pool", "vm", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	disk := binding("vm", "disk", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	input := plan.Input{Assets: []asset.Asset{actionable("cluster"), actionable("pool"), actionable("vm"), actionable("disk")}, ResolvedAssetIDs: []asset.AssetID{"pool"}, LifecycleBindings: []graph.LifecycleBinding{parent, child, disk}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 2 || len(result.Warnings) != 1 {
+		t.Fatalf("direct controller lost descendants: %+v %v", result, err)
+	}
+	step := stepForAsset(result.Steps, "pool")
+	for _, impact := range result.ImpactItems {
+		if impact.DelegatedTo != step.ID || impact.Expected != plan.ExpectedDelegatedDelete {
+			t.Fatalf("descendant has wrong effective controller: %+v", impact)
+		}
+	}
+	input.ResolvedAssetIDs = []asset.AssetID{"cluster", "pool"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 3 || len(result.Warnings) != 0 || stepForAsset(result.Steps, "pool").Action != plan.ActionVerifyManagedAbsent {
+		t.Fatalf("selected parent did not recover complete authority: %+v %v", result, err)
+	}
+	input.ResolvedAssetIDs = []asset.AssetID{"vm"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) == 0 {
+		t.Fatalf("direct fallback incorrectly allowed unmanaged grandchild deletion: %+v %v", result, err)
+	}
+}
+
 func TestRetainingControllerRetainsItsTransitiveChildren(t *testing.T) {
 	for _, policy := range []graph.CleanupPolicy{graph.CleanupDelegate, graph.CleanupDirect} {
 		t.Run(string(policy), func(t *testing.T) {

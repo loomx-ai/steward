@@ -60,23 +60,39 @@ func (a *action) plannedGKE(ctx context.Context, request contracts.ActionRequest
 		if text(live["id"]) == "" || text(live["id"]) != text(request.Asset.Normalized["id"]) {
 			return "gke_cluster_identity_changed", nil
 		}
-		// The cluster API also cleans up its network resources. Keep this action
-		// unavailable until those impacts are represented and independently read.
-		return "gke_network_impact_verification_required", nil
-	}
-	if text(live["name"]) != last(request.Asset.Identity.NativeID) || text(live["etag"]) == "" || text(live["etag"]) != text(request.Asset.Normalized["etag"]) {
-		return "gke_node_pool_changed", nil
-	}
-	cluster, err := a.client.nativeGet(ctx, clusterType, strings.Split(request.Asset.Identity.NativeID, "/nodePools/")[0])
-	if err != nil {
-		return "", err
-	}
-	if text(cluster["id"]) == "" || text(cluster["id"]) != text(request.Asset.Normalized["_gke_cluster_uid"]) {
-		return "gke_cluster_identity_changed", nil
+	} else {
+		if text(live["name"]) != last(request.Asset.Identity.NativeID) || text(live["etag"]) == "" || text(live["etag"]) != text(request.Asset.Normalized["etag"]) {
+			return "gke_node_pool_changed", nil
+		}
+		cluster, err := a.client.nativeGet(ctx, clusterType, strings.Split(request.Asset.Identity.NativeID, "/nodePools/")[0])
+		if err != nil {
+			return "", err
+		}
+		if text(cluster["id"]) == "" || text(cluster["id"]) != text(request.Asset.Normalized["_gke_cluster_uid"]) {
+			return "gke_cluster_identity_changed", nil
+		}
 	}
 	members, err := a.client.gkeMembers(ctx, request.Asset, live)
 	if err != nil {
 		return "", err
+	}
+	if a.kind.NativeType == clusterType {
+		network, err := plannedGKENetwork(request.Asset)
+		if err != nil {
+			return "", err
+		}
+		for _, resource := range network.Resources {
+			data, err := a.client.nativeGet(ctx, resource.Kind, resource.ID)
+			if isNotFound(err) && resource.Delete {
+				data = map[string]any{"id": resource.UID}
+			} else if err != nil {
+				return "", err
+			}
+			if text(data["id"]) != resource.UID {
+				return "gke_network_resource_identity_changed", nil
+			}
+			members = append(members, gkeMember{id: resource.ID, kind: resource.Kind, parent: request.Asset.Identity.NativeID, data: data, deletes: resource.Delete, shared: !resource.Delete})
+		}
 	}
 	impacts, err := groupImpacts(request)
 	if err != nil {
@@ -119,6 +135,16 @@ func (a *action) gkeReadback(ctx context.Context, request contracts.ActionReques
 	}
 	for _, impact := range impacts {
 		if !impact.Delete {
+			live, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)
+			if isNotFound(err) {
+				return contracts.ReadbackResult{}, groupDenied("gke_retained_member_missing")
+			}
+			if err != nil {
+				return contracts.ReadbackResult{}, err
+			}
+			if text(live["id"]) != "" && text(live["id"]) != text(impact.Asset.Normalized["id"]) {
+				return contracts.ReadbackResult{}, groupDenied("gke_retained_member_identity_changed")
+			}
 			continue
 		}
 		_, err := a.client.nativeGet(ctx, impact.Asset.Identity.NativeType, impact.Asset.Identity.NativeID)

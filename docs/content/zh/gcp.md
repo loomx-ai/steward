@@ -9,7 +9,7 @@ navTitle: "Google Cloud"
 每个 GCP 连接通过服务账号 JSON 密钥访问一个项目。服务账号可以来自另一个项目，但必须有权访问目标项目。
 
 1. 在目标项目启用 **Cloud Asset Inventory**、**Cloud Resource Manager** 和 **Compute Engine API**。使用清理功能前，还需启用对应产品的 API。
-2. 为服务账号授予目标项目上的 `cloudasset.assets.listResource`、`resourcemanager.projects.get` 和 `compute.regions.list` 权限，用于盘点和地域发现。仅对准备清理的资源补充对应产品的读取、删除及操作状态查询权限。清理存储桶还需要 `storage.objects.list`。
+2. 为服务账号授予目标项目上的 `cloudasset.assets.listResource`、`resourcemanager.projects.get` 和 `compute.regions.list` 权限，用于盘点和地域发现。原生产品盘点还需要相应产品的列表和读取权限；仅对准备清理的资源补充删除及操作状态查询权限。清理存储桶还需要 `storage.objects.list`。
 3. 打开 **设置 → 云连接 → 添加连接**，选择 **Google Cloud**，填写 **项目 ID** 和服务账号的 **JSON 密钥**。
 4. 验证连接并刷新地域，按下面的首次扫描步骤核对结果。
 
@@ -28,20 +28,21 @@ Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使�
 
 ## 盘点与清理范围
 
-Cloud Asset Inventory 提供资源元数据。Steward 识别下表中的 29 类资源，其中 28 类支持删除；Cloud Asset Inventory 返回的其他类型作为只读资源展示。
+Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 用于补充发现其他类型，作为只读资源展示。产品扫描分片失败时会明确报告，也不会据此认定资源已不存在。
 
 | 产品 | 识别的资源 | 清理能力 |
 | --- | --- | --- |
-| Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板 | 支持 |
+| Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
-| 负载均衡与地址 | 地域和全局 IP 地址、转发规则、后端服务、健康检查、URL Map、HTTP/HTTPS 代理、SSL 证书 | 支持 |
+| 负载均衡与地址 | 地域和全局 IP 地址、转发规则、地域和全局后端服务、健康检查（含旧版 HTTP/HTTPS）、目标池、网络端点组、URL Map、HTTP/HTTPS 代理、SSL 证书 | 支持 |
 | Cloud Storage | 存储桶 | 仅空桶 |
 | Pub/Sub | 主题、订阅 | 支持 |
 | Cloud SQL | 实例 | 关闭删除保护后支持 |
 | Cloud Run | 服务 | 支持 |
 | Artifact Registry | 仓库 | 支持 |
 | Secret Manager | 全局和地域级密钥 | 支持 |
-| Google Kubernetes Engine | 集群 | 只读 |
+| Google Kubernetes Engine | 集群、节点池 | 审查成员影响后，由原生控制器执行清理 |
+| Cloud KMS | 密钥环、密钥、版本、导入任务 | 删除满足条件的资源记录；导入任务只读 |
 
 Google 对部分地域和全局资源使用不同的类型名，例如 `RegionDisk`、`GlobalAddress` 和 `GlobalForwardingRule`。资源完整名称保留项目、地域和可用区信息，不同可用区的同名 VM 不会合并。
 
@@ -55,10 +56,10 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 
 ## 删除保护
 
-- **VM 磁盘**：挂载磁盘启用 `autoDelete` 的 VM 会被阻止清理。请先在 Google Cloud 审查并调整该设置，再重新扫描。Steward 不会通过删除 VM 隐式删除挂载磁盘。
-- **删除保护**：开启删除保护的 VM 和 Cloud SQL 实例会被阻止清理。Steward 不会自动关闭云厂商的删除保护。
+- **VM 磁盘和托管实例组**：磁盘与 IP 的原生删除策略会进入影响计划。对支持保留的资源，Steward 先通过原生操作修改策略并验证生效，再删除控制器。挂载关系或资源身份发生变化时会停止执行。
+- **删除保护**：获准清理 VM 后，Steward 会通过明确的原生准备阶段解除其删除保护；保护标签和 Cloud SQL 的删除保护仍会阻止删除。
 - **存储桶**：非空桶会被拒绝删除。Steward 不会先清空对象或对象版本来满足删除条件。
-- **GKE**：删除集群会影响托管节点等其他资源。在清理计划能够表达这些归属影响前，集群保持只读。
+- **GKE**：计划包含已核实的节点与网络资源影响。删除集群前，会等待 Kubernetes Service、Ingress 和 Gateway 的 finalizer 完成。持久卷、已有 IP 和证书按已验证的策略保留；不支持的保留要求或无法确认的归属会阻止执行。控制平面端点必须可达；盘点需要对 `kube-system` Namespace 的 `get` 权限，以及对 Service、Ingress、已安装 Gateway 资源的 `list` 权限。清理还需要这些工作负载的 `delete` 权限、Container/Compute 的原生读取、删除和操作查询权限，以及节点组成员查询权限。不需要读取 Kubernetes Secret。
 
 执行前检查实际选择范围和[清理结果](./cleanup.md)。产品权限、保留策略、资源依赖和云端状态变化仍可能导致操作无法完成。
 

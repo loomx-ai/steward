@@ -9,7 +9,7 @@ navTitle: "Google Cloud"
 Each GCP connection accesses one project with a service account JSON key. The service account may belong to another project if it has permission to access the target project.
 
 1. Enable **Cloud Asset Inventory**, **Cloud Resource Manager**, and **Compute Engine API** in the target project. Enable the relevant product API before using its cleanup actions.
-2. Grant the service account `cloudasset.assets.listResource`, `resourcemanager.projects.get`, and `compute.regions.list` on the target project. These permissions support inventory and region discovery. Add the product's resource-read, deletion, and operation-status permissions only for resources you intend to clean up. Bucket cleanup also requires `storage.objects.list`.
+2. Grant the service account `cloudasset.assets.listResource`, `resourcemanager.projects.get`, and `compute.regions.list` on the target project. These permissions support inventory and region discovery. Native product scans also require each enabled product's list/read permissions. Add deletion and operation-status permissions for resources you intend to clean up. Bucket cleanup also requires `storage.objects.list`.
 3. Open **Settings → Cloud connections → Add connection**, choose **Google Cloud**, and enter the **Project ID** and the service account's **JSON key**.
 4. Validate the connection, refresh its regions, and verify the result with the first-scan steps below.
 
@@ -28,20 +28,21 @@ Steward accepts service account JSON keys for the standard Google Cloud endpoint
 
 ## Inventory and supported cleanup
 
-Cloud Asset Inventory supplies resource metadata. Steward recognizes 29 resource types below, with deletion support for 28. Additional types returned by Cloud Asset Inventory appear as read-only inventory.
+Steward lists the resources below through their native product APIs. Cloud Asset Inventory adds broad discovery for other types, which appear as read-only inventory. A failed product shard is reported and cannot establish resource absence.
 
 | Service | Recognized resources | Cleanup |
 | --- | --- | --- |
-| Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates | Supported |
+| Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
-| Load balancing and addresses | Regional and global IP addresses and forwarding rules; backend services; health checks; URL maps; HTTP/HTTPS proxies; SSL certificates | Supported |
+| Load balancing and addresses | Regional and global IP addresses and forwarding rules; regional/global backend services; health checks, including legacy HTTP(S) checks; target pools; network endpoint groups; URL maps; HTTP/HTTPS proxies; SSL certificates | Supported |
 | Cloud Storage | Buckets | Empty buckets only |
 | Pub/Sub | Topics and subscriptions | Supported |
 | Cloud SQL | Instances | Supported when deletion protection is off |
 | Cloud Run | Services | Supported |
 | Artifact Registry | Repositories | Supported |
 | Secret Manager | Global and regional secrets | Supported |
-| Google Kubernetes Engine | Clusters | Read-only |
+| Google Kubernetes Engine | Clusters and node pools | Native controller cleanup with reviewed member impacts |
+| Cloud KMS | Key rings, keys, versions and import jobs | Eligible resource records; import jobs are read-only |
 
 Google sometimes uses separate asset types for regional and global resources, including `RegionDisk`, `GlobalAddress`, and `GlobalForwardingRule`. Full resource names retain project and zone/region identity, so same-name VMs in different zones remain distinct.
 
@@ -55,10 +56,10 @@ A **regional VPC cleanup group** selects resources in that region and retains th
 
 ## Deletion protections
 
-- **VM disks:** A VM with an attached disk set to `autoDelete` is protected from cleanup. Review and change that setting in Google Cloud first, then scan again. Steward does not silently delete an attached disk through the VM.
-- **Deletion protection:** Protected VMs and Cloud SQL instances remain blocked. Steward does not disable the provider's deletion protection.
+- **VM disks and managed groups:** Native disk/IP deletion policy appears in the impact plan. Supported retention is applied through native operations and verified before deleting the controller. Changed attachments or resource identities block execution.
+- **Deletion protection:** VM deletion protection is removed as an explicit native preparation phase during authorized cleanup. Protected labels and Cloud SQL deletion protection still block deletion.
 - **Storage buckets:** Nonempty buckets are rejected. Steward does not empty objects or object versions to make a bucket deletable.
-- **GKE:** Cluster deletion can remove managed nodes and other resources. Clusters remain read-only until those ownership effects can be represented in cleanup plans.
+- **GKE:** The plan includes verified node and network impacts. Cluster cleanup waits for Kubernetes Service, Ingress and Gateway finalizers before deleting the cluster. Persistent volumes and pre-existing IPs/certificates are retained according to their verified policy. Unsupported retention or unverified ownership blocks cleanup. The control-plane endpoint must be reachable; inventory needs `get` on the `kube-system` Namespace and `list` on Services, Ingresses and installed Gateway resources. Cleanup also needs `delete` on those workload resources, native Container/Compute read/delete/operation permissions, and access to node-group membership. Kubernetes Secret read permission is not required.
 
 Review the actual selection and [cleanup results](./cleanup.md) before proceeding. Product permissions, retention policies, dependencies, and provider-side changes can still prevent an action.
 

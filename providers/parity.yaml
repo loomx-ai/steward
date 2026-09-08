@@ -1,0 +1,2437 @@
+schema: steward.io/provider-parity/v1
+purpose: Engineering and lifecycle acceptance matrix. Resource names are functional candidates, not claims
+  of equivalent product features. A pending row is unfinished even if some resource kinds exist.
+baseline_provider: alicloud
+resources:
+- alicloud: ACS::ACK::Cluster
+  spec: providers/alicloud/specs/ack-cluster.yaml
+  class: container.cluster
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    hook: alicloud.ack.cluster
+  gcp:
+    resources:
+    - container.googleapis.com/Cluster
+  azure:
+    resources:
+    - Microsoft.ContainerService/managedClusters
+  status: pending_verification
+- alicloud: ACS::AckOne::Cluster
+  spec: providers/alicloud/specs/ack-one-cluster.yaml
+  class: container.fleet
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - gkehub.googleapis.com/Fleet
+    - gkehub.googleapis.com/Membership
+  azure:
+    resources:
+    - Microsoft.ContainerService/fleets
+  status: pending_verification
+- alicloud: ACS::ActionTrail::Trail
+  spec: providers/alicloud/specs/actiontrail-trail.yaml
+  class: security.audit_trail
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - logging.googleapis.com/LogSink
+  azure:
+    resources:
+    - Microsoft.Insights/diagnosticSettings
+  status: pending_verification
+- alicloud: ACS::ADB::DBCluster
+  spec: providers/alicloud/specs/adb-db-cluster.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id001
+    - bigquery.googleapis.com/Dataset
+  azure:
+    resources: &id002
+    - Microsoft.Kusto/clusters
+  status: pending_verification
+- alicloud: ACS::ADB::DBClusterLakeVersion
+  spec: providers/alicloud/specs/adb-lake-cluster.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::ALB::LoadBalancer
+  spec: providers/alicloud/specs/alb-load-balancer.yaml
+  class: network.load_balancer
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id023
+    - compute.googleapis.com/ForwardingRule
+    - compute.googleapis.com/GlobalForwardingRule
+    - compute.googleapis.com/BackendService
+  azure:
+    resources: &id024
+    - Microsoft.Network/loadBalancers
+    - Microsoft.Network/applicationGateways
+  status: pending_verification
+- alicloud: ACS::Alidns::DnsGtmInstance
+  spec: providers/alicloud/specs/alidns-dns-gtm-instance.yaml
+  class: dns.gtm_instance
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    resources: &id003
+    - dns.googleapis.com/ResourceRecordSet
+  azure:
+    resources: &id004
+    - Microsoft.Network/trafficManagerProfiles
+  status: pending_verification
+- alicloud: ACS::Alidns::Domain
+  spec: providers/alicloud/specs/alidns-domain.yaml
+  class: dns.zone
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dns.googleapis.com/ManagedZone
+  azure:
+    resources:
+    - Microsoft.Network/dnsZones
+  status: pending_verification
+- alicloud: ACS::Alidns::GtmInstance
+  spec: providers/alicloud/specs/alidns-gtm-instance.yaml
+  class: dns.gtm_instance
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    resources: *id003
+  azure:
+    resources: *id004
+  status: pending_verification
+- alicloud: ACS::AliKafka::Instance
+  spec: providers/alicloud/specs/alikafka-instance.yaml
+  class: messaging.broker
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    hook: alicloud.alikafka.instance
+  gcp:
+    resources: &id025
+    - managedkafka.googleapis.com/Cluster
+  azure:
+    resources: &id026
+    - Microsoft.ServiceBus/namespaces
+    - Microsoft.EventHub/namespaces
+  status: pending_verification
+- alicloud: ACS::ApiGateway::Instance
+  spec: providers/alicloud/specs/api-gateway-instance.yaml
+  class: network.api_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id005
+    - apigateway.googleapis.com/Api
+    - apigateway.googleapis.com/Gateway
+    - apigateway.googleapis.com/ApiConfig
+  azure:
+    resources: &id006
+    - Microsoft.ApiManagement/service
+  status: pending_verification
+- alicloud: ACS::APIG::Gateway
+  spec: providers/alicloud/specs/apig-gateway.yaml
+  class: network.api_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id005
+  azure:
+    resources: *id006
+  status: pending_verification
+- alicloud: ACS::ARMS::Environment
+  spec: providers/alicloud/specs/arms-environment.yaml
+  class: observability.monitoring_environment
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - monitoring.googleapis.com/MetricsScope
+  azure:
+    resources:
+    - Microsoft.Insights/dataCollectionRules
+  status: pending_verification
+  notes: Metrics-scope membership and monitoring configuration require explicit handling; project deletion
+    is never a substitute.
+- alicloud: ACS::ARMS::GrafanaWorkspace
+  spec: providers/alicloud/specs/arms-grafana-workspace.yaml
+  class: observability.visualization
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/Dashboard
+  azure:
+    resources:
+    - Microsoft.Dashboard/grafana
+  status: pending_verification
+- alicloud: ACS::ARMS::TraceApp
+  spec: providers/alicloud/specs/arms-trace-app.yaml
+  class: observability.apm_application
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/UptimeCheckConfig
+  azure:
+    resources:
+    - Microsoft.Insights/components
+  status: pending_verification
+  notes: Uptime checks are only one monitoring component. Trace application discovery is still a separate
+    gap to assess.
+- alicloud: ACS::ECS::AutoSnapshotPolicy
+  spec: providers/alicloud/specs/auto-snapshot-policy.yaml
+  class: storage.snapshot_policy
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/ResourcePolicy
+  azure:
+    resources:
+    - Microsoft.DataProtection/backupVaults/backupPolicies
+  status: pending_verification
+- alicloud: ACS::Bastionhost::Instance
+  spec: providers/alicloud/specs/bastionhost-instance.yaml
+  class: security.bastion_host
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - iap.googleapis.com/TunnelDestGroup
+  azure:
+    resources:
+    - Microsoft.Network/bastionHosts
+  status: pending_verification
+- alicloud: ACS::BPStudio::Application
+  spec: providers/alicloud/specs/bpstudio-application.yaml
+  class: application.architecture
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    hook: alicloud.bpstudio.application
+  gcp:
+    resources:
+    - config.googleapis.com/Deployment
+  azure:
+    resources:
+    - Microsoft.Resources/deploymentStacks
+  status: pending_verification
+- alicloud: ACS::ECS::CapacityReservation
+  spec: providers/alicloud/specs/capacity-reservation.yaml
+  class: compute.capacity_reservation
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Reservation
+  azure:
+    resources:
+    - Microsoft.Compute/capacityReservationGroups/capacityReservations
+  status: pending_verification
+- alicloud: ACS::CDN::Domain
+  spec: providers/alicloud/specs/cdn-domain.yaml
+  class: network.cdn_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: &id013
+    - networkservices.googleapis.com/EdgeCacheService
+    - compute.googleapis.com/BackendService
+  azure:
+    resources: &id014
+    - Microsoft.Cdn/profiles/endpoints
+    - Microsoft.Cdn/profiles/customDomains
+  status: pending_verification
+- alicloud: ACS::CEN::CenBandwidthPackage
+  spec: providers/alicloud/specs/cen-bandwidth-package.yaml
+  class: network.bandwidth_package
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: &id009
+    - compute.googleapis.com/InterconnectAttachment
+  azure:
+    resources: &id010
+    - Microsoft.Network/expressRouteCircuits
+  status: pending_verification
+  notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
+    a standalone purchased bandwidth-package API.
+- alicloud: ACS::CEN::ChildInstanceAttachment
+  spec: providers/alicloud/specs/cen-child-instance-attachment.yaml
+  class: network.cen_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id007
+    - networkconnectivity.googleapis.com/Spoke
+  azure:
+    resources: &id008
+    - Microsoft.Network/virtualHubs/hubVirtualNetworkConnections
+    - Microsoft.Network/vpnGateways/vpnConnections
+  status: pending_verification
+- alicloud: ACS::CEN::Flowlog
+  spec: providers/alicloud/specs/cen-flowlog.yaml
+  class: observability.flow_log
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - networkmanagement.googleapis.com/VpcFlowLogsConfig
+  azure:
+    resources:
+    - Microsoft.Network/networkWatchers/flowLogs
+  status: pending_verification
+- alicloud: ACS::CEN::CenInstance
+  spec: providers/alicloud/specs/cen-instance.yaml
+  class: network.cloud_enterprise_network
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkconnectivity.googleapis.com/Hub
+  azure:
+    resources:
+    - Microsoft.Network/virtualWans
+  status: pending_verification
+- alicloud: ACS::CEN::InterRegionTrafficQosPolicy
+  spec: providers/alicloud/specs/cen-inter-region-traffic-qos-policy.yaml
+  class: network.qos_policy
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - compute.googleapis.com/InterconnectAttachment
+  azure:
+    resources:
+    - Microsoft.Network/expressRouteCircuits
+  status: pending_verification
+  notes: Verify the actual provider QoS resource or integrated bandwidth policy. A circuit alone is not
+    proof that all policy behavior is implemented.
+- alicloud: ACS::CEN::CenRouteMap
+  spec: providers/alicloud/specs/cen-route-map.yaml
+  class: network.route_policy
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Router
+  azure:
+    resources:
+    - Microsoft.Network/virtualHubs/routeMaps
+  status: pending_verification
+- alicloud: ACS::CEN::TrafficMarkingPolicy
+  spec: providers/alicloud/specs/cen-traffic-marking-policy.yaml
+  class: network.traffic_marking_policy
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - compute.googleapis.com/InterconnectAttachment
+  azure:
+    resources:
+    - Microsoft.Network/expressRouteCircuits
+  status: pending_verification
+  notes: Verify provider-specific packet marking controls; pending API evidence must not be counted as
+    complete.
+- alicloud: ACS::CEN::TransitRouterCidr
+  spec: providers/alicloud/specs/cen-transit-router-cidr.yaml
+  class: network.transit_router_cidr
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkconnectivity.googleapis.com/Hub
+  azure:
+    resources:
+    - Microsoft.Network/virtualHubs
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterEcrAttachment
+  spec: providers/alicloud/specs/cen-transit-router-ecr-attachment.yaml
+  class: network.cen_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources: *id007
+  azure:
+    resources: *id008
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterMulticastDomain
+  spec: providers/alicloud/specs/cen-transit-router-multicast-domain.yaml
+  class: network.multicast_domain
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - networkservices.googleapis.com/MulticastDomain
+  azure:
+    resources: []
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterPeerAttachment
+  spec: providers/alicloud/specs/cen-transit-router-peer-attachment.yaml
+  class: network.cen_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id007
+  azure:
+    resources: *id008
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterRouteTable
+  spec: providers/alicloud/specs/cen-transit-router-route-table.yaml
+  class: network.route_table
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id033
+    - compute.googleapis.com/Route
+    - networkconnectivity.googleapis.com/RouteTable
+  azure:
+    resources: &id034
+    - Microsoft.Network/routeTables
+    - Microsoft.Network/virtualHubs/hubRouteTables
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterVbrAttachment
+  spec: providers/alicloud/specs/cen-transit-router-vbr-attachment.yaml
+  class: network.cen_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources: *id007
+  azure:
+    resources: *id008
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterVpcAttachment
+  spec: providers/alicloud/specs/cen-transit-router-vpc-attachment.yaml
+  class: network.vpc_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkconnectivity.googleapis.com/Spoke
+  azure:
+    resources:
+    - Microsoft.Network/virtualHubs/hubVirtualNetworkConnections
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouterVpnAttachment
+  spec: providers/alicloud/specs/cen-transit-router-vpn-attachment.yaml
+  class: network.cen_attachment
+  baseline:
+    inventory_source: cen-topology
+    scope: region
+    actions: []
+  gcp:
+    resources: *id007
+  azure:
+    resources: *id008
+  status: pending_verification
+- alicloud: ACS::CEN::TransitRouter
+  spec: providers/alicloud/specs/cen-transit-router.yaml
+  class: network.transit_router
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - networkconnectivity.googleapis.com/Hub
+  azure:
+    resources:
+    - Microsoft.Network/virtualHubs
+  status: pending_verification
+- alicloud: ACS::ClickHouse::DBCluster
+  spec: providers/alicloud/specs/clickhouse-db-cluster.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::ClickHouse::EnterpriseDBCluster
+  spec: providers/alicloud/specs/clickhouse-enterprise-cluster.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::CloudFirewall::Instance
+  spec: providers/alicloud/specs/cloud-firewall-instance.yaml
+  class: security.firewall
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    hook: alicloud.cloud_firewall.instance
+  gcp:
+    resources:
+    - compute.googleapis.com/NetworkFirewallPolicy
+    - networksecurity.googleapis.com/FirewallEndpoint
+  azure:
+    resources:
+    - Microsoft.Network/azureFirewalls
+    - Microsoft.Network/firewallPolicies
+  status: pending_verification
+- alicloud: ACS::CloudStorageGateway::Gateway
+  spec: providers/alicloud/specs/cloud-storage-gateway.yaml
+  class: storage.gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - storagetransfer.googleapis.com/AgentPool
+  azure:
+    resources:
+    - Microsoft.StorageSync/storageSyncServices
+  status: pending_verification
+- alicloud: ACS::CloudSSO::Group
+  spec: providers/alicloud/specs/cloudsso-group.yaml
+  class: identity.group
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources: &id031
+    - cloudidentity.googleapis.com/Group
+  azure:
+    resources: &id032
+    - Microsoft.Graph/groups
+  status: pending_verification
+  notes: Directory-wide group management requires explicit directory scope and suitable OAuth permissions,
+    beyond project/subscription inventory.
+- alicloud: ACS::CBWP::CommonBandwidthPackage
+  spec: providers/alicloud/specs/common-bandwidth-package.yaml
+  class: network.bandwidth_package
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id009
+  azure:
+    resources: *id010
+  status: pending_verification
+  notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
+    a standalone purchased bandwidth-package API.
+- alicloud: ACS::CR::Instance
+  spec: providers/alicloud/specs/cr-instance.yaml
+  class: container.registry
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - artifactregistry.googleapis.com/Repository
+  azure:
+    resources:
+    - Microsoft.ContainerRegistry/registries
+  status: pending_verification
+- alicloud: ACS::VPN::CustomerGateway
+  spec: providers/alicloud/specs/customer-gateway.yaml
+  class: network.customer_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/ExternalVpnGateway
+  azure:
+    resources:
+    - Microsoft.Network/localNetworkGateways
+  status: pending_verification
+- alicloud: ACS::DataHub::Project
+  spec: providers/alicloud/specs/datahub-project.yaml
+  class: data.project
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id021
+    - bigquery.googleapis.com/Dataset
+  azure:
+    resources: &id022
+    - Microsoft.Synapse/workspaces
+  status: pending_verification
+- alicloud: ACS::DataV::Workspace
+  spec: providers/alicloud/specs/datav-workspace.yaml
+  class: data.workspace
+  baseline:
+    inventory_source: resource-center
+    scope: region
+    actions: []
+  gcp:
+    resources: &id011
+    - dataform.googleapis.com/Repository
+    - dataplex.googleapis.com/Lake
+  azure:
+    resources: &id012
+    - Microsoft.Synapse/workspaces
+  status: pending_verification
+- alicloud: ACS::DataWorks::Project
+  spec: providers/alicloud/specs/dataworks-project.yaml
+  class: data.workspace
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id011
+  azure:
+    resources: *id012
+  status: pending_verification
+- alicloud: ACS::DataWorks::DwResourceGroup
+  spec: providers/alicloud/specs/dataworks-resource-group.yaml
+  class: data.resource_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dataproc.googleapis.com/Cluster
+  azure:
+    resources:
+    - Microsoft.DataFactory/factories/integrationRuntimes
+  status: pending_verification
+- alicloud: ACS::DBS::BackupPlan
+  spec: providers/alicloud/specs/dbs-backup-plan.yaml
+  class: storage.backup_plan
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - backupdr.googleapis.com/BackupPlan
+    - backupdr.googleapis.com/BackupPlanAssociation
+  azure:
+    resources:
+    - Microsoft.DataProtection/backupVaults/backupPolicies
+  status: pending_verification
+- alicloud: ACS::DCDN::Domain
+  spec: providers/alicloud/specs/dcdn-domain.yaml
+  class: network.cdn_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id013
+  azure:
+    resources: *id014
+  status: pending_verification
+- alicloud: ACS::DCDN::IpaDomain
+  spec: providers/alicloud/specs/dcdn-ipa-domain.yaml
+  class: network.cdn_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id013
+  azure:
+    resources: *id014
+  status: pending_verification
+- alicloud: ACS::DdosBgp::Instance
+  spec: providers/alicloud/specs/ddos-bgp-instance.yaml
+  class: security.ddos_protection
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    hook: alicloud.ddos_bgp.instance
+  gcp:
+    resources: &id015
+    - compute.googleapis.com/SecurityPolicy
+  azure:
+    resources: &id016
+    - Microsoft.Network/ddosProtectionPlans
+  status: pending_verification
+- alicloud: ACS::DdosCoo::Instance
+  spec: providers/alicloud/specs/ddos-coo-instance.yaml
+  class: security.ddos_protection
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id015
+  azure:
+    resources: *id016
+  status: pending_verification
+- alicloud: ACS::ECS::DedicatedHost
+  spec: providers/alicloud/specs/dedicated-host.yaml
+  class: compute.dedicated_host
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/NodeGroup
+    - compute.googleapis.com/NodeTemplate
+  azure:
+    resources:
+    - Microsoft.Compute/hostGroups/hosts
+  status: pending_verification
+- alicloud: ACS::VPC::DhcpOptionsSet
+  spec: providers/alicloud/specs/dhcp-options-set.yaml
+  class: network.dhcp_options_set
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Network
+    - dns.googleapis.com/Policy
+  azure:
+    resources:
+    - Microsoft.Network/virtualNetworks
+  status: pending_verification
+  notes: GCP/Azure expose network DNS/DHCP configuration within network or DNS-policy resources rather
+    than Alibaba DHCP option-set ownership.
+- alicloud: ACS::ECS::Disk
+  spec: providers/alicloud/specs/disk.yaml
+  class: storage.block
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - compute.googleapis.com/Disk
+    - compute.googleapis.com/RegionDisk
+  azure:
+    resources:
+    - Microsoft.Compute/disks
+  status: pending_verification
+- alicloud: ACS::Domain::Domain
+  spec: providers/alicloud/specs/domain-domain.yaml
+  class: dns.registered_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - domains.googleapis.com/Registration
+  azure:
+    resources:
+    - Microsoft.DomainRegistration/domains
+  status: pending_verification
+- alicloud: ACS::DRDS::DBInstance
+  spec: providers/alicloud/specs/drds-instance.yaml
+  class: database.distributed
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id029
+    - spanner.googleapis.com/Instance
+    - spanner.googleapis.com/Database
+  azure:
+    resources: &id030
+    - Microsoft.DocumentDB/databaseAccounts
+  status: pending_verification
+- alicloud: ACS::DTS::Instance
+  spec: providers/alicloud/specs/dts-instance.yaml
+  class: data.transfer_job
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - datastream.googleapis.com/Stream
+  azure:
+    resources:
+    - Microsoft.DataMigration/services/projects
+  status: pending_verification
+- alicloud: ACS::EAIS::Instance
+  spec: providers/alicloud/specs/eais-instance.yaml
+  class: compute.accelerator
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - tpu.googleapis.com/Node
+  azure:
+    resources:
+    - Microsoft.Compute/virtualMachines
+  status: pending_verification
+- alicloud: ACS::EBS::DedicatedBlockStorageCluster
+  spec: providers/alicloud/specs/ebs-dedicated-cluster.yaml
+  class: storage.dedicated_cluster
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - compute.googleapis.com/Disk
+  azure:
+    resources:
+    - Microsoft.ElasticSan/elasticSans
+  status: pending_verification
+  notes: A generic disk is not a dedicated storage-cluster equivalent; assess the cloud resource model
+    before declaring parity.
+- alicloud: ACS::EBS::DiskReplicaGroup
+  spec: providers/alicloud/specs/ebs-disk-replica-group.yaml
+  class: storage.replica_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/RegionDisk
+  azure:
+    resources:
+    - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
+  status: pending_verification
+  notes: Replication grouping is provider-specific; verify source/target retention and controller membership.
+- alicloud: ACS::EBS::DiskReplicaPair
+  spec: providers/alicloud/specs/ebs-disk-replica-pair.yaml
+  class: storage.replica_pair
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/RegionDisk
+  azure:
+    resources:
+    - Microsoft.RecoveryServices/vaults/replicationFabrics/replicationProtectionContainers/replicationProtectedItems
+  status: pending_verification
+  notes: Regional disk replication and Azure Site Recovery differ from explicit Alibaba disk-replica pairs;
+    retention and source/target ownership need platform-aware implementation.
+- alicloud: ACS::ECI::ContainerGroup
+  spec: providers/alicloud/specs/eci-container-group.yaml
+  class: compute.container_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - run.googleapis.com/Job
+  azure:
+    resources:
+    - Microsoft.ContainerInstance/containerGroups
+  status: pending_verification
+- alicloud: ACS::ECI::ImageCache
+  spec: providers/alicloud/specs/eci-image-cache.yaml
+  class: compute.image_cache
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - artifactregistry.googleapis.com/Repository
+  azure:
+    resources:
+    - Microsoft.ContainerRegistry/registries
+  status: pending_verification
+  notes: Registry repositories provide persistent image storage; platform-local image caches and ownership
+    must be assessed separately.
+- alicloud: ACS::ECP::Instance
+  spec: providers/alicloud/specs/ecp-instance.yaml
+  class: compute.cloud_phone
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: []
+  azure:
+    resources: []
+  status: pending_verification
+  notes: 'Research pending: hosted Android/cloud-phone lifecycle is not represented by a generic VM mapping.'
+- alicloud: ACS::ECS::Instance
+  spec: providers/alicloud/specs/ecs-instance.yaml
+  class: compute.instance
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - compute.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.Compute/virtualMachines
+  status: pending_verification
+- alicloud: ACS::Eflo::Cluster
+  spec: providers/alicloud/specs/eflo-cluster.yaml
+  class: compute.lingjun_cluster
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - tpu.googleapis.com/Node
+    - compute.googleapis.com/InstanceGroupManager
+  azure:
+    resources:
+    - Microsoft.Batch/batchAccounts/pools
+  status: pending_verification
+- alicloud: ACS::Ehpc::Cluster
+  spec: providers/alicloud/specs/ehpc-cluster.yaml
+  class: compute.hpc_cluster
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dataproc.googleapis.com/Cluster
+    - batch.googleapis.com/Job
+  azure:
+    resources:
+    - Microsoft.Batch/batchAccounts/pools
+  status: pending_verification
+- alicloud: ACS::EIP::EipAddress
+  spec: providers/alicloud/specs/eip-address.yaml
+  class: network.public_ip
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id017
+    - compute.googleapis.com/Address
+    - compute.googleapis.com/GlobalAddress
+  azure:
+    resources: &id018
+    - Microsoft.Network/publicIPAddresses
+  status: pending_verification
+- alicloud: ACS::Eipanycast::AnycastEipAddress
+  spec: providers/alicloud/specs/eipanycast-address.yaml
+  class: network.public_ip
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id017
+  azure:
+    resources: *id018
+  status: pending_verification
+- alicloud: ACS::ECS::ElasticityAssurance
+  spec: providers/alicloud/specs/elasticity-assurance.yaml
+  class: compute.elasticity_assurance
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - compute.googleapis.com/Reservation
+    - compute.googleapis.com/FutureReservation
+  azure:
+    resources:
+    - Microsoft.Compute/capacityReservationGroups
+  status: pending_verification
+- alicloud: ACS::Elasticsearch::Instance
+  spec: providers/alicloud/specs/elasticsearch-instance.yaml
+  class: database.search
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - discoveryengine.googleapis.com/Engine
+    - discoveryengine.googleapis.com/DataStore
+  azure:
+    resources:
+    - Microsoft.Search/searchServices
+  status: pending_verification
+- alicloud: ACS::Elasticsearch::Logstash
+  spec: providers/alicloud/specs/elasticsearch-logstash.yaml
+  class: data.pipeline
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - datafusion.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.DataFactory/factories
+  status: pending_verification
+- alicloud: ACS::EmrServerlessSpark::Workspace
+  spec: providers/alicloud/specs/emr-serverless-workspace.yaml
+  class: data.workspace
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources: *id011
+  azure:
+    resources: *id012
+  status: pending_verification
+- alicloud: ACS::ENS::Instance
+  spec: providers/alicloud/specs/ens-instance.yaml
+  class: compute.edge_instance
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    hook: alicloud.ens.instance
+  gcp:
+    resources:
+    - compute.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.HybridCompute/machines
+  status: pending_verification
+- alicloud: ACS::ESA::Site
+  spec: providers/alicloud/specs/esa-site.yaml
+  class: network.edge_site
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkservices.googleapis.com/EdgeCacheService
+  azure:
+    resources:
+    - Microsoft.Cdn/profiles/afdEndpoints
+  status: pending_verification
+- alicloud: ACS::ESS::ScalingGroup
+  spec: providers/alicloud/specs/ess-scaling-group.yaml
+  class: compute.scaling_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/InstanceGroupManager
+    - compute.googleapis.com/RegionInstanceGroupManager
+  azure:
+    resources:
+    - Microsoft.Compute/virtualMachineScaleSets
+  status: pending_verification
+- alicloud: ACS::ExpressConnect::PhysicalConnection
+  spec: providers/alicloud/specs/express-connect-physical-connection.yaml
+  class: network.physical_connection
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Interconnect
+  azure:
+    resources:
+    - Microsoft.Network/expressRouteCircuits
+  status: pending_verification
+- alicloud: ACS::ExpressConnectRouter::ExpressConnectRouter
+  spec: providers/alicloud/specs/express-connect-router.yaml
+  class: network.express_connect_router
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Router
+  azure:
+    resources:
+    - Microsoft.Network/expressRouteGateways
+  status: pending_verification
+- alicloud: ACS::ExpressConnect::VirtualBorderRouter
+  spec: providers/alicloud/specs/express-connect-vbr.yaml
+  class: network.virtual_border_router
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/InterconnectAttachment
+  azure:
+    resources:
+    - Microsoft.Network/expressRouteCircuits/peerings
+  status: pending_verification
+- alicloud: ACS::FC::Function
+  spec: providers/alicloud/specs/fc-function.yaml
+  class: serverless.function
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+    parent_discovery: true
+  gcp:
+    resources:
+    - cloudfunctions.googleapis.com/CloudFunction
+  azure:
+    resources:
+    - Microsoft.Web/sites/functions
+  status: pending_verification
+- alicloud: ACS::FC::Service
+  spec: providers/alicloud/specs/fc-service.yaml
+  class: serverless.service
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - run.googleapis.com/Service
+  azure:
+    resources:
+    - Microsoft.Web/sites
+  status: pending_verification
+- alicloud: ACS::Ga::Accelerator
+  spec: providers/alicloud/specs/ga-accelerator.yaml
+  class: network.global_accelerator
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/GlobalForwardingRule
+  azure:
+    resources:
+    - Microsoft.Cdn/profiles/afdEndpoints
+  status: pending_verification
+- alicloud: ACS::Ga::BandwidthPackage
+  spec: providers/alicloud/specs/ga-bandwidth-package.yaml
+  class: network.bandwidth_package
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id009
+  azure:
+    resources: *id010
+  status: pending_verification
+  notes: Capacity/pricing models differ; verify attachment/circuit bandwidth settings and do not claim
+    a standalone purchased bandwidth-package API.
+- alicloud: ACS::GPDB::DBInstance
+  spec: providers/alicloud/specs/gpdb-db-instance.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::GraphDatabase::DbInstance
+  spec: providers/alicloud/specs/graph-database-instance.yaml
+  class: database.graph
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - spanner.googleapis.com/Database
+  azure:
+    resources:
+    - Microsoft.DocumentDB/databaseAccounts
+  status: pending_verification
+- alicloud: ACS::HBase::Cluster
+  spec: providers/alicloud/specs/hbase-cluster.yaml
+  class: database.wide_column
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id019
+    - bigtableadmin.googleapis.com/Instance
+    - bigtableadmin.googleapis.com/Cluster
+  azure:
+    resources: &id020
+    - Microsoft.DocumentDB/cassandraClusters
+  status: pending_verification
+- alicloud: ACS::HBR::HanaInstance
+  spec: providers/alicloud/specs/hbr-hana-instance.yaml
+  class: storage.backup_source
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - backupdr.googleapis.com/DataSource
+  azure:
+    resources:
+    - Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems
+  status: pending_verification
+- alicloud: ACS::HBR::Vault
+  spec: providers/alicloud/specs/hbr-vault.yaml
+  class: storage.backup_vault
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - backupdr.googleapis.com/BackupVault
+  azure:
+    resources:
+    - Microsoft.RecoveryServices/vaults
+    - Microsoft.DataProtection/backupVaults
+  status: pending_verification
+- alicloud: ACS::Hologram::Instance
+  spec: providers/alicloud/specs/hologres-instance.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::ECS::Image
+  spec: providers/alicloud/specs/image.yaml
+  class: compute.image
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Image
+  azure:
+    resources:
+    - Microsoft.Compute/images
+  status: pending_verification
+- alicloud: ACS::VPC::Ipv4Gateway
+  spec: providers/alicloud/specs/ipv4-gateway.yaml
+  class: network.ipv4_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Router
+  azure:
+    resources:
+    - Microsoft.Network/natGateways
+  status: pending_verification
+- alicloud: ACS::VPC::Ipv6Address
+  spec: providers/alicloud/specs/ipv6-address.yaml
+  class: network.ipv6_address
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Address
+    - compute.googleapis.com/GlobalAddress
+  azure:
+    resources:
+    - Microsoft.Network/publicIPAddresses
+  status: pending_verification
+- alicloud: ACS::VPC::Ipv6Gateway
+  spec: providers/alicloud/specs/ipv6-gateway.yaml
+  class: network.ipv6_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Router
+  azure:
+    resources:
+    - Microsoft.Network/virtualNetworkGateways
+  status: pending_verification
+- alicloud: ACS::ECS::KeyPair
+  spec: providers/alicloud/specs/key-pair.yaml
+  class: security.key_pair
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - iam.googleapis.com/ServiceAccountKey
+  azure:
+    resources:
+    - Microsoft.Compute/sshPublicKeys
+  status: pending_verification
+  notes: GCP service-account keys are workload credential resources, not SSH keys. SSH key metadata/OS
+    Login keys need separate behavior review.
+- alicloud: ACS::KMS::Key
+  spec: providers/alicloud/specs/kms-key.yaml
+  class: security.encryption_key
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - cloudkms.googleapis.com/KeyRing
+    - cloudkms.googleapis.com/CryptoKey
+    - cloudkms.googleapis.com/CryptoKeyVersion
+  azure:
+    resources:
+    - Microsoft.KeyVault/vaults/keys
+  status: pending_verification
+- alicloud: ACS::Lindorm::Instance
+  spec: providers/alicloud/specs/lindorm-instance.yaml
+  class: database.wide_column
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id019
+  azure:
+    resources: *id020
+  status: pending_verification
+- alicloud: ACS::Live::Domain
+  spec: providers/alicloud/specs/live-domain.yaml
+  class: media.live_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkservices.googleapis.com/EdgeCacheService
+  azure:
+    resources:
+    - Microsoft.Cdn/profiles/afdEndpoints
+  status: pending_verification
+  notes: Delivery-domain lifecycle maps to CDN endpoints. Azure Media Services is retired; do not add
+    obsolete streaming-resource APIs.
+- alicloud: ACS::MaxCompute::Project
+  spec: providers/alicloud/specs/maxcompute-project.yaml
+  class: data.project
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id021
+  azure:
+    resources: *id022
+  status: pending_verification
+- alicloud: ACS::MessageService::Queue
+  spec: providers/alicloud/specs/mns-queue.yaml
+  class: messaging.queue
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - cloudtasks.googleapis.com/Queue
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/queues
+  status: pending_verification
+- alicloud: ACS::MessageService::Topic
+  spec: providers/alicloud/specs/mns-topic.yaml
+  class: messaging.topic
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - pubsub.googleapis.com/Topic
+  azure:
+    resources:
+    - Microsoft.ServiceBus/namespaces/topics
+  status: pending_verification
+- alicloud: ACS::MongoDB::DBInstance
+  spec: providers/alicloud/specs/mongodb-db-instance.yaml
+  class: database.document
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - firestore.googleapis.com/Database
+  azure:
+    resources:
+    - Microsoft.DocumentDB/databaseAccounts
+    - Microsoft.DocumentDB/mongoClusters
+  status: pending_verification
+- alicloud: ACS::MSE::Cluster
+  spec: providers/alicloud/specs/mse-cluster.yaml
+  class: middleware.registry
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - servicedirectory.googleapis.com/Namespace
+    - servicedirectory.googleapis.com/Service
+  azure:
+    resources:
+    - Microsoft.ServiceFabric/clusters
+  status: pending_verification
+- alicloud: ACS::MSE::Gateway
+  spec: providers/alicloud/specs/mse-gateway.yaml
+  class: network.gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkservices.googleapis.com/Gateway
+  azure:
+    resources:
+    - Microsoft.ApiManagement/service
+  status: pending_verification
+- alicloud: ACS::NAS::FileSystem
+  spec: providers/alicloud/specs/nas-file-system.yaml
+  class: storage.filesystem
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - file.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
+    - Microsoft.Storage/storageAccounts/fileServices/shares
+  status: pending_verification
+- alicloud: ACS::NAS::MountTarget
+  spec: providers/alicloud/specs/nas-mount-target.yaml
+  class: storage.mount_target
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - file.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.NetApp/netAppAccounts/capacityPools/volumes
+  status: pending_verification
+  notes: Filestore mounts are network/file-share properties; do not delete the whole filesystem to remove
+    one client mount.
+- alicloud: ACS::NAT::NatGateway
+  spec: providers/alicloud/specs/nat-gateway.yaml
+  class: network.nat_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Router
+  azure:
+    resources:
+    - Microsoft.Network/natGateways
+  status: pending_verification
+  notes: GCP Cloud NAT is a named configuration in Cloud Router. The component must be discovered and
+    removed without deleting unrelated router/NAT configuration.
+- alicloud: ACS::NAT::NatIp
+  spec: providers/alicloud/specs/nat-ip.yaml
+  class: network.nat_ip
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    parent_discovery: true
+  gcp:
+    resources:
+    - compute.googleapis.com/Address
+  azure:
+    resources:
+    - Microsoft.Network/publicIPAddresses
+  status: pending_verification
+- alicloud: ACS::VPC::NetworkAcl
+  spec: providers/alicloud/specs/network-acl.yaml
+  class: network.acl
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/FirewallPolicy
+    - compute.googleapis.com/NetworkFirewallPolicy
+  azure:
+    resources:
+    - Microsoft.Network/networkSecurityGroups
+  status: pending_verification
+- alicloud: ACS::ECS::NetworkInterface
+  spec: providers/alicloud/specs/network-interface.yaml
+  class: network.interface
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - compute.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.Network/networkInterfaces
+  status: pending_verification
+  notes: GCP NICs are instance components; inventory and lifecycle must account for attachment, aliases,
+    network/subnet membership, and auto-deleted disks without inventing independently deletable NIC assets.
+- alicloud: ACS::NLB::LoadBalancer
+  spec: providers/alicloud/specs/nlb-load-balancer.yaml
+  class: network.load_balancer
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id023
+  azure:
+    resources: *id024
+  status: pending_verification
+- alicloud: ACS::OceanBase::Instance
+  spec: providers/alicloud/specs/oceanbase-instance.yaml
+  class: database.relational
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id027
+    - sqladmin.googleapis.com/Instance
+    - alloydb.googleapis.com/Cluster
+  azure:
+    resources: &id028
+    - Microsoft.Sql/servers/databases
+    - Microsoft.DBforPostgreSQL/flexibleServers
+    - Microsoft.DBforMySQL/flexibleServers
+  status: pending_verification
+- alicloud: ACS::Ons::Instance
+  spec: providers/alicloud/specs/ons-instance.yaml
+  class: messaging.broker
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id025
+  azure:
+    resources: *id026
+  status: pending_verification
+- alicloud: ACS::OOS::Application
+  spec: providers/alicloud/specs/oos-application.yaml
+  class: application
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - apphub.googleapis.com/Application
+  azure:
+    resources:
+    - Microsoft.Solutions/applications
+  status: pending_verification
+- alicloud: ACS::OpenSearch::AppGroup
+  spec: providers/alicloud/specs/opensearch-app-group.yaml
+  class: search.application
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - discoveryengine.googleapis.com/Engine
+  azure:
+    resources:
+    - Microsoft.Search/searchServices
+  status: pending_verification
+- alicloud: ACS::OSS::Bucket
+  spec: providers/alicloud/specs/oss-bucket.yaml
+  class: storage.object_bucket
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - storage.googleapis.com/Bucket
+  azure:
+    resources:
+    - Microsoft.Storage/storageAccounts/blobServices/containers
+  status: pending_verification
+- alicloud: ACS::PAI::Service
+  spec: providers/alicloud/specs/pai-service.yaml
+  class: ai.inference_service
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - aiplatform.googleapis.com/Endpoint
+  azure:
+    resources:
+    - Microsoft.MachineLearningServices/workspaces/onlineEndpoints
+  status: pending_verification
+- alicloud: ACS::VPC::PeerConnection
+  spec: providers/alicloud/specs/peer-connection.yaml
+  class: network.peer_connection
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id035
+    - compute.googleapis.com/Network
+  azure:
+    resources: &id036
+    - Microsoft.Network/virtualNetworks/virtualNetworkPeerings
+  status: pending_verification
+  notes: GCP peering is an independently removable network configuration. Peering cleanup must retain
+    the network and unrelated peers.
+- alicloud: ACS::PolarDB::Application
+  spec: providers/alicloud/specs/polardb-application.yaml
+  class: application.database
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - alloydb.googleapis.com/Cluster
+  azure:
+    resources:
+    - Microsoft.Sql/servers
+  status: pending_verification
+- alicloud: ACS::PolarDB::DBCluster
+  spec: providers/alicloud/specs/polardb-cluster.yaml
+  class: database.relational
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id027
+  azure:
+    resources: *id028
+  status: pending_verification
+- alicloud: ACS::DRDS::PolarDBXInstance
+  spec: providers/alicloud/specs/polardbx-instance.yaml
+  class: database.distributed
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id029
+  azure:
+    resources: *id030
+  status: pending_verification
+- alicloud: ACS::PrivateZone::Zone
+  spec: providers/alicloud/specs/private-zone.yaml
+  class: dns.private_zone
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dns.googleapis.com/ManagedZone
+  azure:
+    resources:
+    - Microsoft.Network/privateDnsZones
+  status: pending_verification
+- alicloud: ACS::PrivateLink::VpcEndpointService
+  spec: providers/alicloud/specs/privatelink-endpoint-service.yaml
+  class: network.endpoint_service
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/ServiceAttachment
+  azure:
+    resources:
+    - Microsoft.Network/privateLinkServices
+  status: pending_verification
+- alicloud: ACS::PrivateLink::VpcEndpoint
+  spec: providers/alicloud/specs/privatelink-endpoint.yaml
+  class: network.endpoint
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: &id037
+    - compute.googleapis.com/ForwardingRule
+    - compute.googleapis.com/NetworkAttachment
+  azure:
+    resources: &id038
+    - Microsoft.Network/privateEndpoints
+  status: pending_verification
+- alicloud: ACS::ARMS::Prometheus
+  spec: providers/alicloud/specs/prometheus-instance.yaml
+  class: observability.prometheus
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - monitoring.googleapis.com/MetricsScope
+  azure:
+    resources:
+    - Microsoft.Monitor/accounts
+  status: pending_verification
+  notes: GCP Managed Service for Prometheus uses project metrics scopes rather than a deletable Prometheus
+    instance.
+- alicloud: ACS::RAM::Group
+  spec: providers/alicloud/specs/ram-group.yaml
+  class: identity.group
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id031
+  azure:
+    resources: *id032
+  status: pending_verification
+  notes: Directory-wide group management requires explicit directory scope and suitable OAuth permissions,
+    beyond project/subscription inventory.
+- alicloud: ACS::RAM::Policy
+  spec: providers/alicloud/specs/ram-policy.yaml
+  class: identity.policy
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - iam.googleapis.com/Role
+  azure:
+    resources:
+    - Microsoft.Authorization/roleDefinitions
+  status: pending_verification
+- alicloud: ACS::RAM::Role
+  spec: providers/alicloud/specs/ram-role.yaml
+  class: identity.role
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - iam.googleapis.com/Role
+    - iam.googleapis.com/ServiceAccount
+  azure:
+    resources:
+    - Microsoft.Authorization/roleDefinitions
+    - Microsoft.ManagedIdentity/userAssignedIdentities
+  status: pending_verification
+- alicloud: ACS::RAM::User
+  spec: providers/alicloud/specs/ram-user.yaml
+  class: identity.user
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - iam.googleapis.com/ServiceAccount
+  azure:
+    resources:
+    - Microsoft.Graph/users
+  status: pending_verification
+  notes: GCP service accounts cover cloud workload identities. Human Google identities belong to the directory;
+    that difference must be documented and separately assessed.
+- alicloud: ACS::RDS::DBInstance
+  spec: providers/alicloud/specs/rds-db-instance.yaml
+  class: database.relational
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id027
+  azure:
+    resources: *id028
+  status: pending_verification
+- alicloud: ACS::RealtimeCompute::VvpInstance
+  spec: providers/alicloud/specs/realtime-compute-instance.yaml
+  class: data.stream_compute
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - dataproc.googleapis.com/Cluster
+  azure:
+    resources:
+    - Microsoft.StreamAnalytics/streamingjobs
+  status: pending_verification
+- alicloud: ACS::Redis::DBInstance
+  spec: providers/alicloud/specs/redis-db-instance.yaml
+  class: database.cache
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - redis.googleapis.com/Instance
+    - redis.googleapis.com/Cluster
+  azure:
+    resources:
+    - Microsoft.Cache/redis
+    - Microsoft.Cache/redisEnterprise
+  status: pending_verification
+- alicloud: ACS::ResourceManager::ResourceDirectory
+  spec: providers/alicloud/specs/resource-directory.yaml
+  class: identity.resource_directory
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - cloudresourcemanager.googleapis.com/Organization
+  azure:
+    resources:
+    - Microsoft.Management/managementGroups
+  status: pending_verification
+  notes: Root organization/tenant lifetime has different ownership and deletion APIs. Root deletion may
+    not be representable through a project/subscription credential.
+- alicloud: ACS::RocketMQ::Instance
+  spec: providers/alicloud/specs/rocketmq-instance.yaml
+  class: messaging.broker
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id025
+  azure:
+    resources: *id026
+  status: pending_verification
+- alicloud: ACS::ROS::StackGroup
+  spec: providers/alicloud/specs/ros-stack-group.yaml
+  class: orchestration.stack_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - config.googleapis.com/Deployment
+  azure:
+    resources:
+    - Microsoft.Resources/deploymentStacks
+  status: pending_verification
+  notes: Regional/fleet orchestration structure differs. Managed resource ownership and detach/delete
+    policies must be implemented explicitly.
+- alicloud: ACS::ROS::Stack
+  spec: providers/alicloud/specs/ros-stack.yaml
+  class: orchestration.stack
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - config.googleapis.com/Deployment
+  azure:
+    resources:
+    - Microsoft.Resources/deploymentStacks
+  status: pending_verification
+  notes: Use Infrastructure Manager and Azure deployment stacks for owned-resource cleanup. Azure deployment
+    history deletion does not delete deployed resources.
+- alicloud: ACS::VPC::RouteTable
+  spec: providers/alicloud/specs/route-table.yaml
+  class: network.route_table
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id033
+  azure:
+    resources: *id034
+  status: pending_verification
+- alicloud: ACS::VPC::RouterInterface
+  spec: providers/alicloud/specs/router-interface.yaml
+  class: network.peer_connection
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id035
+  azure:
+    resources: *id036
+  status: pending_verification
+  notes: GCP peering is an independently removable network configuration. Peering cleanup must retain
+    the network and unrelated peers.
+- alicloud: ACS::RTC::Application
+  spec: providers/alicloud/specs/rtc-application.yaml
+  class: media.rtc_application
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    resources: []
+  azure:
+    resources:
+    - Microsoft.Communication/communicationServices
+  status: pending_verification
+  notes: 'Research pending for GCP: do not substitute an unrelated media processing API for an RTC application.'
+- alicloud: ACS::SCDN::Domain
+  spec: providers/alicloud/specs/scdn-domain.yaml
+  class: network.cdn_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: *id013
+  azure:
+    resources: *id014
+  status: pending_verification
+- alicloud: ACS::SDDP::Instance
+  spec: providers/alicloud/specs/sddp-instance.yaml
+  class: security.data_protection
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    resources:
+    - dlp.googleapis.com/InspectTemplate
+    - dlp.googleapis.com/DeidentifyTemplate
+  azure:
+    resources:
+    - Microsoft.Purview/accounts
+  status: pending_verification
+- alicloud: ACS::ECS::SecurityGroup
+  spec: providers/alicloud/specs/security-group.yaml
+  class: network.security_group
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    enrichment: true
+  gcp:
+    resources:
+    - compute.googleapis.com/Firewall
+  azure:
+    resources:
+    - Microsoft.Network/networkSecurityGroups
+  status: pending_verification
+- alicloud: ACS::SelectDB::DBInstance
+  spec: providers/alicloud/specs/selectdb-instance.yaml
+  class: database.analytics
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id001
+  azure:
+    resources: *id002
+  status: pending_verification
+- alicloud: ACS::SLB::LoadBalancer
+  spec: providers/alicloud/specs/slb-load-balancer.yaml
+  class: network.load_balancer
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources: *id023
+  azure:
+    resources: *id024
+  status: pending_verification
+- alicloud: ACS::SLS::Project
+  spec: providers/alicloud/specs/sls-project.yaml
+  class: observability.logs
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - logging.googleapis.com/LogBucket
+    - logging.googleapis.com/LogSink
+  azure:
+    resources:
+    - Microsoft.OperationalInsights/workspaces
+  status: pending_verification
+- alicloud: ACS::SMS::Template
+  spec: providers/alicloud/specs/sms-template.yaml
+  class: messaging.sms_template
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources: []
+  azure:
+    resources:
+    - Microsoft.Communication/communicationServices
+  status: pending_verification
+  notes: SMS template lifecycle differs by provider and regulatory region; an Azure Communication Services
+    account alone does not prove template cleanup parity.
+- alicloud: ACS::ECS::Snapshot
+  spec: providers/alicloud/specs/snapshot.yaml
+  class: storage.snapshot
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Snapshot
+  azure:
+    resources:
+    - Microsoft.Compute/snapshots
+  status: pending_verification
+- alicloud: ACS::SSLCertificatesService::Certificate
+  spec: providers/alicloud/specs/ssl-certificate.yaml
+  class: security.certificate
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+    hook: alicloud.ssl_certificate
+  gcp:
+    resources:
+    - certificatemanager.googleapis.com/Certificate
+    - compute.googleapis.com/SslCertificate
+  azure:
+    resources:
+    - Microsoft.Web/certificates
+    - Microsoft.KeyVault/vaults/certificates
+  status: pending_verification
+- alicloud: ACS::SWAS::Instance
+  spec: providers/alicloud/specs/swas-instance.yaml
+  class: compute.simple_server
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions: []
+  gcp:
+    resources:
+    - compute.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.Compute/virtualMachines
+  status: pending_verification
+- alicloud: ACS::OTS::Instance
+  spec: providers/alicloud/specs/tablestore-instance.yaml
+  class: database.nosql
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - bigtableadmin.googleapis.com/Instance
+    - bigtableadmin.googleapis.com/Table
+  azure:
+    resources:
+    - Microsoft.DocumentDB/databaseAccounts
+  status: pending_verification
+- alicloud: ACS::ThreatDetection::Instance
+  spec: providers/alicloud/specs/threat-detection-instance.yaml
+  class: security.security_center
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions: []
+  gcp:
+    resources:
+    - securitycenter.googleapis.com/NotificationConfig
+  azure:
+    resources:
+    - Microsoft.Security/pricings
+  status: pending_verification
+  notes: Notification/pricing configuration alone is not full security-center instance parity; validate
+    platform service-state semantics.
+- alicloud: ACS::TSDB::Instance
+  spec: providers/alicloud/specs/tsdb-instance.yaml
+  class: database.timeseries
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - bigtableadmin.googleapis.com/Instance
+  azure:
+    resources:
+    - Microsoft.Kusto/clusters
+  status: pending_verification
+- alicloud: ACS::VOD::Domain
+  spec: providers/alicloud/specs/vod-domain.yaml
+  class: media.vod_domain
+  baseline:
+    inventory_source: product-api
+    scope: global
+    actions:
+    - delete
+  gcp:
+    resources:
+    - networkservices.googleapis.com/EdgeCacheService
+  azure:
+    resources:
+    - Microsoft.Cdn/profiles/afdEndpoints
+  status: pending_verification
+  notes: Delivery-domain lifecycle maps to CDN endpoints; this is not a claim of codec/streaming-engine
+    equivalence.
+- alicloud: ACS::VPC::GatewayEndpoint
+  spec: providers/alicloud/specs/vpc-gateway-endpoint.yaml
+  class: network.endpoint
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+    hook: alicloud.vpc.gateway_endpoint
+  gcp:
+    resources: *id037
+  azure:
+    resources: *id038
+  status: pending_verification
+- alicloud: ACS::VPC::VPC
+  spec: providers/alicloud/specs/vpc.yaml
+  class: network.vpc
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Network
+  azure:
+    resources:
+    - Microsoft.Network/virtualNetworks
+  status: pending_verification
+- alicloud: ACS::VPN::VpnConnection
+  spec: providers/alicloud/specs/vpn-connection.yaml
+  class: network.vpn_connection
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/VpnTunnel
+  azure:
+    resources:
+    - Microsoft.Network/connections
+  status: pending_verification
+- alicloud: ACS::VPN::VpnGateway
+  spec: providers/alicloud/specs/vpn-gateway.yaml
+  class: network.vpn_gateway
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/VpnGateway
+    - compute.googleapis.com/TargetVpnGateway
+  azure:
+    resources:
+    - Microsoft.Network/virtualNetworkGateways
+  status: pending_verification
+- alicloud: ACS::VPC::VSwitch
+  spec: providers/alicloud/specs/vswitch.yaml
+  class: network.subnet
+  baseline:
+    inventory_source: product-api
+    scope: region
+    actions:
+    - delete
+  gcp:
+    resources:
+    - compute.googleapis.com/Subnetwork
+  azure:
+    resources:
+    - Microsoft.Network/virtualNetworks/subnets
+  status: pending_verification
+evidence:
+  gcp_asset_types: https://docs.cloud.google.com/asset-inventory/docs/asset-types
+  gcp_api_directory: https://www.googleapis.com/discovery/v1/apis
+  azure_api_sources: https://github.com/Azure/azure-rest-api-specs
+  gcp_kms_deletion: https://docs.cloud.google.com/kms/docs/delete-kms-resources
+  gcp_multicast: https://docs.cloud.google.com/vpc/docs/multicast/overview
+  gcp_organization_lifetime: https://docs.cloud.google.com/resource-manager/docs/delete-org
+  gcp_deployment_manager_retirement: https://docs.cloud.google.com/deployment-manager/docs/deprecations
+  azure_deployment_history: https://learn.microsoft.com/en-us/rest/api/resources/deployments/delete
+  azure_deployment_stacks: https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/deployment-stacks
+  azure_media_retirement: https://learn.microsoft.com/en-us/lifecycle/end-of-support/end-of-support-2024

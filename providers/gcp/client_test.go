@@ -73,7 +73,7 @@ func TestClientSignsExplicitCredentialAndCachesToken(t *testing.T) {
 			}
 			claimsRaw, _ := base64.RawURLEncoding.DecodeString(parts[1])
 			var claims map[string]any
-			if json.Unmarshal(claimsRaw, &claims) != nil || claims["aud"] != tokenURL || claims["iss"] != "steward@sample-project.iam.gserviceaccount.com" || claims["scope"] != "https://www.googleapis.com/auth/cloud-platform" {
+			if json.Unmarshal(claimsRaw, &claims) != nil || claims["aud"] != tokenURL || claims["iss"] != "steward@sample-project.iam.gserviceaccount.com" || claims["scope"] != "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/userinfo.email" {
 				t.Fatalf("incorrect assertion claims: %s", claimsRaw)
 			}
 			return apiResponse(request, 200, `{"access_token":"test-token", "token_type":"Bearer", "expires_in":3600}`), nil

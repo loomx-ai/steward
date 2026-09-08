@@ -57,6 +57,9 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/InstanceGroup
   targetIdPath: refs_compute_googleapis_com_InstanceGroup
+- type: uses
+  targetType: compute.googleapis.com/NetworkEndpointGroup
+  targetIdPath: refs_compute_googleapis_com_NetworkEndpointGroup
 actions:
   delete:
     operation: compute.backendServices.delete

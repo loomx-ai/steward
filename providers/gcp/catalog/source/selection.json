@@ -28,12 +28,20 @@
         "compute.globalForwardingRules.delete",
         "compute.globalForwardingRules.get",
         "compute.globalForwardingRules.list",
+        "compute.globalNetworkEndpointGroups.delete",
+        "compute.globalNetworkEndpointGroups.get",
         "compute.globalOperations.get",
         "compute.globalOperations.list",
         "compute.healthChecks.aggregatedList",
         "compute.healthChecks.delete",
         "compute.healthChecks.get",
         "compute.healthChecks.list",
+        "compute.httpHealthChecks.delete",
+        "compute.httpHealthChecks.get",
+        "compute.httpHealthChecks.list",
+        "compute.httpsHealthChecks.delete",
+        "compute.httpsHealthChecks.get",
+        "compute.httpsHealthChecks.list",
         "compute.images.delete",
         "compute.images.get",
         "compute.images.list",
@@ -59,6 +67,9 @@
         "compute.instances.list",
         "compute.instances.setDeletionProtection",
         "compute.instances.setDiskAutoDelete",
+        "compute.networkEndpointGroups.aggregatedList",
+        "compute.networkEndpointGroups.delete",
+        "compute.networkEndpointGroups.get",
         "compute.networks.delete",
         "compute.networks.get",
         "compute.networks.list",
@@ -85,6 +96,8 @@
         "compute.regionInstanceTemplates.delete",
         "compute.regionInstanceTemplates.get",
         "compute.regionInstanceTemplates.list",
+        "compute.regionNetworkEndpointGroups.delete",
+        "compute.regionNetworkEndpointGroups.get",
         "compute.regionOperations.get",
         "compute.regionOperations.list",
         "compute.regionSslCertificates.delete",
@@ -125,6 +138,9 @@
         "compute.targetHttpsProxies.delete",
         "compute.targetHttpsProxies.get",
         "compute.targetHttpsProxies.list",
+        "compute.targetPools.aggregatedList",
+        "compute.targetPools.delete",
+        "compute.targetPools.get",
         "compute.urlMaps.aggregatedList",
         "compute.urlMaps.delete",
         "compute.urlMaps.get",
@@ -720,7 +736,9 @@
       "read_operations": [
         "container.projects.locations.clusters.get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "container.projects.locations.clusters.delete"
+      ],
       "list_operations": [
         "container.projects.locations.clusters.list"
       ]
@@ -950,6 +968,83 @@
       ],
       "list_operations": [
         "container.projects.locations.clusters.nodePools.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/TargetPool",
+      "collection": "targetPools",
+      "class": "network.target_pool",
+      "display_name": "Target pool",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.targetPools.get"
+      ],
+      "delete_operations": [
+        "compute.targetPools.delete"
+      ],
+      "list_operations": [
+        "compute.targetPools.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/HttpHealthCheck",
+      "collection": "httpHealthChecks",
+      "class": "network.health_check",
+      "display_name": "Legacy HTTP health check",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.httpHealthChecks.get"
+      ],
+      "delete_operations": [
+        "compute.httpHealthChecks.delete"
+      ],
+      "list_operations": [
+        "compute.httpHealthChecks.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/HttpsHealthCheck",
+      "collection": "httpsHealthChecks",
+      "class": "network.health_check",
+      "display_name": "Legacy HTTPS health check",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.httpsHealthChecks.get"
+      ],
+      "delete_operations": [
+        "compute.httpsHealthChecks.delete"
+      ],
+      "list_operations": [
+        "compute.httpsHealthChecks.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NetworkEndpointGroup",
+      "collection": "networkEndpointGroups",
+      "class": "network.endpoint_group",
+      "display_name": "Network endpoint group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.networkEndpointGroups.get",
+        "compute.regionNetworkEndpointGroups.get",
+        "compute.globalNetworkEndpointGroups.get"
+      ],
+      "delete_operations": [
+        "compute.networkEndpointGroups.delete",
+        "compute.regionNetworkEndpointGroups.delete",
+        "compute.globalNetworkEndpointGroups.delete"
+      ],
+      "list_operations": [
+        "compute.networkEndpointGroups.aggregatedList"
       ]
     }
   ]

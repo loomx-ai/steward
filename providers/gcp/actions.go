@@ -68,12 +68,23 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if strings.HasPrefix(a.kind.NativeType, "compute.googleapis.com/") && text(request.Asset.Normalized["id"]) != "" && text(request.Asset.Normalized["id"]) != text(data["id"]) {
+		return contracts.PreflightResult{Reason: "resource_identity_changed"}, nil
+	}
+	if protectedComputeLabels(data) {
+		return contracts.PreflightResult{Reason: "protected_labels"}, nil
+	}
 	if reason := protectionReason(a.kind.NativeType, data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
 	if a.isGKE() {
 		if reason, err := a.plannedGKE(ctx, request, data); reason != "" || err != nil {
 			return contracts.PreflightResult{Reason: reason}, err
+		}
+		if a.kind.NativeType == clusterType {
+			if err := a.gkeNetworkPreflight(ctx, request, data); err != nil {
+				return contracts.PreflightResult{}, err
+			}
 		}
 	}
 	if a.kind.NativeType == instanceType {
@@ -142,6 +153,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		return contracts.ActionResult{}, nil
 	}
 	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true {
+		if a.kind.NativeType == clusterType {
+			return gkePhase("gke_delete"), nil
+		}
 		return contracts.ActionResult{RetryAfter: 2 * time.Second}, nil
 	}
 	if a.kind.NativeType == managerType {
@@ -149,6 +163,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if a.kind.NativeType == instanceType {
 		return a.prepareInstance(ctx, request)
+	}
+	if a.kind.NativeType == clusterType {
+		return a.prepareGKENetwork(ctx, request)
 	}
 	return a.delete(ctx, request)
 }
@@ -247,6 +264,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == clusterType && text(result.Data["phase"]) != "" {
+		return a.waitGKENetwork(ctx, request, result)
+	}
 	if a.kind.NativeType == managerType && text(result.Data["phase"]) != "" {
 		return a.waitManagedGroup(ctx, request, result)
 	}

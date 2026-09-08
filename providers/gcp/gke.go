@@ -200,6 +200,22 @@ func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset)
 			if err != nil {
 				return result, owned, err
 			}
+			if rootKind == clusterType && root.Normalized[gkeNetworkKey] != nil {
+				network, err := plannedGKENetwork(root)
+				if err != nil {
+					return result, owned, err
+				}
+				for _, resource := range network.Resources {
+					data, err := h.client.nativeGet(ctx, resource.Kind, resource.ID)
+					if err != nil {
+						return result, owned, err
+					}
+					if text(data["id"]) != resource.UID {
+						return result, owned, groupDenied("gke_network_resource_identity_changed")
+					}
+					members = append(members, gkeMember{id: resource.ID, kind: resource.Kind, parent: root.Identity.NativeID, data: data, deletes: resource.Delete, shared: !resource.Delete})
+				}
+			}
 			controllers := map[string]asset.Asset{root.Identity.NativeID: root}
 			for _, member := range members {
 				owner, exists := controllers[member.parent]
@@ -207,9 +223,6 @@ func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset)
 					continue // Its missing parent already creates an unresolved reference.
 				}
 				ownership, policy := graph.OwnershipExclusive, graph.CleanupDelegate
-				if member.kind == nodePoolType && object(live["autopilot"])["enabled"] != true && object(member.data["autopilotConfig"])["enabled"] != true {
-					policy = graph.CleanupDirect
-				}
 				if member.shared {
 					ownership, policy = graph.OwnershipShared, graph.CleanupRetain
 				}
@@ -221,6 +234,9 @@ func (h *computeGroups) contributeGKE(ctx context.Context, assets []asset.Asset)
 					continue
 				}
 				binding := &result.Bindings[len(result.Bindings)-1]
+				// Keep nodes available while cluster workload controllers finalize
+				// their load balancers. A Standard pool can still be selected alone.
+				binding.DirectCleanupAllowed = member.kind == nodePoolType && object(live["autopilot"])["enabled"] != true && object(member.data["autopilotConfig"])["enabled"] != true
 				binding.EvidenceSource = gkeSource
 				binding.Evidence["lifecycle_kind"] = "gke"
 				binding.Evidence["retention_supported"] = !member.deletes

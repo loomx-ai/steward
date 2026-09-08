@@ -170,8 +170,8 @@ func TestGKEPlanUsesNativePoolControllerAndRetainsPersistentVolume(t *testing.T)
 		}
 	}
 	cluster, _ := f.plan("cluster")
-	if len(cluster.Blockers) != 0 || len(cluster.Steps) != 2 {
-		t.Fatalf("cluster must delete standard pools first: %+v", cluster)
+	if len(cluster.Blockers) != 0 || len(cluster.Steps) != 1 || len(cluster.ImpactItems) != 8 {
+		t.Fatalf("cluster must retain node controllers until workload finalizers finish: %+v", cluster)
 	}
 	retained, _ := f.plan("cluster", "pool")
 	if len(retained.Blockers) == 0 {

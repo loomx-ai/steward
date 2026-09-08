@@ -289,6 +289,7 @@ func references(c *client, data map[string]any) map[string][]string {
 	fields["instanceGroup"] = instanceGroupType
 	fields["healthCheck"] = "compute.googleapis.com/HealthCheck"
 	fields["group"] = ""
+	fields["instances"] = instanceType
 	visit = func(value any, key string) {
 		switch typed := value.(type) {
 		case map[string]any:
@@ -329,6 +330,14 @@ func references(c *client, data map[string]any) map[string][]string {
 			}
 			if target == "compute.googleapis.com/BackendService" && strings.Contains(ref, "/regions/") {
 				target = "compute.googleapis.com/RegionBackendService"
+			}
+			if target == "compute.googleapis.com/HealthCheck" {
+				if strings.Contains(ref, "/httpHealthChecks/") {
+					target = "compute.googleapis.com/HttpHealthCheck"
+				}
+				if strings.Contains(ref, "/httpsHealthChecks/") {
+					target = "compute.googleapis.com/HttpsHealthCheck"
+				}
 			}
 			kind, known := findType(target)
 			if !known {

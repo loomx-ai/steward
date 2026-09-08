@@ -86,7 +86,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	}
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
-	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"}}
+	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
 	return &client{project: project, email: key.Email, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw)), http: &http.Client{
 		Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
@@ -104,14 +104,24 @@ type tokenTransport struct {
 }
 
 func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error) {
-	if err := request.Context().Err(); err != nil {
+	token, err := t.accessToken(request.Context())
+	if err != nil {
+		return nil, err
+	}
+	clone := request.Clone(request.Context())
+	token.SetAuthHeader(clone)
+	return t.base.RoundTrip(clone)
+}
+
+func (t *tokenTransport) accessToken(ctx context.Context) (*oauth2.Token, error) {
+	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	t.mu.Lock()
 	token := t.token
 	t.mu.Unlock()
 	if !token.Valid() {
-		ctx, cancel := context.WithTimeout(request.Context(), 30*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		defer cancel()
 		// jwt.TokenSource currently calls Client.PostForm without a context.
 		// Bind the actual exchange request at the transport boundary as well.
@@ -129,9 +139,7 @@ func (t *tokenTransport) RoundTrip(request *http.Request) (*http.Response, error
 		t.token = token
 		t.mu.Unlock()
 	}
-	clone := request.Clone(request.Context())
-	token.SetAuthHeader(clone)
-	return t.base.RoundTrip(clone)
+	return token, nil
 }
 
 type contextTransport struct {
@@ -160,6 +168,10 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		}
 		u.RawQuery = merged.Encode()
 	}
+	return requestJSON(ctx, c.http, method, u, body, safePayload)
+}
+
+func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (result contracts.InvocationResult, failure error) {
 	requestLog := map[string]any{"method": method, "path": u.Path, "query": u.Query()}
 	if len(body) > 0 {
 		var value any
@@ -168,7 +180,7 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		}
 		requestLog["body"] = value
 	}
-	execution.LogCloudAPIRequest(ctx, u.Host, method, safePayload(requestLog))
+	execution.LogCloudAPIRequest(ctx, u.Host, method, sanitize(requestLog))
 	defer func() {
 		if failure != nil {
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
@@ -183,7 +195,7 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 	if len(body) > 0 {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	response, err := c.http.Do(req)
+	response, err := httpClient.Do(req)
 	if err != nil {
 		if ctx.Err() != nil {
 			return result, ctx.Err()
@@ -199,7 +211,7 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		return result, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorRetryable, Code: "transport_error", Message: contracts.SafeProviderTransportMessage}}
 	}
 	defer response.Body.Close()
-	for _, header := range []string{"X-Goog-Request-Id", "X-Request-Id", "X-GUploader-UploadID"} {
+	for _, header := range []string{"X-Goog-Request-Id", "X-Request-Id", "X-GUploader-UploadID", "Audit-Id"} {
 		if value := response.Header.Get(header); value != "" {
 			result.RequestID = value
 			break
@@ -239,10 +251,14 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 	}
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
 		detail, _ := data["error"].(map[string]any)
+		code := text(detail["status"])
+		if data["kind"] == "Status" {
+			code = text(data["reason"])
+		}
 		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode})
-		return result, apiError(response.StatusCode, text(detail["status"]), detail, response.Header.Get("Retry-After"))
+		return result, apiError(response.StatusCode, code, detail, response.Header.Get("Retry-After"))
 	}
-	execution.LogCloudAPIResponse(ctx, u.Host, method, safePayload(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
+	execution.LogCloudAPIResponse(ctx, u.Host, method, sanitize(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
 	result.Data = data
 	result.NextToken = text(data["nextPageToken"])
 	return result, nil

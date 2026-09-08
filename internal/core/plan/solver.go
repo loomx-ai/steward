@@ -58,6 +58,7 @@ func Solve(input Input) (Result, error) {
 	}
 
 	candidates := make(map[asset.AssetID]struct{}, len(selected))
+	directFallbacks := make(map[asset.AssetID]bool)
 	for _, id := range selected {
 		value, ok := assets[id]
 		if !ok {
@@ -86,6 +87,7 @@ func Solve(input Input) (Result, error) {
 				}
 				if binding, allowed := directCleanupFallback(resolution.Chain); allowed {
 					candidates[id] = struct{}{}
+					directFallbacks[id] = true
 					result.Warnings = append(result.Warnings, Warning{
 						Code: WarningManagedResourceDirectCleanup, AssetID: id, ControllerID: resolution.ControllerAssetID,
 						Message: "resource is managed by a lifecycle controller; direct cleanup is allowed but controller cleanup is recommended",
@@ -108,7 +110,16 @@ func Solve(input Input) (Result, error) {
 		candidates[id] = struct{}{}
 	}
 
-	byController := bindingsByController(bindings)
+	// A directly deletable controller remains responsible for its descendants
+	// when its own parent was not selected. Stop authority at that accepted root
+	// for execution; retain the original bindings in the reviewed snapshot.
+	executionBindings := make([]graph.LifecycleBinding, 0, len(bindings))
+	for _, binding := range bindings {
+		if !directFallbacks[binding.ManagedAssetID] {
+			executionBindings = append(executionBindings, binding)
+		}
+	}
+	byController := bindingsByController(executionBindings)
 	suppressed := make(map[asset.AssetID]struct{})
 	directChildren := make(map[asset.AssetID]asset.AssetID)
 	controllerRoots := make(map[asset.AssetID]bool)
@@ -135,7 +146,7 @@ func Solve(input Input) (Result, error) {
 					continue
 				}
 				if binding.Ownership == graph.OwnershipExclusive && binding.CleanupPolicy == graph.CleanupDelegate {
-					resolution, resolveErr := graph.ResolveAuthority(managedID, bindings)
+					resolution, resolveErr := graph.ResolveAuthority(managedID, executionBindings)
 					if resolveErr != nil {
 						blockers.add(lifecycleBlocker(managedID, resolveErr))
 						continue

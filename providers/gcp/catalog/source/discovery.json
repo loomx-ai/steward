@@ -1224,6 +1224,78 @@
               "https://www.googleapis.com/auth/compute.readonly"
             ]
           },
+          "compute.globalNetworkEndpointGroups.delete": {
+            "description": "Deletes the specified network endpoint group.Note that the NEG cannot be\ndeleted if there are backend services referencing it.",
+            "flatPath": "projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "DELETE",
+            "id": "compute.globalNetworkEndpointGroups.delete",
+            "parameterOrder": [
+              "project",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group to delete. It should comply with\nRFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.globalNetworkEndpointGroups.get": {
+            "description": "Returns the specified network endpoint group.",
+            "flatPath": "projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "GET",
+            "id": "compute.globalNetworkEndpointGroups.get",
+            "parameterOrder": [
+              "project",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "NetworkEndpointGroup"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
           "compute.globalOperations.get": {
             "description": "Retrieves the specified Operations resource.",
             "flatPath": "projects/{project}/global/operations/{operation}",
@@ -1502,6 +1574,264 @@
             "path": "projects/{project}/global/healthChecks",
             "response": {
               "$ref": "HealthCheckList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.httpHealthChecks.delete": {
+            "description": "Deletes the specified HttpHealthCheck resource.",
+            "flatPath": "projects/{project}/global/httpHealthChecks/{httpHealthCheck}",
+            "httpMethod": "DELETE",
+            "id": "compute.httpHealthChecks.delete",
+            "parameterOrder": [
+              "project",
+              "httpHealthCheck"
+            ],
+            "parameters": {
+              "httpHealthCheck": {
+                "description": "Name of the HttpHealthCheck resource to delete.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/httpHealthChecks/{httpHealthCheck}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.httpHealthChecks.get": {
+            "description": "Returns the specified HttpHealthCheck resource.",
+            "flatPath": "projects/{project}/global/httpHealthChecks/{httpHealthCheck}",
+            "httpMethod": "GET",
+            "id": "compute.httpHealthChecks.get",
+            "parameterOrder": [
+              "project",
+              "httpHealthCheck"
+            ],
+            "parameters": {
+              "httpHealthCheck": {
+                "description": "Name of the HttpHealthCheck resource to return.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/httpHealthChecks/{httpHealthCheck}",
+            "response": {
+              "$ref": "HttpHealthCheck"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.httpHealthChecks.list": {
+            "description": "Retrieves the list of HttpHealthCheck resources available to the specified\nproject.",
+            "flatPath": "projects/{project}/global/httpHealthChecks",
+            "httpMethod": "GET",
+            "id": "compute.httpHealthChecks.list",
+            "parameterOrder": [
+              "project"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+                "location": "query",
+                "type": "string"
+              },
+              "maxResults": {
+                "default": "500",
+                "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+                "format": "uint32",
+                "location": "query",
+                "minimum": "0",
+                "type": "integer"
+              },
+              "orderBy": {
+                "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+                "location": "query",
+                "type": "string"
+              },
+              "pageToken": {
+                "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+                "location": "query",
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+                "location": "query",
+                "type": "boolean"
+              }
+            },
+            "path": "projects/{project}/global/httpHealthChecks",
+            "response": {
+              "$ref": "HttpHealthCheckList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.httpsHealthChecks.delete": {
+            "description": "Deletes the specified HttpsHealthCheck resource.",
+            "flatPath": "projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}",
+            "httpMethod": "DELETE",
+            "id": "compute.httpsHealthChecks.delete",
+            "parameterOrder": [
+              "project",
+              "httpsHealthCheck"
+            ],
+            "parameters": {
+              "httpsHealthCheck": {
+                "description": "Name of the HttpsHealthCheck resource to delete.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.httpsHealthChecks.get": {
+            "description": "Returns the specified HttpsHealthCheck resource.",
+            "flatPath": "projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}",
+            "httpMethod": "GET",
+            "id": "compute.httpsHealthChecks.get",
+            "parameterOrder": [
+              "project",
+              "httpsHealthCheck"
+            ],
+            "parameters": {
+              "httpsHealthCheck": {
+                "description": "Name of the HttpsHealthCheck resource to return.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}",
+            "response": {
+              "$ref": "HttpsHealthCheck"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.httpsHealthChecks.list": {
+            "description": "Retrieves the list of HttpsHealthCheck resources available to the specified\nproject.",
+            "flatPath": "projects/{project}/global/httpsHealthChecks",
+            "httpMethod": "GET",
+            "id": "compute.httpsHealthChecks.list",
+            "parameterOrder": [
+              "project"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+                "location": "query",
+                "type": "string"
+              },
+              "maxResults": {
+                "default": "500",
+                "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+                "format": "uint32",
+                "location": "query",
+                "minimum": "0",
+                "type": "integer"
+              },
+              "orderBy": {
+                "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+                "location": "query",
+                "type": "string"
+              },
+              "pageToken": {
+                "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+                "location": "query",
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+                "location": "query",
+                "type": "boolean"
+              }
+            },
+            "path": "projects/{project}/global/httpsHealthChecks",
+            "response": {
+              "$ref": "HttpsHealthCheckList"
             },
             "scopes": [
               "https://www.googleapis.com/auth/cloud-platform",
@@ -2831,6 +3161,158 @@
               "https://www.googleapis.com/auth/compute"
             ]
           },
+          "compute.networkEndpointGroups.aggregatedList": {
+            "description": "Retrieves the list of network endpoint groups and sorts them by zone.\n\nTo prevent failure, Google recommends that you set the\n`returnPartialSuccess` parameter to `true`.",
+            "flatPath": "projects/{project}/aggregated/networkEndpointGroups",
+            "httpMethod": "GET",
+            "id": "compute.networkEndpointGroups.aggregatedList",
+            "parameterOrder": [
+              "project"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+                "location": "query",
+                "type": "string"
+              },
+              "includeAllScopes": {
+                "description": "Indicates whether every visible scope for each scope type (zone, region,\nglobal) should be included in the response. For new resource types added\nafter this field, the flag has no effect as new resource types will always\ninclude every visible scope for each scope type in response. For resource\ntypes which predate this field, if this flag is omitted or false, only\nscopes of the scope types where the resource type is expected to be found\nwill be included.",
+                "location": "query",
+                "type": "boolean"
+              },
+              "maxResults": {
+                "default": "500",
+                "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+                "format": "uint32",
+                "location": "query",
+                "minimum": "0",
+                "type": "integer"
+              },
+              "orderBy": {
+                "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+                "location": "query",
+                "type": "string"
+              },
+              "pageToken": {
+                "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+                "location": "query",
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+                "location": "query",
+                "type": "boolean"
+              },
+              "serviceProjectNumber": {
+                "description": "The Shared VPC service project id or service project number for which\naggregated list request is invoked for subnetworks list-usable api.",
+                "format": "int64",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/aggregated/networkEndpointGroups",
+            "response": {
+              "$ref": "NetworkEndpointGroupAggregatedList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.networkEndpointGroups.delete": {
+            "description": "Deletes the specified network endpoint group. The network endpoints in the\nNEG and the VM instances they belong to are not terminated when the NEG is\ndeleted. Note that the NEG cannot be deleted if there are backend services\nreferencing it.",
+            "flatPath": "projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "DELETE",
+            "id": "compute.networkEndpointGroups.delete",
+            "parameterOrder": [
+              "project",
+              "zone",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group to delete. It should comply with\nRFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              },
+              "zone": {
+                "description": "The name of the zone where\nthe network endpoint group is located. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.networkEndpointGroups.get": {
+            "description": "Returns the specified network endpoint group.",
+            "flatPath": "projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "GET",
+            "id": "compute.networkEndpointGroups.get",
+            "parameterOrder": [
+              "project",
+              "zone",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "zone": {
+                "description": "The name of the zone where\nthe network endpoint group is located. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/zones/{zone}/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "NetworkEndpointGroup"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
           "compute.networks.delete": {
             "description": "Deletes the specified network.",
             "flatPath": "projects/{project}/global/networks/{network}",
@@ -4137,6 +4619,92 @@
             "path": "projects/{project}/regions/{region}/instanceTemplates",
             "response": {
               "$ref": "InstanceTemplateList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.regionNetworkEndpointGroups.delete": {
+            "description": "Deletes the specified network endpoint group. Note that the NEG cannot be\ndeleted if it is configured as a backend of a backend service.",
+            "flatPath": "projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "DELETE",
+            "id": "compute.regionNetworkEndpointGroups.delete",
+            "parameterOrder": [
+              "project",
+              "region",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group to delete. It should comply with\nRFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "region": {
+                "description": "The name of the region where\nthe network endpoint group is located. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.regionNetworkEndpointGroups.get": {
+            "description": "Returns the specified network endpoint group.",
+            "flatPath": "projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}",
+            "httpMethod": "GET",
+            "id": "compute.regionNetworkEndpointGroups.get",
+            "parameterOrder": [
+              "project",
+              "region",
+              "networkEndpointGroup"
+            ],
+            "parameters": {
+              "networkEndpointGroup": {
+                "description": "The name of the network endpoint group. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "region": {
+                "description": "The name of the region where\nthe network endpoint group is located. It should comply with RFC1035.",
+                "location": "path",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}",
+            "response": {
+              "$ref": "NetworkEndpointGroup"
             },
             "scopes": [
               "https://www.googleapis.com/auth/cloud-platform",
@@ -6122,6 +6690,162 @@
             "path": "projects/{project}/global/targetHttpsProxies",
             "response": {
               "$ref": "TargetHttpsProxyList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.targetPools.aggregatedList": {
+            "description": "Retrieves an aggregated list of target pools.\n\nTo prevent failure, Google recommends that you set the\n`returnPartialSuccess` parameter to `true`.",
+            "flatPath": "projects/{project}/aggregated/targetPools",
+            "httpMethod": "GET",
+            "id": "compute.targetPools.aggregatedList",
+            "parameterOrder": [
+              "project"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "A filter expression that filters resources listed in the response. Most\nCompute resources support two types of filter expressions:\nexpressions that support regular expressions and expressions that follow\nAPI improvement proposal AIP-160.\nThese two types of filter expressions cannot be mixed in one request.\n\nIf you want to use AIP-160, your expression must specify the field name, an\noperator, and the value that you want to use for filtering. The value\nmust be a string, a number, or a boolean. The operator\nmust be either `=`, `!=`, `>`, `<`, `<=`, `>=` or `:`.\n\nFor example, if you are filtering Compute Engine instances, you can\nexclude instances named `example-instance` by specifying\n`name != example-instance`.\n\nThe `:*` comparison can be used to test whether a key has been defined.\nFor example, to find all objects with `owner` label use:\n```\nlabels.owner:*\n```\n\nYou can also filter nested fields. For example, you could specify\n`scheduling.automaticRestart = false` to include instances only\nif they are not scheduled for automatic restarts. You can use filtering\non nested fields to filter based onresource labels.\n\nTo filter on multiple expressions, provide each separate expression within\nparentheses. For example:\n```\n(scheduling.automaticRestart = true)\n(cpuPlatform = \"Intel Skylake\")\n```\nBy default, each expression is an `AND` expression. However, you\ncan include `AND` and `OR` expressions explicitly.\nFor example:\n```\n(cpuPlatform = \"Intel Skylake\") OR\n(cpuPlatform = \"Intel Broadwell\") AND\n(scheduling.automaticRestart = true)\n```\n\nIf you want to use a regular expression, use the `eq` (equal) or `ne`\n(not equal) operator against a single un-parenthesized expression with or\nwithout quotes or against multiple parenthesized expressions. Examples:\n\n`fieldname eq unquoted literal`\n`fieldname eq 'single quoted literal'`\n`fieldname eq \"double quoted literal\"`\n`(fieldname1 eq literal) (fieldname2 ne \"literal\")`\n\nThe literal value is interpreted as a regular expression using GoogleRE2 library syntax.\nThe literal value must match the entire field.\n\nFor example, to filter for instances that do not end with name \"instance\",\nyou would use `name ne .*instance`.\n\nYou cannot combine constraints on multiple fields using regular\nexpressions.",
+                "location": "query",
+                "type": "string"
+              },
+              "includeAllScopes": {
+                "description": "Indicates whether every visible scope for each scope type (zone, region,\nglobal) should be included in the response. For new resource types added\nafter this field, the flag has no effect as new resource types will always\ninclude every visible scope for each scope type in response. For resource\ntypes which predate this field, if this flag is omitted or false, only\nscopes of the scope types where the resource type is expected to be found\nwill be included.",
+                "location": "query",
+                "type": "boolean"
+              },
+              "maxResults": {
+                "default": "500",
+                "description": "The maximum number of results per page that should be returned.\nIf the number of available results is larger than `maxResults`,\nCompute Engine returns a `nextPageToken` that can be used to get\nthe next page of results in subsequent list requests. Acceptable values are\n`0` to `500`, inclusive. (Default: `500`)",
+                "format": "uint32",
+                "location": "query",
+                "minimum": "0",
+                "type": "integer"
+              },
+              "orderBy": {
+                "description": "Sorts list results by a certain order. By default, results\nare returned in alphanumerical order based on the resource name.\n\nYou can also sort results in descending order based on the creation\ntimestamp using `orderBy=\"creationTimestamp desc\"`. This sorts\nresults based on the `creationTimestamp` field in\nreverse chronological order (newest result first). Use this to sort\nresources like operations so that the newest operation is returned first.\n\nCurrently, only sorting by `name` or\n`creationTimestamp desc` is supported.",
+                "location": "query",
+                "type": "string"
+              },
+              "pageToken": {
+                "description": "Specifies a page token to use. Set `pageToken` to the\n`nextPageToken` returned by a previous list request to get\nthe next page of results.",
+                "location": "query",
+                "type": "string"
+              },
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "returnPartialSuccess": {
+                "description": "Opt-in for partial success behavior which provides partial results in case\nof failure. The default value is false.\n\nFor example, when partial success behavior is enabled, aggregatedList for a\nsingle zone scope either returns all resources in the zone or no resources,\nwith an error code.",
+                "location": "query",
+                "type": "boolean"
+              },
+              "serviceProjectNumber": {
+                "description": "The Shared VPC service project id or service project number for which\naggregated list request is invoked for subnetworks list-usable api.",
+                "format": "int64",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/aggregated/targetPools",
+            "response": {
+              "$ref": "TargetPoolAggregatedList"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute",
+              "https://www.googleapis.com/auth/compute.readonly"
+            ]
+          },
+          "compute.targetPools.delete": {
+            "description": "Deletes the specified target pool.",
+            "flatPath": "projects/{project}/regions/{region}/targetPools/{targetPool}",
+            "httpMethod": "DELETE",
+            "id": "compute.targetPools.delete",
+            "parameterOrder": [
+              "project",
+              "region",
+              "targetPool"
+            ],
+            "parameters": {
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "region": {
+                "description": "Name of the region scoping this request.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "An optional request ID to identify requests. Specify a unique request ID so\nthat if you must retry your request, the server will know to ignore the\nrequest if it has already been completed.\n\nFor example, consider a situation where you make an initial request and\nthe request times out. If you make the request again with the same\nrequest ID, the server can check if original operation with the same\nrequest ID was received, and if so, will ignore the second request. This\nprevents clients from accidentally creating duplicate commitments.\n\nThe request ID must be\na valid UUID with the exception that zero UUID is not supported\n(00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              },
+              "targetPool": {
+                "description": "Name of the TargetPool resource to delete.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/regions/{region}/targetPools/{targetPool}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform",
+              "https://www.googleapis.com/auth/compute"
+            ]
+          },
+          "compute.targetPools.get": {
+            "description": "Returns the specified target pool.",
+            "flatPath": "projects/{project}/regions/{region}/targetPools/{targetPool}",
+            "httpMethod": "GET",
+            "id": "compute.targetPools.get",
+            "parameterOrder": [
+              "project",
+              "region",
+              "targetPool"
+            ],
+            "parameters": {
+              "project": {
+                "description": "Project ID for this request.",
+                "location": "path",
+                "pattern": "(?:(?:[-a-z0-9]{1,63}\\.)*(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?):)?(?:[0-9]{1,19}|(?:[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?))",
+                "required": true,
+                "type": "string"
+              },
+              "region": {
+                "description": "Name of the region scoping this request.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "required": true,
+                "type": "string"
+              },
+              "targetPool": {
+                "description": "Name of the TargetPool resource to return.",
+                "location": "path",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?|[1-9][0-9]{0,19}",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "projects/{project}/regions/{region}/targetPools/{targetPool}",
+            "response": {
+              "$ref": "TargetPool"
             },
             "scopes": [
               "https://www.googleapis.com/auth/cloud-platform",
@@ -12704,6 +13428,231 @@
             },
             "type": "object"
           },
+          "HttpHealthCheck": {
+            "description": "Represents a legacy HTTP Health Check resource.\n\nLegacy HTTP health checks are now only required by target pool-based network\nload balancers. For all other load balancers, including backend service-based\nnetwork load balancers, and for managed instance group auto-healing, you must\nuse modern (non-legacy) health checks.\n\nFor more information, seeHealth checks\noverview.",
+            "id": "HttpHealthCheck",
+            "properties": {
+              "checkIntervalSec": {
+                "description": "How often (in seconds) to send a health check. The default value is5 seconds.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "creationTimestamp": {
+                "description": "[Output Only] Creation timestamp inRFC3339\ntext format.",
+                "type": "string"
+              },
+              "description": {
+                "description": "An optional description of this resource. Provide this property when you\ncreate the resource.",
+                "type": "string"
+              },
+              "healthyThreshold": {
+                "description": "A so-far unhealthy instance will be marked healthy after this\nmany consecutive successes. The default value is 2.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "host": {
+                "description": "The value of the host header in the HTTP health check request. If left\nempty (default value), the public IP on behalf of which this health check\nis performed will be used.",
+                "type": "string"
+              },
+              "id": {
+                "description": "[Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+                "format": "uint64",
+                "type": "string"
+              },
+              "kind": {
+                "default": "compute#httpHealthCheck",
+                "description": "Output only. [Output Only] Type of the resource. Alwayscompute#httpHealthCheck for HTTP health checks.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the resource. Provided by the client when the resource is created.\nThe name must be 1-63 characters long, and comply withRFC1035.\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first\ncharacter must be a lowercase letter, and all following characters must\nbe a dash, lowercase letter, or digit, except the last character, which\ncannot be a dash.",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "type": "string"
+              },
+              "port": {
+                "description": "The TCP port number for the HTTP health check request. The default value is80.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "requestPath": {
+                "description": "The request path of the HTTP health check request. The default value is/. This field does not support query\nparameters. Must comply withRFC3986.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "[Output Only] Server-defined URL for the resource.",
+                "type": "string"
+              },
+              "timeoutSec": {
+                "description": "How long (in seconds) to wait before claiming failure. The default value is5 seconds. It is invalid for timeoutSec to have\ngreater value than checkIntervalSec.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "unhealthyThreshold": {
+                "description": "A so-far healthy instance will be marked unhealthy after this\nmany consecutive failures. The default value is 2.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "HttpHealthCheckList": {
+            "description": "Contains a list of HttpHealthCheck resources.",
+            "id": "HttpHealthCheckList",
+            "properties": {
+              "id": {
+                "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+                "type": "string"
+              },
+              "items": {
+                "description": "A list of HttpHealthCheck resources.",
+                "items": {
+                  "$ref": "HttpHealthCheck"
+                },
+                "type": "array"
+              },
+              "kind": {
+                "default": "compute#httpHealthCheckList",
+                "description": "Output only. Type of resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "nextPageToken": {
+                "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "Output only. [Output Only] Server-defined URL for this resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "warning": {
+                "description": "[Output Only] Informational warning message.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
           "HttpQueryParameterMatch": {
             "description": "HttpRouteRuleMatch criteria for a request's query parameter.",
             "id": "HttpQueryParameterMatch",
@@ -12927,6 +13876,231 @@
               "regexMatch": {
                 "description": "For satisfying the matchRule condition, the path of the\nrequest must satisfy the regular expression specified inregexMatch after removing any query parameters and anchor\nsupplied with the original URL. For\nmore information about regular expression syntax, see Syntax.\n\nOnly one of prefixMatch, fullPathMatch,regexMatch or path_template_match must be\nspecified.\n\nRegular expressions can only be used when the loadBalancingScheme is\nset to INTERNAL_SELF_MANAGED, EXTERNAL_MANAGED\n(regional scope) or INTERNAL_MANAGED.",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "HttpsHealthCheck": {
+            "description": "Represents a legacy HTTPS Health Check resource.\n\nLegacy HTTPS health checks have been deprecated. If you are using a target\npool-based network load balancer, you must use a legacy HTTP (not HTTPS)\nhealth check. For all other load balancers, including backend service-based\nnetwork load balancers, and for managed instance group auto-healing, you must\nuse modern (non-legacy) health checks.\n\nFor more information, seeHealth checks\noverview.",
+            "id": "HttpsHealthCheck",
+            "properties": {
+              "checkIntervalSec": {
+                "description": "How often (in seconds) to send a health check. The default value is 5\nseconds.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "creationTimestamp": {
+                "description": "[Output Only] Creation timestamp inRFC3339\ntext format.",
+                "type": "string"
+              },
+              "description": {
+                "description": "An optional description of this resource. Provide this property when you\ncreate the resource.",
+                "type": "string"
+              },
+              "healthyThreshold": {
+                "description": "A so-far unhealthy instance will be marked healthy after this\nmany consecutive successes. The default value is 2.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "host": {
+                "description": "The value of the host header in the HTTPS health check request. If left\nempty (default value), the public IP on behalf of which this health check\nis performed will be used.",
+                "type": "string"
+              },
+              "id": {
+                "description": "[Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+                "format": "uint64",
+                "type": "string"
+              },
+              "kind": {
+                "default": "compute#httpsHealthCheck",
+                "description": "Output only. Type of the resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the resource. Provided by the client when the resource is created.\nThe name must be 1-63 characters long, and comply withRFC1035.\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first\ncharacter must be a lowercase letter, and all following characters must\nbe a dash, lowercase letter, or digit, except the last character, which\ncannot be a dash.",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "type": "string"
+              },
+              "port": {
+                "description": "The TCP port number for the HTTPS health check request. The default value\nis 443.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "requestPath": {
+                "description": "The request path of the HTTPS health check request. The default value is\n\"/\". Must comply withRFC3986.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "[Output Only] Server-defined URL for the resource.",
+                "type": "string"
+              },
+              "timeoutSec": {
+                "description": "How long (in seconds) to wait before claiming failure. The default value is\n5 seconds. It is invalid for timeoutSec to have a greater value than\ncheckIntervalSec.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "unhealthyThreshold": {
+                "description": "A so-far healthy instance will be marked unhealthy after this\nmany consecutive failures. The default value is 2.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "HttpsHealthCheckList": {
+            "description": "Contains a list of HttpsHealthCheck resources.",
+            "id": "HttpsHealthCheckList",
+            "properties": {
+              "id": {
+                "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+                "type": "string"
+              },
+              "items": {
+                "description": "A list of HttpsHealthCheck resources.",
+                "items": {
+                  "$ref": "HttpsHealthCheck"
+                },
+                "type": "array"
+              },
+              "kind": {
+                "default": "compute#httpsHealthCheckList",
+                "description": "Output only. Type of resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "nextPageToken": {
+                "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "Output only. [Output Only] Server-defined URL for this resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "warning": {
+                "description": "[Output Only] Informational warning message.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
               }
             },
             "type": "object"
@@ -17498,6 +18672,526 @@
                   "type": "string"
                 },
                 "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroup": {
+            "description": "Represents a collection of network endpoints.\n\nA network endpoint group (NEG) defines how a set of endpoints should be\nreached, whether they are reachable, and where they are located.\nFor more information about using NEGs for different use cases, seeNetwork endpoint groups overview.\n\nNote: Use the following APIs to manage network endpoint groups:\n   \n   - \n   To manage NEGs with zonal scope (such as zonal NEGs, hybrid connectivity\n   NEGs): zonal\n   API\n   - \n   To manage NEGs with regional scope (such as regional internet NEGs,\n   serverless NEGs, Private Service Connect NEGs): regional\n   API\n   - \n   To manage NEGs with global scope (such as global internet NEGs):global\n   API",
+            "id": "NetworkEndpointGroup",
+            "properties": {
+              "annotations": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Optional. Metadata defined as annotations on the network endpoint group.",
+                "type": "object"
+              },
+              "appEngine": {
+                "$ref": "NetworkEndpointGroupAppEngine",
+                "description": "Optional. Only valid when networkEndpointType isSERVERLESS. Only one of cloudRun,appEngine or cloudFunction may be set."
+              },
+              "cloudFunction": {
+                "$ref": "NetworkEndpointGroupCloudFunction",
+                "description": "Optional. Only valid when networkEndpointType isSERVERLESS. Only one of cloudRun,appEngine or cloudFunction may be set."
+              },
+              "cloudRun": {
+                "$ref": "NetworkEndpointGroupCloudRun",
+                "description": "Optional. Only valid when networkEndpointType isSERVERLESS. Only one of cloudRun,appEngine or cloudFunction may be set."
+              },
+              "creationTimestamp": {
+                "description": "Output only. [Output Only] Creation timestamp inRFC3339\ntext format.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "defaultPort": {
+                "description": "The default port used if the port number is not specified in the network\nendpoint.\n\nOptional. If the network endpoint type is either GCE_VM_IP,SERVERLESS or PRIVATE_SERVICE_CONNECT, this\nfield must not be specified.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "description": {
+                "description": "An optional description of this resource. Provide this property when you\ncreate the resource.",
+                "type": "string"
+              },
+              "id": {
+                "description": "Output only. [Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+                "format": "uint64",
+                "readOnly": true,
+                "type": "string"
+              },
+              "kind": {
+                "default": "compute#networkEndpointGroup",
+                "description": "Output only. [Output Only] Type of the resource. Alwayscompute#networkEndpointGroup for network endpoint group.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the resource; provided by the client when the resource is created.\nThe name must be 1-63 characters long, and comply withRFC1035.\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first\ncharacter must be a lowercase letter, and all following characters must be\na dash, lowercase letter, or digit, except the last character, which cannot\nbe a dash.",
+                "type": "string"
+              },
+              "network": {
+                "description": "The URL of the network to which all network endpoints in the NEG belong.\nFor networkEndpointType GCE_VM_IP_PORT,GCE_VM_IP_PORTMAP or NON_GCP_PRIVATE_IP_PORT,\nif this field is not specified, a default network will be used.\nThis field cannot be set for NEGs with networkEndpointType set toSERVERLESS or PRIVATE_SERVICE_CONNECT and for\nglobal NEGs.\nFor all other network endpoint types, this field is required.",
+                "type": "string"
+              },
+              "networkEndpointType": {
+                "description": "Type of network endpoints in this network endpoint group. Can be one ofGCE_VM_IP, GCE_VM_IP_PORT,NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,INTERNET_IP_PORT, SERVERLESS,PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.",
+                "enum": [
+                  "GCE_VM_IP",
+                  "GCE_VM_IP_DEDICATED_BACKEND",
+                  "GCE_VM_IP_PORT",
+                  "GCE_VM_IP_PORTMAP",
+                  "INTERNET_FQDN_PORT",
+                  "INTERNET_IP_PORT",
+                  "NON_GCP_PRIVATE_IP_PORT",
+                  "PRIVATE_SERVICE_CONNECT",
+                  "SERVERLESS"
+                ],
+                "enumDescriptions": [
+                  "The network endpoint is represented by an IP address.",
+                  "The network endpoint for targeting a specific network interface of a\nVM instance in configurations with multiple network interfaces on the\nsame network.",
+                  "The network endpoint is represented by IP address and port pair.",
+                  "The network endpoint is represented by an IP, Port and Client Destination\nPort.",
+                  "The network endpoint is represented by fully qualified domain name and\nport.",
+                  "The network endpoint is represented by an internet IP address and port.",
+                  "The network endpoint is represented by an IP address and port. The\nendpoint belongs to a VM or pod running in a customer's on-premises.",
+                  "The network endpoint is either public Google APIs or\nservices exposed by other GCP Project with a Service Attachment.\nThe connection is set up by private service connect",
+                  "The network endpoint is handled by specified serverless infrastructure."
+                ],
+                "type": "string"
+              },
+              "pscData": {
+                "$ref": "NetworkEndpointGroupPscData",
+                "description": "Optional. Only valid when networkEndpointType isPRIVATE_SERVICE_CONNECT."
+              },
+              "pscTargetService": {
+                "description": "The target service url used to set up private service connection to\na Google API or a PSC Producer Service Attachment.\nAn example value is: asia-northeast3-cloudkms.googleapis.com.\n\nOptional. Only valid when networkEndpointType isPRIVATE_SERVICE_CONNECT.",
+                "type": "string"
+              },
+              "region": {
+                "description": "Output only. [Output Only] The URL of theregion\nwhere the network endpoint group is located.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "Output only. [Output Only] Server-defined URL for the resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "size": {
+                "description": "Output only. [Output only] Number of network endpoints in the network endpoint group.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "subnetwork": {
+                "description": "Optional URL of the subnetwork to which all network endpoints in the NEG\nbelong.",
+                "type": "string"
+              },
+              "zone": {
+                "description": "Output only. [Output Only] The URL of thezone\nwhere the network endpoint group is located.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupAggregatedList": {
+            "id": "NetworkEndpointGroupAggregatedList",
+            "properties": {
+              "id": {
+                "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+                "type": "string"
+              },
+              "items": {
+                "additionalProperties": {
+                  "$ref": "NetworkEndpointGroupsScopedList",
+                  "description": "The name of the scope that contains this set of network endpoint groups."
+                },
+                "description": "A list of NetworkEndpointGroupsScopedList resources.",
+                "type": "object"
+              },
+              "kind": {
+                "default": "compute#networkEndpointGroupAggregatedList",
+                "description": "Output only. [Output Only] The resource type, which is alwayscompute#networkEndpointGroupAggregatedList for aggregated\nlists of network endpoint groups.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "nextPageToken": {
+                "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "Output only. [Output Only] Server-defined URL for this resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "unreachables": {
+                "description": "Output only. [Output Only] Unreachable resources.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "warning": {
+                "description": "[Output Only] Informational warning message.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupAppEngine": {
+            "description": "Configuration for an App Engine network endpoint group (NEG).\nThe service is optional, may be provided explicitly or in the\nURL mask. The version is optional and can only be provided\nexplicitly or in the URL mask when service is present.\n\nNote: App Engine service must be in the same project and located in the\nsame region as the Serverless NEG.",
+            "id": "NetworkEndpointGroupAppEngine",
+            "properties": {
+              "service": {
+                "description": "Optional serving service.\n\nThe service name is case-sensitive and must be 1-63\ncharacters long.\n\nExample value: default, my-service.",
+                "type": "string"
+              },
+              "urlMask": {
+                "description": "An URL\nmask is one of the main components of the Cloud Function.\n\nA template to parse service and version fields\nfrom a request URL. URL mask allows for routing to multiple App Engine\nservices without having to create multiple Network Endpoint Groups and\nbackend services.\n\nFor example, the request URLsfoo1-dot-appname.appspot.com/v1 andfoo1-dot-appname.appspot.com/v2 can be backed by the same\nServerless NEG with URL mask<service>-dot-appname.appspot.com/<version>.\nThe URL mask will parse them to { service = \"foo1\", version = \"v1\"\n} and { service = \"foo1\", version = \"v2\" }\nrespectively.",
+                "type": "string"
+              },
+              "version": {
+                "description": "Optional serving version.\n\nThe version name is case-sensitive and must be 1-100\ncharacters long.\n\nExample value: v1, v2.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupCloudFunction": {
+            "description": "Configuration for a Cloud Function network endpoint group (NEG).\nThe function must be provided explicitly or in the URL mask.\n\nNote: Cloud Function must be in the same project and located in the same\nregion as the Serverless NEG.",
+            "id": "NetworkEndpointGroupCloudFunction",
+            "properties": {
+              "function": {
+                "description": "A user-defined name of the Cloud Function.\n\nThe function name is case-sensitive and must be 1-63\ncharacters long.\n\nExample value: func1.",
+                "type": "string"
+              },
+              "urlMask": {
+                "description": "An URL\nmask is one of the main components of the Cloud Function.\n\nA template to parse function field from a request URL. URL\nmask allows for routing to multiple Cloud Functions without having to\ncreate multiple Network Endpoint Groups and backend services.\n\nFor example, request URLs mydomain.com/function1 andmydomain.com/function2 can be backed by the same\nServerless NEG with URL mask /<function>. The URL\nmask will parse them to { function = \"function1\" } and{ function = \"function2\" } respectively.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupCloudRun": {
+            "description": "Configuration for a Cloud Run network endpoint group (NEG).\nThe service must be provided explicitly or in the URL mask.\nThe tag is optional, may be provided explicitly or in the URL\nmask.\n\nNote: Cloud Run service must be in the same project and located in the same\nregion as the Serverless NEG.",
+            "id": "NetworkEndpointGroupCloudRun",
+            "properties": {
+              "service": {
+                "description": "Cloud Run service is the main resource of Cloud Run.\n\nThe service must be 1-63 characters long, and comply withRFC1035.\n\nExample value: \"run-service\".",
+                "type": "string"
+              },
+              "tag": {
+                "description": "Optional Cloud Run tag represents the \"named-revision\" to provide additional\nfine-grained traffic routing information.\n\nThe tag must be 1-63 characters long, and comply withRFC1035.\n\nExample value: \"revision-0010\".",
+                "type": "string"
+              },
+              "urlMask": {
+                "description": "An URL\nmask is one of the main components of the Cloud Function.\n\nA template to parse <service> and<tag> fields from a request URL. URL mask allows for\nrouting to multiple Run services without having to create multiple\nnetwork endpoint groups and backend services.\n\nFor example, request URLs foo1.domain.com/bar1 andfoo1.domain.com/bar2 can be backed by the same Serverless\nNetwork Endpoint Group (NEG) with URL mask<tag>.domain.com/<service>. The URL mask will\nparse them to { service=\"bar1\", tag=\"foo1\" } and {\nservice=\"bar2\", tag=\"foo2\" } respectively.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupPscData": {
+            "description": "All data that is specifically relevant to only network endpoint groups of\ntype PRIVATE_SERVICE_CONNECT.",
+            "id": "NetworkEndpointGroupPscData",
+            "properties": {
+              "consumerPscAddress": {
+                "description": "Output only. [Output Only] Address allocated from given subnetwork for PSC. This IP\naddress acts as a VIP for a PSC NEG, allowing it to act as an endpoint in\nL7 PSC-XLB.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "producerPort": {
+                "description": "The psc producer port is used to connect PSC NEG with specific port on\nthe PSC Producer side; should only be used for the\nPRIVATE_SERVICE_CONNECT NEG type",
+                "format": "int32",
+                "type": "integer"
+              },
+              "pscConnectionId": {
+                "description": "Output only. [Output Only] The PSC connection id of the PSC Network Endpoint Group\nConsumer.",
+                "format": "uint64",
+                "readOnly": true,
+                "type": "string"
+              },
+              "pscConnectionStatus": {
+                "description": "Output only. [Output Only] The connection status of the PSC Forwarding Rule.",
+                "enum": [
+                  "ACCEPTED",
+                  "CLOSED",
+                  "NEEDS_ATTENTION",
+                  "PENDING",
+                  "REJECTED",
+                  "STATUS_UNSPECIFIED"
+                ],
+                "enumDescriptions": [
+                  "The connection has been accepted by the producer.",
+                  "The connection has been closed by the producer and will not serve\ntraffic going forward.",
+                  "The connection has been accepted by the producer, but the producer\nneeds to take further action before the forwarding rule can serve\ntraffic.",
+                  "The connection is pending acceptance by the producer.",
+                  "The connection has been rejected by the producer.",
+                  ""
+                ],
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkEndpointGroupsScopedList": {
+            "id": "NetworkEndpointGroupsScopedList",
+            "properties": {
+              "networkEndpointGroups": {
+                "description": "Output only. [Output Only] The list ofnetwork\nendpoint groups that are contained in this scope.",
+                "items": {
+                  "$ref": "NetworkEndpointGroup"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "warning": {
+                "description": "Output only. [Output Only] An informational warning that replaces the list of network\nendpoint groups when the list is empty.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "readOnly": true,
+                "type": "object"
               }
             },
             "type": "object"
@@ -24973,6 +26667,402 @@
             },
             "type": "object"
           },
+          "TargetPool": {
+            "description": "Represents a Target Pool resource.\n\nTarget pools are used with external passthrough Network Load Balancers.\nA target pool references member instances, an associated legacy\nHttpHealthCheck resource, and, optionally, a backup target pool.\nFor more information, readUsing target pools.",
+            "id": "TargetPool",
+            "properties": {
+              "backupPool": {
+                "description": "The server-defined URL for the resource. This field is applicable only when\nthe containing target pool is serving a forwarding rule as the primary\npool, and its failoverRatio field is properly set to a value\nbetween [0, 1].\nbackupPool and failoverRatio together define\nthe fallback behavior of the primary target pool: if the ratio of the\nhealthy instances in the primary pool is at or belowfailoverRatio, traffic arriving at the load-balanced\nIP will be directed to the backup pool.\n\nIn case where failoverRatio and backupPool\nare not set, or all the instances in the backup pool are unhealthy,\nthe traffic will be directed back to the primary pool in the \"force\"\nmode, where traffic will be spread to the healthy instances with the\nbest effort, or to all instances when no instance is healthy.",
+                "type": "string"
+              },
+              "creationTimestamp": {
+                "description": "Output only. [Output Only] Creation timestamp inRFC3339\ntext format.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "description": {
+                "description": "An optional description of this resource. Provide this property when you\ncreate the resource.",
+                "type": "string"
+              },
+              "failoverRatio": {
+                "description": "This field is applicable only when the containing target pool is serving a\nforwarding rule as the primary pool (i.e., not as a backup pool to some\nother target pool). The value of the field must be in [0, 1].\n\nIf set, backupPool must also be set. They together define\nthe fallback behavior of the primary target pool: if the ratio of the\nhealthy instances in the primary pool is at or below this number,\ntraffic arriving at the load-balanced IP will be directed to the\nbackup pool.\n\nIn case where failoverRatio is not set or all the\ninstances in the backup pool are unhealthy, the traffic will be\ndirected back to the primary pool in the \"force\" mode, where traffic\nwill be spread to the healthy instances with the\nbest effort, or to all instances when no instance is healthy.",
+                "format": "float",
+                "type": "number"
+              },
+              "healthChecks": {
+                "description": "The URL of the HttpHealthCheck resource. A member instance in this\npool is considered healthy if and only if the health checks pass.\nOnly legacy HttpHealthChecks are supported. Only one health check may be\nspecified.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "id": {
+                "description": "[Output Only] The unique identifier for the resource. This identifier is\ndefined by the server.",
+                "format": "uint64",
+                "type": "string"
+              },
+              "instances": {
+                "description": "A list of resource URLs to the virtual machine instances serving this pool.\nThey must live in zones contained in the same region as this pool.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "kind": {
+                "default": "compute#targetPool",
+                "description": "Output only. [Output Only] Type of the resource. Always compute#targetPool\nfor target pools.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the resource. Provided by the client when the resource is created.\nThe name must be 1-63 characters long, and comply withRFC1035.\nSpecifically, the name must be 1-63 characters long and match the regular\nexpression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first\ncharacter must be a lowercase letter, and all following characters must\nbe a dash, lowercase letter, or digit, except the last character, which\ncannot be a dash.",
+                "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
+                "type": "string"
+              },
+              "region": {
+                "description": "Output only. [Output Only] URL of the region where the target pool resides.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "securityPolicy": {
+                "description": "[Output Only] The resource URL for the security policy associated with this\ntarget pool.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "[Output Only] Server-defined URL for the resource.",
+                "type": "string"
+              },
+              "sessionAffinity": {
+                "description": "Session affinity option, must be one of the following values: \nNONE: Connections from the same client IP may go to any\n    instance in the pool. \nCLIENT_IP: Connections from the same client IP will go\n    to the same instance in\n    the pool while that instance remains healthy. \nCLIENT_IP_PROTO: Connections from the same client IP\n    with the same IP protocol will go to the same instance in the\n    pool while that instance remains healthy.",
+                "enum": [
+                  "CLIENT_IP",
+                  "CLIENT_IP_NO_DESTINATION",
+                  "CLIENT_IP_PORT_PROTO",
+                  "CLIENT_IP_PROTO",
+                  "GENERATED_COOKIE",
+                  "HEADER_FIELD",
+                  "HTTP_COOKIE",
+                  "NONE",
+                  "STRONG_COOKIE_AFFINITY"
+                ],
+                "enumDescriptions": [
+                  "2-tuple hash on packet's source and destination IP addresses. Connections\nfrom the same source IP address to the same destination IP address will be\nserved by the same backend VM while that VM remains healthy.",
+                  "1-tuple hash only on packet's source IP address. Connections from the\nsame source IP address will be served by the same backend VM while that VM\nremains healthy. This option can only be used for Internal TCP/UDP\nLoad Balancing.",
+                  "5-tuple hash on packet's source and destination IP addresses, IP protocol,\nand source and destination ports. Connections for the same IP protocol\nfrom the same source IP address and port to the same destination IP address\nand port will be served by the same backend VM while that VM remains\nhealthy. This option cannot be used for HTTP(S) load balancing.",
+                  "3-tuple hash on packet's source and destination IP addresses, and IP\nprotocol. Connections for the same IP protocol from the same source IP\naddress to the same destination IP address will be served by the same\nbackend VM while that VM remains healthy. This option cannot be used for\nHTTP(S) load balancing.",
+                  "Hash based on a cookie generated by the L7 loadbalancer.\nOnly valid for HTTP(S) load balancing.",
+                  "The hash is based on a user specified header field.",
+                  "The hash is based on a user provided cookie.",
+                  "No session affinity. Connections from the same client IP may go\nto any instance in the pool.",
+                  "Strong cookie-based affinity. Connections bearing the same cookie will be\nserved by the same backend VM while that VM remains healthy, as long as the\ncookie has not expired."
+                ],
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "TargetPoolAggregatedList": {
+            "id": "TargetPoolAggregatedList",
+            "properties": {
+              "id": {
+                "description": "[Output Only] Unique identifier for the resource; defined by the server.",
+                "type": "string"
+              },
+              "items": {
+                "additionalProperties": {
+                  "$ref": "TargetPoolsScopedList",
+                  "description": "Name of the scope containing this set of target pools."
+                },
+                "description": "A list of TargetPool resources.",
+                "type": "object"
+              },
+              "kind": {
+                "default": "compute#targetPoolAggregatedList",
+                "description": "Output only. [Output Only] Type of resource. Alwayscompute#targetPoolAggregatedList for aggregated lists of\ntarget pools.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "nextPageToken": {
+                "description": "[Output Only] This token allows you to get the next page of results for\nlist requests. If the number of results is larger thanmaxResults, use the nextPageToken as a value for\nthe query parameter pageToken in the next list request.\nSubsequent list requests will have their own nextPageToken to\ncontinue paging through the results.",
+                "type": "string"
+              },
+              "selfLink": {
+                "description": "Output only. [Output Only] Server-defined URL for this resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "unreachables": {
+                "description": "Output only. [Output Only] Unreachable resources.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "warning": {
+                "description": "[Output Only] Informational warning message.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "TargetPoolsScopedList": {
+            "id": "TargetPoolsScopedList",
+            "properties": {
+              "targetPools": {
+                "description": "A list of target pools contained in this scope.",
+                "items": {
+                  "$ref": "TargetPool"
+                },
+                "type": "array"
+              },
+              "warning": {
+                "description": "Informational warning which replaces the list of addresses when\nthe list is empty.",
+                "properties": {
+                  "code": {
+                    "description": "[Output Only] A warning code, if applicable. For example, Compute\nEngine returns NO_RESULTS_ON_PAGE if there\nare no results in the response.",
+                    "enum": [
+                      "CLEANUP_FAILED",
+                      "DEPRECATED_RESOURCE_USED",
+                      "DEPRECATED_TYPE_USED",
+                      "DISK_SIZE_LARGER_THAN_IMAGE_SIZE",
+                      "EXPERIMENTAL_TYPE_USED",
+                      "EXTERNAL_API_WARNING",
+                      "FIELD_VALUE_OVERRIDEN",
+                      "INJECTED_KERNELS_DEPRECATED",
+                      "INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB",
+                      "LARGE_DEPLOYMENT_WARNING",
+                      "LIST_OVERHEAD_QUOTA_EXCEED",
+                      "MISSING_TYPE_DEPENDENCY",
+                      "NEXT_HOP_ADDRESS_NOT_ASSIGNED",
+                      "NEXT_HOP_CANNOT_IP_FORWARD",
+                      "NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE",
+                      "NEXT_HOP_INSTANCE_NOT_FOUND",
+                      "NEXT_HOP_INSTANCE_NOT_ON_NETWORK",
+                      "NEXT_HOP_NOT_RUNNING",
+                      "NOT_CRITICAL_ERROR",
+                      "NO_RESULTS_ON_PAGE",
+                      "PARTIAL_SUCCESS",
+                      "QUOTA_INFO_UNAVAILABLE",
+                      "REQUIRED_TOS_AGREEMENT",
+                      "RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING",
+                      "RESOURCE_NOT_DELETED",
+                      "SCHEMA_VALIDATION_IGNORED",
+                      "SINGLE_INSTANCE_PROPERTY_TEMPLATE",
+                      "UNDECLARED_PROPERTIES",
+                      "UNREACHABLE"
+                    ],
+                    "enumDeprecated": [
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      true,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false,
+                      false
+                    ],
+                    "enumDescriptions": [
+                      "Warning about failed cleanup of transient changes made by a failed\noperation.",
+                      "A link to a deprecated resource was created.",
+                      "When deploying and at least one of the resources has a type marked as\ndeprecated",
+                      "The user created a boot disk that is larger than image size.",
+                      "When deploying and at least one of the resources has a type marked as\nexperimental",
+                      "Warning that is present in an external api call",
+                      "Warning that value of a field has been overridden.\nDeprecated unused field.",
+                      "The operation involved use of an injected kernel, which is deprecated.",
+                      "A WEIGHTED_MAGLEV backend service is associated with a health check that is\nnot of type HTTP/HTTPS/HTTP2.",
+                      "When deploying a deployment with a exceedingly large number of resources",
+                      "Resource can't be retrieved due to list overhead quota exceed\nwhich captures the amount of resources filtered out by\nuser-defined list filter.",
+                      "A resource depends on a missing type",
+                      "The route's nextHopIp address is not assigned to an instance on the\nnetwork.",
+                      "The route's next hop instance cannot ip forward.",
+                      "The route's nextHopInstance URL refers to an instance that does not have an\nipv6 interface on the same network as the route.",
+                      "The route's nextHopInstance URL refers to an instance that does not exist.",
+                      "The route's nextHopInstance URL refers to an instance that is not on the\nsame network as the route.",
+                      "The route's next hop instance does not have a status of RUNNING.",
+                      "Error which is not critical. We decided to continue the process despite\nthe mentioned error.",
+                      "No results are present on a particular list page.",
+                      "Success is reported, but some results may be missing due to errors",
+                      "Quota information is not available to client requests (e.g:\nregions.list).",
+                      "The user attempted to use a resource that requires a TOS they have not\naccepted.",
+                      "Warning that a resource is in use.",
+                      "One or more of the resources set to auto-delete could not be deleted\nbecause they were in use.",
+                      "When a resource schema validation is ignored.",
+                      "Instance template used in instance group manager is valid as such, but\nits application does not make a lot of sense, because it allows only\nsingle instance in instance group.",
+                      "When undeclared properties in the schema are present",
+                      "A given scope cannot be reached."
+                    ],
+                    "type": "string"
+                  },
+                  "data": {
+                    "description": "[Output Only] Metadata about this warning in key:\nvalue format. For example:\n\n\"data\": [\n  {\n   \"key\": \"scope\",\n   \"value\": \"zones/us-east1-d\"\n  }]",
+                    "items": {
+                      "properties": {
+                        "key": {
+                          "description": "[Output Only] A key that provides more detail on the warning being\nreturned. For example, for warnings where there are no results in a list\nrequest for a particular zone, this key might be scope and\nthe key value might be the zone name. Other examples might be a key\nindicating a deprecated resource and a suggested replacement, or a\nwarning about invalid network settings (for example, if an instance\nattempts to perform IP forwarding but is not enabled for IP forwarding).",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "[Output Only] A warning data value corresponding to the key.",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "message": {
+                    "description": "[Output Only] A human-readable description of the warning code.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
           "TimeZone": {
             "description": "Represents a time zone from the\n[IANA Time Zone Database](https://www.iana.org/time-zones).",
             "id": "TimeZone",
@@ -26003,7 +28093,7 @@
         "servicePath": "compute/v1/",
         "version": "v1"
       },
-      "source_sha256": "93784f0bf15fabd283f1c677247dd4b401edf85308409d6045d442719afee737",
+      "source_sha256": "0f0184ab356260c08bbf24ab6627dedc5d2e47a52962a59fb7c3941c69a12338",
       "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
     },
     {
@@ -28609,7 +30699,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "0c034fcf0ffac5120a566bad014f959d38bdbfb665d0c60214f320950215ad91",
+      "source_sha256": "a482dd679c6601874c058ada40781661f97b7e7e19f849bba80ce92c73c2b22b",
       "source_uri": "https://pubsub.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -32232,7 +34322,7 @@
         "servicePath": "",
         "version": "v1beta4"
       },
-      "source_sha256": "2256f7767eb5cfc4e4fd09e4171349fb55fdc595501af20a85d62b7ebcd53164",
+      "source_sha256": "2bb67342a21deb83ca80174bfdb302c428cc25b039f06c29c79d832ed20c6f48",
       "source_uri": "https://sqladmin.googleapis.com/$discovery/rest?version=v1beta4"
     },
     {
@@ -38217,7 +40307,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "b6b6d31f5601a33415885e7f7581f6bd1c5f5536f7cb58b73be99810ea1d76e7",
+      "source_sha256": "ea8293c898284274060cddc49d3595e8fd4d5305d86c64e7bdb06c749c6753bb",
       "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -39874,7 +41964,7 @@
         "servicePath": "",
         "version": "v2"
       },
-      "source_sha256": "f17bb12234de156843f41885c7bb96e7de94809f254be2c34a80853645a7b42e",
+      "source_sha256": "5c0919efef30ef2f70700591b4ea6f1a69578697f2973a11065ab2bea17d9d3b",
       "source_uri": "https://run.googleapis.com/$discovery/rest?version=v2"
     },
     {
@@ -40859,7 +42949,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "815d142723a2eaa80a65aba208a5c3d6f0e4870e6ed9f1e9bb8200a4d9d0f3ff",
+      "source_sha256": "56036031a59a659e54a0f509619cc0a3ab4f04d688c78322c510aa90b2e4c462",
       "source_uri": "https://artifactregistry.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -41375,7 +43465,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "636c296aa1123c0ec19c288a8bdfbf88ce3083d016429079e0537d29f23a5468",
+      "source_sha256": "9f3f1863b5724ea2fc4a6f2c425a2eb396a8ebee72f07f5599f3334fdf066bb8",
       "source_uri": "https://secretmanager.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -42995,7 +45085,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "7d4c5467ca9153e4a7815ec93051553efe98bf4b4daad2ee2497cb64dc7890ea",
+      "source_sha256": "a54ecb0c95ade447849c7f91778d929b9e9ccc082c2633e095aba128ca68630c",
       "source_uri": "https://cloudasset.googleapis.com/$discovery/rest?version=v1"
     },
     {
@@ -43125,7 +45215,7 @@
         "servicePath": "",
         "version": "v3"
       },
-      "source_sha256": "1b26570830ae5ec58776dc7f833a25fbec375f42902a33e2c9e0a522cd943e7f",
+      "source_sha256": "d742645e23f3ec3419edc0138314ef301b6df7598d88cb61d0dd906a2f7d4bf6",
       "source_uri": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v3"
     },
     {
@@ -44703,7 +46793,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "cec1ce77496fd096d7902b81657b2e1f0096eb1b558d481655e8e81da6483a0c",
+      "source_sha256": "3ad5ace02e8837c5d4c7e153a9e2cce67624674a610504c4f329b64370d52038",
       "source_uri": "https://cloudkms.googleapis.com/$discovery/rest?version=v1"
     }
   ],
@@ -45232,7 +47322,9 @@
       "nativeType": "container.googleapis.com/Cluster",
       "rest": {
         "collection": "clusters",
-        "delete_operations": [],
+        "delete_operations": [
+          "container.projects.locations.clusters.delete"
+        ],
         "list_operations": [
           "container.projects.locations.clusters.list"
         ],
@@ -45493,6 +47585,91 @@
       },
       "scopeKinds": [
         "region"
+      ]
+    },
+    {
+      "class": "network.target_pool",
+      "displayName": "Target pool",
+      "nativeType": "compute.googleapis.com/TargetPool",
+      "rest": {
+        "collection": "targetPools",
+        "delete_operations": [
+          "compute.targetPools.delete"
+        ],
+        "list_operations": [
+          "compute.targetPools.aggregatedList"
+        ],
+        "read_operations": [
+          "compute.targetPools.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.health_check",
+      "displayName": "Legacy HTTP health check",
+      "nativeType": "compute.googleapis.com/HttpHealthCheck",
+      "rest": {
+        "collection": "httpHealthChecks",
+        "delete_operations": [
+          "compute.httpHealthChecks.delete"
+        ],
+        "list_operations": [
+          "compute.httpHealthChecks.list"
+        ],
+        "read_operations": [
+          "compute.httpHealthChecks.get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "network.health_check",
+      "displayName": "Legacy HTTPS health check",
+      "nativeType": "compute.googleapis.com/HttpsHealthCheck",
+      "rest": {
+        "collection": "httpsHealthChecks",
+        "delete_operations": [
+          "compute.httpsHealthChecks.delete"
+        ],
+        "list_operations": [
+          "compute.httpsHealthChecks.list"
+        ],
+        "read_operations": [
+          "compute.httpsHealthChecks.get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "network.endpoint_group",
+      "displayName": "Network endpoint group",
+      "nativeType": "compute.googleapis.com/NetworkEndpointGroup",
+      "rest": {
+        "collection": "networkEndpointGroups",
+        "delete_operations": [
+          "compute.networkEndpointGroups.delete",
+          "compute.regionNetworkEndpointGroups.delete",
+          "compute.globalNetworkEndpointGroups.delete"
+        ],
+        "list_operations": [
+          "compute.networkEndpointGroups.aggregatedList"
+        ],
+        "read_operations": [
+          "compute.networkEndpointGroups.get",
+          "compute.regionNetworkEndpointGroups.get",
+          "compute.globalNetworkEndpointGroups.get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
       ]
     }
   ]

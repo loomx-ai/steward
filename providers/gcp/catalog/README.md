@@ -77,8 +77,38 @@ GKE operation names, locations and targets are verified; operation completion or
 a missing pool does not close live underlying resources. Direct MIG cleanup also
 requires `container.clusters.list` to exclude active GKE ownership.
 
-Cluster network-resource and load-balancer ownership remains unfinished; cluster
-deletion is not enabled by this node-pool implementation.
+Cluster inventory also takes an authenticated Kubernetes snapshot of GKE-managed
+LoadBalancer/NEG Services, GCE Ingresses, and Gateways. A fresh Container API read
+binds the cluster UID, native endpoint and CA; DNS endpoints use system trust.
+OAuth uses the selected connection. Kubernetes list paging requires a stable
+resourceVersion, and deletion requires both UID and resourceVersion. No Secret
+contents, kubeconfig, embedded client keys, or arbitrary inventory endpoints are
+used. The snapshot stores object identities and configuration hashes only.
+
+Published workload addresses, listeners and native Compute links identify the
+frontend graph; internal frontends must agree with the native VPC. NEG ownership
+uses the kube-system UID and network. Verified node/template tags and VPC identity
+are required for generated firewall rules; routes require a native node next hop.
+Address reservations and pre-shared certificates are retained unless their
+native controller allocation is established. Secret-generated Gateway certificates
+are joined through the exact live HTTPS proxy without reading Secret data.
+
+Cluster deletion first removes Gateway/Ingress/Service objects through their
+controllers, preserving finalizers and node availability. Only after objects
+are absent may frozen, reviewed leftover Compute resources be recovered in
+native dependency order. Cluster/node completion precedes remaining cluster
+firewall and route cleanup. Every operation also requires final resource absence;
+retained members must still have the original identity. All phases survive
+serialization and restart. Changed workloads, identities, protection or membership
+stop subsequent writes. Disabling L4 firewall creation does not change the native
+controller's teardown of its previously generated rules.
+
+The connection still authorizes one project. Foreign-project resources and
+unverifiable ownership cannot be cascaded through that connection. Kubernetes
+control-plane reachability and list/read/delete RBAC are required for this
+cluster workflow. Shared-VPC host resources, multi-cluster controllers, and
+additional GKE custom-resource controllers require further coverage before the
+full provider parity acceptance is complete.
 
 Reference material:
 
@@ -94,6 +124,9 @@ Reference material:
 - [GKE boot disk deletion](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/hyperdisk-storage-pools)
 - [Native GKE node pool deletion](https://docs.cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters.nodePools/delete)
 - [GKE cluster deletion and persistent storage](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/deleting-a-cluster)
+- [GKE Gateway TLS sources](https://docs.cloud.google.com/kubernetes-engine/docs/concepts/gateway-security)
+- [GKE firewall reconciliation settings](https://docs.cloud.google.com/kubernetes-engine/docs/how-to/user-managed-firewall-rules)
+- [Native ingress-gce cleanup implementation](https://github.com/kubernetes/ingress-gce/tree/93bdce86f8426bf4f2129c30de9923698351e04d/pkg/l4/resources)
 - [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
 
 The checked-in tests establish metadata consistency and protocol behavior. They
