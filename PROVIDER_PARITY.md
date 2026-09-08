@@ -241,3 +241,11 @@ background evidence only, not acceptance evidence for this work.
   locks now fail discovery/preflight instead of being ignored. Full Go tests,
   offline source tests and vet pass. SQL/other parent controllers, remaining
   service families and independent/application acceptance are still outstanding.
+
+- Azure SQL logical servers now support native deletion with reviewed database
+  and elastic-pool cascades, including the system `master` database. Retaining a
+  database blocks its parent deletion; standalone `master` deletion remains
+  prohibited. Database creation IDs, child permissions, native SQL operation
+  polling and resumed descendant readback have retained protocol tests. Full Go
+  tests, offline source tests, vet and targeted races pass. Other controllers,
+  remaining families, independent emulators and application acceptance are open.

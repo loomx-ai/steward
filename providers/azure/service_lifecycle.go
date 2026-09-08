@@ -17,11 +17,16 @@ import (
 )
 
 const serviceCascadeSource = "azure:service-cascade"
+const sqlServerType = "Microsoft.Sql/servers"
+const sqlDatabaseType = "Microsoft.Sql/servers/databases"
+
 const networkWatcherType = "Microsoft.Network/networkWatchers"
 
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	// https://learn.microsoft.com/azure/azure-sql/database/logical-servers
+	sqlServerType: {sqlDatabaseType, "Microsoft.Sql/servers/elasticPools"},
 	networkWatcherType: {
 		"Microsoft.Network/networkWatchers/flowLogs",
 		"Microsoft.Network/networkWatchers/connectionMonitors",
@@ -132,7 +137,7 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceListedIncarnation(listed, live map[string]any) error {
-	for _, field := range []string{"resourceGuid", "resourceUid", "vmId", "creationTime", "timeCreated"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId"} {
 		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
 			return fmt.Errorf("Azure resource incarnation changed")
 		}
@@ -279,7 +284,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			if locked(child.id, locks) {
 				return serviceDenied("azure_management_lock")
 			}
-			if reason := protectionReason(kind, child.data); reason != "" {
+			if reason := protectionReason(kind, child.data); reason != "" && !serviceIntrinsicChild(parent.Identity.NativeType, child.kind, reason) {
 				return serviceDenied(reason)
 			}
 			for key, value := range object(child.data["tags"]) {
@@ -348,4 +353,10 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 		return contracts.ReadbackResult{Exists: true, State: "service_children_deleting"}, nil
 	}
 	return contracts.ReadbackResult{Exists: false}, nil
+}
+
+// The master database is part of the server's native lifetime. Its restriction
+// prohibits direct DELETE, while a reviewed server deletion can remove it.
+func serviceIntrinsicChild(parent, child, reason string) bool {
+	return strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database"
 }

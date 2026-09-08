@@ -53095,7 +53095,9 @@
       "nativeType": "Microsoft.Sql/servers",
       "rest": {
         "collection": "servers",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.Sql.Servers_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Sql.Servers_List"
         ],

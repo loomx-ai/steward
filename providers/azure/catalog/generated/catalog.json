@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8bc2de2bd2358f5ecf4da424e49d84fdf66ce6181d3c9908252399f167fb6ead",
+    "checksum": "06d9822feca0ceadabc19b6d923aac5cb33b909c708e2b71edfa902e55a6691c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "34eca7652b3a1464319b700a3a63d5d1142c61ac1458d3f0035e3c47e0043964",
+  "content_checksum": "91f427492171394aed05bd2554591a9c23055cf5497c05c155fb25378cd6a5e8",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -22108,6 +22108,9 @@
         "collection": "servers",
         "read_operations": [
           "Azure.Microsoft.Sql.Servers_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Sql.Servers_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Sql.Servers_List"

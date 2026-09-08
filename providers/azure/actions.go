@@ -359,7 +359,7 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
-	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic":
+	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_private_endpoint_managed_nic", "azure_system_database":
 		return true
 	default:
 		return false

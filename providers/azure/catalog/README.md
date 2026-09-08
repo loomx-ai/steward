@@ -120,3 +120,12 @@ HTTP request headers and SAS query values in capture storage paths are sanitized
 Deleting a capture session does not delete its stored capture file. See the
 [Network Watcher deletion contract](https://learn.microsoft.com/en-us/azure/network-watcher/network-watcher-create)
 and [packet-capture deletion behavior](https://learn.microsoft.com/en-us/azure/network-watcher/packet-capture-manage#delete-a-packet-capture).
+
+SQL logical servers support their native DELETE with reviewed database and
+elastic-pool impacts. The `master` database is restricted to server-owned cleanup,
+while other databases and pools retain their independent native delete actions.
+SQL database IDs and creation dates supplement ARM generation checks. Native
+child permissions, locks, protected records, new members and retention requests
+are checked before server deletion; every planned child must be absent afterward.
+The service's backup/soft-delete retention remains governed by Azure; this action
+does not purge retained backups. See [logical-server lifetime semantics](https://learn.microsoft.com/en-us/azure/azure-sql/database/logical-servers).

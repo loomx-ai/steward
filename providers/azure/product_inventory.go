@@ -209,7 +209,7 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 
 func productGeneration(raw map[string]any) string {
 	properties := object(raw["properties"])
-	values := []any{object(raw["systemData"])["createdAt"], properties["resourceGuid"], properties["resourceUid"], properties["vmId"], properties["creationTime"], properties["timeCreated"]}
+	values := []any{object(raw["systemData"])["createdAt"], properties["resourceGuid"], properties["resourceUid"], properties["vmId"], properties["creationTime"], properties["timeCreated"], properties["creationDate"], properties["databaseId"]}
 	// Not every ARM provider exposes a creation identifier. Keep its etag as a
 	// conservative change detector where available.
 	values = append(values, raw["etag"])

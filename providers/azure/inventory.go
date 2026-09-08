@@ -194,14 +194,7 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 		values, err = c.listAll(ctx, id+"/subnets", kind.Version)
 	case storageType:
 		values, err = c.listAll(ctx, id+"/blobServices/default/containers", kind.Version)
-	case "Microsoft.Sql/servers":
-		for _, child := range []string{"databases", "elasticPools"} {
-			items, callErr := c.listAll(ctx, id+"/"+child, kind.Version)
-			if callErr != nil {
-				return nil, callErr
-			}
-			values = append(values, items...)
-		}
+
 	}
 	if err != nil {
 		return nil, err
