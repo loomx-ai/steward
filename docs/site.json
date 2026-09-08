@@ -1,6 +1,8 @@
 {
   "schemaVersion": 1,
   "name": "Steward",
+  "wordmark": "steward",
+  "logo": "steward-symbol.svg",
   "description": {
     "en": "Cloud inventory, resource relationships, and cleanup.",
     "zh": "盘点云资源、查看依赖、审查和执行清理。"
