@@ -14,9 +14,9 @@ Steward helps you inventory existing cloud resources, understand their relations
 - **Complete a task:** [First resource inventory](./tutorials/first-inventory.md) walks through verifying scan results for a known resource.
 - **Find an operation:** Use the sidebar for connection, scan, inventory, relationship, and cleanup guides.
 
-Steward supports Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure. Run it on your own computer or server, or use the invitation-only Steward Cloud hosted by LoomX.
+Steward supports Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure. Run it on your own computer or server, or sign up for Steward Cloud, hosted by LoomX.
 
-<div class="docs-start-links"><a href="./quick-start.md"><strong>Self-host Steward</strong><span aria-hidden="true">↗</span><span>Install and start a local server</span></a><a href="https://steward.console.loomx.ai"><strong>Steward Cloud</strong> <span aria-hidden="true">↗</span><span>Have an invitation? Open your workspace</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions, service principals, and resource locks</span></a></div>
+<div class="docs-start-links"><a href="./quick-start.md"><strong>Self-host Steward</strong><span aria-hidden="true">↗</span><span>Install and start a local server</span></a><a href="https://steward.console.loomx.ai"><strong>Steward Cloud</strong> <span aria-hidden="true">↗</span><span>Create an account and open your workspace</span></a><a href="./azure.md"><strong>Microsoft Azure</strong><span>Subscriptions, service principals, and resource locks</span></a></div>
 
 ## Connect your cloud
 
