@@ -260,7 +260,12 @@ func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
 				controller.Normalized = map[string]any{"subscription_id": "11111111-1111-4111-8111-111111111111", "storageProfile": map[string]any{"osDisk": map[string]any{"managedDisk": map[string]any{"id": child.Identity.NativeID}, "deleteOption": "Delete"}}}
 			}
 			assets := []asset.Asset{controller, child}
-			contributors, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), asset.CloudConnection{ID: "connection", Provider: provider}, assets)
+			runtime := &azureServiceContributorRuntime{}
+			directory := contributorRuntimeDirectory{}
+			if provider == asset.ProviderAzure {
+				directory.runtime = runtime
+			}
+			contributors, err := newLifecycleContributorResolver(directory).ResolveContributors(context.Background(), asset.CloudConnection{ID: "connection", Provider: provider}, assets)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -278,6 +283,9 @@ func TestNativeCloudAttachmentContributorsAreWiredIntoServer(t *testing.T) {
 			}
 			if bindings != 1 {
 				t.Fatalf("server omitted native attachment lifecycle: %d", bindings)
+			}
+			if provider == asset.ProviderAzure && !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{"connection"}) {
+				t.Fatalf("Azure VM extension discovery missing: %v", runtime.connections)
 			}
 		})
 	}

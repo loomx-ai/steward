@@ -9775,6 +9775,18 @@
               }
             }
           },
+          "VirtualMachineExtensionsListResult": {
+            "description": "The List Extension operation response",
+            "properties": {
+              "value": {
+                "description": "The list of extensions",
+                "items": {
+                  "$ref": "#/definitions/VirtualMachineExtension"
+                },
+                "type": "array"
+              }
+            }
+          },
           "VirtualMachineHealthStatus": {
             "description": "The health status of the VM.",
             "properties": {
@@ -10769,6 +10781,195 @@
                 }
               },
               "x-ms-long-running-operation": true
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions": {
+            "get": {
+              "description": "The operation to get all extensions of a Virtual Machine.",
+              "operationId": "VirtualMachineExtensions_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine containing the extension.",
+                  "in": "path",
+                  "name": "vmName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineExtensionsListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineExtension_List_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_List_MaximumSet_Gen.json"
+                },
+                "VirtualMachineExtension_List_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_List_MinimumSet_Gen.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}": {
+            "delete": {
+              "description": "The operation to delete the extension.",
+              "operationId": "VirtualMachineExtensions_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine where the extension should be deleted.",
+                  "in": "path",
+                  "name": "vmName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine extension.",
+                  "in": "path",
+                  "name": "vmExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "202": {
+                  "description": "Accepted"
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineExtension_Delete_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_Delete_MaximumSet_Gen.json"
+                },
+                "VirtualMachineExtension_Delete_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_Delete_MinimumSet_Gen.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "The operation to get the extension.",
+              "operationId": "VirtualMachineExtensions_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine containing the extension.",
+                  "in": "path",
+                  "name": "vmName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the virtual machine extension.",
+                  "in": "path",
+                  "name": "vmExtensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common-types/v1/common.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/VirtualMachineExtension"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common-types/v1/common.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "VirtualMachineExtensions"
+              ],
+              "x-ms-examples": {
+                "VirtualMachineExtension_Get_MaximumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_Get_MaximumSet_Gen.json"
+                },
+                "VirtualMachineExtension_Get_MinimumSet_Gen": {
+                  "$ref": "./examples/virtualMachineExamples/VirtualMachineExtension_Get_MinimumSet_Gen.json"
+                }
+              }
             }
           }
         },
@@ -57859,6 +58060,26 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Compute.PublicIPAddresses_GetVirtualMachineScaleSetPublicIPAddress"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "compute.extension",
+      "displayName": "Virtual machine extension",
+      "nativeType": "Microsoft.Compute/virtualMachines/extensions",
+      "rest": {
+        "collection": "extensions",
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_Get"
         ]
       },
       "scopeKinds": [

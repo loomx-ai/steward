@@ -88,6 +88,9 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json",
       "operations": [
+        "VirtualMachineExtensions_Delete",
+        "VirtualMachineExtensions_Get",
+        "VirtualMachineExtensions_List",
         "VirtualMachines_Delete",
         "VirtualMachines_Get",
         "VirtualMachines_List",
@@ -2260,6 +2263,24 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.Compute.PublicIPAddresses_ListVirtualMachineScaleSetVMPublicIPAddresses"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachines/extensions",
+      "class": "compute.extension",
+      "display_name": "Virtual machine extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "extensions",
+      "read_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineExtensions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineExtensions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Compute.VirtualMachineExtensions_List"
       ]
     }
   ]

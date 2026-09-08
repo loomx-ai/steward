@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "f83e385041834a62db98292522aed44cf49fa0fe0730093fd9e205e33fd0dcda",
+    "checksum": "87552bebc7e5e548462bd41f79bb411f7f83f05cf9f314402f264b22e24ce1f9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "004ea2e99fec74c440a54f80ec74ca8736f97eb3e454ef1d2bb59492cc1a4b1d",
+  "content_checksum": "e2abe91d7fc90e68029403bca16e27df6e1a41c60eb12e022cbd158c17813616",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -3942,6 +3942,219 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/sshPublicKey.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineExtensions_Delete",
+      "name": "VirtualMachineExtensions_Delete",
+      "service": "Microsoft.Compute",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmExtensionName": {
+            "description": "The name of the virtual machine extension.",
+            "in": "path",
+            "name": "vmExtensionName",
+            "required": true,
+            "type": "string"
+          },
+          "vmName": {
+            "description": "The name of the virtual machine where the extension should be deleted.",
+            "in": "path",
+            "name": "vmName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineExtensions_Get",
+      "name": "VirtualMachineExtensions_Get",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmExtensionName": {
+            "description": "The name of the virtual machine extension.",
+            "in": "path",
+            "name": "vmExtensionName",
+            "required": true,
+            "type": "string"
+          },
+          "vmName": {
+            "description": "The name of the virtual machine containing the extension.",
+            "in": "path",
+            "name": "vmName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../common-types/v1/common.json#/definitions/ResourceWithOptionalLocation"
+          }
+        ],
+        "description": "Describes a Virtual Machine Extension.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/VirtualMachineExtensionProperties",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions/{vmExtensionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json"
+    },
+    {
+      "id": "Azure.Microsoft.Compute.VirtualMachineExtensions_List",
+      "name": "VirtualMachineExtensions_List",
+      "service": "Microsoft.Compute",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The expand expression to apply on the operation.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2024-07-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "vmName": {
+            "description": "The name of the virtual machine containing the extension.",
+            "in": "path",
+            "name": "vmName",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The List Extension operation response",
+        "properties": {
+          "value": {
+            "description": "The list of extensions",
+            "items": {
+              "$ref": "#/definitions/VirtualMachineExtension"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Compute",
+        "version": "2024-07-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json"
     },
     {
       "id": "Azure.Microsoft.Compute.VirtualMachineScaleSetExtensions_Delete",
@@ -23784,6 +23997,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Compute.VirtualMachines_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Compute/virtualMachines/extensions",
+      "class": "compute.extension",
+      "display_name": "Virtual machine extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "extensions",
+        "read_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Compute.VirtualMachineExtensions_List"
         ]
       }
     },

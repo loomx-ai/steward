@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 92 current resource rules discover through native product List operations.
+All 93 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,7 +47,7 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 291 operations from
+Private Link and file shares. The current catalog contains 294 operations from
 51 root documents and 25 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
@@ -201,3 +201,18 @@ changed ownership and serialized worker restart. Known resources are read after
 group absence, including external DNS records. A failed resource readback cannot
 set the waiter's completion flag. Other service-parent lifecycles and independent
 emulator/application acceptance remain open.
+
+Standard VM extensions have explicit native product discovery and independent
+Delete/Get operations. VM cleanup includes their reviewed cascade alongside its
+separate disk/NIC/public-IP deletion policies. Service and attachment impacts
+are partitioned only by the frozen native attachment references and controller
+identities, so retaining a disk cannot silently retain or drop an extension.
+
+The VM's normal generation check remains strict until a reviewed Delete-to-Detach
+transition has taken effect. Native retention updates change its ETag; that
+resumed phase still checks stable VM identity, all attachment policies and live
+extension membership. Preparation rechecks extensions before another mutation.
+After the VM is absent, its extensions must also return 404. AKS recursive group
+cleanup includes standard VM extensions as well. Native list shards, permission
+errors, changing extensions, missing/foreign impacts and retention have permanent
+protocol tests, including server lifecycle discovery and serialized restart.

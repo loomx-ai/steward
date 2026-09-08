@@ -32,6 +32,11 @@ func (a *action) prepareAttachments(ctx context.Context, request contracts.Actio
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
+	if HasServiceCascade(a.kind.NativeType) {
+		if err := a.serviceCascadePreflight(ctx, request, live.data, locks); err != nil {
+			return contracts.ActionResult{}, err
+		}
+	}
 	updates, reason, err := a.evaluateAttachments(ctx, request, live.data, locks)
 	if err != nil {
 		return contracts.ActionResult{}, err

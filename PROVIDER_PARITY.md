@@ -286,3 +286,12 @@ background evidence only, not acceptance evidence for this work.
   longer report completion alongside readback errors. Full Go/vet and targeted
   races pass. Remaining service families/parent lifecycles and independent
   emulator/application acceptance are still unfinished.
+
+- Azure now has 93 rules/294 native operations, adding standard VM extensions.
+  Independent extension deletion and reviewed VM/AKS cascades coexist with
+  disk/NIC/public-IP retention. Native retention ETag changes are accepted only
+  after the reviewed Delete-to-Detach transition; VM incarnation and complete
+  extension/attachment membership remain checked. Retained native wire,
+  failure/permission, server wiring and serialized restart tests pass, with
+  full Go/Python/vet and targeted race checks. Other families, parent lifecycle
+  gaps, independent emulators and application acceptance remain open.

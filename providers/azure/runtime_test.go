@@ -109,6 +109,8 @@ func TestLegacySubscriptionInventoryPagingChildrenAndVMNetworking(t *testing.T) 
 			data = map[string]any{"value": []any{}}
 		case strings.ToLower(resourceID(vmType, "vm")):
 			data = vm
+		case strings.ToLower(resourceID(vmType, "vm") + "/extensions"):
+			data = map[string]any{"value": []any{}}
 		case strings.ToLower(resourceID(nicType, "nic")):
 			data = nic
 		case strings.ToLower(resourceID(vnetType, "vnet")):

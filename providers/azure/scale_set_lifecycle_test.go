@@ -233,6 +233,8 @@ func flexibleScaleSetScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Ass
 		disk := map[string]any{"id": diskID, "type": diskType, "name": name + "-os", "location": "eastus", "properties": map[string]any{"uniqueId": name + "-disk-uid"}}
 		raw = append(raw, vm, disk)
 		members = append(members, vm)
+		s.lists[strings.ToLower(vmID+"/extensions")] = []any{}
+		s.version[strings.ToLower(vmID+"/extensions")] = "2024-07-01"
 	}
 	for _, value := range raw {
 		version := "2024-07-01"
@@ -534,7 +536,7 @@ func TestFlexibleScaleSetStandaloneVMRequiresStableOwner(t *testing.T) {
 				s.handle = func(req *http.Request) (*http.Response, bool) {
 					if req.Method == "GET" && strings.EqualFold(req.URL.Path, member.Identity.NativeID) {
 						reads++
-						if reads == 2 {
+						if reads == 3 {
 							delete(object(vm["properties"]), "virtualMachineScaleSet")
 						}
 					}

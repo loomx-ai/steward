@@ -19,6 +19,7 @@ import (
 type aksScenario struct {
 	cluster, group, vm, disk, unknown map[string]any
 	members                           []any
+	extensions                        []any
 	locks                             []any
 	status                            int
 	deletes, polls, groupReads        int
@@ -90,6 +91,8 @@ func (s *aksScenario) runtime(t *testing.T) *Runtime {
 				return jsonResponse(404, map[string]any{}, nil), nil
 			}
 			return jsonResponse(200, s.vm, nil), nil
+		case strings.ToLower(text(s.vm["id"])) + "/extensions":
+			return jsonResponse(200, map[string]any{"value": append([]any{}, s.extensions...)}, nil), nil
 		case strings.ToLower(text(s.disk["id"])):
 			if s.childrenGone {
 				return jsonResponse(404, map[string]any{}, nil), nil
@@ -102,6 +105,14 @@ func (s *aksScenario) runtime(t *testing.T) *Runtime {
 				state = "Failed"
 			}
 			return jsonResponse(200, map[string]any{"status": state}, nil), nil
+		}
+		if strings.HasPrefix(path, strings.ToLower(text(s.vm["id"]))+"/extensions/") {
+			for _, extension := range s.extensions {
+				if strings.EqualFold(text(object(extension)["id"]), path) {
+					return jsonResponse(200, extension, nil), nil
+				}
+			}
+			return jsonResponse(404, map[string]any{}, nil), nil
 		}
 		return nil, fmt.Errorf("unexpected AKS operation %s %s", req.Method, req.URL)
 	})

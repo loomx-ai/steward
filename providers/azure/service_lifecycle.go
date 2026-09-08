@@ -19,12 +19,14 @@ import (
 const serviceCascadeSource = "azure:service-cascade"
 const sqlServerType = "Microsoft.Sql/servers"
 const sqlDatabaseType = "Microsoft.Sql/servers/databases"
+const vmExtensionType = vmType + "/extensions"
 
 const networkWatcherType = "Microsoft.Network/networkWatchers"
 
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	vmType:                  {vmExtensionType},
 	scaleSetType:            {scaleSetVMType, scaleSetExtensionType, vmType},
 	scaleSetVMType:          {scaleSetVMExtensionType, scaleSetNICType, diskType},
 	scaleSetNICType:         {scaleSetIPConfigType},
@@ -268,13 +270,22 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 		if err != nil || impact.Asset.ID == "" || assets[impact.Asset.ID].Identity.NativeID != "" || impacts[id].Asset.Identity.NativeID != "" || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.EqualFold(kind, identity.NativeType) || !strings.HasPrefix(id, a.client.root()+"/") {
 			return nil, serviceDenied("invalid_service_lifecycle_impact")
 		}
-		if !impact.Delete {
-			return nil, serviceDenied("service_child_retention_not_supported")
-		}
 		impacts[id] = impact
 		assets[impact.Asset.ID] = impact.Asset
 	}
+	if a.kind.NativeType == vmType {
+		attachments, err := plannedAttachmentImpacts(a.client.subscription, root, impacts, assets)
+		if err != nil {
+			return nil, err
+		}
+		for id := range attachments {
+			delete(impacts, id)
+		}
+	}
 	for _, impact := range impacts {
+		if !impact.Delete {
+			return nil, serviceDenied("service_child_retention_not_supported")
+		}
 		current := impact
 		seen := map[asset.AssetID]bool{}
 		for {
@@ -301,7 +312,24 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	if err != nil {
 		return err
 	}
-	if err := serviceIncarnation(request.Asset, live); err != nil {
+	planned := request.Asset
+	if a.kind.NativeType == vmType {
+		retained, err := vmRetentionApplied(a.client.subscription, request, object(live["properties"]))
+		if err != nil {
+			return err
+		}
+		if retained {
+			// Our reviewed Delete -> Detach update changes the VM ETag. Keep
+			// checking its stable VM ID and every live child/attachment policy.
+			planned.Normalized = map[string]any{}
+			for key, value := range request.Asset.Normalized {
+				if key != "_arm_generation" {
+					planned.Normalized[key] = value
+				}
+			}
+		}
+	}
+	if err := serviceIncarnation(planned, live); err != nil {
 		return err
 	}
 	visited := map[string]bool{}

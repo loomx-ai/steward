@@ -57,10 +57,12 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 						return jsonResponse(202, map[string]any{}, h), nil
 					}
 					reads++
-					if reads >= 4 {
+					if deletes > 0 && reads >= 6 {
 						return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
 					}
 					return jsonResponse(200, nativeResource(vmType, "vm", "eastus", map[string]any{"provisioningState": "Succeeded"}), nil), nil
+				case id + "/extensions":
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				case "/subscriptions/" + testSubscription + "/resourcegroups/test":
 					return jsonResponse(200, map[string]any{"id": path}, nil), nil
 				case "/subscriptions/" + testSubscription + "/providers/microsoft.authorization/locks":
@@ -86,7 +88,7 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 					t.Fatalf("poll %d prematurely completed: %+v", i, wait)
 				}
 			}
-			if deletes != 1 || reads != 4 {
+			if deletes != 1 || reads != 6 {
 				t.Fatalf("calls deletes=%d reads=%d", deletes, reads)
 			}
 		})

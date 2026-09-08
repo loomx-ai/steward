@@ -273,3 +273,57 @@ func (a *action) evaluateAttachments(ctx context.Context, request contracts.Acti
 	reason, err := walk(request.Asset, raw)
 	return updates, reason, err
 }
+
+// Separate the frozen native auto-delete attachment tree from service children
+// such as VM extensions. Both paths share one reviewed action request; retention
+// applies to attachments without making an extension independently retainable.
+func plannedAttachmentImpacts(subscription string, root asset.Asset, impacts map[string]contracts.ActionImpact, assets map[asset.AssetID]asset.Asset) (map[string]bool, error) {
+	result := map[string]bool{}
+	controllers := map[asset.AssetID]bool{root.ID: true}
+	for changed := true; changed; {
+		changed = false
+		for id, impact := range impacts {
+			if result[id] || !controllers[impact.ControllerID] {
+				continue
+			}
+			parent := assets[impact.ControllerID]
+			attachments, err := resourceAttachments(subscription, parent.Identity.NativeType, parent.Normalized)
+			if err != nil {
+				return nil, err
+			}
+			for _, attachment := range attachments {
+				if attachment.delete && attachment.id == id && strings.EqualFold(attachment.kind, impact.Asset.Identity.NativeType) {
+					result[id], controllers[impact.Asset.ID], changed = true, true, true
+				}
+			}
+		}
+	}
+	return result, nil
+}
+
+func vmRetentionApplied(subscription string, request contracts.ActionRequest, properties map[string]any) (bool, error) {
+	current, err := resourceAttachments(subscription, vmType, properties)
+	if err != nil {
+		return false, err
+	}
+	planned, err := resourceAttachments(subscription, vmType, request.Asset.Normalized)
+	if err != nil {
+		return false, err
+	}
+	for _, live := range current {
+		if live.delete {
+			continue
+		}
+		for _, previous := range planned {
+			if !previous.delete || live.id != previous.id || live.slot != previous.slot {
+				continue
+			}
+			for _, impact := range request.LifecycleImpacts {
+				if !impact.Delete && impact.ControllerID == request.Asset.ID && strings.EqualFold(impact.Asset.Identity.NativeID, live.id) && strings.EqualFold(impact.Asset.Identity.NativeType, live.kind) {
+					return true, nil
+				}
+			}
+		}
+	}
+	return false, nil
+}

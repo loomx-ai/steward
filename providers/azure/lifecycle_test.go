@@ -240,6 +240,9 @@ func TestAzureRetentionSurvivesWorkerRestartAndPreservesNICSettings(t *testing.T
 	mutations := []string{}
 	deleted := false
 	runtime := protocolRuntime(t, func(r *http.Request) (*http.Response, error) {
+		if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		if operation := operations[r.URL.String()]; operation != nil {
 			operation.polls++
 			state := "Running"
@@ -403,6 +406,9 @@ func TestAzureCascadePreflightRejectsMissingImpactDriftAndLiveLocks(t *testing.T
 				object(live["nic"]["properties"])["futureSetting"] = "do-not-erase"
 			}
 			runtime := protocolRuntime(t, func(r *http.Request) (*http.Response, error) {
+				if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
 				if r.Method != "GET" {
 					t.Fatal("mutated resource after failed cascade validation")
 				}
@@ -445,6 +451,9 @@ func TestAzureRetainedNICWaitsForReadbackAndKeepsPublicIPWithoutMutation(t *test
 			updates, deletes := 0, 0
 			operation := apiURL("/subscriptions/"+testSubscription+"/providers/Microsoft.Compute/locations/eastus/operations/retain", "2024-07-01")
 			runtime := protocolRuntime(t, func(r *http.Request) (*http.Response, error) {
+				if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {
+					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+				}
 				if r.Method == "PATCH" {
 					updates++
 					var body map[string]any
