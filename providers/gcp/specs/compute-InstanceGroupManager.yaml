@@ -2,26 +2,26 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: compute.googleapis.com/BackendService
-  class: network.load_balancer_backend
+  nativeType: compute.googleapis.com/InstanceGroupManager
+  class: compute.scaling_group
 presentation:
   displayNames:
-    en-US: Backend service
-    zh-CN: 后端服务
-  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+    en-US: Managed instance group
+    zh-CN: 托管实例组
+  consoleLinkTemplate: https://console.cloud.google.com/compute/instanceGroups?project={projectId}
 scope:
-  kind: global
+  kind: region
 discovery:
   source: product-api
   detail:
-    operation: compute.backendServices.get
+    operation: compute.instanceGroupManagers.get
     itemsPath: $
     identityPath: name
   list:
-    operation: compute.backendServices.list
+    operation: compute.instanceGroupManagers.aggregatedList
     parameters:
       project: scope.project
-    itemsPath: items
+    itemsPath: items.*.instanceGroupManagers
     identityPath: selfLink
     pagination:
       type: token
@@ -33,9 +33,6 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: status
-    type: string
   projectId:
     path: project_id
     type: string
@@ -45,25 +42,31 @@ fields:
   labels:
     path: labels
     type: object
+  targetSize:
+    path: targetSize
+    type: number
+  isStable:
+    path: status.isStable
+    type: boolean
+  statefulPolicy:
+    path: statefulPolicy
+    type: object
 extensions:
   hook: gcp.resource
 relationships:
-- type: member_of
-  targetType: compute.googleapis.com/Network
-  targetIdPath: refs_compute_googleapis_com_Network
+- type: created_from
+  targetType: compute.googleapis.com/InstanceTemplate
+  targetIdPath: refs_compute_googleapis_com_InstanceTemplate
 - type: uses
   targetType: compute.googleapis.com/HealthCheck
   targetIdPath: refs_compute_googleapis_com_HealthCheck
-- type: uses
-  targetType: compute.googleapis.com/InstanceGroup
-  targetIdPath: refs_compute_googleapis_com_InstanceGroup
 actions:
   delete:
-    operation: compute.backendServices.delete
+    operation: compute.instanceGroupManagers.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: compute.backendServices.get
+      operation: compute.instanceGroupManagers.get
       itemsPath: $
       identityPath: name

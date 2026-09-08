@@ -237,6 +237,10 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		state = text(data["state"])
 	}
 	actionable := known && len(kind.DeleteOperations) > 0
+	if actionable {
+		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")
+		actionable = err == nil
+	}
 	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: safePayload(normalized), Raw: safePayload(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
 }
 
@@ -269,6 +273,10 @@ func references(c *client, data map[string]any) map[string][]string {
 	// sourceSnapshot) and reverse children lists are not deletion dependencies.
 	fields := map[string]string{"network": "compute.googleapis.com/Network", "networkURL": "compute.googleapis.com/Network", "privateNetwork": "compute.googleapis.com/Network", "subnetwork": "compute.googleapis.com/Subnetwork", "subnetworkURL": "compute.googleapis.com/Subnetwork", "topic": "pubsub.googleapis.com/Topic", "deadLetterTopic": "pubsub.googleapis.com/Topic", "healthChecks": "compute.googleapis.com/HealthCheck", "urlMap": "compute.googleapis.com/UrlMap", "sslCertificates": "compute.googleapis.com/SslCertificate", "backendService": "compute.googleapis.com/BackendService", "defaultService": "compute.googleapis.com/BackendService", "service": "compute.googleapis.com/BackendService", "nextHopInstance": "compute.googleapis.com/Instance", "target": "", "source": "compute.googleapis.com/Disk"}
 	var visit func(any, string)
+	fields["instanceTemplate"] = "compute.googleapis.com/InstanceTemplate"
+	fields["instanceGroup"] = instanceGroupType
+	fields["healthCheck"] = "compute.googleapis.com/HealthCheck"
+	fields["group"] = ""
 	visit = func(value any, key string) {
 		switch typed := value.(type) {
 		case map[string]any:

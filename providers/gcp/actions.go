@@ -50,6 +50,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
+		if a.kind.NativeType == managerType {
+			read, err := a.managedGroupReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"manager_absent": true}}, err
+		}
 		return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 	}
 	if err != nil {
@@ -59,7 +63,20 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
 	if a.kind.NativeType == instanceType {
+		if reason, err := a.managedVMPreflight(ctx, request, data); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
 		if _, reason, err := a.plannedDisks(request, data); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
+	}
+	if a.kind.NativeType == managerType {
+		if _, reason, err := a.plannedGroup(ctx, request, data); reason != "" || err != nil {
+			return contracts.PreflightResult{Reason: reason}, err
+		}
+	}
+	if a.kind.NativeType == instanceGroupType {
+		if reason, err := a.unmanagedGroupPreflight(ctx, request); reason != "" || err != nil {
 			return contracts.PreflightResult{Reason: reason}, err
 		}
 	}
@@ -109,6 +126,12 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if check.Evidence["manager_absent"] == true {
+		return contracts.ActionResult{RetryAfter: 2 * time.Second}, nil
+	}
+	if a.kind.NativeType == managerType {
+		return a.prepareManagedGroup(ctx, request)
 	}
 	if a.kind.NativeType == instanceType {
 		return a.prepareInstance(ctx, request)
@@ -207,6 +230,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == managerType && text(result.Data["phase"]) != "" {
+		return a.waitManagedGroup(ctx, request, result)
+	}
 	phase := text(result.Data["phase"])
 	if phase != "" {
 		if a.kind.NativeType != instanceType || (phase != "prepare_instance" && phase != "delete") {
@@ -217,35 +243,9 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 			return contracts.WaitResult{}, fmt.Errorf("missing GCP preparation operation")
 		}
 	}
-	if result.ProviderOperationID != "" {
-		// Rebuild the operation from its name and the validated resource endpoint.
-		// A persisted waiter URL cannot redirect credentials to another project/API.
-		endpoint, _ := url.Parse(result.ProviderOperationID)
-		if endpoint == nil {
-			return contracts.WaitResult{}, fmt.Errorf("invalid GCP operation")
-		}
-		name := last(endpoint.Path)
-		if a.regionalOperation() {
-			name = strings.TrimPrefix(strings.TrimPrefix(endpoint.Path, "/"), strings.Split(strings.TrimPrefix(endpoint.Path, "/"), "/")[0]+"/")
-		}
-		expected, err := a.operationURL(map[string]any{"name": name})
-		if err != nil || expected != result.ProviderOperationID {
-			return contracts.WaitResult{}, fmt.Errorf("GCP operation identity mismatch")
-		}
-		response, err := a.client.requestResult(ctx, "GET", expected, nil, nil)
-		if err != nil && !isNotFound(err) {
-			return contracts.WaitResult{}, err
-		}
-		if err == nil {
-			data := response.Data
-			if failure := operationError(data, response.RequestID); failure != nil {
-				return contracts.WaitResult{}, failure
-			}
-			done := data["done"] == true || text(data["status"]) == "DONE"
-			if !done {
-				return contracts.WaitResult{RetryAfter: 2 * time.Second, State: text(data["status"])}, nil
-			}
-		}
+	wait, err := a.waitOperation(ctx, result.ProviderOperationID)
+	if err != nil || !wait.Done {
+		return wait, err
 	}
 	if phase == "prepare_instance" {
 		applied, err := a.instancePreparationApplied(ctx, request, result)
@@ -274,9 +274,46 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	read, err := a.Readback(ctx, request)
 	return contracts.WaitResult{Done: !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
 }
+
+func (a *action) waitOperation(ctx context.Context, operationID string) (contracts.WaitResult, error) {
+	if operationID != "" {
+		// Rebuild the operation from its name and the validated resource endpoint.
+		// A persisted waiter URL cannot redirect credentials to another project/API.
+		endpoint, _ := url.Parse(operationID)
+		if endpoint == nil {
+			return contracts.WaitResult{}, fmt.Errorf("invalid GCP operation")
+		}
+		name := last(endpoint.Path)
+		if a.regionalOperation() {
+			name = strings.TrimPrefix(strings.TrimPrefix(endpoint.Path, "/"), strings.Split(strings.TrimPrefix(endpoint.Path, "/"), "/")[0]+"/")
+		}
+		expected, err := a.operationURL(map[string]any{"name": name})
+		if err != nil || expected != operationID {
+			return contracts.WaitResult{}, fmt.Errorf("GCP operation identity mismatch")
+		}
+		response, err := a.client.requestResult(ctx, "GET", expected, nil, nil)
+		if err != nil && !isNotFound(err) {
+			return contracts.WaitResult{}, err
+		}
+		if err == nil {
+			data := response.Data
+			if failure := operationError(data, response.RequestID); failure != nil {
+				return contracts.WaitResult{}, failure
+			}
+			done := data["done"] == true || text(data["status"]) == "DONE"
+			if !done {
+				return contracts.WaitResult{RetryAfter: 2 * time.Second, State: text(data["status"])}, nil
+			}
+		}
+	}
+	return contracts.WaitResult{Done: true}, nil
+}
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
+		if a.kind.NativeType == managerType {
+			return a.managedGroupReadback(ctx, request)
+		}
 		return contracts.ReadbackResult{Exists: false}, nil
 	}
 	if err != nil {

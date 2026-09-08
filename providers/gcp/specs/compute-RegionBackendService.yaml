@@ -55,6 +55,9 @@ relationships:
 - type: uses
   targetType: compute.googleapis.com/HealthCheck
   targetIdPath: refs_compute_googleapis_com_HealthCheck
+- type: uses
+  targetType: compute.googleapis.com/InstanceGroup
+  targetIdPath: refs_compute_googleapis_com_InstanceGroup
 actions:
   delete:
     operation: compute.regionBackendServices.delete

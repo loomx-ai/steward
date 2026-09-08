@@ -33,6 +33,10 @@ type clusterLifecycleRuntime interface {
 	ClusterLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
 }
 
+type computeLifecycleRuntime interface {
+	ComputeLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error)
+}
+
 type lifecycleContributorResolver struct {
 	runtimes lifecycleRuntimeDirectory
 }
@@ -51,6 +55,20 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	}
 	switch connection.Provider {
 	case asset.ProviderGCP:
+		for _, value := range assets {
+			if value.Identity.Provider != asset.ProviderGCP || value.Identity.NativeType != "compute.googleapis.com/InstanceGroupManager" {
+				continue
+			}
+			provider, ok := runtime.(computeLifecycleRuntime)
+			if !ok {
+				return nil, fmt.Errorf("GCP runtime does not expose Compute lifecycle discovery")
+			}
+			contributor, err := provider.ComputeLifecycle(ctx, connection.ID)
+			if err != nil {
+				return nil, err
+			}
+			return []governance.Contributor{contributor}, nil
+		}
 		return []governance.Contributor{gcp.NewInstanceDisks()}, nil
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}

@@ -2,26 +2,26 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: gcp
-  nativeType: compute.googleapis.com/BackendService
-  class: network.load_balancer_backend
+  nativeType: compute.googleapis.com/Autoscaler
+  class: compute.scaling_policy
 presentation:
   displayNames:
-    en-US: Backend service
-    zh-CN: 后端服务
-  consoleLinkTemplate: https://console.cloud.google.com/home/dashboard?project={projectId}
+    en-US: Autoscaler
+    zh-CN: 自动扩缩容策略
+  consoleLinkTemplate: https://console.cloud.google.com/compute/instanceGroups?project={projectId}
 scope:
-  kind: global
+  kind: region
 discovery:
   source: product-api
   detail:
-    operation: compute.backendServices.get
+    operation: compute.autoscalers.get
     itemsPath: $
     identityPath: name
   list:
-    operation: compute.backendServices.list
+    operation: compute.autoscalers.aggregatedList
     parameters:
       project: scope.project
-    itemsPath: items
+    itemsPath: items.*.autoscalers
     identityPath: selfLink
     pagination:
       type: token
@@ -33,9 +33,6 @@ fields:
   name:
     path: name
     type: string
-  state:
-    path: status
-    type: string
   projectId:
     path: project_id
     type: string
@@ -45,25 +42,25 @@ fields:
   labels:
     path: labels
     type: object
+  autoscalingPolicy:
+    path: autoscalingPolicy
+    type: object
+  state:
+    path: status
+    type: string
 extensions:
   hook: gcp.resource
 relationships:
-- type: member_of
-  targetType: compute.googleapis.com/Network
-  targetIdPath: refs_compute_googleapis_com_Network
 - type: uses
-  targetType: compute.googleapis.com/HealthCheck
-  targetIdPath: refs_compute_googleapis_com_HealthCheck
-- type: uses
-  targetType: compute.googleapis.com/InstanceGroup
-  targetIdPath: refs_compute_googleapis_com_InstanceGroup
+  targetType: compute.googleapis.com/InstanceGroupManager
+  targetIdPath: refs_compute_googleapis_com_InstanceGroupManager
 actions:
   delete:
-    operation: compute.backendServices.delete
+    operation: compute.autoscalers.delete
     idempotency: readback
     waiter: gcp_operation
     readback: gcp_absent
     read:
-      operation: compute.backendServices.get
+      operation: compute.autoscalers.get
       itemsPath: $
       identityPath: name

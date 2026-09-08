@@ -29,6 +29,11 @@ func safePayload(value map[string]any) map[string]any {
 					}
 				case "env", "environmentvariables", "secretenvironmentvariables", "secretvolumes", "user-data", "userdata", "startup-script", "startup-script-url", "sshkeys", "ssh-keys", "connectionstring", "connectionstrings", "clientsecret", "client_secret":
 					object[key] = "[REDACTED]"
+				case "preservedstate", "preservedstatefrompolicy", "preservedstatefromconfig":
+					if state, ok := child.(map[string]any); ok && state["metadata"] != nil {
+						state["metadata"] = "[REDACTED]"
+					}
+					redact(child)
 				case "metadata":
 					if metadata, ok := child.(map[string]any); ok {
 						for _, raw := range array(metadata["items"]) {

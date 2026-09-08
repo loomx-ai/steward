@@ -6,6 +6,9 @@
         "compute.addresses.delete",
         "compute.addresses.get",
         "compute.addresses.list",
+        "compute.autoscalers.aggregatedList",
+        "compute.autoscalers.delete",
+        "compute.autoscalers.get",
         "compute.backendServices.delete",
         "compute.backendServices.get",
         "compute.backendServices.list",
@@ -34,6 +37,18 @@
         "compute.images.delete",
         "compute.images.get",
         "compute.images.list",
+        "compute.instanceGroupManagers.abandonInstances",
+        "compute.instanceGroupManagers.aggregatedList",
+        "compute.instanceGroupManagers.applyUpdatesToInstances",
+        "compute.instanceGroupManagers.delete",
+        "compute.instanceGroupManagers.get",
+        "compute.instanceGroupManagers.listManagedInstances",
+        "compute.instanceGroupManagers.listPerInstanceConfigs",
+        "compute.instanceGroupManagers.patchPerInstanceConfigs",
+        "compute.instanceGroups.aggregatedList",
+        "compute.instanceGroups.delete",
+        "compute.instanceGroups.get",
+        "compute.instanceGroups.listInstances",
         "compute.instanceTemplates.aggregatedList",
         "compute.instanceTemplates.delete",
         "compute.instanceTemplates.get",
@@ -47,6 +62,8 @@
         "compute.networks.delete",
         "compute.networks.get",
         "compute.networks.list",
+        "compute.regionAutoscalers.delete",
+        "compute.regionAutoscalers.get",
         "compute.regionBackendServices.delete",
         "compute.regionBackendServices.get",
         "compute.regionBackendServices.list",
@@ -56,6 +73,15 @@
         "compute.regionHealthChecks.delete",
         "compute.regionHealthChecks.get",
         "compute.regionHealthChecks.list",
+        "compute.regionInstanceGroupManagers.abandonInstances",
+        "compute.regionInstanceGroupManagers.applyUpdatesToInstances",
+        "compute.regionInstanceGroupManagers.delete",
+        "compute.regionInstanceGroupManagers.get",
+        "compute.regionInstanceGroupManagers.listManagedInstances",
+        "compute.regionInstanceGroupManagers.listPerInstanceConfigs",
+        "compute.regionInstanceGroupManagers.patchPerInstanceConfigs",
+        "compute.regionInstanceGroups.get",
+        "compute.regionInstanceGroups.listInstances",
         "compute.regionInstanceTemplates.delete",
         "compute.regionInstanceTemplates.get",
         "compute.regionInstanceTemplates.list",
@@ -844,6 +870,65 @@
       "delete_operations": [],
       "list_operations": [
         "cloudkms.projects.locations.keyRings.importJobs.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/InstanceGroupManager",
+      "collection": "instanceGroupManagers",
+      "class": "compute.scaling_group",
+      "display_name": "Managed instance group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.instanceGroupManagers.get",
+        "compute.regionInstanceGroupManagers.get"
+      ],
+      "delete_operations": [
+        "compute.instanceGroupManagers.delete",
+        "compute.regionInstanceGroupManagers.delete"
+      ],
+      "list_operations": [
+        "compute.instanceGroupManagers.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/InstanceGroup",
+      "collection": "instanceGroups",
+      "class": "compute.instance_group",
+      "display_name": "Instance group",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.instanceGroups.get",
+        "compute.regionInstanceGroups.get"
+      ],
+      "delete_operations": [
+        "compute.instanceGroups.delete"
+      ],
+      "list_operations": [
+        "compute.instanceGroups.aggregatedList"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/Autoscaler",
+      "collection": "autoscalers",
+      "class": "compute.scaling_policy",
+      "display_name": "Autoscaler",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "compute.autoscalers.get",
+        "compute.regionAutoscalers.get"
+      ],
+      "delete_operations": [
+        "compute.autoscalers.delete",
+        "compute.regionAutoscalers.delete"
+      ],
+      "list_operations": [
+        "compute.autoscalers.aggregatedList"
       ]
     }
   ]

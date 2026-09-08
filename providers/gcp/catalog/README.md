@@ -48,12 +48,32 @@ persisted waiter state. A completed operation must also be reflected in a live
 read before deletion proceeds. Unreviewed or changed attachments block cleanup.
 Local SSDs are integrated instance storage and have no separate disk resource.
 
+Zonal and regional managed instance groups discover native members, per-instance
+configurations, the complementary InstanceGroup, and their autoscaler. Effective
+stateful disk/IP policy overrides VM attachment policy. Shared read-only disks
+are retained. The autoscaler has a separate deletion prerequisite. Standalone
+VM/InstanceGroup deletion verifies that a MIG no longer owns the resource.
+
+Retention abandons selected VMs, patches per-instance deletion rules for stateful
+disks/IPs, and updates ordinary disk autoDelete flags. Configurations preserve
+live metadata and use native fingerprints. When manual application is required,
+the driver validates a persisted configuration hash and applies only a REFRESH;
+it disallows restart/replacement. Each stage waits for both the native operation
+and effective configuration/membership, and resumes from persisted state.
+The reviewed plan binds VM/disk/IP incarnations and the complete member set.
+Controller completion also requires its complementary InstanceGroup to disappear.
+Regional InstanceGroup has no native standalone delete method; its absence is
+verified through the owning MIG's cleanup.
+
 Reference material:
 
 - [Google Discovery directory](https://www.googleapis.com/discovery/v1/apis)
 - [Cloud Asset Inventory asset types](https://docs.cloud.google.com/asset-inventory/docs/asset-types)
 - [Compute REST API](https://docs.cloud.google.com/compute/docs/reference/rest/v1)
 - [Disk deletion policy](https://docs.cloud.google.com/compute/docs/disks/modify-persistent-disk)
+- [MIG preserved-state deletion and abandonment](https://docs.cloud.google.com/compute/docs/instance-groups/preserved-state)
+- [Applying and verifying stateful configuration](https://docs.cloud.google.com/compute/docs/instance-groups/applying-viewing-removing-stateful-config-in-migs)
+- [Native per-instance configuration patch](https://docs.cloud.google.com/compute/docs/reference/rest/v1/instanceGroupManagers/patchPerInstanceConfigs)
 - [Google API resource names](https://cloud.google.com/apis/design/resource_names)
 - [Cloud KMS resource deletion and restrictions](https://docs.cloud.google.com/kms/docs/delete-kms-resources)
 

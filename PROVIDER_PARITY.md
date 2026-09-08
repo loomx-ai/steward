@@ -139,3 +139,14 @@ background evidence only, not acceptance evidence for this work.
   failed operations and restart behavior. AKS external attachment retention,
   other controllers, GCP cluster lifecycle and the broader acceptance scope
   remain unfinished.
+- GCP now includes zonal/regional managed instance groups, InstanceGroups and
+  autoscalers. Native member discovery records stateful disk/IP policy and shared
+  read-only ownership. Cleanup prepares retention through abandonment, native
+  policy updates and verified manual application when needed. It checks frozen
+  resource incarnations, member/policy drift, pagination completeness, protected
+  labels and operation failures. Complementary InstanceGroup readback is required.
+  Retained tests cover native product lists, plan ordering and retention,
+  automatic/manual state application, stale configuration fingerprints, operation
+  completion before effective state, cross-zone polling and resumed execution.
+  These remain protocol tests; GKE, other controllers and broader service/emulator
+  acceptance are still outstanding.
