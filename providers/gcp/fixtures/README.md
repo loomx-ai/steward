@@ -1,5 +1,9 @@
 # Google Cloud protocol fixtures
 
+[Batch fixtures](batch/README.md) cover native jobs/tasks, reviewed Compute
+effects, retention, asynchronous deletion and recovery, plus a SQLite scan-worker
+check for failed parent discovery. They are synthetic protocol fixtures.
+
 These are synthetic resources using the native [Asset](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/Asset)
 and [assets.list](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list)
 response schemas, including project-number full names, Compute API selfLinks,

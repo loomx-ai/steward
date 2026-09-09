@@ -199,6 +199,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
+	if nativeType == batchJobType {
+		normalized[batchProof] = batchConfiguration(data)
+	}
 	if isDataform(nativeType) {
 		normalized[dataformProof] = dataformConfiguration(nativeType, data)
 	}
@@ -207,6 +210,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if nativeType == batchJobType {
+		refs = references(c, c.batchDependencyData(data))
+	}
 	if nativeType == "dataform.googleapis.com/WorkflowConfig" {
 		id := c.canonicalName("//dataform.googleapis.com/" + text(data["releaseConfig"]))
 		kind, _ := findType("dataform.googleapis.com/ReleaseConfig")

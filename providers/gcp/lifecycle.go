@@ -70,6 +70,15 @@ func (*InstanceDisks) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 		}
 		project := text(vm.Normalized["project_id"])
 		c := &client{project: project, number: text(vm.Normalized["project_number"])}
+		batchManaged := false
+		if uid := batchUID(vm.Normalized); uid != "" {
+			for _, job := range assets {
+				if job.Identity.Provider == vm.Identity.Provider && job.Identity.ConnectionID == vm.Identity.ConnectionID && job.Identity.Partition == vm.Identity.Partition && job.Identity.NativeType == batchJobType && job.ClosedAt == nil && text(job.Normalized["uid"]) == uid {
+					batchManaged = true
+					break
+				}
+			}
+		}
 		disks, err := instanceDisks(c, vm.Normalized)
 		if err != nil {
 			return result, err
@@ -92,6 +101,11 @@ func (*InstanceDisks) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 			}
 			if attachment.autoDelete {
 				evidence["delete_by_default"] = true
+				if batchManaged {
+					// Batch owns the VM lifecycle; only its Job DELETE is issued.
+					evidence["retention_supported"] = false
+					evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
+				}
 				evidence[graph.LifecycleEvidenceControllerDeleteGuaranteed] = true
 				result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: vm.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: diskAttachmentSource, Evidence: evidence, Confidence: 1})
 			} else {

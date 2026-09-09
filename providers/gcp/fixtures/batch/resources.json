@@ -1,0 +1,330 @@
+[
+  {
+    "name": "projects/sample-project/locations/us-central1/jobs/training",
+    "uid": "training-uid-a91",
+    "createTime": "2026-07-01T00:00:00Z",
+    "updateTime": "2026-07-01T00:01:00Z",
+    "status": {
+      "state": "RUNNING"
+    },
+    "labels": {
+      "environment": "test"
+    },
+    "taskGroups": [
+      {
+        "name": "projects/sample-project/locations/us-central1/jobs/training/taskGroups/workers",
+        "taskCount": "2",
+        "taskSpec": {
+          "runnables": [
+            {
+              "script": {
+                "text": "echo BATCH_PRIVATE_COMMAND"
+              },
+              "environment": {
+                "variables": {
+                  "APP_VALUE": "BATCH_PRIVATE_ENV"
+                },
+                "secretVariables": {
+                  "PASSWORD": "projects/sample-project/secrets/batch-password/versions/latest"
+                },
+                "encryptedVariables": {
+                  "keyName": "projects/sample-project/locations/us-central1/keyRings/batch/cryptoKeys/environment",
+                  "cipherText": "BATCH_PRIVATE_CIPHERTEXT"
+                }
+              }
+            }
+          ],
+          "volumes": [
+            {
+              "gcs": {
+                "remotePath": "batch-input-data/training/"
+              }
+            },
+            {
+              "deviceName": "input",
+              "mountPath": "/mnt/input"
+            }
+          ]
+        }
+      }
+    ],
+    "allocationPolicy": {
+      "instances": [
+        {
+          "policy": {
+            "machineType": "e2-standard-2",
+            "disks": [
+              {
+                "existingDisk": "projects/sample-project/regions/europe-west1/disks/input-data",
+                "deviceName": "input"
+              },
+              {
+                "newDisk": {
+                  "sizeGb": "30",
+                  "type": "pd-balanced"
+                },
+                "deviceName": "output"
+              }
+            ]
+          }
+        }
+      ],
+      "location": {
+        "allowedLocations": [
+          "zones/europe-west1-b"
+        ]
+      },
+      "network": {
+        "networkInterfaces": [
+          {
+            "network": "global/networks/jobs",
+            "subnetwork": "regions/europe-west1/subnetworks/jobs"
+          }
+        ]
+      },
+      "serviceAccount": {
+        "email": "batch-runner@sample-project.iam.gserviceaccount.com"
+      }
+    },
+    "logsPolicy": {
+      "destination": "CLOUD_LOGGING"
+    },
+    "notifications": [
+      {
+        "pubsubTopic": "projects/sample-project/topics/batch-events"
+      }
+    ]
+  },
+  {
+    "name": "projects/sample-project/locations/europe-west1/jobs/training",
+    "uid": "training-uid-b72",
+    "createTime": "2026-07-01T00:00:00Z",
+    "updateTime": "2026-07-01T00:01:00Z",
+    "status": {
+      "state": "SUCCEEDED"
+    },
+    "labels": {
+      "environment": "test"
+    },
+    "taskGroups": [
+      {
+        "name": "projects/sample-project/locations/europe-west1/jobs/training/taskGroups/workers",
+        "taskCount": "1",
+        "taskSpec": {
+          "runnables": [
+            {
+              "script": {
+                "text": "echo BATCH_PRIVATE_COMMAND"
+              },
+              "environment": {
+                "variables": {
+                  "APP_VALUE": "BATCH_PRIVATE_ENV"
+                },
+                "secretVariables": {
+                  "PASSWORD": "projects/sample-project/secrets/batch-password/versions/latest"
+                },
+                "encryptedVariables": {
+                  "keyName": "projects/sample-project/locations/us-central1/keyRings/batch/cryptoKeys/environment",
+                  "cipherText": "BATCH_PRIVATE_CIPHERTEXT"
+                }
+              }
+            }
+          ],
+          "volumes": [
+            {
+              "gcs": {
+                "remotePath": "batch-input-data/training/"
+              }
+            },
+            {
+              "deviceName": "input",
+              "mountPath": "/mnt/input"
+            }
+          ]
+        }
+      }
+    ],
+    "allocationPolicy": {},
+    "logsPolicy": {
+      "destination": "CLOUD_LOGGING"
+    },
+    "notifications": [
+      {
+        "pubsubTopic": "projects/sample-project/topics/batch-events"
+      }
+    ]
+  },
+  {
+    "name": "projects/sample-project/locations/us-central1/jobs/training/taskGroups/workers/tasks/0",
+    "status": {
+      "state": "RUNNING",
+      "statusEvents": [
+        {
+          "description": "BATCH_PRIVATE_TASK_LOG",
+          "taskExecution": {
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "projects/sample-project/locations/us-central1/jobs/training/taskGroups/workers/tasks/1",
+    "status": {
+      "state": "SUCCEEDED",
+      "statusEvents": [
+        {
+          "description": "BATCH_PRIVATE_TASK_LOG",
+          "taskExecution": {
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "projects/sample-project/locations/europe-west1/jobs/training/taskGroups/workers/tasks/0",
+    "status": {
+      "state": "RUNNING",
+      "statusEvents": [
+        {
+          "description": "BATCH_PRIVATE_TASK_LOG",
+          "taskExecution": {
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "worker-q91",
+    "id": "1001",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/worker-q91",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b",
+    "creationTimestamp": "2026-07-01T00:01:00Z",
+    "labels": {
+      "batch-job-id": "training",
+      "batch-job-uid": "training-uid-a91",
+      "batch-node": ""
+    },
+    "machineType": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/machineTypes/e2-standard-2",
+    "serviceAccounts": [
+      {
+        "email": "batch-runner@sample-project.iam.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/cloud-platform"
+        ]
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/jobs",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/europe-west1/subnetworks/jobs",
+        "networkIP": "10.0.0.2"
+      }
+    ],
+    "disks": [
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/disks/worker-boot",
+        "deviceName": "boot",
+        "autoDelete": true,
+        "boot": true,
+        "type": "PERSISTENT",
+        "mode": "READ_WRITE"
+      },
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/disks/output",
+        "deviceName": "output",
+        "autoDelete": true,
+        "type": "PERSISTENT",
+        "mode": "READ_WRITE"
+      },
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/europe-west1/disks/input-data",
+        "deviceName": "input",
+        "autoDelete": false,
+        "type": "PERSISTENT",
+        "mode": "READ_ONLY"
+      }
+    ]
+  },
+  {
+    "name": "worker-other",
+    "id": "2001",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/worker-other",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b",
+    "creationTimestamp": "2026-07-01T00:01:00Z",
+    "labels": {
+      "batch-job-id": "training",
+      "batch-job-uid": "training-uid-b72",
+      "batch-node": ""
+    },
+    "disks": []
+  },
+  {
+    "name": "worker-boot",
+    "id": "1002",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/disks/worker-boot",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b",
+    "creationTimestamp": "2026-07-01T00:01:00Z",
+    "labels": {
+      "batch-job-id": "training",
+      "batch-job-uid": "training-uid-a91",
+      "batch-node": ""
+    },
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/diskTypes/pd-balanced",
+    "sizeGb": "30",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/worker-q91"
+    ]
+  },
+  {
+    "name": "output",
+    "id": "1003",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/disks/output",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b",
+    "creationTimestamp": "2026-07-01T00:01:00Z",
+    "labels": {
+      "batch-job-id": "training",
+      "batch-job-uid": "training-uid-a91",
+      "batch-node": ""
+    },
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/diskTypes/pd-balanced",
+    "sizeGb": "30",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/worker-q91"
+    ]
+  },
+  {
+    "name": "input-data",
+    "id": "1004",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/europe-west1/disks/input-data",
+    "region": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/europe-west1",
+    "creationTimestamp": "2025-01-01T00:00:00Z",
+    "labels": {
+      "owner": "data-team"
+    },
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/europe-west1/diskTypes/pd-balanced",
+    "sizeGb": "30",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/worker-q91",
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/instances/unrelated-reader"
+    ]
+  },
+  {
+    "name": "orphan-output",
+    "id": "1005",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/disks/orphan-output",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b",
+    "creationTimestamp": "2026-07-01T00:01:00Z",
+    "labels": {
+      "batch-job-id": "training",
+      "batch-job-uid": "training-uid-a91",
+      "batch-node": ""
+    },
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b/diskTypes/pd-balanced",
+    "sizeGb": "30",
+    "users": []
+  }
+]

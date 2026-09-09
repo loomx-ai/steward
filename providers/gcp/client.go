@@ -261,11 +261,11 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 	if method == http.MethodGet && response.StatusCode != http.StatusOK {
 		return result, apiError(response.StatusCode, "incomplete_response", nil, "")
 	}
-	if u.Host == "dataform.googleapis.com" && response.StatusCode != http.StatusOK {
-		return result, apiError(response.StatusCode, "unexpected_dataform_response", nil, "")
+	if (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com") && response.StatusCode != http.StatusOK {
+		return result, apiError(response.StatusCode, "unexpected_native_response", nil, "")
 	}
-	if _, present := data["error"]; u.Host == "dataform.googleapis.com" && present {
-		return result, apiError(response.StatusCode, "dataform_error_response", nil, "")
+	if _, present := data["error"]; (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com") && present {
+		return result, apiError(response.StatusCode, "native_error_response", nil, "")
 	}
 	execution.LogCloudAPIResponse(ctx, u.Host, method, sanitize(map[string]any{"request_id": result.RequestID, "status_code": response.StatusCode, "body": data}))
 	result.Data = data

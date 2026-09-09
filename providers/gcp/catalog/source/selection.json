@@ -812,6 +812,18 @@
         "dataform.projects.locations.teamFolders.queryContents",
         "dataform.projects.locations.teamFolders.search"
       ]
+    },
+    {
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "batch.projects.locations.jobs.delete",
+        "batch.projects.locations.jobs.get",
+        "batch.projects.locations.jobs.list",
+        "batch.projects.locations.jobs.taskGroups.tasks.get",
+        "batch.projects.locations.jobs.taskGroups.tasks.list",
+        "batch.projects.locations.list",
+        "batch.projects.locations.operations.get"
+      ]
     }
   ],
   "resource_types": [
@@ -3581,6 +3593,40 @@
       ],
       "list_operations": [
         "dataform.projects.locations.teamFolders.search"
+      ]
+    },
+    {
+      "native_type": "batch.googleapis.com/Job",
+      "collection": "jobs",
+      "class": "compute.job",
+      "display_name": "Batch job",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "batch.projects.locations.jobs.get"
+      ],
+      "delete_operations": [
+        "batch.projects.locations.jobs.delete"
+      ],
+      "list_operations": [
+        "batch.projects.locations.jobs.list"
+      ]
+    },
+    {
+      "native_type": "batch.googleapis.com/Task",
+      "collection": "tasks",
+      "class": "compute.task",
+      "display_name": "Batch task",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "batch.projects.locations.jobs.taskGroups.tasks.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "batch.projects.locations.jobs.taskGroups.tasks.list"
       ]
     }
   ],

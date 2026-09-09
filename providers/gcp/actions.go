@@ -23,6 +23,9 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
+	if value.Identity.NativeType == batchJobType && (id == "" || id != value.Identity.ConnectionID) {
+		return nil, groupDenied("batch_connection_changed")
+	}
 	kind, ok := findType(value.Identity.NativeType)
 	if !ok || value.Identity.Provider != asset.ProviderGCP || len(kind.DeleteOperations) == 0 {
 		return nil, fmt.Errorf("GCP resource has no action driver")
@@ -162,6 +165,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			return contracts.PreflightResult{Reason: "bucket_not_empty"}, nil
 		}
 	}
+	if a.kind.NativeType == batchJobType {
+		return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"batch_deleting": object(data["status"])["state"] == "DELETION_IN_PROGRESS"}}, nil
+	}
 	return contracts.PreflightResult{Allowed: true}, nil
 }
 
@@ -177,6 +183,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		return contracts.ActionResult{}, nil
 	}
 	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true || check.Evidence["service_parent_absent"] == true {
+		if a.kind.NativeType == batchJobType {
+			return contracts.ActionResult{Data: batchPhase(request, ""), RetryAfter: 2 * time.Second}, nil
+		}
 		if a.kind.NativeType == clusterType {
 			return gkePhase("gke_delete"), nil
 		}
@@ -193,6 +202,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if a.kind.NativeType == dataformInvocationType {
 		return a.prepareDataformInvocation(ctx, request)
+	}
+	if a.kind.NativeType == batchJobType && check.Evidence["batch_deleting"] == true {
+		return contracts.ActionResult{Data: batchPhase(request, ""), RetryAfter: 2 * time.Second}, nil
 	}
 	return a.delete(ctx, request)
 }
@@ -243,6 +255,13 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	operation, err := a.operationURL(data)
 	if err != nil {
 		return contracts.ActionResult{}, err
+	}
+	if a.kind.NativeType == batchJobType {
+		operation, err = a.batchOperation(data, request)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: batchPhase(request, operation), RetryAfter: 2 * time.Second}, nil
 	}
 	return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: map[string]any{"operation": operation}, RetryAfter: 2 * time.Second}, nil
 }
@@ -313,6 +332,15 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == batchJobType {
+		// Execute may return an empty result when its initial read already proved
+		// the reviewed job and all effects absent, or DELETE itself returned 404.
+		if len(result.Data) == 0 && result.ProviderOperationID == "" {
+			read, err := a.Readback(ctx, request)
+			return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+		}
+		return a.waitBatch(ctx, request, result)
+	}
 	if a.kind.NativeType == dataformInvocationType && text(result.Data["phase"]) != "" {
 		return a.waitDataformInvocation(ctx, request, result)
 	}
@@ -427,6 +455,11 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	}
 	if err := a.dataformPreflight(ctx, request, data); err != nil {
 		return contracts.ReadbackResult{}, err
+	}
+	if a.kind.NativeType == batchJobType {
+		if err := a.batchJobIdentity(request, data); err != nil {
+			return contracts.ReadbackResult{}, err
+		}
 	}
 	if resourceSoftDeleted(a.kind.NativeType, data) {
 		return contracts.ReadbackResult{Exists: false, State: "soft_deleted"}, nil

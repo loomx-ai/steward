@@ -40,6 +40,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | Cloud SQL | Instances | Supported when deletion protection is off |
 | Cloud Run | Services | Supported |
 | Artifact Registry | Repositories | Supported |
+| Batch | Jobs and task records | Job cleanup cancels running work and verifies reviewed task/VM/disk effects; tasks have no independent delete |
 | Dataform | Folders, team folders, repositories, workspaces, release/workflow configurations, workflow invocations, compilation results | Reviewed folder and repository cleanup; running invocations are cancelled first; compilation results are deleted with their repository |
 | Secret Manager | Global and regional secrets | Supported |
 | Google Kubernetes Engine | Clusters and node pools | Native controller cleanup with reviewed member impacts |
@@ -60,9 +61,11 @@ A **regional VPC cleanup group** selects resources in that region and retains th
 - **VM disks and managed groups:** Native disk/IP deletion policy appears in the impact plan. Supported retention is applied through native operations and verified before deleting the controller. Changed attachments or resource identities block execution.
 - **Deletion protection:** VM deletion protection is removed as an explicit native preparation phase during authorized cleanup. Protected labels and Cloud SQL deletion protection still block deletion.
 - **Storage buckets:** Nonempty buckets are rejected. Steward does not empty objects or object versions to make a bucket deletable.
+- **Batch:** Select the job to review its tasks, VMs and disks together. Cleanup uses native job deletion and waits for resource absence. Existing attached disks with `autoDelete=false` remain retained; retention of Batch-created disks or unsafe external-disk deletion settings blocks cleanup. Instance templates, storage buckets, NFS data, secrets, Pub/Sub topics, logs and output data remain separate resources. See Google's [job deletion behavior](https://docs.cloud.google.com/batch/docs/delete-job).
 - **Dataform:** Repository cleanup deletes its workspaces, release/workflow configurations and invocation records, then removes the repository and its reviewed compilation results. Running invocations are cancelled and must reach a terminal state first. New members, changed configuration or unreadable dependencies block cleanup. Git remotes, referenced secrets and BigQuery output tables remain separate resources. Cancellation does not roll back completed BigQuery work. See Google's [repository deletion contract](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.repositories/delete) and [cancellation behavior](https://docs.cloud.google.com/dataform/docs/reference/mcp/tools_list/cancel_workflow_invocation).
 
 Dataform folder cleanup includes its nested folders and repositories, with each member deleted before its parent. A moved or recreated ancestor also stops child actions and resumed cancellations. Folder searches reflect the connection's access: resources hidden by a sharing change remain recorded until deletion is verified. Google's [team-folder search contract](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.teamFolders/search) describes this visibility limit.
+
 - **GKE:** The plan includes verified node and network impacts. Cluster cleanup waits for Kubernetes Service, Ingress and Gateway finalizers before deleting the cluster. Persistent volumes and pre-existing IPs/certificates are retained according to their verified policy. Unsupported retention or unverified ownership blocks cleanup. The control-plane endpoint must be reachable; inventory needs `get` on the `kube-system` Namespace and `list` on Services, Ingresses and installed Gateway resources. Cleanup also needs `delete` on those workload resources, native Container/Compute read/delete/operation permissions, and access to node-group membership. Kubernetes Secret read permission is not required.
 
 Review the actual selection and [cleanup results](./cleanup.md) before proceeding. Product permissions, retention policies, dependencies, and provider-side changes can still prevent an action.
@@ -70,6 +73,8 @@ Review the actual selection and [cleanup results](./cleanup.md) before proceedin
 Dataform scans require `dataform.locations.list` and the `list`/`get` permissions for repositories, workspaces, release configs, workflow configs, workflow invocations and compilation results. Cleanup also needs each independently deletable type's `delete` permission and `dataform.workflowInvocations.cancel` for running work. These checks read secret references without fetching secret values. See the [Dataform permission index](https://docs.cloud.google.com/iam/docs/roles-permissions/dataform).
 
 Folder discovery and cleanup additionally require `dataform.folders.get`, `dataform.teamFolders.get` and `dataform.folders.queryContents` for the accessible tree; deletion requires `dataform.folders.delete` and/or `dataform.teamFolders.delete` for the selected folders.
+
+Batch inventory needs `batch.locations.list`, `batch.jobs.list`, `batch.jobs.get` and `batch.tasks.list`, `batch.tasks.get`. Cleanup also needs `batch.jobs.delete` and `batch.operations.get`, plus `compute.instances.list`, `compute.instances.get` and `compute.disks.list`, `compute.disks.get` to verify its effects. Jobs using instance templates require `compute.instanceTemplates.get`. Referenced secrets are not read. See the [Batch permission index](https://docs.cloud.google.com/iam/docs/roles-permissions/batch).
 
 ## Troubleshooting
 

@@ -1,0 +1,105 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: batch.googleapis.com/Job
+  class: compute.job
+presentation:
+  displayNames:
+    en-US: Batch job
+    zh-CN: Batch 作业
+  consoleLinkTemplate: https://console.cloud.google.com/batch/jobs?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: batch.projects.locations.jobs.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: jobs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: batch.projects.locations.jobs.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: status.state
+    type: string
+  uid:
+    path: uid
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  labels:
+    path: labels
+    type: object
+  allocationPolicy:
+    path: allocationPolicy
+    type: object
+  taskGroups:
+    path: taskGroups
+    type: array
+  logsPolicy:
+    path: logsPolicy
+    type: object
+  notifications:
+    path: notifications
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: compute.googleapis.com/Disk
+  targetIdPath: refs_compute_googleapis_com_Disk
+- type: depends_on
+  targetType: compute.googleapis.com/RegionDisk
+  targetIdPath: refs_compute_googleapis_com_RegionDisk
+- type: depends_on
+  targetType: compute.googleapis.com/InstanceTemplate
+  targetIdPath: refs_compute_googleapis_com_InstanceTemplate
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: pubsub.googleapis.com/Topic
+  targetIdPath: refs_pubsub_googleapis_com_Topic
+- type: depends_on
+  targetType: secretmanager.googleapis.com/Secret
+  targetIdPath: refs_secretmanager_googleapis_com_Secret
+actions:
+  delete:
+    operation: batch.projects.locations.jobs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: batch.projects.locations.jobs.get
+      itemsPath: $
+      identityPath: name

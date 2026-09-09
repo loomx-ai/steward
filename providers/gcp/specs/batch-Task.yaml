@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: batch.googleapis.com/Task
+  class: compute.task
+presentation:
+  displayNames:
+    en-US: Batch task
+    zh-CN: Batch 任务
+  consoleLinkTemplate: https://console.cloud.google.com/batch/jobs?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: batch.projects.locations.jobs.taskGroups.tasks.list
+    parameters:
+      parent: parent.normalized._batch_task_group
+    itemsPath: tasks
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: batch.projects.locations.jobs.taskGroups.tasks.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: batch.googleapis.com/Job
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: status.state
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: batch.googleapis.com/Job
+  targetIdPath: refs_batch_googleapis_com_Job

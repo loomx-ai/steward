@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "c17f8fa3eb3ca8d606bc321ac955a9307e7fc4bc5684a86569ffa2981176797d",
+    "checksum": "46d2ed04db4564b560aa2f5bdd492ccda5382a35e77086800b2fb63edc307d07",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "039c7c8e50260a75c7fe102bfbf56441e4391f612de271ed0412f9d69c4d98c4",
+  "content_checksum": "15929b1f00ba86c08d2861af00b959b799d79201b220b7b871d46e30f8a591dd",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -9607,6 +9607,547 @@
         "parameter_position": "query"
       },
       "source_uri": "https://backupdr.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.jobs.delete",
+      "name": "delete",
+      "service": "batch",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Job name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/jobs/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "reason": {
+            "description": "Optional. Reason for this deletion.",
+            "location": "query",
+            "type": "string"
+          },
+          "requestId": {
+            "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "requestId"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.jobs.get",
+      "name": "get",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Job name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/jobs/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The Cloud Batch Job description.",
+        "id": "Job",
+        "properties": {
+          "allocationPolicy": {
+            "$ref": "AllocationPolicy",
+            "description": "Compute resource allocation for all TaskGroups in the Job."
+          },
+          "createTime": {
+            "description": "Output only. When the Job was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Custom labels to apply to the job and any Cloud Logging [LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry) that it generates. Use labels to group and describe the resources they are applied to. Batch automatically applies predefined labels and supports multiple `labels` fields for each job, which each let you apply custom labels to various resources. Label names that start with \"goog-\" or \"google-\" are reserved for predefined labels. For more information about labels with Batch, see [Organize resources using labels](https://cloud.google.com/batch/docs/organize-resources-using-labels).",
+            "type": "object"
+          },
+          "logsPolicy": {
+            "$ref": "LogsPolicy",
+            "description": "Log preservation policy for the Job."
+          },
+          "name": {
+            "description": "Output only. Job name. For example: \"projects/123456/locations/us-central1/jobs/job01\".",
+            "readOnly": true,
+            "type": "string"
+          },
+          "notifications": {
+            "description": "Notification configurations.",
+            "items": {
+              "$ref": "JobNotification"
+            },
+            "type": "array"
+          },
+          "priority": {
+            "description": "Priority of the Job. The valid value range is [0, 100). Default value is 0. Higher value indicates higher priority. A job with higher priority value is more likely to run earlier if all other requirements are satisfied.",
+            "format": "int64",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "JobStatus",
+            "description": "Output only. Job status. It is read only for users.",
+            "readOnly": true
+          },
+          "taskGroups": {
+            "description": "Required. TaskGroups in the Job. Only one TaskGroup is supported now.",
+            "items": {
+              "$ref": "TaskGroup"
+            },
+            "type": "array"
+          },
+          "uid": {
+            "description": "Output only. A system generated unique ID for the Job.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The last time the Job was updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.jobs.list",
+      "name": "list",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{parent}/jobs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "List filter.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Sort results. Supported are \"name\", \"name desc\", \"create_time\", and \"create_time desc\".",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Page size.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Parent path.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "ListJob Response.",
+        "id": "ListJobsResponse",
+        "properties": {
+          "jobs": {
+            "description": "Jobs.",
+            "items": {
+              "$ref": "Job"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "Next page token.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/jobs",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.jobs.taskGroups.tasks.get",
+      "name": "get",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. Task name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/jobs/[^/]+/taskGroups/[^/]+/tasks/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A Cloud Batch task.",
+        "id": "Task",
+        "properties": {
+          "name": {
+            "description": "Task name. The name is generated from the parent TaskGroup name and 'id' field. For example: \"projects/123456/locations/us-west1/jobs/job01/taskGroups/group01/tasks/task01\".",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "TaskStatus",
+            "description": "Task Status."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.jobs.taskGroups.tasks.list",
+      "name": "list",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{parent}/tasks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Task filter, null filter matches all Tasks. Filter string should be of the format State=TaskStatus.State e.g. State=RUNNING",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Page size.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Name of a TaskGroup from which Tasks are being requested. Pattern: \"projects/{project}/locations/{location}/jobs/{job}/taskGroups/{task_group}\"",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/jobs/[^/]+/taskGroups/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "ListTasks Response.",
+        "id": "ListTasksResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Next page token.",
+            "type": "string"
+          },
+          "tasks": {
+            "description": "Tasks.",
+            "items": {
+              "$ref": "Task"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/tasks",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.list",
+      "name": "list",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{name}/locations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "extraLocationTypes": {
+            "description": "Optional. Do not use this field unless explicitly documented otherwise. This is primarily for internal usage.",
+            "location": "query",
+            "repeated": true,
+            "type": "string"
+          },
+          "filter": {
+            "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https://google.aip.dev/160).",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The resource that owns the locations collection, if applicable.",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "The maximum number of results to return. If not set, the service selects a default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for Locations.ListLocations.",
+        "id": "ListLocationsResponse",
+        "properties": {
+          "locations": {
+            "description": "A list of locations that matches the specified filter in the request.",
+            "items": {
+              "$ref": "Location"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "The standard List next-page token.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "locations"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}/locations",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "batch.projects.locations.operations.get",
+      "name": "get",
+      "service": "batch",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/operations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "batch",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://batch.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://batch.googleapis.com/$discovery/rest?version=v1"
     },
     {
       "id": "bigquery.datasets.delete",
@@ -95709,6 +96250,43 @@
         ],
         "list_operations": [
           "backupdr.projects.locations.backupVaults.dataSources.list"
+        ]
+      }
+    },
+    {
+      "native_type": "batch.googleapis.com/Job",
+      "class": "compute.job",
+      "display_name": "Batch job",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "jobs",
+        "read_operations": [
+          "batch.projects.locations.jobs.get"
+        ],
+        "delete_operations": [
+          "batch.projects.locations.jobs.delete"
+        ],
+        "list_operations": [
+          "batch.projects.locations.jobs.list"
+        ]
+      }
+    },
+    {
+      "native_type": "batch.googleapis.com/Task",
+      "class": "compute.task",
+      "display_name": "Batch task",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "tasks",
+        "read_operations": [
+          "batch.projects.locations.jobs.taskGroups.tasks.get"
+        ],
+        "list_operations": [
+          "batch.projects.locations.jobs.taskGroups.tasks.list"
         ]
       }
     },

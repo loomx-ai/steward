@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 151 explicit resource rules and 624 selected methods
-from 45 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 153 explicit resource rules and 631 selected methods
+from 46 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -47,7 +47,40 @@ Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
 Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
-Storage Transfer and Dataform. Registration and wire tests do not close the full parity matrix.
+Storage Transfer, Dataform and Batch. Registration and wire tests do not close the full parity matrix.
+
+Batch v1 uses native regional Job lists and embedded TaskGroup names to discover
+Tasks. TaskGroups have no independent resource endpoint; Tasks have GET/LIST but
+no DELETE. Job UID and immutable configuration bind child cursors and reviewed
+cleanup, with configuration hashed before runnable code and environments are
+redacted. The native Job DELETE also cancels queued/running work and removes its
+task history. A persisted regional operation is checked against its name, scope,
+available target/verb/version metadata and the frozen job incarnation; completion
+requires native readback, including when an operation record expires.
+
+Job cleanup correlates Compute VMs/disks using the documented Batch UID labels,
+native creation identities, VM allocation settings and disk attachments/users.
+Complete aggregate lists include all scopes, allowing legacy jobs whose VMs run
+outside the job region. Native task and Compute membership are checked again
+after detail reads. Only Batch Job DELETE is sent: mutable Compute labels never
+authorize a Compute write or silently select an unselected Job. Frozen impacts
+and fresh UID queries must confirm absence, including disks left after a VM
+disappears. Existing attached disks with `autoDelete=false` are explicit retained
+references; an existing disk with automatic deletion, or attempted retention of
+a Batch-created disk, blocks cleanup. Referenced instance templates are read to
+identify existing disks and remain separate resources, as do buckets, NFS,
+secrets, Pub/Sub topics, logs and output data.
+
+Batch has no atomic condition spanning Job/task/Compute reads and Job deletion.
+Batch GET does not expose an immutable list of VM IDs. Compute users can edit
+correlation labels; labels removed before inventory cannot be reconstructed from
+the Batch API. Keep the documented Batch labels intact. Changed or missing
+reviewed evidence blocks execution, and lingering correlated resources prevent
+successful readback. An explicitly selected orphan VM can use ordinary Compute
+cleanup after native GETs in every Batch location prove its original Job UID no
+longer exists; unreadable locations or jobs block this fallback.
+Synthetic protocol and SQLite-worker coverage, source provenance and native
+contracts are in [the Batch fixture notes](../fixtures/batch/README.md).
 
 Dataform v1 uses service-native location and repository lists to discover its
 workspaces, release/workflow configurations, workflow invocations and compilation

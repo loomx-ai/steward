@@ -423,3 +423,25 @@ background evidence only, not acceptance evidence for this work.
   deterministic generation and bilingual documentation checks pass. Independent
   emulator/application/real-cloud acceptance and the remaining Azure/GCP
   resource families and lifecycle gaps are still unfinished.
+
+- GCP now has 153 rules, 147 kinds with native deletion and 631 selected methods
+  from 46 Discovery documents and one pinned Cloud SDK archive. Batch Job and
+  Task inventory uses native regional discovery, actual embedded TaskGroup
+  names, complete paging, detail reads and immutable Job UID/configuration
+  proofs. Job cleanup reviews tasks, correlated VMs, automatic disks and
+  retained external disks, then uses only native Job deletion. Serialized
+  regional operations and fresh native readback verify all reviewed effects,
+  including disks left after a VM disappears. Existing data disks and instance
+  templates remain intact. Explicit orphan-VM cleanup requires native absence
+  of the original Job UID across Batch locations; unreadable ownership blocks
+  it. Synthetic protocol tests cover two regions, shared external data,
+  pagination and cursor drift, changed or forged membership, protection,
+  retention, malformed/failed reads, rate-limit metadata, delayed operations,
+  recreation and restart. The real SQLite inventory worker retains existing
+  Task observations when parent discovery fails. Full Go tests, vet, relevant
+  races, 12 offline source tests, deterministic generation and bilingual
+  documentation checks pass. Native Batch deletion has no atomic membership
+  condition, and removed Compute correlation labels cannot be reconstructed
+  from the Job API; these limits are documented. Ten mapped GCP kinds and
+  49 mapped Azure kinds still lack specifications. The remaining lifecycle
+  behavior and independent emulator/application/real-cloud acceptance are open.

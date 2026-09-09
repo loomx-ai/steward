@@ -24,6 +24,7 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	batchJobType:                                    {children: []string{batchTaskType, instanceType, "compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk"}},
 	dataformFolderType:                              {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
 	dataformTeamFolderType:                          {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
 	dataformRepositoryType:                          {children: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType, "dataform.googleapis.com/CompilationResult"}, directChildren: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType}, forceParameter: "force"},
@@ -53,9 +54,13 @@ type serviceChild struct {
 	kind, id string
 	data     map[string]any
 	direct   bool
+	retain   bool
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if parent.NativeType == batchJobType {
+		return c.batchChildren(ctx, parent, data)
+	}
 	if isDataformFolder(parent.NativeType) {
 		return c.dataformFolderChildren(ctx, parent, data)
 	}
@@ -217,6 +222,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		for _, child := range children {
 			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
 			policy := graph.CleanupDelegate
+			ownership := graph.OwnershipExclusive
+			if child.retain {
+				policy, ownership = graph.CleanupRetain, graph.OwnershipReferenced
+				evidence["delete_by_default"], evidence["retention_supported"] = false, true
+				delete(evidence, graph.LifecycleEvidenceControllerDeleteGuaranteed)
+			}
 			if child.direct {
 				policy = graph.CleanupDirect
 				delete(evidence, graph.LifecycleEvidenceControllerDeleteGuaranteed)
@@ -242,7 +253,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := dataformSameResource(child.kind, target.Normalized, child.data); err != nil {
 				return result, err
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: policy, DirectCleanupAllowed: child.direct, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			if parent.Identity.NativeType == batchJobType {
+				if err := batchSameChild(child, target.Normalized); err != nil {
+					return result, err
+				}
+				evidence["native_job_uid"] = parent.Normalized["uid"]
+				evidence["native_batch_cleanup_only"] = true
+			}
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
@@ -250,6 +268,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any) error {
+	if a.kind.NativeType == batchJobType {
+		return a.batchPreflight(ctx, request, live)
+	}
 	if !HasServiceCascade(a.kind.NativeType) {
 		return nil
 	}
@@ -371,6 +392,9 @@ func (a *action) serviceImpactDescendant(request contracts.ActionRequest, impact
 }
 
 func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == batchJobType {
+		return a.batchReadback(ctx, request)
+	}
 	endpoint, err := a.client.resourceURL(a.kind, request.Asset.Identity.NativeID)
 	if err != nil || endpoint != a.endpoint || request.Asset.Identity.NativeType != a.kind.NativeType {
 		return contracts.ReadbackResult{}, groupDenied("service_parent_identity_changed")

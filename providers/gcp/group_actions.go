@@ -490,6 +490,9 @@ func (a *action) unmanagedGroupPreflight(ctx context.Context, request contracts.
 }
 
 func (a *action) managedVMPreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any) (string, error) {
+	if owned, err := a.client.batchVMHasJob(ctx, live); err != nil || owned {
+		return "batch_instance_requires_job_cleanup", err
+	}
 	for _, raw := range array(object(live["metadata"])["items"]) {
 		item := object(raw)
 		if text(item["key"]) != "created-by" || !strings.Contains(text(item["value"]), "/instanceGroupManagers/") {

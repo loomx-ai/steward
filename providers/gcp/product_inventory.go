@@ -95,6 +95,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
+	if err := c.verifyBatchParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	if err := c.verifyDataformParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -115,7 +118,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isDataform(nativeType) {
+	if isDataform(nativeType) || isBatch(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -152,6 +155,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
+		if isBatch(nativeType) {
+			if err := c.batchChildIdentity(nativeType, id, text(parameters["parent"])); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		// Aggregate Compute collections can contain kinds with separate global and
 		// regional bindings. Route those records to their canonical kind's shard.
 		if _, err := c.resourceURL(kind, id); err != nil {
@@ -164,7 +172,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) {
+		if isDataform(nativeType) || isBatch(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
@@ -173,11 +181,19 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			if c.canonicalName("//dataform.googleapis.com/"+text(live["name"])) != id {
+			if c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
 				return contracts.InventoryBatch{}, groupDenied("dataform_identity_changed")
 			}
 			if err := dataformSameResource(nativeType, record.Data, live); err != nil {
 				return contracts.InventoryBatch{}, err
+			}
+			if err := batchSameResource(nativeType, record.Data, live); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if nativeType == batchJobType {
+				if _, err := c.batchTaskGroups(id, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
 			}
 			record.Data = live
 		}
@@ -200,6 +216,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if target.ParentID != "" {
 			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
 			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
+			if nativeType == batchTaskType {
+				item.Normalized[batchParentProof] = target.ParentConfiguration
+				item.Normalized["_batch_job_uid"] = target.ParentUID
+			}
 			if nativeType == nodePoolType {
 				item.Normalized["_gke_cluster_uid"] = target.ParentUID
 			}
@@ -209,6 +229,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		batch.Items = append(batch.Items, item)
+	}
+	if err := c.verifyBatchParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
 	}
 	if err := c.verifyDataformParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
@@ -304,6 +327,22 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			if parents[i-1].NativeID == parents[i].NativeID {
 				return nil, fmt.Errorf("GCP parent inventory returned duplicate identities")
 			}
+		}
+		if request.ResourceKind.NativeType == batchTaskType {
+			var expanded []contracts.InventoryItem
+			for _, parent := range parents {
+				groups, err := c.batchTaskGroups(parent.NativeID, parent.Normalized)
+				if err != nil {
+					return nil, err
+				}
+				for _, group := range groups {
+					copy := parent
+					copy.Normalized = cloneParameters(parent.Normalized)
+					copy.Normalized["_batch_task_group"] = group
+					expanded = append(expanded, copy)
+				}
+			}
+			parents = expanded
 		}
 	} else {
 		parents = []contracts.InventoryItem{{}}
@@ -418,7 +457,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 						break
 					}
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: text(parent.Normalized[dataformProof]), ParentContainerChain: text(parent.Normalized[dataformContainerChain])})
+				configuration := text(parent.Normalized[dataformProof])
+				if parent.NativeType == batchJobType {
+					configuration = text(parent.Normalized[batchProof])
+				}
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: text(parent.Normalized[dataformContainerChain])})
 			}
 		}
 	}
@@ -560,6 +603,9 @@ func productRecords(data map[string]any, path string) ([]productRecord, error) {
 	return result, err
 }
 func checkListCompleteness(data map[string]any) error {
+	if _, present := data["error"]; present {
+		return fmt.Errorf("GCP list returned an error payload")
+	}
 	for _, key := range []string{"unreachable", "unreachables", "unreachableLocations", "failedLocations", "missingZones"} {
 		if value, present := data[key]; present && value != nil {
 			values, ok := value.([]any)
