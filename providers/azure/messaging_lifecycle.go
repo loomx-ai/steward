@@ -105,12 +105,15 @@ func messagingDeletionReason(kind string, raw map[string]any) string {
 		// Azure requires failover or breaking the pairing before deleting an
 		// active alias. Failing over is not part of an ordinary cleanup action.
 		// https://learn.microsoft.com/azure/event-hubs/resource-manager-exceptions
-		if text(properties["partnerNamespace"]) != "" || !strings.EqualFold(text(properties["role"]), "PrimaryNotReplicating") || !strings.EqualFold(text(properties["provisioningState"]), "Succeeded") || !replicationIdle(properties) {
+		if strings.EqualFold(text(properties["role"]), "Secondary") && messagingNamespaceValueValid(properties["partnerNamespace"]) && text(properties["partnerNamespace"]) != "" {
+			return "azure_messaging_recovery_secondary"
+		}
+		if !recoveryUnpaired(properties) && !recoveryPrimary(properties) {
 			return "azure_messaging_recovery_requires_unpairing"
 		}
 	}
 	if kind == serviceBusMigrationType {
-		if !replicationCountValid(properties) {
+		if !replicationCountValid(properties) || !messagingNamespaceValueValid(properties["targetNamespace"]) {
 			return "azure_messaging_migration_in_progress"
 		}
 		switch strings.ToLower(text(properties["migrationState"])) {
@@ -201,7 +204,7 @@ func (c *client) messagingReplicationContext(ctx context.Context, kind, id strin
 			if text(properties["targetNamespace"]) != "" || !migrationReady(properties) {
 				return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
 			}
-		} else if messagingDeletionReason(child.kind, child.data) != "" || !strings.EqualFold(text(properties["provisioningState"]), "Succeeded") {
+		} else if !recoveryUnpaired(properties) {
 			return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
 		}
 	}
@@ -215,6 +218,15 @@ func (c *client) messagingReplicationContext(ctx context.Context, kind, id strin
 		}
 	}
 	return "", creationGeneration(live.data), nil
+}
+
+func recoveryUnpaired(properties map[string]any) bool {
+	return messagingNamespaceValueValid(properties["partnerNamespace"]) && text(properties["partnerNamespace"]) == "" && strings.EqualFold(text(properties["role"]), "PrimaryNotReplicating") && strings.EqualFold(text(properties["provisioningState"]), "Succeeded") && replicationIdle(properties)
+}
+
+func messagingNamespaceValueValid(value any) bool {
+	_, stringValue := value.(string)
+	return value == nil || stringValue
 }
 
 func replicationIdle(properties map[string]any) bool {
@@ -235,4 +247,9 @@ func replicationIdle(properties map[string]any) bool {
 	default:
 		return false
 	}
+}
+
+func recoveryPrimary(properties map[string]any) bool {
+	state := text(properties["provisioningState"])
+	return messagingNamespaceValueValid(properties["partnerNamespace"]) && text(properties["partnerNamespace"]) != "" && strings.EqualFold(text(properties["role"]), "Primary") && replicationCountValid(properties) && (strings.EqualFold(state, "Accepted") || strings.EqualFold(state, "Succeeded"))
 }

@@ -352,3 +352,20 @@ background evidence only, not acceptance evidence for this work.
   ordering, frozen proofs, authorization, target-only cleanup and sibling source
   deletion. Full Go tests, vet and targeted races pass. Geo-recovery unpairing,
   remaining service families and independent acceptance remain unfinished.
+
+- Azure now binds 375 native operations. Service Bus and Event Hubs Geo-DR
+  inventory resolves full or bare partner names and verifies reciprocal primary/
+  secondary alias views across resource groups and regions. Namespace cleanup
+  shares one primary-alias prerequisite; the primary action waits for pending
+  replication, issues native BreakPairing, verifies effective unpairing, deletes
+  the alias, and confirms both alias/auth views absent. Unselected namespaces
+  and entities are retained. Secondary-only alias selection identifies its
+  primary controller using the existing managed-resource planning flow.
+  Persisted preparation, namespace creation/configuration proofs, protections,
+  peer membership and failed/partial reads have retained protocol tests for
+  both products. Immutable official CLI recordings show native HTTP 200 followed
+  by multiple Accepted reads before effective unpairing; the selected runtime
+  routes use Swagger 2024-01-01. Full Go tests, vet, relevant races, offline Azure
+  source tests and deterministic catalog regeneration pass. Standalone replicated
+  entity cleanup, dedicated Event Hubs clusters, remaining service families and
+  independent emulator/application/real-cloud acceptance remain unfinished.

@@ -216,7 +216,7 @@ func TestNativeStandaloneCreationIdentitySurvivesOrdinaryUpdates(t *testing.T) {
 
 func TestMessagingPairingAndMigrationCannotBeImplicitlyDiscarded(t *testing.T) {
 	for _, kind := range []string{serviceBusRecoveryType, eventHubRecoveryType, serviceBusMigrationType} {
-		for _, mode := range []string{"paired", "transition", "pending", "malformed-pending"} {
+		for _, mode := range []string{"paired", "transition", "pending", "malformed-pending", "malformed-partner"} {
 			t.Run(kind+"/"+mode, func(t *testing.T) {
 				namespace := serviceBusNamespaceType
 				if kind == eventHubRecoveryType {
@@ -248,6 +248,12 @@ func TestMessagingPairingAndMigrationCannotBeImplicitlyDiscarded(t *testing.T) {
 					properties["pendingReplicationOperationsCount"] = 1
 				case "malformed-pending":
 					properties["pendingReplicationOperationsCount"] = "0"
+				case "malformed-partner":
+					field := "partnerNamespace"
+					if kind == serviceBusMigrationType {
+						field = "targetNamespace"
+					}
+					properties[field] = map[string]any{"unreadable": "namespace"}
 				}
 				for _, action := range []contracts.ActionRequest{request, {Asset: child, Action: "delete"}} {
 					driver, _ := r.ResolveAction(context.Background(), "connection", action.Asset)

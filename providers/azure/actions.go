@@ -138,6 +138,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			return contracts.PreflightResult{}, err
 		}
 	}
+	if recoveryType(a.kind.NativeType) {
+		if err := a.recoveryPreflight(ctx, request.Asset, res.data, locks); err != nil {
+			return contracts.PreflightResult{}, err
+		}
+	}
 	if err := a.validateScaleSetVMOwner(ctx, request, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -221,6 +226,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if a.kind.NativeType == serviceBusMigrationType {
 		return a.prepareMigration(ctx, request)
 	}
+	if recoveryType(a.kind.NativeType) {
+		return a.prepareRecovery(ctx, request)
+	}
 	return a.delete(ctx, request)
 }
 
@@ -278,11 +286,14 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	if phase == "prepare_attachments" {
 		return a.waitAttachmentPreparation(ctx, request, result)
 	}
+	if phase == "break_recovery" || phase == "await_recovery" {
+		return a.waitRecoveryPreparation(ctx, request, result)
+	}
 	if phase == "revert_migration" || phase == "await_migration" {
 		return a.waitMigrationPreparation(ctx, request, result)
 	}
 	if phase != "" {
-		if phase != "delete" || (a.kind.NativeType != vmType && a.kind.NativeType != nicType && a.kind.NativeType != serviceBusMigrationType) {
+		if phase != "delete" || (a.kind.NativeType != vmType && a.kind.NativeType != nicType && a.kind.NativeType != serviceBusMigrationType && !recoveryType(a.kind.NativeType)) {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure action phase")
 		}
 		result.ProviderOperationID = text(result.Data["operation"])
@@ -440,7 +451,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing":
+	case "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing":
 		return true
 	default:
 		return false

@@ -323,6 +323,11 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if recoveryType(nativeType) {
+		if err := c.recoveryInventory(ctx, nativeType, id, raw, normalized, refs); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	if nativeType == serviceBusMigrationType {
 		if err := c.migrationInventory(ctx, id, raw, normalized, refs); err != nil {
 			return contracts.InventoryItem{}, err

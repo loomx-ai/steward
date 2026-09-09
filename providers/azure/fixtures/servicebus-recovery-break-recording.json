@@ -1,0 +1,72 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/f86c78ae126c4f3c8e110a116dde8e6f0cfdc04e/src/azure-cli/azure/cli/command_modules/servicebus/tests/latest/recordings/test_sb_alias.yaml",
+  "source_sha256": "90e3d97666677de60244020a8ce67cd2163d0132e13a9cd98b5077a544085ead",
+  "recorded_api_version": "2026-01-01",
+  "note": "Selected request methods/URIs and unchanged response bodies from the official Azure CLI recording. The runtime binds the 2024-01-01 Swagger separately. These interactions establish paired namespace views and asynchronous BreakPairing state transitions. The recording does not read the secondary alias after BreakPairing. No request or response headers are retained.",
+  "interactions": [
+    {
+      "interaction": 15,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Accepted\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003\",\"role\":\"Primary\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "74cb95b4dad18ba4b785aa05c276de40de33ef7e0ffb1db6545d8c10bcccfee2"
+    },
+    {
+      "interaction": 16,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Accepted\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002\",\"role\":\"Secondary\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "c421da6dfc7e925abd796461778dc4caa84ca58ac553b04debf59ccb5fc1b142"
+    },
+    {
+      "interaction": 21,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Succeeded\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003\",\"role\":\"Primary\",\"type\":\"MetadataReplication\",\"pendingReplicationOperationsCount\":0}}",
+      "response_body_sha256": "37795b02bda3d20f7fb3aa74954753bbd73989c2dbda1cc2009ecafad460dd10"
+    },
+    {
+      "interaction": 25,
+      "method": "POST",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005/breakPairing?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "",
+      "response_body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "interaction": 26,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Accepted\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003\",\"role\":\"Primary\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "74cb95b4dad18ba4b785aa05c276de40de33ef7e0ffb1db6545d8c10bcccfee2"
+    },
+    {
+      "interaction": 27,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Accepted\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003\",\"role\":\"Primary\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "74cb95b4dad18ba4b785aa05c276de40de33ef7e0ffb1db6545d8c10bcccfee2"
+    },
+    {
+      "interaction": 28,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Accepted\",\"partnerNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000003\",\"role\":\"Primary\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "74cb95b4dad18ba4b785aa05c276de40de33ef7e0ffb1db6545d8c10bcccfee2"
+    },
+    {
+      "interaction": 29,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_alias000001/providers/Microsoft.ServiceBus/namespaces/sb-nscli000002/disasterRecoveryConfigs/cliAlias000005\",\"name\":\"cliAlias000005\",\"type\":\"Microsoft.ServiceBus/Namespaces/disasterrecoveryconfigs\",\"properties\":{\"provisioningState\":\"Succeeded\",\"partnerNamespace\":\"\",\"role\":\"PrimaryNotReplicating\",\"type\":\"MetadataReplication\"}}",
+      "response_body_sha256": "f4e31d763c2f9bd38dfb1ec2346577c1b45b779ff0ba8496f02d67ecc9a02d1b"
+    }
+  ]
+}

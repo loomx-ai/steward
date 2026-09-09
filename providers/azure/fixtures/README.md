@@ -23,6 +23,16 @@ recorded API version is **2026-01-01**; it provides independent evidence that
 Revert route is separately bound and tested against the **2024-01-01** Swagger.
 These are distinct sources, not a claim of live testing of that pinned version.
 
+`servicebus-recovery-break-recording.json` and
+`eventhubs-recovery-break-recording.json` similarly retain unchanged bodies from
+immutable official Azure CLI recordings. They show the reciprocal primary and
+secondary alias views, the empty HTTP 200 response to BreakPairing, subsequent
+`Accepted` reads, and the eventual `PrimaryNotReplicating` state with a cleared
+partner. Their recorded versions are **2026-01-01** and **2026-07-01-preview**;
+the runtime bindings use **2024-01-01**. These recordings do not read the
+secondary alias after BreakPairing, so they do not establish when that view
+disappears. No request or response headers are retained.
+
 LRO protocol reference:
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
 

@@ -21098,6 +21098,48 @@
                 }
               }
             }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing": {
+            "post": {
+              "description": "This operation disables the Disaster Recovery and stops replicating changes from primary to secondary namespaces",
+              "operationId": "DisasterRecoveryConfigs_BreakPairing",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/NamespaceNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/AliasNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Break-Pairing operation is successful."
+                },
+                "default": {
+                  "description": "Eventhub error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./common/v2/definitions.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DisasterRecoveryConfigs"
+              ],
+              "x-ms-examples": {
+                "EHAliasBreakPairing": {
+                  "$ref": "./examples/disasterRecoveryConfigs/EHAliasBreakPairing.json"
+                }
+              }
+            }
           }
         },
         "schemes": [
@@ -51420,6 +51462,48 @@
               "x-ms-examples": {
                 "SBAliasGet": {
                   "$ref": "./examples/disasterRecoveryConfigs/SBAliasGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing": {
+            "post": {
+              "description": "This operation disables the Disaster Recovery and stops replicating changes from primary to secondary namespaces",
+              "operationId": "DisasterRecoveryConfigs_BreakPairing",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "../../common/v1/definitions.json#/parameters/NamespaceNameParameter"
+                },
+                {
+                  "$ref": "../../common/v1/definitions.json#/parameters/AliasNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Break-Pairing operation is successful."
+                },
+                "default": {
+                  "description": "ServiceBus error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../common/v1/definitions.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DisasterRecoveryConfigs"
+              ],
+              "x-ms-examples": {
+                "SBEHAliasBreakPairing": {
+                  "$ref": "./examples/disasterRecoveryConfigs/SBEHAliasBreakPairing.json"
                 }
               }
             }

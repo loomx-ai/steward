@@ -179,6 +179,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if recoveryType(planned.Identity.NativeType) && text(planned.Normalized["_recovery_configuration"]) != "" && text(planned.Normalized["_recovery_configuration"]) == recoveryConfiguration(live) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := serviceCreationIdentity(planned, live); err != nil {
 		return err
 	}
@@ -229,11 +232,17 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if err := serviceIncarnation(parent, live.data); err != nil {
 			return result, err
 		}
-		children, err := s.client.serviceChildren(ctx, parent.Identity, live.data)
+		children, err := s.client.plannedServiceChildren(ctx, parent, live.data)
 		if err != nil {
 			return result, err
 		}
 		for _, child := range children {
+			if recoveryType(child.kind) && parent.Identity.NativeType+"/disasterRecoveryConfigs" == child.kind && strings.EqualFold(text(object(child.data["properties"])["role"]), "Secondary") {
+				if err := s.contributeRecoveryPrerequisite(ctx, parent, child, assets, &result); err != nil {
+					return result, err
+				}
+				continue
+			}
 			ownerKey := string(parent.Identity.ConnectionID) + "|" + parent.Identity.Partition + "|" + child.id
 			if dnsExternalController(parent.Identity.NativeType) {
 				if owner, exists := dnsOwners[ownerKey]; exists && owner != parent.ID {
@@ -267,6 +276,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if aksMembers[aksKey(target.Identity, child.id)] {
 				continue
 			}
+			if recoveryType(parent.Identity.NativeType) && parent.Identity.NativeType == child.kind && !recoveryPeerRelation(parent, *target) {
+				return result, serviceDenied("recovery_pair_changed")
+			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
@@ -298,6 +310,12 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 		impacts[id] = impact
 		assets[impact.Asset.ID] = impact.Asset
 	}
+	if recoveryType(root.Identity.NativeType) && text(root.Normalized["_recovery_peer_alias"]) != "" {
+		peer, exists := impacts[text(root.Normalized["_recovery_peer_alias"])]
+		if !exists || peer.ControllerID != root.ID || !recoveryPeerRelation(root, peer.Asset) {
+			return nil, serviceDenied("recovery_peer_missing_from_plan")
+		}
+	}
 	if a.kind.NativeType == vmType {
 		attachments, err := plannedAttachmentImpacts(a.client.subscription, root, impacts, assets)
 		if err != nil {
@@ -320,7 +338,7 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 			seen[current.Asset.ID] = true
 			parent, ok := assets[current.ControllerID]
 			kinds := serviceChildKinds(parent.Identity.NativeType)
-			if !ok || !slices.ContainsFunc(kinds, func(kind string) bool { return strings.EqualFold(kind, current.Asset.Identity.NativeType) }) || !serviceChildRelation(parent, current.Asset) {
+			if !ok || ((!slices.ContainsFunc(kinds, func(kind string) bool { return strings.EqualFold(kind, current.Asset.Identity.NativeType) }) || !serviceChildRelation(parent, current.Asset)) && !recoveryPeerRelation(parent, current.Asset)) {
 				return nil, serviceDenied("service_child_scope_changed")
 			}
 			if parent.ID == root.ID {
@@ -376,7 +394,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	verifiedGroups := map[string]bool{}
 	var verify func(asset.Asset, map[string]any) error
 	verify = func(parent asset.Asset, raw map[string]any) error {
-		children, err := a.client.serviceChildren(ctx, parent.Identity, raw)
+		children, err := a.client.plannedServiceChildren(ctx, parent, raw)
 		if err != nil {
 			return err
 		}
@@ -487,7 +505,8 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return ((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
+	return (recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
+		((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
 		(messagingManagedConfiguration(child) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_messaging_managed_configuration") ||
 		(strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
 		(strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
@@ -525,6 +544,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if recoveryType(children[i].kind) {
+			children[i].direct = !recoveryUnpaired(object(children[i].data["properties"]))
+		}
 		if children[i].kind == serviceBusMigrationType {
 			// A paired migration must first be aborted by its own persisted
 			// action. Namespace DELETE cannot stand in for native Revert.
@@ -542,6 +564,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if recoveryPeerRelation(parent, child) {
+		return true
+	}
 	switch {
 	case strings.EqualFold(parent.Identity.NativeType, scaleSetVMType) && strings.EqualFold(child.Identity.NativeType, diskType):
 		return uniformVMDiskRelation(parent, child)

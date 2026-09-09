@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "bb054512479b2000a5e31e8ec3ad1a499651144d17f59d10da046dd024f9217c",
+    "checksum": "5005c5579bee8c82fd4762788d8f02c2e7fc27a4d5fa24a82ea375beec6bec55",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "74581b7cc8504365369bd6295022609a436ffc0a2615ba6b338bb4ebbccd0a1a",
+  "content_checksum": "767109e37116904b6f7130b86106606f55ecae6b9a4e79d45435d732f6ea5713",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -7902,6 +7902,76 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/consumergroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_BreakPairing",
+      "name": "DisasterRecoveryConfigs_BreakPairing",
+      "service": "Microsoft.EventHub",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "alias": {
+            "description": "The Disaster Recovery configuration name",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "alias",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "namespaceName": {
+            "description": "The Namespace name",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "namespaceName",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9-]{6,50}[a-zA-Z0-9]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "Name of the resource group within the azure subscription.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/disasterRecoveryConfigs.json"
     },
     {
       "id": "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_Delete",
@@ -22428,6 +22498,75 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json"
+    },
+    {
+      "id": "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_BreakPairing",
+      "name": "DisasterRecoveryConfigs_BreakPairing",
+      "service": "Microsoft.ServiceBus",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "alias": {
+            "description": "The Disaster Recovery configuration name",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "alias",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "namespaceName": {
+            "description": "The namespace name",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "namespaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ServiceBus",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/disasterRecoveryConfigs/{alias}/breakPairing",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/DisasterRecoveryConfig.json"
     },
     {
       "id": "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_Delete",

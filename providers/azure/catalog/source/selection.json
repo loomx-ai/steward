@@ -188,6 +188,7 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/disasterRecoveryConfigs.json",
       "operations": [
+        "DisasterRecoveryConfigs_BreakPairing",
         "DisasterRecoveryConfigs_Delete",
         "DisasterRecoveryConfigs_Get",
         "DisasterRecoveryConfigs_List"
@@ -566,6 +567,7 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/DisasterRecoveryConfig.json",
       "operations": [
+        "DisasterRecoveryConfigs_BreakPairing",
         "DisasterRecoveryConfigs_Delete",
         "DisasterRecoveryConfigs_Get",
         "DisasterRecoveryConfigs_List"

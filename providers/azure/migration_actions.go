@@ -136,7 +136,7 @@ func (a *action) migrationPreflight(ctx context.Context, planned asset.Asset, ra
 }
 
 func migrationReady(properties map[string]any) bool {
-	return strings.EqualFold(text(properties["provisioningState"]), "Succeeded") && strings.EqualFold(text(properties["migrationState"]), "Active") && replicationIdle(properties)
+	return messagingNamespaceValueValid(properties["targetNamespace"]) && strings.EqualFold(text(properties["provisioningState"]), "Succeeded") && strings.EqualFold(text(properties["migrationState"]), "Active") && replicationIdle(properties)
 }
 
 func (a *action) prepareMigration(ctx context.Context, request contracts.ActionRequest) (out contracts.ActionResult, err error) {
