@@ -38,7 +38,7 @@ steward --version
 steward server start
 ```
 
-也支持[安装脚本、Scoop、deb/rpm 和独立二进制](https://loomx.ai/steward/docs/installation)。[GitHub Releases](https://github.com/loomx-ai/steward/releases) 提供 macOS/Linux amd64、arm64 和 Windows amd64 产物及 SHA-256 校验文件。发布版内含 Web 控制台和数据库迁移脚本，无需 Go 或 Node.js。
+也支持[APT/DNF 软件源、Scoop、安装脚本和独立二进制](https://loomx.ai/steward/docs/installation)。[GitHub Releases](https://github.com/loomx-ai/steward/releases) 提供 macOS/Linux amd64、arm64 和 Windows amd64 产物及 SHA-256 校验文件。发布版内含 Web 控制台和数据库迁移脚本，无需 Go 或 Node.js。
 
 打开 <http://127.0.0.1:8585>，直接使用，无需登录。SQLite 数据默认保存在 `.steward/steward.db`，凭证加密密钥首次启动时自动保存在 `.steward/credential-master-key`。备份时请同时保存数据库和密钥；已有数据库必须继续使用原来的密钥。
 
