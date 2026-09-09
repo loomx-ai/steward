@@ -70,6 +70,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		return result, err
 	}
 	result.Data = safePayload(result.Data)
+	if operation.Call.Product == "discoveryengine" {
+		result.Data = safeDiscoveryPayload(result.Data)
+	}
 	return result, nil
 }
 
@@ -94,6 +97,12 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isDiscovery(kind.NativeType) {
+		parts := strings.Split(name, "/")
+		if len(parts) < 6 || parts[0] != "projects" || parts[2] != "locations" || !discoveryLocation(parts[3]) || parts[4] != "collections" {
+			return catalog.Operation{}, nil, groupDenied("discoveryengine_resource_scope_invalid")
+		}
+	}
 	if host == "iap.googleapis.com" {
 		name = strings.Replace(name, "projects/"+c.project+"/", "projects/"+c.number+"/", 1)
 	}

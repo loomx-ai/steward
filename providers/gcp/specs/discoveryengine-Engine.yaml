@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: discoveryengine.googleapis.com/Engine
+  class: search.application
+presentation:
+  displayNames:
+    en-US: Discovery Engine Engine
+    zh-CN: Discovery Engine 应用
+  consoleLinkTemplate: https://console.cloud.google.com/gen-app-builder/engines?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: discoveryengine.projects.locations.collections.engines.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: engines
+    identityPath: name
+  detail: &id001
+    operation: discoveryengine.projects.locations.collections.engines.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: discoveryengine.googleapis.com/Collection
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: discoveryengine.googleapis.com/Collection
+  targetIdPath: refs_discoveryengine_googleapis_com_Collection
+- type: depends_on
+  targetType: discoveryengine.googleapis.com/DataStore
+  targetIdPath: refs_discoveryengine_googleapis_com_DataStore
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+actions:
+  delete:
+    operation: discoveryengine.projects.locations.collections.engines.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *id001

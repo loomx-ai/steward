@@ -24,6 +24,11 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	discoveryHost + "/Collection":                   {children: []string{discoveryHost + "/Engine", discoveryHost + "/DataStore"}, directChildren: []string{discoveryHost + "/Engine", discoveryHost + "/DataStore"}},
+	discoveryHost + "/Engine":                       {children: []string{discoveryHost + "/Control", discoveryHost + "/ServingConfig", discoveryHost + "/Session", discoveryHost + "/Conversation", discoveryHost + "/Assistant"}},
+	discoveryHost + "/DataStore":                    {children: []string{discoveryHost + "/Schema", discoveryHost + "/Control", discoveryHost + "/ServingConfig", discoveryHost + "/Session", discoveryHost + "/Conversation", discoveryHost + "/Branch", discoveryHost + "/SiteSearchEngine"}},
+	discoveryHost + "/Branch":                       {children: []string{discoveryHost + "/Document"}},
+	discoveryHost + "/SiteSearchEngine":             {children: []string{discoveryHost + "/TargetSite"}},
 	batchJobType:                                    {children: []string{batchTaskType, instanceType, "compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk"}},
 	dataformFolderType:                              {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
 	dataformTeamFolderType:                          {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
@@ -58,6 +63,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if isDiscovery(parent.NativeType) {
+		return c.discoveryChildren(ctx, parent, data)
+	}
 	if parent.NativeType == batchJobType {
 		return c.batchChildren(ctx, parent, data)
 	}
@@ -250,6 +258,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(target.Normalized, child.data); err != nil {
 				return result, err
 			}
+			if err := discoverySameResource(child.kind, target.Normalized, child.data); err != nil {
+				return result, err
+			}
 			if err := dataformSameResource(child.kind, target.Normalized, child.data); err != nil {
 				return result, err
 			}
@@ -260,7 +271,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				evidence["native_job_uid"] = parent.Normalized["uid"]
 				evidence["native_batch_cleanup_only"] = true
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct || isDiscovery(child.kind), EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
@@ -309,6 +320,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			}
 			visited[key] = true
 			if err := serviceIncarnation(impact.Asset.Normalized, child.data); err != nil {
+				return err
+			}
+			if err := discoverySameResource(child.kind, impact.Asset.Normalized, child.data); err != nil {
 				return err
 			}
 			if err := dataformSameResource(child.kind, impact.Asset.Normalized, child.data); err != nil {

@@ -158,8 +158,11 @@ func (c *client) request(ctx context.Context, method, endpoint string, query url
 
 func (c *client) requestResult(ctx context.Context, method, endpoint string, query url.Values, body []byte) (result contracts.InvocationResult, failure error) {
 	u, err := url.Parse(endpoint)
-	if err != nil || u.Scheme != "https" || u.User != nil || u.Port() != "" || u.Fragment != "" || !allowedHost(u.Hostname()) {
+	if err != nil || u.Scheme != "https" || u.User != nil || u.Port() != "" || u.Fragment != "" || (!allowedHost(u.Hostname()) && !(discoveryAPIHost(u.Hostname()) && allowedHost(discoveryHost))) {
 		return result, fmt.Errorf("invalid Google API endpoint")
+	}
+	if err := c.discoveryEndpoint(u); err != nil {
+		return result, err
 	}
 	if len(query) > 0 {
 		merged := u.Query()
@@ -168,7 +171,11 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		}
 		u.RawQuery = merged.Encode()
 	}
-	return requestJSON(ctx, c.http, method, u, body, safePayload)
+	sanitize := safePayload
+	if discoveryAPIHost(u.Host) {
+		sanitize = safeDiscoveryPayload
+	}
+	return requestJSON(ctx, c.http, method, u, body, sanitize)
 }
 
 func requestJSON(ctx context.Context, httpClient *http.Client, method string, u *url.URL, body []byte, sanitize func(map[string]any) map[string]any) (result contracts.InvocationResult, failure error) {
@@ -261,7 +268,7 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 	if method == http.MethodGet && response.StatusCode != http.StatusOK {
 		return result, apiError(response.StatusCode, "incomplete_response", nil, "")
 	}
-	if (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com") && response.StatusCode != http.StatusOK {
+	if (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com" || discoveryAPIHost(u.Host)) && response.StatusCode != http.StatusOK {
 		return result, apiError(response.StatusCode, "unexpected_native_response", nil, "")
 	}
 	if _, present := data["error"]; (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com") && present {

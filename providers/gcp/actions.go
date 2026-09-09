@@ -24,7 +24,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -46,6 +46,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	return &action{identity: value.Identity, client: c, kind: kind, endpoint: endpoint, deleteOperation: operation, deleteParameters: parameters}, nil
 }
 func (a *action) DeletionCheckTimeout() time.Duration {
+	if a.kind.NativeType == discoveryDataStoreType || a.kind.NativeType == discoveryCollectionType {
+		return 7 * 24 * time.Hour
+	}
 	if a.isGKE() {
 		return 2 * time.Hour // Native node draining may itself wait for one hour.
 	}
@@ -57,10 +60,13 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
+	if err := a.discoveryActionIdentity(request); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.dataprocActionIdentity(request); err != nil {
 		return contracts.PreflightResult{}, err
 	}
-	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
+	data, err := a.readResource(ctx)
 	if isNotFound(err) {
 		if a.isGKE() {
 			read, err := a.gkeReadback(ctx, request)
@@ -74,6 +80,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			read, err := a.dataprocReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"dataproc_observing": true}}, err
 		}
+		if isDiscovery(a.kind.NativeType) {
+			read, err := a.discoveryReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"service_parent_absent": true}}, err
+		}
 		if HasServiceCascade(a.kind.NativeType) {
 			read, err := a.serviceCascadeReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"service_parent_absent": true}}, err
@@ -81,6 +91,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{Allowed: true, Absent: true}, nil
 	}
 	if err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.discoveryPreflight(ctx, request, data, true); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.dataformPreflight(ctx, request, data); err != nil {
@@ -292,6 +305,13 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 		return contracts.ActionResult{}, failure
 	}
 	operation, err := a.operationURL(data)
+	if isDiscovery(a.kind.NativeType) {
+		operation, err = a.discoveryOperation(data, response.RequestID)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: discoveryPhase(request, operation), RetryAfter: 2 * time.Second}, nil
+	}
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
@@ -378,6 +398,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if isDiscovery(a.kind.NativeType) {
+		return a.waitDiscovery(ctx, request, result)
+	}
 	if err := a.dataprocActionIdentity(request); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -496,13 +519,16 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.discoveryActionIdentity(request); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	if err := a.dataprocActionIdentity(request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	if a.kind.NativeType == dataprocClusterType {
 		return a.dataprocReadback(ctx, request)
 	}
-	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
+	data, err := a.readResource(ctx)
 	if isNotFound(err) {
 		if a.isGKE() {
 			return a.gkeReadback(ctx, request)
@@ -510,12 +536,18 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 		if a.kind.NativeType == managerType {
 			return a.managedGroupReadback(ctx, request)
 		}
+		if isDiscovery(a.kind.NativeType) {
+			return a.discoveryReadback(ctx, request)
+		}
 		if HasServiceCascade(a.kind.NativeType) {
 			return a.serviceCascadeReadback(ctx, request)
 		}
 		return contracts.ReadbackResult{Exists: false}, nil
 	}
 	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if err := a.discoveryPreflight(ctx, request, data, false); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	if err := a.dataformPreflight(ctx, request, data); err != nil {

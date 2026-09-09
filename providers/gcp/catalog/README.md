@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 153 explicit resource rules and 631 selected methods
-from 46 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 171 explicit resource rules and 703 selected methods
+from 49 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,

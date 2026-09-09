@@ -1,5 +1,11 @@
 # Google Cloud protocol fixtures
 
+[Discovery Engine fixtures](discoveryengine/README.md) cover native collections,
+apps/data stores and their reviewed child resources, regional API origins,
+ancestry proofs, asynchronous deletion/recovery and a SQLite inventory scan.
+[Dataproc fixtures](dataproc/README.md) cover native cluster/job cleanup and
+reviewed Compute effects, retention and worker recovery.
+
 [Batch fixtures](batch/README.md) cover native jobs/tasks, reviewed Compute
 effects, retention, asynchronous deletion and recovery, plus a SQLite scan-worker
 check for failed parent discovery. They are synthetic protocol fixtures.

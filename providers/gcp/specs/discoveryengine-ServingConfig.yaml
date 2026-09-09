@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: discoveryengine.googleapis.com/ServingConfig
+  class: search.configuration
+presentation:
+  displayNames:
+    en-US: Discovery Engine ServingConfig
+    zh-CN: Discovery Engine 服务配置
+  consoleLinkTemplate: https://console.cloud.google.com/gen-app-builder/engines?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: discoveryengine.projects.locations.collections.dataStores.servingConfigs.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: servingConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail: &id001
+    operation: discoveryengine.projects.locations.collections.dataStores.servingConfigs.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: discoveryengine.googleapis.com/DataStore
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: discoveryengine.googleapis.com/DataStore
+  targetIdPath: refs_discoveryengine_googleapis_com_DataStore
+- type: depends_on
+  targetType: discoveryengine.googleapis.com/Engine
+  targetIdPath: refs_discoveryengine_googleapis_com_Engine
+- type: depends_on
+  targetType: discoveryengine.googleapis.com/Control
+  targetIdPath: refs_discoveryengine_googleapis_com_Control
+actions:
+  delete:
+    operation: discoveryengine.projects.locations.collections.dataStores.servingConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *id001

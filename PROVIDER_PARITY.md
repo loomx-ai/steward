@@ -474,3 +474,37 @@ background evidence only, not acceptance evidence for this work.
   immutable incarnation UUIDs, while jobs/policies lack configuration preconditions.
   Nine mapped GCP kinds and 49 mapped Azure kinds still lack specifications;
   remaining lifecycle and independent environment acceptance work stays open.
+
+- GCP now has 171 rules, 162 kinds with native deletion and 703 selected methods
+  from 49 Discovery documents and one pinned Cloud SDK archive. Discovery Engine
+  adds 13 native kinds: Collection, DataStore, Engine, Schema, Control,
+  ServingConfig, Session, Conversation, Assistant, Branch, Document,
+  SiteSearchEngine and TargetSite. Inventory uses actual collection/branch IDs,
+  both supported app/data-store parent forms, complete paging, native detail
+  reads and location-specific US/EU API origins. US/EU appear in region selection
+  before CAI has observed resources; unsupported Compute-style regional calls
+  are filtered. Collection cleanup orders app and data-store prerequisites.
+  Apps retain their linked data stores, and data-store deletion rejects remaining
+  app references. Read-only branches/site configuration delegate their reviewed
+  descendants to native parent deletion. Child configuration, complete ancestry,
+  connector/entity parameters and sitemap metadata are frozen before redaction.
+  Document/schema and serving-config/control dependencies enter the shared plan.
+  Root or operation absence cannot hide remaining reviewed descendants; serialized
+  waits bind resource, location, configuration, impacts and prerequisites and
+  recheck replacements. Native data-store/collection waits allow multi-day cleanup.
+  Synthetic HTTP cases cover regional aliases, paging/cursor drift, linked-data
+  retention, ordered deletion, standalone children, changed/protected/unreviewed
+  effects, malformed/failed responses, operation errors, delayed effects and
+  restart. A SQLite inventory-worker test preserves observations and ancestry
+  after parent permission loss. Logs and stored inventory redact document,
+  conversation, prompt, schema, sitemap and connector content, including malformed
+  list records. Full Go tests, vet, GCP/planner/cleanup/contracts race tests,
+  10 offline source tests, deterministic catalog
+  generation and bilingual checks (30 chapters, 10 screenshots) pass. Native
+  deletions have no atomic configuration/incarnation condition, and identical
+  leaf replacements may lack an observable creation token. Preview agent/runtime
+  families and all data-plane records are not individually inventoried. The
+  checked official emulator catalog and floci-gcp list do not include Discovery
+  Engine; protocol tests are not independent emulator or real-cloud acceptance.
+  Seven mapped GCP kinds and 49 mapped Azure kinds still lack specifications;
+  the remaining lifecycle and independent environment acceptance work stays open.

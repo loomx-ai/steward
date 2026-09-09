@@ -95,6 +95,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
+	if err := c.verifyDiscoveryParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	if err := c.verifyDataprocParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -121,7 +124,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) {
+	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -141,9 +144,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	if err = checkListCompleteness(result.Data); err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
 	}
-	records, err := productRecords(result.Data, target.API.ItemsPath)
+	var records []productRecord
+	if nativeType != discoverySiteType {
+		records, err = productRecords(result.Data, target.API.ItemsPath)
+	}
 	if err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
+	}
+	if nativeType == discoverySiteType && err == nil {
+		records = []productRecord{{Data: result.Data}}
 	}
 	identityPath := target.API.IdentityPath
 	if nativeType == dataprocNodeGroupType {
@@ -169,6 +178,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
+		}
+		if isDiscovery(nativeType) {
+			if err := c.discoveryIdentity(nativeType, id, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			parent := text(parameters["parent"])
+			if parent != "" && !strings.HasPrefix(id, c.canonicalName("//"+discoveryHost+"/"+parent)+"/"+kind.Collection+"/") {
+				return contracts.InventoryBatch{}, groupDenied("discoveryengine_list_parent_changed")
+			}
 		}
 		if isBatch(nativeType) {
 			if err := c.batchChildIdentity(nativeType, id, text(parameters["parent"])); err != nil {
@@ -199,12 +217,17 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			live, err := c.request(ctx, "GET", endpoint, nil)
+			var live map[string]any
+			if isDiscovery(nativeType) {
+				live, err = c.discoveryRead(ctx, nativeType, id)
+			} else {
+				live, err = c.request(ctx, "GET", endpoint, nil)
+			}
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
@@ -212,8 +235,18 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {
 					return contracts.InventoryBatch{}, err
 				}
-			} else if c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
+			} else if !isDiscovery(nativeType) && c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
 				return contracts.InventoryBatch{}, groupDenied("dataform_identity_changed")
+			}
+			if isDiscovery(nativeType) {
+				if err := serviceIncarnation(record.Data, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				if nativeType != discoveryCollectionType && nativeType != discoverySiteType {
+					if err := discoverySameResource(nativeType, record.Data, live); err != nil {
+						return contracts.InventoryBatch{}, err
+					}
+				}
 			}
 			if err := dataformSameResource(nativeType, record.Data, live); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -250,6 +283,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if target.ParentID != "" {
 			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
 			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
+			if isDiscovery(nativeType) {
+				item.Normalized[discoveryParentProof] = target.ParentConfiguration
+				item.Normalized["_discoveryengine_ancestors"] = target.ParentContainerChain
+				item.Normalized["_discoveryengine_parent_type"] = target.ParentType
+				item.Normalized["_discoveryengine_parent_id"] = target.ParentID
+			}
 			if nativeType == batchTaskType {
 				item.Normalized[batchParentProof] = target.ParentConfiguration
 				item.Normalized["_batch_job_uid"] = target.ParentUID
@@ -268,6 +307,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		batch.Items = append(batch.Items, item)
 	}
+	if err := c.verifyDiscoveryParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	if err := c.verifyDataprocParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -278,6 +320,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, err
 	}
 	next := ""
+	if isDiscovery(nativeType) && result.Data["nextPageToken"] != nil {
+		if _, ok := result.Data["nextPageToken"].(string); !ok {
+			return contracts.InventoryBatch{}, groupDenied("discoveryengine_page_token_invalid")
+		}
+	}
 	if pagination := target.API.Pagination; pagination != nil {
 		value := productValue(result.Data, pagination.TokenPath)
 		if value != nil {
@@ -324,6 +371,9 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 }
 
 func (r *Runtime) productTargets(ctx context.Context, c *client, request contracts.InventoryRequest, definition spec.ResourceKindSpec, ancestors []string) ([]productTarget, error) {
+	if isDiscovery(definition.Metadata.NativeType) {
+		return r.discoveryTargets(ctx, c, request, definition, ancestors)
+	}
 	kind, _ := findType(definition.Metadata.NativeType)
 	metadata, _ := providerData()
 	locations := []string{request.Scope.NativeID}
@@ -501,6 +551,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			targetLocations = append(targetLocations, "global")
 		}
 		for _, location := range targetLocations {
+			if regional && !serviceLocationList && !productSupportsMultiRegion(operation.Call.Product, location) {
+				continue
+			}
 			for _, parent := range parents {
 				resolved, err := productParameters(parameters, c, location, parent)
 				if err != nil {
@@ -709,6 +762,9 @@ func checkListCompleteness(data map[string]any) error {
 }
 
 func (c *client) productIdentity(kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord) (string, error) {
+	if isDiscovery(kind.NativeType) {
+		return c.discoveryID(kind.NativeType, text(productValue(record.Data, identityPath)))
+	}
 	if kind.NativeType == "bigquery.googleapis.com/Dataset" || kind.NativeType == "bigquery.googleapis.com/Table" {
 		reference := object(record.Data["datasetReference"])
 		if kind.NativeType == "bigquery.googleapis.com/Table" {
@@ -812,4 +868,22 @@ func (c *client) otherProductKind(kind resourceType, id string) bool {
 		}
 	}
 	return false
+}
+
+// These products use ordinary regions (or zones), not Discovery Engine's US/EU
+// locations. An all-regions scan must not call Compute-region endpoints with a
+// multi-region name. Products with Locations.list use that authoritative list;
+// project-wide/aggregate APIs retain their ordinary scope filtering.
+func productSupportsMultiRegion(product, location string) bool {
+	if location != "us" && location != "eu" {
+		return true
+	}
+	switch product {
+	case "compute", "file", "dataproc", "servicedirectory", "managedkafka", "redis", "iap", "alloydb", "apigateway", "gkehub", "run", "cloudtasks", "cloudfunctions", "certificatemanager":
+		return false
+	case "artifactregistry":
+		return location == "us" // Artifact Registry calls its European multi-region "europe".
+	default:
+		return true // DLP and Logging explicitly support US/EU processing/storage.
+	}
 }

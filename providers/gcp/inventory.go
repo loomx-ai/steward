@@ -206,6 +206,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized[dataprocProof] = dataprocConfiguration(data)
 		normalized["_dataproc_region"] = dataprocRegion(nativeID)
 	}
+	if isDiscovery(nativeType) {
+		if err := c.discoveryIdentity(nativeType, nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[discoveryProof] = discoveryConfiguration(data)
+	}
 	if isDataform(nativeType) {
 		normalized[dataformProof] = dataformConfiguration(nativeType, data)
 	}
@@ -219,6 +225,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	}
 	if isDataproc(nativeType) {
 		refs = c.dataprocReferences(nativeType, nativeID, data)
+	}
+	if isDiscovery(nativeType) {
+		var err error
+		refs, err = c.discoveryReferences(nativeType, nativeID, data)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
 	}
 	if nativeType == "dataform.googleapis.com/WorkflowConfig" {
 		id := c.canonicalName("//dataform.googleapis.com/" + text(data["releaseConfig"]))
@@ -272,7 +285,11 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		_, _, err := c.resourceOperation(kind, nativeID, "DELETE")
 		actionable = err == nil
 	}
-	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: safePayload(normalized), Raw: safePayload(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
+	sanitize := safePayload
+	if isDiscovery(nativeType) {
+		sanitize = safeDiscoveryPayload
+	}
+	return contracts.InventoryItem{NativeType: nativeType, NativeID: nativeID, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope, Name: name, State: state, Location: location, Tags: tags, Normalized: sanitize(normalized), Raw: sanitize(raw), NativeAliases: []string{text(data["selfLink"]), nativeID}, NetworkReferences: networkRefs}, nil
 }
 
 func resourceState(data map[string]any) string {
@@ -296,7 +313,7 @@ func (c *client) canonicalName(value string) string {
 }
 
 func canonicalName(value string) string {
-	value = strings.TrimSpace(value)
+	value = discoveryCanonical(strings.TrimSpace(value))
 	for _, prefix := range []string{"https://container.googleapis.com/v1/", "https://container.googleapis.com/v1beta1/"} {
 		if strings.HasPrefix(value, prefix) {
 			value = "//container.googleapis.com/" + strings.TrimPrefix(value, prefix)

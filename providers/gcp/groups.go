@@ -125,7 +125,7 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if next == "" {
 			return result, nil
 		}
-		if seen[next] || properties["pageToken"] == nil {
+		if seen[next] || properties["pageToken"] == nil || (operation.Call.Product == "discoveryengine" && strings.HasSuffix(operation.ID, ".engines.list")) {
 			return nil, fmt.Errorf("Google lifecycle pagination did not advance")
 		}
 		seen[next] = true

@@ -117,7 +117,9 @@ func (r *Runtime) DiscoverRegions(ctx context.Context, id asset.ConnectionID) ([
 	if err != nil {
 		return nil, err
 	}
-	regions := map[string]bool{}
+	// Discovery Engine supports US/EU multi-regions but has no Locations.list.
+	// Offer their documented scopes even before CAI observes the first resource.
+	regions := map[string]bool{"us": true, "eu": true}
 	cursor := ""
 	for {
 		data, err := c.request(ctx, "GET", "https://compute.googleapis.com/compute/v1/projects/"+c.project+"/regions", url.Values{"maxResults": {"500"}, "pageToken": {cursor}})

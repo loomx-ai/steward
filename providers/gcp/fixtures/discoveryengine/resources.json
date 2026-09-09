@@ -1,0 +1,215 @@
+{
+  "projects/sample-project/locations/global/collections/default_collection": {
+    "name": "projects/sample-project/locations/global/collections/default_collection",
+    "displayName": "Search collection",
+    "createTime": "2026-08-01T12:00:00Z"
+  },
+  "projects/sample-project/locations/us/collections/connector-real": {
+    "name": "projects/sample-project/locations/us/collections/connector-real",
+    "displayName": "Search collection",
+    "createTime": "2026-08-01T12:00:00Z"
+  },
+  "projects/sample-project/locations/eu/collections/default_collection": {
+    "name": "projects/sample-project/locations/eu/collections/default_collection",
+    "displayName": "Search collection",
+    "createTime": "2026-08-01T12:00:00Z"
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles",
+    "displayName": "Articles",
+    "createTime": "2026-08-01T12:00:00Z",
+    "industryVertical": "GENERIC",
+    "solutionTypes": [
+      "SOLUTION_TYPE_SEARCH"
+    ],
+    "contentConfig": "CONTENT_REQUIRED",
+    "defaultSchemaId": "default_schema",
+    "kmsKeyName": "projects/sample-project/locations/global/keyRings/search/cryptoKeys/data",
+    "documentProcessingConfig": {
+      "defaultParsingConfig": {
+        "digitalParsingConfig": {}
+      }
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search",
+    "displayName": "Search",
+    "createTime": "2026-08-01T12:00:00Z",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "dataStoreIds": [
+      "articles"
+    ],
+    "searchEngineConfig": {
+      "searchTier": "SEARCH_TIER_ENTERPRISE"
+    }
+  },
+  "projects/sample-project/locations/us/collections/connector-real/dataStores/articles": {
+    "name": "projects/sample-project/locations/us/collections/connector-real/dataStores/articles",
+    "displayName": "Website",
+    "createTime": "2026-08-01T12:00:00Z",
+    "industryVertical": "GENERIC",
+    "solutionTypes": [
+      "SOLUTION_TYPE_SEARCH"
+    ],
+    "contentConfig": "NO_CONTENT",
+    "advancedSiteSearchConfig": {
+      "disableAutomaticRefresh": true
+    }
+  },
+  "projects/sample-project/locations/us/collections/connector-real/engines/search": {
+    "name": "projects/sample-project/locations/us/collections/connector-real/engines/search",
+    "displayName": "Web search",
+    "createTime": "2026-08-01T12:00:00Z",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "dataStoreIds": [
+      "articles"
+    ]
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/controls/promote": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/controls/promote",
+    "displayName": "Promote",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "boostAction": {
+      "boost": 1,
+      "filter": "DISCOVERY_PRIVATE_FILTER"
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/servingConfigs/default_search": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/servingConfigs/default_search",
+    "displayName": "Search configuration",
+    "createTime": "2026-08-01T12:00:00Z",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "boostControlIds": [
+      "promote"
+    ],
+    "answerGenerationSpec": {
+      "promptSpec": {
+        "preamble": "DISCOVERY_PRIVATE_PROMPT"
+      }
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/sessions/session-1": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/sessions/session-1",
+    "startTime": "2026-08-01T12:00:00Z",
+    "userPseudoId": "DISCOVERY_PRIVATE_USER",
+    "state": "IN_PROGRESS",
+    "turns": [
+      {
+        "query": {
+          "text": "DISCOVERY_PRIVATE_QUERY"
+        }
+      }
+    ]
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/conversations/conversation-1": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/conversations/conversation-1",
+    "startTime": "2026-08-01T12:00:00Z",
+    "userPseudoId": "DISCOVERY_PRIVATE_USER",
+    "state": "IN_PROGRESS",
+    "messages": [
+      {
+        "userInput": {
+          "input": "DISCOVERY_PRIVATE_CONVERSATION"
+        }
+      }
+    ]
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search/controls/promote": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search/controls/promote",
+    "displayName": "Promote",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "boostAction": {
+      "boost": 1,
+      "filter": "DISCOVERY_PRIVATE_FILTER"
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search/servingConfigs/default_search": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search/servingConfigs/default_search",
+    "displayName": "Search configuration",
+    "createTime": "2026-08-01T12:00:00Z",
+    "solutionType": "SOLUTION_TYPE_SEARCH",
+    "boostControlIds": [
+      "promote"
+    ],
+    "answerGenerationSpec": {
+      "promptSpec": {
+        "preamble": "DISCOVERY_PRIVATE_PROMPT"
+      }
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search/sessions/session-1": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search/sessions/session-1",
+    "startTime": "2026-08-01T12:00:00Z",
+    "userPseudoId": "DISCOVERY_PRIVATE_USER",
+    "state": "IN_PROGRESS",
+    "turns": [
+      {
+        "query": {
+          "text": "DISCOVERY_PRIVATE_QUERY"
+        }
+      }
+    ]
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search/conversations/conversation-1": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search/conversations/conversation-1",
+    "startTime": "2026-08-01T12:00:00Z",
+    "userPseudoId": "DISCOVERY_PRIVATE_USER",
+    "state": "IN_PROGRESS",
+    "messages": [
+      {
+        "userInput": {
+          "input": "DISCOVERY_PRIVATE_CONVERSATION"
+        }
+      }
+    ]
+  },
+  "projects/sample-project/locations/global/collections/default_collection/engines/search/assistants/default_assistant": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/engines/search/assistants/default_assistant",
+    "displayName": "Assistant",
+    "createTime": "2026-08-01T12:00:00Z",
+    "generationConfig": {
+      "systemInstruction": "DISCOVERY_PRIVATE_INSTRUCTION"
+    },
+    "customerPolicy": "DISCOVERY_PRIVATE_POLICY"
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/schemas/default_schema": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/schemas/default_schema",
+    "structSchema": {
+      "title": "DISCOVERY_PRIVATE_SCHEMA",
+      "type": "object"
+    }
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/branches/0": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/branches/0",
+    "displayName": "Default",
+    "isDefault": true
+  },
+  "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/branches/0/documents/document-1": {
+    "name": "projects/sample-project/locations/global/collections/default_collection/dataStores/articles/branches/0/documents/document-1",
+    "id": "document-1",
+    "schemaId": "default_schema",
+    "structData": {
+      "title": "DISCOVERY_PRIVATE_TITLE"
+    },
+    "content": {
+      "uri": "gs://private-documents/file.pdf",
+      "mimeType": "application/pdf"
+    },
+    "indexStatus": {
+      "indexTime": "2026-08-01T13:00:00Z"
+    }
+  },
+  "projects/sample-project/locations/us/collections/connector-real/dataStores/articles/siteSearchEngine": {
+    "name": "projects/sample-project/locations/us/collections/connector-real/dataStores/articles/siteSearchEngine"
+  },
+  "projects/sample-project/locations/us/collections/connector-real/dataStores/articles/siteSearchEngine/targetSites/site-1": {
+    "name": "projects/sample-project/locations/us/collections/connector-real/dataStores/articles/siteSearchEngine/targetSites/site-1",
+    "type": "INCLUDE",
+    "providedUriPattern": "DISCOVERY_PRIVATE_SITE",
+    "exactMatch": false,
+    "indexingStatus": "INDEXING",
+    "siteVerificationInfo": {
+      "siteVerificationState": "VERIFIED"
+    }
+  }
+}

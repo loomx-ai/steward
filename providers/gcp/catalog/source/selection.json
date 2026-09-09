@@ -844,6 +844,73 @@
         "dataproc.projects.regions.workflowTemplates.get",
         "dataproc.projects.regions.workflowTemplates.list"
       ]
+    },
+    {
+      "source_uri": "https://discoveryengine.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.delete",
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.get",
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.list",
+        "discoveryengine.projects.locations.collections.dataStores.branches.operations.get",
+        "discoveryengine.projects.locations.collections.dataStores.controls.delete",
+        "discoveryengine.projects.locations.collections.dataStores.controls.get",
+        "discoveryengine.projects.locations.collections.dataStores.controls.list",
+        "discoveryengine.projects.locations.collections.dataStores.conversations.delete",
+        "discoveryengine.projects.locations.collections.dataStores.conversations.get",
+        "discoveryengine.projects.locations.collections.dataStores.conversations.list",
+        "discoveryengine.projects.locations.collections.dataStores.delete",
+        "discoveryengine.projects.locations.collections.dataStores.get",
+        "discoveryengine.projects.locations.collections.dataStores.getSiteSearchEngine",
+        "discoveryengine.projects.locations.collections.dataStores.list",
+        "discoveryengine.projects.locations.collections.dataStores.operations.get",
+        "discoveryengine.projects.locations.collections.dataStores.schemas.delete",
+        "discoveryengine.projects.locations.collections.dataStores.schemas.get",
+        "discoveryengine.projects.locations.collections.dataStores.schemas.list",
+        "discoveryengine.projects.locations.collections.dataStores.schemas.operations.get",
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.delete",
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.get",
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.list",
+        "discoveryengine.projects.locations.collections.dataStores.sessions.delete",
+        "discoveryengine.projects.locations.collections.dataStores.sessions.get",
+        "discoveryengine.projects.locations.collections.dataStores.sessions.list",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.operations.get",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.sitemaps.fetch",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.delete",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.get",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.list",
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.operations.get",
+        "discoveryengine.projects.locations.collections.engines.assistants.delete",
+        "discoveryengine.projects.locations.collections.engines.assistants.get",
+        "discoveryengine.projects.locations.collections.engines.assistants.list",
+        "discoveryengine.projects.locations.collections.engines.controls.delete",
+        "discoveryengine.projects.locations.collections.engines.controls.get",
+        "discoveryengine.projects.locations.collections.engines.controls.list",
+        "discoveryengine.projects.locations.collections.engines.conversations.delete",
+        "discoveryengine.projects.locations.collections.engines.conversations.get",
+        "discoveryengine.projects.locations.collections.engines.conversations.list",
+        "discoveryengine.projects.locations.collections.engines.delete",
+        "discoveryengine.projects.locations.collections.engines.get",
+        "discoveryengine.projects.locations.collections.engines.list",
+        "discoveryengine.projects.locations.collections.engines.operations.get",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.delete",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.get",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.list",
+        "discoveryengine.projects.locations.collections.engines.sessions.delete",
+        "discoveryengine.projects.locations.collections.engines.sessions.get",
+        "discoveryengine.projects.locations.collections.engines.sessions.list",
+        "discoveryengine.projects.locations.collections.getDataConnector"
+      ]
+    },
+    {
+      "source_uri": "https://discoveryengine.googleapis.com/$discovery/rest?version=v1alpha",
+      "methods": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.get",
+        "discoveryengine.projects.locations.collections.dataStores.branches.list",
+        "discoveryengine.projects.locations.collections.delete",
+        "discoveryengine.projects.locations.collections.get",
+        "discoveryengine.projects.locations.collections.list",
+        "discoveryengine.projects.locations.collections.operations.get"
+      ]
     }
   ],
   "resource_types": [
@@ -3735,6 +3802,261 @@
       ],
       "list_operations": [
         "dataproc.projects.regions.workflowTemplates.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Collection",
+      "class": "data.collection",
+      "display_name": "Discovery Engine Collection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "collections",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/DataStore",
+      "class": "database.search",
+      "display_name": "Discovery Engine DataStore",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "dataStores",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Engine",
+      "class": "search.application",
+      "display_name": "Discovery Engine Engine",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "engines",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.engines.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.engines.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.engines.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Schema",
+      "class": "data.schema",
+      "display_name": "Discovery Engine Schema",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "schemas",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.schemas.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.schemas.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.schemas.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Control",
+      "class": "search.control",
+      "display_name": "Discovery Engine Control",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "controls",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.controls.get",
+        "discoveryengine.projects.locations.collections.engines.controls.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.controls.delete",
+        "discoveryengine.projects.locations.collections.engines.controls.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.controls.list",
+        "discoveryengine.projects.locations.collections.engines.controls.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/ServingConfig",
+      "class": "search.configuration",
+      "display_name": "Discovery Engine ServingConfig",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "servingConfigs",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.get",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.delete",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.servingConfigs.list",
+        "discoveryengine.projects.locations.collections.engines.servingConfigs.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Session",
+      "class": "search.session",
+      "display_name": "Discovery Engine Session",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "sessions",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.sessions.get",
+        "discoveryengine.projects.locations.collections.engines.sessions.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.sessions.delete",
+        "discoveryengine.projects.locations.collections.engines.sessions.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.sessions.list",
+        "discoveryengine.projects.locations.collections.engines.sessions.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Conversation",
+      "class": "search.conversation",
+      "display_name": "Discovery Engine Conversation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "conversations",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.conversations.get",
+        "discoveryengine.projects.locations.collections.engines.conversations.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.conversations.delete",
+        "discoveryengine.projects.locations.collections.engines.conversations.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.conversations.list",
+        "discoveryengine.projects.locations.collections.engines.conversations.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Assistant",
+      "class": "search.assistant",
+      "display_name": "Discovery Engine Assistant",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "assistants",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.engines.assistants.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.engines.assistants.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.engines.assistants.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Branch",
+      "class": "data.branch",
+      "display_name": "Discovery Engine Branch",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "branches",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/Document",
+      "class": "data.document",
+      "display_name": "Discovery Engine Document",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "documents",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.branches.documents.list"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/SiteSearchEngine",
+      "class": "search.site_configuration",
+      "display_name": "Discovery Engine SiteSearchEngine",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "siteSearchEngine",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.getSiteSearchEngine"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.getSiteSearchEngine"
+      ]
+    },
+    {
+      "native_type": "discoveryengine.googleapis.com/TargetSite",
+      "class": "search.site",
+      "display_name": "Discovery Engine TargetSite",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "targetSites",
+      "read_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.get"
+      ],
+      "delete_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.delete"
+      ],
+      "list_operations": [
+        "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.list"
       ]
     }
   ],
