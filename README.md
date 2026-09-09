@@ -53,8 +53,7 @@ The [documentation](https://loomx.ai/steward/docs/latest/en/) covers cloud conne
 
 This repository contains the Steward service, web console, and cloud provider integrations. Contributions are welcome:
 
-- [Build from source and develop locally](docs/content/en/development.md)
-- [Contribute to the documentation](docs/README.md)
+- [Build from source and develop locally](https://loomx.ai/steward/docs/latest/en/development/)
 - [Report an issue or discuss a proposed change](https://github.com/loomx-ai/steward/issues)
 
 ## License

@@ -52,8 +52,7 @@ Steward 是一个开源的云资源盘点与清理工具。它将[阿里云](htt
 
 本仓库包含 Steward 服务、Web 控制台和云平台集成。欢迎参与贡献：
 
-- [源码构建与本地开发](docs/content/zh/development.md)
-- [参与文档维护](docs/README.md)
+- [源码构建与本地开发](https://loomx.ai/steward/docs/latest/zh/development/)
 - [报告问题或讨论改进](https://github.com/loomx-ai/steward/issues)
 
 ## 许可证
