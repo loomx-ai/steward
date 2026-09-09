@@ -16,6 +16,9 @@ type ActionRequest struct {
 	// LifecycleImpacts are populated from the reviewed plan by the executor.
 	// They are not caller-supplied provider parameters.
 	LifecycleImpacts []ActionImpact `json:"lifecycle_impacts,omitempty"`
+	// PrerequisiteDeletions come from reviewed direct-child steps on which
+	// this step depends. Providers must still verify native absence.
+	PrerequisiteDeletions []ActionImpact `json:"prerequisite_deletions,omitempty"`
 }
 
 type ActionImpact struct {

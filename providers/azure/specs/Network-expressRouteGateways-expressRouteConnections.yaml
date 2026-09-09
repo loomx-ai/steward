@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/expressRouteGateways/expressRouteConnections
+  class: network.connection
+presentation:
+  displayNames:
+    en-US: Virtual WAN ExpressRoute connection
+    zh-CN: 虚拟 WAN ExpressRoute 连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.ExpressRouteConnections_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      expressRouteGatewayName: parent.normalized.arm_parameters.expressRouteGatewayName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.ExpressRouteConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/expressRouteGateways
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  expressRouteCircuitPeering:
+    path: expressRouteCircuitPeering
+    type: object
+  routingWeight:
+    path: routingWeight
+    type: number
+  enableInternetSecurity:
+    path: enableInternetSecurity
+    type: boolean
+  routingConfiguration:
+    path: routingConfiguration
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/expressRouteGateways
+  targetIdPath: refs_microsoft_network_expressroutegateways
+- type: depends_on
+  targetType: Microsoft.Network/expressRouteCircuits/peerings
+  targetIdPath: refs_microsoft_network_expressroutecircuits_peerings
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.ExpressRouteConnections_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.ExpressRouteConnections_Get
+      itemsPath: $
+      identityPath: id

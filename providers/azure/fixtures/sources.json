@@ -28,5 +28,20 @@
     "file": "VmssPublicIpGet.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/VmssPublicIpGet.json",
     "source_sha256": "7d61c1a161cc8d2a8d06a49a9b95b1e9bd22b126642160c3f17307d0c75c32cd"
+  },
+  {
+    "file": "VpnSiteLinkConnectionGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/VpnSiteLinkConnectionGet.json",
+    "source_sha256": "07997583281d3f94ba540bdaf83166d3129179f5e5abe185fdf4c66a28392a90"
+  },
+  {
+    "file": "NatRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/NatRuleGet.json",
+    "source_sha256": "c67db8b8722132d389470b56a049c8ef07a12aa53ce7d166161f84aae4c293e2"
+  },
+  {
+    "file": "ExpressRouteConnectionGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/ExpressRouteConnectionGet.json",
+    "source_sha256": "4dc0f993d704b0b5d1b78a51dbe54558003b39c4e216c9bcf2393f3e046e2cc3"
   }
 ]

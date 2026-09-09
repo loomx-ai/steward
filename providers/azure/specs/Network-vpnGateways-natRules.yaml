@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/vpnGateways/natRules
+  class: network.nat_rule
+presentation:
+  displayNames:
+    en-US: Virtual WAN VPN NAT rule
+    zh-CN: 虚拟 WAN VPN NAT 规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.NatRules_ListByVpnGateway
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      gatewayName: parent.normalized.arm_parameters.gatewayName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.NatRules_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/vpnGateways
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  type:
+    path: type
+    type: string
+  mode:
+    path: mode
+    type: string
+  internalMappings:
+    path: internalMappings
+    type: array
+  externalMappings:
+    path: externalMappings
+    type: array
+  ipConfigurationId:
+    path: ipConfigurationId
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/vpnGateways
+  targetIdPath: refs_microsoft_network_vpngateways
+actions:
+  delete:
+    operation: Azure.Microsoft.Network.NatRules_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Network.NatRules_Get
+      itemsPath: $
+      identityPath: id

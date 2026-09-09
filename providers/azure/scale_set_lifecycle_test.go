@@ -160,7 +160,7 @@ func TestScaleSetNativeProductRoutesAndControllerOnlyNetwork(t *testing.T) {
 	}
 }
 
-func TestScaleSetOfficialResponseAliasesRemainBoundToNativeIDs(t *testing.T) {
+func TestOfficialResponseAliasesRemainBoundToNativeIDs(t *testing.T) {
 	// These unchanged upstream examples are independent of the wire fixtures above.
 	var sources []struct{ File, SourceURI, SourceSHA256 string }
 	data, err := os.ReadFile("fixtures/sources.json")
@@ -174,7 +174,7 @@ func TestScaleSetOfficialResponseAliasesRemainBoundToNativeIDs(t *testing.T) {
 	for _, entry := range manifest {
 		sources = append(sources, struct{ File, SourceURI, SourceSHA256 string }{entry["file"], entry["source_uri"], entry["source_sha256"]})
 	}
-	for _, tc := range []struct{ file, kind string }{{"VirtualMachineScaleSetVM_Get_WithUserData.json", scaleSetVMType}, {"VmssNetworkInterfaceGet.json", scaleSetNICType}, {"VmssNetworkInterfaceIpConfigGet.json", scaleSetIPConfigType}, {"VmssPublicIpGet.json", scaleSetPublicIPType}} {
+	for _, tc := range []struct{ file, kind string }{{"VirtualMachineScaleSetVM_Get_WithUserData.json", scaleSetVMType}, {"VmssNetworkInterfaceGet.json", scaleSetNICType}, {"VmssNetworkInterfaceIpConfigGet.json", scaleSetIPConfigType}, {"VmssPublicIpGet.json", scaleSetPublicIPType}, {"VpnSiteLinkConnectionGet.json", vpnLinkConnectionType}, {"NatRuleGet.json", vpnNATRuleType}, {"ExpressRouteConnectionGet.json", expressConnectionType}} {
 		t.Run(tc.file, func(t *testing.T) {
 			payload, err := os.ReadFile("fixtures/" + tc.file)
 			if err != nil {
@@ -195,7 +195,7 @@ func TestScaleSetOfficialResponseAliasesRemainBoundToNativeIDs(t *testing.T) {
 				t.Fatal(err)
 			}
 			raw := object(object(object(example["responses"])["200"])["body"])
-			id := text(raw["id"])
+			id := responseID(tc.kind, text(raw["id"]))
 			if !validResourceResponse(response{status: 200, data: raw}, id, tc.kind) {
 				t.Fatalf("rejected documented native type: %s", raw["type"])
 			}
@@ -204,7 +204,7 @@ func TestScaleSetOfficialResponseAliasesRemainBoundToNativeIDs(t *testing.T) {
 			if _, err := c.resourceURL(kind, id); err != nil {
 				t.Fatal(err)
 			}
-			foreign := strings.Replace(id, "/virtualMachineScaleSets/", "/unrelated/", 1)
+			foreign := strings.Replace(id, "/providers/", "/unrelated/", 1)
 			if _, err := c.resourceURL(kind, foreign); err == nil {
 				t.Fatal("type alias accepted unrelated path")
 			}

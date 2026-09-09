@@ -235,6 +235,16 @@ func servicePlanRequest(result plan.Result, assets []asset.Asset, root asset.Ass
 			stepID, request.Parameters = step.ID, step.RequestOptions
 		}
 	}
+	for _, step := range result.Steps {
+		if fmt.Sprint(step.Evidence["lifecycle_controller"]) != string(root.ID) || step.Action != "delete" {
+			continue
+		}
+		for _, value := range assets {
+			if value.ID == step.AssetID {
+				request.PrerequisiteDeletions = append(request.PrerequisiteDeletions, contracts.ActionImpact{Asset: value, ControllerID: root.ID, Delete: true})
+			}
+		}
+	}
 	for _, impact := range result.ImpactItems {
 		if impact.DelegatedTo != stepID {
 			continue

@@ -26,6 +26,11 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	hostGroupType:           {hostType},
+	capacityGroupType:       {capacityType},
+	vpnGatewayType:          {vpnConnectionType, vpnNATRuleType},
+	vpnConnectionType:       {vpnLinkConnectionType},
+	expressGatewayType:      {expressConnectionType},
 	vmType:                  {vmExtensionType},
 	scaleSetType:            {scaleSetVMType, scaleSetExtensionType, vmType},
 	scaleSetVMType:          {scaleSetVMExtensionType, scaleSetNICType, diskType},
@@ -115,7 +120,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 		kind, _ := findType(childType)
 		for _, value := range records {
 			record := object(value)
-			id, parsedType, err := parseID(text(record["id"]))
+			id, parsedType, err := parseID(responseID(childType, text(record["id"])))
 			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || !validResponseType(childType, text(record["type"])) {
 				return nil, fmt.Errorf("invalid or duplicate Azure cascade child identity")
 			}
@@ -135,6 +140,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			if err := serviceListedIncarnation(record, live.data); err != nil {
 				return nil, err
 			}
+			live.data["id"] = id
 			children = append(children, serviceChild{kind: childType, id: id, data: live.data})
 		}
 	}
@@ -313,6 +319,12 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		return err
 	}
 	planned := request.Asset
+	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
+		return err
+	}
+	if len(request.PrerequisiteDeletions) > 0 && serviceParentConfigurationMatches(planned, live) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if a.kind.NativeType == vmType {
 		retained, err := vmRetentionApplied(a.client.subscription, request, object(live["properties"]))
 		if err != nil {
@@ -414,6 +426,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
+	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	ids := make([]string, 0, len(impacts))
 	for id := range impacts {
 		ids = append(ids, id)
@@ -444,7 +459,8 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
+	return (strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
+		(strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
 		((strings.EqualFold(child, scaleSetNICType) || strings.EqualFold(child, scaleSetIPConfigType) || strings.EqualFold(child, scaleSetPublicIPType)) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_scale_set_managed_network") ||
 		(strings.EqualFold(parent, privateEndpointType) && strings.EqualFold(child, nicType) && reason == "azure_private_endpoint_managed_nic") ||
 		(strings.EqualFold(parent, sqlServerType) && strings.EqualFold(child, sqlDatabaseType) && reason == "azure_system_database") ||
@@ -458,6 +474,7 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	var children []serviceChild
 	var err error
+	native := false
 	switch {
 	case strings.EqualFold(parent.NativeType, scaleSetType):
 		children, err = c.scaleSetChildren(ctx, parent, raw)
@@ -470,10 +487,17 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	case strings.EqualFold(parent.NativeType, privateDNSLinkType):
 		children, err = c.privateDNSRegistrationChildren(ctx, parent, raw)
 	default:
-		return c.nativeServiceChildren(ctx, parent, raw, serviceChildKinds(parent.NativeType))
+		native = true
+		children, err = c.nativeServiceChildren(ctx, parent, raw, serviceChildKinds(parent.NativeType))
 	}
 	if err != nil {
 		return nil, err
+	}
+	for i := range children {
+		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+	}
+	if native {
+		return children, nil // nativeServiceChildren already re-read the parent.
 	}
 	if err := c.verifyProductParent(ctx, productTarget{ParentID: parent.NativeID, ParentType: parent.NativeType, Generation: productGeneration(raw)}); err != nil {
 		return nil, err

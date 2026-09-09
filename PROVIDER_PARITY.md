@@ -295,3 +295,14 @@ background evidence only, not acceptance evidence for this work.
   failure/permission, server wiring and serialized restart tests pass, with
   full Go/Python/vet and targeted race checks. Other families, parent lifecycle
   gaps, independent emulators and application acceptance remain open.
+
+- Azure now has 96 rules/302 native operations. Dedicated-host and reservation
+  groups, and Virtual WAN VPN/ExpressRoute gateways, plan native child deletion
+  prerequisites. VPN links remain owned by their connection; NAT references
+  order connections before rules. Reviewed prerequisite snapshots survive closed
+  inventory and worker restart, and every prerequisite must return native 404.
+  Parent ETag changes require unchanged configuration/creation identity after
+  accounting for the declared child collections. Official unchanged fixtures
+  exposed the VPN link response-ID spelling difference, now handled with one
+  narrowly bound alias. Full Go/vet, offline source checks and targeted races
+  pass. Remaining families, service parents and independent acceptance are open.

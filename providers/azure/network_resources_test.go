@@ -29,6 +29,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/expressRouteCircuits", "Microsoft.Network/expressRouteCircuits/circuit", "/providers/Microsoft.Network/expressRouteCircuits", "2024-05-01", "eastus"},
 		{"Microsoft.Network/expressRouteCircuits/peerings", "Microsoft.Network/expressRouteCircuits/circuit/peerings/peering", "/resourceGroups/test/providers/Microsoft.Network/expressRouteCircuits/circuit/peerings", "2024-05-01", "eastus"},
 		{"Microsoft.Network/expressRouteGateways", "Microsoft.Network/expressRouteGateways/gateway", "/providers/Microsoft.Network/expressRouteGateways", "2024-05-01", "eastus"},
+		{"Microsoft.Network/expressRouteGateways/expressRouteConnections", "Microsoft.Network/expressRouteGateways/gateway/expressRouteConnections/connection", "/resourceGroups/test/providers/Microsoft.Network/expressRouteGateways/gateway/expressRouteConnections", "2024-05-01", "eastus"},
 		{"Microsoft.Network/firewallPolicies", "Microsoft.Network/firewallPolicies/policy", "/providers/Microsoft.Network/firewallPolicies", "2024-05-01", "eastus"},
 		{"Microsoft.Network/localNetworkGateways", "Microsoft.Network/localNetworkGateways/local", "/resourceGroups/test/providers/Microsoft.Network/localNetworkGateways", "2024-05-01", "eastus"},
 		{"Microsoft.Network/networkWatchers", "Microsoft.Network/networkWatchers/watcher", "/providers/Microsoft.Network/networkWatchers", "2024-05-01", "eastus"},
@@ -50,6 +51,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 		{"Microsoft.Network/virtualWans", "Microsoft.Network/virtualWans/wan", "/providers/Microsoft.Network/virtualWans", "2024-05-01", "eastus"},
 		{"Microsoft.Network/vpnGateways", "Microsoft.Network/vpnGateways/vpn", "/providers/Microsoft.Network/vpnGateways", "2024-05-01", "eastus"},
 		{"Microsoft.Network/vpnGateways/vpnConnections", "Microsoft.Network/vpnGateways/vpn/vpnConnections/connection", "/resourceGroups/test/providers/Microsoft.Network/vpnGateways/vpn/vpnConnections", "2024-05-01", "eastus"},
+		{"Microsoft.Network/vpnGateways/natRules", "Microsoft.Network/vpnGateways/vpn/natRules/nat", "/resourceGroups/test/providers/Microsoft.Network/vpnGateways/vpn/natRules", "2024-05-01", "eastus"},
 		{"Microsoft.Storage/storageAccounts/fileServices/shares", "Microsoft.Storage/storageAccounts/storage/fileServices/default/shares/share", "/resourceGroups/test/providers/Microsoft.Storage/storageAccounts/storage/fileServices/default/shares", "2023-05-01", "eastus"},
 	} {
 		t.Run(tc.kind, func(t *testing.T) {
@@ -76,6 +78,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 				{"Microsoft.Compute/capacityReservationGroups", "cg"}, {"Microsoft.Compute/hostGroups", "hg"},
 				{"Microsoft.Network/expressRouteCircuits", "circuit"}, {"Microsoft.Network/networkWatchers", "watcher"},
 				{"Microsoft.Network/virtualHubs", "hub"}, {"Microsoft.Network/vpnGateways", "vpn"}, {vnetType, "vnet"}, {storageType, "storage"},
+				{"Microsoft.Network/expressRouteGateways", "gateway"},
 			} {
 				location := "eastus"
 				if parent.kind == privateDNSZoneType {
@@ -88,7 +91,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			for _, collection := range []string{"flowLogs", "connectionMonitors", "packetCaptures"} {
 				lists[strings.ToLower(group+"/providers/Microsoft.Network/networkWatchers/watcher/"+collection)] = []any{}
 			}
-			for _, collection := range []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "virtualNetworkLinks", "privateDnsZoneGroups"} {
+			for _, collection := range []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "PTR", "SOA", "SRV", "TXT", "virtualNetworkLinks", "privateDnsZoneGroups", "capacityReservations", "hosts", "expressRouteConnections", "vpnConnections", "natRules", "vpnLinkConnections"} {
 				lists[strings.ToLower(id+"/"+collection)] = []any{}
 			}
 			details[strings.ToLower(id)] = raw

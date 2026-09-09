@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Network/vpnGateways/vpnConnections/vpnLinkConnections
+  class: network.vpn_connection
+presentation:
+  displayNames:
+    en-US: Virtual WAN VPN link connection
+    zh-CN: 虚拟 WAN VPN 链路连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Network.VpnLinkConnections_ListByVpnConnection
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      gatewayName: parent.normalized.arm_parameters.gatewayName
+      connectionName: parent.normalized.arm_parameters.connectionName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Network.VpnSiteLinkConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Network/vpnGateways/vpnConnections
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  connectionStatus:
+    path: connectionStatus
+    type: string
+  vpnLinkConnectionMode:
+    path: vpnLinkConnectionMode
+    type: string
+  enableBgp:
+    path: enableBgp
+    type: boolean
+  vpnSiteLink:
+    path: vpnSiteLink
+    type: object
+  ingressNatRules:
+    path: ingressNatRules
+    type: array
+  egressNatRules:
+    path: egressNatRules
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Network/vpnGateways/vpnConnections
+  targetIdPath: refs_microsoft_network_vpngateways_vpnconnections
+- type: depends_on
+  targetType: Microsoft.Network/vpnGateways/natRules
+  targetIdPath: refs_microsoft_network_vpngateways_natrules

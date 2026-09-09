@@ -275,6 +275,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	normalized["_inventory_source"] = inventorySource
 	normalized["_arm_generation"] = productGeneration(raw)
 	normalized["arm_etag"] = text(raw["etag"])
+	if hasServicePrerequisites(nativeType) {
+		normalized["_arm_parent_configuration"] = serviceParentConfiguration(nativeType, raw)
+	}
 	if known {
 		_, parameters, err := c.resourceOperation(kind, id, "GET")
 		if err != nil {
@@ -407,6 +410,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/packetCaptures") {
 		fields["target"] = true
+	}
+	if nativeType == vpnConnectionType || nativeType == vpnLinkConnectionType {
+		fields["ingressnatrules"], fields["egressnatrules"] = true, true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true

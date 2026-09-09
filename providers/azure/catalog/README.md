@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 93 current resource rules discover through native product List operations.
+All 96 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,7 +47,7 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 294 operations from
+Private Link and file shares. The current catalog contains 302 operations from
 51 root documents and 25 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
@@ -216,3 +216,28 @@ After the VM is absent, its extensions must also return 404. AKS recursive group
 cleanup includes standard VM extensions as well. Native list shards, permission
 errors, changing extensions, missing/foreign impacts and retention have permanent
 protocol tests, including server lifecycle discovery and serialized restart.
+
+Dedicated-host and capacity-reservation groups now plan independent member
+deletions before their own DELETE. Virtual WAN VPN gateways similarly require
+connection and NAT-rule cleanup; ExpressRoute gateways require connection
+cleanup. VPN connections own their read-only link connections, whose native
+API has no independent DELETE. NAT references order link-owning connections
+before their rules. Active VM associations and live NAT-link references block
+deletion of the associated host, reservation or rule.
+
+The executor passes frozen, reviewed direct-child steps as prerequisites, even
+after those assets close or inventory changes. Parent preflight and resumed
+readback require their individual native 404s. An ETag change can be attributed
+to those prior deletions only when the sanitized parent configuration and
+creation identity match, excluding its declared child collections and modification
+audit fields. Other configuration changes still require a fresh plan. This
+extends to Flexible scale-set prerequisites.
+
+Unchanged official Get examples verify gateway connections and NAT rules. The
+VPN link example uses `VpnSiteLinkConnections` in response IDs/types but
+`vpnLinkConnections` in request paths. This one documented final-segment alias
+is bound to the same subscription, group, gateway, connection and link name;
+foreign identities and duplicate canonical/alias records are rejected. See the
+[native VPN link contract](https://learn.microsoft.com/en-us/rest/api/virtualwan/vpn-site-link-connections/get),
+[Virtual WAN cleanup sequence](https://learn.microsoft.com/en-us/azure/virtual-wan/virtual-wan-faq),
+and [capacity-group deletion prerequisites](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group).

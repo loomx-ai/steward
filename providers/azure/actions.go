@@ -123,6 +123,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := a.validateScaleSetVMOwner(ctx, request, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if reason := serviceAssociationReason(a.kind.NativeType, res.data); reason != "" {
+		return contracts.PreflightResult{Reason: reason}, nil
+	}
 	if HasServiceCascade(a.kind.NativeType) {
 		if err := a.serviceCascadePreflight(ctx, request, res.data, locks); err != nil {
 			return contracts.PreflightResult{}, err
@@ -380,6 +383,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 		}
 	}
 	properties := object(raw["properties"])
+	if kind.NativeType == vpnLinkConnectionType {
+		return "azure_vpn_connection_managed_link"
+	}
 	if kind.NativeType == scaleSetNICType || kind.NativeType == scaleSetIPConfigType || kind.NativeType == scaleSetPublicIPType {
 		return "azure_scale_set_managed_network"
 	}
@@ -397,7 +403,7 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
-	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
+	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
 	default:
 		return false

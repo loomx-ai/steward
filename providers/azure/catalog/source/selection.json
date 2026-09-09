@@ -372,6 +372,9 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json",
       "operations": [
+        "ExpressRouteConnections_Delete",
+        "ExpressRouteConnections_Get",
+        "ExpressRouteConnections_List",
         "ExpressRouteGateways_Delete",
         "ExpressRouteGateways_Get",
         "ExpressRouteGateways_ListBySubscription",
@@ -381,6 +384,9 @@
         "HubVirtualNetworkConnections_Delete",
         "HubVirtualNetworkConnections_Get",
         "HubVirtualNetworkConnections_List",
+        "NatRules_Delete",
+        "NatRules_Get",
+        "NatRules_ListByVpnGateway",
         "RouteMaps_Delete",
         "RouteMaps_Get",
         "RouteMaps_List",
@@ -395,7 +401,9 @@
         "VpnConnections_ListByVpnGateway",
         "VpnGateways_Delete",
         "VpnGateways_Get",
-        "VpnGateways_List"
+        "VpnGateways_List",
+        "VpnLinkConnections_ListByVpnConnection",
+        "VpnSiteLinkConnections_Get"
       ]
     },
     {
@@ -2281,6 +2289,61 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Compute.VirtualMachineExtensions_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/vpnGateways/natRules",
+      "class": "network.nat_rule",
+      "display_name": "Virtual WAN VPN NAT rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "natRules",
+      "read_operations": [
+        "Azure.Microsoft.Network.NatRules_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.NatRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.NatRules_ListByVpnGateway"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/vpnGateways/vpnConnections/vpnLinkConnections",
+      "class": "network.vpn_connection",
+      "display_name": "Virtual WAN VPN link connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "vpnLinkConnections",
+      "read_operations": [
+        "Azure.Microsoft.Network.VpnSiteLinkConnections_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Network.VpnLinkConnections_ListByVpnConnection"
+      ],
+      "response_types": [
+        "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/expressRouteGateways/expressRouteConnections",
+      "class": "network.connection",
+      "display_name": "Virtual WAN ExpressRoute connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "expressRouteConnections",
+      "read_operations": [
+        "Azure.Microsoft.Network.ExpressRouteConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.ExpressRouteConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.ExpressRouteConnections_List"
       ]
     }
   ]

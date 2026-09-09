@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "87552bebc7e5e548462bd41f79bb411f7f83f05cf9f314402f264b22e24ce1f9",
+    "checksum": "5d8cef5ea603730c0b41534b8d6b88e2e0f41dd9f3551202360ae330a481cdbb",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e2abe91d7fc90e68029403bca16e27df6e1a41c60eb12e022cbd158c17813616",
+  "content_checksum": "7086dd3e4471b939c5edbd57073ad33881c10bb79b98f3c8012bf170763c9f92",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -9981,6 +9981,213 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/expressRouteCircuit.json"
     },
     {
+      "id": "Azure.Microsoft.Network.ExpressRouteConnections_Delete",
+      "name": "ExpressRouteConnections_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections/{connectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionName": {
+            "description": "The name of the connection subresource.",
+            "in": "path",
+            "name": "connectionName",
+            "required": true,
+            "type": "string"
+          },
+          "expressRouteGatewayName": {
+            "description": "The name of the ExpressRoute gateway.",
+            "in": "path",
+            "name": "expressRouteGatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections/{connectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.ExpressRouteConnections_Get",
+      "name": "ExpressRouteConnections_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections/{connectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionName": {
+            "description": "The name of the ExpressRoute connection.",
+            "in": "path",
+            "name": "connectionName",
+            "required": true,
+            "type": "string"
+          },
+          "expressRouteGatewayName": {
+            "description": "The name of the ExpressRoute gateway.",
+            "in": "path",
+            "name": "expressRouteGatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "ExpressRouteConnection resource.",
+        "properties": {
+          "name": {
+            "description": "The name of the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ExpressRouteConnectionProperties",
+            "description": "Properties of the express route connection.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections/{connectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.ExpressRouteConnections_List",
+      "name": "ExpressRouteConnections_List",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "expressRouteGatewayName": {
+            "description": "The name of the ExpressRoute gateway.",
+            "in": "path",
+            "name": "expressRouteGatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "ExpressRouteConnection list.",
+        "properties": {
+          "value": {
+            "description": "The list of ExpressRoute connections.",
+            "items": {
+              "$ref": "#/definitions/ExpressRouteConnection"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.ExpressRouteGateways_Delete",
       "name": "ExpressRouteGateways_Delete",
       "service": "Microsoft.Network",
@@ -11929,6 +12136,228 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/natGateway.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.NatRules_Delete",
+      "name": "NatRules_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules/{natRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "natRuleName": {
+            "description": "The name of the nat rule.",
+            "in": "path",
+            "name": "natRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules/{natRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.NatRules_Get",
+      "name": "NatRules_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules/{natRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "natRuleName": {
+            "description": "The name of the nat rule.",
+            "in": "path",
+            "name": "natRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "VpnGatewayNatRule Resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource that is unique within a resource group. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VpnGatewayNatRuleProperties",
+            "description": "Properties of the VpnGateway NAT rule.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Resource type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules/{natRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.NatRules_ListByVpnGateway",
+      "name": "NatRules_ListByVpnGateway",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list all nat rules to a virtual wan vpn gateway. It contains a list of Nat rules and a URL nextLink to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of operation list results if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Nat Rules.",
+            "items": {
+              "$ref": "#/definitions/VpnGatewayNatRule"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
     },
     {
       "id": "Azure.Microsoft.Network.NetworkInterfaces_CreateOrUpdate",
@@ -18091,6 +18520,182 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/vpnGateways",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VpnLinkConnections_ListByVpnConnection",
+      "name": "VpnLinkConnections_ListByVpnConnection",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionName": {
+            "description": "The name of the vpn connection.",
+            "in": "path",
+            "name": "connectionName",
+            "required": true,
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the vpn gateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list all vpn connections to a virtual wan vpn gateway. It contains a list of Vpn Connections and a URL nextLink to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of operation list results if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of VpnSiteLinkConnections.",
+            "items": {
+              "$ref": "#/definitions/VpnSiteLinkConnection"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/virtualWan.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.VpnSiteLinkConnections_Get",
+      "name": "VpnSiteLinkConnections_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections/{linkConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectionName": {
+            "description": "The name of the vpn connection.",
+            "in": "path",
+            "name": "connectionName",
+            "required": true,
+            "type": "string"
+          },
+          "gatewayName": {
+            "description": "The name of the gateway.",
+            "in": "path",
+            "name": "gatewayName",
+            "required": true,
+            "type": "string"
+          },
+          "linkConnectionName": {
+            "description": "The name of the vpn connection.",
+            "in": "path",
+            "name": "linkConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The resource group name of the VpnGateway.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./network.json#/definitions/SubResource"
+          }
+        ],
+        "description": "VpnSiteLinkConnection Resource.",
+        "properties": {
+          "etag": {
+            "description": "A unique read-only string that changes whenever the resource is updated.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the resource that is unique within a resource group. This name can be used to access the resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/VpnSiteLinkConnectionProperties",
+            "description": "Properties of the VPN site link connection.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "Resource type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        }
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2024-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections/{linkConnectionName}",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"
@@ -24532,6 +25137,26 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/expressRouteGateways/expressRouteConnections",
+      "class": "network.connection",
+      "display_name": "Virtual WAN ExpressRoute connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "expressRouteConnections",
+        "read_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/firewallPolicies",
       "class": "security.firewall",
       "display_name": "Firewall policy",
@@ -25299,6 +25924,26 @@
       }
     },
     {
+      "native_type": "Microsoft.Network/vpnGateways/natRules",
+      "class": "network.nat_rule",
+      "display_name": "Virtual WAN VPN NAT rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "natRules",
+        "read_operations": [
+          "Azure.Microsoft.Network.NatRules_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.NatRules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NatRules_ListByVpnGateway"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Network/vpnGateways/vpnConnections",
       "class": "network.vpn_connection",
       "display_name": "Virtual WAN VPN connection",
@@ -25316,6 +25961,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.VpnConnections_ListByVpnGateway"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/vpnGateways/vpnConnections/vpnLinkConnections",
+      "class": "network.vpn_connection",
+      "display_name": "Virtual WAN VPN link connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "vpnLinkConnections",
+        "read_operations": [
+          "Azure.Microsoft.Network.VpnSiteLinkConnections_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.VpnLinkConnections_ListByVpnConnection"
+        ],
+        "response_types": [
+          "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
         ]
       }
     },

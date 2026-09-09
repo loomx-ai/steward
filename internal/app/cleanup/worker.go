@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -791,6 +792,20 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 		IdempotencyKey: resumedProviderIdempotencyKey(attempt, action),
 	}
 	if !verificationOnly {
+		for _, prerequisite := range aggregate.Steps {
+			if prerequisite.Action != "delete" || fmt.Sprint(prerequisite.Evidence["lifecycle_controller"]) != string(step.AssetID) || fmt.Sprint(prerequisite.Evidence["cleanup_policy"]) != string(graph.CleanupDirect) || !slices.Contains(step.DependsOn, prerequisite.ID) {
+				continue
+			}
+			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, prerequisite.AssetID)
+			if err != nil {
+				return err
+			}
+			managed, err = plan.PlannedAsset(prerequisite.Evidence, managed)
+			if err != nil {
+				return err
+			}
+			request.PrerequisiteDeletions = append(request.PrerequisiteDeletions, contracts.ActionImpact{Asset: managed, ControllerID: step.AssetID, Delete: true})
+		}
 		for _, impact := range aggregate.ImpactItems {
 			if impact.DelegatedTo != step.ID {
 				continue

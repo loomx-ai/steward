@@ -2700,6 +2700,76 @@ func TestExecutorKeepsReviewedAssetsWhileInventoryChangesDuringWait(t *testing.T
 	}
 }
 
+func TestExecutorSuppliesFrozenDirectPrerequisitesAfterWorkerRestart(t *testing.T) {
+	ctx := context.Background()
+	repositories, planner, _, _ := controllerExecutionFixture(t, "execution-prerequisites", []controllerChild{
+		{id: "first", ownership: graph.OwnershipExclusive, policy: graph.CleanupDirect},
+		{id: "second", ownership: graph.OwnershipExclusive, policy: graph.CleanupDirect},
+	})
+	childDriver := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+	parentDriver := &scriptedActionDriver{pollInterval: time.Second, readback: contracts.ReadbackResult{Exists: false}}
+	resolver := cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+		if value.ID == "ack" {
+			return parentDriver, nil
+		}
+		return childDriver, nil
+	})
+	handler := cleanup.NewExecutionHandler(planner, resolver)
+	parentJob := cleanupExecutionJobForAsset(t, repositories, "cln-controller", "ack")
+	var retry *cleanup.RetryError
+	if err := handler.Handle(ctx, parentJob); err != nil && !errors.As(err, &retry) {
+		t.Fatal(err)
+	}
+	if parentDriver.executeCalls != 0 {
+		t.Fatal("parent invoked before prerequisite jobs finished")
+	}
+	for _, id := range []asset.AssetID{"first", "second"} {
+		if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-controller", id)); err != nil {
+			t.Fatal(err)
+		}
+		current, err := repositories.Inventory().GetAsset(ctx, id)
+		if err != nil || current.ClosedAt == nil {
+			t.Fatalf("prerequisite did not close: %+v %v", current, err)
+		}
+		current.Normalized = map[string]any{"changed_after_plan": true}
+		if err := repositories.Inventory().PutAsset(ctx, current); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := handler.Handle(ctx, parentJob); !errors.As(err, &retry) {
+		t.Fatalf("parent should persist its wait: %v", err)
+	}
+	if len(parentDriver.executeRequests) != 1 {
+		t.Fatalf("parent requests=%+v", parentDriver.executeRequests)
+	}
+	request := parentDriver.executeRequests[0]
+	if len(request.PrerequisiteDeletions) != 2 || len(request.LifecycleImpacts) != 0 {
+		t.Fatalf("wrong prerequisite contract: %+v", request)
+	}
+	for _, prerequisite := range request.PrerequisiteDeletions {
+		if prerequisite.ControllerID != "ack" || !prerequisite.Delete || prerequisite.Asset.Normalized["changed_after_plan"] != nil || prerequisite.Asset.Identity.NativeID != string(prerequisite.Asset.ID)+"-native" {
+			t.Fatalf("unfrozen prerequisite: %+v", prerequisite)
+		}
+	}
+	for _, request := range childDriver.executeRequests {
+		if len(request.PrerequisiteDeletions) != 0 {
+			t.Fatal("child received unrelated prerequisites")
+		}
+	}
+	handler = cleanup.NewExecutionHandler(planner, resolver)
+	if err := handler.Handle(ctx, parentJob); err != nil && !errors.As(err, &retry) {
+		t.Fatal(err)
+	}
+	if len(parentDriver.waitRequests) != 1 || len(parentDriver.waitRequests[0].PrerequisiteDeletions) != 2 || parentDriver.executeCalls != 1 {
+		t.Fatalf("restart lost reviewed prerequisites: %+v", parentDriver.waitRequests)
+	}
+	for _, prerequisite := range parentDriver.waitRequests[0].PrerequisiteDeletions {
+		if prerequisite.Asset.Normalized["changed_after_plan"] != nil {
+			t.Fatal("restart replaced reviewed prerequisite with current inventory")
+		}
+	}
+}
+
 func TestControllerGuaranteedDeleteCompletesWithoutAuthoritativeRescan(t *testing.T) {
 	ctx := context.Background()
 	repositories, planner, created, _ := controllerExecutionFixture(t, "execution-guaranteed-delete", []controllerChild{

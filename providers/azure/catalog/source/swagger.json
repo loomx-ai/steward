@@ -38755,6 +38755,18 @@
               }
             }
           },
+          "ExpressRouteConnectionList": {
+            "description": "ExpressRouteConnection list.",
+            "properties": {
+              "value": {
+                "description": "The list of ExpressRoute connections.",
+                "items": {
+                  "$ref": "#/definitions/ExpressRouteConnection"
+                },
+                "type": "array"
+              }
+            }
+          },
           "ExpressRouteConnectionProperties": {
             "description": "Properties of the ExpressRouteConnection subresource.",
             "properties": {
@@ -39142,6 +39154,22 @@
               }
             }
           },
+          "ListVpnGatewayNatRulesResult": {
+            "description": "Result of the request to list all nat rules to a virtual wan vpn gateway. It contains a list of Nat rules and a URL nextLink to get the next set of results.",
+            "properties": {
+              "nextLink": {
+                "description": "URL to get the next set of operation list results if there are any.",
+                "type": "string"
+              },
+              "value": {
+                "description": "List of Nat Rules.",
+                "items": {
+                  "$ref": "#/definitions/VpnGatewayNatRule"
+                },
+                "type": "array"
+              }
+            }
+          },
           "ListVpnGatewaysResult": {
             "description": "Result of the request to list VpnGateways. It contains a list of VpnGateways and a URL nextLink to get the next set of results.",
             "properties": {
@@ -39153,6 +39181,22 @@
                 "description": "List of VpnGateways.",
                 "items": {
                   "$ref": "#/definitions/VpnGateway"
+                },
+                "type": "array"
+              }
+            }
+          },
+          "ListVpnSiteLinkConnectionsResult": {
+            "description": "Result of the request to list all vpn connections to a virtual wan vpn gateway. It contains a list of Vpn Connections and a URL nextLink to get the next set of results.",
+            "properties": {
+              "nextLink": {
+                "description": "URL to get the next set of operation list results if there are any.",
+                "type": "string"
+              },
+              "value": {
+                "description": "List of VpnSiteLinkConnections.",
+                "items": {
+                  "$ref": "#/definitions/VpnSiteLinkConnection"
                 },
                 "type": "array"
               }
@@ -40561,6 +40605,175 @@
               }
             }
           },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections": {
+            "get": {
+              "description": "Lists ExpressRouteConnections.",
+              "operationId": "ExpressRouteConnections_List",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ExpressRoute gateway.",
+                  "in": "path",
+                  "name": "expressRouteGatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful.",
+                  "schema": {
+                    "$ref": "#/definitions/ExpressRouteConnectionList"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "ExpressRouteConnections"
+              ],
+              "x-ms-examples": {
+                "ExpressRouteConnectionList": {
+                  "$ref": "./examples/ExpressRouteConnectionList.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/expressRouteGateways/{expressRouteGatewayName}/expressRouteConnections/{connectionName}": {
+            "delete": {
+              "description": "Deletes a connection to a ExpressRoute circuit.",
+              "operationId": "ExpressRouteConnections_Delete",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ExpressRoute gateway.",
+                  "in": "path",
+                  "name": "expressRouteGatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the connection subresource.",
+                  "in": "path",
+                  "name": "connectionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Delete successful."
+                },
+                "202": {
+                  "description": "Accepted, and the operation will continue asynchronously."
+                },
+                "204": {
+                  "description": "Delete successful."
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "ExpressRouteConnections"
+              ],
+              "x-ms-examples": {
+                "ExpressRouteConnectionDelete": {
+                  "$ref": "./examples/ExpressRouteConnectionDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets the specified ExpressRouteConnection.",
+              "operationId": "ExpressRouteConnections_Get",
+              "parameters": [
+                {
+                  "description": "The name of the resource group.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ExpressRoute gateway.",
+                  "in": "path",
+                  "name": "expressRouteGatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ExpressRoute connection.",
+                  "in": "path",
+                  "name": "connectionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. The operation returns the ExpressRouteConnection.",
+                  "schema": {
+                    "$ref": "#/definitions/ExpressRouteConnection"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "tags": [
+                "ExpressRouteConnections"
+              ],
+              "x-ms-examples": {
+                "ExpressRouteConnectionGet": {
+                  "$ref": "./examples/ExpressRouteConnectionGet.json"
+                }
+              }
+            }
+          },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualHubs/{virtualHubName}": {
             "delete": {
               "description": "Deletes a VirtualHub.",
@@ -41347,6 +41560,169 @@
               }
             }
           },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules": {
+            "get": {
+              "description": "Retrieves all nat rules for a particular virtual wan vpn gateway.",
+              "operationId": "NatRules_ListByVpnGateway",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "The resource group name of the VpnGateway.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the gateway.",
+                  "in": "path",
+                  "name": "gatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. Returns all Nat rules for a virtual wan vpn gateway.",
+                  "schema": {
+                    "$ref": "#/definitions/ListVpnGatewayNatRulesResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "NatRuleList": {
+                  "$ref": "./examples/NatRuleList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/natRules/{natRuleName}": {
+            "delete": {
+              "description": "Deletes a nat rule.",
+              "operationId": "NatRules_Delete",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "The resource group name of the VpnGateway.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the gateway.",
+                  "in": "path",
+                  "name": "gatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the nat rule.",
+                  "in": "path",
+                  "name": "natRuleName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. Nat Rule deleted."
+                },
+                "202": {
+                  "description": "Request received successfully. Nat Rule deletion is in progress; follow the Location header to poll for final outcome."
+                },
+                "204": {
+                  "description": "No nat rules exist by the name provided."
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "NatRuleDelete": {
+                  "$ref": "./examples/NatRuleDelete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Retrieves the details of a nat ruleGet.",
+              "operationId": "NatRules_Get",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "The resource group name of the VpnGateway.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the gateway.",
+                  "in": "path",
+                  "name": "gatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the nat rule.",
+                  "in": "path",
+                  "name": "natRuleName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. Returns the details of the nat rule.",
+                  "schema": {
+                    "$ref": "#/definitions/VpnGatewayNatRule"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "NatRuleGet": {
+                  "$ref": "./examples/NatRuleGet.json"
+                }
+              }
+            }
+          },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections": {
             "get": {
               "description": "Retrieves all vpn connections for a particular virtual wan vpn gateway.",
@@ -41506,6 +41882,124 @@
               "x-ms-examples": {
                 "VpnConnectionGet": {
                   "$ref": "./examples/VpnConnectionGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections": {
+            "get": {
+              "description": "Retrieves all vpn site link connections for a particular virtual wan vpn gateway vpn connection.",
+              "operationId": "VpnLinkConnections_ListByVpnConnection",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "The resource group name of the vpn gateway.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the gateway.",
+                  "in": "path",
+                  "name": "gatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the vpn connection.",
+                  "in": "path",
+                  "name": "connectionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. Returns all Vpn connections for a virtual wan vpn gateway.",
+                  "schema": {
+                    "$ref": "#/definitions/ListVpnSiteLinkConnectionsResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "VpnSiteLinkConnectionList": {
+                  "$ref": "./examples/VpnSiteLinkConnectionList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/vpnGateways/{gatewayName}/vpnConnections/{connectionName}/vpnLinkConnections/{linkConnectionName}": {
+            "get": {
+              "description": "Retrieves the details of a vpn site link connection.",
+              "operationId": "VpnSiteLinkConnections_Get",
+              "parameters": [
+                {
+                  "$ref": "./network.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "description": "The resource group name of the VpnGateway.",
+                  "in": "path",
+                  "name": "resourceGroupName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the gateway.",
+                  "in": "path",
+                  "name": "gatewayName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the vpn connection.",
+                  "in": "path",
+                  "name": "connectionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the vpn connection.",
+                  "in": "path",
+                  "name": "linkConnectionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./network.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Request successful. Returns the details of the vpn connection.",
+                  "schema": {
+                    "$ref": "#/definitions/VpnSiteLinkConnection"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "./network.json#/definitions/CloudError"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "VpnSiteLinkConnectionGet": {
+                  "$ref": "./examples/VpnSiteLinkConnectionGet.json"
                 }
               }
             }
@@ -58080,6 +58574,67 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Compute.VirtualMachineExtensions_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.nat_rule",
+      "displayName": "Virtual WAN VPN NAT rule",
+      "nativeType": "Microsoft.Network/vpnGateways/natRules",
+      "rest": {
+        "collection": "natRules",
+        "delete_operations": [
+          "Azure.Microsoft.Network.NatRules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.NatRules_ListByVpnGateway"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.NatRules_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.vpn_connection",
+      "displayName": "Virtual WAN VPN link connection",
+      "nativeType": "Microsoft.Network/vpnGateways/vpnConnections/vpnLinkConnections",
+      "rest": {
+        "collection": "vpnLinkConnections",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Network.VpnLinkConnections_ListByVpnConnection"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.VpnSiteLinkConnections_Get"
+        ],
+        "response_types": [
+          "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.connection",
+      "displayName": "Virtual WAN ExpressRoute connection",
+      "nativeType": "Microsoft.Network/expressRouteGateways/expressRouteConnections",
+      "rest": {
+        "collection": "expressRouteConnections",
+        "delete_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Network.ExpressRouteConnections_Get"
         ]
       },
       "scopeKinds": [

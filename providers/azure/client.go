@@ -46,8 +46,26 @@ type response struct {
 // expected native operation; a present type must still agree with that binding.
 func validResourceResponse(res response, nativeID, nativeType string) bool {
 	return res.status == http.StatusOK && res.data["error"] == nil &&
-		strings.EqualFold(text(res.data["id"]), nativeID) &&
+		strings.EqualFold(responseID(nativeType, text(res.data["id"])), nativeID) &&
 		validResponseType(nativeType, text(res.data["type"]))
+}
+
+// The official VPN link Get/List payloads spell the last ID collection
+// VpnSiteLinkConnections while their request paths use vpnLinkConnections.
+// Only this documented final segment can differ; all ancestors and the name
+// remain bound to the native request. Type aliases alone never rewrite IDs.
+// https://learn.microsoft.com/rest/api/virtualwan/vpn-site-link-connections/get
+func responseID(nativeType, id string) string {
+	if nativeType != vpnLinkConnectionType {
+		return id
+	}
+	parsed, kind, err := parseID(id)
+	if err == nil && strings.EqualFold(kind, vpnConnectionType+"/VpnSiteLinkConnections") {
+		parts := strings.Split(parsed, "/")
+		parts[len(parts)-2] = "vpnLinkConnections"
+		return strings.Join(parts, "/")
+	}
+	return id
 }
 
 // A few documented child APIs report a top-level resource type, such as

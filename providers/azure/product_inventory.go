@@ -128,7 +128,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	seen := map[string]bool{}
 	for _, value := range values {
 		raw := object(value)
-		id, parsedType, err := parseID(text(raw["id"]))
+		id, parsedType, err := parseID(responseID(kind.NativeType, text(raw["id"])))
 		if err != nil || !strings.EqualFold(parsedType, kind.NativeType) || !validResponseType(kind.NativeType, text(raw["type"])) || seen[id] {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 		}
@@ -153,6 +153,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		data["id"] = id
 		data["type"] = kind.NativeType
 		if text(data["name"]) == "" {
 			data["name"] = last(id)
