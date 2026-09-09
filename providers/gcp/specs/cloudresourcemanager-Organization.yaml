@@ -1,0 +1,28 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudresourcemanager.googleapis.com/Organization
+  class: identity.resource_directory
+presentation:
+  displayNames:
+    en-US: Google Cloud organization
+    zh-CN: Google Cloud 组织
+scope:
+  kind: global
+discovery:
+  source: organization-ancestry
+  list:
+    operation: cloudresourcemanager.organizations.get
+    itemsPath: $
+    identityPath: name
+  detail:
+    operation: cloudresourcemanager.organizations.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name: displayName
+  state: state
+  createTime: createTime
+  updateTime: updateTime
+  directoryCustomerId: directoryCustomerId

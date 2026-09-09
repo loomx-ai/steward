@@ -2064,8 +2064,14 @@ resources:
     resources:
     - Microsoft.Management/managementGroups
   status: pending_verification
-  notes: Root organization/tenant lifetime has different ownership and deletion APIs. Root deletion may
-    not be representable through a project/subscription credential.
+  notes: GCP Organization is inventoried read-only through the connected project's native parent
+    chain; denied or changed ancestry preserves prior observations. The public Resource Manager v3
+    API has no organization DELETE. Standalone organization deletion uses a separate owner-authorized
+    console workflow. Root organization/tenant lifetime differs from Alibaba ResourceDirectory;
+    read-only coverage does not establish cleanup parity.
+  sources:
+  - https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations
+  - https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org
 - alicloud: ACS::RocketMQ::Instance
   spec: providers/alicloud/specs/rocketmq-instance.yaml
   class: messaging.broker

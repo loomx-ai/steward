@@ -130448,6 +130448,23 @@
         "region",
         "global"
       ]
+    },
+    {
+      "class": "identity.resource_directory",
+      "displayName": "Google Cloud organization",
+      "nativeType": "cloudresourcemanager.googleapis.com/Organization",
+      "rest": {
+        "collection": "organizations",
+        "list_operations": [
+          "cloudresourcemanager.organizations.get"
+        ],
+        "read_operations": [
+          "cloudresourcemanager.organizations.get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
     }
   ]
 }

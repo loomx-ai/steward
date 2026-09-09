@@ -146,6 +146,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if kind.NativeType == organizationType {
+		return organizationOperation(metadata, nativeID, method)
+	}
 	if isInfra(kind.NativeType) {
 		if _, err := c.infraName(kind.NativeType, nativeID); err != nil {
 			return catalog.Operation{}, nil, err

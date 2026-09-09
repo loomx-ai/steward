@@ -4471,6 +4471,21 @@
         "compute.networkFirewallPolicies.get",
         "compute.regionNetworkFirewallPolicies.get"
       ]
+    },
+    {
+      "class": "identity.resource_directory",
+      "collection": "organizations",
+      "display_name": "Google Cloud organization",
+      "list_operations": [
+        "cloudresourcemanager.organizations.get"
+      ],
+      "native_type": "cloudresourcemanager.googleapis.com/Organization",
+      "read_operations": [
+        "cloudresourcemanager.organizations.get"
+      ],
+      "scope_kinds": [
+        "global"
+      ]
     }
   ],
   "sdk_documents": [

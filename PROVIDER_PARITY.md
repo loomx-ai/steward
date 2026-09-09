@@ -780,3 +780,26 @@ background evidence only, not acceptance evidence for this work.
   Composed preparations, remaining lifecycle behavior, independent environment
   and end-to-end acceptance, and publication remain open. The parity rows remain
   pending; rule counts alone do not establish complete behavioral parity.
+
+- GCP now has 191 resource rules, 173 kinds with native deletion and 761 selected
+  methods. Organization inventory follows the connected project's native parent
+  chain and compares two complete Project/Folder/Organization reads. The global
+  source preserves prior observations after project moves or denied ancestors.
+  Standalone organizations and native `DELETE_REQUESTED` state are represented.
+- Organization is read-only: the current public Resource Manager v3 API has no
+  organization DELETE. The separately documented standalone-organization console
+  lifecycle is not exposed as a provider action. Project ancestry does not grant
+  organization-level firewall mutation authority. This records an API capability
+  difference from Alibaba ResourceDirectory, rather than claiming cleanup parity.
+- Four native protocol/schema/SQLite test functions cover scope and identity
+  validation, incomplete/changing ancestry, preserved observations and the actual
+  registry/Creator/worker. Full Go tests, vet, focused organization/Invoke race
+  tests, documentation checks and two deterministic catalog generations pass.
+  All 55 source documents and 761 methods are unchanged. The retained three
+  official schemas and verification limits are in the
+  [organization evidence](providers/gcp/fixtures/organization/README.md).
+  The inspected Google mock has no Organization handler; no independent emulator
+  or real-cloud organization acceptance is claimed.
+- One mapped GCP kind (Cloud Identity Group) and 49 mapped Azure kinds still lack
+  specifications. Remaining lifecycle composition, API capability differences,
+  independent environment/end-to-end acceptance and publication stay open.

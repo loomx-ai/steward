@@ -36,6 +36,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | --- | --- | --- |
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
 | 防火墙策略 | 配置范围内的层级策略、全局和地域级网络策略及原生关联 | 先解除审查过的关联，再删除策略；也支持独立解除关联 |
 | 负载均衡与地址 | 地域和全局 IP 地址、转发规则、地域和全局后端服务、健康检查（含旧版 HTTP/HTTPS）、目标池、网络端点组、URL Map、HTTP/HTTPS 代理、SSL 证书 | 支持 |
 | Cloud Storage | 存储桶 | 仅空桶 |
@@ -58,6 +59,8 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 Google 对部分地域和全局资源使用不同的类型名，例如 `RegionDisk`、`GlobalAddress` 和 `GlobalForwardingRule`。资源完整名称保留项目、地域和可用区信息，不同可用区的同名 VM 不会合并。
 
 资源盘点具有最终一致性。新建或删除的资源可能需要一段时间才会反映到 Cloud Asset Inventory 中，立即重扫也可能看到旧数据。执行清理时，Steward 直接查询产品 API、等待异步操作结束并确认资源不存在，不会把旧盘点结果当作删除成功的依据。参阅 Google 的[资源类型与数据时效说明](https://docs.cloud.google.com/asset-inventory/docs/asset-types)。
+
+组织盘点需要对每一级父文件夹和组织的 Resource Manager 读取权限。读取失败或项目移动时，历史组织记录会保留；项目的组织归属不会授权组织级清理。参阅 Google 的[组织 API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations)和[独立组织生命周期指南](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org)。
 
 ## 全局 VPC 与地域子网
 

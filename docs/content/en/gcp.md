@@ -36,6 +36,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | --- | --- | --- |
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Resource Manager | Organization containing the connected project, discovered through its folder ancestry | Read-only; the public v3 API has no organization delete method |
 | Firewall policies | Hierarchical policies within the configured firewall scope; global and regional network policies; native associations | Remove reviewed associations before deleting a policy; associations can also be removed independently |
 | Load balancing and addresses | Regional and global IP addresses and forwarding rules; regional/global backend services; health checks, including legacy HTTP(S) checks; target pools; network endpoint groups; URL maps; HTTP/HTTPS proxies; SSL certificates | Supported |
 | Cloud Storage | Buckets | Empty buckets only |
@@ -58,6 +59,12 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 Google sometimes uses separate asset types for regional and global resources, including `RegionDisk`, `GlobalAddress`, and `GlobalForwardingRule`. Full resource names retain project and zone/region identity, so same-name VMs in different zones remain distinct.
 
 Inventory is eventually consistent. Newly created or deleted resources may take time to appear in Cloud Asset Inventory even after another scan. Cleanup checks the product API directly and waits for asynchronous operations and resource absence; it does not use a stale inventory result as proof of deletion. See Google's [asset type and freshness documentation](https://docs.cloud.google.com/asset-inventory/docs/asset-types).
+
+Organization discovery requires Resource Manager read access to every ancestor
+folder and the organization. Failed reads or a moved project preserve prior
+organization observations. This does not authorize organization-level cleanup.
+See Google's [Organization API](https://docs.cloud.google.com/resource-manager/reference/rest/v3/organizations)
+and [standalone organization lifecycle guide](https://docs.cloud.google.com/resource-manager/docs/delete-standalone-org).
 
 ## Global VPCs and regional subnets
 

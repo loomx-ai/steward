@@ -57,6 +57,8 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		// An optional hierarchy scope can change independently of the project.
 		// Losing that scope must not close previously observed policies or links.
 		{Name: firewallInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
+		// Project moves and lost ancestor visibility do not delete organizations.
+		{Name: organizationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
 	}
 }
 func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {

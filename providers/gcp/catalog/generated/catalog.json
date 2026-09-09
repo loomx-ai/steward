@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "5e4cc94c485de6b80814baa37d967a76e4b4b978c45c4711cc0e8983facd638e",
+    "checksum": "0e39952f41a2b5e587deaf0d064a0377bab96bdb9376a65555300723a5e2c438",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "bfe48c09b8d4d6cc5b845d43e426748e0e0cb6fc0537e52175d8f91c1405f607",
+  "content_checksum": "36886b5cc40fa0d6822c74ea804e21c2ee12d98de32d9eb0c3c6616355396088",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -109774,6 +109774,23 @@
         ],
         "list_operations": [
           "cloudkms.projects.locations.keyRings.list"
+        ]
+      }
+    },
+    {
+      "native_type": "cloudresourcemanager.googleapis.com/Organization",
+      "class": "identity.resource_directory",
+      "display_name": "Google Cloud organization",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "organizations",
+        "read_operations": [
+          "cloudresourcemanager.organizations.get"
+        ],
+        "list_operations": [
+          "cloudresourcemanager.organizations.get"
         ]
       }
     },

@@ -20,7 +20,19 @@ func (c *client) firewallInvocation(ctx context.Context, operation catalog.Opera
 			key = "parent"
 		}
 		_, err := c.firewallContainerChain(ctx, text(parameters[key]))
-		return err
+		if err == nil || operation.ID != "cloudresourcemanager.organizations.get" {
+			return err
+		}
+		// Organization inventory also allows its selected project's actual
+		// ancestor. This read authority never extends to firewall mutations.
+		ancestry, err := c.organizationAncestry(ctx)
+		if err != nil {
+			return err
+		}
+		if ancestry.Organization == nil || ancestry.Organization["name"] != parameters[key] {
+			return groupDenied("organization_invocation_outside_ancestry")
+		}
+		return nil
 	}
 	if operation.ID == "compute.globalOrganizationOperations.get" {
 		name := text(parameters["operation"])

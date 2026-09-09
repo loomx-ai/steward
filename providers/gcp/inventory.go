@@ -83,7 +83,7 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -92,6 +92,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
+	if request.Source == organizationInventorySource {
+		return r.listOrganization(ctx, c, request)
 	}
 	if request.Source == firewallInventorySource {
 		if request.ResourceKind == nil || firewallParentType(request.ResourceKind.NativeType) != firewallPolicyType {
