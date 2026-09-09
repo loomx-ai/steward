@@ -26,7 +26,7 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 96 current resource rules discover through native product List operations.
+All 122 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,8 +47,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 302 operations from
-51 root documents and 25 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 380 operations from
+70 root documents and 30 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -241,3 +241,17 @@ foreign identities and duplicate canonical/alias records are rejected. See the
 [native VPN link contract](https://learn.microsoft.com/en-us/rest/api/virtualwan/vpn-site-link-connections/get),
 [Virtual WAN cleanup sequence](https://learn.microsoft.com/en-us/azure/virtual-wan/virtual-wan-faq),
 and [capacity-group deletion prerequisites](https://learn.microsoft.com/en-us/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group).
+
+Event Hubs dedicated clusters use `Clusters_ListBySubscription`, `Clusters_Get`,
+`Clusters_ListNamespaces`, `Configuration_Get`, and `Clusters_Delete` from the
+2024-01-01 API. The namespace-ID list is cross-resource-group; every namespace
+GET must prove the reciprocal `clusterArmId`. Namespace steps preserve their
+nested entity cascades and shared Geo-DR unpairing prerequisites. The cluster
+DELETE waits for native namespace absence and its waiter repeats these checks.
+Quota configuration has neither an ARM ID nor a DELETE; its string-valued
+settings enrich cluster inventory and must still match the frozen plan.
+Changing or unreadable lists/settings, missing or retained inventory, altered
+namespace membership, recreation, inherited locks and protected resources block
+cleanup. A known creation time less than four hours old prevents deletion in
+accordance with Azure's minimum cluster lifetime. Five unchanged Swagger
+examples and retained protocol/restart tests verify these contracts.

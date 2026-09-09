@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "5005c5579bee8c82fd4762788d8f02c2e7fc27a4d5fa24a82ea375beec6bec55",
+    "checksum": "95ab83b136174d93a12bd5486572e255ad0804ae649991933ccdb732ad6a8acf",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "767109e37116904b6f7130b86106606f55ecae6b9a4e79d45435d732f6ea5713",
+  "content_checksum": "38fe224c371ef818cb170e0186dde4082dd1f55c501545fabc95fd71edcf1777",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -7595,6 +7595,398 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/ApplicationGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.Clusters_Delete",
+      "name": "Clusters_Delete",
+      "service": "Microsoft.EventHub",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Event Hubs Cluster.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "Name of the resource group within the azure subscription.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/Clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.Clusters_Get",
+      "name": "Clusters_Get",
+      "service": "Microsoft.EventHub",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Event Hubs Cluster.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "Name of the resource group within the azure subscription.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./common/v1/definitions.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Single Event Hubs Cluster resource in List or Get operations.",
+        "properties": {
+          "properties": {
+            "description": "Event Hubs Cluster properties supplied in responses in List or Get operations.",
+            "properties": {
+              "createdAt": {
+                "description": "The UTC time when the Event Hubs Cluster was created.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "metricId": {
+                "description": "The metric ID of the cluster resource. Provided by the service and not modifiable by the user.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisioningState": {
+                "description": "Provisioning state of the Cluster.",
+                "enum": [
+                  "Unknown",
+                  "Creating",
+                  "Deleting",
+                  "Scaling",
+                  "Active",
+                  "Failed",
+                  "Succeeded",
+                  "Canceled"
+                ],
+                "readOnly": true,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "provisioningState"
+                }
+              },
+              "status": {
+                "description": "Status of the Cluster resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "supportsScaling": {
+                "description": "A value that indicates whether Scaling is Supported.",
+                "type": "boolean"
+              },
+              "updatedAt": {
+                "description": "The UTC time when the Event Hubs Cluster was last updated.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/ClusterSku",
+            "description": "Properties of the cluster SKU."
+          },
+          "systemData": {
+            "$ref": "./common/v1/definitions.json#/definitions/systemData",
+            "description": "The system meta data relating to this resource.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/Clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.Clusters_ListBySubscription",
+      "name": "Clusters_ListBySubscription",
+      "service": "Microsoft.EventHub",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventHub/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of the List Event Hubs Clusters operation.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next set of results. Empty unless the value parameter contains an incomplete list of Event Hubs Clusters.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Event Hubs Clusters present in the List Event Hubs operation results.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventHub/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/Clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.Clusters_ListNamespaces",
+      "name": "Clusters_ListNamespaces",
+      "service": "Microsoft.EventHub",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}/namespaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Event Hubs Cluster.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "Name of the resource group within the azure subscription.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of the List Namespace IDs operation",
+        "properties": {
+          "value": {
+            "description": "Result of the List Namespace IDs operation",
+            "items": {
+              "$ref": "#/definitions/EHNamespaceIdContainer"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}/namespaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/Clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.EventHub.Configuration_Get",
+      "name": "Configuration_Get",
+      "service": "Microsoft.EventHub",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}/quotaConfiguration/default",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Event Hubs Cluster.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "Name of the resource group within the azure subscription.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Contains all settings for the cluster.",
+        "properties": {
+          "settings": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "All possible Cluster settings - a collection of key/value paired settings which apply to quotas and configurations imposed on the cluster.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.EventHub",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/clusters/{clusterName}/quotaConfiguration/default",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/quotaConfiguration.json"
     },
     {
       "id": "Azure.Microsoft.EventHub.ConsumerGroups_Delete",
@@ -31431,6 +31823,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.DBforPostgreSQL.Servers_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.EventHub/clusters",
+      "class": "messaging.cluster",
+      "display_name": "Event Hubs dedicated cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "clusters",
+        "read_operations": [
+          "Azure.Microsoft.EventHub.Clusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.EventHub.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.EventHub.Clusters_ListBySubscription"
         ]
       }
     },

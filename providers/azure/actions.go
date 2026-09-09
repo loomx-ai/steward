@@ -107,6 +107,12 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := serviceCreationIdentity(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if a.kind.NativeType == eventHubNamespaceType {
+		planned, live := request.Asset.Normalized["clusterArmId"], object(res.data["properties"])["clusterArmId"]
+		if !messagingNamespaceValueValid(planned) || !messagingNamespaceValueValid(live) || ((text(planned) != "" || text(live) != "") && (!eventHubClusterReference(live, text(planned)) || !eventHubClusterReference(planned, text(live)))) {
+			return contracts.PreflightResult{Reason: "eventhub_cluster_membership_changed"}, nil
+		}
+	}
 	if reason := protectionReason(a.kind, res.data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
@@ -399,6 +405,11 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
+	}
+	if kind.NativeType == eventHubClusterType {
+		if reason := eventHubClusterMinimumAge(raw, time.Now()); reason != "" {
+			return reason
+		}
 	}
 	if isDNSRecordType(kind.NativeType) {
 		if protectedAzureTags(object(object(raw["properties"])["metadata"])) {

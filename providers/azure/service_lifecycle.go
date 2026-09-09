@@ -26,6 +26,9 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	// The dedicated cluster's native namespace list contains external ARM IDs.
+	// Delete each namespace through its own reviewed lifecycle first.
+	eventHubClusterType: {eventHubNamespaceType},
 	// Native ARM namespace deletion removes associated resources.
 	// https://learn.microsoft.com/rest/api/servicebus/controlplane/namespaces/delete
 	serviceBusNamespaceType:    {serviceBusQueueType, serviceBusTopicType, serviceBusNamespaceType + "/authorizationRules", serviceBusRecoveryType, serviceBusMigrationType, serviceBusNamespaceType + "/privateEndpointConnections", serviceBusNamespaceType + "/networkRuleSets"},
@@ -232,6 +235,11 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if err := serviceIncarnation(parent, live.data); err != nil {
 			return result, err
 		}
+		if parent.Identity.NativeType == eventHubClusterType {
+			if err := s.client.verifyEventHubClusterSettings(ctx, parent); err != nil {
+				return result, err
+			}
+		}
 		children, err := s.client.plannedServiceChildren(ctx, parent, live.data)
 		if err != nil {
 			return result, err
@@ -278,6 +286,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if recoveryType(parent.Identity.NativeType) && parent.Identity.NativeType == child.kind && !recoveryPeerRelation(parent, *target) {
 				return result, serviceDenied("recovery_pair_changed")
+			}
+			if parent.Identity.NativeType == eventHubClusterType && !serviceChildRelation(parent, *target) {
+				return result, serviceDenied("eventhub_cluster_membership_changed")
 			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
@@ -351,6 +362,11 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any) error {
+	if a.kind.NativeType == eventHubClusterType {
+		if err := a.client.verifyEventHubClusterSettings(ctx, request.Asset); err != nil {
+			return err
+		}
+	}
 	if a.kind.NativeType == serviceBusNamespaceType {
 		incoming, err := a.client.incomingMigrations(ctx)
 		if err != nil {
@@ -525,6 +541,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case strings.EqualFold(parent.NativeType, eventHubClusterType):
+		children, err = c.eventHubClusterNamespaces(ctx, parent)
 	case strings.EqualFold(parent.NativeType, scaleSetType):
 		children, err = c.scaleSetChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, scaleSetVMType):
@@ -568,6 +586,8 @@ func serviceChildRelation(parent, child asset.Asset) bool {
 		return true
 	}
 	switch {
+	case strings.EqualFold(parent.Identity.NativeType, eventHubClusterType):
+		return strings.EqualFold(child.Identity.NativeType, eventHubNamespaceType) && eventHubClusterReference(child.Normalized["clusterArmId"], parent.Identity.NativeID)
 	case strings.EqualFold(parent.Identity.NativeType, scaleSetVMType) && strings.EqualFold(child.Identity.NativeType, diskType):
 		return uniformVMDiskRelation(parent, child)
 	case strings.EqualFold(parent.Identity.NativeType, scaleSetType) && strings.EqualFold(child.Identity.NativeType, vmType):

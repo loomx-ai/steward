@@ -170,6 +170,15 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/Clusters.json",
+      "operations": [
+        "Clusters_Delete",
+        "Clusters_Get",
+        "Clusters_ListBySubscription",
+        "Clusters_ListNamespaces"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/SchemaRegistry.json",
       "operations": [
         "SchemaRegistry_Delete",
@@ -220,6 +229,12 @@
       "operations": [
         "Namespaces_GetNetworkRuleSet",
         "Namespaces_ListNetworkRuleSet"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/quotaConfiguration.json",
+      "operations": [
+        "Configuration_Get"
       ]
     },
     {
@@ -2981,6 +2996,24 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.EventHub.NetworkSecurityPerimeterConfiguration_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/clusters",
+      "class": "messaging.cluster",
+      "display_name": "Event Hubs dedicated cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.Clusters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.Clusters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.Clusters_ListBySubscription"
       ]
     }
   ]

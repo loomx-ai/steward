@@ -163,5 +163,30 @@
     "file": "eventhub-disasterRecoveryConfigs-EHAliasGet.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/disasterRecoveryConfigs/EHAliasGet.json",
     "source_sha256": "01232d1b4dae30e62d8d28c28d00da5a80ca7636b979e3fc56aa444edf73f4d4"
+  },
+  {
+    "file": "eventhub-Clusters-ClusterGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/Clusters/ClusterGet.json",
+    "source_sha256": "2a88fec6059da98d4afb65b1c4492646c5668dbdcb7d2ee3f19f40644318c965"
+  },
+  {
+    "file": "eventhub-Clusters-ClustersListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/Clusters/ClustersListBySubscription.json",
+    "source_sha256": "7dd627a9318fc8eedcf017374f56d25245cca511928e2051f775211d54549842"
+  },
+  {
+    "file": "eventhub-Clusters-ListNamespacesInClusterGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/Clusters/ListNamespacesInClusterGet.json",
+    "source_sha256": "acd63fd62bd2fcbd9dc6f2d5ce6f28c36de3adf5ce0591bc6cdd814ddfa2b5f5"
+  },
+  {
+    "file": "eventhub-Clusters-ClusterDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/Clusters/ClusterDelete.json",
+    "source_sha256": "13391005f2b85caf1b20475ef91eafda25625874d8a5c92cfc58aa3159b17991"
+  },
+  {
+    "file": "eventhub-Clusters-ClusterQuotaConfigurationGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/Clusters/ClusterQuotaConfigurationGet.json",
+    "source_sha256": "a0b86b31596ae60cc01665e43eef1e7d6e1c4f0a976e788bd82f4b034ca90c3c"
   }
 ]

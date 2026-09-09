@@ -33,6 +33,14 @@ the runtime bindings use **2024-01-01**. These recordings do not read the
 secondary alias after BreakPairing, so they do not establish when that view
 disappears. No request or response headers are retained.
 
+`eventhub-Clusters-*.json` retains five unchanged 2024-01-01 Swagger examples:
+cluster Get/List/Delete, the namespace-ID list and singleton quota settings.
+The member list explicitly contains namespaces in multiple resource groups.
+Quota settings have no ARM ID and no independent DELETE; they are enriched
+cluster properties. The Delete example contains a placeholder HTTP operation
+URL, which is kept unchanged as source evidence; executable LRO tests use an
+owned HTTPS ARM URL and verify completion with native resource readback.
+
 LRO protocol reference:
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations
 

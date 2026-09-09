@@ -369,3 +369,17 @@ background evidence only, not acceptance evidence for this work.
   source tests and deterministic catalog regeneration pass. Standalone replicated
   entity cleanup, dedicated Event Hubs clusters, remaining service families and
   independent emulator/application/real-cloud acceptance remain unfinished.
+
+- Azure now has 122 rules and 380 native operations from 70 official root
+  documents. Dedicated Event Hubs cluster cleanup reads its native namespace
+  membership and singleton quota settings, verifies reciprocal namespace
+  associations across resource groups, and plans namespace deletion before
+  the cluster. Nested messaging impacts and shared Geo-DR prerequisites reuse
+  their native workflows; unselected recovery peers remain intact. Retained
+  tests cover original Swagger fixtures, paging, member/configuration drift,
+  retention, permission and lock failures, minimum cluster age, LRO failures
+  and serialized restoration with complete native absence checks. Full Go
+  tests, vet, Azure/shared-contract race tests, offline source tests, deterministic
+  regeneration and bilingual documentation checks pass. Remaining service
+  families, standalone replicated entities and independent emulator/
+  application/real-cloud acceptance are still unfinished.

@@ -291,6 +291,16 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		// including multiple ancestor names and provider-specific spelling.
 		normalized["arm_parameters"] = parameters
 	}
+	if nativeType == eventHubClusterType {
+		settings, err := c.eventHubClusterSettings(ctx, id)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		if err := c.verifyProductParent(ctx, productTarget{ParentID: id, ParentType: nativeType, Generation: productGeneration(raw)}); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized["quotaSettings"] = settings
+	}
 	if zones := array(raw["zones"]); len(zones) > 0 {
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
@@ -453,6 +463,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		if err == nil && strings.EqualFold(storageKind, storageType) && container != "" && container != "." && container != ".." && !strings.ContainsAny(container, "/\\?#%\x00\r\n ") {
 			add(storageID + "/blobServices/default/containers/" + container)
 		}
+	}
+	if nativeType == eventHubNamespaceType {
+		fields["clusterarmid"] = true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true

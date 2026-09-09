@@ -76,6 +76,9 @@ extensions:
   hook: azure.resource
 relationships:
 - type: depends_on
+  targetType: Microsoft.EventHub/clusters
+  targetIdPath: refs_microsoft_eventhub_clusters
+- type: depends_on
   targetType: Microsoft.ManagedIdentity/userAssignedIdentities
   targetIdPath: refs_microsoft_managedidentity_userassignedidentities
 actions:
