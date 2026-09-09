@@ -543,3 +543,50 @@ background evidence only, not acceptance evidence for this work.
   Compute/GKE-managed TPU hardware are outside this Cloud TPU API workflow.
   Six mapped GCP kinds and 49 mapped Azure kinds still lack specifications; the
   remaining lifecycle and independent environment acceptance work stays open.
+
+- GCP now has 177 rules, 166 kinds with native deletion and 721 selected methods
+  from 53 Discovery documents and one pinned Cloud SDK archive. Data Fusion adds
+  native v1 regional instances and DNS peerings plus v1beta1 namespace records,
+  with eight official methods and their complete transitive schemas. The root
+  uses `data.pipeline`, matching the mapped Alibaba Cloud Logstash resource.
+  Earlier source fragments are unchanged and the refresh selection reproduces
+  the new method, schema and resource bindings exactly.
+- Data Fusion inventory reconciles native list/detail responses, validates full
+  project/region/parent identities, reads complete child lists and binds child
+  cursors to the instance's creation/configuration proof. Namespace lists request
+  the full IAM policy; an embedded policy failure fails a successful HTTP response.
+  Configuration proofs are computed before private options, descriptions and
+  policy bodies are redacted. Network, PSC, bucket, service-account, key and topic
+  references are retained, including explicit shared-VPC/tenant-project identities.
+- Instance lifecycle review reconciles two complete DNS/namespace sets and the
+  parent proof. The shared solver includes those records in the cascade impact;
+  the driver requires the reviewed identities and configurations before issuing
+  native `force=true` deletion. DNS supports independent synchronous deletion
+  and repeated complete-list readback. Namespace records have no independent
+  management-plane delete and are removed with the instance; the adapter never
+  enables unrecoverable reset or restarts an instance to delete a namespace.
+- Transitional instance states settle before cleanup. Persistent phases bind
+  the resource, configuration, reviewed effects and current/initial operation;
+  regional LRO name, version, target, verb, cancellation and completion are checked.
+  An expired or completed operation cannot prove resource absence. Parent absence
+  is rechecked after child reads, including after an initial 404. A child-collection
+  404 under a live parent is a dependency error, not successful target cleanup.
+- Fifteen Data Fusion test functions exercise the native HTTP boundary, real
+  contributor/solver, list-based child reads, independent DNS cleanup, reviewed
+  cascades, native state/operation recovery, redaction and more than 100 injected
+  failure cases. A SQLite namespace scan preserves observations after an embedded
+  IAM error. A regression reproduces a DNS configuration change after its first
+  response and verifies that a second complete read blocks deletion.
+- Full Go tests, GCP/planner/cleanup/contracts race checks, vet, source-refresh/SDK
+  tests, documentation checks and two identical catalog generations pass. The [Data Fusion fixtures](providers/gcp/fixtures/datafusion/README.md)
+  retain sources, native contracts and verification limits. Neither the official
+  emulator catalog nor floci-gcp lists Data Fusion. CDAP Sandbox supports pipeline
+  development but does not exercise these managed Google APIs; no independent
+  Data Fusion emulator or real-cloud acceptance is claimed.
+- CDAP pipeline/dataset/secure-store inventory and runtime Dataproc lifecycle are
+  separate unfinished behavior. Instance deletion retains user data and is not
+  evidence that all external runtime/output resources disappeared. These delete
+  APIs have no atomic configuration/incarnation condition, and identical same-name
+  DNS/namespace replacement cannot be distinguished within one instance.
+  Five mapped GCP and 49 mapped Azure kinds still lack specifications; remaining
+  lifecycle and independent environment acceptance work stays open.

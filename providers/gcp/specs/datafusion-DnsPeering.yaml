@@ -1,0 +1,57 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: datafusion.googleapis.com/DnsPeering
+  class: network.dns_peering
+presentation:
+  displayNames:
+    en-US: Data Fusion DNS peering
+    zh-CN: Data Fusion DNS 对等连接
+  consoleLinkTemplate: https://console.cloud.google.com/data-fusion/instances?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: datafusion.googleapis.com/Instance
+    source: product-api
+  list:
+    operation: datafusion.projects.locations.instances.dnsPeerings.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: dnsPeerings
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail: &read
+    operation: datafusion.projects.locations.instances.dnsPeerings.list
+    itemsPath: dnsPeerings
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: datafusion.projects.locations.instances.dnsPeerings.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read
+relationships:
+- type: depends_on
+  targetType: datafusion.googleapis.com/Instance
+  targetIdPath: refs_datafusion_googleapis_com_Instance
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network

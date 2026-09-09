@@ -1,0 +1,112 @@
+{
+  "projects/sample-project/locations/us-central1/instances/integration": {
+    "name": "projects/sample-project/locations/us-central1/instances/integration",
+    "createTime": "2026-08-01T00:00:00Z",
+    "updateTime": "2026-08-20T00:00:00Z",
+    "type": "ENTERPRISE",
+    "state": "ACTIVE",
+    "version": "6.11.0",
+    "privateInstance": true,
+    "displayName": "Integration",
+    "description": "FUSION_PRIVATE_DESCRIPTION",
+    "options": {
+      "custom": "FUSION_PRIVATE_OPTION"
+    },
+    "networkConfig": {
+      "network": "projects/shared-project/global/networks/shared",
+      "ipAllocation": "192.168.0.0/22",
+      "connectionType": "VPC_PEERING"
+    },
+    "tenantProjectId": "tenant-project",
+    "serviceAccount": "management@tenant-project.iam.gserviceaccount.com",
+    "p4ServiceAccount": "service-123456@gcp-sa-datafusion.iam.gserviceaccount.com",
+    "dataprocServiceAccount": "pipeline@sample-project.iam.gserviceaccount.com",
+    "gcsBucket": "cdf-sample-staging",
+    "cryptoKeyConfig": {
+      "keyReference": "projects/sample-project/locations/us-central1/keyRings/cdf/cryptoKeys/data"
+    },
+    "eventPublishConfig": {
+      "enabled": true,
+      "topic": "projects/sample-project/topics/pipeline-events"
+    },
+    "apiEndpoint": "https://integration-sample-project-dot-usc1.datafusion.googleusercontent.com/api",
+    "serviceEndpoint": "https://integration-sample-project-dot-usc1.datafusion.googleusercontent.com",
+    "labels": {
+      "environment": "test"
+    }
+  },
+  "projects/sample-project/locations/europe-west1/instances/integration": {
+    "name": "projects/sample-project/locations/europe-west1/instances/integration",
+    "createTime": "2026-08-01T00:00:00Z",
+    "type": "DEVELOPER",
+    "state": "ACTIVE",
+    "version": "6.11.0",
+    "privateInstance": true,
+    "networkConfig": {
+      "connectionType": "PRIVATE_SERVICE_CONNECT_INTERFACES",
+      "privateServiceConnectConfig": {
+        "networkAttachment": "projects/sample-project/regions/europe-west1/networkAttachments/cdf-psc"
+      }
+    },
+    "gcsBucket": "gs://cdf-eu-staging/"
+  },
+  "projects/sample-project/locations/us-central1/instances/integration/dnsPeerings/private": {
+    "name": "projects/sample-project/locations/us-central1/instances/integration/dnsPeerings/private",
+    "domain": "corp.example.",
+    "targetProject": "shared-project",
+    "targetNetwork": "shared",
+    "description": "FUSION_PRIVATE_DNS_DESCRIPTION"
+  },
+  "projects/sample-project/locations/us-central1/instances/integration/namespaces/default": {
+    "name": "default",
+    "iamPolicy": {
+      "status": {},
+      "policy": {
+        "version": 1,
+        "etag": "Q0RGX0VUQUdfVjE=",
+        "bindings": [
+          {
+            "role": "roles/datafusion.viewer",
+            "members": [
+              "user:FUSION_PRIVATE_MEMBER@example.invalid"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "projects/sample-project/locations/europe-west1/instances/integration/dnsPeerings/private": {
+    "name": "projects/sample-project/locations/europe-west1/instances/integration/dnsPeerings/private",
+    "domain": "corp.example.",
+    "targetProject": "shared-project",
+    "targetNetwork": "shared",
+    "description": "FUSION_PRIVATE_DNS_DESCRIPTION"
+  },
+  "projects/sample-project/locations/europe-west1/instances/integration/namespaces/default": {
+    "name": "default",
+    "iamPolicy": {
+      "status": {},
+      "policy": {
+        "version": 1,
+        "etag": "Q0RGX0VUQUdfVjE=",
+        "bindings": [
+          {
+            "role": "roles/datafusion.viewer",
+            "members": [
+              "user:FUSION_PRIVATE_MEMBER@example.invalid"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "projects/sample-project/locations/us-central1/instances/integration/namespaces/analytics": {
+    "name": "projects/sample-project/locations/us-central1/instances/integration/namespaces/analytics",
+    "iamPolicy": {
+      "status": {
+        "code": 0
+      },
+      "policy": {}
+    }
+  }
+}

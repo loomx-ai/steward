@@ -13,7 +13,7 @@ import (
 func tpuPhase(request contracts.ActionRequest, phase, operation string) contracts.ActionResult {
 	return contracts.ActionResult{ProviderOperationID: operation, RetryAfter: 2 * time.Second, Data: map[string]any{
 		"phase": phase, "resource": request.Asset.Identity.NativeID, "configuration": request.Asset.Normalized[tpuProof],
-		"review": tpuReview(request), "operation": operation, "initial_operation": operation,
+		"review": serviceReview(request), "operation": operation, "initial_operation": operation,
 	}}
 }
 
@@ -226,7 +226,7 @@ func (a *action) waitTPU(ctx context.Context, request contracts.ActionRequest, r
 		}
 	}
 	valid := phase == "tpu_delete" || a.kind.NativeType == tpuNodeType && (phase == "tpu_detach" || phase == "tpu_node_settle") || a.kind.NativeType == tpuQueueType && phase == "tpu_queue_settle"
-	if !valid || result.Data["resource"] != a.identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[tpuProof] || result.Data["review"] != tpuReview(request) || text(result.Data["initial_operation"]) != result.ProviderOperationID || strings.HasSuffix(phase, "_settle") && operation != "" {
+	if !valid || result.Data["resource"] != a.identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[tpuProof] || result.Data["review"] != serviceReview(request) || text(result.Data["initial_operation"]) != result.ProviderOperationID || strings.HasSuffix(phase, "_settle") && operation != "" {
 		return contracts.WaitResult{}, groupDenied("tpu_phase_changed")
 	}
 	pending := false

@@ -12,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const (
@@ -526,12 +524,4 @@ func safeTPUPayload(raw map[string]any) map[string]any {
 	}
 	redact(value)
 	return value
-}
-
-func tpuReview(request contracts.ActionRequest) string {
-	encoded, _ := json.Marshal(struct {
-		Impacts       []contracts.ActionImpact
-		Prerequisites []contracts.ActionImpact
-	}{request.LifecycleImpacts, request.PrerequisiteDeletions})
-	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }

@@ -2,9 +2,6 @@ package gcp
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/json"
-	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -13,6 +10,9 @@ import (
 )
 
 func (a *action) readResource(ctx context.Context) (map[string]any, error) {
+	if isFusion(a.kind.NativeType) {
+		return a.client.fusionRead(ctx, a.kind.NativeType, a.identity.NativeID)
+	}
 	if isTPU(a.kind.NativeType) {
 		return a.client.tpuRead(ctx, a.kind.NativeType, a.identity.NativeID)
 	}
@@ -23,7 +23,7 @@ func (a *action) readResource(ctx context.Context) (map[string]any, error) {
 }
 
 func discoveryPhase(request contracts.ActionRequest, operation string) map[string]any {
-	return map[string]any{"phase": "discoveryengine_delete", "resource": request.Asset.Identity.NativeID, "configuration": request.Asset.Normalized[discoveryProof], "operation": operation, "review": discoveryReview(request)}
+	return map[string]any{"phase": "discoveryengine_delete", "resource": request.Asset.Identity.NativeID, "configuration": request.Asset.Normalized[discoveryProof], "operation": operation, "review": serviceReview(request)}
 }
 
 func (a *action) discoveryOperation(data map[string]any, requestIDs ...string) (string, error) {
@@ -76,7 +76,7 @@ func (a *action) waitDiscovery(ctx context.Context, request contracts.ActionRequ
 		read, err := a.Readback(ctx, request)
 		return contracts.WaitResult{Done: err == nil && !read.Exists, State: read.State, RetryAfter: 2 * time.Second}, err
 	}
-	if result.Data["phase"] != "discoveryengine_delete" || result.Data["resource"] != request.Asset.Identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[discoveryProof] || result.Data["review"] != discoveryReview(request) || text(result.Data["operation"]) != result.ProviderOperationID {
+	if result.Data["phase"] != "discoveryengine_delete" || result.Data["resource"] != request.Asset.Identity.NativeID || result.Data["configuration"] != request.Asset.Normalized[discoveryProof] || result.Data["review"] != serviceReview(request) || text(result.Data["operation"]) != result.ProviderOperationID {
 		return contracts.WaitResult{}, groupDenied("discoveryengine_phase_changed")
 	}
 	if operation := result.ProviderOperationID; operation != "" {
@@ -151,12 +151,4 @@ func (a *action) discoveryReadback(ctx context.Context, request contracts.Action
 		return contracts.ReadbackResult{}, err
 	}
 	return contracts.ReadbackResult{Exists: true, State: "deleting"}, nil
-}
-
-func discoveryReview(request contracts.ActionRequest) string {
-	raw, _ := json.Marshal(struct {
-		Impacts       []contracts.ActionImpact
-		Prerequisites []contracts.ActionImpact
-	}{request.LifecycleImpacts, request.PrerequisiteDeletions})
-	return fmt.Sprintf("%x", sha256.Sum256(raw))
 }

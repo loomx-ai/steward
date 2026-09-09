@@ -41,6 +41,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud Run | 服务 | 支持 |
 | Artifact Registry | 仓库 | 支持 |
 | Cloud TPU | 节点、排队资源和原生预留容量 | 节点与排队资源支持审查后清理；数据盘先解绑并保留；预留容量只读 |
+| Data Fusion | 实例、DNS 对等连接和命名空间 | 实例清理纳入审查过的命名空间与 DNS 对等连接；DNS 对等连接也支持独立删除 |
 | Batch | 作业、任务记录 | 删除作业时取消运行中的工作，并核实任务、VM 和磁盘影响；任务没有独立删除接口 |
 | Discovery Engine | 集合、数据存储、应用、架构、控制规则、服务配置、会话、对话、助手、文档分支与文档、目标网站 | 审查影响后执行原生清理；分支和网站搜索配置随数据存储删除 |
 | Dataproc | 集群、作业、辅助节点组、自动伸缩策略和工作流模板 | 审查后清理集群；默认保留作业历史；辅助节点组没有独立删除接口 |
@@ -65,6 +66,7 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 - **删除保护**：获准清理 VM 后，Steward 会通过明确的原生准备阶段解除其删除保护；保护标签和 Cloud SQL 的删除保护仍会阻止删除。
 - **存储桶**：非空桶会被拒绝删除。Steward 不会先清空对象或对象版本来满足删除条件。
 - **Cloud TPU**：清理排队资源时，先删除计划中的节点。节点清理会先解绑已有数据盘，确认磁盘仍然存在，再删除节点及其启动盘；所有节点消失后再删除排队请求。网络资源和预留容量作为独立资源保留。参阅 Google 的[排队资源删除契约](https://docs.cloud.google.com/tpu/docs/reference/rest/v2/projects.locations.queuedResources/delete)。
+- **Data Fusion**：实例清理包含计划中已审查的命名空间和 DNS 对等连接，并等待原生操作完成及资源消失。策略不可读、新增子资源或配置变化会阻止清理。用户数据及引用的存储、网络、服务账号、密钥和主题作为独立资源保留。参阅 Google 的[实例删除说明](https://docs.cloud.google.com/data-fusion/docs/how-to/delete-instance)。
 - **Batch**：选择作业后，一起审查其任务、VM 和磁盘。清理通过原生作业删除接口执行，并等待相关资源消失。已挂载且 `autoDelete=false` 的已有磁盘会保留；要求保留 Batch 创建的磁盘，或外部磁盘的删除设置不安全时，会停止清理。实例模板、存储桶、NFS 数据、密钥、Pub/Sub 主题、日志和输出数据仍作为独立资源保留。参阅 Google 的[作业删除行为](https://docs.cloud.google.com/batch/docs/delete-job)。
 - **Discovery Engine**：删除应用会保留其关联的数据存储。删除数据存储前，必须先删除或解除所有关联应用；Steward 不会解除未选中应用的关联。计划会包含已发现的子配置、会话和文档。数据存储删除可能持续数天，任务会等待原生操作及已审查资源消失，重启后继续核实。清理集合时先删除其中的应用和数据存储。参阅 Google 的[数据存储删除要求](https://docs.cloud.google.com/generative-ai-app-builder/docs/delete-a-data-store)。
 - **Dataproc**：集群清理会审查托管 VM、实例组、生成的实例模板和磁盘。默认保留作业历史；同时选中作业记录时，会先取消活动作业并删除记录，再删除集群。已挂载且 `autoDelete=false` 的已有磁盘、存储桶、自动伸缩策略及外部服务仍作为独立资源保留。虚拟集群清理会保留其 GKE 集群和节点池。参阅 Google 的[集群删除契约](https://docs.cloud.google.com/managed-spark/docs/reference/rest/v1/projects.regions.clusters/delete)和 [GKE 清理行为](https://docs.cloud.google.com/managed-spark/docs/guides/dpgke/quickstarts/gke-quickstart-create-cluster)。
@@ -87,6 +89,10 @@ Dataproc 盘点需要 `compute.regions.list`、`dataproc.clusters.list` / `datap
 Dataproc 检查会绑定集群 UUID 和已审查的配置，但其 API 无法同时锁定作业和 Compute 成员。清理期间请保留服务写入的身份元数据和标签，并避免并发修改集群。额外的 Compute 自动伸缩器或有状态实例组策略会使清理停止，等待重新审查。删除工作流模板不会取消已经由该模板启动的工作流。
 
 Discovery Engine 使用 `global`、`us` 和 `eu` 位置；即使 Cloud Asset Inventory 尚未发现资源，地域选择器也会提供 US/EU。连接需要所选类型的原生 `list` / `get` 权限、集合与祖先资源的读取权限；有连接器的集合另需 `discoveryengine.dataConnectors.get`，网站数据存储还需网站配置与 sitemap 的读取权限。清理另需所选类型的 `delete` 和 `discoveryengine.operations.get`。参阅[权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/discoveryengine)。文档正文、会话内容、提示词、架构和连接器配置会在存储盘点结果或日志前脱敏，配置一致性检查使用脱敏前的数据。
+
+Data Fusion 盘点需要 `datafusion.locations.list`、`datafusion.instances.list`、`datafusion.instances.get`、`datafusion.namespaces.list` 和 `datafusion.namespaces.getIamPolicy`。实例清理需要 `datafusion.instances.delete` 和 `datafusion.operations.get`；独立删除 DNS 对等连接使用 `datafusion.instances.update`。参阅[原生方法权限](https://docs.cloud.google.com/data-fusion/docs/how-to/audit-logging)和[权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/datafusion)。私有选项和命名空间策略会在配置一致性检查后脱敏。
+
+Data Fusion 的支持范围使用管理 API，单个 CDAP 流水线、数据集、安全存储条目及其运行时计算资源尚未纳入此流程。命名空间记录随实例清理；Steward 不会为独立删除命名空间开启不可恢复重置。这些删除接口没有原子的配置条件，清理期间应避免并发修改。参阅 [CDAP API 文档](https://docs.cloud.google.com/data-fusion/docs/reference/cdap-reference)。
 
 这些 Discovery Engine 删除接口不支持以配置或创建 ID 作为原子删除条件，清理期间应避免并发修改。分支和网站搜索配置没有独立删除接口。上述范围不会单独盘点预览版 agent/runtime 资源或每一种数据记录；删除所属应用或数据存储时，也会删除其中的服务数据。
 

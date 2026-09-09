@@ -931,6 +931,24 @@
       "methods": [
         "tpu.projects.locations.reservations.list"
       ]
+    },
+    {
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "datafusion.projects.locations.instances.delete",
+        "datafusion.projects.locations.instances.dnsPeerings.delete",
+        "datafusion.projects.locations.instances.dnsPeerings.list",
+        "datafusion.projects.locations.instances.get",
+        "datafusion.projects.locations.instances.list",
+        "datafusion.projects.locations.list",
+        "datafusion.projects.locations.operations.get"
+      ]
+    },
+    {
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1beta1",
+      "methods": [
+        "datafusion.projects.locations.instances.namespaces.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4130,6 +4148,58 @@
         "tpu.projects.locations.reservations.list"
       ],
       "delete_operations": []
+    },
+    {
+      "native_type": "datafusion.googleapis.com/Instance",
+      "class": "data.pipeline",
+      "display_name": "Data Fusion Instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "instances",
+      "delete_operations": [
+        "datafusion.projects.locations.instances.delete"
+      ],
+      "list_operations": [
+        "datafusion.projects.locations.instances.list"
+      ],
+      "read_operations": [
+        "datafusion.projects.locations.instances.get"
+      ]
+    },
+    {
+      "native_type": "datafusion.googleapis.com/DnsPeering",
+      "class": "network.dns_peering",
+      "display_name": "Data Fusion DnsPeering",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dnsPeerings",
+      "delete_operations": [
+        "datafusion.projects.locations.instances.dnsPeerings.delete"
+      ],
+      "list_operations": [
+        "datafusion.projects.locations.instances.dnsPeerings.list"
+      ],
+      "read_operations": [
+        "datafusion.projects.locations.instances.dnsPeerings.list"
+      ]
+    },
+    {
+      "native_type": "datafusion.googleapis.com/Namespace",
+      "class": "data.namespace",
+      "display_name": "Data Fusion Namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "delete_operations": [],
+      "list_operations": [
+        "datafusion.projects.locations.instances.namespaces.list"
+      ],
+      "read_operations": [
+        "datafusion.projects.locations.instances.namespaces.list"
+      ]
     }
   ],
   "sdk_documents": [

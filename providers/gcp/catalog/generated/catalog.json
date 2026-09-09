@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "c2b134764ea93e437eb45663d70520ff549a1d139092008b0eca71979f724fa9",
+    "checksum": "254473831c18c97fdf16b10bb81c606592e1d39e6d9954982d5c7b7d3ad6e8ab",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0a0d9997af3ad3389e89f584a8b79e53520467abd32150c0aabe3788cb1ed0f1",
+  "content_checksum": "710d86171e4cf6b7cb2a5cdbbe53f74d15413364d9554902f86009821a83351e",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -74948,6 +74948,801 @@
       "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "datafusion.projects.locations.instances.delete",
+      "name": "delete",
+      "service": "datafusion",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "force": {
+            "description": "Optional. If set to true, any nested resources from this instance will also be deleted.",
+            "location": "query",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Required. The instance resource name in the format projects/{project}/locations/{location}/instances/{instance}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/instances/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.instances.dnsPeerings.delete",
+      "name": "delete",
+      "service": "datafusion",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the DNS peering zone to delete. Format: projects/{project}/locations/{location}/instances/{instance}/dnsPeerings/{dns_peering}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/instances/[^/]+/dnsPeerings/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.instances.dnsPeerings.list",
+      "name": "list",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1/{parent}/dnsPeerings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "The maximum number of dns peerings to return. The service may return fewer than this value. If unspecified, at most 50 dns peerings will be returned. The maximum value is 200; values above 200 will be coerced to 200.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A page token, received from a previous `ListDnsPeerings` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListDnsPeerings` must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent, which owns this collection of dns peerings. Format: projects/{project}/locations/{location}/instances/{instance}",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/instances/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for list DNS peerings.",
+        "id": "ListDnsPeeringsResponse",
+        "properties": {
+          "dnsPeerings": {
+            "description": "List of dns peering.",
+            "items": {
+              "$ref": "DnsPeering"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "dnsPeerings"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/dnsPeerings",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.instances.get",
+      "name": "get",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The instance resource name in the format projects/{project}/locations/{location}/instances/{instance}.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/instances/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a Data Fusion instance.",
+        "id": "Instance",
+        "properties": {
+          "accelerators": {
+            "description": "Output only. List of accelerators enabled for this CDF instance.",
+            "items": {
+              "$ref": "Accelerator"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "apiEndpoint": {
+            "description": "Output only. Endpoint on which the REST APIs is accessible.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "availableVersion": {
+            "description": "Output only. Available versions that the instance can be upgraded to using UpdateInstanceRequest.",
+            "items": {
+              "$ref": "Version"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "createTime": {
+            "description": "Output only. The time the instance was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "cryptoKeyConfig": {
+            "$ref": "CryptoKeyConfig",
+            "description": "Optional. The crypto key configuration. This field is used by the Customer-Managed Encryption Keys (CMEK) feature."
+          },
+          "dataplexDataLineageIntegrationEnabled": {
+            "description": "Optional. Option to enable the Dataplex Lineage Integration feature.",
+            "type": "boolean"
+          },
+          "dataprocServiceAccount": {
+            "description": "Optional. User-managed service account to set on Dataproc when Cloud Data Fusion creates Dataproc to run data processing pipelines. This allows users to have fine-grained access control on Dataproc's accesses to cloud resources.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Optional. A description of this instance.",
+            "type": "string"
+          },
+          "disabledReason": {
+            "description": "Output only. If the instance state is DISABLED, the reason for disabling the instance.",
+            "items": {
+              "enum": [
+                "DISABLED_REASON_UNSPECIFIED",
+                "KMS_KEY_ISSUE",
+                "PROJECT_STATE_OFF"
+              ],
+              "enumDescriptions": [
+                "This is an unknown reason for disabling.",
+                "The KMS key used by the instance is either revoked or denied access to",
+                "The consumer project is in a non-ACTIVE state."
+              ],
+              "type": "string"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "displayName": {
+            "description": "Optional. Display name for an instance.",
+            "type": "string"
+          },
+          "enableRbac": {
+            "description": "Optional. Option to enable granular role-based access control.",
+            "type": "boolean"
+          },
+          "enableStackdriverLogging": {
+            "description": "Optional. Option to enable Dataproc Stackdriver Logging.",
+            "type": "boolean"
+          },
+          "enableStackdriverMonitoring": {
+            "description": "Optional. Option to enable Stackdriver Monitoring.",
+            "type": "boolean"
+          },
+          "enableZoneSeparation": {
+            "description": "Output only. Option to enable granular zone separation.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "eventPublishConfig": {
+            "$ref": "EventPublishConfig",
+            "description": "Optional. Option to enable and pass metadata for event publishing."
+          },
+          "gcsBucket": {
+            "description": "Output only. Cloud Storage bucket generated by Data Fusion in the customer project.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The resource labels for instance to use to annotate any related underlying resources such as Compute Engine VMs. The character '=' is not allowed to be used within the labels.",
+            "type": "object"
+          },
+          "loggingConfig": {
+            "$ref": "LoggingConfig",
+            "description": "Optional. The logging configuration for this instance. This field is supported only in CDF versions 6.11.0 and above."
+          },
+          "maintenanceEvents": {
+            "description": "Output only. The maintenance events for this instance.",
+            "items": {
+              "$ref": "MaintenanceEvent"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "maintenancePolicy": {
+            "$ref": "MaintenancePolicy",
+            "description": "Optional. Configure the maintenance policy for this instance."
+          },
+          "monitoringConfig": {
+            "$ref": "MonitoringConfig",
+            "description": "Optional. The monitoring configuration for this instance."
+          },
+          "name": {
+            "description": "Output only. The name of this instance is in the form of projects/{project}/locations/{location}/instances/{instance}.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "networkConfig": {
+            "$ref": "NetworkConfig",
+            "description": "Optional. Network configuration options. These are required when a private Data Fusion instance is to be created."
+          },
+          "options": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Map of additional options used to configure the behavior of Data Fusion instance.",
+            "type": "object"
+          },
+          "p4ServiceAccount": {
+            "description": "Output only. Service agent for the customer project.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "patchRevision": {
+            "description": "Optional. Current patch revision of the Data Fusion.",
+            "type": "string"
+          },
+          "privateInstance": {
+            "description": "Optional. Specifies whether the Data Fusion instance should be private. If set to true, all Data Fusion nodes will have private IP addresses and will not be able to access the public internet.",
+            "type": "boolean"
+          },
+          "satisfiesPzi": {
+            "description": "Output only. Reserved for future use.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "satisfiesPzs": {
+            "description": "Output only. Reserved for future use.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "serviceAccount": {
+            "deprecated": true,
+            "description": "Output only. Deprecated. Use tenant_project_id instead to extract the tenant project ID.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "serviceEndpoint": {
+            "description": "Output only. Endpoint on which the Data Fusion UI is accessible.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. The current state of this Data Fusion instance.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "CREATING",
+              "ACTIVE",
+              "FAILED",
+              "DELETING",
+              "UPGRADING",
+              "RESTARTING",
+              "UPDATING",
+              "AUTO_UPDATING",
+              "AUTO_UPGRADING",
+              "DISABLED",
+              "ENABLING"
+            ],
+            "enumDescriptions": [
+              "Instance does not have a state yet",
+              "Instance is being created",
+              "Instance is active and ready for requests. This corresponds to 'RUNNING' in datafusion.v1beta1.",
+              "Instance creation failed",
+              "Instance is being deleted",
+              "Instance is being upgraded",
+              "Instance is being restarted",
+              "Instance is being updated on customer request",
+              "Instance is being auto-updated",
+              "Instance is being auto-upgraded",
+              "Instance is disabled",
+              "Instance is being enabled."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "stateMessage": {
+            "description": "Output only. Additional information about the current state of this Data Fusion instance if available.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Input only. Immutable. Tag keys/values directly bound to this resource. For example: \"123/environment\": \"production\", \"123/costCenter\": \"marketing\"",
+            "type": "object"
+          },
+          "tenantProjectId": {
+            "description": "Output only. The name of the tenant project.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "type": {
+            "description": "Required. Instance type.",
+            "enum": [
+              "TYPE_UNSPECIFIED",
+              "BASIC",
+              "ENTERPRISE",
+              "DEVELOPER"
+            ],
+            "enumDescriptions": [
+              "No type specified. The instance creation will fail.",
+              "Basic Data Fusion instance. In Basic type, the user will be able to create data pipelines using point and click UI. However, there are certain limitations, such as fewer number of concurrent pipelines, no support for streaming pipelines, etc.",
+              "Enterprise Data Fusion instance. In Enterprise type, the user will have all features available, such as support for streaming pipelines, higher number of concurrent pipelines, etc.",
+              "Developer Data Fusion instance. In Developer type, the user will have all features available but with restrictive capabilities. This is to help enterprises design and develop their data ingestion and integration pipelines at low cost."
+            ],
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The time the instance was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "version": {
+            "description": "Optional. Current version of the Data Fusion. Only specifiable in Update.",
+            "type": "string"
+          },
+          "workforceIdentityServiceEndpoint": {
+            "description": "Output only. Endpoint on which the Data Fusion UI is accessible to third-party users",
+            "readOnly": true,
+            "type": "string"
+          },
+          "zone": {
+            "description": "Optional. Name of the zone in which the Data Fusion instance will be created. Only DEVELOPER instances use this field.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.instances.list",
+      "name": "list",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1/{parent}/instances",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "List filter.",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Sort results. Supported values are \"name\", \"name desc\", or \"\" (unsorted).",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "The maximum number of items to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The project and location for which to retrieve instance information in the format projects/{project}/locations/{location}. If the location is specified as '-' (wildcard), then all regions available to the project are queried, and the results are aggregated.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for the list instance request.",
+        "id": "ListInstancesResponse",
+        "properties": {
+          "instances": {
+            "description": "Represents a list of Data Fusion instances.",
+            "items": {
+              "$ref": "Instance"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/instances",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.instances.namespaces.list",
+      "name": "list",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1beta1/{parent}/namespaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "The maximum number of items to return.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The instance to list its namespaces.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/instances/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "view": {
+            "description": "By default, only basic information about a namespace is returned (e.g. name). When `NAMESPACE_VIEW_FULL` is specified, additional information associated with a namespace gets returned (e.g. IAM policy set on the namespace)",
+            "enum": [
+              "NAMESPACE_VIEW_UNSPECIFIED",
+              "NAMESPACE_VIEW_BASIC",
+              "NAMESPACE_VIEW_FULL"
+            ],
+            "enumDescriptions": [
+              "Default/unset value, which will use BASIC view.",
+              "Show the most basic metadata of a namespace",
+              "Returns all metadata of a namespace"
+            ],
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List namespaces response.",
+        "id": "ListNamespacesResponse",
+        "properties": {
+          "namespaces": {
+            "description": "List of namespaces",
+            "items": {
+              "$ref": "Namespace"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "namespaces"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1beta1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1beta1/{parent}/namespaces",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1beta1"
+    },
+    {
+      "id": "datafusion.projects.locations.list",
+      "name": "list",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1/{name}/locations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "extraLocationTypes": {
+            "description": "Optional. Do not use this field unless explicitly documented otherwise. This is primarily for internal usage.",
+            "location": "query",
+            "repeated": true,
+            "type": "string"
+          },
+          "filter": {
+            "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https://google.aip.dev/160).",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The resource that owns the locations collection, if applicable.",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "The maximum number of results to return. If not set, the service selects a default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for Locations.ListLocations.",
+        "id": "ListLocationsResponse",
+        "properties": {
+          "locations": {
+            "description": "A list of locations that matches the specified filter in the request.",
+            "items": {
+              "$ref": "Location"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "The standard List next-page token.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "locations"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}/locations",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "datafusion.projects.locations.operations.get",
+      "name": "get",
+      "service": "datafusion",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/operations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "datafusion",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://datafusion.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://datafusion.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "dataplex.projects.locations.lakes.delete",
       "name": "delete",
       "service": "dataplex",
@@ -105054,6 +105849,63 @@
         ],
         "list_operations": [
           "dataform.projects.locations.repositories.workspaces.list"
+        ]
+      }
+    },
+    {
+      "native_type": "datafusion.googleapis.com/DnsPeering",
+      "class": "network.dns_peering",
+      "display_name": "Data Fusion DnsPeering",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "dnsPeerings",
+        "read_operations": [
+          "datafusion.projects.locations.instances.dnsPeerings.list"
+        ],
+        "delete_operations": [
+          "datafusion.projects.locations.instances.dnsPeerings.delete"
+        ],
+        "list_operations": [
+          "datafusion.projects.locations.instances.dnsPeerings.list"
+        ]
+      }
+    },
+    {
+      "native_type": "datafusion.googleapis.com/Instance",
+      "class": "data.pipeline",
+      "display_name": "Data Fusion Instance",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "instances",
+        "read_operations": [
+          "datafusion.projects.locations.instances.get"
+        ],
+        "delete_operations": [
+          "datafusion.projects.locations.instances.delete"
+        ],
+        "list_operations": [
+          "datafusion.projects.locations.instances.list"
+        ]
+      }
+    },
+    {
+      "native_type": "datafusion.googleapis.com/Namespace",
+      "class": "data.namespace",
+      "display_name": "Data Fusion Namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "namespaces",
+        "read_operations": [
+          "datafusion.projects.locations.instances.namespaces.list"
+        ],
+        "list_operations": [
+          "datafusion.projects.locations.instances.namespaces.list"
         ]
       }
     },

@@ -70,6 +70,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		return result, err
 	}
 	result.Data = safePayload(result.Data)
+	if operation.Call.Product == "datafusion" {
+		result.Data = safeFusionPayload(result.Data)
+	}
 	if operation.Call.Product == "tpu" {
 		result.Data = safeTPUPayload(result.Data)
 	}
@@ -100,6 +103,19 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isFusion(kind.NativeType) {
+		if _, err := c.fusionName(kind.NativeType, nativeID); err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		if kind.NativeType != fusionInstanceType && method == "GET" {
+			method, _, parameters := fusionListParameters(kind.NativeType, strings.Join(strings.Split(name, "/")[:6], "/"))
+			op, ok := metadata.catalog.Operation(method)
+			if !ok {
+				return catalog.Operation{}, nil, groupDenied("datafusion_child_method_missing")
+			}
+			return op, parameters, nil
+		}
+	}
 	if isTPU(kind.NativeType) {
 		if _, err := c.tpuName(kind.NativeType, nativeID); err != nil {
 			return catalog.Operation{}, nil, err

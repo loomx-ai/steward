@@ -1,5 +1,9 @@
 # Google Cloud protocol fixtures
 
+[Data Fusion fixtures](datafusion/README.md) cover native instance/DNS cleanup,
+reviewed namespace impacts, complete list readback, restart recovery and a SQLite
+scan that preserves observations after an embedded IAM policy error.
+
 [Cloud TPU fixtures](tpu/README.md) cover native zonal discovery, reviewed queued
 requests and nodes, durable-disk detachment/retention and restart recovery.
 

@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: datafusion.googleapis.com/Namespace
+  class: data.namespace
+presentation:
+  displayNames:
+    en-US: Data Fusion namespace
+    zh-CN: Data Fusion 命名空间
+  consoleLinkTemplate: https://console.cloud.google.com/data-fusion/instances?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: datafusion.googleapis.com/Instance
+    source: product-api
+  list:
+    operation: datafusion.projects.locations.instances.namespaces.list
+    parameters:
+      parent: parent.nativeId
+      view: NAMESPACE_VIEW_FULL
+    itemsPath: namespaces
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail: &read
+    operation: datafusion.projects.locations.instances.namespaces.list
+    itemsPath: namespaces
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: datafusion.googleapis.com/Instance
+  targetIdPath: refs_datafusion_googleapis_com_Instance
