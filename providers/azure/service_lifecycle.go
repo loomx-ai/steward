@@ -26,6 +26,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	searchType:          {searchConnectionType, searchLinkType, searchPerimeterType},
 	redisType:           {redisPolicyType, redisAssignmentType, redisFirewallType, redisLinkType, redisPatchType, redisConnectionType},
 	redisPolicyType:     {redisAssignmentType},
 	redisLinkType:       {redisLinkType},
@@ -202,6 +203,13 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := searchIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isSearchType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+		delete(planned.Normalized, "eTag") // Child deletion changes Search's property ETag.
+	}
 	if err := redisIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -628,7 +636,7 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
+	return (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
 		(parent == redisLinkType && child == redisLinkType && reason == "azure_redis_secondary_link") ||
 		(recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
 		((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
@@ -650,6 +658,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case parent.NativeType == searchType:
+		children, err = c.searchChildren(ctx, parent, raw)
 	case isRedisType(parent.NativeType):
 		children, err = c.redisChildren(ctx, parent, raw)
 	case parent.NativeType == appSiteType || parent.NativeType == appSlotType:

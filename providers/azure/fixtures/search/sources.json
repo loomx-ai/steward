@@ -1,0 +1,68 @@
+[
+  {
+    "operation": "Services_ListBySubscription",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/SearchListServicesBySubscription.json",
+    "source_sha256": "7dc87e081b23438a1f400ababedf53591c67d3698cec421ea541ee544e6ebd87",
+    "file": "SearchListServicesBySubscription.json"
+  },
+  {
+    "operation": "Services_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/SearchGetService.json",
+    "source_sha256": "324102aaeaf3d9e21e47e28826fdd2038fc97e9be3df480dc130c70368165413",
+    "file": "SearchGetService.json"
+  },
+  {
+    "operation": "Services_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/SearchDeleteService.json",
+    "source_sha256": "eb49261379ab29d8339a2c3c4269440ae812dfc315de1e439478e580cc4fc2b7",
+    "file": "SearchDeleteService.json"
+  },
+  {
+    "operation": "NetworkSecurityPerimeterConfigurations_ListByService",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/NetworkSecurityPerimeterConfigurationsListByService.json",
+    "source_sha256": "09d079a36fcb896c5d2b455e0f479708b0c0fa813cd6b632567ad57401f6611e",
+    "file": "NetworkSecurityPerimeterConfigurationsListByService.json"
+  },
+  {
+    "operation": "NetworkSecurityPerimeterConfigurations_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/NetworkSecurityPerimeterConfigurationsGet.json",
+    "source_sha256": "97b9e4127158b28559f9fd1bc6cff7fa3c898b47f4483a92f697aca1f9983e8a",
+    "file": "NetworkSecurityPerimeterConfigurationsGet.json"
+  },
+  {
+    "operation": "PrivateEndpointConnections_ListByService",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/ListPrivateEndpointConnectionsByService.json",
+    "source_sha256": "0c979498e9de9cbd2bd4833a0b1df7ad72227161b08ef06ced8023acb972754d",
+    "file": "ListPrivateEndpointConnectionsByService.json"
+  },
+  {
+    "operation": "PrivateEndpointConnections_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/GetPrivateEndpointConnection.json",
+    "source_sha256": "2412bf939e1434503a9a09048e7e8d67b0bc25eab3c9d998a58edbde3faa1a99",
+    "file": "GetPrivateEndpointConnection.json"
+  },
+  {
+    "operation": "PrivateEndpointConnections_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/DeletePrivateEndpointConnection.json",
+    "source_sha256": "a9d35a2cf47d1829dc7dd4e408fd63bafb9bf1c3834650c4d0b7c33bd414087e",
+    "file": "DeletePrivateEndpointConnection.json"
+  },
+  {
+    "operation": "SharedPrivateLinkResources_ListByService",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/ListSharedPrivateLinkResourcesByService.json",
+    "source_sha256": "090f05b7afee7f3500dc5853759bde42e81bc14f20a6bccf18424afa280507ea",
+    "file": "ListSharedPrivateLinkResourcesByService.json"
+  },
+  {
+    "operation": "SharedPrivateLinkResources_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/GetSharedPrivateLinkResource.json",
+    "source_sha256": "8d7c3b03731321e185fa6641881b1347f82cafd1b32e4ade505e2dbc7aac1872",
+    "file": "GetSharedPrivateLinkResource.json"
+  },
+  {
+    "operation": "SharedPrivateLinkResources_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/./examples/DeleteSharedPrivateLinkResource.json",
+    "source_sha256": "0f2df31942ffe9bc01337ab44811977cbc43d80ba3e5cf4f92b52314b1729831",
+    "file": "DeleteSharedPrivateLinkResource.json"
+  }
+]

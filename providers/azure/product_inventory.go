@@ -283,6 +283,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isSearchType(kind) {
+		values = append(values, searchConfiguration(kind, raw))
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isRedisType(kind) {
 		values = append(values, redisConfiguration(kind, raw))
 	}

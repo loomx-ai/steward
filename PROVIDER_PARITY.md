@@ -1142,3 +1142,38 @@ background evidence only, not acceptance evidence for this work.
   importer tests and bilingual documentation checks pass. Classic Front Door
   lifecycles, remaining mapped families and full provider/application acceptance
   remain unfinished.
+
+- Azure AI Search adds four rules and eleven selected native operations from
+  stable 2025-05-01: service, private endpoint connection, shared private link,
+  and read-only network security perimeter configuration views. Product lists
+  inherit parent location and bind cursors to native service context. Parent
+  cleanup requires reviewed connection/link deletions and verifies every view's
+  final absence, including after serialization and worker restart. Retaining a
+  prerequisite or managed view blocks parent cleanup.
+- Shared-link cleanup binds the actual target native API in the selected
+  subscription and checks its configuration, optional region, protected tags,
+  inherited locks and managed-group ownership before a final target re-read.
+  This follows Microsoft's documented target-provider metadata update; the data
+  resource is not an owned deletion impact. Unknown target APIs, including
+  still-unimplemented Cosmos DB and Cognitive Services, and cross-subscription
+  links remain gaps. External network perimeter association lifecycles are also
+  unfinished; the read-only Search view does not authorize their deletion.
+- Eleven unchanged official examples retain provenance and eight independent
+  native schema checks. Four responses pass directly and four expose documented
+  optional null/non-nullable discrepancies. Nineteen responses from three pinned
+  Microsoft CLI recordings include native final GET 404s and signed asynchronous
+  polling. The root recording uses 2025-05-01; child recordings use 2022-09-01 and
+  are explicitly version-bridged to selected native 2025-05-01 requests. Empty
+  supporting collections and Storage target reads are synthetic. The
+  [Search evidence](providers/azure/fixtures/search/README.md) records those limits.
+- The Azure catalog now has 170 rules, 157 native DELETE bindings and 528
+  operations from 82 source plus 42 reference documents. A fresh four-document
+  Search snapshot matches; unrelated documents and earlier type entries remain
+  unchanged. Repeated generation produces SHA-256
+  `7a140ea99b601c3f7ca989b37dad3fbfbdb737f738cceb344acca296c42e67f5`;
+  two independent extractions reproduce the checked-in recordings byte-for-byte.
+  Full Go tests, Azure/catalog/shared-contract/plan/cleanup race checks, vet,
+  three offline importer tests and bilingual documentation checks pass.
+  These are protocol/schema/recording results, not independent ARM emulator,
+  live-cloud or full application acceptance. Remaining mapped resource families,
+  data-plane parity and provider/application verification are still open.

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "117759709ad8fd231081928956fa44da5b8c580698f928ea4427d84088129e18",
+    "checksum": "d927b15ebc42a840de1ef72f9d4d474d842061a9824a60d8e45eff6ea52423f8",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "67e486ebd389a84c8070b40bcfbcd0c9eeeff9538bb8e9b53618e1ab03b03742",
+  "content_checksum": "2d3204af0611ee74d484b0a97dcfd845f978779eef1bf6c02159aa614b25533d",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -31629,6 +31629,963 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/resourcegraph.json"
     },
     {
+      "id": "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_Get",
+      "name": "NetworkSecurityPerimeterConfigurations_Get",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/networkSecurityPerimeterConfigurations/{nspConfigName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "nspConfigName": {
+            "description": "The network security perimeter configuration name.",
+            "in": "path",
+            "maxLength": 100,
+            "minLength": 38,
+            "name": "nspConfigName",
+            "pattern": "^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}\\.[a-z][a-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Network security perimeter (NSP) configuration resource",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/NetworkSecurityPerimeterConfigurationProperties"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/networkSecurityPerimeterConfigurations/{nspConfigName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_ListByService",
+      "name": "NetworkSecurityPerimeterConfigurations_ListByService",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/networkSecurityPerimeterConfigurations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a NetworkSecurityPerimeterConfiguration list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The NetworkSecurityPerimeterConfiguration items on this page",
+            "items": {
+              "$ref": "../../../../../../common-types/resource-management/v6/networksecurityperimeter.json#/definitions/NetworkSecurityPerimeterConfiguration"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/networkSecurityPerimeterConfigurations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.Search",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection to the Azure AI Search service with the specified resource group.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Describes an existing private endpoint connection to the Azure AI Search service.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Describes the properties of an existing private endpoint connection to the Azure AI Search service."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection to the Azure AI Search service with the specified resource group.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Describes an existing private endpoint connection to the Azure AI Search service.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Describes the properties of an existing private endpoint connection to the Azure AI Search service."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.PrivateEndpointConnections_ListByService",
+      "name": "PrivateEndpointConnections_ListByService",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response containing a list of private endpoint connections.",
+        "properties": {
+          "nextLink": {
+            "description": "Request URL that can be used to query next page of private endpoint connections. Returned when the total number of requested private endpoint connections exceed maximum page size.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of private endpoint connections.",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "x-ms-external": true
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.Services_Delete",
+      "name": "Services_Delete",
+      "service": "Microsoft.Search",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.Services_Get",
+      "name": "Services_Get",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Describes an Azure AI Search service and its current state.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The identity of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/SearchServiceProperties",
+            "description": "Properties of the search service.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "The SKU of the search service, which determines price tier and capacity limits. This property is required when creating a new search service.",
+            "externalDocs": {
+              "url": "https://azure.microsoft.com/documentation/articles/search-sku-tier/"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.Services_ListBySubscription",
+      "name": "Services_ListBySubscription",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Search/searchServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response containing a list of Azure AI Search services.",
+        "properties": {
+          "nextLink": {
+            "description": "Request URL that can be used to query next page of search services. Returned when the total number of requested search services exceed maximum page size.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of search services.",
+            "items": {
+              "$ref": "#/definitions/SearchService"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "x-ms-external": true
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Search/searchServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.SharedPrivateLinkResources_Delete",
+      "name": "SharedPrivateLinkResources_Delete",
+      "service": "Microsoft.Search",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources/{sharedPrivateLinkResourceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "sharedPrivateLinkResourceName": {
+            "description": "The name of the shared private link resource managed by the Azure AI Search service within the specified resource group.",
+            "in": "path",
+            "name": "sharedPrivateLinkResourceName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources/{sharedPrivateLinkResourceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.SharedPrivateLinkResources_Get",
+      "name": "SharedPrivateLinkResources_Get",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources/{sharedPrivateLinkResourceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "sharedPrivateLinkResourceName": {
+            "description": "The name of the shared private link resource managed by the Azure AI Search service within the specified resource group.",
+            "in": "path",
+            "name": "sharedPrivateLinkResourceName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Describes a shared private link resource managed by the Azure AI Search service.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SharedPrivateLinkResourceProperties",
+            "description": "Describes the properties of a shared private link resource managed by the Azure AI Search service."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources/{sharedPrivateLinkResourceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
+      "id": "Azure.Microsoft.Search.SharedPrivateLinkResources_ListByService",
+      "name": "SharedPrivateLinkResources_ListByService",
+      "service": "Microsoft.Search",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "searchServiceName": {
+            "description": "The name of the Azure AI Search service associated with the specified resource group.",
+            "in": "path",
+            "name": "searchServiceName",
+            "pattern": "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-client-request-id": {
+            "description": "A client-generated GUID value that identifies this request. If specified, this will be included in response information as a way to track the request.",
+            "format": "uuid",
+            "in": "header",
+            "name": "x-ms-client-request-id",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "clientRequestId",
+            "x-ms-client-request-id": true,
+            "x-ms-parameter-grouping": {
+              "name": "search-management-request-options"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response containing a list of shared private link resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of shared private link resources, if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of shared private link resources.",
+            "items": {
+              "$ref": "#/definitions/SharedPrivateLinkResource"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "x-ms-external": true
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Search",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}/sharedPrivateLinkResources",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json"
+    },
+    {
       "id": "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_BreakPairing",
       "name": "DisasterRecoveryConfigs_BreakPairing",
       "service": "Microsoft.ServiceBus",
@@ -44185,6 +45142,87 @@
         ],
         "list_operations": [
           "Azure.ResourceManagementClient.ResourceGroups_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices",
+      "class": "data.search_service",
+      "display_name": "Azure AI Search service",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "searchServices",
+        "read_operations": [
+          "Azure.Microsoft.Search.Services_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Search.Services_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Search.Services_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/networkSecurityPerimeterConfigurations",
+      "class": "network.perimeter_configuration",
+      "display_name": "Search network perimeter configuration",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "networkSecurityPerimeterConfigurations",
+        "read_operations": [
+          "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_ListByService"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Search private endpoint connection",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.Search.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Search.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Search.PrivateEndpointConnections_ListByService"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+      "class": "network.private_link",
+      "display_name": "Search shared private link",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "sharedPrivateLinkResources",
+        "read_operations": [
+          "Azure.Microsoft.Search.SharedPrivateLinkResources_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Search.SharedPrivateLinkResources_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Search.SharedPrivateLinkResources_ListByService"
         ]
       }
     },

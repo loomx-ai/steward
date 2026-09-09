@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 166 current resource rules discover through native product List operations.
+All 170 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 517 operations from
-81 root documents and 41 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 528 operations from
+82 root documents and 42 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -316,3 +316,13 @@ parent/context checks, sensitive configuration digests and peer readback cover
 resumed deletion. The [Redis evidence](../fixtures/redis/README.md) records 35
 unchanged Swagger examples, 61 Microsoft CLI responses, native inconsistencies,
 replay adaptations and the limits of protocol verification.
+
+Azure AI Search adds four native rules and eleven operations from 2025-05-01.
+Reviewed connection/shared-link deletion precedes service deletion; read-only
+perimeter configuration views require the service lifecycle. Shared links verify
+the native target API, configuration, inherited locks and protected ownership.
+Native final absence, keyed private configuration checks and returned operation
+receipts survive restart. The [Search evidence](../fixtures/search/README.md)
+retains eleven unchanged examples, nineteen CLI responses, native schema
+discrepancies and the older child-API replay boundary. Unmodeled target families,
+cross-subscription links and external perimeter association lifecycles remain open.

@@ -312,17 +312,17 @@ func redisSharedPrerequisite(parent, child asset.Asset) bool {
 	return false
 }
 
-func (a *action) redisOperationResponse(endpoint string, res response) error {
-	if !isRedisType(a.kind.NativeType) {
+func (a *action) resourceOperationResponse(endpoint string, res response) error {
+	if !isRedisType(a.kind.NativeType) && !isSearchType(a.kind.NativeType) {
 		return nil
 	}
 	if res.status != 200 && res.status != 202 && res.status != 204 {
-		return fmt.Errorf("incomplete Redis operation response")
+		return fmt.Errorf("incomplete Azure operation response")
 	}
 	u, _ := url.Parse(endpoint)
 	for field, expected := range map[string]string{"id": u.Path, "name": last(u.Path), "resourceId": a.id} {
 		if value, present := res.data[field]; present && !strings.EqualFold(text(value), expected) {
-			return fmt.Errorf("Redis polling response belongs to another resource or operation")
+			return fmt.Errorf("Azure polling response belongs to another resource or operation")
 		}
 	}
 	return nil

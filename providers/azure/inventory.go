@@ -279,6 +279,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.searchInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.redisInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -547,6 +550,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	}
 	if isGrafanaType(nativeType) {
 		fields["privatelinkresourceid"], fields["datasourceresourceid"], fields["azuremonitorworkspaceresourceid"] = true, true, true
+	}
+	if isSearchType(nativeType) {
+		fields["privatelinkresourceid"], fields["networksecurityperimeter"] = true, true
 	}
 	if isDataCollectionType(nativeType) {
 		for _, key := range []string{"datacollectionruleid", "datacollectionendpointid", "eventhubresourceid", "storageaccountresourceid", "accountresourceid", "resourceid"} {

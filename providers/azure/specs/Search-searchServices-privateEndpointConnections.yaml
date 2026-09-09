@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Search/searchServices/privateEndpointConnections
+  class: network.private_endpoint_connection
+presentation:
+  displayNames:
+    en-US: Search private endpoint connection
+    zh-CN: Search 专用终结点连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Search.PrivateEndpointConnections_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      searchServiceName: parent.normalized.arm_parameters.searchServiceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Search.PrivateEndpointConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Search/searchServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  privateEndpoint:
+    path: privateEndpoint
+    type: object
+  privateLinkServiceConnectionState:
+    path: privateLinkServiceConnectionState
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Search/searchServices
+  targetIdPath: refs_microsoft_search_searchservices
+- type: uses
+  targetType: Microsoft.Network/privateEndpoints
+  targetIdPath: refs_microsoft_network_privateendpoints
+actions:
+  delete:
+    operation: Azure.Microsoft.Search.PrivateEndpointConnections_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Search.PrivateEndpointConnections_Get
+      itemsPath: $
+      identityPath: id

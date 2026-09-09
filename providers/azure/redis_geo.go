@@ -116,10 +116,10 @@ func (a *action) redisGeoPreflight(ctx context.Context, planned asset.Asset, raw
 		if text(expected["root_configuration"]) == "" || text(expected["root_configuration"]) != redisConfiguration(redisEnterpriseType, root) || text(expected["root_private_configuration"]) != a.client.privateConfiguration(redisSnapshot(redisEnterpriseType, root)) {
 			return serviceDenied("redis_geo_peer_changed")
 		}
-		if err := a.client.redisPeerProtection(ctx, id, peer, locks); err != nil {
+		if err := a.client.linkedResourceProtection(ctx, id, peer, locks); err != nil {
 			return err
 		}
-		if err := a.client.redisPeerProtection(ctx, redisRootID(id), root, locks); err != nil {
+		if err := a.client.linkedResourceProtection(ctx, redisRootID(id), root, locks); err != nil {
 			return err
 		}
 		current[id] = peer
@@ -151,7 +151,7 @@ func (a *action) redisGeoPreflight(ctx context.Context, planned asset.Asset, raw
 	}
 	return nil
 }
-func (c *client) redisPeerProtection(ctx context.Context, id string, raw map[string]any, locks []any) error {
+func (c *client) linkedResourceProtection(ctx context.Context, id string, raw map[string]any, locks []any) error {
 	_, nativeType, _ := parseID(id)
 	kind, _ := findType(nativeType)
 	if locked(id, locks) {
@@ -166,7 +166,7 @@ func (c *client) redisPeerProtection(ctx context.Context, id string, raw map[str
 		return err
 	}
 	if !validResourceResponse(group, groupID, groupType) {
-		return serviceDenied("invalid_redis_peer_group")
+		return serviceDenied("invalid_linked_resource_group")
 	}
 	if text(group.data["managedBy"]) != "" {
 		return serviceDenied("azure_managed_resource_group")

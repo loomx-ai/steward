@@ -1,0 +1,457 @@
+[
+  {
+    "file": "test_service_create_delete_show.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/db34d9752ceddcde6db94eec5d681f6742d86403/src/azure-cli/azure/cli/command_modules/search/tests/latest/recordings/test_service_create_delete_show.yaml",
+    "source_sha256": "18de8e572841e6e5c2c40f5744b47bb5eaf9052aacc8f198ddcbd464ccc8d963",
+    "recordings": [
+      {
+        "interaction_index": 20,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002?api-version=2025-05-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "location": "East US 2 EUAP",
+          "tags": {},
+          "properties": {
+            "replicaCount": 1,
+            "partitionCount": 1,
+            "endpoint": "https://test000002.search.windows.net",
+            "status": "running",
+            "statusDetails": "",
+            "provisioningState": "succeeded",
+            "hostingMode": "default",
+            "computeType": "Default",
+            "publicNetworkAccess": "Enabled",
+            "networkRuleSet": {
+              "ipRules": [],
+              "bypass": "None"
+            },
+            "privateEndpointConnections": [],
+            "sharedPrivateLinkResources": [],
+            "encryptionWithCmk": {
+              "enforcement": "Unspecified",
+              "encryptionComplianceStatus": "Compliant"
+            },
+            "disableLocalAuth": false,
+            "authOptions": {
+              "apiKeyOnly": {}
+            },
+            "dataExfiltrationProtections": [],
+            "semanticSearch": "free",
+            "upgradeAvailable": "notAvailable",
+            "serviceUpgradedAt": null
+          },
+          "systemData": {
+            "createdAt": "2025-09-12T01:19:03.141Z"
+          },
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002",
+          "name": "test000002",
+          "type": "Microsoft.Search/searchServices",
+          "sku": {
+            "name": "standard"
+          }
+        }
+      },
+      {
+        "interaction_index": 21,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002?api-version=2025-05-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 22,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002?api-version=2025-05-01",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "ResourceNotFound",
+            "message": "The Resource 'Microsoft.Search/searchServices/test000002' under resource group 'azure_search_cli_test000001' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "file": "test_private_endpoint_connection_crud.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/db34d9752ceddcde6db94eec5d681f6742d86403/src/azure-cli/azure/cli/command_modules/search/tests/latest/recordings/test_private_endpoint_connection_crud.yaml",
+    "source_sha256": "d3990b8a7ec5768d7bf70b2f20024917f93d076a63e84f7d3272047d42bf14bd",
+    "recordings": [
+      {
+        "interaction_index": 40,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002?api-version=2025-05-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "location": "East US 2 EUAP",
+          "tags": {},
+          "properties": {
+            "replicaCount": 1,
+            "partitionCount": 1,
+            "endpoint": "https://test000002.search.windows.net",
+            "status": "running",
+            "statusDetails": "",
+            "provisioningState": "succeeded",
+            "hostingMode": "default",
+            "computeType": "Default",
+            "publicNetworkAccess": "Disabled",
+            "networkRuleSet": {
+              "ipRules": [],
+              "bypass": "None"
+            },
+            "privateEndpointConnections": [
+              {
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+                "name": "testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+                "type": "Microsoft.Search/searchServices/privateEndpointConnections",
+                "etag": null,
+                "location": null,
+                "properties": {
+                  "privateEndpoint": {
+                    "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Network/privateEndpoints/testpe000005"
+                  },
+                  "privateLinkServiceConnectionState": {
+                    "status": "Approved",
+                    "description": "Auto-approved",
+                    "actionsRequired": "None"
+                  },
+                  "provisioningState": "Succeeded",
+                  "groupId": "searchService"
+                }
+              }
+            ],
+            "sharedPrivateLinkResources": [],
+            "encryptionWithCmk": {
+              "enforcement": "Unspecified",
+              "encryptionComplianceStatus": "Compliant"
+            },
+            "disableLocalAuth": false,
+            "authOptions": {
+              "apiKeyOnly": {}
+            },
+            "dataExfiltrationProtections": [],
+            "semanticSearch": "free",
+            "upgradeAvailable": "notAvailable",
+            "serviceUpgradedAt": null
+          },
+          "systemData": {
+            "createdAt": "2025-09-12T01:19:03.374Z"
+          },
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002",
+          "name": "test000002",
+          "type": "Microsoft.Search/searchServices",
+          "sku": {
+            "name": "basic"
+          }
+        }
+      },
+      {
+        "interaction_index": 41,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+              "name": "testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+              "type": "Microsoft.Search/searchServices/privateEndpointConnections",
+              "properties": {
+                "privateEndpoint": {
+                  "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Network/privateEndpoints/testpe000005"
+                },
+                "privateLinkServiceConnectionState": {
+                  "status": "Approved",
+                  "description": "Auto-approved",
+                  "actionsRequired": "None"
+                },
+                "provisioningState": "Succeeded",
+                "groupId": "searchService"
+              }
+            }
+          ],
+          "nextLink": null
+        }
+      },
+      {
+        "interaction_index": 42,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+          "name": "testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+          "type": "Microsoft.Search/searchServices/privateEndpointConnections",
+          "properties": {
+            "privateEndpoint": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Network/privateEndpoints/testpe000005"
+            },
+            "privateLinkServiceConnectionState": {
+              "status": "Approved",
+              "description": "Auto-approved",
+              "actionsRequired": "None"
+            },
+            "provisioningState": "Succeeded",
+            "groupId": "searchService"
+          }
+        }
+      },
+      {
+        "interaction_index": 46,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+          "name": "testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6",
+          "type": "Microsoft.Search/searchServices/privateEndpointConnections",
+          "properties": {
+            "privateEndpoint": {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Network/privateEndpoints/testpe000005"
+            },
+            "privateLinkServiceConnectionState": {
+              "status": "Disconnected",
+              "description": "Remove request from customer.",
+              "actionsRequired": "None"
+            },
+            "provisioningState": "Succeeded",
+            "groupId": "searchService"
+          }
+        }
+      },
+      {
+        "interaction_index": 47,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections/testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6?api-version=2022-09-01",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "ResourceNotFound",
+            "message": "Could not find private endpoint connection 'testpe000005.6bdad5b5-8a28-443e-b66b-ba4e8e04adf6' in subscription 'a4337210-c6b0-4de4-907a-688f1c120d9a', resourceGroupName 'azure_search_cli_test000001', searchService 'test000002'. RequestId: db925640-a117-43f8-a241-f6d30449541a",
+            "target": null,
+            "details": null
+          }
+        }
+      },
+      {
+        "interaction_index": 48,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/test000002/privateEndpointConnections?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "nextLink": null
+        }
+      }
+    ]
+  },
+  {
+    "file": "test_shared_private_link_resource_crud.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/db34d9752ceddcde6db94eec5d681f6742d86403/src/azure-cli/azure/cli/command_modules/search/tests/latest/recordings/test_shared_private_link_resource_crud.yaml",
+    "source_sha256": "3f078cfa324f81f2068d8c22a64d2f6a6f95d61280ee33fc2f5f122ffc2d9e8c",
+    "recordings": [
+      {
+        "interaction_index": 3,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003?api-version=2025-05-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "location": "West Central US",
+          "tags": {},
+          "properties": {
+            "replicaCount": 1,
+            "partitionCount": 1,
+            "endpoint": "https://azstest000003.search.windows.net",
+            "status": "running",
+            "statusDetails": "",
+            "provisioningState": "succeeded",
+            "hostingMode": "default",
+            "computeType": "Default",
+            "publicNetworkAccess": "Disabled",
+            "networkRuleSet": {
+              "ipRules": [],
+              "bypass": "None"
+            },
+            "privateEndpointConnections": [],
+            "sharedPrivateLinkResources": [],
+            "encryptionWithCmk": {
+              "enforcement": "Unspecified",
+              "encryptionComplianceStatus": "Compliant"
+            },
+            "disableLocalAuth": false,
+            "authOptions": {
+              "apiKeyOnly": {}
+            },
+            "dataExfiltrationProtections": [],
+            "semanticSearch": "free",
+            "upgradeAvailable": "notAvailable",
+            "serviceUpgradedAt": null
+          },
+          "systemData": {
+            "createdAt": "2025-09-12T01:40:29.927Z"
+          },
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003",
+          "name": "azstest000003",
+          "type": "Microsoft.Search/searchServices",
+          "sku": {
+            "name": "basic"
+          }
+        }
+      },
+      {
+        "interaction_index": 9,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "name": "spltest000004",
+          "type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004",
+          "properties": {
+            "privateLinkResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Storage/storageAccounts/satest000002",
+            "groupId": "blob",
+            "requestMessage": "Please approve",
+            "status": "Pending",
+            "provisioningState": "Succeeded",
+            "resourceRegion": null
+          }
+        }
+      },
+      {
+        "interaction_index": 15,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "name": "spltest000004",
+          "type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004",
+          "properties": {
+            "privateLinkResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Storage/storageAccounts/satest000002",
+            "groupId": "blob",
+            "requestMessage": "Please approve again",
+            "status": "Pending",
+            "provisioningState": "Succeeded",
+            "resourceRegion": null
+          }
+        }
+      },
+      {
+        "interaction_index": 16,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "name": "spltest000004",
+              "type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004",
+              "properties": {
+                "privateLinkResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Storage/storageAccounts/satest000002",
+                "groupId": "blob",
+                "requestMessage": "Please approve again",
+                "status": "Pending",
+                "provisioningState": "Succeeded",
+                "resourceRegion": null
+              }
+            }
+          ],
+          "nextLink": null
+        }
+      },
+      {
+        "interaction_index": 17,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "name": "spltest000004",
+          "type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004",
+          "properties": {
+            "privateLinkResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Storage/storageAccounts/satest000002",
+            "groupId": "blob",
+            "requestMessage": "Please approve again",
+            "status": "Pending",
+            "provisioningState": "Succeeded",
+            "resourceRegion": null
+          }
+        }
+      },
+      {
+        "interaction_index": 18,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004?api-version=2022-09-01",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004/operationStatuses/fc03287a-1938-4600-a830-f87202e14637?api-version=2022-09-01&t=638932555154072329&c=MIIHhjCCBm6gAwIBAgITHgdcHrRLNWOyRnVyKwAAB1wetDANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDYwHhcNMjUwODIxMTIzODQ3WhcNMjUxMTE5MTIzODQ3WjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJq8SCGFx-fWhyjET0PoCR11VqjJgzRrXr9uy-0NZHrGGmTeWSmNEocBW3oCaIhu_1FGrjVfhXjIdFcU-lkQh_IbesS4duDxPn7z_jYWhWf-RD-ic_TcluQA5YvreOIU3J40oxZyNxD2ksYbHBoKoF_HM9zCav24xX32K3zk0U8X7uH3ZZBeX84AFdHvMOlNGebVQfXG3vVMoW_3fPn4JFMxHk7TuZQJ9zi_BtS8LsymbVA7dlWRLEoGzMatnGnZdfdbsBUXKjf75hBgS0ovjMY_BhDmV8Ap2R7gLwc0VGWjCtZvuz6GXYP-A0EAfISrkXQJyHPklm1HOyJhDv1ZUMkCAwEAAaOCBHMwggRvMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwIwCgYIKwYBBQUHAwEwPAYJKwYBBAGCNxUHBC8wLQYlKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFgh8fIENbYcQIBZAIBBjCCAcsGCCsGAQUFBwEBBIIBvTCCAbkwYwYIKwYBBQUHMAKGV2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2lpbmZyYS9DZXJ0cy9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDEuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwyLmFtZS5nYmwvYWlhL0JMMlBLSUlOVENBMDIuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDYuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMy5hbWUuZ2JsL2FpYS9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDQuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwHQYDVR0OBBYEFHTcmOIkz8D5rarMHtYs8qd2MmTRMA4GA1UdDwEB_wQEAwIFoDCCASYGA1UdHwSCAR0wggEZMIIBFaCCARGgggENhj9odHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ1JML0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwxLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwyLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwzLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmw0LmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmwwgZ0GA1UdIASBlTCBkjAMBgorBgEEAYI3ewEBMGYGCisGAQQBgjd7AgIwWDBWBggrBgEFBQcCAjBKHkgAMwAzAGUAMAAxADkAMgAxAC0ANABkADYANAAtADQAZgA4AGMALQBhADAANQA1AC0ANQBiAGQAYQBmAGYAZAA1AGUAMwAzAGQwDAYKKwYBBAGCN3sDAjAMBgorBgEEAYI3ewQCMB8GA1UdIwQYMBaAFPFGaMbxw_ArLX2LauGy-b41_NFBMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATANBgkqhkiG9w0BAQsFAAOCAQEAKKJAzFL4kJWYLj_6hXiucZYVZ5vv4_NDGHQCwNAZ2V9EZQtlet5i2wzRCgI3dANPOXTgM64Ny3W4eTS0HN7j9usx_3AmNIax3QLDcKbtzienAjHeUjFg023nYGpDcw2OlDzq6ajXRFMwy6XN5imiLfcK4FAD2rbf69gSeUkmNW33pzbBGbOwCONDDRXlEjjtOMZ4B-Ih7CZ3_C8bR6cwzmuLx-tMqanHXr_yYj3sGqpUgtN7s6GrVLOKMW558xDP8ibkNToqQ3kbMK5k64buRYE6MH6n6dvd2bG0SSeffIVePpw02T9oel65Jus9VBlxaqsXiXIdeRPVBbFO2GecPA&s=N3ahgSzjgL1KcTH-UwZTAbqMtz_Ssxvmq4LvoLGZ8sybTy1cqXq2AxcNFlW-ptOxLLt9e6tqBW6ryP4psvaJ8nKMEHrPwHldYx1VFxl8NFz_IbiCbHWgA6ame5meM8CyFA4xU4SutsqthLrZKDACb5UTenI4PzuMmxQzPv17vmdosegHpIt3UC9HWmHDWzfVikUI9VZAO_QZRGP9GvO-0ZiYz257vU4WS6SZ0CKut_CjDAPq2qGi4TANggy2cj9J20tluWXMxP4Y-wZ0qteoPMiSIRZ1-Ml4oWClO-AqPyaGx9Q5a6zlxyisH-2Ps0Yqs8lZ9tPclBcr8AoMKCTbyg&h=A6ttAmXyOMcsS8ME5C_pFisC14slHEPLrniqMoetVRc"
+          ]
+        },
+        "body": null
+      },
+      {
+        "interaction_index": 19,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004/operationStatuses/fc03287a-1938-4600-a830-f87202e14637?api-version=2022-09-01&t=638932555154072329&c=MIIHhjCCBm6gAwIBAgITHgdcHrRLNWOyRnVyKwAAB1wetDANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDYwHhcNMjUwODIxMTIzODQ3WhcNMjUxMTE5MTIzODQ3WjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJq8SCGFx-fWhyjET0PoCR11VqjJgzRrXr9uy-0NZHrGGmTeWSmNEocBW3oCaIhu_1FGrjVfhXjIdFcU-lkQh_IbesS4duDxPn7z_jYWhWf-RD-ic_TcluQA5YvreOIU3J40oxZyNxD2ksYbHBoKoF_HM9zCav24xX32K3zk0U8X7uH3ZZBeX84AFdHvMOlNGebVQfXG3vVMoW_3fPn4JFMxHk7TuZQJ9zi_BtS8LsymbVA7dlWRLEoGzMatnGnZdfdbsBUXKjf75hBgS0ovjMY_BhDmV8Ap2R7gLwc0VGWjCtZvuz6GXYP-A0EAfISrkXQJyHPklm1HOyJhDv1ZUMkCAwEAAaOCBHMwggRvMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwIwCgYIKwYBBQUHAwEwPAYJKwYBBAGCNxUHBC8wLQYlKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFgh8fIENbYcQIBZAIBBjCCAcsGCCsGAQUFBwEBBIIBvTCCAbkwYwYIKwYBBQUHMAKGV2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2lpbmZyYS9DZXJ0cy9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDEuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwyLmFtZS5nYmwvYWlhL0JMMlBLSUlOVENBMDIuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDYuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMy5hbWUuZ2JsL2FpYS9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDQuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwHQYDVR0OBBYEFHTcmOIkz8D5rarMHtYs8qd2MmTRMA4GA1UdDwEB_wQEAwIFoDCCASYGA1UdHwSCAR0wggEZMIIBFaCCARGgggENhj9odHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ1JML0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwxLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwyLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwzLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmw0LmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmwwgZ0GA1UdIASBlTCBkjAMBgorBgEEAYI3ewEBMGYGCisGAQQBgjd7AgIwWDBWBggrBgEFBQcCAjBKHkgAMwAzAGUAMAAxADkAMgAxAC0ANABkADYANAAtADQAZgA4AGMALQBhADAANQA1AC0ANQBiAGQAYQBmAGYAZAA1AGUAMwAzAGQwDAYKKwYBBAGCN3sDAjAMBgorBgEEAYI3ewQCMB8GA1UdIwQYMBaAFPFGaMbxw_ArLX2LauGy-b41_NFBMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATANBgkqhkiG9w0BAQsFAAOCAQEAKKJAzFL4kJWYLj_6hXiucZYVZ5vv4_NDGHQCwNAZ2V9EZQtlet5i2wzRCgI3dANPOXTgM64Ny3W4eTS0HN7j9usx_3AmNIax3QLDcKbtzienAjHeUjFg023nYGpDcw2OlDzq6ajXRFMwy6XN5imiLfcK4FAD2rbf69gSeUkmNW33pzbBGbOwCONDDRXlEjjtOMZ4B-Ih7CZ3_C8bR6cwzmuLx-tMqanHXr_yYj3sGqpUgtN7s6GrVLOKMW558xDP8ibkNToqQ3kbMK5k64buRYE6MH6n6dvd2bG0SSeffIVePpw02T9oel65Jus9VBlxaqsXiXIdeRPVBbFO2GecPA&s=N3ahgSzjgL1KcTH-UwZTAbqMtz_Ssxvmq4LvoLGZ8sybTy1cqXq2AxcNFlW-ptOxLLt9e6tqBW6ryP4psvaJ8nKMEHrPwHldYx1VFxl8NFz_IbiCbHWgA6ame5meM8CyFA4xU4SutsqthLrZKDACb5UTenI4PzuMmxQzPv17vmdosegHpIt3UC9HWmHDWzfVikUI9VZAO_QZRGP9GvO-0ZiYz257vU4WS6SZ0CKut_CjDAPq2qGi4TANggy2cj9J20tluWXMxP4Y-wZ0qteoPMiSIRZ1-Ml4oWClO-AqPyaGx9Q5a6zlxyisH-2Ps0Yqs8lZ9tPclBcr8AoMKCTbyg&h=A6ttAmXyOMcsS8ME5C_pFisC14slHEPLrniqMoetVRc",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 20,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004/operationStatuses/fc03287a-1938-4600-a830-f87202e14637?api-version=2022-09-01&t=638932555154072329&c=MIIHhjCCBm6gAwIBAgITHgdcHrRLNWOyRnVyKwAAB1wetDANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDYwHhcNMjUwODIxMTIzODQ3WhcNMjUxMTE5MTIzODQ3WjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJq8SCGFx-fWhyjET0PoCR11VqjJgzRrXr9uy-0NZHrGGmTeWSmNEocBW3oCaIhu_1FGrjVfhXjIdFcU-lkQh_IbesS4duDxPn7z_jYWhWf-RD-ic_TcluQA5YvreOIU3J40oxZyNxD2ksYbHBoKoF_HM9zCav24xX32K3zk0U8X7uH3ZZBeX84AFdHvMOlNGebVQfXG3vVMoW_3fPn4JFMxHk7TuZQJ9zi_BtS8LsymbVA7dlWRLEoGzMatnGnZdfdbsBUXKjf75hBgS0ovjMY_BhDmV8Ap2R7gLwc0VGWjCtZvuz6GXYP-A0EAfISrkXQJyHPklm1HOyJhDv1ZUMkCAwEAAaOCBHMwggRvMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwIwCgYIKwYBBQUHAwEwPAYJKwYBBAGCNxUHBC8wLQYlKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFgh8fIENbYcQIBZAIBBjCCAcsGCCsGAQUFBwEBBIIBvTCCAbkwYwYIKwYBBQUHMAKGV2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2lpbmZyYS9DZXJ0cy9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDEuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwyLmFtZS5nYmwvYWlhL0JMMlBLSUlOVENBMDIuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDYuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMy5hbWUuZ2JsL2FpYS9CTDJQS0lJTlRDQTAyLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA2LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDQuYW1lLmdibC9haWEvQkwyUEtJSU5UQ0EwMi5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcnQwHQYDVR0OBBYEFHTcmOIkz8D5rarMHtYs8qd2MmTRMA4GA1UdDwEB_wQEAwIFoDCCASYGA1UdHwSCAR0wggEZMIIBFaCCARGgggENhj9odHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ1JML0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwxLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwyLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmwzLmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmyGMWh0dHA6Ly9jcmw0LmFtZS5nYmwvY3JsL0FNRSUyMEluZnJhJTIwQ0ElMjAwNi5jcmwwgZ0GA1UdIASBlTCBkjAMBgorBgEEAYI3ewEBMGYGCisGAQQBgjd7AgIwWDBWBggrBgEFBQcCAjBKHkgAMwAzAGUAMAAxADkAMgAxAC0ANABkADYANAAtADQAZgA4AGMALQBhADAANQA1AC0ANQBiAGQAYQBmAGYAZAA1AGUAMwAzAGQwDAYKKwYBBAGCN3sDAjAMBgorBgEEAYI3ewQCMB8GA1UdIwQYMBaAFPFGaMbxw_ArLX2LauGy-b41_NFBMB0GA1UdJQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATANBgkqhkiG9w0BAQsFAAOCAQEAKKJAzFL4kJWYLj_6hXiucZYVZ5vv4_NDGHQCwNAZ2V9EZQtlet5i2wzRCgI3dANPOXTgM64Ny3W4eTS0HN7j9usx_3AmNIax3QLDcKbtzienAjHeUjFg023nYGpDcw2OlDzq6ajXRFMwy6XN5imiLfcK4FAD2rbf69gSeUkmNW33pzbBGbOwCONDDRXlEjjtOMZ4B-Ih7CZ3_C8bR6cwzmuLx-tMqanHXr_yYj3sGqpUgtN7s6GrVLOKMW558xDP8ibkNToqQ3kbMK5k64buRYE6MH6n6dvd2bG0SSeffIVePpw02T9oel65Jus9VBlxaqsXiXIdeRPVBbFO2GecPA&s=N3ahgSzjgL1KcTH-UwZTAbqMtz_Ssxvmq4LvoLGZ8sybTy1cqXq2AxcNFlW-ptOxLLt9e6tqBW6ryP4psvaJ8nKMEHrPwHldYx1VFxl8NFz_IbiCbHWgA6ame5meM8CyFA4xU4SutsqthLrZKDACb5UTenI4PzuMmxQzPv17vmdosegHpIt3UC9HWmHDWzfVikUI9VZAO_QZRGP9GvO-0ZiYz257vU4WS6SZ0CKut_CjDAPq2qGi4TANggy2cj9J20tluWXMxP4Y-wZ0qteoPMiSIRZ1-Ml4oWClO-AqPyaGx9Q5a6zlxyisH-2Ps0Yqs8lZ9tPclBcr8AoMKCTbyg&h=A6ttAmXyOMcsS8ME5C_pFisC14slHEPLrniqMoetVRc",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "Succeeded"
+        }
+      },
+      {
+        "interaction_index": 21,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources?api-version=2022-09-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "nextLink": null
+        }
+      },
+      {
+        "interaction_index": 22,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/azure_search_cli_test000001/providers/Microsoft.Search/searchServices/azstest000003/sharedPrivateLinkResources/spltest000004?api-version=2022-09-01",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "ResourceNotFound",
+            "message": "Could not find sharedPrivateLinkResource 'spltest000004' for searchService 'azstest000003' in subscription 'a4337210-c6b0-4de4-907a-688f1c120d9a', resourceGroupName 'azure_search_cli_test000001'. RequestId: 630add90-25e8-4312-9417-5f29ebaaac2f",
+            "target": null,
+            "details": null
+          }
+        }
+      }
+    ]
+  }
+]

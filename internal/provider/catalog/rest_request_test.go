@@ -58,6 +58,25 @@ func TestRESTRedisEnterpriseNativeNameBoundaries(t *testing.T) {
 	}
 }
 
+func TestRESTSearchNativeNameBoundaries(t *testing.T) {
+	pattern := "^(?=.{2,60}$)[a-z0-9][a-z0-9]+(-[a-z0-9]+)*$"
+	property := map[string]any{"type": "string", "in": "path", "pattern": pattern}
+	op := Operation{ID: "Azure.Microsoft.Search.Services_Get", Call: &OperationCall{Style: "azure-rest", Endpoint: "https://management.azure.com", Method: "GET", Path: "/searchServices/{name}", Version: "2025-05-01"}, InputSchema: map[string]any{"properties": map[string]any{"name": property}}}
+	for _, name := range []string{"ab", "ab-c", "22", strings.Repeat("a", 60)} {
+		if _, err := BindREST(op, map[string]any{"name": name}); err != nil {
+			t.Fatalf("valid Search name %q: %v", name, err)
+		}
+	}
+	for _, name := range []string{"a", "A1", "-ab", "ab-", "ab--c", "a-b", "ab_c", "中文", strings.Repeat("a", 61)} {
+		if _, err := BindREST(op, map[string]any{"name": name}); err == nil {
+			t.Fatalf("invalid Search name accepted: %q", name)
+		}
+	}
+	if property["pattern"] != pattern {
+		t.Fatal("binding changed the native schema")
+	}
+}
+
 func TestRESTBindingEscapesNamesAndRejectsMalformedInput(t *testing.T) {
 	op := Operation{ID: "service.resources.delete", Call: &OperationCall{Style: "google-rest", Endpoint: "https://run.googleapis.com", Method: "DELETE", Path: "/v2/{name}", RawPathParameters: []string{"name"}}, InputSchema: map[string]any{"properties": map[string]any{
 		"name": map[string]any{"type": "string", "location": "path", "required": true, "pattern": "^projects/[^/]+/locations/[^/]+/services/[^/]+$"},

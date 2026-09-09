@@ -1,0 +1,86 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Search/searchServices/sharedPrivateLinkResources
+  class: network.private_link
+presentation:
+  displayNames:
+    en-US: Search shared private link
+    zh-CN: Search 共享私有链接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Search.SharedPrivateLinkResources_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      searchServiceName: parent.normalized.arm_parameters.searchServiceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Search.SharedPrivateLinkResources_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Search/searchServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  groupId:
+    path: groupId
+    type: string
+  privateLinkResourceId:
+    path: privateLinkResourceId
+    type: string
+  status:
+    path: status
+    type: string
+  requestMessage:
+    path: requestMessage
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Search/searchServices
+  targetIdPath: refs_microsoft_search_searchservices
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.Sql/servers
+  targetIdPath: refs_microsoft_sql_servers
+- type: uses
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+- type: uses
+  targetType: Microsoft.ContainerService/managedClusters
+  targetIdPath: refs_microsoft_containerservice_managedclusters
+actions:
+  delete:
+    operation: Azure.Microsoft.Search.SharedPrivateLinkResources_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Search.SharedPrivateLinkResources_Get
+      itemsPath: $
+      identityPath: id

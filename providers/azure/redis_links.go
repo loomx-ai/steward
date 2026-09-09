@@ -242,7 +242,7 @@ func (a *action) redisLinkPreflight(ctx context.Context, planned asset.Asset, ra
 	if err != nil {
 		return err
 	}
-	if err := a.client.redisPeerProtection(ctx, peerID, peer, locks); err != nil {
+	if err := a.client.linkedResourceProtection(ctx, peerID, peer, locks); err != nil {
 		return err
 	}
 	live, err := a.client.redisResource(ctx, peerID)

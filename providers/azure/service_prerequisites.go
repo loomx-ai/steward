@@ -29,6 +29,7 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	searchType:                 {searchConnectionType, searchLinkType},
 	redisType:                  {redisPolicyType, redisAssignmentType, redisFirewallType, redisLinkType, redisPatchType, redisConnectionType},
 	redisPolicyType:            {redisAssignmentType},
 	redisEnterpriseType:        {redisDatabaseType, redisEnterpriseConnectionType},

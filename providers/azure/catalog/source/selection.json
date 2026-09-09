@@ -921,6 +921,22 @@
         "RedisEnterprise_List",
         "OperationsStatus_Get"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/search/resource-manager/Microsoft.Search/Search/stable/2025-05-01/search.json",
+      "operations": [
+        "NetworkSecurityPerimeterConfigurations_Get",
+        "NetworkSecurityPerimeterConfigurations_ListByService",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_ListByService",
+        "Services_Delete",
+        "Services_Get",
+        "Services_ListBySubscription",
+        "SharedPrivateLinkResources_Delete",
+        "SharedPrivateLinkResources_Get",
+        "SharedPrivateLinkResources_ListByService"
+      ]
     }
   ],
   "resource_types": [
@@ -4042,6 +4058,80 @@
       "delete_operations": [
         "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.PrivateEndpointConnections_Delete"
       ]
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices",
+      "display_name": "Azure AI Search service",
+      "class": "data.search_service",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "searchServices",
+      "read_operations": [
+        "Azure.Microsoft.Search.Services_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Search.Services_ListBySubscription"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Search.Services_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/privateEndpointConnections",
+      "display_name": "Search private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Search.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Search.PrivateEndpointConnections_ListByService"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Search.PrivateEndpointConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/sharedPrivateLinkResources",
+      "display_name": "Search shared private link",
+      "class": "network.private_link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "sharedPrivateLinkResources",
+      "read_operations": [
+        "Azure.Microsoft.Search.SharedPrivateLinkResources_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Search.SharedPrivateLinkResources_ListByService"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Search.SharedPrivateLinkResources_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Search/searchServices/networkSecurityPerimeterConfigurations",
+      "display_name": "Search network perimeter configuration",
+      "class": "network.perimeter_configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkSecurityPerimeterConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_ListByService"
+      ],
+      "delete_operations": []
     }
   ]
 }

@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Search/searchServices/networkSecurityPerimeterConfigurations
+  class: network.perimeter_configuration
+presentation:
+  displayNames:
+    en-US: Search network perimeter configuration
+    zh-CN: Search 网络边界配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      searchServiceName: parent.normalized.arm_parameters.searchServiceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Search/searchServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  networkSecurityPerimeter:
+    path: networkSecurityPerimeter
+    type: object
+  resourceAssociation:
+    path: resourceAssociation
+    type: object
+  profile:
+    path: profile
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Search/searchServices
+  targetIdPath: refs_microsoft_search_searchservices
