@@ -60,6 +60,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
+	if a.kind.NativeType == infraGroup {
+		return a.infraGroupPreflight(ctx, request)
+	}
 	if isInfra(a.kind.NativeType) {
 		return a.infraPreflight(ctx, request)
 	}
@@ -230,6 +233,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == infraGroup {
+		return a.executeInfraGroup(ctx, request, text(check.Evidence["infra_stage"]))
 	}
 	if isInfra(a.kind.NativeType) {
 		return a.executeInfra(ctx, request, text(check.Evidence["infra_stage"]))
@@ -422,6 +428,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == infraGroup {
+		return a.waitInfraGroup(ctx, request, result)
+	}
 	if isInfra(a.kind.NativeType) {
 		return a.waitInfra(ctx, request, result)
 	}
@@ -555,6 +564,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == infraGroup {
+		return a.infraGroupReadback(ctx, request)
+	}
 	if isInfra(a.kind.NativeType) {
 		return a.infraReadback(ctx, request)
 	}

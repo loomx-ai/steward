@@ -1,0 +1,160 @@
+{
+  "projects/sample-project/locations/us-central1/deploymentGroups/application": {
+    "name": "projects/sample-project/locations/us-central1/deploymentGroups/application",
+    "createTime": "2026-08-01T00:00:00Z",
+    "updateTime": "2026-08-21T00:00:00Z",
+    "state": "ACTIVE",
+    "provisioningState": "PROVISIONED",
+    "labels": {
+      "purpose": "test"
+    },
+    "annotations": {
+      "private": "GROUP_PRIVATE_ANNOTATION"
+    },
+    "deploymentUnits": [
+      {
+        "id": "current",
+        "deployment": "projects/sample-project/locations/us-central1/deployments/stack-a"
+      },
+      {
+        "id": "placeholder",
+        "dependencies": [
+          "current"
+        ]
+      }
+    ]
+  },
+  "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-1": {
+    "name": "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-1",
+    "createTime": "2026-08-02T00:00:00Z",
+    "snapshot": {
+      "name": "projects/sample-project/locations/us-central1/deploymentGroups/application",
+      "createTime": "2026-08-01T00:00:00Z",
+      "updateTime": "2026-08-02T00:00:00Z",
+      "state": "ACTIVE",
+      "provisioningState": "PROVISIONED",
+      "labels": {
+        "purpose": "test"
+      },
+      "annotations": {
+        "private": "GROUP_PRIVATE_ANNOTATION"
+      },
+      "deploymentUnits": [
+        {
+          "id": "former",
+          "deployment": "projects/sample-project/locations/us-central1/deployments/historical-group-unit"
+        }
+      ]
+    },
+    "alternativeIds": []
+  },
+  "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-2": {
+    "name": "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-2",
+    "createTime": "2026-08-20T00:00:00Z",
+    "snapshot": {
+      "name": "projects/sample-project/locations/us-central1/deploymentGroups/application",
+      "createTime": "2026-08-01T00:00:00Z",
+      "updateTime": "2026-08-20T00:00:00Z",
+      "state": "ACTIVE",
+      "provisioningState": "PROVISIONED",
+      "labels": {
+        "purpose": "test"
+      },
+      "annotations": {
+        "private": "GROUP_PRIVATE_ANNOTATION"
+      },
+      "deploymentUnits": [
+        {
+          "id": "current",
+          "deployment": "projects/sample-project/locations/us-central1/deployments/stack-a"
+        },
+        {
+          "id": "retired",
+          "deployment": "projects/sample-project/locations/europe-west1/deployments/stack-a",
+          "dependencies": [
+            "current"
+          ]
+        }
+      ]
+    },
+    "alternativeIds": []
+  },
+  "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-3": {
+    "name": "projects/sample-project/locations/us-central1/deploymentGroups/application/revisions/g-3",
+    "createTime": "2026-08-21T00:00:00Z",
+    "snapshot": {
+      "name": "projects/sample-project/locations/us-central1/deploymentGroups/application",
+      "createTime": "2026-08-01T00:00:00Z",
+      "updateTime": "2026-08-21T00:00:00Z",
+      "state": "ACTIVE",
+      "provisioningState": "FAILED_TO_PROVISION",
+      "labels": {
+        "purpose": "test"
+      },
+      "annotations": {
+        "private": "GROUP_PRIVATE_ANNOTATION"
+      },
+      "deploymentUnits": [
+        {
+          "id": "attempt",
+          "deployment": "projects/sample-project/locations/us-central1/deployments/historical-group-unit"
+        }
+      ]
+    },
+    "alternativeIds": []
+  },
+  "projects/sample-project/locations/europe-west1/deployments/stack-a": {
+    "createTime": "2026-08-15T00:00:00Z",
+    "lockState": "UNLOCKED",
+    "name": "projects/sample-project/locations/europe-west1/deployments/stack-a",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "ACTIVE",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    },
+    "latestRevision": "projects/sample-project/locations/europe-west1/deployments/stack-a/revisions/e-1"
+  },
+  "projects/sample-project/locations/europe-west1/deployments/stack-a/revisions/e-1": {
+    "action": "UPDATE",
+    "applyResults": {
+      "outputs": {
+        "connection": {
+          "sensitive": true,
+          "value": "INFRA_PRIVATE_OUTPUT"
+        }
+      }
+    },
+    "createTime": "2026-08-16T00:00:00Z",
+    "name": "projects/sample-project/locations/europe-west1/deployments/stack-a/revisions/e-1",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "APPLIED",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    }
+  },
+  "projects/sample-project/locations/europe-west1/deployments/stack-a/revisions/e-1/resources/retired-bucket": {
+    "caiAssets": {
+      "storage.googleapis.com/Bucket": {
+        "fullResourceName": "//storage.googleapis.com/infra-retired-data"
+      }
+    },
+    "intent": "CREATE",
+    "name": "projects/sample-project/locations/europe-west1/deployments/stack-a/revisions/e-1/resources/retired-bucket",
+    "state": "RECONCILED",
+    "terraformInfo": {
+      "address": "module.stack.google_storage_bucket.bucket",
+      "id": "infra-retired-data",
+      "type": "google_storage_bucket"
+    }
+  }
+}

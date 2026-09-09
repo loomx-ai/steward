@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: config.googleapis.com/DeploymentGroup
+  class: orchestration.stack_group
+presentation:
+  displayNames:
+    en-US: Infrastructure Manager deployment group
+    zh-CN: Infrastructure Manager 部署组
+  consoleLinkTemplate: https://console.cloud.google.com/infra-manager/deployments?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: config.projects.locations.deploymentGroups.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: deploymentGroups
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail: &read
+    operation: config.projects.locations.deploymentGroups.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: config.projects.locations.deploymentGroups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

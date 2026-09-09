@@ -1,0 +1,11 @@
+{
+  "//storage.googleapis.com/infra-retired-data": {
+    "id": "infra-retired-data",
+    "kind": "storage#bucket",
+    "location": "EU",
+    "metageneration": "1",
+    "name": "infra-retired-data",
+    "projectNumber": "123456",
+    "timeCreated": "2026-08-16T00:00:00Z"
+  }
+}

@@ -65,8 +65,8 @@ const (
 	LifecycleEvidenceWaitPollSeconds                 = "wait_poll_seconds"
 	LifecycleEvidenceControllerDeleteGuaranteed      = "controller_delete_guaranteed"
 	LifecycleEvidenceControllerIntegratedResource    = "controller_integrated_resource"
-	// Controller metadata disappears with its controller even when all provisioned
-	// resources are retained. Explicit retention of that metadata remains invalid.
+	// Retain-all applies to provisioned resources, not this controller metadata.
+	// Explicit metadata retention still follows the binding's native policy.
 	LifecycleEvidenceControllerMetadata               = "controller_metadata"
 	LifecycleEvidenceControllerVerifiesManagedAbsence = "controller_verifies_managed_absence"
 	LifecycleEvidenceUnselectedControllerAction       = "unselected_controller_action"

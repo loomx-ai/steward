@@ -14,8 +14,9 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-func TestInfraManagerFixturesMatchOfficialSchemas(t *testing.T) {
-	raw, err := os.ReadFile("fixtures/infra-manager/native-schemas.json")
+func infraFixtureSchemas(t *testing.T, path, revision, hash string) *jsonschema.Compiler {
+	t.Helper()
+	raw, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,7 +24,7 @@ func TestInfraManagerFixturesMatchOfficialSchemas(t *testing.T) {
 	if err := json.Unmarshal(raw, &source); err != nil {
 		t.Fatal(err)
 	}
-	if source["revision"] != "20260831" || source["source_sha256"] != "15c2ddd49765663081856686923abef3861993df467c711862b67795cf7217e5" {
+	if source["revision"] != revision || source["source_sha256"] != hash {
 		t.Fatal("unreviewed native schema provenance")
 	}
 	schemas := object(source["schemas"])
@@ -55,6 +56,11 @@ func TestInfraManagerFixturesMatchOfficialSchemas(t *testing.T) {
 	if err := compiler.AddResource("https://fixture.test/infra-manager.json", map[string]any{"definitions": schemas}); err != nil {
 		t.Fatal(err)
 	}
+	return compiler
+}
+
+func TestInfraManagerFixturesMatchOfficialSchemas(t *testing.T) {
+	compiler := infraFixtureSchemas(t, "fixtures/infra-manager/native-schemas.json", "20260831", "15c2ddd49765663081856686923abef3861993df467c711862b67795cf7217e5")
 	s := newInfraScenario(t)
 	for name, data := range s.resources {
 		kind := map[string]string{"deployments": "Deployment", "revisions": "Revision", "resources": "Resource", "previews": "Preview", "resourceChanges": "ResourceChange", "resourceDrifts": "ResourceDrift"}[strings.Split(name, "/")[len(strings.Split(name, "/"))-2]]

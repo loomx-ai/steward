@@ -957,6 +957,12 @@
     {
       "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1",
       "methods": [
+        "config.projects.locations.deploymentGroups.delete",
+        "config.projects.locations.deploymentGroups.deprovision",
+        "config.projects.locations.deploymentGroups.get",
+        "config.projects.locations.deploymentGroups.list",
+        "config.projects.locations.deploymentGroups.revisions.get",
+        "config.projects.locations.deploymentGroups.revisions.list",
         "config.projects.locations.deployments.delete",
         "config.projects.locations.deployments.get",
         "config.projects.locations.deployments.list",
@@ -4357,6 +4363,40 @@
       ],
       "list_operations": [
         "config.projects.locations.previews.resourceDrifts.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "config.googleapis.com/DeploymentGroup",
+      "class": "orchestration.stack_group",
+      "display_name": "Infrastructure Manager deployment group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "deploymentGroups",
+      "read_operations": [
+        "config.projects.locations.deploymentGroups.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.deploymentGroups.list"
+      ],
+      "delete_operations": [
+        "config.projects.locations.deploymentGroups.delete"
+      ]
+    },
+    {
+      "native_type": "config.googleapis.com/DeploymentGroupRevision",
+      "class": "orchestration.revision",
+      "display_name": "Infrastructure Manager deployment group revision",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "revisions",
+      "read_operations": [
+        "config.projects.locations.deploymentGroups.revisions.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.deploymentGroups.revisions.list"
       ],
       "delete_operations": []
     }

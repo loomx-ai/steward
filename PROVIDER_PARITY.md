@@ -682,3 +682,51 @@ background evidence only, not acceptance evidence for this work.
   and 49 mapped Azure kinds lack specifications. Composed preparations, broader
   Terraform mappings, remaining lifecycle behavior, independent environment and
   end-to-end acceptance, and final publication remain open.
+
+- GCP now has 187 explicit rules, 170 kinds with native deletion and 747 selected
+  methods from 54 Discovery documents and one pinned Cloud SDK archive. Native
+  DeploymentGroup and DeploymentGroupRevision add six Config methods. The updated
+  22-method Config fragment and 187 resource bindings reproduce from their source;
+  the earlier 16 Config methods/schemas and all 54 other documents are unchanged.
+- Group inventory reviews its current deployments and the deployments referenced
+  by the last successful group revision, including removed cross-region members
+  that native deprovision also deletes. It binds each child's existing Terraform
+  and physical-resource manifest, validates native unit DAG order, reconciles two
+  complete revision sets and re-reads the group. Unknown revision outcomes and
+  ambiguous success history block cleanup. Selecting the latest successful
+  snapshot by creation time is an inference from the native revision fields;
+  independent deprovision acceptance remains outstanding.
+- The actual solver supports whole-group destructive deprovision, ABANDON of all
+  physical resources, and retention of all referenced Deployment controllers.
+  The first two remove deployment metadata before group metadata. The third uses
+  only native group DELETE with `IGNORE_DEPLOYMENT_REFERENCES`, retaining the
+  reviewed deployments and descendants. Partial retention is rejected. Existing
+  deployment drivers enforce their own Terraform mappings, locks, protection and
+  native preparation guards; no direct physical DELETE is substituted for Config.
+- Persisted settle/deprovision/delete phases validate operation region, target,
+  type, verb, per-unit progress, failure and cancellation. Already-running
+  deprovision is observed without repeating the POST. Physical and nested native
+  readback gates metadata DELETE and final completion, including after serialized
+  restart, expired operations or root disappearance. One new successful
+  deprovision revision is accepted only for the reviewed incarnation and DAG,
+  with cleared references and a creation time after every reviewed revision.
+- Thirteen protocol/schema/scan-worker test functions cover the 22-asset,
+  15-impact scenario and more than 100 fault cases. A SQLite scan failure preserves
+  all prior group revisions. Full Go tests, GCP/planner/cleanup/contracts/spec race
+  tests, vet, ten offline source tests, documentation checks and two deterministic
+  catalog generations pass. The [Deployment Group evidence](providers/gcp/fixtures/deployment-group/README.md)
+  records request policies, provenance, commands and remaining limits.
+- Google's unmodified Config Connector mock at
+  `673a61419de1b8e4f7d26070ce20dde2daa61da8` independently passed native group
+  creation, GET, metadata DELETE, regional LRO GET, typed response, serialized
+  resume and GET absence. This opt-in test forwarded 14 native calls after setup
+  and counted 12 explicit read-only list substitutions. Upstream lacks
+  location/group/revision LIST and deprovision, so this proves metadata deletion
+  only. The harness is retained; its temporary server was stopped and its
+  checkout/binary removed. No independent deprovision or real-cloud acceptance
+  is claimed, and deprovision has no native request ID or atomic condition.
+- Three mapped GCP kinds and 49 mapped Azure kinds still lack specifications.
+  Composed VM/MIG/GKE/TPU preparations, broader Terraform mappings, other lifecycle
+  behavior, independent environment/end-to-end acceptance and publication remain
+  open. The parity rows remain pending; resource-rule counts do not establish
+  complete behavioral parity.

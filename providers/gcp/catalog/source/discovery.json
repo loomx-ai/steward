@@ -123454,6 +123454,218 @@
     {
       "document": {
         "methods": {
+          "config.projects.locations.deploymentGroups.delete": {
+            "description": "Deletes a DeploymentGroup",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups/{deploymentGroupsId}",
+            "httpMethod": "DELETE",
+            "id": "config.projects.locations.deploymentGroups.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "deploymentReferencePolicy": {
+                "description": "Optional. Policy on how to handle referenced deployments when deleting the DeploymentGroup. If unspecified, the default behavior is to fail the deletion if any deployments currently referenced in the `deployment_units` of the DeploymentGroup or in the latest revision are not deleted.",
+                "enum": [
+                  "DEPLOYMENT_REFERENCE_POLICY_UNSPECIFIED",
+                  "FAIL_IF_ANY_REFERENCES_EXIST",
+                  "FAIL_IF_METADATA_REFERENCES_EXIST",
+                  "IGNORE_DEPLOYMENT_REFERENCES"
+                ],
+                "enumDescriptions": [
+                  "The default behavior. If unspecified, the system will act as if `FAIL_IF_ANY_REFERENCES_EXIST` is specified.",
+                  "Fail the deletion if any deployments currently referenced in the `deployment_units` of the DeploymentGroup or in the latest revision are not deleted.",
+                  "Fail the deletion only if any deployments currently referenced in the `deployment_units` of the DeploymentGroup are not deleted. The deletion will proceed even if the deployments in the latest revision of the DeploymentGroup are not deleted.",
+                  "Ignore any deployments currently referenced in the `deployment_units` of the DeploymentGroup or in the latest revision."
+                ],
+                "location": "query",
+                "type": "string"
+              },
+              "force": {
+                "description": "Optional. If set to true, any revisions for this deployment group will also be deleted. (Otherwise, the request will only work if the deployment group has no revisions.)",
+                "location": "query",
+                "type": "boolean"
+              },
+              "name": {
+                "description": "Required. The name of DeploymentGroup in the format projects/{project_id}/locations/{location_id}/deploymentGroups/{deploymentGroup}",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/deploymentGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "requestId": {
+                "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "config.projects.locations.deploymentGroups.deprovision": {
+            "description": "Deprovisions a deployment group. NOTE: As a first step of this operation, Infra Manager will automatically delete any Deployments that were part of the *last successful* DeploymentGroupRevision but are *no longer* included in the *current* DeploymentGroup definition (e.g., following an `UpdateDeploymentGroup` call), along with their actuated resources.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups/{deploymentGroupsId}:deprovision",
+            "httpMethod": "POST",
+            "id": "config.projects.locations.deploymentGroups.deprovision",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The name of the deployment group to deprovision. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/deploymentGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}:deprovision",
+            "request": {
+              "$ref": "DeprovisionDeploymentGroupRequest"
+            },
+            "response": {
+              "$ref": "Operation"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "config.projects.locations.deploymentGroups.get": {
+            "description": "Get a DeploymentGroup for a given project and location.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups/{deploymentGroupsId}",
+            "httpMethod": "GET",
+            "id": "config.projects.locations.deploymentGroups.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The name of the deployment group to retrieve. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/deploymentGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "DeploymentGroup"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "config.projects.locations.deploymentGroups.list": {
+            "description": "List DeploymentGroups for a given project and location.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups",
+            "httpMethod": "GET",
+            "id": "config.projects.locations.deploymentGroups.list",
+            "parameterOrder": [
+              "parent"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "Optional. Lists the DeploymentGroups that match the filter expression. A filter expression filters the deployment groups listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/deploymentGroups/bar\" - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - DeploymentGroups in CREATING state. state=CREATING",
+                "location": "query",
+                "type": "string"
+              },
+              "orderBy": {
+                "description": "Optional. Field to use to sort the list.",
+                "location": "query",
+                "type": "string"
+              },
+              "pageSize": {
+                "description": "Optional. When requesting a page of resources, 'page_size' specifies number of resources to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Token returned by previous call to 'ListDeploymentGroups' which specifies the position in the list from where to continue listing the deployment groups.",
+                "location": "query",
+                "type": "string"
+              },
+              "parent": {
+                "description": "Required. The parent, which owns this collection of deployment groups. Format: 'projects/{project_id}/locations/{location}'.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+parent}/deploymentGroups",
+            "response": {
+              "$ref": "ListDeploymentGroupsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "config.projects.locations.deploymentGroups.revisions.get": {
+            "description": "Gets details about a DeploymentGroupRevision.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups/{deploymentGroupsId}/revisions/{revisionsId}",
+            "httpMethod": "GET",
+            "id": "config.projects.locations.deploymentGroups.revisions.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The name of the deployment group revision to retrieve. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}'.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/deploymentGroups/[^/]+/revisions/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "DeploymentGroupRevision"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "config.projects.locations.deploymentGroups.revisions.list": {
+            "description": "Lists DeploymentGroupRevisions in a given DeploymentGroup.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deploymentGroups/{deploymentGroupsId}/revisions",
+            "httpMethod": "GET",
+            "id": "config.projects.locations.deploymentGroups.revisions.list",
+            "parameterOrder": [
+              "parent"
+            ],
+            "parameters": {
+              "pageSize": {
+                "description": "Optional. When requesting a page of resources, 'page_size' specifies number of resources to return. If unspecified, a sensible default will be used by the server. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Token returned by previous call to 'ListDeploymentGroupRevisions' which specifies the position in the list from where to continue listing the deployment group revisions. All other parameters provided to `ListDeploymentGroupRevisions` must match the call that provided the page token.",
+                "location": "query",
+                "type": "string"
+              },
+              "parent": {
+                "description": "Required. The parent, which owns this collection of deployment group revisions. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/deploymentGroups/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+parent}/revisions",
+            "response": {
+              "$ref": "ListDeploymentGroupRevisionsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
           "config.projects.locations.deployments.delete": {
             "description": "Deletes a Deployment.",
             "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deployments/{deploymentsId}",
@@ -124254,6 +124466,143 @@
             },
             "type": "object"
           },
+          "DeploymentGroup": {
+            "description": "A DeploymentGroup is a collection of DeploymentUnits that in a DAG-like structure.",
+            "id": "DeploymentGroup",
+            "properties": {
+              "annotations": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify deployment group during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+                "type": "object"
+              },
+              "createTime": {
+                "description": "Output only. Time when the deployment group was created.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              },
+              "deploymentUnits": {
+                "description": "The deployment units of the deployment group in a DAG like structure. When a deployment group is being provisioned, the deployment units are deployed in a DAG order. The provided units must be in a DAG order, otherwise an error will be returned.",
+                "items": {
+                  "$ref": "DeploymentUnit"
+                },
+                "type": "array"
+              },
+              "labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Optional. User-defined metadata for the deployment group.",
+                "type": "object"
+              },
+              "name": {
+                "description": "Identifier. The name of the deployment group. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.",
+                "type": "string"
+              },
+              "provisioningError": {
+                "$ref": "Status",
+                "description": "Output only. The error status of the deployment group provisioning or deprovisioning.",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "description": "Output only. The provisioning state of the deployment group.",
+                "enum": [
+                  "PROVISIONING_STATE_UNSPECIFIED",
+                  "PROVISIONING",
+                  "PROVISIONED",
+                  "FAILED_TO_PROVISION",
+                  "DEPROVISIONING",
+                  "DEPROVISIONED",
+                  "FAILED_TO_DEPROVISION"
+                ],
+                "enumDescriptions": [
+                  "Unspecified provisioning state.",
+                  "The deployment group is being provisioned.",
+                  "The deployment group is provisioned.",
+                  "The deployment group failed to be provisioned.",
+                  "The deployment group is being deprovisioned.",
+                  "The deployment group is deprovisioned.",
+                  "The deployment group failed to be deprovisioned."
+                ],
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisioningStateDescription": {
+                "description": "Output only. Additional information regarding the current provisioning state.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "state": {
+                "description": "Output only. Current state of the deployment group.",
+                "enum": [
+                  "STATE_UNSPECIFIED",
+                  "CREATING",
+                  "ACTIVE",
+                  "UPDATING",
+                  "DELETING",
+                  "FAILED",
+                  "SUSPENDED",
+                  "DELETED"
+                ],
+                "enumDescriptions": [
+                  "The default value. This value is used if the state is omitted.",
+                  "The deployment group is being created.",
+                  "The deployment group is healthy.",
+                  "The deployment group is being updated.",
+                  "The deployment group is being deleted.",
+                  "The deployment group has encountered an unexpected error.",
+                  "The deployment group is no longer being actively reconciled. This may be the result of recovering the project after deletion.",
+                  "The deployment group has been deleted."
+                ],
+                "readOnly": true,
+                "type": "string"
+              },
+              "stateDescription": {
+                "description": "Output only. Additional information regarding the current state.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "updateTime": {
+                "description": "Output only. Time when the deployment group was last updated.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DeploymentGroupRevision": {
+            "description": "A DeploymentGroupRevision represents a snapshot of a DeploymentGroup at a given point in time, created when a DeploymentGroup is provisioned or deprovisioned.",
+            "id": "DeploymentGroupRevision",
+            "properties": {
+              "alternativeIds": {
+                "description": "Output only. The alternative IDs of the deployment group revision.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "createTime": {
+                "description": "Output only. Time when the deployment group revision was created.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Identifier. The name of the deployment group revision. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}'.",
+                "type": "string"
+              },
+              "snapshot": {
+                "$ref": "DeploymentGroup",
+                "description": "Output only. The snapshot of the deployment group at this revision.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
           "DeploymentSource": {
             "description": "Configuration for a value sourced from a Deployment.",
             "id": "DeploymentSource",
@@ -124265,6 +124614,53 @@
               "outputName": {
                 "description": "Required. The name of the output variable in the source deployment's latest successfully applied revision.",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DeploymentUnit": {
+            "description": "A DeploymentUnit is a container for a deployment and its dependencies. An existing deployment can be provided directly in the unit, or the unit can act as a placeholder to define the DAG, with the deployment specs supplied in a `provisionDeploymentRequest`.",
+            "id": "DeploymentUnit",
+            "properties": {
+              "dependencies": {
+                "description": "Required. The IDs of the deployment units within the deployment group that this unit depends on.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "deployment": {
+                "description": "Optional. The name of the deployment to be provisioned. Format: 'projects/{project_id}/locations/{location}/deployments/{deployment}'.",
+                "type": "string"
+              },
+              "id": {
+                "description": "The id of the deployment unit. Must be unique within the deployment group.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DeprovisionDeploymentGroupRequest": {
+            "description": "The request message for the DeprovisionDeploymentGroup method.",
+            "id": "DeprovisionDeploymentGroupRequest",
+            "properties": {
+              "deletePolicy": {
+                "description": "Optional. Policy on how resources within each deployment should be handled during deletion. This policy is applied globally to the deletion of all deployments in this group. This corresponds to the 'delete_policy' field in DeleteDeploymentRequest.",
+                "enum": [
+                  "DELETE_POLICY_UNSPECIFIED",
+                  "DELETE",
+                  "ABANDON"
+                ],
+                "enumDescriptions": [
+                  "Unspecified policy, resources will be deleted.",
+                  "Deletes resources actuated by the deployment.",
+                  "Abandons resources and only deletes the deployment and its metadata."
+                ],
+                "type": "string"
+              },
+              "force": {
+                "description": "Optional. If set to true, this option is propagated to the deletion of each deployment in the group. This corresponds to the 'force' field in DeleteDeploymentRequest.",
+                "type": "boolean"
               }
             },
             "type": "object"
@@ -124295,6 +124691,56 @@
               "repo": {
                 "description": "Repository URL. Example: 'https://github.com/kubernetes/examples.git'",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ListDeploymentGroupRevisionsResponse": {
+            "description": "The response message for the ListDeploymentGroupRevisions method.",
+            "id": "ListDeploymentGroupRevisionsResponse",
+            "properties": {
+              "deploymentGroupRevisions": {
+                "description": "The deployment group revisions from the specified collection.",
+                "items": {
+                  "$ref": "DeploymentGroupRevision"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "Token to be supplied to the next ListDeploymentGroupRevisions request via `page_token` to obtain the next set of results.",
+                "type": "string"
+              },
+              "unreachable": {
+                "description": "Unordered list. Locations that could not be reached.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ListDeploymentGroupsResponse": {
+            "description": "The response message for the ListDeploymentGroups method.",
+            "id": "ListDeploymentGroupsResponse",
+            "properties": {
+              "deploymentGroups": {
+                "description": "The deployment groups from the specified collection.",
+                "items": {
+                  "$ref": "DeploymentGroup"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "Token to be supplied to the next ListDeploymentGroups request via `page_token` to obtain the next set of results.",
+                "type": "string"
+              },
+              "unreachable": {
+                "description": "Locations that could not be reached.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               }
             },
             "type": "object"
@@ -125310,7 +125756,7 @@
         "servicePath": "",
         "version": "v1"
       },
-      "source_sha256": "15c2ddd49765663081856686923abef3861993df467c711862b67795cf7217e5",
+      "source_sha256": "0a4d3eed2f6ff6b98863520cb9e3718949871c9bfaac7b9cb5f276db16cbfafd",
       "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
     }
   ],
@@ -129062,6 +129508,44 @@
         ],
         "read_operations": [
           "config.projects.locations.previews.resourceDrifts.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "orchestration.stack_group",
+      "displayName": "Infrastructure Manager deployment group",
+      "nativeType": "config.googleapis.com/DeploymentGroup",
+      "rest": {
+        "collection": "deploymentGroups",
+        "delete_operations": [
+          "config.projects.locations.deploymentGroups.delete"
+        ],
+        "list_operations": [
+          "config.projects.locations.deploymentGroups.list"
+        ],
+        "read_operations": [
+          "config.projects.locations.deploymentGroups.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "orchestration.revision",
+      "displayName": "Infrastructure Manager deployment group revision",
+      "nativeType": "config.googleapis.com/DeploymentGroupRevision",
+      "rest": {
+        "collection": "revisions",
+        "delete_operations": [],
+        "list_operations": [
+          "config.projects.locations.deploymentGroups.revisions.list"
+        ],
+        "read_operations": [
+          "config.projects.locations.deploymentGroups.revisions.get"
         ]
       },
       "scopeKinds": [

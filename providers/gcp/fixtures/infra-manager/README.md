@@ -37,8 +37,10 @@ controller; no child DELETE method is invented.
 references from the official [Config v1 Discovery document](https://config.googleapis.com/$discovery/rest?version=v1),
 revision `20260831`, SHA-256
 `15c2ddd49765663081856686923abef3861993df467c711862b67795cf7217e5`.
-The catalog selects 16 native methods. Its fragment exactly reproduces from that
-raw response; all previously selected source documents remain unchanged.
+The original 16-method fragment for these six kinds exactly reproduced from that
+raw response. The Config catalog now also includes the separate
+[Deployment Group methods](../deployment-group/README.md); these original methods
+and schemas remain unchanged.
 
 `terraform-provenance.json` records the source URL, SHA-256 and SetId line for
 each of the 68 mapped Terraform resources. Stable-provider implementations are
@@ -153,6 +155,7 @@ implements DeploymentGroup behavior, but has no Deployment/Preview CRUD handlers
 Its presence is therefore not claimed as an independent emulator for this workflow.
 The independent JSON Schema validator checks retained official payload schemas;
 the deletion behavior uses Steward-owned native protocol scenarios. No independent
-Config deletion server or real-cloud acceptance is claimed. DeploymentGroups and
-DeploymentGroupRevisions, their deprovisioning policies, broader Terraform mappings
-and composed preparation flows remain part of the overall parity work.
+Deployment/Preview deletion server or real-cloud acceptance is claimed. The
+separate [Deployment Group workflow](../deployment-group/README.md) records its
+deprovision policies and limited independent metadata-delete coverage. Broader
+Terraform mappings and composed preparation flows remain part of the parity work.

@@ -2093,9 +2093,11 @@ resources:
     resources:
     - Microsoft.Resources/deploymentStacks
   status: pending_verification
-  notes: GCP deployment groups require native deprovisioning before metadata deletion and explicit
-    referenced-deployment policy; this group workflow remains unfinished. Deployment resource
-    ownership and whole-deployment DELETE/ABANDON are implemented separately.
+  notes: GCP deployment groups review current and last-successful-revision deployments before native
+    deprovisioning and metadata deletion, with whole-group DELETE/ABANDON or retention of all
+    referenced deployments. Nested native readback and serialized recovery are implemented.
+    Independent Google mock coverage verifies metadata DELETE only; deprovision acceptance and
+    composed child preparation flows remain open.
 - alicloud: ACS::ROS::Stack
   spec: providers/alicloud/specs/ros-stack.yaml
   class: orchestration.stack

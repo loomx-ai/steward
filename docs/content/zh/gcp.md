@@ -43,7 +43,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud Monitoring 指标范围 | 当前连接项目的指标范围、被监控项目关联及其他范围的反向引用 | 支持解除选中的项目关联；保留范围及其自身项目关联 |
 | Cloud TPU | 节点、排队资源和原生预留容量 | 节点与排队资源支持审查后清理；数据盘先解绑并保留；预留容量只读 |
 | Data Fusion | 实例、DNS 对等连接和命名空间 | 实例清理纳入审查过的命名空间与 DNS 对等连接；DNS 对等连接也支持独立删除 |
-| Infrastructure Manager | 部署、修订、资源记录、预览及变更/漂移记录 | 支持审查后的部署与预览清理；子级元数据没有独立删除操作 |
+| Infrastructure Manager | 部署组、部署、修订、资源记录、预览及变更/漂移记录 | 支持审查后的部署组、部署与预览清理；子级元数据没有独立删除操作 |
 | Batch | 作业、任务记录 | 删除作业时取消运行中的工作，并核实任务、VM 和磁盘影响；任务没有独立删除接口 |
 | Discovery Engine | 集合、数据存储、应用、架构、控制规则、服务配置、会话、对话、助手、文档分支与文档、目标网站 | 审查影响后执行原生清理；分支和网站搜索配置随数据存储删除 |
 | Dataproc | 集群、作业、辅助节点组、自动伸缩策略和工作流模板 | 审查后清理集群；默认保留作业历史；辅助节点组没有独立删除接口 |
@@ -69,6 +69,7 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 - **存储桶**：非空桶会被拒绝删除。Steward 不会先清空对象或对象版本来满足删除条件。
 - **指标范围**：解除项目关联会改变范围可以查询的指标，但会保留被监控项目、时序数据、仪表板和告警配置。范围及其自身项目关联只读；其他项目中的反向关联需要在各自连接中清理。参阅 Google 的[指标范围配置说明](https://docs.cloud.google.com/monitoring/settings/multiple-projects)。
 - **Infrastructure Manager**：部署清理会审查当前修订创建的资源及其嵌套原生影响。原生策略可以删除这些资源，或全部保留；两种情况下都会删除部署及修订元数据。预览清理仅删除预览元数据。不支持部分保留；无法完整识别或映射的 Terraform 资源需要显式指定 `retain_all_resources=true`。执行服务账号和源文件存储桶仍作为依赖保留。参阅 Google 的[部署删除说明](https://docs.cloud.google.com/infrastructure-manager/docs/delete-deployments)。
+- **部署组**：清理会审查当前引用的部署，以及上次成功组修订中存在、此后已从配置移除的部署和实际资源。先解除资源配置，再删除部署组及修订元数据。`retain_all_resources=true` 会保留实际资源并删除部署元数据；显式保留全部被引用的 Deployment 则也会保留这些部署。不支持部分保留。参阅 Google 的[部署组说明](https://docs.cloud.google.com/infrastructure-manager/docs/deployment-groups)。
 - **Cloud TPU**：清理排队资源时，先删除计划中的节点。节点清理会先解绑已有数据盘，确认磁盘仍然存在，再删除节点及其启动盘；所有节点消失后再删除排队请求。网络资源和预留容量作为独立资源保留。参阅 Google 的[排队资源删除契约](https://docs.cloud.google.com/tpu/docs/reference/rest/v2/projects.locations.queuedResources/delete)。
 - **Data Fusion**：实例清理包含计划中已审查的命名空间和 DNS 对等连接，并等待原生操作完成及资源消失。策略不可读、新增子资源或配置变化会阻止清理。用户数据及引用的存储、网络、服务账号、密钥和主题作为独立资源保留。参阅 Google 的[实例删除说明](https://docs.cloud.google.com/data-fusion/docs/how-to/delete-instance)。
 - **Batch**：选择作业后，一起审查其任务、VM 和磁盘。清理通过原生作业删除接口执行，并等待相关资源消失。已挂载且 `autoDelete=false` 的已有磁盘会保留；要求保留 Batch 创建的磁盘，或外部磁盘的删除设置不安全时，会停止清理。实例模板、存储桶、NFS 数据、密钥、Pub/Sub 主题、日志和输出数据仍作为独立资源保留。参阅 Google 的[作业删除行为](https://docs.cloud.google.com/batch/docs/delete-job)。
@@ -86,7 +87,9 @@ Dataform 文件夹清理会纳入其中的嵌套文件夹和仓库，逐一删�
 
 Infrastructure Manager 需要 `config.locations.list`，以及 deployments、revisions、resources、previews、resourcechanges 和 resourcedrifts 对应的原生 `get` / `list` 权限。清理还需要 `config.deployments.delete` 或 `config.previews.delete`、`config.operations.get`，以及实际资源的读取和列举权限。Terraform 使用部署的服务账号和源配置，两者必须保持有效。参阅 [Config 权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/config)。
 
-如果子资源仍需修改 VM/MIG 保留策略或删除保护、处理 GKE 工作负载与网络 finalizer，或解绑 TPU 数据盘，部署清理会停止。目前尚未把这些准备步骤与 Terraform 销毁组合执行；可以先保留全部已创建资源，在部署移除后另行审查清理。Terraform 自身的保护和删除策略也可能阻止销毁。最终检查会核实元数据与实际资源的结果，重启后继续执行；这些 API 没有原子的配置条件，清理期间应避免并发修改。部署组的资源解除配置流程尚未纳入。
+部署组还需要 `config.deploymentgroups` 和 `config.deploymentgrouprevisions` 对应的原生读取、列举权限，以及清理所需的 `config.deploymentgroups.deprovision` 和 `config.deploymentgroups.delete`。如果修订结果未知或无法唯一确定成功历史，清理会停止，直到能够确认资源影响。
+
+如果子资源仍需修改 VM/MIG 保留策略或删除保护、处理 GKE 工作负载与网络 finalizer，或解绑 TPU 数据盘，部署与部署组清理会停止。目前尚未把这些准备步骤与 Terraform 销毁组合执行；可以先保留全部已创建资源，在部署移除后另行审查清理。Terraform 自身的保护和删除策略也可能阻止销毁。最终检查会核实元数据与实际资源的结果，重启后继续执行；这些 API 没有原子的配置条件，清理期间应避免并发修改。
 
 Dataform 盘点需要 `dataform.locations.list`，以及仓库、工作区、发布配置、工作流配置、工作流执行和编译结果各自的 `list` / `get` 权限。清理还需对可独立删除的类型授予 `delete`，取消运行中的执行另需 `dataform.workflowInvocations.cancel`。检查只读取密钥引用，不读取密钥内容。完整权限名称参阅 [Dataform 权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/dataform)。
 

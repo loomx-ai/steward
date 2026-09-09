@@ -14,29 +14,41 @@ import (
 )
 
 const (
-	infraHost        = "config.googleapis.com"
-	infraDeployment  = infraHost + "/Deployment"
-	infraRevision    = infraHost + "/Revision"
-	infraResource    = infraHost + "/Resource"
-	infraPreview     = infraHost + "/Preview"
-	infraChange      = infraHost + "/ResourceChange"
-	infraDrift       = infraHost + "/ResourceDrift"
-	infraProof       = "_infra_configuration"
-	infraParentProof = "_infra_parent_configuration"
-	infraRootProof   = "_infra_root_configuration"
+	infraHost          = "config.googleapis.com"
+	infraDeployment    = infraHost + "/Deployment"
+	infraRevision      = infraHost + "/Revision"
+	infraResource      = infraHost + "/Resource"
+	infraPreview       = infraHost + "/Preview"
+	infraChange        = infraHost + "/ResourceChange"
+	infraDrift         = infraHost + "/ResourceDrift"
+	infraGroup         = infraHost + "/DeploymentGroup"
+	infraGroupRevision = infraHost + "/DeploymentGroupRevision"
+	infraProof         = "_infra_configuration"
+	infraParentProof   = "_infra_parent_configuration"
+	infraRootProof     = "_infra_root_configuration"
 )
 
 var infraCollections = map[string][]string{
 	infraDeployment: {"deployments"}, infraRevision: {"deployments", "revisions"},
 	infraResource: {"deployments", "revisions", "resources"}, infraPreview: {"previews"},
 	infraChange: {"previews", "resourceChanges"}, infraDrift: {"previews", "resourceDrifts"},
+	infraGroup: {"deploymentGroups"}, infraGroupRevision: {"deploymentGroups", "revisions"},
 }
 
 func isInfra(kind string) bool { _, ok := infraCollections[kind]; return ok }
 
+func isInfraController(kind string) bool {
+	return kind == infraDeployment || kind == infraPreview || kind == infraGroup
+}
+
 func infraListShape(data map[string]any, path string) error {
 	// The official response schema permits omission of an empty repeated field,
 	// but an explicitly returned field must keep its native array/string type.
+	for _, field := range []string{"items", "locations", "deployments", "revisions", "resources", "previews", "resourceChanges", "resourceDrifts", "deploymentGroups", "deploymentGroupRevisions"} {
+		if _, present := data[field]; present && field != path {
+			return groupDenied("infra_list_collection_changed")
+		}
+	}
 	for _, field := range []string{path, "unreachable"} {
 		if value, present := data[field]; present {
 			if _, ok := value.([]any); !ok {
@@ -93,7 +105,7 @@ func (c *client) infraID(kind, value string) (string, error) {
 }
 
 func infraParent(kind, id string) (string, string) {
-	parent := map[string]string{infraRevision: infraDeployment, infraResource: infraRevision, infraChange: infraPreview, infraDrift: infraPreview}[kind]
+	parent := map[string]string{infraRevision: infraDeployment, infraResource: infraRevision, infraChange: infraPreview, infraDrift: infraPreview, infraGroupRevision: infraGroup}[kind]
 	if parent == "" {
 		return "", ""
 	}
@@ -103,6 +115,11 @@ func infraParent(kind, id string) (string, string) {
 
 func infraConfiguration(raw map[string]any) string {
 	data := cloneParameters(raw)
+	if strings.Contains(text(data["name"]), "/deploymentGroups/") {
+		for _, field := range []string{"provisioningState", "provisioningStateDescription", "provisioningError", "stateDescription", "alternativeIds"} {
+			delete(data, field)
+		}
+	}
 	for key := range data {
 		if strings.HasPrefix(key, "_") || strings.HasPrefix(key, "refs_") || slices.Contains([]string{
 			"state", "stateDetail", "updateTime", "lockState", "errorCode", "errorStatus", "tfErrors", "errorLogs", "logs", "build", "deleteBuild", "deleteLogs", "deleteResults", "applyResults", "previewArtifacts", "quotaValidationResults", "project_id", "project_number",
@@ -130,9 +147,14 @@ func (c *client) infraIdentity(kind, id string, data map[string]any) error {
 	if err != nil || actual != id {
 		return groupDenied("infra_resource_identity_changed")
 	}
-	if slices.Contains([]string{infraDeployment, infraRevision, infraPreview}, kind) {
+	if slices.Contains([]string{infraDeployment, infraRevision, infraPreview, infraGroup, infraGroupRevision}, kind) {
 		if _, err := time.Parse(time.RFC3339Nano, text(data["createTime"])); err != nil {
 			return groupDenied("infra_creation_time_missing")
+		}
+	}
+	if kind == infraGroup || kind == infraGroupRevision {
+		if err := c.infraGroupIdentity(kind, id, data); err != nil {
+			return err
 		}
 	}
 	if kind == infraDeployment && text(data["latestRevision"]) != "" {
@@ -199,6 +221,20 @@ func (c *client) infraReferences(kind, id string, data map[string]any) map[strin
 	if parent, name := infraParent(kind, id); parent != "" {
 		refs[parent] = []string{name}
 	}
+	if kind == infraGroup || kind == infraGroupRevision {
+		group := data
+		if kind == infraGroupRevision {
+			group = object(data["snapshot"])
+		}
+		if units, err := c.infraGroupUnits(group); err == nil {
+			for _, unit := range units {
+				if unit.Deployment != "" {
+					refs[infraDeployment] = append(refs[infraDeployment], unit.Deployment)
+				}
+			}
+		}
+		return refs
+	}
 	// Revision/preview records describe past or proposed resources, not an
 	// ownership transfer. CAI identities are interpreted separately for a live
 	// deployment's current state. Never infer dependencies from arbitrary input.
@@ -239,7 +275,7 @@ func safeInfraPayload(raw map[string]any) map[string]any {
 		switch value := value.(type) {
 		case map[string]any:
 			for key, child := range value {
-				if slices.Contains([]string{"terraformBlueprint", "providerConfig", "applyResults", "deleteResults", "previewArtifacts", "stateDetail", "statusMessage", "errorStatus", "tfErrors", "logs", "errorLogs", "deleteLogs", "annotations", "before", "after"}, key) {
+				if slices.Contains([]string{"terraformBlueprint", "providerConfig", "applyResults", "deleteResults", "previewArtifacts", "stateDetail", "statusMessage", "errorStatus", "tfErrors", "logs", "errorLogs", "deleteLogs", "annotations", "before", "after", "provisioningError", "provisioningStateDescription", "stateDescription", "deploymentOperationSummary"}, key) {
 					value[key] = "[REDACTED]"
 				} else {
 					visit(child)

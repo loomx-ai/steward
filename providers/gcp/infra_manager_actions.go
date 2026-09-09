@@ -19,11 +19,22 @@ func (a *action) infraActionIdentity(request contracts.ActionRequest) ([]infraMe
 	if err := a.client.infraIdentity(a.kind.NativeType, a.identity.NativeID, request.Asset.Normalized); err != nil {
 		return nil, "", err
 	}
+	if err := infraRetentionOptions(request, false); err != nil {
+		return nil, "", err
+	}
+	members, err := a.client.infraSavedMembers(request.Asset)
+	if err != nil {
+		return nil, "", err
+	}
+	return a.infraReviewedMembers(request, members)
+}
+
+func infraRetentionOptions(request contracts.ActionRequest, deployments bool) error {
 	for name, value := range request.Parameters {
 		switch name {
 		case "retain_all_resources":
 			if _, ok := value.(bool); !ok {
-				return nil, "", groupDenied("infra_retention_option_invalid")
+				return groupDenied("infra_retention_option_invalid")
 			}
 		case "retain_resources":
 			var ids []string
@@ -34,30 +45,31 @@ func (a *action) infraActionIdentity(request contracts.ActionRequest) ([]infraMe
 				for _, item := range value {
 					id, ok := item.(string)
 					if !ok {
-						return nil, "", groupDenied("infra_retention_option_invalid")
+						return groupDenied("infra_retention_option_invalid")
 					}
 					ids = append(ids, id)
 				}
 			default:
-				return nil, "", groupDenied("infra_retention_option_invalid")
+				return groupDenied("infra_retention_option_invalid")
 			}
 			for _, id := range ids {
 				found := false
 				for _, impact := range request.LifecycleImpacts {
-					found = found || id != "" && (id == string(impact.Asset.ID) || id == impact.Asset.Identity.NativeID) && !impact.Delete && !isInfra(impact.Asset.Identity.NativeType)
+					allowed := !isInfra(impact.Asset.Identity.NativeType) || deployments && impact.Asset.Identity.NativeType == infraDeployment
+					found = found || id != "" && (id == string(impact.Asset.ID) || id == impact.Asset.Identity.NativeID) && !impact.Delete && allowed
 				}
 				if !found {
-					return nil, "", groupDenied("infra_retention_target_invalid")
+					return groupDenied("infra_retention_target_invalid")
 				}
 			}
 		default:
-			return nil, "", groupDenied("infra_option_unsupported")
+			return groupDenied("infra_option_unsupported")
 		}
 	}
-	members, err := a.client.infraSavedMembers(request.Asset)
-	if err != nil {
-		return nil, "", err
-	}
+	return nil
+}
+
+func (a *action) infraReviewedMembers(request contracts.ActionRequest, members []infraMember) ([]infraMember, string, error) {
 	impacts, err := groupImpacts(request)
 	if err != nil {
 		return nil, "", err
@@ -447,6 +459,10 @@ func (a *action) executeInfra(ctx context.Context, request contracts.ActionReque
 }
 
 func (a *action) infraOperation(data map[string]any, requestID string) (string, error) {
+	return a.infraOperationFor(data, requestID, "delete", true)
+}
+
+func (a *action) infraOperationFor(data map[string]any, requestID, verb string, deleted bool) (string, error) {
 	name := text(data["name"])
 	p := strings.Split(name, "/")
 	resource, err := a.client.infraName(a.kind.NativeType, a.identity.NativeID)
@@ -469,7 +485,7 @@ func (a *action) infraOperation(data map[string]any, requestID string) (string, 
 		if !ok {
 			return "", groupDenied("infra_operation_metadata_invalid")
 		}
-		for field, expected := range map[string]string{"@type": "type.googleapis.com/google.cloud.config.v1.OperationMetadata", "verb": "delete", "apiVersion": "v1"} {
+		for field, expected := range map[string]string{"@type": "type.googleapis.com/google.cloud.config.v1.OperationMetadata", "verb": verb, "apiVersion": "v1"} {
 			if value, present := metadata[field]; present && value != expected {
 				return "", groupDenied("infra_operation_metadata_changed")
 			}
@@ -485,10 +501,10 @@ func (a *action) infraOperation(data map[string]any, requestID string) (string, 
 				return "", groupDenied("infra_operation_cancelled")
 			}
 		}
-		for _, field := range []string{"deploymentMetadata", "previewMetadata"} {
+		for field, kind := range map[string]string{"deploymentMetadata": infraDeployment, "previewMetadata": infraPreview, "provisionDeploymentGroupMetadata": infraGroup} {
 			if value, present := metadata[field]; present {
 				phase, ok := value.(map[string]any)
-				if !ok || (field == "deploymentMetadata") != (a.kind.NativeType == infraDeployment) {
+				if !ok || kind != a.kind.NativeType {
 					return "", groupDenied("infra_operation_phase_invalid")
 				}
 				if phase["step"] == "FAILED" {
@@ -511,8 +527,11 @@ func (a *action) infraOperation(data map[string]any, requestID string) (string, 
 		if err != nil || id != a.identity.NativeID {
 			return "", groupDenied("infra_operation_response_target_changed")
 		}
-		if state, present := response["state"]; present && state != "DELETED" {
+		if state, present := response["state"]; deleted && present && state != "DELETED" {
 			return "", groupDenied("infra_operation_response_not_deleted")
+		}
+		if !deleted && (response["state"] != "ACTIVE" || response["provisioningState"] != "DEPROVISIONED") {
+			return "", groupDenied("infra_group_operation_not_deprovisioned")
 		}
 	}
 	return "https://" + infraHost + "/v1/" + name, nil

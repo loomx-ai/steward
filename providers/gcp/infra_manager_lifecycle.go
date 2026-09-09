@@ -27,6 +27,7 @@ type infraMember struct {
 	Proof        string `json:"proof"`
 	VisibleProof string `json:"visible_proof,omitempty"`
 	Incarnation  string `json:"incarnation,omitempty"`
+	Snapshot     string `json:"snapshot,omitempty"`
 	Absent       bool   `json:"absent,omitempty"`
 	Unmapped     bool   `json:"unmapped,omitempty"`
 }
@@ -44,6 +45,8 @@ func infraChildKinds(kind string) []string {
 		return []string{infraResource}
 	case infraPreview:
 		return []string{infraChange, infraDrift}
+	case infraGroup:
+		return []string{infraGroupRevision}
 	}
 	return nil
 }
@@ -51,7 +54,11 @@ func infraChildKinds(kind string) []string {
 func (c *client) infraList(ctx context.Context, kind, parent string, details bool) ([]infraRecord, error) {
 	collections := infraCollections[kind]
 	operation := "config.projects.locations." + strings.Join(collections, ".") + ".list"
-	rows, err := c.batchList(ctx, operation, map[string]any{"parent": strings.TrimPrefix(parent, "//"+infraHost+"/")}, collections[len(collections)-1])
+	path := collections[len(collections)-1]
+	if kind == infraGroupRevision {
+		path = "deploymentGroupRevisions"
+	}
+	rows, err := c.batchList(ctx, operation, map[string]any{"parent": strings.TrimPrefix(parent, "//"+infraHost+"/")}, path)
 	if err != nil {
 		return nil, err
 	}
@@ -103,6 +110,9 @@ func (c *client) infraRecords(ctx context.Context, kind, parent string, details 
 }
 
 func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[string]any) ([]infraMember, error) {
+	if kind == infraGroup {
+		return c.infraGroupSnapshot(ctx, id, data)
+	}
 	records, err := c.infraRecords(ctx, kind, id, true)
 	if err != nil {
 		return nil, err
@@ -146,32 +156,42 @@ func (c *client) infraSnapshot(ctx context.Context, kind, id string, data map[st
 	if !latestFound || kind == infraDeployment && latest == "" && len(records) != 0 {
 		return nil, groupDenied("infra_latest_revision_missing")
 	}
-	// Reconcile all collections after the native physical reads. A new revision
-	// or resource that appears during a detail read must restart discovery.
-	again, err := c.infraRecords(ctx, kind, id, false)
-	if err != nil {
-		return nil, err
-	}
-	if len(records) != len(again) {
-		return nil, groupDenied("infra_membership_changed")
-	}
-	for i, record := range records {
-		if record.kind != again[i].kind || record.id != again[i].id || infraConfiguration(record.data) != infraConfiguration(again[i].data) {
-			return nil, groupDenied("infra_membership_changed")
-		}
-	}
-	live, err := c.infraRead(ctx, kind, id)
-	if err != nil {
-		return nil, err
-	}
-	if err := infraSame(data, live); err != nil {
+	if err := c.infraStableRecords(ctx, kind, id, data, records); err != nil {
 		return nil, err
 	}
 	slices.SortFunc(members, func(a, b infraMember) int { return strings.Compare(a.ID, b.ID) })
 	return members, nil
 }
 
+// Reconcile all collections after native dependency reads. New revisions and
+// resource changes during detail reads must restart discovery.
+func (c *client) infraStableRecords(ctx context.Context, kind, id string, data map[string]any, records []infraRecord) error {
+	again, err := c.infraRecords(ctx, kind, id, false)
+	if err != nil {
+		return err
+	}
+	if len(records) != len(again) {
+		return groupDenied("infra_membership_changed")
+	}
+	for i, record := range records {
+		if record.kind != again[i].kind || record.id != again[i].id || infraConfiguration(record.data) != infraConfiguration(again[i].data) {
+			return groupDenied("infra_membership_changed")
+		}
+	}
+	live, err := c.infraRead(ctx, kind, id)
+	if err != nil {
+		return err
+	}
+	if err := infraSame(data, live); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *client) infraSavedMembers(root asset.Asset) ([]infraMember, error) {
+	if root.Identity.NativeType == infraGroup {
+		return c.infraGroupSavedMembers(root)
+	}
 	var members []infraMember
 	value := text(root.Normalized[infraManifestKey])
 	if value == "" || json.Unmarshal([]byte(value), &members) != nil || text(root.Normalized[infraSnapshotKey]) != infraManifestHash(text(root.Normalized[infraProof]), value) {
@@ -179,7 +199,7 @@ func (c *client) infraSavedMembers(root asset.Asset) ([]infraMember, error) {
 	}
 	seen := map[string]bool{}
 	for _, member := range members {
-		if seen[member.ID] || member.ID == root.Identity.NativeID || member.Proof == "" && !member.Absent {
+		if seen[member.ID] || member.ID == root.Identity.NativeID || member.Proof == "" && !member.Absent || member.Snapshot != "" {
 			return nil, groupDenied("infra_plan_manifest_invalid")
 		}
 		seen[member.ID] = true
@@ -204,6 +224,9 @@ func (c *client) infraSavedMembers(root asset.Asset) ([]infraMember, error) {
 }
 
 func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
+	if root.Identity.NativeType == infraGroup {
+		return s.contributeInfraGroup(ctx, root, assets)
+	}
 	result := governance.Contribution{}
 	planned, err := s.client.infraSavedMembers(root)
 	if err != nil {

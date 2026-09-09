@@ -50,7 +50,7 @@ var serviceCascadeRules = map[string]serviceCascadeRule{
 
 func HasServiceCascade(nativeType string) bool {
 	_, ok := serviceCascadeRules[nativeType]
-	return ok || nativeType == infraDeployment || nativeType == infraPreview
+	return ok || isInfraController(nativeType)
 }
 
 type serviceCascades struct{ client *client }
@@ -237,7 +237,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if parent.Identity.Provider != asset.ProviderGCP || !HasServiceCascade(parent.Identity.NativeType) {
 			continue
 		}
-		if parent.Identity.NativeType == infraDeployment || parent.Identity.NativeType == infraPreview {
+		if isInfraController(parent.Identity.NativeType) {
 			contribution, err := s.contributeInfra(ctx, parent, assets)
 			if err != nil {
 				return result, err

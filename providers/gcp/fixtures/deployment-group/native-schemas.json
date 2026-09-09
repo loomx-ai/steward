@@ -1,0 +1,1864 @@
+{
+  "revision": "20260831",
+  "schemas": {
+    "ApplyResults": {
+      "description": "Outputs and artifacts from applying a deployment.",
+      "id": "ApplyResults",
+      "properties": {
+        "artifacts": {
+          "description": "Location of artifacts (e.g. logs) in Google Cloud Storage. Format: `gs://{bucket}/{object}`",
+          "type": "string"
+        },
+        "content": {
+          "description": "Location of a blueprint copy and other manifests in Google Cloud Storage. Format: `gs://{bucket}/{object}`",
+          "type": "string"
+        },
+        "outputs": {
+          "additionalProperties": {
+            "$ref": "TerraformOutput"
+          },
+          "description": "Map of output name to output info.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "Deployment": {
+      "description": "A Deployment is a group of resources and configs managed and provisioned by Infra Manager.",
+      "id": "Deployment",
+      "properties": {
+        "annotations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify deployments during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+          "type": "object"
+        },
+        "artifactsGcsBucket": {
+          "description": "User-defined location of Cloud Build logs and artifacts in Google Cloud Storage. Format: `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the field is not set or empty. Default bucket format: `gs://--blueprint-config` Constraints: - The bucket needs to be in the same project as the deployment - The path cannot be within the path of `gcs_source` - The field cannot be updated, including changing its presence",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the deployment was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteBuild": {
+          "description": "Output only. Cloud Build instance UUID associated with deleting this deployment.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteLogs": {
+          "description": "Output only. Location of Cloud Build logs in Google Cloud Storage, populated when deleting this deployment. Format: `gs://{bucket}/{object}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteResults": {
+          "$ref": "ApplyResults",
+          "description": "Output only. Location of artifacts from a DeleteDeployment operation.",
+          "readOnly": true
+        },
+        "errorCode": {
+          "description": "Output only. Error code describing errors that may have occurred.",
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "REVISION_FAILED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "DELETE_BUILD_API_FAILED",
+            "DELETE_BUILD_RUN_FAILED",
+            "BUCKET_CREATION_PERMISSION_DENIED",
+            "BUCKET_CREATION_FAILED",
+            "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+          ],
+          "enumDescriptions": [
+            "No error code was specified.",
+            "The revision failed. See Revision for more details.",
+            "Cloud Build failed due to a permission issue.",
+            "Cloud Build job associated with a deployment deletion could not be started.",
+            "Cloud Build job associated with a deployment deletion was started but failed.",
+            "Cloud Storage bucket creation failed due to a permission issue.",
+            "Cloud Storage bucket creation failed due to an issue unrelated to permissions.",
+            "Failed to import values from an external source."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorLogs": {
+          "description": "Output only. Location of Terraform error logs in Google Cloud Storage. Format: `gs://{bucket}/{object}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "importExistingResources": {
+          "description": "By default, Infra Manager will return a failure when Terraform encounters a 409 code (resource conflict error) during actuation. If this flag is set to true, Infra Manager will instead attempt to automatically import the resource into the Terraform state (for supported resource types) and continue actuation. Not all resource types are supported, refer to documentation.",
+          "type": "boolean"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. User-defined metadata for the deployment.",
+          "type": "object"
+        },
+        "latestRevision": {
+          "description": "Output only. Revision name that was most recently applied. Format: `projects/{project}/locations/{location}/deployments/{deployment}/ revisions/{revision}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "lockState": {
+          "description": "Output only. Current lock state of the deployment.",
+          "enum": [
+            "LOCK_STATE_UNSPECIFIED",
+            "LOCKED",
+            "UNLOCKED",
+            "LOCKING",
+            "UNLOCKING",
+            "LOCK_FAILED",
+            "UNLOCK_FAILED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the lock state is omitted.",
+            "The deployment is locked.",
+            "The deployment is unlocked.",
+            "The deployment is being locked.",
+            "The deployment is being unlocked.",
+            "The deployment has failed to lock.",
+            "The deployment has failed to unlock."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Identifier. Resource name of the deployment. Format: `projects/{project}/locations/{location}/deployments/{deployment}`",
+          "type": "string"
+        },
+        "providerConfig": {
+          "$ref": "ProviderConfig",
+          "description": "Optional. This field specifies the provider configurations."
+        },
+        "quotaValidation": {
+          "description": "Optional. Input to control quota checks for resources in terraform configuration files. There are limited resources on which quota validation applies.",
+          "enum": [
+            "QUOTA_VALIDATION_UNSPECIFIED",
+            "ENABLED",
+            "ENFORCED"
+          ],
+          "enumDescriptions": [
+            "The default value. QuotaValidation on terraform configuration files will be disabled in this case.",
+            "Enable computing quotas for resources in terraform configuration files to get visibility on resources with insufficient quotas.",
+            "Enforce quota checks so deployment fails if there isn't sufficient quotas available to deploy resources in terraform configuration files."
+          ],
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "Required. User-specified Service Account (SA) credentials to be used when actuating resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the deployment.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING",
+            "FAILED",
+            "SUSPENDED",
+            "DELETED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The deployment is being created.",
+            "The deployment is healthy.",
+            "The deployment is being updated.",
+            "The deployment is being deleted.",
+            "The deployment has encountered an unexpected error.",
+            "The deployment is no longer being actively reconciled. This may be the result of recovering the project after deletion.",
+            "The deployment has been deleted."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateDetail": {
+          "description": "Output only. Additional information regarding the current state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "terraformBlueprint": {
+          "$ref": "TerraformBlueprint",
+          "description": "A blueprint described using Terraform's HashiCorp Configuration Language as a root module."
+        },
+        "tfErrors": {
+          "description": "Output only. Errors encountered when deleting this deployment. Errors are truncated to 10 entries, see `delete_results` and `error_logs` for full details.",
+          "items": {
+            "$ref": "TerraformError"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "tfVersion": {
+          "description": "Output only. The current Terraform version set on the deployment. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "tfVersionConstraint": {
+          "description": "The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the deployment was last modified.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "workerPool": {
+          "description": "The user-specified Cloud Build worker pool resource in which the Cloud Build job will execute. Format: `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If this field is unspecified, the default Cloud Build worker pool will be used.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentGroup": {
+      "description": "A DeploymentGroup is a collection of DeploymentUnits that in a DAG-like structure.",
+      "id": "DeploymentGroup",
+      "properties": {
+        "annotations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify deployment group during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+          "type": "object"
+        },
+        "createTime": {
+          "description": "Output only. Time when the deployment group was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deploymentUnits": {
+          "description": "The deployment units of the deployment group in a DAG like structure. When a deployment group is being provisioned, the deployment units are deployed in a DAG order. The provided units must be in a DAG order, otherwise an error will be returned.",
+          "items": {
+            "$ref": "DeploymentUnit"
+          },
+          "type": "array"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. User-defined metadata for the deployment group.",
+          "type": "object"
+        },
+        "name": {
+          "description": "Identifier. The name of the deployment group. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}'.",
+          "type": "string"
+        },
+        "provisioningError": {
+          "$ref": "Status",
+          "description": "Output only. The error status of the deployment group provisioning or deprovisioning.",
+          "readOnly": true
+        },
+        "provisioningState": {
+          "description": "Output only. The provisioning state of the deployment group.",
+          "enum": [
+            "PROVISIONING_STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "PROVISIONED",
+            "FAILED_TO_PROVISION",
+            "DEPROVISIONING",
+            "DEPROVISIONED",
+            "FAILED_TO_DEPROVISION"
+          ],
+          "enumDescriptions": [
+            "Unspecified provisioning state.",
+            "The deployment group is being provisioned.",
+            "The deployment group is provisioned.",
+            "The deployment group failed to be provisioned.",
+            "The deployment group is being deprovisioned.",
+            "The deployment group is deprovisioned.",
+            "The deployment group failed to be deprovisioned."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "provisioningStateDescription": {
+          "description": "Output only. Additional information regarding the current provisioning state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the deployment group.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING",
+            "FAILED",
+            "SUSPENDED",
+            "DELETED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The deployment group is being created.",
+            "The deployment group is healthy.",
+            "The deployment group is being updated.",
+            "The deployment group is being deleted.",
+            "The deployment group has encountered an unexpected error.",
+            "The deployment group is no longer being actively reconciled. This may be the result of recovering the project after deletion.",
+            "The deployment group has been deleted."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateDescription": {
+          "description": "Output only. Additional information regarding the current state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the deployment group was last updated.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentGroupRevision": {
+      "description": "A DeploymentGroupRevision represents a snapshot of a DeploymentGroup at a given point in time, created when a DeploymentGroup is provisioned or deprovisioned.",
+      "id": "DeploymentGroupRevision",
+      "properties": {
+        "alternativeIds": {
+          "description": "Output only. The alternative IDs of the deployment group revision.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "createTime": {
+          "description": "Output only. Time when the deployment group revision was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Identifier. The name of the deployment group revision. Format: 'projects/{project_id}/locations/{location}/deploymentGroups/{deployment_group}/revisions/{revision}'.",
+          "type": "string"
+        },
+        "snapshot": {
+          "$ref": "DeploymentGroup",
+          "description": "Output only. The snapshot of the deployment group at this revision.",
+          "readOnly": true
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentOperationMetadata": {
+      "description": "Ephemeral metadata content describing the state of a deployment operation.",
+      "id": "DeploymentOperationMetadata",
+      "properties": {
+        "applyResults": {
+          "$ref": "ApplyResults",
+          "description": "Outputs and artifacts from applying a deployment."
+        },
+        "applyResultsAvailable": {
+          "description": "Output only. Indicating if early apply results are available.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of Deployment operations logs in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "step": {
+          "description": "The current step the deployment operation is running.",
+          "enum": [
+            "DEPLOYMENT_STEP_UNSPECIFIED",
+            "PREPARING_STORAGE_BUCKET",
+            "DOWNLOADING_BLUEPRINT",
+            "RUNNING_TF_INIT",
+            "RUNNING_TF_PLAN",
+            "RUNNING_TF_APPLY",
+            "RUNNING_TF_DESTROY",
+            "RUNNING_TF_VALIDATE",
+            "UNLOCKING_DEPLOYMENT",
+            "SUCCEEDED",
+            "FAILED",
+            "VALIDATING_REPOSITORY",
+            "RUNNING_QUOTA_VALIDATION"
+          ],
+          "enumDescriptions": [
+            "Unspecified deployment step",
+            "Infra Manager is creating a Google Cloud Storage bucket to store artifacts and metadata about the deployment and revision",
+            "Downloading the blueprint onto the Google Cloud Storage bucket",
+            "Initializing Terraform using `terraform init`",
+            "Running `terraform plan`",
+            "Actuating resources using Terraform using `terraform apply`",
+            "Destroying resources using Terraform using `terraform destroy`",
+            "Validating the uploaded TF state file when unlocking a deployment",
+            "Unlocking a deployment",
+            "Operation was successful",
+            "Operation failed",
+            "Validating the provided repository.",
+            "Running quota validation"
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentOperationSummary": {
+      "description": "The summary of the deployment operation.",
+      "id": "DeploymentOperationSummary",
+      "properties": {
+        "artifacts": {
+          "description": "Output only. Location of Deployment operations artifacts in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "content": {
+          "description": "Output only. Location of Deployment operations content in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deploymentStep": {
+          "description": "Output only. The current step the deployment operation is running.",
+          "enum": [
+            "DEPLOYMENT_STEP_UNSPECIFIED",
+            "PREPARING_STORAGE_BUCKET",
+            "DOWNLOADING_BLUEPRINT",
+            "RUNNING_TF_INIT",
+            "RUNNING_TF_PLAN",
+            "RUNNING_TF_APPLY",
+            "RUNNING_TF_DESTROY",
+            "RUNNING_TF_VALIDATE",
+            "UNLOCKING_DEPLOYMENT",
+            "SUCCEEDED",
+            "FAILED",
+            "VALIDATING_REPOSITORY",
+            "RUNNING_QUOTA_VALIDATION"
+          ],
+          "enumDescriptions": [
+            "Unspecified deployment step",
+            "Infra Manager is creating a Google Cloud Storage bucket to store artifacts and metadata about the deployment and revision",
+            "Downloading the blueprint onto the Google Cloud Storage bucket",
+            "Initializing Terraform using `terraform init`",
+            "Running `terraform plan`",
+            "Actuating resources using Terraform using `terraform apply`",
+            "Destroying resources using Terraform using `terraform destroy`",
+            "Validating the uploaded TF state file when unlocking a deployment",
+            "Unlocking a deployment",
+            "Operation was successful",
+            "Operation failed",
+            "Validating the provided repository.",
+            "Running quota validation"
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of Deployment operations logs in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentSource": {
+      "description": "Configuration for a value sourced from a Deployment.",
+      "id": "DeploymentSource",
+      "properties": {
+        "deployment": {
+          "description": "Required. The resource name of the source Deployment to import the output from. Format: projects/{project}/locations/{location}/deployments/{deployment} The source deployment must be in the same project and location.",
+          "type": "string"
+        },
+        "outputName": {
+          "description": "Required. The name of the output variable in the source deployment's latest successfully applied revision.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentUnit": {
+      "description": "A DeploymentUnit is a container for a deployment and its dependencies. An existing deployment can be provided directly in the unit, or the unit can act as a placeholder to define the DAG, with the deployment specs supplied in a `provisionDeploymentRequest`.",
+      "id": "DeploymentUnit",
+      "properties": {
+        "dependencies": {
+          "description": "Required. The IDs of the deployment units within the deployment group that this unit depends on.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "deployment": {
+          "description": "Optional. The name of the deployment to be provisioned. Format: 'projects/{project_id}/locations/{location}/deployments/{deployment}'.",
+          "type": "string"
+        },
+        "id": {
+          "description": "The id of the deployment unit. Must be unique within the deployment group.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeploymentUnitProgress": {
+      "description": "The progress of a deployment unit provisioning or deprovisioning.",
+      "id": "DeploymentUnitProgress",
+      "properties": {
+        "deployment": {
+          "description": "Output only. The name of the deployment to be provisioned. Format: 'projects/{project}/locations/{location}/deployments/{deployment}'.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deploymentOperationSummary": {
+          "$ref": "DeploymentOperationSummary",
+          "description": "Output only. The summary of the deployment operation.",
+          "readOnly": true
+        },
+        "error": {
+          "$ref": "Status",
+          "description": "Output only. Holds the error status of the deployment unit provisioning.",
+          "readOnly": true
+        },
+        "intent": {
+          "description": "Output only. The intent of the deployment unit.",
+          "enum": [
+            "INTENT_UNSPECIFIED",
+            "CREATE_DEPLOYMENT",
+            "UPDATE_DEPLOYMENT",
+            "DELETE_DEPLOYMENT",
+            "RECREATE_DEPLOYMENT",
+            "CLEAN_UP",
+            "UNCHANGED"
+          ],
+          "enumDescriptions": [
+            "Unspecified intent.",
+            "Create deployment in the unit from the deployment spec.",
+            "Update deployment in the unit.",
+            "Delete deployment in the unit.",
+            "Recreate deployment in the unit.",
+            "Delete deployment in latest successful revision while no longer referenced in any deployment unit in the current deployment group.",
+            "Expected to be unchanged."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current step of the deployment unit provisioning.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "QUEUED",
+            "APPLYING_DEPLOYMENT",
+            "SUCCEEDED",
+            "FAILED",
+            "ABORTED",
+            "SKIPPED",
+            "DELETING_DEPLOYMENT",
+            "PREVIEWING_DEPLOYMENT"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is unused.",
+            "The deployment unit is queued for deployment creation or update.",
+            "The underlying deployment of the unit is being created or updated.",
+            "The underlying deployment operation of the unit has succeeded.",
+            "The underlying deployment operation of the unit has failed.",
+            "The deployment unit was aborted, likely due to failures in other dependent deployment units.",
+            "The deployment unit was skipped because there were no changes to apply.",
+            "The deployment is being deleted.",
+            "The deployment is being previewed."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateDescription": {
+          "description": "Output only. Additional information regarding the current state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "unitId": {
+          "description": "Output only. The unit id of the deployment unit to be provisioned.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "DeprovisionDeploymentGroupRequest": {
+      "description": "The request message for the DeprovisionDeploymentGroup method.",
+      "id": "DeprovisionDeploymentGroupRequest",
+      "properties": {
+        "deletePolicy": {
+          "description": "Optional. Policy on how resources within each deployment should be handled during deletion. This policy is applied globally to the deletion of all deployments in this group. This corresponds to the 'delete_policy' field in DeleteDeploymentRequest.",
+          "enum": [
+            "DELETE_POLICY_UNSPECIFIED",
+            "DELETE",
+            "ABANDON"
+          ],
+          "enumDescriptions": [
+            "Unspecified policy, resources will be deleted.",
+            "Deletes resources actuated by the deployment.",
+            "Abandons resources and only deletes the deployment and its metadata."
+          ],
+          "type": "string"
+        },
+        "force": {
+          "description": "Optional. If set to true, this option is propagated to the deletion of each deployment in the group. This corresponds to the 'force' field in DeleteDeploymentRequest.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "ExternalValueSource": {
+      "description": "Configuration for a source of an external value.",
+      "id": "ExternalValueSource",
+      "properties": {
+        "deploymentSource": {
+          "$ref": "DeploymentSource",
+          "description": "A source from a Deployment."
+        }
+      },
+      "type": "object"
+    },
+    "GitSource": {
+      "description": "A set of files in a Git repository.",
+      "id": "GitSource",
+      "properties": {
+        "directory": {
+          "description": "Subdirectory inside the repository. Example: 'staging/my-package'",
+          "type": "string"
+        },
+        "ref": {
+          "description": "Git reference (e.g. branch or tag).",
+          "type": "string"
+        },
+        "repo": {
+          "description": "Repository URL. Example: 'https://github.com/kubernetes/examples.git'",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ListDeploymentGroupRevisionsResponse": {
+      "description": "The response message for the ListDeploymentGroupRevisions method.",
+      "id": "ListDeploymentGroupRevisionsResponse",
+      "properties": {
+        "deploymentGroupRevisions": {
+          "description": "The deployment group revisions from the specified collection.",
+          "items": {
+            "$ref": "DeploymentGroupRevision"
+          },
+          "type": "array"
+        },
+        "nextPageToken": {
+          "description": "Token to be supplied to the next ListDeploymentGroupRevisions request via `page_token` to obtain the next set of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Unordered list. Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListDeploymentGroupsResponse": {
+      "description": "The response message for the ListDeploymentGroups method.",
+      "id": "ListDeploymentGroupsResponse",
+      "properties": {
+        "deploymentGroups": {
+          "description": "The deployment groups from the specified collection.",
+          "items": {
+            "$ref": "DeploymentGroup"
+          },
+          "type": "array"
+        },
+        "nextPageToken": {
+          "description": "Token to be supplied to the next ListDeploymentGroups request via `page_token` to obtain the next set of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListDeploymentsResponse": {
+      "id": "ListDeploymentsResponse",
+      "properties": {
+        "deployments": {
+          "description": "List of Deployments.",
+          "items": {
+            "$ref": "Deployment"
+          },
+          "type": "array"
+        },
+        "nextPageToken": {
+          "description": "Token to be supplied to the next ListDeployments request via `page_token` to obtain the next set of results.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListLocationsResponse": {
+      "description": "The response message for Locations.ListLocations.",
+      "id": "ListLocationsResponse",
+      "properties": {
+        "locations": {
+          "description": "A list of locations that matches the specified filter in the request.",
+          "items": {
+            "$ref": "Location"
+          },
+          "type": "array"
+        },
+        "nextPageToken": {
+          "description": "The standard List next-page token.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ListPreviewsResponse": {
+      "description": "A response to a `ListPreviews` call. Contains a list of Previews.",
+      "id": "ListPreviewsResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "Token to be supplied to the next ListPreviews request via `page_token` to obtain the next set of results.",
+          "type": "string"
+        },
+        "previews": {
+          "description": "List of Previews.",
+          "items": {
+            "$ref": "Preview"
+          },
+          "type": "array"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListResourceChangesResponse": {
+      "description": "A response to a 'ListResourceChanges' call. Contains a list of ResourceChanges.",
+      "id": "ListResourceChangesResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the 'ListResourceChanges' method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "resourceChanges": {
+          "description": "List of ResourceChanges.",
+          "items": {
+            "$ref": "ResourceChange"
+          },
+          "type": "array"
+        },
+        "unreachable": {
+          "description": "Unreachable resources, if any.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListResourceDriftsResponse": {
+      "description": "A response to a 'ListResourceDrifts' call. Contains a list of ResourceDrifts.",
+      "id": "ListResourceDriftsResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the 'ListResourceDrifts' method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "resourceDrifts": {
+          "description": "List of ResourceDrifts.",
+          "items": {
+            "$ref": "ResourceDrift"
+          },
+          "type": "array"
+        },
+        "unreachable": {
+          "description": "Unreachable resources, if any.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListResourcesResponse": {
+      "description": "A response to a 'ListResources' call. Contains a list of Resources.",
+      "id": "ListResourcesResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the 'ListResources' method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "resources": {
+          "description": "List of Resources.",
+          "items": {
+            "$ref": "Resource"
+          },
+          "type": "array"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "ListRevisionsResponse": {
+      "description": "A response to a 'ListRevisions' call. Contains a list of Revisions.",
+      "id": "ListRevisionsResponse",
+      "properties": {
+        "nextPageToken": {
+          "description": "A token to request the next page of resources from the 'ListRevisions' method. The value of an empty string means that there are no more resources to return.",
+          "type": "string"
+        },
+        "revisions": {
+          "description": "List of Revisions.",
+          "items": {
+            "$ref": "Revision"
+          },
+          "type": "array"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "Location": {
+      "description": "A resource that represents a Google Cloud location.",
+      "id": "Location",
+      "properties": {
+        "displayName": {
+          "description": "The friendly name for this location, typically a nearby city name. For example, \"Tokyo\".",
+          "type": "string"
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Cross-service attributes for the location. For example {\"cloud.googleapis.com/region\": \"us-east1\"}",
+          "type": "object"
+        },
+        "locationId": {
+          "description": "The canonical id for this location. For example: `\"us-east1\"`.",
+          "type": "string"
+        },
+        "metadata": {
+          "additionalProperties": {
+            "description": "Properties of the object. Contains field @type with type URL.",
+            "type": "any"
+          },
+          "description": "Service-specific metadata. For example the available capacity at the given location.",
+          "type": "object"
+        },
+        "name": {
+          "description": "Resource name for the location, which may vary between implementations. For example: `\"projects/example-project/locations/us-east1\"`",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Operation": {
+      "description": "This resource represents a long-running operation that is the result of a network API call.",
+      "id": "Operation",
+      "properties": {
+        "done": {
+          "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+          "type": "boolean"
+        },
+        "error": {
+          "$ref": "Status",
+          "description": "The error result of the operation in case of failure or cancellation."
+        },
+        "metadata": {
+          "additionalProperties": {
+            "description": "Properties of the object. Contains field @type with type URL.",
+            "type": "any"
+          },
+          "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+          "type": "object"
+        },
+        "name": {
+          "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+          "type": "string"
+        },
+        "response": {
+          "additionalProperties": {
+            "description": "Properties of the object. Contains field @type with type URL.",
+            "type": "any"
+          },
+          "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "OperationMetadata": {
+      "description": "Represents the metadata of the long-running operation.",
+      "id": "OperationMetadata",
+      "properties": {
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the operation was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deploymentMetadata": {
+          "$ref": "DeploymentOperationMetadata",
+          "description": "Output only. Metadata about the deployment operation state.",
+          "readOnly": true
+        },
+        "endTime": {
+          "description": "Output only. Time when the operation finished running.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "previewMetadata": {
+          "$ref": "PreviewOperationMetadata",
+          "description": "Output only. Metadata about the preview operation state.",
+          "readOnly": true
+        },
+        "provisionDeploymentGroupMetadata": {
+          "$ref": "ProvisionDeploymentGroupOperationMetadata",
+          "description": "Output only. Metadata about ProvisionDeploymentGroup operation state.",
+          "readOnly": true
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have google.longrunning.Operation.error value with a google.rpc.Status.code of `1`, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Preview": {
+      "description": "A preview represents a set of actions Infra Manager would perform to move the resources towards the desired state as specified in the configuration.",
+      "id": "Preview",
+      "properties": {
+        "annotations": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify preview during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+          "type": "object"
+        },
+        "artifactsGcsBucket": {
+          "description": "User-defined location of Cloud Build logs, artifacts, and in Google Cloud Storage. Format: `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the field is not set or empty Default Bucket Format: `gs://--blueprint-config` Constraints: - The bucket needs to be in the same project as the deployment - The path cannot be within the path of `gcs_source` If omitted and deployment resource ref provided has artifacts_gcs_bucket defined, that artifact bucket is used.",
+          "type": "string"
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this preview.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the preview was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deployment": {
+          "description": "Optional. Deployment reference. If specified, the preview will be performed using the provided deployment's current state and use any relevant fields from the deployment unless explicitly specified in the preview create request.",
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "Output only. Code describing any errors that may have occurred.",
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "BUCKET_CREATION_PERMISSION_DENIED",
+            "BUCKET_CREATION_FAILED",
+            "DEPLOYMENT_LOCK_ACQUIRE_FAILED",
+            "PREVIEW_BUILD_API_FAILED",
+            "PREVIEW_BUILD_RUN_FAILED",
+            "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+          ],
+          "enumDescriptions": [
+            "No error code was specified.",
+            "Cloud Build failed due to a permissions issue.",
+            "Cloud Storage bucket failed to create due to a permissions issue.",
+            "Cloud Storage bucket failed for a non-permissions-related issue.",
+            "Acquiring lock on provided deployment reference failed.",
+            "Preview encountered an error when trying to access Cloud Build API.",
+            "Preview created a build but build failed and logs were generated.",
+            "Failed to import values from an external source."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorLogs": {
+          "description": "Output only. Link to tf-error.ndjson file, which contains the full list of the errors encountered during a Terraform preview. Format: `gs://{bucket}/{object}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorStatus": {
+          "$ref": "Status",
+          "description": "Output only. Additional information regarding the current state.",
+          "readOnly": true
+        },
+        "labels": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. User-defined labels for the preview.",
+          "type": "object"
+        },
+        "logs": {
+          "description": "Output only. Location of preview logs in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Identifier. Resource name of the preview. Resource name can be user provided or server generated ID if unspecified. Format: `projects/{project}/locations/{location}/previews/{preview}`",
+          "type": "string"
+        },
+        "previewArtifacts": {
+          "$ref": "PreviewArtifacts",
+          "description": "Output only. Artifacts from preview.",
+          "readOnly": true
+        },
+        "previewMode": {
+          "description": "Optional. Current mode of preview.",
+          "enum": [
+            "PREVIEW_MODE_UNSPECIFIED",
+            "DEFAULT",
+            "DELETE"
+          ],
+          "enumDescriptions": [
+            "Unspecified policy, default mode will be used.",
+            "DEFAULT mode generates an execution plan for reconciling current resource state into expected resource state.",
+            "DELETE mode generates as execution plan for destroying current resources."
+          ],
+          "type": "string"
+        },
+        "providerConfig": {
+          "$ref": "ProviderConfig",
+          "description": "Optional. This field specifies the provider configurations."
+        },
+        "serviceAccount": {
+          "description": "Required. User-specified Service Account (SA) credentials to be used when previewing resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the preview.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "SUCCEEDED",
+            "APPLYING",
+            "STALE",
+            "DELETING",
+            "FAILED",
+            "DELETED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the state is unknown.",
+            "The preview is being created.",
+            "The preview has succeeded.",
+            "The preview is being applied.",
+            "The preview is stale. A preview can become stale if a revision has been applied after this preview was created.",
+            "The preview is being deleted.",
+            "The preview has encountered an unexpected error.",
+            "The preview has been deleted."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "terraformBlueprint": {
+          "$ref": "TerraformBlueprint",
+          "description": "The terraform blueprint to preview."
+        },
+        "tfErrors": {
+          "description": "Output only. Summary of errors encountered during Terraform preview. It has a size limit of 10, i.e. only top 10 errors will be summarized here.",
+          "items": {
+            "$ref": "TerraformError"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "tfVersion": {
+          "description": "Output only. The current Terraform version set on the preview. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "tfVersionConstraint": {
+          "description": "The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+          "type": "string"
+        },
+        "workerPool": {
+          "description": "The user-specified Worker Pool resource in which the Cloud Build job will execute. Format projects/{project}/locations/{location}/workerPools/{workerPoolId} If this field is unspecified, the default Cloud Build worker pool will be used. If omitted and deployment resource ref provided has worker_pool defined, that worker pool is used.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PreviewArtifacts": {
+      "description": "Artifacts created by preview.",
+      "id": "PreviewArtifacts",
+      "properties": {
+        "artifacts": {
+          "description": "Output only. Location of artifacts in Google Cloud Storage. Format: `gs://{bucket}/{object}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "content": {
+          "description": "Output only. Location of a blueprint copy and other content in Google Cloud Storage. Format: `gs://{bucket}/{object}`",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PreviewOperationMetadata": {
+      "description": "Ephemeral metadata content describing the state of a preview operation.",
+      "id": "PreviewOperationMetadata",
+      "properties": {
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this preview.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "logs": {
+          "description": "Output only. Location of preview logs in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "previewArtifacts": {
+          "$ref": "PreviewArtifacts",
+          "description": "Artifacts from preview."
+        },
+        "step": {
+          "description": "The current step the preview operation is running.",
+          "enum": [
+            "PREVIEW_STEP_UNSPECIFIED",
+            "PREPARING_STORAGE_BUCKET",
+            "DOWNLOADING_BLUEPRINT",
+            "RUNNING_TF_INIT",
+            "RUNNING_TF_PLAN",
+            "FETCHING_DEPLOYMENT",
+            "LOCKING_DEPLOYMENT",
+            "UNLOCKING_DEPLOYMENT",
+            "SUCCEEDED",
+            "FAILED",
+            "VALIDATING_REPOSITORY"
+          ],
+          "enumDescriptions": [
+            "Unspecified preview step.",
+            "Infra Manager is creating a Google Cloud Storage bucket to store artifacts and metadata about the preview.",
+            "Downloading the blueprint onto the Google Cloud Storage bucket.",
+            "Initializing Terraform using `terraform init`.",
+            "Running `terraform plan`.",
+            "Fetching a deployment.",
+            "Locking a deployment.",
+            "Unlocking a deployment.",
+            "Operation was successful.",
+            "Operation failed.",
+            "Validating the provided repository."
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PropertyChange": {
+      "description": "A property change represents a change to a property in the state file.",
+      "id": "PropertyChange",
+      "properties": {
+        "after": {
+          "description": "Output only. Representations of the object value after the actions.",
+          "readOnly": true,
+          "type": "any"
+        },
+        "afterSensitivePaths": {
+          "description": "Output only. The paths of sensitive fields in `after`. Paths are relative to `path`.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "before": {
+          "description": "Output only. Representations of the object value before the actions.",
+          "readOnly": true,
+          "type": "any"
+        },
+        "beforeSensitivePaths": {
+          "description": "Output only. The paths of sensitive fields in `before`. Paths are relative to `path`.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "path": {
+          "description": "Output only. The path of the property change.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "PropertyDrift": {
+      "description": "A property drift represents a drift to a property in the state file.",
+      "id": "PropertyDrift",
+      "properties": {
+        "after": {
+          "description": "Output only. Representations of the object value after the actions.",
+          "readOnly": true,
+          "type": "any"
+        },
+        "afterSensitivePaths": {
+          "description": "Output only. The paths of sensitive fields in `after`. Paths are relative to `path`.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "before": {
+          "description": "Output only. Representations of the object value before the actions.",
+          "readOnly": true,
+          "type": "any"
+        },
+        "beforeSensitivePaths": {
+          "description": "Output only. The paths of sensitive fields in `before`. Paths are relative to `path`.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "path": {
+          "description": "Output only. The path of the property drift.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ProviderConfig": {
+      "description": "ProviderConfig contains the provider configurations.",
+      "id": "ProviderConfig",
+      "properties": {
+        "sourceType": {
+          "description": "Optional. ProviderSource specifies the source type of the provider.",
+          "enum": [
+            "PROVIDER_SOURCE_UNSPECIFIED",
+            "SERVICE_MAINTAINED"
+          ],
+          "enumDescriptions": [
+            "Unspecified source type, default to public sources.",
+            "Service maintained provider source type."
+          ],
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ProvisionDeploymentGroupOperationMetadata": {
+      "description": "Operation metadata for `ProvisionDeploymentGroup` and `DeprovisionDeploymentGroup` long-running operations.",
+      "id": "ProvisionDeploymentGroupOperationMetadata",
+      "properties": {
+        "deploymentUnitProgresses": {
+          "description": "Output only. Progress information for each deployment unit within the operation.",
+          "items": {
+            "$ref": "DeploymentUnitProgress"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "step": {
+          "description": "Output only. The current step of the deployment group operation.",
+          "enum": [
+            "PROVISION_DEPLOYMENT_GROUP_STEP_UNSPECIFIED",
+            "VALIDATING_DEPLOYMENT_GROUP",
+            "ASSOCIATING_DEPLOYMENTS_TO_DEPLOYMENT_GROUP",
+            "PROVISIONING_DEPLOYMENT_UNITS",
+            "DISASSOCIATING_DEPLOYMENTS_FROM_DEPLOYMENT_GROUP",
+            "SUCCEEDED",
+            "FAILED",
+            "DEPROVISIONING_DEPLOYMENT_UNITS"
+          ],
+          "enumDescriptions": [
+            "Unspecified step.",
+            "Validating the deployment group.",
+            "Locking the deployments to the deployment group for atomic actuation.",
+            "Provisioning the deployment units.",
+            "Unlocking the deployments from the deployment group after actuation.",
+            "The operation has succeeded.",
+            "The operation has failed.",
+            "Deprovisioning the deployment units."
+          ],
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Resource": {
+      "description": "Resource represents a Google Cloud Platform resource actuated by IM. Resources are child resources of Revisions.",
+      "id": "Resource",
+      "properties": {
+        "caiAssets": {
+          "additionalProperties": {
+            "$ref": "ResourceCAIInfo"
+          },
+          "description": "Output only. Map of Cloud Asset Inventory (CAI) type to CAI info (e.g. CAI ID). CAI type format follows https://cloud.google.com/asset-inventory/docs/supported-asset-types",
+          "readOnly": true,
+          "type": "object"
+        },
+        "intent": {
+          "description": "Output only. Intent of the resource.",
+          "enum": [
+            "INTENT_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE",
+            "RECREATE",
+            "UNCHANGED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the intent is omitted.",
+            "Infra Manager will create this Resource.",
+            "Infra Manager will update this Resource.",
+            "Infra Manager will delete this Resource.",
+            "Infra Manager will destroy and recreate this Resource.",
+            "Infra Manager will leave this Resource untouched."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. Resource name. Format: `projects/{project}/locations/{location}/deployments/{deployment}/revisions/{revision}/resources/{resource}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the resource.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PLANNED",
+            "IN_PROGRESS",
+            "RECONCILED",
+            "FAILED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "Resource has been planned for reconcile.",
+            "Resource is actively reconciling into the intended state.",
+            "Resource has reconciled to intended state.",
+            "Resource failed to reconcile."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "terraformInfo": {
+          "$ref": "ResourceTerraformInfo",
+          "description": "Output only. Terraform-specific info if this resource was created using Terraform.",
+          "readOnly": true
+        }
+      },
+      "type": "object"
+    },
+    "ResourceCAIInfo": {
+      "description": "CAI info of a Resource.",
+      "id": "ResourceCAIInfo",
+      "properties": {
+        "fullResourceName": {
+          "description": "CAI resource name in the format following https://cloud.google.com/apis/design/resource_names#full_resource_name",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ResourceChange": {
+      "description": "A resource change represents a change to a resource in the state file.",
+      "id": "ResourceChange",
+      "properties": {
+        "intent": {
+          "description": "Output only. The intent of the resource change.",
+          "enum": [
+            "INTENT_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE",
+            "RECREATE",
+            "UNCHANGED"
+          ],
+          "enumDescriptions": [
+            "The default value.",
+            "The resource will be created.",
+            "The resource will be updated.",
+            "The resource will be deleted.",
+            "The resource will be recreated.",
+            "The resource will be untouched."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Identifier. The name of the resource change. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceChanges/{resource_change}'.",
+          "type": "string"
+        },
+        "propertyChanges": {
+          "description": "Output only. The property changes of the resource change.",
+          "items": {
+            "$ref": "PropertyChange"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "terraformInfo": {
+          "$ref": "ResourceChangeTerraformInfo",
+          "description": "Output only. Terraform info of the resource change.",
+          "readOnly": true
+        }
+      },
+      "type": "object"
+    },
+    "ResourceChangeTerraformInfo": {
+      "description": "Terraform info of a ResourceChange.",
+      "id": "ResourceChangeTerraformInfo",
+      "properties": {
+        "actions": {
+          "description": "Output only. TF resource actions.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "address": {
+          "description": "Output only. TF resource address that uniquely identifies the resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "provider": {
+          "description": "Output only. TF resource provider.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "Output only. TF resource name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Output only. TF resource type.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ResourceDrift": {
+      "description": "A resource drift represents a drift to a resource in the state file.",
+      "id": "ResourceDrift",
+      "properties": {
+        "name": {
+          "description": "Identifier. The name of the resource drift. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceDrifts/{resource_drift}'.",
+          "type": "string"
+        },
+        "propertyDrifts": {
+          "description": "Output only. The property drifts of the resource drift.",
+          "items": {
+            "$ref": "PropertyDrift"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "terraformInfo": {
+          "$ref": "ResourceDriftTerraformInfo",
+          "description": "Output only. Terraform info of the resource drift.",
+          "readOnly": true
+        }
+      },
+      "type": "object"
+    },
+    "ResourceDriftTerraformInfo": {
+      "description": "Terraform info of a ResourceChange.",
+      "id": "ResourceDriftTerraformInfo",
+      "properties": {
+        "address": {
+          "description": "Output only. The address of the drifted resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "provider": {
+          "description": "Output only. The provider of the drifted resource.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "resourceName": {
+          "description": "Output only. TF resource name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "type": {
+          "description": "Output only. The type of the drifted resource.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ResourceTerraformInfo": {
+      "description": "Terraform info of a Resource.",
+      "id": "ResourceTerraformInfo",
+      "properties": {
+        "address": {
+          "description": "TF resource address that uniquely identifies this resource within this deployment.",
+          "type": "string"
+        },
+        "id": {
+          "description": "ID attribute of the TF resource",
+          "type": "string"
+        },
+        "type": {
+          "description": "TF resource type",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Revision": {
+      "description": "A child resource of a Deployment generated by a 'CreateDeployment' or 'UpdateDeployment' call. Each Revision contains metadata pertaining to a snapshot of a particular Deployment.",
+      "id": "Revision",
+      "properties": {
+        "action": {
+          "description": "Output only. The action which created this revision",
+          "enum": [
+            "ACTION_UNSPECIFIED",
+            "CREATE",
+            "UPDATE",
+            "DELETE"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the action is omitted.",
+            "The revision was generated by creating a deployment.",
+            "The revision was generated by updating a deployment.",
+            "The revision was deleted."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "applyResults": {
+          "$ref": "ApplyResults",
+          "description": "Output only. Outputs and artifacts from applying a deployment.",
+          "readOnly": true
+        },
+        "build": {
+          "description": "Output only. Cloud Build instance UUID associated with this revision.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time when the revision was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "Output only. Code describing any errors that may have occurred.",
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "APPLY_BUILD_API_FAILED",
+            "APPLY_BUILD_RUN_FAILED",
+            "QUOTA_VALIDATION_FAILED",
+            "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+          ],
+          "enumDescriptions": [
+            "No error code was specified.",
+            "Cloud Build failed due to a permission issue.",
+            "Cloud Build job associated with creating or updating a deployment could not be started.",
+            "Cloud Build job associated with creating or updating a deployment was started but failed.",
+            "quota validation failed for one or more resources in terraform configuration files.",
+            "Failed to import values from an external source."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorLogs": {
+          "description": "Output only. Location of Terraform error logs in Google Cloud Storage. Format: `gs://{bucket}/{object}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "importExistingResources": {
+          "description": "Output only. By default, Infra Manager will return a failure when Terraform encounters a 409 code (resource conflict error) during actuation. If this flag is set to true, Infra Manager will instead attempt to automatically import the resource into the Terraform state (for supported resource types) and continue actuation. Not all resource types are supported, refer to documentation.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "logs": {
+          "description": "Output only. Location of Revision operation logs in `gs://{bucket}/{object}` format.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Revision name. Format: `projects/{project}/locations/{location}/deployments/{deployment}/ revisions/{revision}`",
+          "type": "string"
+        },
+        "providerConfig": {
+          "$ref": "ProviderConfig",
+          "description": "Output only. This field specifies the provider configurations.",
+          "readOnly": true
+        },
+        "quotaValidation": {
+          "description": "Optional. Input to control quota checks for resources in terraform configuration files. There are limited resources on which quota validation applies.",
+          "enum": [
+            "QUOTA_VALIDATION_UNSPECIFIED",
+            "ENABLED",
+            "ENFORCED"
+          ],
+          "enumDescriptions": [
+            "The default value. QuotaValidation on terraform configuration files will be disabled in this case.",
+            "Enable computing quotas for resources in terraform configuration files to get visibility on resources with insufficient quotas.",
+            "Enforce quota checks so deployment fails if there isn't sufficient quotas available to deploy resources in terraform configuration files."
+          ],
+          "type": "string"
+        },
+        "quotaValidationResults": {
+          "description": "Output only. Cloud Storage path containing quota validation results. This field is set when a user sets Deployment.quota_validation field to ENABLED or ENFORCED. Format: `gs://{bucket}/{object}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "Output only. User-specified Service Account (SA) to be used as credential to manage resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the revision.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "APPLYING",
+            "APPLIED",
+            "FAILED"
+          ],
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The revision is being applied.",
+            "The revision was applied successfully.",
+            "The revision could not be applied successfully."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateDetail": {
+          "description": "Output only. Additional info regarding the current state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "terraformBlueprint": {
+          "$ref": "TerraformBlueprint",
+          "description": "Output only. A blueprint described using Terraform's HashiCorp Configuration Language as a root module.",
+          "readOnly": true
+        },
+        "tfErrors": {
+          "description": "Output only. Errors encountered when creating or updating this deployment. Errors are truncated to 10 entries, see `delete_results` and `error_logs` for full details.",
+          "items": {
+            "$ref": "TerraformError"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "tfVersion": {
+          "description": "Output only. The version of Terraform used to create the Revision. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "tfVersionConstraint": {
+          "description": "Output only. The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Time when the revision was last modified.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "workerPool": {
+          "description": "Output only. The user-specified Cloud Build worker pool resource in which the Cloud Build job will execute. Format: `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If this field is unspecified, the default Cloud Build worker pool will be used.",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Status": {
+      "description": "The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).",
+      "id": "Status",
+      "properties": {
+        "code": {
+          "description": "The status code, which should be an enum value of google.rpc.Code.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "details": {
+          "description": "A list of messages that carry the error details. There is a common set of message types for APIs to use.",
+          "items": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "message": {
+          "description": "A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the google.rpc.Status.details field, or localized by the client.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "TerraformBlueprint": {
+      "description": "TerraformBlueprint describes the source of a Terraform root module which describes the resources and configs to be deployed.",
+      "id": "TerraformBlueprint",
+      "properties": {
+        "externalValues": {
+          "additionalProperties": {
+            "$ref": "ExternalValueSource"
+          },
+          "description": "Optional. Map of input variable names in this blueprint to configurations for importing values from external sources.",
+          "type": "object"
+        },
+        "gcsSource": {
+          "description": "URI of an object in Google Cloud Storage. Format: `gs://{bucket}/{object}` URI may also specify an object version for zipped objects. Format: `gs://{bucket}/{object}#{version}`",
+          "type": "string"
+        },
+        "gitSource": {
+          "$ref": "GitSource",
+          "description": "URI of a public Git repo."
+        },
+        "inputValues": {
+          "additionalProperties": {
+            "$ref": "TerraformVariable"
+          },
+          "description": "Optional. Input variable values for the Terraform blueprint.",
+          "type": "object"
+        }
+      },
+      "type": "object"
+    },
+    "TerraformError": {
+      "description": "Errors encountered during actuation using Terraform",
+      "id": "TerraformError",
+      "properties": {
+        "error": {
+          "$ref": "Status",
+          "description": "Output only. Original error response from underlying Google API, if available.",
+          "readOnly": true
+        },
+        "errorDescription": {
+          "description": "A human-readable error description.",
+          "type": "string"
+        },
+        "httpResponseCode": {
+          "description": "HTTP response code returned from Google Cloud Platform APIs when Terraform fails to provision the resource. If unset or 0, no HTTP response code was returned by Terraform.",
+          "format": "int32",
+          "type": "integer"
+        },
+        "resourceAddress": {
+          "description": "Address of the resource associated with the error, e.g. `google_compute_network.vpc_network`.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "TerraformOutput": {
+      "description": "Describes a Terraform output.",
+      "id": "TerraformOutput",
+      "properties": {
+        "sensitive": {
+          "description": "Identifies whether Terraform has set this output as a potential sensitive value.",
+          "type": "boolean"
+        },
+        "value": {
+          "description": "Value of output.",
+          "type": "any"
+        }
+      },
+      "type": "object"
+    },
+    "TerraformVariable": {
+      "description": "A Terraform input variable.",
+      "id": "TerraformVariable",
+      "properties": {
+        "inputValue": {
+          "description": "Optional. Input variable value.",
+          "type": "any"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "source_sha256": "0a4d3eed2f6ff6b98863520cb9e3718949871c9bfaac7b9cb5f276db16cbfafd",
+  "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+}

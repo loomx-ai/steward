@@ -321,14 +321,18 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				}
 			}
 
-			if nativeType == infraDeployment || nativeType == infraPreview {
+			if isInfraController(nativeType) {
 				members, err := c.infraSnapshot(ctx, nativeType, id, live)
 				if err != nil {
 					return contracts.InventoryBatch{}, err
 				}
 				encoded, _ := json.Marshal(members)
 				live[infraManifestKey] = string(encoded)
-				live[infraSnapshotKey] = infraManifestHash(infraConfiguration(live), string(encoded))
+				proof := infraConfiguration(live)
+				if nativeType == infraGroup {
+					proof += "\n" + text(live[infraGroupStructure])
+				}
+				live[infraSnapshotKey] = infraManifestHash(proof, string(encoded))
 			}
 			record.Data = live
 		}
