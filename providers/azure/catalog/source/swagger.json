@@ -873,55 +873,6 @@
             ],
             "type": "object"
           },
-          "RuleSet": {
-            "allOf": [
-              {
-                "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
-              }
-            ],
-            "description": "Friendly RuleSet name mapping to the any RuleSet or secret related information.",
-            "properties": {
-              "properties": {
-                "$ref": "#/definitions/RuleSetProperties",
-                "x-ms-client-flatten": true
-              }
-            },
-            "type": "object"
-          },
-          "RuleSetListResult": {
-            "description": "Result of the request to list rule sets. It contains a list of rule set objects and a URL link to get the next set of results.",
-            "properties": {
-              "nextLink": {
-                "description": "URL to get the next set of rule set objects if there are any.",
-                "type": "string"
-              },
-              "value": {
-                "description": "List of AzureFrontDoor rule sets within a profile.",
-                "items": {
-                  "$ref": "#/definitions/RuleSet"
-                },
-                "readOnly": true,
-                "type": "array"
-              }
-            },
-            "type": "object"
-          },
-          "RuleSetProperties": {
-            "allOf": [
-              {
-                "$ref": "#/definitions/AFDStateProperties"
-              }
-            ],
-            "description": "The JSON object that contains the properties of the Rule Set to create.",
-            "properties": {
-              "profileName": {
-                "description": "The name of the profile which holds the rule set.",
-                "readOnly": true,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          },
           "RuleUpdatePropertiesParameters": {
             "description": "The JSON object that contains the properties of the rule to update.",
             "properties": {
@@ -1987,159 +1938,6 @@
               "x-ms-examples": {
                 "AFDOrigins_Get": {
                   "$ref": "./examples/AFDOrigins_Get.json"
-                }
-              }
-            }
-          },
-          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets": {
-            "get": {
-              "description": "Lists existing AzureFrontDoor rule sets within a profile.",
-              "operationId": "RuleSets_ListByProfile",
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "#/parameters/profileNameParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "$ref": "#/definitions/RuleSetListResult"
-                  }
-                },
-                "default": {
-                  "description": "Azure Front Door error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
-                  }
-                }
-              },
-              "tags": [
-                "RuleSets"
-              ],
-              "x-ms-examples": {
-                "RuleSets_ListByProfile": {
-                  "$ref": "./examples/RuleSets_ListByProfile.json"
-                }
-              },
-              "x-ms-pageable": {
-                "nextLinkName": "nextLink"
-              }
-            }
-          },
-          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}": {
-            "delete": {
-              "description": "Deletes an existing AzureFrontDoor rule set with the specified rule set name under the specified subscription, resource group and profile.",
-              "operationId": "RuleSets_Delete",
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "#/parameters/profileNameParameter"
-                },
-                {
-                  "description": "Name of the rule set under the profile which is unique globally.",
-                  "in": "path",
-                  "name": "ruleSetName",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "Delete successful."
-                },
-                "202": {
-                  "description": "Accepted. The request has been accepted for processing and the operation will complete asynchronously.",
-                  "headers": {
-                    "location": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "204": {
-                  "description": "No Content. The request has been accepted but the rule set was not found."
-                },
-                "default": {
-                  "description": "Azure Front Door error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
-                  }
-                }
-              },
-              "tags": [
-                "RuleSets"
-              ],
-              "x-ms-examples": {
-                "RuleSets_Delete": {
-                  "$ref": "./examples/RuleSets_Delete.json"
-                }
-              },
-              "x-ms-long-running-operation": true,
-              "x-ms-long-running-operation-options": {
-                "final-state-via": "azure-async-operation"
-              }
-            },
-            "get": {
-              "description": "Gets an existing AzureFrontDoor rule set with the specified rule set name under the specified subscription, resource group and profile.",
-              "operationId": "RuleSets_Get",
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "#/parameters/profileNameParameter"
-                },
-                {
-                  "description": "Name of the rule set under the profile which is unique globally.",
-                  "in": "path",
-                  "name": "ruleSetName",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "$ref": "#/definitions/RuleSet"
-                  }
-                },
-                "default": {
-                  "description": "Azure Front Door error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
-                  }
-                }
-              },
-              "tags": [
-                "RuleSets"
-              ],
-              "x-ms-examples": {
-                "RuleSets_Get": {
-                  "$ref": "./examples/RuleSets_Get.json"
                 }
               }
             }
@@ -4908,6 +4706,635 @@
       },
       "source_sha256": "3977159b00ec3ed077c6809c1b5efe24a6d7d954fca69a692929a3e1e54b6e07",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AFDStateProperties": {
+            "description": "The tracking states for afd resources.",
+            "properties": {
+              "deploymentStatus": {
+                "$ref": "#/definitions/DeploymentStatus",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/AfdProvisioningState",
+                "description": "Provisioning status",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "AfdProvisioningState": {
+            "description": "Provisioning status",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Updating",
+              "Deleting",
+              "Creating"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AfdProvisioningState",
+              "values": [
+                {
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "name": "Deleting",
+                  "value": "Deleting"
+                },
+                {
+                  "name": "Creating",
+                  "value": "Creating"
+                }
+              ]
+            }
+          },
+          "BatchRuleProperties": {
+            "description": "The JSON object that contains a rule with its name for batch mode operations.",
+            "properties": {
+              "actions": {
+                "description": "A list of actions that are executed when all the conditions of a rule are satisfied.",
+                "items": {
+                  "$ref": "#/definitions/DeliveryRuleAction"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "conditions": {
+                "description": "A list of conditions that must be matched for the actions to be executed",
+                "items": {
+                  "$ref": "#/definitions/DeliveryRuleCondition"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "matchProcessingBehavior": {
+                "default": "Continue",
+                "description": "If this rule is a match should the rules engine continue running the remaining rules or stop. If not present, defaults to Continue.",
+                "enum": [
+                  "Continue",
+                  "Stop"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "MatchProcessingBehavior",
+                  "values": [
+                    {
+                      "name": "Continue",
+                      "value": "Continue"
+                    },
+                    {
+                      "name": "Stop",
+                      "value": "Stop"
+                    }
+                  ]
+                }
+              },
+              "order": {
+                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,\u2026\u2026\u2026}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "ruleName": {
+                "description": "Name of the rule.",
+                "maxLength": 60,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z][a-zA-Z0-9]{0,59}$",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "ruleSetName": {
+                "description": "The name of the rule set containing the rule.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "ruleName"
+            ],
+            "type": "object"
+          },
+          "DeliveryRuleAction": {
+            "description": "An action for the delivery rule.",
+            "discriminator": "name",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/DeliveryRuleActionName",
+                "description": "The name of the action for the delivery rule."
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "DeliveryRuleActionName": {
+            "description": "The name of the action for the delivery rule.",
+            "enum": [
+              "CacheExpiration",
+              "CacheKeyQueryString",
+              "ModifyRequestHeader",
+              "ModifyResponseHeader",
+              "UrlRedirect",
+              "UrlRewrite",
+              "UrlSigning",
+              "OriginGroupOverride",
+              "RouteConfigurationOverride"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "DeliveryRuleActionName",
+              "values": [
+                {
+                  "name": "CacheExpiration",
+                  "value": "CacheExpiration"
+                },
+                {
+                  "name": "CacheKeyQueryString",
+                  "value": "CacheKeyQueryString"
+                },
+                {
+                  "name": "ModifyRequestHeader",
+                  "value": "ModifyRequestHeader"
+                },
+                {
+                  "name": "ModifyResponseHeader",
+                  "value": "ModifyResponseHeader"
+                },
+                {
+                  "name": "UrlRedirect",
+                  "value": "UrlRedirect"
+                },
+                {
+                  "name": "UrlRewrite",
+                  "value": "UrlRewrite"
+                },
+                {
+                  "name": "UrlSigning",
+                  "value": "UrlSigning"
+                },
+                {
+                  "name": "OriginGroupOverride",
+                  "value": "OriginGroupOverride"
+                },
+                {
+                  "name": "RouteConfigurationOverride",
+                  "value": "RouteConfigurationOverride"
+                }
+              ]
+            }
+          },
+          "DeliveryRuleCondition": {
+            "description": "A condition for the delivery rule.",
+            "discriminator": "name",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/MatchVariable",
+                "description": "The name of the condition for the delivery rule."
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "DeploymentStatus": {
+            "enum": [
+              "NotStarted",
+              "InProgress",
+              "Succeeded",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "DeploymentStatus",
+              "values": [
+                {
+                  "name": "NotStarted",
+                  "value": "NotStarted"
+                },
+                {
+                  "name": "InProgress",
+                  "value": "InProgress"
+                },
+                {
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "MatchVariable": {
+            "description": "Request variable to compare with.",
+            "enum": [
+              "RemoteAddress",
+              "RequestMethod",
+              "QueryString",
+              "PostArgs",
+              "RequestUri",
+              "RequestHeader",
+              "RequestBody",
+              "RequestScheme",
+              "UrlPath",
+              "UrlFileExtension",
+              "UrlFileName",
+              "HttpVersion",
+              "Cookies",
+              "IsDevice",
+              "SocketAddr",
+              "ClientPort",
+              "ServerPort",
+              "HostName",
+              "SslProtocol"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "MatchVariable",
+              "values": [
+                {
+                  "name": "RemoteAddress",
+                  "value": "RemoteAddress"
+                },
+                {
+                  "name": "RequestMethod",
+                  "value": "RequestMethod"
+                },
+                {
+                  "name": "QueryString",
+                  "value": "QueryString"
+                },
+                {
+                  "name": "PostArgs",
+                  "value": "PostArgs"
+                },
+                {
+                  "name": "RequestUri",
+                  "value": "RequestUri"
+                },
+                {
+                  "name": "RequestHeader",
+                  "value": "RequestHeader"
+                },
+                {
+                  "name": "RequestBody",
+                  "value": "RequestBody"
+                },
+                {
+                  "name": "RequestScheme",
+                  "value": "RequestScheme"
+                },
+                {
+                  "name": "UrlPath",
+                  "value": "UrlPath"
+                },
+                {
+                  "name": "UrlFileExtension",
+                  "value": "UrlFileExtension"
+                },
+                {
+                  "name": "UrlFileName",
+                  "value": "UrlFileName"
+                },
+                {
+                  "name": "HttpVersion",
+                  "value": "HttpVersion"
+                },
+                {
+                  "name": "Cookies",
+                  "value": "Cookies"
+                },
+                {
+                  "name": "IsDevice",
+                  "value": "IsDevice"
+                },
+                {
+                  "name": "SocketAddr",
+                  "value": "SocketAddr"
+                },
+                {
+                  "name": "ClientPort",
+                  "value": "ClientPort"
+                },
+                {
+                  "name": "ServerPort",
+                  "value": "ServerPort"
+                },
+                {
+                  "name": "HostName",
+                  "value": "HostName"
+                },
+                {
+                  "name": "SslProtocol",
+                  "value": "SslProtocol"
+                }
+              ]
+            }
+          },
+          "RuleSet": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Friendly RuleSet name mapping to the any RuleSet or secret related information.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/RuleSetProperties",
+                "description": "The JSON object that contains the properties of the Rule Set to create.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "RuleSetListResult": {
+            "description": "The response of a RuleSet list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The RuleSet items on this page",
+                "items": {
+                  "$ref": "#/definitions/RuleSet"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "RuleSetProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AFDStateProperties"
+              }
+            ],
+            "description": "The JSON object that contains the properties of the Rule Set to create.",
+            "properties": {
+              "batchMode": {
+                "description": "Indicates whether rule set is in batch mode. When batch mode is enabled, rules will be processed in a batch along with the rule set.\nWhen batch mode is disabled, rules would need to be processed independently.\nThis property can only be set during rule set creation and cannot be updated later.\nFor switching modes, a new rule set needs to be created with the desired mode and rules need to be migrated to the new rule set.",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "profileName": {
+                "description": "The name of the profile which holds the rule set.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "rules": {
+                "description": "A list of rules that are part of this rule set provided the rule set is in batch mode.\nThis property will be ignored if the rule set is not in batch mode.",
+                "items": {
+                  "$ref": "#/definitions/BatchRuleProperties"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "ruleName"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Use these APIs to manage Azure Front Door and CDN resources through the Azure Resource Manager. You must make sure that requests made to these resources are secure.",
+          "title": "CdnManagementClient",
+          "version": "2025-12-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets": {
+            "get": {
+              "description": "Lists existing AzureFrontDoor rule sets within a profile.",
+              "operationId": "RuleSets_ListByProfile",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
+                  "in": "path",
+                  "maxLength": 260,
+                  "minLength": 1,
+                  "name": "profileName",
+                  "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RuleSetListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "RuleSets"
+              ],
+              "x-ms-examples": {
+                "RuleSets_ListByProfile": {
+                  "$ref": "./examples/RuleSets_ListByProfile.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}": {
+            "delete": {
+              "description": "Deletes an existing AzureFrontDoor rule set with the specified rule set name under the specified subscription, resource group and profile.",
+              "operationId": "RuleSets_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
+                  "in": "path",
+                  "maxLength": 260,
+                  "minLength": 1,
+                  "name": "profileName",
+                  "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Name of the rule set under the profile which is unique globally.",
+                  "in": "path",
+                  "name": "ruleSetName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "description": "A link to the status monitor",
+                      "type": "string"
+                    },
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "RuleSets"
+              ],
+              "x-ms-examples": {
+                "RuleSets_Delete": {
+                  "$ref": "./examples/RuleSets_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              }
+            },
+            "get": {
+              "description": "Gets an existing AzureFrontDoor rule set with the specified rule set name under the specified subscription, resource group and profile.",
+              "operationId": "RuleSets_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v6/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
+                  "in": "path",
+                  "maxLength": 260,
+                  "minLength": 1,
+                  "name": "profileName",
+                  "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Name of the rule set under the profile which is unique globally.",
+                  "in": "path",
+                  "name": "ruleSetName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/RuleSet"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "RuleSets"
+              ],
+              "x-ms-examples": {
+                "RuleSets_Get": {
+                  "$ref": "./examples/RuleSets_Get.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "6436a54fc7ed6c7f8bced43cc7d1d6c878fb7e639928ad4763d5c4f1cd1bdfe8",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
     },
     {
       "dependency": true,

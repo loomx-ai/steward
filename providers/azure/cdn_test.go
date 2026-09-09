@@ -22,6 +22,13 @@ import (
 
 const cdnVersion = "2025-04-15"
 
+func cdnNativeVersion(kind string) string {
+	if strings.EqualFold(kind, afdRuleSetType) {
+		return "2025-12-01"
+	}
+	return cdnVersion
+}
+
 func cdnExample(t *testing.T, name string) map[string]any {
 	t.Helper()
 	payload, err := os.ReadFile("fixtures/cdn/" + name + ".json")
@@ -38,6 +45,12 @@ func TestCDNNativeExamplesAndSchemas(t *testing.T) {
 	if err != nil || json.Unmarshal(payload, &manifest) != nil || len(manifest) != 42 {
 		t.Fatal("invalid CDN source manifest")
 	}
+	payload, err = os.ReadFile("fixtures/cdn/batch-sources.json")
+	var batchManifest []map[string]string
+	if err != nil || json.Unmarshal(payload, &batchManifest) != nil || len(batchManifest) != 3 {
+		t.Fatal("invalid CDN batch source manifest")
+	}
+	manifest = append(manifest, batchManifest...)
 	for _, entry := range manifest {
 		payload, err := os.ReadFile("fixtures/cdn/" + entry["file"])
 		if err != nil || fmt.Sprintf("%x", sha256.Sum256(payload)) != entry["source_sha256"] {
@@ -58,7 +71,7 @@ func TestCDNNativeExamplesAndSchemas(t *testing.T) {
 	}
 	checked := 0
 	for _, document := range set.Documents {
-		if !strings.Contains(document.SourceURI, "/Cdn/stable/2025-04-15/") {
+		if !strings.Contains(document.SourceURI, "/Cdn/stable/") {
 			continue
 		}
 		var native map[string]any
@@ -73,9 +86,28 @@ func TestCDNNativeExamplesAndSchemas(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				if strings.Contains(document.SourceURI, "/2025-12-01/") && op["operationId"] == "RuleSets_Get" {
+					s, _, assets := cdnBatchScenario(t)
+					raw := s.records[cdnAsset(t, assets, afdRuleSetType).Identity.NativeID]
+					payload, _ := json.Marshal(raw)
+					value, _ := jsonschema.UnmarshalJSON(bytes.NewReader(payload))
+					if err := schema.Validate(value); err != nil {
+						t.Fatalf("synthetic batch response differs from independent native schema: %v", err)
+					}
+					delete(object(array(object(raw["properties"])["rules"])[0]), "ruleName")
+					payload, _ = json.Marshal(raw)
+					value, _ = jsonschema.UnmarshalJSON(bytes.NewReader(payload))
+					if err := schema.Validate(value); err == nil {
+						t.Fatal("native batch schema accepted a rule without its required name")
+					}
+				}
 				for _, reference := range object(op["x-ms-examples"]) {
 					name := strings.TrimSuffix(last(text(object(reference)["$ref"])), ".json")
-					example := cdnExample(t, name)
+					file := name
+					if strings.Contains(document.SourceURI, "/2025-12-01/") {
+						file = "2025-12-01/" + name
+					}
+					example := cdnExample(t, file)
 					body := object(object(example["responses"])["200"])["body"]
 					payload, _ := json.Marshal(body)
 					value, _ := jsonschema.UnmarshalJSON(bytes.NewReader(payload))
@@ -192,15 +224,15 @@ func cdnScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset) {
 	lookup("Endpoints")["customDomains"] = []any{map[string]any{"name": last(ids["CustomDomains"]), "properties": lookup("CustomDomains")}}
 	lookup("Endpoints")["defaultOriginGroup"] = map[string]any{"id": ids["OriginGroups"]}
 	for _, raw := range raws {
-		s.add(raw, cdnVersion)
 		id, kind, _ := parseID(text(raw["id"]))
+		s.add(raw, cdnNativeVersion(kind))
 		canonical, _ := findType(kind)
 		collection := id[:strings.LastIndex(id, "/")]
 		if canonical.NativeType == cdnProfileType {
 			collection = root + "/providers/microsoft.cdn/profiles"
 		}
 		s.lists[collection] = append(s.lists[collection], raw)
-		s.version[collection] = cdnVersion
+		s.version[collection] = cdnNativeVersion(kind)
 		for _, childKind := range serviceChildKinds(canonical.NativeType) {
 			if canonical.NativeType == cdnProfileType {
 				applies, err := cdnChildApplies(childKind, raw)
@@ -215,7 +247,7 @@ func cdnScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset) {
 			if _, ok := s.lists[list]; !ok {
 				s.lists[list] = []any{}
 			}
-			s.version[list] = cdnVersion
+			s.version[list] = cdnNativeVersion(childKind)
 		}
 	}
 	r := s.runtime(t)
@@ -498,7 +530,7 @@ func TestCDNRecordedNativeDeletesAndSignedOperationRecovery(t *testing.T) {
 				}
 				read := object(records[tc.read]["body"])
 				s := newDNSScenario()
-				s.add(read, cdnVersion)
+				s.add(read, cdnNativeVersion(tc.kind))
 				id := strings.ToLower(text(read["id"]))
 				group := strings.Join(strings.Split(id, "/")[:5], "/")
 				profile := read
@@ -514,9 +546,6 @@ func TestCDNRecordedNativeDeletesAndSignedOperationRecovery(t *testing.T) {
 						s.lists[profileID+"/"+strings.ToLower(last(kind))] = []any{}
 					}
 				}
-				for _, kind := range serviceChildKinds(tc.kind) {
-					s.lists[id+"/"+strings.ToLower(last(kind))] = []any{}
-				}
 				collection := id[:strings.LastIndex(id, "/")]
 				if tc.kind == cdnProfileType {
 					collection = "/subscriptions/" + testSubscription + "/providers/microsoft.cdn/profiles"
@@ -529,6 +558,14 @@ func TestCDNRecordedNativeDeletesAndSignedOperationRecovery(t *testing.T) {
 				batch, err := r.List(context.Background(), productRequest(r, tc.kind))
 				if err != nil || len(batch.Items) != 1 {
 					t.Fatalf("recorded inventory: items=%d %v", len(batch.Items), err)
+				}
+				if tc.kind == afdRuleSetType {
+					if batch.Items[0].Normalized["batchMode"] != true || len(array(batch.Items[0].Normalized["rules"])) != 1 {
+						t.Fatal("native batch-mode detail lost its embedded rules")
+					}
+					if rules, err := r.List(context.Background(), productRequest(r, afdRuleType)); err != nil || !rules.Complete || len(rules.Items) != 0 {
+						t.Fatal("native batch mode invented independent rules", err)
+					}
 				}
 				root := dnsAsset(t, r, read)
 				request := contracts.ActionRequest{Asset: root, Action: "delete", IdempotencyKey: "cdn-recorded-delete"}
@@ -556,7 +593,7 @@ func TestCDNRecordedNativeDeletesAndSignedOperationRecovery(t *testing.T) {
 				polls, deletes := 0, 0
 				s.handle = func(req *http.Request) (*http.Response, bool) {
 					if req.Method == "DELETE" {
-						if !strings.EqualFold(req.URL.Path, id) || req.URL.Query().Get("api-version") != cdnVersion || req.Header.Get("x-ms-client-request-id") != azureRequestID(request.IdempotencyKey) {
+						if !strings.EqualFold(req.URL.Path, id) || req.URL.Query().Get("api-version") != cdnNativeVersion(tc.kind) || req.Header.Get("x-ms-client-request-id") != azureRequestID(request.IdempotencyKey) {
 							t.Fatal("recorded delete binding changed")
 						}
 						deletes++

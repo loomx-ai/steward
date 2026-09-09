@@ -83,3 +83,5 @@ Monitor 数据采集需要订阅范围的规则、终结点列举与读取权限
 Container Instances 容器组支持原生清单与删除。普通容器和初始化容器共享组的生命周期，外部 Azure Files 文件共享保持独立。子网、托管身份和返回的 Log Analytics 资源 ID 作为依赖引用。执行时核对已审阅的配置，敏感值通过与连接绑定的摘要比较；轮换凭据后需要重新扫描。命令、配置值和凭据不会以明文写入清单或日志。删除返回 HTTP 200 后仍须原生读取确认资源消失。参见[容器组删除约定](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01)。
 
 CDN 与 Front Door 根据 SKU 使用各自的原生子资源集合。清理前审查全部所属资源，保留级联成员会阻止删除。单独删除域名、源站组、规则集或证书引用时，计划会加入必须先删除的路由、规则或关联；多个目标共用一项前置删除。删除整个配置时，已审查的同一次级联可以同时移除其内部引用。外部源站、Key Vault 数据、DNS 区域和 WAF 策略保持独立。经典终结点仍在引用源站组时，必须先更新路由配置或选择清理终结点，才能删除源站组。清点和清理需要配置及相关子集合的原生读取、列举权限，包括引用方的路由和安全关联。签名异步操作及资源、子资源最终缺失回读支持重启恢复。参见原生[配置删除契约](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15)和[规则集清理说明](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-rule-set)。
+
+Front Door 批量模式的规则显示在规则集内，并随整个规则集保留或删除。要保留这些规则，请保留整个规则集。批量规则中的源站组覆盖配置会将引用它的规则集加入前置删除步骤；使用该规则集的路由也必须先删除。经典模式仍支持单条规则删除，并在执行前重新核对父规则集。参见微软的[批量规则管理指南](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch)。

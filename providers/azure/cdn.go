@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -58,6 +59,85 @@ func cdnProfileID(id string) string {
 		return ""
 	}
 	return strings.Join(parts[:9], "/")
+}
+
+var cdnBatchRuleName = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9]{0,59}$`)
+
+// Batch rules are embedded RuleSet properties, without independent resource
+// IDs. Only the rule-set API owns their atomic lifecycle. Require a complete
+// detail response; the native rule-set LIST omits the rules array.
+func cdnBatchMode(raw map[string]any) (bool, error) {
+	properties := object(raw["properties"])
+	value, present := properties["batchMode"]
+	if !present {
+		return false, nil
+	}
+	batch, ok := value.(bool)
+	if !ok {
+		return false, serviceDenied("invalid_cdn_batch_mode")
+	}
+	if !batch {
+		return false, nil
+	}
+	rules, ok := properties["rules"].([]any)
+	if !ok {
+		return false, serviceDenied("incomplete_cdn_batch_rules")
+	}
+	seen := map[string]bool{}
+	for _, value := range rules {
+		rule := object(value)
+		name, _ := rule["ruleName"].(string)
+		if !cdnBatchRuleName.MatchString(name) || seen[strings.ToLower(name)] {
+			return false, serviceDenied("invalid_cdn_batch_rule_name")
+		}
+		seen[strings.ToLower(name)] = true
+		if parent, exists := rule["ruleSetName"]; exists && !strings.EqualFold(text(parent), last(text(raw["id"]))) {
+			return false, serviceDenied("invalid_cdn_batch_rule_parent")
+		}
+		for _, field := range []string{"actions", "conditions"} {
+			if value, exists := rule[field]; exists {
+				members, ok := value.([]any)
+				if !ok {
+					return false, serviceDenied("invalid_cdn_batch_rule_configuration")
+				}
+				for _, member := range members {
+					if text(object(member)["name"]) == "" || object(object(member)["parameters"]) == nil {
+						return false, serviceDenied("invalid_cdn_batch_rule_configuration")
+					}
+				}
+			}
+		}
+	}
+	return true, nil
+}
+
+func (c *client) cdnRuleParent(ctx context.Context, id string) (map[string]any, error) {
+	id = strings.ToLower(id)
+	index := strings.LastIndex(id, "/rules/")
+	if index < 0 {
+		return nil, serviceDenied("invalid_cdn_rule_identity")
+	}
+	parentID := id[:index]
+	kind, _ := findType(afdRuleSetType)
+	endpoint, err := c.resourceURL(kind, parentID)
+	if err != nil {
+		return nil, err
+	}
+	live, err := c.request(ctx, "GET", endpoint)
+	if err != nil {
+		return nil, err
+	}
+	if !validResourceResponse(live, parentID, afdRuleSetType) {
+		return nil, serviceDenied("invalid_cdn_rule_set_identity")
+	}
+	batch, err := cdnBatchMode(live.data)
+	if err != nil {
+		return nil, err
+	}
+	if batch {
+		return nil, serviceDenied("cdn_batch_rule_requires_rule_set")
+	}
+	return live.data, nil
 }
 
 // Preserve configuration and stable native identities. Proxy resources acquire
@@ -164,6 +244,13 @@ func (c *client) cdnInventory(ctx context.Context, id, kind string, raw, normali
 		return serviceDenied("cdn_profile_family_changed")
 	}
 	normalized["_cdn_profile_configuration"] = cdnConfiguration(cdnProfileType, profile)
+	if kind == afdRuleType {
+		parent, err := c.cdnRuleParent(ctx, id)
+		if err != nil {
+			return contracts.DependencyReadError(err)
+		}
+		normalized["_cdn_rule_set_configuration"] = cdnConfiguration(afdRuleSetType, parent)
+	}
 	return nil
 }
 
@@ -188,6 +275,15 @@ func (a *action) cdnPreflight(ctx context.Context, planned asset.Asset, raw map[
 	if applies, err := cdnChildApplies(kind, profile); err != nil || !applies {
 		return serviceDenied("cdn_profile_family_changed")
 	}
+	if kind == afdRuleType {
+		parent, err := a.client.cdnRuleParent(ctx, planned.Identity.NativeID)
+		if err != nil {
+			return err
+		}
+		if expected := text(planned.Normalized["_cdn_rule_set_configuration"]); expected == "" || expected != cdnConfiguration(afdRuleSetType, parent) {
+			return serviceDenied("cdn_rule_set_changed")
+		}
+	}
 	incoming, err := a.client.cdnIncoming(ctx, planned.Identity, profile)
 	if err != nil {
 		return err
@@ -201,6 +297,11 @@ func (a *action) cdnPreflight(ctx context.Context, planned asset.Asset, raw map[
 // Repeat the native child set and compare complete configurations. Profiles do
 // not expose an ETag that changes for every child insertion/removal.
 func (c *client) cdnChildren(ctx context.Context, parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
+	if parent.NativeType == afdRuleSetType {
+		if batch, err := cdnBatchMode(raw); err != nil || batch {
+			return nil, err
+		}
+	}
 	kinds := slices.Clone(serviceChildKinds(parent.NativeType))
 	if parent.NativeType == cdnProfileType {
 		filtered := []string{}

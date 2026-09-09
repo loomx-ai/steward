@@ -823,9 +823,6 @@
         "Routes_Delete",
         "Routes_Get",
         "Routes_ListByEndpoint",
-        "RuleSets_Delete",
-        "RuleSets_Get",
-        "RuleSets_ListByProfile",
         "Rules_Delete",
         "Rules_Get",
         "Rules_ListByRuleSet",
@@ -835,6 +832,14 @@
         "SecurityPolicies_Delete",
         "SecurityPolicies_Get",
         "SecurityPolicies_ListByProfile"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json",
+      "operations": [
+        "RuleSets_Delete",
+        "RuleSets_Get",
+        "RuleSets_ListByProfile"
       ]
     }
   ],

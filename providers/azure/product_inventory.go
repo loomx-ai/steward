@@ -385,6 +385,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if parent.NativeType == afdRuleSetType && definition.Metadata.NativeType == afdRuleType {
+			batch, err := cdnBatchMode(parent.Raw)
+			if err != nil {
+				return nil, err
+			}
+			if batch {
+				continue
+			}
+		}
 		if parent.NativeType == cdnProfileType && isCDNType(definition.Metadata.NativeType) {
 			applies, err := cdnChildApplies(definition.Metadata.NativeType, parent.Raw)
 			if err != nil {

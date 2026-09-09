@@ -1004,3 +1004,26 @@ background evidence only, not acceptance evidence for this work.
   Azure validation. Opt-in batch rule sets described in the August 2026 guidance,
   external WAF/DNS lifecycles and the remaining provider/application acceptance
   are tracked follow-ups; this does not close the overall parity criteria.
+
+- Front Door batch rule sets now use the pinned stable 2025-12-01 RuleSets
+  GET/LIST/DELETE contract. Native CLI responses confirm that LIST omits the
+  embedded rules and GET supplies them. Inventory preserves the sanitized
+  array as rule-set configuration; batch members share the whole rule-set
+  lifetime. No individual rule identities, collection reads or DELETEs are
+  synthesized. Classic rules bind their parent's configuration and reject a
+  parent recreated in batch mode before individual deletion.
+- Batch origin-group overrides contribute the entire referring rule set as a
+  prerequisite, including its own route prerequisites. Retention and missing
+  observations block the affected cleanup. Native schema validation, unchanged
+  recorded batch deletion/404 responses, JSON recovery, missing/malformed detail,
+  new/changed rules, sensitive content, reference changes and runtime-only status
+  changes have retained tests. Empty rule arrays remain valid. These are protocol
+  and recorded-response evidence, not independent emulator or live-cloud tests.
+- This follow-up keeps 145 rules, 133 native DELETE bindings and 452 operations;
+  the source bundle has 78 root plus 38 reference documents. Every unrelated
+  source document and resource-type entry is unchanged. A fresh five-document
+  native CDN snapshot matches, and repeated generation produces SHA-256
+  `eed49659eb8d6b74ea8950128493673d684fa5700fb3b0ec90728099015f4b07`.
+  Full Go tests, CDN/shared-contract race checks, vet, offline importer tests and
+  bilingual documentation checks pass. External WAF/DNS lifecycles, remaining
+  service families and provider/application acceptance are still outstanding.

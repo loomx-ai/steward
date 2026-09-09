@@ -23,6 +23,14 @@ func cdnReferenceIDs(kind string, raw map[string]any) ([]string, error) {
 		fields = map[string][]string{"customDomains": {afdDomainType}, "originGroup": {afdOriginGroupType}, "ruleSets": {afdRuleSetType}}
 	case afdRuleType:
 		fields["originGroup"] = []string{afdOriginGroupType}
+	case afdRuleSetType:
+		batch, err := cdnBatchMode(raw)
+		if err != nil {
+			return nil, err
+		}
+		if batch {
+			fields["originGroup"] = []string{afdOriginGroupType}
+		}
 	case afdDomainType:
 		fields["secret"] = []string{afdSecretType}
 	case afdSecurityPolicyType:
@@ -92,7 +100,7 @@ func cdnIncomingKinds(kind string) []string {
 	case afdDomainType:
 		return []string{afdRouteType, afdSecurityPolicyType}
 	case afdOriginGroupType:
-		return []string{afdRouteType, afdRuleType}
+		return []string{afdRouteType, afdRuleSetType, afdRuleType}
 	case afdRuleSetType:
 		return []string{afdRouteType}
 	case afdSecretType:
@@ -119,6 +127,11 @@ func (c *client) cdnIncomingIndex(ctx context.Context, target asset.Identity, pr
 	}
 	var collect func(asset.Identity, map[string]any) ([]serviceChild, error)
 	collect = func(parent asset.Identity, raw map[string]any) ([]serviceChild, error) {
+		if parent.NativeType == afdRuleSetType {
+			if batch, err := cdnBatchMode(raw); err != nil || batch {
+				return nil, err
+			}
+		}
 		branches := []string{}
 		for _, childKind := range serviceChildKinds(parent.NativeType) {
 			needed := slices.ContainsFunc(kinds, func(kind string) bool { return kind == childKind || strings.HasPrefix(kind, childKind+"/") })

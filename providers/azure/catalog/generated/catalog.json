@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "457513a09d29c0e90be63a898aa90f818f44afec45b2442abe7dc1aadaf42e42",
+    "checksum": "8b0ae095f1a80b6b438d7c2824f56df68666fc071545d6efd253a763501d8d80",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "52fa87031cf5718c29046514ce196220218c908bb2ce5d42d4219ddc1f1eed7d",
+  "content_checksum": "e5281cd81827f5b8289c6501ebe7de982751538f28b9a56057d2e633cd0a9696",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -3543,21 +3543,20 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2025-04-15"
+              "2025-12-01"
             ],
             "in": "query",
             "type": "string"
           },
           "profileName": {
-            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
             "in": "path",
             "maxLength": 260,
             "minLength": 1,
             "name": "profileName",
             "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
+            "type": "string"
           },
           "resourceGroupName": {
             "description": "The name of the resource group. The name is case insensitive.",
@@ -3589,7 +3588,7 @@
       },
       "call": {
         "product": "Microsoft.Cdn",
-        "version": "2025-04-15",
+        "version": "2025-12-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "DELETE",
@@ -3598,7 +3597,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Cdn.RuleSets_Get",
@@ -3611,21 +3610,20 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2025-04-15"
+              "2025-12-01"
             ],
             "in": "query",
             "type": "string"
           },
           "profileName": {
-            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
             "in": "path",
             "maxLength": 260,
             "minLength": 1,
             "name": "profileName",
             "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
+            "type": "string"
           },
           "resourceGroupName": {
             "description": "The name of the resource group. The name is case insensitive.",
@@ -3665,6 +3663,7 @@
         "properties": {
           "properties": {
             "$ref": "#/definitions/RuleSetProperties",
+            "description": "The JSON object that contains the properties of the Rule Set to create.",
             "x-ms-client-flatten": true
           }
         },
@@ -3672,7 +3671,7 @@
       },
       "call": {
         "product": "Microsoft.Cdn",
-        "version": "2025-04-15",
+        "version": "2025-12-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -3681,7 +3680,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Cdn.RuleSets_ListByProfile",
@@ -3694,21 +3693,20 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2025-04-15"
+              "2025-12-01"
             ],
             "in": "query",
             "type": "string"
           },
           "profileName": {
-            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
             "in": "path",
             "maxLength": 260,
             "minLength": 1,
             "name": "profileName",
             "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
+            "type": "string"
           },
           "resourceGroupName": {
             "description": "The name of the resource group. The name is case insensitive.",
@@ -3732,21 +3730,24 @@
         "type": "object"
       },
       "output_schema": {
-        "description": "Result of the request to list rule sets. It contains a list of rule set objects and a URL link to get the next set of results.",
+        "description": "The response of a RuleSet list operation.",
         "properties": {
           "nextLink": {
-            "description": "URL to get the next set of rule set objects if there are any.",
+            "description": "The link to the next page of items",
+            "format": "uri",
             "type": "string"
           },
           "value": {
-            "description": "List of AzureFrontDoor rule sets within a profile.",
+            "description": "The RuleSet items on this page",
             "items": {
               "$ref": "#/definitions/RuleSet"
             },
-            "readOnly": true,
             "type": "array"
           }
         },
+        "required": [
+          "value"
+        ],
         "type": "object"
       },
       "pagination": {
@@ -3755,7 +3756,7 @@
       },
       "call": {
         "product": "Microsoft.Cdn",
-        "version": "2025-04-15",
+        "version": "2025-12-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -3764,7 +3765,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Cdn.Rules_Delete",

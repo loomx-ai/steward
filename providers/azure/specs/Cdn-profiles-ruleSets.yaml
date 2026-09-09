@@ -29,6 +29,12 @@ discovery:
     source: product-api
     nativeType: Microsoft.Cdn/profiles
 fields:
+  batchMode:
+    path: batchMode
+    type: boolean
+  rules:
+    path: rules
+    type: array
   name:
     path: name
     type: string
@@ -47,6 +53,9 @@ fields:
 extensions:
   hook: azure.resource
 relationships:
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/originGroups
+  targetIdPath: refs_microsoft_cdn_profiles_origingroups
 - type: depends_on
   targetType: Microsoft.Cdn/profiles
   targetIdPath: refs_microsoft_cdn_profiles

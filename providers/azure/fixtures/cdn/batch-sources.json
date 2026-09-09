@@ -1,0 +1,17 @@
+[
+  {
+    "file": "2025-12-01/RuleSets_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/RuleSets_Delete.json",
+    "source_sha256": "b14cf2ad86617610f4353e71c6ddd2240511c25536e73fd9d3cd9539f4b950a2"
+  },
+  {
+    "file": "2025-12-01/RuleSets_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/RuleSets_Get.json",
+    "source_sha256": "6625da1fc483022200c021c7c142734f5987f4c19acf50d9755549eb418d6775"
+  },
+  {
+    "file": "2025-12-01/RuleSets_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/RuleSets_ListByProfile.json",
+    "source_sha256": "1af8bfcc88bcc05876cc5be4bc758abc5bbf85f43027a56c41a8af3f8fb8c816"
+  }
+]

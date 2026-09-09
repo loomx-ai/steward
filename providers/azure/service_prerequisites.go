@@ -31,7 +31,7 @@ const (
 var servicePrerequisiteRules = map[string][]string{
 	afdEndpointType:            {afdSecurityPolicyType},
 	afdDomainType:              {afdRouteType, afdSecurityPolicyType},
-	afdOriginGroupType:         {afdRouteType, afdRuleType},
+	afdOriginGroupType:         {afdRouteType, afdRuleSetType, afdRuleType},
 	afdRuleSetType:             {afdRouteType},
 	afdSecretType:              {afdDomainType},
 	cdnOriginType:              {cdnOriginGroupType},

@@ -5,10 +5,13 @@ The 42 original GET, LIST and DELETE examples come from Microsoft's immutable
 `specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15`.
 `sources.json` records each original URL and SHA-256; example bytes are unchanged.
 The selected 42 operations retain the native `cdn.json` and `afdx.json` definitions
-and their common-types v6 references in the catalog source snapshot.
+and their common-types v6 references in the catalog source snapshot. The three
+RuleSets operations now use the same pinned commit's stable `2025-12-01/openapi.json`
+to read opt-in batch mode. `batch-sources.json` retains three additional unchanged
+examples from that version; the earlier examples remain checksum-verified.
 
-`TestCDNNativeExamplesAndSchemas` independently validates all 28 GET/LIST bodies
-against those native schemas with network loading disabled. Eighteen pass without
+`TestCDNNativeExamplesAndSchemas` independently validates the 28 selected GET/LIST
+example bodies against their respective native schemas with network loading disabled. Eighteen pass without
 changes. Ten contain documented source inconsistencies: optional typed fields
 set to null in Origins, AFDOrigins, Routes and Endpoints, and two undeclared
 provisioning-state enum values in classic CustomDomains. The test first requires
@@ -42,10 +45,18 @@ are retained. Signed `t`, `c`, `s`, `h` URL values become explicit `replay-*`
 placeholders; original paths and API versions remain. No signed credential from
 the recordings is committed. Replay binds the zero subscription ID to the test
 connection. Recorded resource requests use `2026-04-01-preview`; tests issue the
-selected stable `2025-04-15` resource API while honoring the version returned in
+selected stable `2025-04-15` resource API (`2025-12-01` for RuleSets) while honoring the version returned in
 operation URLs. Resource-group profile LIST bodies are replayed through native
 subscription LIST; parent and empty child/protection collections are synthetic.
 The secret's positive inventory list is synthesized from its recorded GET.
+
+The recorded rule set has `batchMode: true`. Its native LIST omits `rules`, and
+its detail GET contains the complete named rule array. The replay verifies that
+inventory follows the detail response and does not invent independent rule IDs,
+rule collection reads or individual DELETEs for those embedded properties.
+Native deletion and final 404 cover the batch rule set. Additional origin-group
+references, retention, malformed arrays, configuration/secret drift and a stale
+classic rule whose parent was recreated in batch mode are synthetic tests.
 
 Microsoft's pending and successful CDN polls both contain
 `error: {code: "None", message: null}`. Runtime accepts exactly that placeholder
@@ -68,7 +79,15 @@ python3 providers/azure/fixtures/cdn/reproduce_recordings.py /path/to/recordings
 The [native profile DELETE contract](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15)
 removes all its subresources. Classic endpoints contain origins, origin groups
 and domains. Front Door endpoints contain routes; origin groups contain origins;
-rule sets contain rules. Full native child lists, detail reads, repeat reads,
+classic-mode rule sets contain independently managed rules. Batch-mode rule sets
+hold their named rules as one atomic configuration, as documented in Microsoft's
+[batch rule guide](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch).
+Embedded rules are retained or deleted with the entire rule set. Their origin-group
+overrides require deleting the referring batch rule set first, including any route
+prerequisites. A missing batch detail array fails discovery; an explicit empty
+array is valid. Classic individual rules additionally bind the live parent rule-set
+configuration; prior inventories without that binding require a rescan.
+Full native child lists, detail reads, repeat reads,
 profile SKU/configuration and immutable creation fields where returned bind each
 reviewed cascade. Classic endpoint embedded collections must agree with lists.
 Retention, missing inventory, changing relationships/configuration, management
