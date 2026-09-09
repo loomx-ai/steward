@@ -784,6 +784,58 @@
         "ContainerGroups_List",
         "ContainerGroups_Delete"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json",
+      "operations": [
+        "CustomDomains_Delete",
+        "CustomDomains_Get",
+        "CustomDomains_ListByEndpoint",
+        "Endpoints_Delete",
+        "Endpoints_Get",
+        "Endpoints_ListByProfile",
+        "OriginGroups_Delete",
+        "OriginGroups_Get",
+        "OriginGroups_ListByEndpoint",
+        "Origins_Delete",
+        "Origins_Get",
+        "Origins_ListByEndpoint",
+        "Profiles_Delete",
+        "Profiles_Get",
+        "Profiles_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json",
+      "operations": [
+        "AFDCustomDomains_Delete",
+        "AFDCustomDomains_Get",
+        "AFDCustomDomains_ListByProfile",
+        "AFDEndpoints_Delete",
+        "AFDEndpoints_Get",
+        "AFDEndpoints_ListByProfile",
+        "AFDOriginGroups_Delete",
+        "AFDOriginGroups_Get",
+        "AFDOriginGroups_ListByProfile",
+        "AFDOrigins_Delete",
+        "AFDOrigins_Get",
+        "AFDOrigins_ListByOriginGroup",
+        "Routes_Delete",
+        "Routes_Get",
+        "Routes_ListByEndpoint",
+        "RuleSets_Delete",
+        "RuleSets_Get",
+        "RuleSets_ListByProfile",
+        "Rules_Delete",
+        "Rules_Get",
+        "Rules_ListByRuleSet",
+        "Secrets_Delete",
+        "Secrets_Get",
+        "Secrets_ListByProfile",
+        "SecurityPolicies_Delete",
+        "SecurityPolicies_Get",
+        "SecurityPolicies_ListByProfile"
+      ]
     }
   ],
   "resource_types": [
@@ -3233,6 +3285,272 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.ContainerInstance.ContainerGroups_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles",
+      "display_name": "CDN / Front Door profile",
+      "class": "network.cdn",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "profiles",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Profiles_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Profiles_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Profiles_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints",
+      "display_name": "CDN endpoint",
+      "class": "network.cdn_domain",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "endpoints",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Endpoints_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Endpoints_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Endpoints_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/origins",
+      "display_name": "CDN origin",
+      "class": "network.cdn_origin",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "origins",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Origins_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Origins_ListByEndpoint"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Origins_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/originGroups",
+      "display_name": "CDN origin group",
+      "class": "network.cdn_origin_group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "originGroups",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.OriginGroups_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.OriginGroups_ListByEndpoint"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.OriginGroups_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/customDomains",
+      "display_name": "CDN custom domain",
+      "class": "network.cdn_domain",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "customDomains",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.CustomDomains_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.CustomDomains_ListByEndpoint"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.CustomDomains_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "display_name": "Front Door endpoint",
+      "class": "network.cdn_domain",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "afdEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.AFDEndpoints_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.AFDEndpoints_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.AFDEndpoints_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/customDomains",
+      "display_name": "Front Door custom domain",
+      "class": "network.cdn_domain",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "customDomains",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.AFDCustomDomains_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.AFDCustomDomains_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.AFDCustomDomains_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/originGroups",
+      "display_name": "Front Door origin group",
+      "class": "network.cdn_origin_group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "originGroups",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.AFDOriginGroups_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.AFDOriginGroups_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.AFDOriginGroups_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/originGroups/origins",
+      "display_name": "Front Door origin",
+      "class": "network.cdn_origin",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "origins",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.AFDOrigins_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.AFDOrigins_ListByOriginGroup"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.AFDOrigins_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "display_name": "Front Door route",
+      "class": "network.cdn_route",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "routes",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Routes_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Routes_ListByEndpoint"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Routes_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/ruleSets",
+      "display_name": "Front Door rule set",
+      "class": "network.cdn_rule_set",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "ruleSets",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.RuleSets_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.RuleSets_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.RuleSets_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/ruleSets/rules",
+      "display_name": "Front Door rule",
+      "class": "network.cdn_rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "rules",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Rules_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Rules_ListByRuleSet"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Rules_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/securityPolicies",
+      "display_name": "Front Door security policy association",
+      "class": "security.waf_association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "securityPolicies",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.SecurityPolicies_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.SecurityPolicies_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.SecurityPolicies_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/secrets",
+      "display_name": "Front Door certificate reference",
+      "class": "security.certificate_reference",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "secrets",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Secrets_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Secrets_ListByProfile"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Secrets_Delete"
       ]
     }
   ]

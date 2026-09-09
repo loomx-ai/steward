@@ -1,0 +1,212 @@
+[
+  {
+    "file": "AFDCustomDomains_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDCustomDomains_Delete.json",
+    "source_sha256": "1ad01dedcfccffb158c3b80100e0ca420a7bc6959bc3478614e8f6ac98db2420"
+  },
+  {
+    "file": "AFDCustomDomains_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDCustomDomains_Get.json",
+    "source_sha256": "979c561a239b71868a1d4cd5f3da3f1c480b31b5d5ef82dc9b1f29b70d60ff1d"
+  },
+  {
+    "file": "AFDCustomDomains_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDCustomDomains_ListByProfile.json",
+    "source_sha256": "a4064a8bf3723c703e4d5d2d6a97074a6ba29759e7b7f878002ae01ba64c780f"
+  },
+  {
+    "file": "AFDEndpoints_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDEndpoints_Delete.json",
+    "source_sha256": "625eb22fe4064517a256aea7ac9f46b073eea4741cee60e601a48840da4a01aa"
+  },
+  {
+    "file": "AFDEndpoints_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDEndpoints_Get.json",
+    "source_sha256": "99cdf34f7251a912f29ac05c08b34363f2960ec08e58530b3151f336844891ec"
+  },
+  {
+    "file": "AFDEndpoints_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDEndpoints_ListByProfile.json",
+    "source_sha256": "06147e15332c0fac223a6b4346d6af2a28cf49ca59db678e237509fb0b0448ee"
+  },
+  {
+    "file": "AFDOriginGroups_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOriginGroups_Delete.json",
+    "source_sha256": "1cde5ba37649f6ebdf9cbca8c55ba4be6e1809a4452e13086bc3c26654c1b21f"
+  },
+  {
+    "file": "AFDOriginGroups_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOriginGroups_Get.json",
+    "source_sha256": "0b21abd500593a2a916d5e50e90bb898b26cd48cd795b06841b768f4c2136bde"
+  },
+  {
+    "file": "AFDOriginGroups_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOriginGroups_ListByProfile.json",
+    "source_sha256": "df774d90b8e8f7a562dc0348e3fa7e2ed8453e1cd86d9b060d4f7b8991f8f12e"
+  },
+  {
+    "file": "AFDOrigins_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOrigins_Delete.json",
+    "source_sha256": "4a5500ffb7c40dad865c7d6e74110cee5207d1034fcfa96dbeba0b4055203ccc"
+  },
+  {
+    "file": "AFDOrigins_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOrigins_Get.json",
+    "source_sha256": "fbcf5c83ce0b913e41db1c9196e22b827806b7248ee63c097ca620f669038ab6"
+  },
+  {
+    "file": "AFDOrigins_ListByOriginGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/AFDOrigins_ListByOriginGroup.json",
+    "source_sha256": "072c1af9b0f91b5a4272362c5464752881f11f0cd8e3d557056a928a06060930"
+  },
+  {
+    "file": "CustomDomains_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/CustomDomains_Delete.json",
+    "source_sha256": "f0bb1f8ecd66a780fa7d4aafb0ca9ee7e493cc7fbb8714d3dc228843cb56b827"
+  },
+  {
+    "file": "CustomDomains_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/CustomDomains_Get.json",
+    "source_sha256": "5ce1e97dc53f3254c16bb6b5b0cb89620f1be3317e530175de037845005482ab"
+  },
+  {
+    "file": "CustomDomains_ListByEndpoint.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/CustomDomains_ListByEndpoint.json",
+    "source_sha256": "7c134fc9d7eaf0722c4d380d4108407e47f64b541f64494813c8b7c9e95fa50e"
+  },
+  {
+    "file": "Endpoints_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Endpoints_Delete.json",
+    "source_sha256": "625eb22fe4064517a256aea7ac9f46b073eea4741cee60e601a48840da4a01aa"
+  },
+  {
+    "file": "Endpoints_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Endpoints_Get.json",
+    "source_sha256": "077e86397404a2e27a885279535045e1e570851c945bc0e655c0b60727d7f917"
+  },
+  {
+    "file": "Endpoints_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Endpoints_ListByProfile.json",
+    "source_sha256": "e6d9b6fbee95ed882f4bf2a6596e894cfbc2a5aec686b4eb1d212529444dda64"
+  },
+  {
+    "file": "OriginGroups_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/OriginGroups_Delete.json",
+    "source_sha256": "dd5603c359cdff1430b131cd647a152606a0246d5b0acc7fdd54091e35cfef3b"
+  },
+  {
+    "file": "OriginGroups_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/OriginGroups_Get.json",
+    "source_sha256": "e07595a0bea18288e3d2658826c33c9a7f6400dfd4069ce313a1ce20c25d870d"
+  },
+  {
+    "file": "OriginGroups_ListByEndpoint.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/OriginGroups_ListByEndpoint.json",
+    "source_sha256": "404c60143c76992c8907f9b998bafb820d1b9cc1f1d32558f227f06642423f5a"
+  },
+  {
+    "file": "Origins_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Origins_Delete.json",
+    "source_sha256": "2c6ad48a58aa33a07cc89228d6e48dfe62bdf75b9f7549640ff8a61875cfabd0"
+  },
+  {
+    "file": "Origins_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Origins_Get.json",
+    "source_sha256": "538be0d5bf2d7b06dfd6485f589fc87b74220a0f3723551b794e3dcede7276e1"
+  },
+  {
+    "file": "Origins_ListByEndpoint.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Origins_ListByEndpoint.json",
+    "source_sha256": "70418a307463c3c1466c484c9787448633623088253c447b1ed315493d40b531"
+  },
+  {
+    "file": "Profiles_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Profiles_Delete.json",
+    "source_sha256": "4d8689ff2e49e2ba746c2e731ca5d49ac684c34ae33ebf14063a1ff72fcc8aa9"
+  },
+  {
+    "file": "Profiles_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Profiles_Get.json",
+    "source_sha256": "df50eec9e8a18df246902d134dc46c3e18914b45bb9b6bac70b81b7ea9071cf5"
+  },
+  {
+    "file": "Profiles_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Profiles_List.json",
+    "source_sha256": "44a9cbc5d710966f5695319b80bfcc6271e7920d7f6af29bebb364c8528246e2"
+  },
+  {
+    "file": "Routes_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Routes_Delete.json",
+    "source_sha256": "5825ad71764d9bc495a4735364f216880178f72c0e5dbfddbe37ebd3e280c325"
+  },
+  {
+    "file": "Routes_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Routes_Get.json",
+    "source_sha256": "72d8dde5417a7cac93aa435724184a285a90aa72312058a8daabb7772d172323"
+  },
+  {
+    "file": "Routes_ListByEndpoint.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Routes_ListByEndpoint.json",
+    "source_sha256": "e838d28b7c83a5eeee3c4965bf7649209a169ef453c7512c463edda7580a9610"
+  },
+  {
+    "file": "RuleSets_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/RuleSets_Delete.json",
+    "source_sha256": "99229d1a3d74154b45e26a0b020ab1e7f7b82d5d04269110e9aa65f4078c2e9e"
+  },
+  {
+    "file": "RuleSets_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/RuleSets_Get.json",
+    "source_sha256": "2cd53b35706515f0987926b6df4a82a64f512592252c4c7f385ee3bc9794d154"
+  },
+  {
+    "file": "RuleSets_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/RuleSets_ListByProfile.json",
+    "source_sha256": "ad085e667bdbfdfed29edbba89282e3db552e0f3e8dd8a9f3c2044c3cebd99e9"
+  },
+  {
+    "file": "Rules_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Rules_Delete.json",
+    "source_sha256": "4cb506c650ccd3c406b3eeb84d946bafbf519030aaa08cd446b5b315c1b6cc09"
+  },
+  {
+    "file": "Rules_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Rules_Get.json",
+    "source_sha256": "e8a56ecb446dfe5bdd478e837c0579f0ca0f70982ebfb90a616174f9520b4145"
+  },
+  {
+    "file": "Rules_ListByRuleSet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Rules_ListByRuleSet.json",
+    "source_sha256": "9b24efb6d43c91f9beef98abf7d9e1ff545f6e53ebd92d1d7f0a4584e6da0b25"
+  },
+  {
+    "file": "Secrets_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Secrets_Delete.json",
+    "source_sha256": "d4aae13072e585f8780362a7ed87571d583601f74a56852f57492b660f50c478"
+  },
+  {
+    "file": "Secrets_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Secrets_Get.json",
+    "source_sha256": "3ac6082fc04cf83dc73562ec0c231676fa81223f77257ffa65ce5a5eb6288ce3"
+  },
+  {
+    "file": "Secrets_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/Secrets_ListByProfile.json",
+    "source_sha256": "a292bbad60cd8ab0af9ed8f9c84f73a4291f7324d921370abce44fe7e8ed6cb7"
+  },
+  {
+    "file": "SecurityPolicies_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/SecurityPolicies_Delete.json",
+    "source_sha256": "8858eff573403397f5d65d019003cd8e0bd7ac5dcb38c3f7c90f9310c36a0884"
+  },
+  {
+    "file": "SecurityPolicies_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/SecurityPolicies_Get.json",
+    "source_sha256": "248d5032a88ad0b932c9371791cd6745a25de51ba4db816b468733017784df90"
+  },
+  {
+    "file": "SecurityPolicies_ListByProfile.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/examples/SecurityPolicies_ListByProfile.json",
+    "source_sha256": "e56a7f052043ca85e4c53e438309388cc7771520c4fb5b0eda7d5fb665d052d4"
+  }
+]

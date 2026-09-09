@@ -64,7 +64,11 @@ func containerGroupSnapshot(raw map[string]any) map[string]any {
 // binds commands, environment and other sensitive settings without persisting
 // their plaintext or an unkeyed digest that could expose low-entropy secrets.
 func (c *client) containerGroupPrivateConfiguration(raw map[string]any) string {
-	payload, _ := json.Marshal(containerGroupSnapshot(raw))
+	return c.privateConfiguration(containerGroupSnapshot(raw))
+}
+
+func (c *client) privateConfiguration(snapshot map[string]any) string {
+	payload, _ := json.Marshal(snapshot)
 	hash := hmac.New(sha256.New, c.fingerprint[:])
 	hash.Write(payload)
 	return fmt.Sprintf("%x", hash.Sum(nil))

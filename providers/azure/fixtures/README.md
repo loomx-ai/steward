@@ -46,3 +46,8 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-
 
 Blob version/snapshot enumeration reference:
 https://learn.microsoft.com/en-us/rest/api/storageservices/list-blobs
+
+[CDN and Front Door](cdn/README.md) retain 42 original Swagger examples and 17
+Microsoft CLI responses, including signed asynchronous deletion and the native
+None-error placeholder. Schema inconsistencies, API-version rebinding and
+injected lifecycle/readback cases are explicitly documented.

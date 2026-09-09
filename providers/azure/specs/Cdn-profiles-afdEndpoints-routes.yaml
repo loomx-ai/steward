@@ -1,0 +1,93 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cdn/profiles/afdEndpoints/routes
+  class: network.cdn_route
+presentation:
+  displayNames:
+    en-US: Front Door route
+    zh-CN: Front Door 路由
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cdn.Routes_ListByEndpoint
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      profileName: parent.normalized.arm_parameters.profileName
+      endpointName: parent.normalized.arm_parameters.endpointName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cdn.Routes_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cdn/profiles/afdEndpoints
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  customDomains:
+    path: customDomains
+    type: array
+  originGroup:
+    path: originGroup
+    type: object
+  ruleSets:
+    path: ruleSets
+    type: array
+  supportedProtocols:
+    path: supportedProtocols
+    type: array
+  patternsToMatch:
+    path: patternsToMatch
+    type: array
+  forwardingProtocol:
+    path: forwardingProtocol
+    type: string
+  enabledState:
+    path: enabledState
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/afdEndpoints
+  targetIdPath: refs_microsoft_cdn_profiles_afdendpoints
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/customDomains
+  targetIdPath: refs_microsoft_cdn_profiles_customdomains
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/originGroups
+  targetIdPath: refs_microsoft_cdn_profiles_origingroups
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/ruleSets
+  targetIdPath: refs_microsoft_cdn_profiles_rulesets
+actions:
+  delete:
+    operation: Azure.Microsoft.Cdn.Routes_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cdn.Routes_Get
+      itemsPath: $
+      identityPath: id

@@ -75,8 +75,12 @@ const (
 	// Required deletion is an independently executable prerequisite, not an
 	// ownership claim. Only authoritative provider evidence can expand a plan.
 	RelationshipEvidenceRequiredDeletion = "required_deletion"
-	RelationshipEvidenceAuthority        = "authority"
-	DeletionOrderTargetBeforeSource      = "target_before_source"
+	// Named native controllers can remove a reference and its target together.
+	// This applies only when both are already reviewed delegated deletes of the
+	// same controller action; it never selects another controller implicitly.
+	RelationshipEvidenceDeletionCascadeControllers = "deletion_cascade_controllers"
+	RelationshipEvidenceAuthority                  = "authority"
+	DeletionOrderTargetBeforeSource                = "target_before_source"
 )
 
 type LifecycleBinding struct {

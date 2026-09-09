@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cdn/profiles/customDomains
+  class: network.cdn_domain
+presentation:
+  displayNames:
+    en-US: Front Door custom domain
+    zh-CN: Front Door 自定义域名
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cdn.AFDCustomDomains_ListByProfile
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      profileName: parent.normalized.arm_parameters.profileName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cdn.AFDCustomDomains_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cdn/profiles
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  hostName:
+    path: hostName
+    type: string
+  tlsSettings:
+    path: tlsSettings
+    type: object
+  azureDnsZone:
+    path: azureDnsZone
+    type: object
+  domainValidationState:
+    path: domainValidationState
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles
+  targetIdPath: refs_microsoft_cdn_profiles
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/secrets
+  targetIdPath: refs_microsoft_cdn_profiles_secrets
+- type: depends_on
+  targetType: Microsoft.Network/dnsZones
+  targetIdPath: refs_microsoft_network_dnszones
+actions:
+  delete:
+    operation: Azure.Microsoft.Cdn.AFDCustomDomains_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cdn.AFDCustomDomains_Get
+      itemsPath: $
+      identityPath: id

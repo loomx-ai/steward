@@ -1,0 +1,380 @@
+[
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/5813689875f128709e8db10903e893138a064236/src/cdn/azext_cdn/tests/latest/recordings/test_afd_profile_crud.yaml",
+    "source_sha256": "da0a9ac231332e83c9a66fdf3479a68dffdf140c559b02bd752c57dbf4c21961",
+    "recordings": [
+      {
+        "interaction_index": 28,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002",
+          "type": "Microsoft.Cdn/profiles",
+          "name": "profile000002",
+          "location": "Global",
+          "kind": "frontdoor",
+          "tags": {
+            "tag3": "value3",
+            "tag4": "value4"
+          },
+          "sku": {
+            "name": "Standard_AzureFrontDoor"
+          },
+          "identity": {
+            "type": "UserAssigned",
+            "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+            "userAssignedIdentities": {
+              "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.ManagedIdentity/userAssignedIdentities/uai000003": {
+                "principalId": "81ab4b32-535f-4334-b4ed-202d69180284",
+                "clientId": "afb5093f-54bd-462b-a377-4badf404216a"
+              }
+            }
+          },
+          "properties": {
+            "originResponseTimeoutSeconds": 30,
+            "logScrubbing": null,
+            "frontDoorId": "f6222cfe-5de7-4fba-9783-afeeb99d58f8",
+            "extendedProperties": {},
+            "enablePreviewDeployment": null,
+            "resourceState": "Active",
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 7,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002",
+              "type": "Microsoft.Cdn/profiles",
+              "name": "profile000002",
+              "location": "Global",
+              "kind": "frontdoor",
+              "tags": {
+                "tag1": "value1",
+                "tag2": "value2"
+              },
+              "sku": {
+                "name": "Standard_AzureFrontDoor"
+              },
+              "identity": {
+                "type": "SystemAssigned",
+                "principalId": "4862a9d4-4c1f-4f4b-a636-c2235fc65a9b",
+                "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+              },
+              "properties": {
+                "originResponseTimeoutSeconds": 100,
+                "logScrubbing": null,
+                "frontDoorId": "f6222cfe-5de7-4fba-9783-afeeb99d58f8",
+                "extendedProperties": {},
+                "enablePreviewDeployment": null,
+                "resourceState": "Active",
+                "provisioningState": "Succeeded"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "interaction_index": 35,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002?api-version=2026-04-01-preview",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/f4afd7b9-bbcb-427a-a0fe-aa2e1812e582?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/f4afd7b9-bbcb-427a-a0fe-aa2e1812e582/profileresults/profile000002?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ]
+        },
+        "body": null
+      },
+      {
+        "interaction_index": 36,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/f4afd7b9-bbcb-427a-a0fe-aa2e1812e582?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "InProgress",
+          "error": {
+            "code": "None",
+            "message": null
+          }
+        }
+      },
+      {
+        "interaction_index": 69,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/f4afd7b9-bbcb-427a-a0fe-aa2e1812e582?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "Succeeded",
+          "error": {
+            "code": "None",
+            "message": null
+          }
+        }
+      },
+      {
+        "interaction_index": 70,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/f4afd7b9-bbcb-427a-a0fe-aa2e1812e582/profileresults/profile000002?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "NotFound",
+            "message": "The requested resource was not found."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/5813689875f128709e8db10903e893138a064236/src/cdn/azext_cdn/tests/latest/recordings/test_rule_set_crud.yaml",
+    "source_sha256": "976b4c2dda4cdb6e3a0d9b87a1e66e586b1b882eca00218b0144e9e81d0c25c5",
+    "recordings": [
+      {
+        "interaction_index": 6,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002",
+          "type": "Microsoft.Cdn/profiles",
+          "name": "profile000002",
+          "location": "Global",
+          "kind": "frontdoor",
+          "tags": {},
+          "sku": {
+            "name": "Standard_AzureFrontDoor"
+          },
+          "properties": {
+            "originResponseTimeoutSeconds": 30,
+            "logScrubbing": null,
+            "frontDoorId": "9132680e-9103-4477-b3db-015d2d3ea1a3",
+            "extendedProperties": {},
+            "enablePreviewDeployment": null,
+            "resourceState": "Active",
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 12,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/ruleSets/ruleset000003?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/rulesets/ruleset000003",
+          "type": "Microsoft.Cdn/profiles/rulesets",
+          "name": "ruleset000003",
+          "properties": {
+            "batchMode": true,
+            "rules": [
+              {
+                "ruleName": "r0",
+                "order": 0,
+                "ruleSetName": "ruleset000003",
+                "conditions": [],
+                "actions": [
+                  {
+                    "name": "RouteConfigurationOverride",
+                    "parameters": {
+                      "typeName": "DeliveryRuleRouteConfigurationOverrideActionParameters",
+                      "cacheConfiguration": {
+                        "isCompressionEnabled": "Disabled",
+                        "queryStringCachingBehavior": "UseQueryString",
+                        "queryParameters": null,
+                        "cacheBehavior": "HonorOrigin",
+                        "cacheDuration": null
+                      },
+                      "originGroupOverride": null
+                    }
+                  }
+                ],
+                "matchProcessingBehavior": "Continue",
+                "provisioningState": null,
+                "deploymentStatus": null
+              }
+            ],
+            "provisioningState": "Succeeded",
+            "deploymentStatus": "NotStarted"
+          }
+        }
+      },
+      {
+        "interaction_index": 11,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/ruleSets?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/rulesets/ruleset000003",
+              "type": "Microsoft.Cdn/profiles/rulesets",
+              "name": "ruleset000003",
+              "properties": {
+                "batchMode": true,
+                "provisioningState": "Succeeded",
+                "deploymentStatus": "NotStarted"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "interaction_index": 13,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/ruleSets/ruleset000003?api-version=2026-04-01-preview",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/9410afee-b270-44dd-bc3f-55f0c489516f?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/9410afee-b270-44dd-bc3f-55f0c489516f/profileresults/profile000002/rulesetresults/ruleset000003?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ]
+        },
+        "body": null
+      },
+      {
+        "interaction_index": 14,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/9410afee-b270-44dd-bc3f-55f0c489516f?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "InProgress",
+          "error": {
+            "code": "None",
+            "message": null
+          }
+        }
+      },
+      {
+        "interaction_index": 16,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/operationresults/9410afee-b270-44dd-bc3f-55f0c489516f?api-version=2026-04-01-preview&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "status": "Succeeded",
+          "error": {
+            "code": "None",
+            "message": null
+          }
+        }
+      },
+      {
+        "interaction_index": 17,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/ruleSets/ruleset000003?api-version=2026-04-01-preview",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "NotFound",
+            "message": "The requested resource was not found."
+          }
+        }
+      }
+    ]
+  },
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/5813689875f128709e8db10903e893138a064236/src/cdn/azext_cdn/tests/latest/recordings/test_afd_secret_latest_version_crud.yaml",
+    "source_sha256": "a1a9cf7b29198911da434f4e718e8fa750ce0a638be550a6c0dfdb6319d88766",
+    "recordings": [
+      {
+        "interaction_index": 5,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002",
+          "type": "Microsoft.Cdn/profiles",
+          "name": "profile000002",
+          "location": "Global",
+          "kind": "frontdoor",
+          "tags": {},
+          "sku": {
+            "name": "Standard_AzureFrontDoor"
+          },
+          "properties": {
+            "originResponseTimeoutSeconds": 30,
+            "logScrubbing": null,
+            "frontDoorId": "273689fc-e693-44c5-805c-731792315478",
+            "extendedProperties": {},
+            "enablePreviewDeployment": null,
+            "resourceState": "Active",
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 8,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/secrets/secret000003?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/secrets/secret000003",
+          "type": "Microsoft.Cdn/profiles/secrets",
+          "name": "secret000003",
+          "properties": {
+            "parameters": {
+              "type": "CustomerCertificate",
+              "subject": "*.afde2e-root.azfdtest.xyz",
+              "certificateAuthority": "CN=Microsoft TLS G2 RSA CA OCSP 10, O=Microsoft Corporation, C=US",
+              "expirationDate": "2026-10-28T20:06:36+00:00",
+              "thumbprint": "F36842542BC22F7EE2EBEF04248360756BB6C5DE",
+              "secretSource": {
+                "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/byoc/providers/Microsoft.KeyVault/vaults/Azure-CDN-BYOC/secrets/afde2e-root-azfdtest-xyz"
+              },
+              "secretVersion": "befe1f7916f34e3b9227cea04805e8d2",
+              "useLatestVersion": true,
+              "subjectAlternativeNames": [
+                "afde2e-root.azfdtest.xyz",
+                "*.afde2e-root.azfdtest.xyz"
+              ]
+            },
+            "provisioningState": "Succeeded",
+            "deploymentStatus": "NotStarted"
+          }
+        }
+      },
+      {
+        "interaction_index": 9,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/secrets/secret000003?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 10,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Cdn/profiles/profile000002/secrets?api-version=2026-04-01-preview",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": []
+        }
+      }
+    ]
+  }
+]

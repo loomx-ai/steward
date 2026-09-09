@@ -217,3 +217,57 @@ func TestRequiredDeletionRetainsResourcesRequestedByAncestorOfDirectStep(t *test
 		t.Fatalf("ancestor retention lost through direct step %+v %v", result, err)
 	}
 }
+
+func TestRequiredDeletionCanBeCoveredOnlyByDeclaredCommonCascade(t *testing.T) {
+	for _, mode := range []string{"cascade", "direct", "undeclared", "wrong-controller", "retained", "protected", "inferred", "malformed"} {
+		t.Run(mode, func(t *testing.T) {
+			outer := binding("profile", "endpoint", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			source := binding("profile", "domain", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			target := binding("endpoint", "route", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			for _, value := range []*graph.LifecycleBinding{&outer, &source, &target} {
+				value.DirectCleanupAllowed = true
+				value.Evidence = map[string]any{graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true, graph.LifecycleEvidenceControllerDeleteGuaranteed: true}
+			}
+			relation := requiredDeletion("domain", "route")
+			relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"profile": true}
+			input := plan.Input{Assets: []asset.Asset{prerequisiteAsset("profile"), prerequisiteAsset("endpoint"), prerequisiteAsset("domain"), prerequisiteAsset("route")}, ResolvedAssetIDs: []asset.AssetID{"profile"}, LifecycleBindings: []graph.LifecycleBinding{outer, source, target}, Relationships: []graph.Relationship{relation}}
+			switch mode {
+			case "direct":
+				input.ResolvedAssetIDs = []asset.AssetID{"domain"}
+			case "undeclared":
+				delete(relation.Evidence, graph.RelationshipEvidenceDeletionCascadeControllers)
+			case "wrong-controller":
+				relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"endpoint": true}
+			case "retained":
+				input.RequestOptions = map[asset.AssetID]map[string]any{"profile": {"retain_resources": []string{"route"}}}
+			case "protected":
+				input.Protections = []plan.ProtectionPolicy{{AssetID: "route", Protected: true}}
+			case "inferred":
+				relation.Evidence[graph.RelationshipEvidenceAuthority] = graph.AuthorityInferred
+			case "malformed":
+				relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"profile": "true"}
+			}
+			result, err := plan.Solve(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if mode == "cascade" {
+				if len(result.Blockers) != 0 || len(result.Steps) != 1 || len(result.ImpactItems) != 3 {
+					t.Fatalf("common cascade not preserved: steps=%d impacts=%d blockers=%+v", len(result.Steps), len(result.ImpactItems), result.Blockers)
+				}
+				if required, err := plan.RequiredDeletions(result.Steps[0]); err != nil || len(required) != 0 {
+					t.Fatal("common cascade gained a self prerequisite")
+				}
+			} else if mode == "direct" {
+				if len(result.Blockers) != 0 || len(result.Steps) != 2 || result.Steps[0].AssetID != "route" || result.Steps[1].AssetID != "domain" {
+					t.Fatalf("independent prerequisite lost: %+v", result.Blockers)
+				}
+				if stepForAsset(result.Steps, "profile").Action != "" {
+					t.Fatal("unselected profile promoted")
+				}
+			} else if len(result.Blockers) == 0 {
+				t.Fatal("unsafe common cascade accepted")
+			}
+		})
+	}
+}

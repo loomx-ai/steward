@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 131 current resource rules discover through native product List operations.
+All 145 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 410 operations from
-75 root documents and 36 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 452 operations from
+77 root documents and 38 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -297,3 +297,11 @@ independent. Sanitized configuration, keyed sensitive-value comparison, explicit
 network/identity references, native final absence and managed-group preflight have
 retained tests. See the [Container Instances evidence](../fixtures/container-instances/README.md)
 for original Swagger examples, native CLI response replay and verification limits.
+
+CDN / Front Door adds fourteen native rules and 42 operations from 2025-04-15.
+SKU-specific collection discovery, nested profile-bound cursors, full cascade
+review and shared reference prerequisites use the same inventory/action contracts.
+Sensitive configuration uses keyed comparison; native CDN None-error placeholders
+are distinguished from actual polling failures. Original examples, known schema
+inconsistencies and versioned CLI replay are retained in the
+[CDN evidence](../fixtures/cdn/README.md). External WAF/DNS lifecycles remain separate.

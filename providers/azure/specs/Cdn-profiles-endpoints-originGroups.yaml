@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cdn/profiles/endpoints/originGroups
+  class: network.cdn_origin_group
+presentation:
+  displayNames:
+    en-US: CDN origin group
+    zh-CN: CDN 源站组
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cdn.OriginGroups_ListByEndpoint
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      profileName: parent.normalized.arm_parameters.profileName
+      endpointName: parent.normalized.arm_parameters.endpointName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cdn.OriginGroups_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cdn/profiles/endpoints
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  origins:
+    path: origins
+    type: array
+  healthProbeSettings:
+    path: healthProbeSettings
+    type: object
+  responseBasedOriginErrorDetectionSettings:
+    path: responseBasedOriginErrorDetectionSettings
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/endpoints
+  targetIdPath: refs_microsoft_cdn_profiles_endpoints
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/endpoints/origins
+  targetIdPath: refs_microsoft_cdn_profiles_endpoints_origins
+actions:
+  delete:
+    operation: Azure.Microsoft.Cdn.OriginGroups_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cdn.OriginGroups_Get
+      itemsPath: $
+      identityPath: id

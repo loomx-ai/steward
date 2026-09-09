@@ -272,7 +272,7 @@ func (c *client) contributeManagedGroup(ctx context.Context, controller asset.As
 			return result, fmt.Errorf("invalid or ambiguous AKS managed asset")
 		}
 		if live := liveByID[id]; live != nil {
-			if err := c.containerGroupPrivateIncarnation(value, live); err != nil {
+			if err := c.servicePrivateIncarnation(value, live); err != nil {
 				return result, err
 			}
 			if err := serviceIncarnation(value, live); err != nil {
@@ -398,7 +398,7 @@ func (a *action) managedGroupPreflight(ctx context.Context, request contracts.Ac
 			return "aks_resource_missing_from_plan", nil
 		}
 		visited[id] = true
-		if err := a.client.containerGroupPrivateIncarnation(impact.Asset, resource); err != nil {
+		if err := a.client.servicePrivateIncarnation(impact.Asset, resource); err != nil {
 			return "", err
 		}
 		if err := serviceCreationIdentity(impact.Asset, resource); err != nil {

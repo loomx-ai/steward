@@ -46,7 +46,7 @@ func validateGrafanaGlobalOperation(endpoint, location string) error {
 	return nil
 }
 
-func (a *action) grafanaOperationBinding(endpoint string) string {
+func (a *action) operationBinding(endpoint string) string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(a.client.subscription+"\x00"+a.client.tenant+"\x00"+a.id+"\x00"+endpoint)))
 }
 

@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 131 类资源，其中 119 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 145 类资源，其中 133 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ Steward 识别 131 类资源，其中 119 类具有原生删除操作，执行�
 | SQL | 逻辑服务器、数据库、弹性池 | 服务器清理包含已审查的数据库与弹性池；禁止独立删除 `master` |
 | PostgreSQL / MySQL | Flexible Server | 支持 |
 | App Service | Web App / Function App、App Service Plan | 分别支持清理 |
+| CDN 与 Front Door | 配置、经典终结点/源站/源站组/域名；Front Door 终结点/路由/源站组/源站/域名/规则集/规则/安全关联/证书引用 | 配置及所属子资源审查级联影响；共享引用按依赖顺序清理 |
 | 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
 | DNS 与私有终结点 | 公有/私有 DNS 区域及记录、私有 DNS 链接、Private Endpoint 与 DNS 区域组 | 级联审查包含已验证的托管网卡和外部 DNS 记录；系统 DNS 记录不可独立删除 |
 | Virtual WAN 网关 | VPN/ExpressRoute 网关、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理 |
@@ -80,3 +81,5 @@ Monitor 数据采集需要订阅范围的规则、终结点列举与读取权限
 删除 Azure Monitor 工作区还会删除默认摄取托管资源组及组内全部资源。计划会审查完整影响，包括尚未识别的组内资源类型；保留任何组成员都会阻止删除。两个原生默认摄取资源 ID 及任何 managedBy 值必须相互一致。工作区数据不支持软删除恢复。私有连接属于冻结的工作区配置，引用的外部网络终结点不会仅因被引用而纳入托管组。参阅[微软的工作区管理说明](https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage)。
 
 Container Instances 容器组支持原生清单与删除。普通容器和初始化容器共享组的生命周期，外部 Azure Files 文件共享保持独立。子网、托管身份和返回的 Log Analytics 资源 ID 作为依赖引用。执行时核对已审阅的配置，敏感值通过与连接绑定的摘要比较；轮换凭据后需要重新扫描。命令、配置值和凭据不会以明文写入清单或日志。删除返回 HTTP 200 后仍须原生读取确认资源消失。参见[容器组删除约定](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01)。
+
+CDN 与 Front Door 根据 SKU 使用各自的原生子资源集合。清理前审查全部所属资源，保留级联成员会阻止删除。单独删除域名、源站组、规则集或证书引用时，计划会加入必须先删除的路由、规则或关联；多个目标共用一项前置删除。删除整个配置时，已审查的同一次级联可以同时移除其内部引用。外部源站、Key Vault 数据、DNS 区域和 WAF 策略保持独立。经典终结点仍在引用源站组时，必须先更新路由配置或选择清理终结点，才能删除源站组。清点和清理需要配置及相关子集合的原生读取、列举权限，包括引用方的路由和安全关联。签名异步操作及资源、子资源最终缺失回读支持重启恢复。参见原生[配置删除契约](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15)和[规则集清理说明](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-rule-set)。

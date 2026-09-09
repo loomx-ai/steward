@@ -968,3 +968,39 @@ background evidence only, not acceptance evidence for this work.
   This is native-example, recorded-response and protocol evidence; independent
   emulator/cloud acceptance, remaining mapped services, lifecycle composition,
   end-to-end verification and publication remain open.
+
+- Azure CDN / Front Door now adds fourteen explicit resource rules and 42 native
+  operations from pinned 2025-04-15 CDN/AFD Swagger. Profiles select the appropriate
+  SKU-specific collections. Native child detail reads, complete repeated lists,
+  classic embedded membership and nested profile-bound cursors guard discovery.
+  Profile/endpoint/origin-group/rule-set cleanup reviews and verifies its child
+  tree. Routes, rules, certificate references and security associations contribute
+  shared prerequisites without claiming ownership of their targets. An explicitly
+  declared common cascade can cover an internal prerequisite only when both
+  resources are already reviewed deletes of the same controller; independent
+  cleanup retains separate steps, frozen snapshots and final native readback.
+- CDN configuration, optional creation identity, profile context, locks, retention,
+  managed ownership and sensitive-value digests are checked before mutation.
+  Migrating profiles and active classic default/override origin-group references
+  block the applicable independent deletion. Returned rule values and validation
+  or signing secrets are not persisted. Repeated reference discovery shares each
+  referring collection across targets, avoiding one full route scan per domain.
+- The retained CDN evidence includes 42 unchanged examples and independent schema
+  checks for all 28 read/list bodies. Ten documented optional-null/enum source
+  inconsistencies are asserted before narrowly corrected in-memory validation.
+  Seventeen Microsoft CLI responses independently exposed the native CDN
+  `error:{code:"None",message:null}` placeholder on pending/successful polls.
+  This exact CDN-only case is accepted; real errors and incomplete responses
+  remain failures. Signed polling, persisted resource binding, header fallbacks,
+  expiration, surviving descendants, actual prerequisite action ordering, scope,
+  pagination and ancestor/configuration drift have retained regression tests.
+- At this step Azure has 145 resource rules, 133 native DELETE bindings and 452
+  operations from 77 root plus 38 reference documents. All 111 preceding source
+  documents and 131 preceding type entries are unchanged. A fresh independent
+  four-document native import matches; repeated generation and CLI extraction
+  are byte-reproducible. Full Go tests, relevant race checks, vet, offline catalog
+  refresh tests and bilingual documentation checks pass. These are protocol and
+  recorded-response results, not an independent CDN lifecycle emulator or live
+  Azure validation. Opt-in batch rule sets described in the August 2026 guidance,
+  external WAF/DNS lifecycles and the remaining provider/application acceptance
+  are tracked follow-ups; this does not close the overall parity criteria.

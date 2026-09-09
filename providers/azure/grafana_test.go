@@ -576,7 +576,7 @@ func TestGrafanaSignedOperationAuthorityFailuresAndLogging(t *testing.T) {
 	}
 	u, _ := url.Parse(endpoint)
 	responseBody := map[string]any{"id": u.Path, "name": last(u.Path), "resourceId": value.Identity.NativeID, "status": "Succeeded"}
-	operation := contracts.ActionResult{ProviderOperationID: endpoint, Data: map[string]any{"polling": "status", "grafana_operation_binding": a.grafanaOperationBinding(endpoint)}}
+	operation := contracts.ActionResult{ProviderOperationID: endpoint, Data: map[string]any{"polling": "status", "grafana_operation_binding": a.operationBinding(endpoint)}}
 	for _, mode := range []string{"foreign-host", "foreign-provider", "foreign-region", "encoded-path", "traversal", "missing-signature", "duplicate-query", "unknown-query", "corrupt-receipt", "changed-target", "response-target", "response-id", "response-name", "missing-response-target", "partial", "failed", "canceled", "denied", "expired-live", "expired-absent"} {
 		t.Run(mode, func(t *testing.T) {
 			payload, _ := json.Marshal(operation)

@@ -330,6 +330,7 @@ resources:
     resources: &id014
     - Microsoft.Cdn/profiles/endpoints
     - Microsoft.Cdn/profiles/customDomains
+  notes: Native CDN/Front Door profile and child discovery, reviewed cascades, shared route/certificate/security prerequisites and recorded CLI polling are implemented. Independent emulator and complete application acceptance remain pending.
   status: pending_verification
 - alicloud: ACS::CEN::CenBandwidthPackage
   spec: providers/alicloud/specs/cen-bandwidth-package.yaml

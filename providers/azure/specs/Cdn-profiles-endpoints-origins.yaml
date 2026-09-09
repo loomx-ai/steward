@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cdn/profiles/endpoints/origins
+  class: network.cdn_origin
+presentation:
+  displayNames:
+    en-US: CDN origin
+    zh-CN: CDN 源站
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cdn.Origins_ListByEndpoint
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      profileName: parent.normalized.arm_parameters.profileName
+      endpointName: parent.normalized.arm_parameters.endpointName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cdn.Origins_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cdn/profiles/endpoints
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  hostName:
+    path: hostName
+    type: string
+  httpPort:
+    path: httpPort
+    type: integer
+  httpsPort:
+    path: httpsPort
+    type: integer
+  originHostHeader:
+    path: originHostHeader
+    type: string
+  priority:
+    path: priority
+    type: integer
+  weight:
+    path: weight
+    type: integer
+  enabled:
+    path: enabled
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Cdn/profiles/endpoints
+  targetIdPath: refs_microsoft_cdn_profiles_endpoints
+- type: depends_on
+  targetType: Microsoft.Network/privateLinkServices
+  targetIdPath: refs_microsoft_network_privatelinkservices
+actions:
+  delete:
+    operation: Azure.Microsoft.Cdn.Origins_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cdn.Origins_Get
+      itemsPath: $
+      identityPath: id

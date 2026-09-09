@@ -25,12 +25,13 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	MonitoredResource string `json:"monitored_resource,omitempty"`
-	Endpoint          string `json:"endpoint"`
-	ParentID          string `json:"parent_id,omitempty"`
-	ParentType        string `json:"parent_type,omitempty"`
-	Generation        string `json:"generation,omitempty"`
-	Location          string `json:"location,omitempty"`
+	CDNProfileConfiguration string `json:"cdn_profile_configuration,omitempty"`
+	MonitoredResource       string `json:"monitored_resource,omitempty"`
+	Endpoint                string `json:"endpoint"`
+	ParentID                string `json:"parent_id,omitempty"`
+	ParentType              string `json:"parent_type,omitempty"`
+	Generation              string `json:"generation,omitempty"`
+	Location                string `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -277,6 +278,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && strings.EqualFold(kind, containerGroupType) {
 		values = append(values, containerGroupConfiguration(raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
+		values = append(values, cdnConfiguration(kind, raw))
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }
@@ -325,6 +329,15 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
 	}
+	if target.CDNProfileConfiguration != "" {
+		profile, err := c.cdnProfile(ctx, target.ParentID)
+		if err != nil {
+			return err
+		}
+		if cdnConfiguration(cdnProfileType, profile) != target.CDNProfileConfiguration {
+			return errProductParentGenerationChanged
+		}
+	}
 	if productGeneration(current.data) != target.Generation {
 		return errProductParentGenerationChanged
 	}
@@ -372,6 +385,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if parent.NativeType == cdnProfileType && isCDNType(definition.Metadata.NativeType) {
+			applies, err := cdnChildApplies(definition.Metadata.NativeType, parent.Raw)
+			if err != nil {
+				return nil, err
+			}
+			if !applies {
+				continue
+			}
+		}
 		if definition.Metadata.NativeType == scaleSetVMType {
 			mode, err := scaleSetMode(parent.Normalized)
 			if err != nil {
@@ -395,6 +417,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if isCDNType(parent.NativeType) {
+				target.CDNProfileConfiguration = text(parent.Normalized["_cdn_profile_configuration"])
+			}
 		}
 		targets = append(targets, target)
 	}

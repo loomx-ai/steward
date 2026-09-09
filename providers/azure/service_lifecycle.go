@@ -26,6 +26,13 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	// The native Profiles_Delete contract removes every subresource.
+	cdnProfileType:     {cdnEndpointType, afdEndpointType, afdDomainType, afdOriginGroupType, afdRuleSetType, afdSecurityPolicyType, afdSecretType},
+	cdnEndpointType:    {cdnOriginType, cdnOriginGroupType, cdnDomainType},
+	afdEndpointType:    {afdRouteType},
+	afdOriginGroupType: {afdOriginType},
+	afdRuleSetType:     {afdRuleType},
+	cdnOriginType:      {}, cdnOriginGroupType: {}, afdDomainType: {}, afdSecretType: {},
 	monitorWorkspaceType:       {}, // Native default-ingestion managed group; discovered separately.
 	dataCollectionRuleType:     {dataCollectionAssociationType},
 	dataCollectionEndpointType: {dataCollectionAssociationType},
@@ -187,6 +194,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := cdnIncarnation(planned, live); err != nil {
+		return err
+	}
 	if err := containerGroupIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -232,6 +242,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
 	}
+	if err := s.contributeCDNReferences(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	aksMembers := managedGroupMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {
@@ -263,6 +276,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		}
 		if !validResourceResponse(live, parent.Identity.NativeID, parent.Identity.NativeType) {
 			return result, fmt.Errorf("Azure service parent identity mismatch")
+		}
+		if err := s.client.servicePrivateIncarnation(parent, live.data); err != nil {
+			return result, err
 		}
 		if err := serviceIncarnation(parent, live.data); err != nil {
 			return result, err
@@ -321,6 +337,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if parent.Identity.NativeType == eventHubClusterType && !serviceChildRelation(parent, *target) {
 				return result, serviceDenied("eventhub_cluster_membership_changed")
+			}
+			if err := s.client.servicePrivateIncarnation(*target, child.data); err != nil {
+				return result, err
 			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
@@ -465,6 +484,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 				return serviceDenied("service_child_missing_from_plan")
 			}
 			visited[child.id] = true
+			if err := a.client.servicePrivateIncarnation(impact.Asset, child.data); err != nil {
+				return err
+			}
 			if err := serviceIncarnation(impact.Asset, child.data); err != nil {
 				return err
 			}
@@ -586,6 +608,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isCDNType(parent.NativeType):
+		children, err = c.cdnChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, monitorWorkspaceType):
 		resources, links, failure := c.monitorWorkspaceResources(ctx, asset.Asset{Identity: parent}, raw)
 		if failure != nil {

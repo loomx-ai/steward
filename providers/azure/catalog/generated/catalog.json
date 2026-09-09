@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8855f184f610f4aabc986f861e8bee818dc4777bb0c9635b56b9c6aee8faf74c",
+    "checksum": "457513a09d29c0e90be63a898aa90f818f44afec45b2442abe7dc1aadaf42e42",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "425b7f41d672a47f8f062665d96718b6841099a3d942db76fd1158dca2d6d34a",
+  "content_checksum": "52fa87031cf5718c29046514ce196220218c908bb2ce5d42d4219ddc1f1eed7d",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -1160,6 +1160,3334 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2024-03-01/ManagedEnvironments.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDCustomDomains_Delete",
+      "name": "AFDCustomDomains_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains/{customDomainName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "customDomainName": {
+            "description": "Name of the domain under the profile which is unique globally.",
+            "in": "path",
+            "name": "customDomainName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains/{customDomainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDCustomDomains_Get",
+      "name": "AFDCustomDomains_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains/{customDomainName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "customDomainName": {
+            "description": "Name of the domain under the profile which is unique globally.",
+            "in": "path",
+            "name": "customDomainName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly domain name mapping to the endpoint hostname that the customer provides for branding purposes, e.g. www.contoso.com.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AFDDomainProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains/{customDomainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDCustomDomains_ListByProfile",
+      "name": "AFDCustomDomains_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list domains. It contains a list of domain objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of domain objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor domains within a profile.",
+            "items": {
+              "$ref": "#/definitions/AFDDomain"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/customDomains",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDEndpoints_Delete",
+      "name": "AFDEndpoints_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDEndpoints_Get",
+      "name": "AFDEndpoints_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Azure Front Door endpoint is the entity within a Azure Front Door profile containing configuration information such as origin, protocol, content caching and delivery behavior. The AzureFrontDoor endpoint uses the URL format \u003cendpointname\u003e.azureedge.net.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AFDEndpointProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDEndpoints_ListByProfile",
+      "name": "AFDEndpoints_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list endpoints. It contains a list of endpoint objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of endpoint objects if there is any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor endpoints within a profile",
+            "items": {
+              "$ref": "#/definitions/AFDEndpoint"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOriginGroups_Delete",
+      "name": "AFDOriginGroups_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the profile.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOriginGroups_Get",
+      "name": "AFDOriginGroups_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the endpoint.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "AFDOrigin group comprising of origins is used for load balancing to origins when the content cannot be served from Azure Front Door.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AFDOriginGroupProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOriginGroups_ListByProfile",
+      "name": "AFDOriginGroups_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list origin groups. It contains a list of origin groups objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of origin objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Azure Front Door origin groups within an Azure Front Door endpoint",
+            "items": {
+              "$ref": "#/definitions/AFDOriginGroup"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOrigins_Delete",
+      "name": "AFDOrigins_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins/{originName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the profile.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "originName": {
+            "description": "Name of the origin which is unique within the profile.",
+            "in": "path",
+            "name": "originName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins/{originName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOrigins_Get",
+      "name": "AFDOrigins_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins/{originName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the profile.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "originName": {
+            "description": "Name of the origin which is unique within the profile.",
+            "in": "path",
+            "name": "originName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Azure Front Door origin is the source of the content being delivered via Azure Front Door. When the edge nodes represented by an endpoint do not have the requested content cached, they attempt to fetch it from one or more of the configured origins.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AFDOriginProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins/{originName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.AFDOrigins_ListByOriginGroup",
+      "name": "AFDOrigins_ListByOriginGroup",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the profile.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list origins. It contains a list of origin objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of origin objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Azure Front Door origins within an Azure Front Door endpoint",
+            "items": {
+              "$ref": "#/definitions/AFDOrigin"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/originGroups/{originGroupName}/origins",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.CustomDomains_Delete",
+      "name": "CustomDomains_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains/{customDomainName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "customDomainName": {
+            "description": "Name of the custom domain within an endpoint.",
+            "in": "path",
+            "name": "customDomainName",
+            "required": true,
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains/{customDomainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.CustomDomains_Get",
+      "name": "CustomDomains_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains/{customDomainName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "customDomainName": {
+            "description": "Name of the custom domain within an endpoint.",
+            "in": "path",
+            "name": "customDomainName",
+            "required": true,
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly domain name mapping to the endpoint hostname that the customer provides for branding purposes, e.g. www.contoso.com.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/CustomDomainProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains/{customDomainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.CustomDomains_ListByEndpoint",
+      "name": "CustomDomains_ListByEndpoint",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list custom domains. It contains a list of custom domain objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of custom domain objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of CDN CustomDomains within an endpoint.",
+            "items": {
+              "$ref": "#/definitions/CustomDomain"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/customDomains",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Endpoints_Delete",
+      "name": "Endpoints_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Endpoints_Get",
+      "name": "Endpoints_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "CDN endpoint is the entity within a CDN profile containing configuration information such as origin, protocol, content caching and delivery behavior. The CDN endpoint uses the URL format \u003cendpointname\u003e.azureedge.net.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/EndpointProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Endpoints_ListByProfile",
+      "name": "Endpoints_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list endpoints. It contains a list of endpoint objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of endpoint objects if there is any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of CDN endpoints within a profile",
+            "items": {
+              "$ref": "#/definitions/Endpoint"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.OriginGroups_Delete",
+      "name": "OriginGroups_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups/{originGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the endpoint.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups/{originGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.OriginGroups_Get",
+      "name": "OriginGroups_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups/{originGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "originGroupName": {
+            "description": "Name of the origin group which is unique within the endpoint.",
+            "in": "path",
+            "name": "originGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Origin group comprising of origins is used for load balancing to origins when the content cannot be served from CDN.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/OriginGroupProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups/{originGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.OriginGroups_ListByEndpoint",
+      "name": "OriginGroups_ListByEndpoint",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list origin groups. It contains a list of origin groups objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of origin objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of CDN origin groups within an endpoint",
+            "items": {
+              "$ref": "#/definitions/OriginGroup"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/originGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Origins_Delete",
+      "name": "Origins_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins/{originName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "originName": {
+            "description": "Name of the origin which is unique within the endpoint.",
+            "in": "path",
+            "name": "originName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins/{originName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Origins_Get",
+      "name": "Origins_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins/{originName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "originName": {
+            "description": "Name of the origin which is unique within the endpoint.",
+            "in": "path",
+            "name": "originName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "CDN origin is the source of the content being delivered via CDN. When the edge nodes represented by an endpoint do not have the requested content cached, they attempt to fetch it from one or more of the configured origins.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/OriginProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins/{originName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Origins_ListByEndpoint",
+      "name": "Origins_ListByEndpoint",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list origins. It contains a list of origin objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of origin objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of CDN origins within an endpoint",
+            "items": {
+              "$ref": "#/definitions/Origin"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints/{endpointName}/origins",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Profiles_Delete",
+      "name": "Profiles_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Profiles_Get",
+      "name": "Profiles_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium or CDN profile which is unique within the resource group.",
+            "in": "path",
+            "name": "profileName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A profile is a logical grouping of endpoints that share the same settings.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "Managed service identity (system assigned and/or user assigned identities).",
+            "type": "object"
+          },
+          "kind": {
+            "description": "Kind of the profile. Used by portal to differentiate traditional CDN profile and new AFD profile.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ProfileProperties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "The pricing tier (defines Azure Front Door Standard or Premium or a CDN provider, feature list and rate) of the profile."
+          }
+        },
+        "required": [
+          "sku"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Profiles_List",
+      "name": "Profiles_List",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Cdn/profiles",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list profiles. It contains a list of profile objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of profile objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of CDN profiles within a resource group.",
+            "items": {
+              "$ref": "#/definitions/Profile"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Cdn/profiles",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Routes_Delete",
+      "name": "Routes_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes/{routeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "routeName": {
+            "description": "Name of the routing rule.",
+            "in": "path",
+            "name": "routeName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes/{routeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Routes_Get",
+      "name": "Routes_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes/{routeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "routeName": {
+            "description": "Name of the routing rule.",
+            "in": "path",
+            "name": "routeName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly Routes name mapping to the any Routes or secret related information.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/RouteProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes/{routeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Routes_ListByEndpoint",
+      "name": "Routes_ListByEndpoint",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpointName": {
+            "description": "Name of the endpoint under the profile which is unique globally.",
+            "in": "path",
+            "name": "endpointName",
+            "required": true,
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list routes. It contains a list of route objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of route objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor routes within a profile.",
+            "items": {
+              "$ref": "#/definitions/Route"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/afdEndpoints/{endpointName}/routes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.RuleSets_Delete",
+      "name": "RuleSets_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleSetName": {
+            "description": "Name of the rule set under the profile which is unique globally.",
+            "in": "path",
+            "name": "ruleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.RuleSets_Get",
+      "name": "RuleSets_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleSetName": {
+            "description": "Name of the rule set under the profile which is unique globally.",
+            "in": "path",
+            "name": "ruleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly RuleSet name mapping to the any RuleSet or secret related information.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/RuleSetProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.RuleSets_ListByProfile",
+      "name": "RuleSets_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list rule sets. It contains a list of rule set objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of rule set objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor rule sets within a profile.",
+            "items": {
+              "$ref": "#/definitions/RuleSet"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Rules_Delete",
+      "name": "Rules_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules/{ruleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "Name of the delivery rule which is unique within the endpoint.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "ruleSetName": {
+            "description": "Name of the rule set under the profile.",
+            "in": "path",
+            "name": "ruleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Rules_Get",
+      "name": "Rules_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules/{ruleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "Name of the delivery rule which is unique within the endpoint.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "ruleSetName": {
+            "description": "Name of the rule set under the profile.",
+            "in": "path",
+            "name": "ruleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly Rules name mapping to the any Rules or secret related information.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/RuleProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Rules_ListByRuleSet",
+      "name": "Rules_ListByRuleSet",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleSetName": {
+            "description": "Name of the rule set under the profile.",
+            "in": "path",
+            "name": "ruleSetName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list rules. It contains a list of rule objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of rule objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor rules within a rule set.",
+            "items": {
+              "$ref": "#/definitions/Rule"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/ruleSets/{ruleSetName}/rules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Secrets_Delete",
+      "name": "Secrets_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets/{secretName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "secretName": {
+            "description": "Name of the Secret under the profile.",
+            "in": "path",
+            "name": "secretName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets/{secretName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Secrets_Get",
+      "name": "Secrets_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets/{secretName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "secretName": {
+            "description": "Name of the Secret under the profile.",
+            "in": "path",
+            "name": "secretName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Friendly Secret name mapping to the any Secret or secret related information.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SecretProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets/{secretName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Secrets_ListByProfile",
+      "name": "Secrets_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list secrets. It contains a list of Secret objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of Secret objects if there are any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of AzureFrontDoor secrets within a profile.",
+            "items": {
+              "$ref": "#/definitions/Secret"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/secrets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.SecurityPolicies_Delete",
+      "name": "SecurityPolicies_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies/{securityPolicyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "securityPolicyName": {
+            "description": "Name of the security policy under the profile.",
+            "in": "path",
+            "name": "securityPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies/{securityPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.SecurityPolicies_Get",
+      "name": "SecurityPolicies_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies/{securityPolicyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "securityPolicyName": {
+            "description": "Name of the security policy under the profile.",
+            "in": "path",
+            "name": "securityPolicyName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "SecurityPolicy association for AzureFrontDoor profile",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SecurityPolicyProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies/{securityPolicyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.SecurityPolicies_ListByProfile",
+      "name": "SecurityPolicies_ListByProfile",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-04-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "profileName": {
+            "description": "Name of the Azure Front Door Standard or Azure Front Door Premium which is unique within the resource group.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "profileName",
+            "pattern": "^[a-zA-Z0-9]+(-*[a-zA-Z0-9])*$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of the request to list security policies. It contains a list of security policy objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "URL to get the next set of security policy objects if there is any.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Security policies within a profile",
+            "items": {
+              "$ref": "#/definitions/SecurityPolicy"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-04-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/profiles/{profileName}/securityPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/afdx.json"
     },
     {
       "id": "Azure.Microsoft.Compute.AvailabilitySets_Delete",
@@ -33634,6 +36962,300 @@
         ],
         "list_operations": [
           "Azure.Microsoft.App.ManagedEnvironments_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles",
+      "class": "network.cdn",
+      "display_name": "CDN / Front Door profile",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "profiles",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Profiles_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Profiles_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Profiles_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/afdEndpoints",
+      "class": "network.cdn_domain",
+      "display_name": "Front Door endpoint",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "afdEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.AFDEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.AFDEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.AFDEndpoints_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/afdEndpoints/routes",
+      "class": "network.cdn_route",
+      "display_name": "Front Door route",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "routes",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Routes_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Routes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Routes_ListByEndpoint"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/customDomains",
+      "class": "network.cdn_domain",
+      "display_name": "Front Door custom domain",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "customDomains",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.AFDCustomDomains_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.AFDCustomDomains_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.AFDCustomDomains_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints",
+      "class": "network.cdn_domain",
+      "display_name": "CDN endpoint",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "endpoints",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Endpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Endpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Endpoints_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/customDomains",
+      "class": "network.cdn_domain",
+      "display_name": "CDN custom domain",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "customDomains",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.CustomDomains_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.CustomDomains_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.CustomDomains_ListByEndpoint"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/originGroups",
+      "class": "network.cdn_origin_group",
+      "display_name": "CDN origin group",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "originGroups",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.OriginGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.OriginGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.OriginGroups_ListByEndpoint"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/endpoints/origins",
+      "class": "network.cdn_origin",
+      "display_name": "CDN origin",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "origins",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Origins_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Origins_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Origins_ListByEndpoint"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/originGroups",
+      "class": "network.cdn_origin_group",
+      "display_name": "Front Door origin group",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "originGroups",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.AFDOriginGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.AFDOriginGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.AFDOriginGroups_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/originGroups/origins",
+      "class": "network.cdn_origin",
+      "display_name": "Front Door origin",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "origins",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.AFDOrigins_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.AFDOrigins_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.AFDOrigins_ListByOriginGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/ruleSets",
+      "class": "network.cdn_rule_set",
+      "display_name": "Front Door rule set",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "ruleSets",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.RuleSets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.RuleSets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.RuleSets_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/ruleSets/rules",
+      "class": "network.cdn_rule",
+      "display_name": "Front Door rule",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "rules",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Rules_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Rules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Rules_ListByRuleSet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/secrets",
+      "class": "security.certificate_reference",
+      "display_name": "Front Door certificate reference",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "secrets",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Secrets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Secrets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Secrets_ListByProfile"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Cdn/profiles/securityPolicies",
+      "class": "security.waf_association",
+      "display_name": "Front Door security policy association",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "securityPolicies",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.SecurityPolicies_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.SecurityPolicies_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.SecurityPolicies_ListByProfile"
         ]
       }
     },

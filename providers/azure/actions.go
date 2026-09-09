@@ -116,10 +116,13 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := containerGroupIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
-	if err := a.client.containerGroupPrivateIncarnation(request.Asset, res.data); err != nil {
+	if err := a.client.servicePrivateIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := grafanaIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.cdnPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.grafanaParentPreflight(ctx, request.Asset); err != nil {
@@ -271,7 +274,7 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
-	if err := operationError(res); err != nil {
+	if err := a.operationError(res); err != nil {
 		return contracts.ActionResult{}, err
 	}
 	return a.operationResult(res)
@@ -294,7 +297,10 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 	}
 	data := map[string]any{"polling": polling}
 	if isGrafanaType(a.kind.NativeType) && operation != "" {
-		data["grafana_operation_binding"] = a.grafanaOperationBinding(operation)
+		data["grafana_operation_binding"] = a.operationBinding(operation)
+	}
+	if isCDNType(a.kind.NativeType) && operation != "" {
+		data["cdn_operation_binding"] = a.operationBinding(operation)
 	}
 	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: data, RetryAfter: retryAfter(res.header)}, nil
 }
@@ -342,8 +348,11 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
 		}
-		if isGrafanaType(a.kind.NativeType) && text(result.Data["grafana_operation_binding"]) != a.grafanaOperationBinding(result.ProviderOperationID) {
+		if isGrafanaType(a.kind.NativeType) && text(result.Data["grafana_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("Grafana polling receipt does not match its resource")
+		}
+		if isCDNType(a.kind.NativeType) && text(result.Data["cdn_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("CDN polling receipt does not match its resource")
 		}
 		res, err := a.client.requestAt(ctx, "GET", result.ProviderOperationID, nil, nil, a.validateOperationURL)
 		if err != nil && !isNotFound(err) {
@@ -353,7 +362,7 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 			if err := a.grafanaOperationResponse(result.ProviderOperationID, res); err != nil {
 				return contracts.WaitResult{}, err
 			}
-			if err := operationError(res); err != nil {
+			if err := a.operationError(res); err != nil {
 				return contracts.WaitResult{}, err
 			}
 			state := text(res.data["status"])
@@ -434,6 +443,13 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
 }
 func protectionReason(kind resourceType, raw map[string]any) string {
+	if kind.NativeType == cdnProfileType {
+		switch text(object(raw["properties"])["resourceState"]) {
+		case "Migrating", "Migrated", "PendingMigrationCommit", "CommittingMigration", "AbortingMigration":
+			return "azure_cdn_profile_migration_in_progress"
+		}
+	}
+
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}

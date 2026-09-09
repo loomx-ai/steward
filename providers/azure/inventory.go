@@ -279,6 +279,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.cdnInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, err
+	}
 	if nativeType == containerGroupType {
 		if err := validateContainerGroup(raw); err != nil {
 			return contracts.InventoryItem{}, err
@@ -530,6 +533,20 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if strings.EqualFold(nativeType, monitorWorkspaceType) {
 		fields["datacollectionruleresourceid"], fields["datacollectionendpointresourceid"] = true, true
 	}
+	if isCDNType(nativeType) {
+		for _, key := range []string{"originGroup", "ruleSets", "secret", "secretSource", "azureDnsZone", "azureOrigin", "privateLink", "privateLinkResourceId", "webApplicationFirewallPolicyLink", "wafPolicy", "preValidatedCustomDomainResourceId"} {
+			fields[strings.ToLower(key)] = true
+		}
+		if nativeType == afdRouteType {
+			fields["customdomains"] = true
+		}
+		if nativeType == afdSecurityPolicyType {
+			fields["domains"] = true
+		}
+		if nativeType == cdnOriginGroupType {
+			fields["origins"] = true
+		}
+	}
 	if strings.EqualFold(nativeType, containerGroupType) {
 		fields["subnetids"], fields["identity"] = true, true
 	}
@@ -625,6 +642,12 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
+			if strings.HasSuffix(text(typed["typeName"]), "ConditionParameters") && key == "matchValues" {
+				continue
+			}
+			if strings.HasSuffix(text(typed["typeName"]), "ActionParameters") && (key == "value" || key == "customQueryString" || key == "destination" || key == "customPath" || key == "customFragment") {
+				continue
+			}
 			if strings.EqualFold(key, "settings") && (typed["typeHandlerVersion"] != nil || typed["extensionType"] != nil) {
 				continue
 			}
@@ -632,7 +655,7 @@ func safeResource(value any) any {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
 				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
-				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue":
+				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata":
 				continue
 			}
 			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") {
