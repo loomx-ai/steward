@@ -50,22 +50,25 @@ func validResourceResponse(res response, nativeID, nativeType string) bool {
 		validResponseType(nativeType, text(res.data["type"]))
 }
 
-// The official VPN link Get/List payloads spell the last ID collection
-// VpnSiteLinkConnections while their request paths use vpnLinkConnections.
-// Only this documented final segment can differ; all ancestors and the name
-// remain bound to the native request. Type aliases alone never rewrite IDs.
-// https://learn.microsoft.com/rest/api/virtualwan/vpn-site-link-connections/get
+// Some official responses use a different final collection name from their
+// request path. Only catalog-selected ID aliases may change that last segment;
+// every ancestor and the name stay bound to the request. Type aliases alone
+// never rewrite IDs. A single trailing slash is accepted in native responses.
 func responseID(nativeType, id string) string {
-	if nativeType != vpnLinkConnectionType {
+	parsed, kind, err := parseID(strings.TrimSuffix(id, "/"))
+	if err != nil {
 		return id
 	}
-	parsed, kind, err := parseID(id)
-	if err == nil && strings.EqualFold(kind, vpnConnectionType+"/VpnSiteLinkConnections") {
-		parts := strings.Split(parsed, "/")
-		parts[len(parts)-2] = "vpnLinkConnections"
-		return strings.Join(parts, "/")
+	if definition, known := findType(nativeType); known {
+		for _, alias := range definition.ResponseIDTypes {
+			if strings.EqualFold(kind, alias) {
+				parts := strings.Split(parsed, "/")
+				parts[len(parts)-2] = definition.Collection
+				return strings.Join(parts, "/")
+			}
+		}
 	}
-	return id
+	return parsed
 }
 
 // A few documented child APIs report a top-level resource type, such as

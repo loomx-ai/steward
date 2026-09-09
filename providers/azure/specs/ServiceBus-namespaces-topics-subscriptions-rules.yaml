@@ -1,0 +1,79 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ServiceBus/namespaces/topics/subscriptions/rules
+  class: messaging.rule
+presentation:
+  displayNames:
+    en-US: Service Bus subscription rule
+    zh-CN: Service Bus 订阅规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ServiceBus.Rules_ListBySubscriptions
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+      topicName: parent.normalized.arm_parameters.topicName
+      subscriptionName: parent.normalized.arm_parameters.subscriptionName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ServiceBus.Rules_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ServiceBus/namespaces/topics/subscriptions
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  filterType:
+    path: filterType
+    type: string
+  action:
+    path: action
+    type: object
+  sqlFilter:
+    path: sqlFilter
+    type: object
+  correlationFilter:
+    path: correlationFilter
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.ServiceBus/namespaces/topics/subscriptions
+  targetIdPath: refs_microsoft_servicebus_namespaces_topics_subscriptions
+actions:
+  delete:
+    operation: Azure.Microsoft.ServiceBus.Rules_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ServiceBus.Rules_Get
+      itemsPath: $
+      identityPath: id

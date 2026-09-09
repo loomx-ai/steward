@@ -43,5 +43,125 @@
     "file": "ExpressRouteConnectionGet.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/examples/ExpressRouteConnectionGet.json",
     "source_sha256": "4dc0f993d704b0b5d1b78a51dbe54558003b39c4e216c9bcf2393f3e046e2cc3"
+  },
+  {
+    "file": "servicebus-Migrationconfigurations-SBMigrationconfigurationGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Migrationconfigurations/SBMigrationconfigurationGet.json",
+    "source_sha256": "c77f348b7b3cefeb67ab27eb15f548ab46cb33b46997f47e71458e3632ac419e"
+  },
+  {
+    "file": "servicebus-NameSpaces-PrivateEndPointConnectionGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/NameSpaces/PrivateEndPointConnectionGet.json",
+    "source_sha256": "0fae937d371669ec76e710946e18aee6fd678cd8ff60552bdf22d49d2aa6666d"
+  },
+  {
+    "file": "servicebus-NameSpaces-SBNameSpaceAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/NameSpaces/SBNameSpaceAuthorizationRuleGet.json",
+    "source_sha256": "dbfb6cfe2e6197409a35b971ff6ddb03f66a14dab55c927392bd67d958837b29"
+  },
+  {
+    "file": "servicebus-NameSpaces-SBNameSpaceGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/NameSpaces/SBNameSpaceGet.json",
+    "source_sha256": "972690dd9e8bd29f8679d7cee6f9efc7e92e9f520b23336f0a20400e26d5c6b6"
+  },
+  {
+    "file": "servicebus-NameSpaces-VirtualNetworkRule-SBNetworkRuleSetGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/NameSpaces/VirtualNetworkRule/SBNetworkRuleSetGet.json",
+    "source_sha256": "9243d998a39af945d922d43428ee84e4575ad3d9a94485c809ece4325a519f34"
+  },
+  {
+    "file": "servicebus-Queues-SBQueueAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Queues/SBQueueAuthorizationRuleGet.json",
+    "source_sha256": "60f4ef2045286dcfa212b5b75311269dec764d9103a55f29ca0456ba60ccd51e"
+  },
+  {
+    "file": "servicebus-Queues-SBQueueGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Queues/SBQueueGet.json",
+    "source_sha256": "ea450d487e8919dcf807f3f985308adb61fabd167e42910bc173eb34408d5104"
+  },
+  {
+    "file": "servicebus-Rules-RuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Rules/RuleGet.json",
+    "source_sha256": "0aefb1b9be2149a61bab617d6ddbd524926c3b3cb4e89c18db0c0071774f3a4f"
+  },
+  {
+    "file": "servicebus-Subscriptions-SBSubscriptionGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Subscriptions/SBSubscriptionGet.json",
+    "source_sha256": "55ba850aa8c5d17d9030df6a08fe367f22c442feb8171552bed976c11046a47f"
+  },
+  {
+    "file": "servicebus-Topics-SBTopicAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Topics/SBTopicAuthorizationRuleGet.json",
+    "source_sha256": "5d584300e9e69a4b56fbc70205bf5db260f2eb69667fe9c0a3ed906ce596ca7e"
+  },
+  {
+    "file": "servicebus-Topics-SBTopicGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/Topics/SBTopicGet.json",
+    "source_sha256": "bda3b573dee502f66fc2e3dcb4e8f34615592e8b5e50be968132b82a5746af83"
+  },
+  {
+    "file": "servicebus-disasterRecoveryConfigs-SBAliasAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/disasterRecoveryConfigs/SBAliasAuthorizationRuleGet.json",
+    "source_sha256": "6cb2d96de5ceb412b0a1c0d638ff2631d0e99325e224706c8c7bbbe056bc6b12"
+  },
+  {
+    "file": "servicebus-disasterRecoveryConfigs-SBAliasGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/examples/disasterRecoveryConfigs/SBAliasGet.json",
+    "source_sha256": "fdc081778f90abd96aba176b75dc399e3ddaca8f36a0178eef705bba6d4dd7cd"
+  },
+  {
+    "file": "eventhub-ApplicationGroup-ApplicationGroupGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/ApplicationGroup/ApplicationGroupGet.json",
+    "source_sha256": "116764d1ac695aea1de8222fd026c6a7c245f8f746015b7b27ff0db02021d47a"
+  },
+  {
+    "file": "eventhub-ConsumerGroup-EHConsumerGroupGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/ConsumerGroup/EHConsumerGroupGet.json",
+    "source_sha256": "170c7ecd39d790b97b6345b4d5ab45db86118fc7834740267cafb1a2d4fd76c4"
+  },
+  {
+    "file": "eventhub-EventHubs-EHEventHubAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/EventHubs/EHEventHubAuthorizationRuleGet.json",
+    "source_sha256": "a4ed479ebd5286a3d25de4cffe8b50e9f5a6d55db989011f2f4bbab2decf969a"
+  },
+  {
+    "file": "eventhub-EventHubs-EHEventHubGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/EventHubs/EHEventHubGet.json",
+    "source_sha256": "103f634baad4c95bed43e5b379e3e99c53b7e7c2ed0a1cfe51a52792e5abb137"
+  },
+  {
+    "file": "eventhub-NameSpaces-EHNameSpaceAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/NameSpaces/EHNameSpaceAuthorizationRuleGet.json",
+    "source_sha256": "96fa2afa2635a29880f19f2c0b644d10e248655f904fe6a81cc7dcfaa5936591"
+  },
+  {
+    "file": "eventhub-NameSpaces-EHNameSpaceGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/NameSpaces/EHNameSpaceGet.json",
+    "source_sha256": "91b47d4e10267356e6bb34b2965f5c1f22047160406f6f5315ea8804f1c22af8"
+  },
+  {
+    "file": "eventhub-NameSpaces-PrivateEndPointConnectionGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/NameSpaces/PrivateEndPointConnectionGet.json",
+    "source_sha256": "a6b294a0e3cf35b2623076e934853a041909dd8c9784edbe3d9ba39405a5ce74"
+  },
+  {
+    "file": "eventhub-NameSpaces-VirtualNetworkRule-EHNetworkRuleSetGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/NameSpaces/VirtualNetworkRule/EHNetworkRuleSetGet.json",
+    "source_sha256": "8813ebcb01a57ee3eccf83dde573c4016be64da0a2ecae9dfff5af9cf9650594"
+  },
+  {
+    "file": "eventhub-SchemaRegistry-SchemaRegistryGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/SchemaRegistry/SchemaRegistryGet.json",
+    "source_sha256": "fb8498b375c626bb0743fcbfc2a976ba40d9c17c86777e2604b901697b9eb337"
+  },
+  {
+    "file": "eventhub-disasterRecoveryConfigs-EHAliasAuthorizationRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/disasterRecoveryConfigs/EHAliasAuthorizationRuleGet.json",
+    "source_sha256": "591ac2ceaaf902f1e0cabac5c11cea0090bf2a586c6a458264446bf0a4226561"
+  },
+  {
+    "file": "eventhub-disasterRecoveryConfigs-EHAliasGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/disasterRecoveryConfigs/EHAliasGet.json",
+    "source_sha256": "01232d1b4dae30e62d8d28c28d00da5a80ca7636b979e3fc56aa444edf73f4d4"
   }
 ]

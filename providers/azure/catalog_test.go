@@ -54,7 +54,7 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 		for _, relation := range compiled.Definition.Relationships {
 			// Native firewall inheritance and nested Traffic Manager endpoints
 			// reference another resource of the same kind.
-			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" {
+			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}

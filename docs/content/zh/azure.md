@@ -20,39 +20,50 @@ navTitle: "Microsoft Azure"
 ## 第一次盘点
 
 1. 切换到新连接并核对订阅。
-2. 执行**全部启用地域与全局资源**扫描。Azure Resource Manager 提供资源列表，Steward 再调用各产品 API 获取支持的资源详情。
+2. 执行**全部启用地域与全局资源**扫描。Steward 使用各产品原生列表和详情 API 发现支持的资源，同时保留 Azure Resource Manager 的广泛盘点结果。
 3. 检查扫描覆盖与错误。权限或分页失败不会被视为原有资源已经消失。
 4. 打开地域中的 VNet，查看子网、网卡、VM 和关联资源。VM 的网络位置通过网卡解析。
 
-订阅级列表可能不包含子资源，因此 Steward 会显式枚举 VNet 子网、Blob 容器、SQL 数据库和弹性池。资源组显示在全局清单中；Azure 为资源组记录的地域用于存放资源组元数据。完整 ARM ID 保留订阅与资源组边界，匹配时不区分大小写，不同资源组中的同名资源不会混淆。
+原生发现覆盖 VNet 子网、Blob 容器、SQL 数据库、伸缩集实例、DNS 记录、Service Bus 实体和 Event Hubs 消费者组等子资源。资源组显示在全局清单中；Azure 为资源组记录的地域用于存放资源组元数据。完整 ARM ID 保留订阅与资源组边界，匹配时不区分大小写，不同资源组中的同名资源不会混淆。
 
 ## 盘点与清理范围
 
-Steward 识别 34 类资源，其中 27 类支持删除。ARM 返回的其他资源类型作为只读清单展示。
+Steward 识别 121 类资源，其中 109 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
-| Compute | VM、托管磁盘、快照、托管镜像、可用性集 | 支持，受挂载与归属保护限制 |
+| Compute | VM 与扩展、托管磁盘、快照、托管镜像、可用性集、专用宿主机、容量预留 | 支持，受挂载与归属保护限制；宿主机组和容量预留组先删除成员 |
+| VM Scale Set | Uniform、Flexible 伸缩集及实例、扩展 | Uniform 成员纳入级联影响；Flexible VM 作为前置删除步骤 |
 | 虚拟网络 | VNet、子网、网卡、网络安全组、路由表、公网 IP、公网 IP 前缀、NAT Gateway | 支持 |
 | 负载均衡 | Load Balancer、Application Gateway | 支持 |
 | Storage | 存储账户、Blob 容器 | 仅空资源 |
-| SQL | 数据库、弹性池 | 支持；`master` 数据库受保护 |
+| SQL | 逻辑服务器、数据库、弹性池 | 服务器清理包含已审查的数据库与弹性池；禁止独立删除 `master` |
 | PostgreSQL / MySQL | Flexible Server | 支持 |
 | App Service | Web App / Function App、App Service Plan | 分别支持清理 |
-| 容器 | 容器注册表、Container App | 支持 |
+| 容器 | 容器注册表、Container App、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
+| DNS 与私有终结点 | 公有/私有 DNS 区域及记录、私有 DNS 链接、Private Endpoint 与 DNS 区域组 | 级联审查包含已验证的托管网卡和外部 DNS 记录；系统 DNS 记录不可独立删除 |
+| Virtual WAN 网关 | VPN/ExpressRoute 网关、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理 |
+| Service Bus | 命名空间、队列、主题、订阅、规则、授权规则、灾难恢复别名、迁移配置、私有终结点连接 | 支持独立原生操作及经过审查的命名空间/实体级联；活动配对或迁移阻止删除 |
+| Event Hubs | 命名空间、事件中心、消费者组、授权规则、灾难恢复别名、架构组/应用组、私有终结点连接 | 支持独立原生操作及经过审查的命名空间/事件中心级联；活动配对阻止删除 |
 | 运维与身份 | Log Analytics 工作区、用户分配的托管身份 | 支持 |
-| 托管或集合资源 | 资源组、VM Scale Set、Private Endpoint、SQL 逻辑服务器、AKS 集群、Key Vault、Container Apps 环境 | 只读 |
+| 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
-只读类型可能包含数据或管理其他资源，这些连带删除影响尚未完整纳入清理计划。展示这些资源不代表可以删除它们管理的资源。
+Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作，会纳入所属控制资源的删除影响。保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
+
+Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
 
 - **管理锁**：订阅、资源组、资源本身及相关子资源的锁会阻止删除。Steward 在盘点和实际删除前检查锁，不会移除锁。
-- **托管资源**：由云服务管理的资源组中的资源、伸缩集成员 VM、Private Endpoint 网卡及其他云服务拥有的资源受到保护。
-- **VM 挂载资源**：VM 或网卡配置了 `deleteOption: Delete` 时会被阻止清理。请先在 Azure 审查设置，按需改为 `Detach`，再重新扫描。已挂载的托管磁盘按依赖排在 VM 之后删除。
+- **托管资源**：云服务拥有的资源需要通过受支持的控制资源清理，具有明确独立删除能力的成员除外。AKS 删除包含经过审查的节点资源组；仍禁止任意删除托管资源组中的资源。
+- **VM 挂载资源**：计划展示原生自动删除的磁盘、网卡和公网 IP。支持的保留操作在删除前执行带条件的原生更新，并支持工作进程重启恢复。VM 扩展仍属于 VM 的删除影响。Uniform 伸缩集的非托管 VHD 清理和磁盘解除挂载尚未实现。
 - **存储**：存储账户对应的服务必须没有 Blob 容器、文件共享、队列或表。Blob 容器不能含有 Blob、快照、版本、软删除条目或未提交上传。法律保留与不可变策略会阻止清理。Steward 不会清空或永久清除数据来满足删除条件。Blob 清理目前要求使用标准 `ACCOUNT.blob.core.windows.net` 端点。
-- **VNet**：必须先删除子网。选择 VNet 不会隐式删除未选择的子网。
+- **VNet 与 DNS 区域**：必须先移除必要的子网和私有 DNS 链接。选择 VNet 不会隐式删除未选择的子网或链接。
+- **消息服务**：删除命名空间、主题和订阅可能删除其中的消息与配置。所有已建模子资源均须经过审查，并在执行后逐一确认不存在。Steward 尚未实现自动解除异地恢复配对、故障转移或完成/中止活动 Service Bus 迁移。
+- **并发变更**：删除前重新核对原生创建标识；服务资源树还会核对版本、成员清单、锁与保护设置。资源被重建或出现未审查的子资源时，需要重新扫描和生成计划。
 - **App Service**：删除应用时显式保留 App Service Plan；需要删除计划时，应单独选择。
 - **异步操作**：Steward 跟踪 ARM 返回的操作状态，再重新读取资源确认其不存在。失败或取消的操作仍记为失败，不启用强制删除或永久清除选项。
 
 执行前审查[清理选择与结果](./cleanup.md)。删除数据库或容器注册表可能删除其内部数据。Azure 权限、保留策略、依赖关系和并发变更仍可能阻止操作。参阅微软的[管理锁](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources)、[VM 删除设置](https://learn.microsoft.com/en-us/azure/virtual-machines/delete)和[异步操作说明](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations)。
+
+这些扩展能力已保留原生 HTTP 协议测试及未修改的官方响应样例；独立模拟器与真实云验证仍待完成。

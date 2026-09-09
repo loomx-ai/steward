@@ -214,8 +214,43 @@ func productGeneration(raw map[string]any) string {
 	// Not every ARM provider exposes a creation identifier. Keep its etag as a
 	// conservative change detector where available.
 	values = append(values, raw["etag"])
+	extra := map[string]any{}
+	for _, field := range []string{"hostId", "createdAt", "createdAtUtc", "eTag"} {
+		if value := properties[field]; value != nil {
+			extra[field] = value
+		}
+	}
+	if len(extra) != 0 {
+		values = append(values, extra)
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
+}
+
+// Native creation fields survive ordinary configuration and attachment edits.
+// Keep this identity check separate from the stricter service generation check.
+func creationGeneration(raw map[string]any) string {
+	values := map[string]any{}
+	if value := object(raw["systemData"])["createdAt"]; value != nil {
+		values["systemData.createdAt"] = value
+	}
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc"} {
+		if value := object(raw["properties"])[field]; value != nil {
+			values[field] = value
+		}
+	}
+	if len(values) == 0 {
+		return ""
+	}
+	encoded, _ := json.Marshal(values)
+	return fmt.Sprintf("%x", sha256.Sum256(encoded))
+}
+
+func serviceCreationIdentity(planned asset.Asset, live map[string]any) error {
+	if expected := text(planned.Normalized["_arm_creation_generation"]); expected != "" && expected != creationGeneration(live) {
+		return serviceDenied("service_resource_incarnation_changed")
+	}
+	return nil
 }
 
 func (c *client) verifyProductParent(ctx context.Context, target productTarget) error {

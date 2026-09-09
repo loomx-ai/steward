@@ -1,0 +1,76 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ServiceBus/namespaces/networkRuleSets
+  class: network.rule_set
+presentation:
+  displayNames:
+    en-US: Service Bus network rule set
+    zh-CN: Service Bus 网络规则集
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ServiceBus.Namespaces_ListNetworkRuleSets
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ServiceBus.Namespaces_GetNetworkRuleSet
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ServiceBus/namespaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  defaultAction:
+    path: defaultAction
+    type: string
+  publicNetworkAccess:
+    path: publicNetworkAccess
+    type: string
+  virtualNetworkRules:
+    path: virtualNetworkRules
+    type: array
+  ipRules:
+    path: ipRules
+    type: array
+  trustedServiceAccessEnabled:
+    path: trustedServiceAccessEnabled
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.ServiceBus/namespaces
+  targetIdPath: refs_microsoft_servicebus_namespaces
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks

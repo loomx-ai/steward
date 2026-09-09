@@ -1,0 +1,92 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.EventHub/namespaces/eventhubs
+  class: messaging.stream
+presentation:
+  displayNames:
+    en-US: Event hub
+    zh-CN: 事件中心
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.EventHub.EventHubs_ListByNamespace
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.EventHub.EventHubs_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.EventHub/namespaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: status
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  createdAt:
+    path: createdAt
+    type: string
+  status:
+    path: status
+    type: string
+  partitionCount:
+    path: partitionCount
+    type: number
+  partitionIds:
+    path: partitionIds
+    type: array
+  messageRetentionInDays:
+    path: messageRetentionInDays
+    type: number
+  captureDescription:
+    path: captureDescription
+    type: object
+  retentionDescription:
+    path: retentionDescription
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts/blobServices/containers
+  targetIdPath: refs_microsoft_storage_storageaccounts_blobservices_containers
+actions:
+  delete:
+    operation: Azure.Microsoft.EventHub.EventHubs_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.EventHub.EventHubs_Get
+      itemsPath: $
+      identityPath: id

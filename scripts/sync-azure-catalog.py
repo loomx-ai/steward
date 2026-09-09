@@ -119,8 +119,9 @@ def snapshot(selection):
     types = [{target: item[key] for key, target in keys.items()} for item in selection["resource_types"]]
     for target, source in zip(types, selection["resource_types"]):
         target["rest"] = {key: source[key] for key in ("collection", "read_operations", "delete_operations", "list_operations")}
-        if source.get("response_types"):
-            target["rest"]["response_types"] = source["response_types"]
+        for field in ("response_types", "response_id_types"):
+            if source.get(field):
+                target["rest"][field] = source[field]
     return {"documents": documents, "x-resource-types": types}
 
 

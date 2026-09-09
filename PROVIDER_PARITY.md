@@ -306,3 +306,19 @@ background evidence only, not acceptance evidence for this work.
   exposed the VPN link response-ID spelling difference, now handled with one
   narrowly bound alias. Full Go/vet, offline source checks and targeted races
   pass. Remaining families, service parents and independent acceptance are open.
+
+- Azure now has 121 rules/372 native operations from 68 official root documents
+  and 30 references, adding 25 Service Bus/Event Hubs resource kinds. Native
+  namespace/entity cascades include nested subscriptions/rules and read-only
+  configuration views, with per-child review, retention blocking and serialized
+  absence verification. Explicit response-ID aliases handle only the documented
+  final collection spelling; native 200 responses, ancestor identity and type
+  checks remain required. Creation identifiers protect standalone actions from
+  resource recreation while allowing ordinary updates. Forwarding, Capture,
+  identity, network-rule and private-endpoint dependencies are explicit. Retained
+  tests cover every added native Get/List/action contract, 24 unchanged official
+  examples, child permissions and incomplete lists, drift, locks, external
+  preservation and restarts. Full Go/vet, 10 source checks and targeted races
+  pass; bilingual Azure docs reflect the current conditions. Active geo-recovery
+  unpairing, migration workflows, dedicated Event Hubs clusters, other families
+  and independent emulator/application/real-cloud acceptance remain unfinished.

@@ -38,6 +38,7 @@ type resourceType struct {
 	DeleteOperations []string          `json:"delete_operations"`
 	ListOperations   []string          `json:"list_operations"`
 	ResponseTypes    []string          `json:"response_types,omitempty"`
+	ResponseIDTypes  []string          `json:"response_id_types,omitempty"`
 }
 
 var both = []asset.ScopeKind{asset.ScopeRegion, asset.ScopeGlobal}
@@ -68,7 +69,7 @@ func loadProviderData() (providerMetadata, error) {
 		if !ok || operation.Call == nil {
 			return result, fmt.Errorf("Azure resource has no valid read operation")
 		}
-		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations, ResponseTypes: kind.REST.ResponseTypes})
+		result.kinds = append(result.kinds, resourceType{Version: operation.Call.Version, ReadOnly: len(kind.REST.DeleteOperations) == 0, NativeType: kind.NativeType, Scopes: kind.ScopeKinds, Collection: kind.REST.Collection, ReadOperations: kind.REST.ReadOperations, DeleteOperations: kind.REST.DeleteOperations, ListOperations: kind.REST.ListOperations, ResponseTypes: kind.REST.ResponseTypes, ResponseIDTypes: kind.REST.ResponseIDTypes})
 	}
 	entries, err := providerFiles.ReadDir("specs")
 	if err != nil {
@@ -99,6 +100,16 @@ func loadProviderData() (providerMetadata, error) {
 			return result, fmt.Errorf("invalid Azure resource mapping %q", kind.NativeType)
 		}
 		seen[kind.NativeType] = true
+		for _, alias := range kind.ResponseIDTypes {
+			if !validResponseIDType(kind.NativeType, alias) {
+				return result, fmt.Errorf("Azure response ID alias changes an ancestor resource")
+			}
+			for _, other := range result.kinds {
+				if strings.EqualFold(alias, other.NativeType) {
+					return result, fmt.Errorf("Azure response ID alias shadows a resource type")
+				}
+			}
+		}
 		if _, ok := result.catalog.ResourceType(kind.NativeType); !ok {
 			return result, fmt.Errorf("Azure resource %q is missing from catalog", kind.NativeType)
 		}
@@ -150,4 +161,11 @@ func compileBundle() (spec.Bundle, error) {
 
 func referenceKey(nativeType string) string {
 	return "refs_" + strings.NewReplacer(".", "_", "/", "_").Replace(strings.ToLower(nativeType))
+}
+
+func validResponseIDType(nativeType, alias string) bool {
+	parts, aliases := strings.Split(nativeType, "/"), strings.Split(alias, "/")
+	return len(parts) >= 3 && len(parts) == len(aliases) && aliases[len(aliases)-1] != "" &&
+		strings.EqualFold(strings.Join(parts[:len(parts)-1], "/"), strings.Join(aliases[:len(aliases)-1], "/")) &&
+		!strings.EqualFold(parts[len(parts)-1], aliases[len(aliases)-1])
 }

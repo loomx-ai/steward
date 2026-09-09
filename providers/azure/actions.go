@@ -99,6 +99,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if !validResourceResponse(res, a.id, a.kind.NativeType) {
 		return contracts.PreflightResult{}, fmt.Errorf("Azure preflight identity mismatch")
 	}
+	if err := serviceCreationIdentity(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if reason := protectionReason(a.kind, res.data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
@@ -351,7 +354,7 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	if !strings.EqualFold(text(res.data["id"]), a.id) {
+	if !validResourceResponse(res, a.id, a.kind.NativeType) {
 		return contracts.ReadbackResult{}, fmt.Errorf("Azure readback identity mismatch")
 	}
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
@@ -383,6 +386,12 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 		}
 	}
 	properties := object(raw["properties"])
+	if reason := messagingDeletionReason(kind.NativeType, raw); reason != "" {
+		return reason
+	}
+	if messagingManagedConfiguration(kind.NativeType) {
+		return "azure_messaging_managed_configuration"
+	}
 	if kind.NativeType == vpnLinkConnectionType {
 		return "azure_vpn_connection_managed_link"
 	}
@@ -404,6 +413,8 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
+		return true
+	case "azure_messaging_managed_configuration":
 		return true
 	default:
 		return false

@@ -1,0 +1,76 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.EventHub/namespaces/networkRuleSets
+  class: network.rule_set
+presentation:
+  displayNames:
+    en-US: Event Hubs network rule set
+    zh-CN: Event Hubs 网络规则集
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.EventHub.Namespaces_ListNetworkRuleSet
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.EventHub.Namespaces_GetNetworkRuleSet
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.EventHub/namespaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  defaultAction:
+    path: defaultAction
+    type: string
+  publicNetworkAccess:
+    path: publicNetworkAccess
+    type: string
+  virtualNetworkRules:
+    path: virtualNetworkRules
+    type: array
+  ipRules:
+    path: ipRules
+    type: array
+  trustedServiceAccessEnabled:
+    path: trustedServiceAccessEnabled
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: depends_on
+  targetType: Microsoft.Network/virtualNetworks
+  targetIdPath: refs_microsoft_network_virtualnetworks

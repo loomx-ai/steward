@@ -26,21 +26,31 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
-	hostGroupType:           {hostType},
-	capacityGroupType:       {capacityType},
-	vpnGatewayType:          {vpnConnectionType, vpnNATRuleType},
-	vpnConnectionType:       {vpnLinkConnectionType},
-	expressGatewayType:      {expressConnectionType},
-	vmType:                  {vmExtensionType},
-	scaleSetType:            {scaleSetVMType, scaleSetExtensionType, vmType},
-	scaleSetVMType:          {scaleSetVMExtensionType, scaleSetNICType, diskType},
-	scaleSetNICType:         {scaleSetIPConfigType},
-	scaleSetIPConfigType:    {scaleSetPublicIPType},
-	privateEndpointType:     {nicType, privateDNSZoneGroupType},
-	publicDNSZoneType:       dnsChildTypes(publicDNSZoneType),
-	privateDNSZoneType:      dnsChildTypes(privateDNSZoneType),
-	privateDNSZoneGroupType: {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
-	privateDNSLinkType:      {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
+	// Native ARM namespace deletion removes associated resources.
+	// https://learn.microsoft.com/rest/api/servicebus/controlplane/namespaces/delete
+	serviceBusNamespaceType:    {serviceBusQueueType, serviceBusTopicType, serviceBusNamespaceType + "/authorizationRules", serviceBusRecoveryType, serviceBusMigrationType, serviceBusNamespaceType + "/privateEndpointConnections", serviceBusNamespaceType + "/networkRuleSets"},
+	serviceBusQueueType:        {serviceBusQueueType + "/authorizationRules"},
+	serviceBusTopicType:        {serviceBusSubscriptionType, serviceBusTopicType + "/authorizationRules"},
+	serviceBusSubscriptionType: {serviceBusRuleType},
+	serviceBusRecoveryType:     {serviceBusRecoveryType + "/authorizationRules"},
+	eventHubNamespaceType:      {eventHubType, eventHubNamespaceType + "/authorizationRules", eventHubRecoveryType, eventHubNamespaceType + "/schemagroups", eventHubNamespaceType + "/applicationGroups", eventHubNamespaceType + "/privateEndpointConnections", eventHubNamespaceType + "/networkRuleSets", eventHubNamespaceType + "/networkSecurityPerimeterConfigurations"},
+	eventHubType:               {eventHubConsumerGroupType, eventHubType + "/authorizationRules"},
+	eventHubRecoveryType:       {eventHubRecoveryType + "/authorizationRules"},
+	hostGroupType:              {hostType},
+	capacityGroupType:          {capacityType},
+	vpnGatewayType:             {vpnConnectionType, vpnNATRuleType},
+	vpnConnectionType:          {vpnLinkConnectionType},
+	expressGatewayType:         {expressConnectionType},
+	vmType:                     {vmExtensionType},
+	scaleSetType:               {scaleSetVMType, scaleSetExtensionType, vmType},
+	scaleSetVMType:             {scaleSetVMExtensionType, scaleSetNICType, diskType},
+	scaleSetNICType:            {scaleSetIPConfigType},
+	scaleSetIPConfigType:       {scaleSetPublicIPType},
+	privateEndpointType:        {nicType, privateDNSZoneGroupType},
+	publicDNSZoneType:          dnsChildTypes(publicDNSZoneType),
+	privateDNSZoneType:         dnsChildTypes(privateDNSZoneType),
+	privateDNSZoneGroupType:    {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
+	privateDNSLinkType:         {privateDNSZoneType + "/A", privateDNSZoneType + "/AAAA"},
 	// https://learn.microsoft.com/azure/azure-sql/database/logical-servers
 	sqlServerType: {sqlDatabaseType, "Microsoft.Sql/servers/elasticPools"},
 	networkWatcherType: {
@@ -152,7 +162,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 }
 
 func serviceListedIncarnation(listed, live map[string]any) error {
-	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "eTag"} {
 		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
 			return fmt.Errorf("Azure resource incarnation changed")
 		}
@@ -169,6 +179,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := serviceCreationIdentity(planned, live); err != nil {
+		return err
+	}
 	if strings.EqualFold(planned.Identity.NativeType, scaleSetType) {
 		expected, expectedErr := scaleSetMode(planned.Normalized)
 		actual, actualErr := scaleSetMode(object(live["properties"]))
@@ -459,7 +472,8 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
+	return (messagingManagedConfiguration(child) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_messaging_managed_configuration") ||
+		(strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
 		(strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
 		((strings.EqualFold(child, scaleSetNICType) || strings.EqualFold(child, scaleSetIPConfigType) || strings.EqualFold(child, scaleSetPublicIPType)) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_scale_set_managed_network") ||
 		(strings.EqualFold(parent, privateEndpointType) && strings.EqualFold(child, nicType) && reason == "azure_private_endpoint_managed_nic") ||

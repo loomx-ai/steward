@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ServiceBus/namespaces/authorizationRules
+  class: messaging.authorization_rule
+presentation:
+  displayNames:
+    en-US: Service Bus namespace authorization rule
+    zh-CN: Service Bus 命名空间授权规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ServiceBus.Namespaces_ListAuthorizationRules
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ServiceBus.Namespaces_GetAuthorizationRule
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ServiceBus/namespaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  rights:
+    path: rights
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.ServiceBus/namespaces
+  targetIdPath: refs_microsoft_servicebus_namespaces
+actions:
+  delete:
+    operation: Azure.Microsoft.ServiceBus.Namespaces_DeleteAuthorizationRule
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ServiceBus.Namespaces_GetAuthorizationRule
+      itemsPath: $
+      identityPath: id

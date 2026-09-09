@@ -1,0 +1,64 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.EventHub/namespaces/networkSecurityPerimeterConfigurations
+  class: network.perimeter_configuration
+presentation:
+  displayNames:
+    en-US: Event Hubs network perimeter configuration
+    zh-CN: Event Hubs 网络边界配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.EventHub.NetworkSecurityPerimeterConfiguration_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      namespaceName: parent.normalized.arm_parameters.namespaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.EventHub.NetworkSecurityPerimeterConfigurations_GetResourceAssociationName
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.EventHub/namespaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  networkSecurityPerimeter:
+    path: networkSecurityPerimeter
+    type: object
+  resourceAssociation:
+    path: resourceAssociation
+    type: object
+  profile:
+    path: profile
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces

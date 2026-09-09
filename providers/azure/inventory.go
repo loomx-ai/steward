@@ -129,6 +129,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 				return contracts.InventoryBatch{}, fmt.Errorf("Azure resource detail identity mismatch")
 			}
 			raw = detail.data
+			raw["id"] = responseID(kind.NativeType, text(raw["id"]))
 			raw["type"] = kind.NativeType
 			if text(raw["location"]) == "" {
 				raw["location"] = resourceRegion(object(value))
@@ -274,6 +275,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	normalized["resource_group"] = parts[4]
 	normalized["_inventory_source"] = inventorySource
 	normalized["_arm_generation"] = productGeneration(raw)
+	if creation := creationGeneration(raw); creation != "" {
+		normalized["_arm_creation_generation"] = creation
+	}
 	normalized["arm_etag"] = text(raw["etag"])
 	if hasServicePrerequisites(nativeType) {
 		normalized["_arm_parent_configuration"] = serviceParentConfiguration(nativeType, raw)
@@ -309,6 +313,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if err := c.serviceBusForwardReferences(ctx, nativeType, id, raw, refs); err != nil {
+		return contracts.InventoryItem{}, err
+	}
 	if nativeType == vmType {
 		// VM placement is carried by its NICs, not by the VM ARM document.
 		nicKind, _ := findType(nicType)
@@ -362,8 +369,12 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		}
 	}
 	actionable := known && !kind.ReadOnly
+	state := text(object(raw["properties"])["provisioningState"])
+	if state == "" {
+		state = text(object(raw["properties"])["status"])
+	}
 	return contracts.InventoryItem{NativeID: id, NativeType: nativeType, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope,
-		Name: text(raw["name"]), Location: region, State: text(object(raw["properties"])["provisioningState"]), Tags: tags, Normalized: normalized, Raw: safe,
+		Name: text(raw["name"]), Location: region, State: state, Tags: tags, Normalized: normalized, Raw: safe,
 		NativeAliases: []string{text(raw["id"]), id}, NetworkReferences: networkRefs}, nil
 }
 
@@ -413,6 +424,15 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	}
 	if nativeType == vpnConnectionType || nativeType == vpnLinkConnectionType {
 		fields["ingressnatrules"], fields["egressnatrules"] = true, true
+	}
+	if nativeType == eventHubType {
+		fields["storageaccountresourceid"] = true
+		destination := object(object(object(object(raw["properties"])["captureDescription"])["destination"])["properties"])
+		storageID, storageKind, err := parseID(text(destination["storageAccountResourceId"]))
+		container := text(destination["blobContainer"])
+		if err == nil && strings.EqualFold(storageKind, storageType) && container != "" && container != "." && container != ".." && !strings.ContainsAny(container, "/\\?#%\x00\r\n ") {
+			add(storageID + "/blobServices/default/containers/" + container)
+		}
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true

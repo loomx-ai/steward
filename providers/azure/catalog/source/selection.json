@@ -149,6 +149,79 @@
       ]
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/ApplicationGroups.json",
+      "operations": [
+        "ApplicationGroup_Delete",
+        "ApplicationGroup_Get",
+        "ApplicationGroup_ListByNamespace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/AuthorizationRules.json",
+      "operations": [
+        "DisasterRecoveryConfigs_GetAuthorizationRule",
+        "DisasterRecoveryConfigs_ListAuthorizationRules",
+        "EventHubs_DeleteAuthorizationRule",
+        "EventHubs_GetAuthorizationRule",
+        "EventHubs_ListAuthorizationRules",
+        "Namespaces_DeleteAuthorizationRule",
+        "Namespaces_GetAuthorizationRule",
+        "Namespaces_ListAuthorizationRules"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/SchemaRegistry.json",
+      "operations": [
+        "SchemaRegistry_Delete",
+        "SchemaRegistry_Get",
+        "SchemaRegistry_ListByNamespace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/consumergroups.json",
+      "operations": [
+        "ConsumerGroups_Delete",
+        "ConsumerGroups_Get",
+        "ConsumerGroups_ListByEventHub"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/disasterRecoveryConfigs.json",
+      "operations": [
+        "DisasterRecoveryConfigs_Delete",
+        "DisasterRecoveryConfigs_Get",
+        "DisasterRecoveryConfigs_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/eventhubs.json",
+      "operations": [
+        "EventHubs_Delete",
+        "EventHubs_Get",
+        "EventHubs_ListByNamespace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/namespaces.json",
+      "operations": [
+        "Namespaces_Delete",
+        "Namespaces_Get",
+        "Namespaces_List",
+        "NetworkSecurityPerimeterConfiguration_List",
+        "NetworkSecurityPerimeterConfigurations_GetResourceAssociationName",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/networkrulessets.json",
+      "operations": [
+        "Namespaces_GetNetworkRuleSet",
+        "Namespaces_ListNetworkRuleSet"
+      ]
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json",
       "operations": [
         "Vaults_Delete",
@@ -472,6 +545,88 @@
       "operations": [
         "Subscriptions_Get",
         "Subscriptions_ListLocations"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/AuthorizationRules.json",
+      "operations": [
+        "DisasterRecoveryConfigs_GetAuthorizationRule",
+        "DisasterRecoveryConfigs_ListAuthorizationRules",
+        "Namespaces_DeleteAuthorizationRule",
+        "Namespaces_GetAuthorizationRule",
+        "Namespaces_ListAuthorizationRules",
+        "Queues_DeleteAuthorizationRule",
+        "Queues_GetAuthorizationRule",
+        "Queues_ListAuthorizationRules",
+        "Topics_DeleteAuthorizationRule",
+        "Topics_GetAuthorizationRule",
+        "Topics_ListAuthorizationRules"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/DisasterRecoveryConfig.json",
+      "operations": [
+        "DisasterRecoveryConfigs_Delete",
+        "DisasterRecoveryConfigs_Get",
+        "DisasterRecoveryConfigs_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/Queue.json",
+      "operations": [
+        "Queues_Delete",
+        "Queues_Get",
+        "Queues_ListByNamespace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/Rules.json",
+      "operations": [
+        "Rules_Delete",
+        "Rules_Get",
+        "Rules_ListBySubscriptions"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/migrationconfigs.json",
+      "operations": [
+        "MigrationConfigs_Delete",
+        "MigrationConfigs_Get",
+        "MigrationConfigs_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/namespace-preview.json",
+      "operations": [
+        "Namespaces_Delete",
+        "Namespaces_Get",
+        "Namespaces_List",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/networksets.json",
+      "operations": [
+        "Namespaces_GetNetworkRuleSet",
+        "Namespaces_ListNetworkRuleSets"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/subscriptions.json",
+      "operations": [
+        "Subscriptions_Delete",
+        "Subscriptions_Get",
+        "Subscriptions_ListByTopic"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/topics.json",
+      "operations": [
+        "Topics_Delete",
+        "Topics_Get",
+        "Topics_ListByNamespace"
       ]
     },
     {
@@ -2326,6 +2481,9 @@
       ],
       "response_types": [
         "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
+      ],
+      "response_id_types": [
+        "Microsoft.Network/vpnGateways/vpnConnections/VpnSiteLinkConnections"
       ]
     },
     {
@@ -2344,6 +2502,482 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Network.ExpressRouteConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces",
+      "class": "messaging.namespace",
+      "display_name": "Service Bus namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/queues",
+      "class": "messaging.queue",
+      "display_name": "Service Bus queue",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "queues",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/topics",
+      "class": "messaging.topic",
+      "display_name": "Service Bus topic",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "topics",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+      "class": "messaging.subscription",
+      "display_name": "Service Bus topic subscription",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "subscriptions",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Subscriptions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Subscriptions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Subscriptions_ListByTopic"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules",
+      "class": "messaging.rule",
+      "display_name": "Service Bus subscription rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "rules",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Rules_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Rules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Rules_ListBySubscriptions"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Service Bus namespace authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_GetAuthorizationRule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_DeleteAuthorizationRule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_ListAuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/queues/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Service Bus queue authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_GetAuthorizationRule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_DeleteAuthorizationRule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Queues_ListAuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/topics/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Service Bus topic authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_GetAuthorizationRule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_DeleteAuthorizationRule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Topics_ListAuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/disasterRecoveryConfigs",
+      "class": "messaging.replication",
+      "display_name": "Service Bus recovery alias",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "disasterRecoveryConfigs",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_List"
+      ],
+      "response_types": [
+        "Microsoft.ServiceBus/namespaces/DisasterRecoveryConfig"
+      ],
+      "response_id_types": [
+        "Microsoft.ServiceBus/namespaces/disasterRecoveryConfig"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/disasterRecoveryConfigs/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Service Bus recovery alias authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_GetAuthorizationRule"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_ListAuthorizationRules"
+      ],
+      "response_types": [
+        "Microsoft.ServiceBus/namespaces/DisasterRecoveryConfig/AuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/migrationConfigurations",
+      "class": "messaging.migration",
+      "display_name": "Service Bus migration configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "migrationConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.MigrationConfigs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.MigrationConfigs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.MigrationConfigs_List"
+      ],
+      "response_types": [
+        "Microsoft.ServiceBus/namespaces/disasterrecoveryconfigs"
+      ],
+      "response_id_types": [
+        "Microsoft.ServiceBus/namespaces/migrationConfigs"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Service Bus private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.PrivateEndpointConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ServiceBus.PrivateEndpointConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ServiceBus/namespaces/networkRuleSets",
+      "class": "network.rule_set",
+      "display_name": "Service Bus network rule set",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "networkRuleSets",
+      "read_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_GetNetworkRuleSet"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ServiceBus.Namespaces_ListNetworkRuleSets"
+      ],
+      "response_types": [
+        "Microsoft.ServiceBus/namespaces/NetworkRuleSet"
+      ],
+      "response_id_types": [
+        "Microsoft.ServiceBus/namespaces/networkRuleSet"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces",
+      "class": "messaging.namespace",
+      "display_name": "Event Hubs namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "namespaces",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/eventhubs",
+      "class": "messaging.stream",
+      "display_name": "Event hub",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "eventhubs",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/eventhubs/consumergroups",
+      "class": "messaging.consumer_group",
+      "display_name": "Event Hubs consumer group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "consumergroups",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.ConsumerGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.ConsumerGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.ConsumerGroups_ListByEventHub"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Event Hubs namespace authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_GetAuthorizationRule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_DeleteAuthorizationRule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_ListAuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/eventhubs/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Event hub authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_GetAuthorizationRule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_DeleteAuthorizationRule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.EventHubs_ListAuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/disasterRecoveryConfigs",
+      "class": "messaging.replication",
+      "display_name": "Event Hubs recovery alias",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "disasterRecoveryConfigs",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_List"
+      ],
+      "response_types": [
+        "Microsoft.EventHub/namespaces/DisasterRecoveryConfig"
+      ],
+      "response_id_types": [
+        "Microsoft.EventHub/namespaces/disasterRecoveryConfig"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/disasterRecoveryConfigs/authorizationRules",
+      "class": "messaging.authorization_rule",
+      "display_name": "Event Hubs recovery alias authorization rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "authorizationRules",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_GetAuthorizationRule"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.DisasterRecoveryConfigs_ListAuthorizationRules"
+      ],
+      "response_types": [
+        "Microsoft.EventHub/namespaces/AuthorizationRules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/schemagroups",
+      "class": "messaging.schema_group",
+      "display_name": "Event Hubs schema group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "schemagroups",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.SchemaRegistry_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.SchemaRegistry_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.SchemaRegistry_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/applicationGroups",
+      "class": "messaging.application_group",
+      "display_name": "Event Hubs application group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "applicationGroups",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.ApplicationGroup_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.ApplicationGroup_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.ApplicationGroup_ListByNamespace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Event Hubs private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.PrivateEndpointConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.EventHub.PrivateEndpointConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/networkRuleSets",
+      "class": "network.rule_set",
+      "display_name": "Event Hubs network rule set",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "networkRuleSets",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_GetNetworkRuleSet"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.Namespaces_ListNetworkRuleSet"
+      ],
+      "response_types": [
+        "Microsoft.EventHub/namespaces/NetworkRuleSet"
+      ],
+      "response_id_types": [
+        "Microsoft.EventHub/namespaces/networkRuleSet"
+      ]
+    },
+    {
+      "native_type": "Microsoft.EventHub/namespaces/networkSecurityPerimeterConfigurations",
+      "class": "network.perimeter_configuration",
+      "display_name": "Event Hubs network perimeter configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "networkSecurityPerimeterConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.EventHub.NetworkSecurityPerimeterConfigurations_GetResourceAssociationName"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.EventHub.NetworkSecurityPerimeterConfiguration_List"
       ]
     }
   ]
