@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/release.yml'
+      - '.gitattributes'
       - 'packaging/**'
       - 'scripts/*release*'
       - 'scripts/test_install.py'
