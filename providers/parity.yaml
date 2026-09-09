@@ -1180,11 +1180,16 @@ resources:
   gcp:
     resources:
     - compute.googleapis.com/InstanceGroupManager
-    - compute.googleapis.com/RegionInstanceGroupManager
   azure:
     resources:
     - Microsoft.Compute/virtualMachineScaleSets
   status: pending_verification
+  notes: Zonal and regional managed instance groups share the canonical InstanceGroupManager type.
+    Both native operation families remain required and are bound by one resource rule; regional
+    lifecycle and retention tests are retained in providers/gcp/groups_test.go.
+  sources:
+  - https://docs.cloud.google.com/asset-inventory/docs/asset-types
+  - https://docs.cloud.google.com/compute/docs/reference/rest/v1/regionInstanceGroupManagers
 - alicloud: ACS::ExpressConnect::PhysicalConnection
   spec: providers/alicloud/specs/express-connect-physical-connection.yaml
   class: network.physical_connection
@@ -1676,6 +1681,13 @@ resources:
     resources:
     - Microsoft.Network/networkSecurityGroups
   status: pending_verification
+  notes: Global/regional NetworkFirewallPolicy methods are implemented. Hierarchical FirewallPolicy
+    remains unfinished and requires organization/folder scope. Cloud NGFW uses stateful packet
+    filtering; these are functional mappings, not an assertion of identical network ACL behavior.
+  sources:
+  - https://docs.cloud.google.com/compute/docs/reference/rest/v1/networkFirewallPolicies
+  - https://docs.cloud.google.com/compute/docs/reference/rest/v1/firewallPolicies
+  - https://docs.cloud.google.com/firewall/docs/key-terms
 - alicloud: ACS::ECS::NetworkInterface
   spec: providers/alicloud/specs/network-interface.yaml
   class: network.interface
