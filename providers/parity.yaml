@@ -209,7 +209,9 @@ resources:
     Incoming scopes are references outside the connection boundary. Broader monitoring configuration
     and real-cloud acceptance remain unverified. Azure data collection rules, endpoints and extension
     associations now use native product inventory and reviewed shared unlink prerequisites.
-    Azure Monitor workspace ownership and its default managed resource group remain unfinished.
+    Azure Monitor workspace deletion now reviews its native default managed resource group,
+    preserves shared external unlink prerequisites and verifies group/known-child absence.
+    Independent environment and real-cloud acceptance remain open.
 - alicloud: ACS::ARMS::GrafanaWorkspace
   spec: providers/alicloud/specs/arms-grafana-workspace.yaml
   class: observability.visualization

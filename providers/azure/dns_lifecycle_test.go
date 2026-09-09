@@ -213,8 +213,11 @@ func dnsAsset(t *testing.T, r *Runtime, raw map[string]any) asset.Asset {
 		copy[k] = v
 	}
 	_, kind, _ := parseID(text(raw["id"]))
-	rule, _ := findType(kind)
-	copy["type"] = rule.NativeType
+	if rule, known := findType(kind); known {
+		copy["type"] = rule.NativeType
+	} else {
+		copy["type"] = kind
+	}
 	item, err := r.inventoryItem(context.Background(), c, copy, nil, nil)
 	if err != nil {
 		t.Fatal(err)

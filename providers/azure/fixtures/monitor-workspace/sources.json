@@ -1,0 +1,17 @@
+[
+  {
+    "file": "AzureMonitorWorkspacesListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/examples/AzureMonitorWorkspacesListBySubscription.json",
+    "source_sha256": "9f50cc1213c46c236d6694b3974b9b114319dc05ac5610afbbb5b797c39d73a2"
+  },
+  {
+    "file": "AzureMonitorWorkspacesGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/examples/AzureMonitorWorkspacesGet.json",
+    "source_sha256": "d028422e5f50a6bad46cad1a02330218c72079c050ac63013bd409cc08437cc6"
+  },
+  {
+    "file": "AzureMonitorWorkspacesDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/examples/AzureMonitorWorkspacesDelete.json",
+    "source_sha256": "e4ac7440b1d241e6de319299ecc8a57f6aad83c916cd1f375625b898e88f7c2f"
+  }
+]

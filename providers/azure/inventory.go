@@ -279,6 +279,18 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if nativeType == groupType {
+		normalized["_managed_group_owner"] = strings.ToLower(text(raw["managedBy"]))
+	}
+	if nativeType == monitorWorkspaceType {
+		if err := validateMonitorConnections(id, object(raw["properties"])); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized["_monitor_workspace_configuration"] = monitorWorkspaceConfiguration(raw)
+		if value := safe["identity"]; value != nil {
+			normalized["identity"] = value
+		}
+	}
 	if isDataCollectionType(nativeType) {
 		normalized["_data_collection_configuration"] = dataCollectionConfiguration(nativeType, raw)
 		if value := safe["identity"]; value != nil {
@@ -504,6 +516,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 			parent, _ := dataCollectionMonitoredResource(self)
 			add(parent)
 		}
+	}
+	if strings.EqualFold(nativeType, monitorWorkspaceType) {
+		fields["datacollectionruleresourceid"], fields["datacollectionendpointresourceid"] = true, true
 	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true

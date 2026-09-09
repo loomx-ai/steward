@@ -26,6 +26,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	monitorWorkspaceType:       {}, // Native default-ingestion managed group; discovered separately.
 	dataCollectionRuleType:     {dataCollectionAssociationType},
 	dataCollectionEndpointType: {dataCollectionAssociationType},
 	// These are direct prerequisites; only their own APIs remove each child.
@@ -186,6 +187,14 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if strings.EqualFold(planned.Identity.NativeType, groupType) {
+		if expected, captured := planned.Normalized["_managed_group_owner"]; captured && !strings.EqualFold(text(expected), text(live["managedBy"])) {
+			return serviceDenied("managed_resource_group_owner_changed")
+		}
+	}
+	if err := monitorWorkspaceIncarnation(planned, live); err != nil {
+		return err
+	}
 	if err := dataCollectionIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -220,14 +229,24 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
 	}
-	aksMembers := aksManagedMembers(assets)
+	aksMembers := managedGroupMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {
 		return dnsExternalController(parents[i].Identity.NativeType) && !dnsExternalController(parents[j].Identity.NativeType)
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
-		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[aksKey(parent.Identity, parent.Identity.NativeID)] {
+		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)] {
+			continue
+		}
+		if strings.EqualFold(parent.Identity.NativeType, monitorWorkspaceType) {
+			contribution, err := s.client.contributeMonitorWorkspace(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
 		kind, _ := findType(parent.Identity.NativeType)
@@ -291,7 +310,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
-			if aksMembers[aksKey(target.Identity, child.id)] {
+			if aksMembers[managedGroupKey(target.Identity, child.id)] {
 				continue
 			}
 			if recoveryType(parent.Identity.NativeType) && parent.Identity.NativeType == child.kind && !recoveryPeerRelation(parent, *target) {
@@ -379,6 +398,9 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any) error {
+	if a.kind.NativeType == monitorWorkspaceType {
+		return a.monitorWorkspacePreflight(ctx, request, live, locks)
+	}
 	if a.kind.NativeType == eventHubClusterType {
 		if err := a.client.verifyEventHubClusterSettings(ctx, request.Asset); err != nil {
 			return err
@@ -501,6 +523,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 }
 
 func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == monitorWorkspaceType {
+		return a.monitorWorkspaceReadback(ctx, request)
+	}
 	impacts, err := a.serviceImpacts(request)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
@@ -558,6 +583,16 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case strings.EqualFold(parent.NativeType, monitorWorkspaceType):
+		resources, links, failure := c.monitorWorkspaceResources(ctx, asset.Asset{Identity: parent}, raw)
+		if failure != nil {
+			return nil, failure
+		}
+		for _, resource := range resources {
+			id, kind, _ := parseID(text(resource["id"]))
+			children = append(children, serviceChild{kind: kind, id: id, data: resource})
+		}
+		children = append(children, links...)
 	case isDataCollectionType(parent.NativeType):
 		children, err = c.dataCollectionAssociations(ctx, parent)
 	case strings.EqualFold(parent.NativeType, grafanaType):
@@ -603,6 +638,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if monitorWorkspaceAssociation(parent, child) {
+		return true
+	}
 	if recoveryPeerRelation(parent, child) {
 		return true
 	}

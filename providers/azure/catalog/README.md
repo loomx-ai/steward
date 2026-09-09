@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 129 current resource rules discover through native product List operations.
+All 130 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 404 operations from
-73 root documents and 34 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 407 operations from
+74 root documents and 36 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -279,5 +279,14 @@ DCR deletion explicitly binds deleteAssociations=false. Fourteen unchanged
 Swagger examples, independent native-schema validation and three extracted
 Microsoft CLI responses are retained in the
 [data collection evidence](../fixtures/data-collection/README.md).
-Workspace managed-group lifecycle support and real-cloud acceptance are still
-unfinished; native deletion has no atomic conditional header.
+Workspace managed-group lifecycle is described below; real-cloud acceptance
+remains open; native deletion has no atomic conditional header.
+
+Azure Monitor workspaces use the documented 2023-04-03 GET/LIST/DELETE API.
+Read-only default-ingestion IDs identify the managed group; native group reads,
+all members and optional managedBy values bind its reviewed cascade. External
+DCR/DCE associations are separate shared prerequisites. Retention, configuration,
+creation identity, locks, changed membership and final group/known-child absence
+are checked with the same group machinery used by AKS. The
+[workspace evidence](../fixtures/monitor-workspace/README.md) retains three native
+examples, their schema/header inconsistencies and two Microsoft CLI read responses.

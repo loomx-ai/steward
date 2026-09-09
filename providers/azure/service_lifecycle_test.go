@@ -436,12 +436,12 @@ func TestAKSResourceGroupIncludesNativeServiceChildren(t *testing.T) {
 		t.Fatal(err)
 	}
 	group := "/subscriptions/" + testSubscription + "/resourcegroups/test"
-	records, err := c.aksResources(context.Background(), resourceID(aksType, "cluster"), group)
+	records, err := c.managedGroupResources(context.Background(), resourceID(aksType, "cluster"), group)
 	if err != nil || len(records) != 6 {
 		t.Fatalf("group lost native service children: %+v %v", records, err)
 	}
 	s.mode = "collection-missing"
-	if _, err := c.aksResources(context.Background(), resourceID(aksType, "cluster"), group); err == nil {
+	if _, err := c.managedGroupResources(context.Background(), resourceID(aksType, "cluster"), group); err == nil {
 		t.Fatal("missing service collection accepted for AKS group deletion")
 	}
 }

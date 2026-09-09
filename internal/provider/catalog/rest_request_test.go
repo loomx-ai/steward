@@ -100,3 +100,13 @@ func TestRESTNativeHeaderAndAzureNameValidation(t *testing.T) {
 		t.Error("header injection accepted")
 	}
 }
+
+func TestRESTMonitorWorkspaceNativeNamePattern(t *testing.T) {
+	op := Operation{ID: "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Get", Call: &OperationCall{Style: "azure-rest", Endpoint: "https://management.azure.com", Method: "GET", Path: "/accounts/{name}", Version: "2023-04-03"}, InputSchema: map[string]any{"properties": map[string]any{"name": map[string]any{"in": "path", "pattern": "^(?!-)[a-zA-Z0-9-]+[^-]$"}}}}
+	for name, valid := range map[string]bool{"workspace": true, "Workspace-2": true, "-workspace": false, "workspace-": false, "": false} {
+		_, err := BindREST(op, map[string]any{"name": name})
+		if (err == nil) != valid {
+			t.Fatalf("native name %q: %v", name, err)
+		}
+	}
+}

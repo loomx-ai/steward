@@ -271,6 +271,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isDataCollectionType(kind) {
 		values = append(values, dataCollectionConfiguration(kind, raw), properties["immutableId"])
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && strings.EqualFold(kind, monitorWorkspaceType) {
+		values = append(values, monitorWorkspaceConfiguration(raw))
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }

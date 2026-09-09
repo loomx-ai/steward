@@ -47,7 +47,8 @@ func inResourceGroup(id, group string) bool {
 // The native group list establishes membership for all kinds. Known resources
 // are read with their product APIs, and documented cascades are expanded until
 // every nested or external descendant has been visited.
-func (c *client) aksResources(ctx context.Context, clusterID, group string) ([]map[string]any, error) {
+func (c *client) managedGroupResources(ctx context.Context, clusterID, group string) ([]map[string]any, error) {
+	_, controllerType, _ := parseID(clusterID)
 	response, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
 	if isNotFound(err) {
 		return nil, nil
@@ -115,6 +116,12 @@ func (c *client) aksResources(ctx context.Context, clusterID, group string) ([]m
 			}
 		}
 		for _, child := range children {
+			if strings.EqualFold(controllerType, monitorWorkspaceType) && !inResourceGroup(text(child["id"]), group) {
+				_, childType, _ := parseID(text(child["id"]))
+				if strings.EqualFold(childType, dataCollectionAssociationType) {
+					continue // The workspace reviews these as separate unlink steps.
+				}
+			}
 			if !inResourceGroup(text(child["id"]), group) && !aksExternalRelation(aksNativeAsset(raw), aksNativeAsset(child)) {
 				return fmt.Errorf("AKS descendant is outside its native deletion cascade")
 			}
@@ -178,7 +185,7 @@ func aksExternalRelation(parent, child asset.Asset) bool {
 	}) && serviceChildRelation(parent, child)
 }
 
-func aksFrozenMembers(group string, assets []asset.Asset) map[string]bool {
+func managedGroupFrozenMembers(group string, assets []asset.Asset) map[string]bool {
 	members := map[string]bool{}
 	for _, value := range assets {
 		if inResourceGroup(value.Identity.NativeID, group) {
@@ -231,50 +238,62 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 		if err != nil || group != planned || inResourceGroup(cluster.Identity.NativeID, group) {
 			return result, fmt.Errorf("AKS node resource group changed; refresh inventory")
 		}
-		resources, err := h.client.aksResources(ctx, cluster.Identity.NativeID, group)
+		contribution, err := h.client.contributeManagedGroup(ctx, cluster, response, group, aksSource, assets)
 		if err != nil {
 			return result, err
 		}
-		members := map[string]string{}
-		liveByID := map[string]map[string]any{}
-		for _, raw := range resources {
-			id, nativeType, _ := parseID(text(raw["id"]))
-			members[id] = nativeType
-			liveByID[id] = raw
+		result.Bindings = append(result.Bindings, contribution.Bindings...)
+		result.Relationships = append(result.Relationships, contribution.Relationships...)
+		result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+	}
+	return result, nil
+}
+
+func (c *client) contributeManagedGroup(ctx context.Context, controller asset.Asset, response response, group, source string, assets []asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	resources, err := c.managedGroupResources(ctx, controller.Identity.NativeID, group)
+	if err != nil {
+		return result, err
+	}
+	members := map[string]string{}
+	liveByID := map[string]map[string]any{}
+	for _, raw := range resources {
+		id, nativeType, _ := parseID(text(raw["id"]))
+		members[id] = nativeType
+		liveByID[id] = raw
+	}
+	byID := map[string]asset.Asset{}
+	for _, value := range assets {
+		if value.Identity.Provider != controller.Identity.Provider || value.Identity.ConnectionID != controller.Identity.ConnectionID || value.Identity.Partition != controller.Identity.Partition || (!inResourceGroup(value.Identity.NativeID, group) && members[strings.ToLower(value.Identity.NativeID)] == "") {
+			continue
 		}
-		byID := map[string]asset.Asset{}
-		for _, value := range assets {
-			if value.Identity.Provider != cluster.Identity.Provider || value.Identity.ConnectionID != cluster.Identity.ConnectionID || value.Identity.Partition != cluster.Identity.Partition || (!inResourceGroup(value.Identity.NativeID, group) && members[strings.ToLower(value.Identity.NativeID)] == "") {
-				continue
-			}
-			id, nativeType, err := parseID(value.Identity.NativeID)
-			if err != nil || !strings.EqualFold(nativeType, value.Identity.NativeType) || byID[id].ID != "" {
-				return result, fmt.Errorf("invalid or ambiguous AKS managed asset")
-			}
-			if live := liveByID[id]; live != nil {
-				if err := serviceIncarnation(value, live); err != nil {
-					return result, err
-				}
-			}
-			byID[id] = value
-			members[id] = value.Identity.NativeType
+		id, nativeType, err := parseID(value.Identity.NativeID)
+		if err != nil || !strings.EqualFold(nativeType, value.Identity.NativeType) || byID[id].ID != "" {
+			return result, fmt.Errorf("invalid or ambiguous AKS managed asset")
 		}
-		ids := make([]string, 0, len(members))
-		for id := range members {
-			ids = append(ids, id)
-		}
-		sort.Strings(ids)
-		for _, id := range ids {
-			nativeType := members[id]
-			evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "node_resource_group": group, "delete_by_default": true, "retention_supported": false, "request_id": response.requestID, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
-			value, found := byID[id]
-			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: cluster.Identity.Provider, ConnectionID: cluster.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: cluster.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
-				continue
+		if live := liveByID[id]; live != nil {
+			if err := serviceIncarnation(value, live); err != nil {
+				return result, err
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: cluster.ID, ManagedAssetID: value.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: aksSource, Evidence: evidence, Confidence: 1})
-			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: cluster.ID, Type: graph.RelationshipMemberOf, Source: aksSource, Evidence: evidence, Confidence: 1})
 		}
+		byID[id] = value
+		members[id] = value.Identity.NativeType
+	}
+	ids := make([]string, 0, len(members))
+	for id := range members {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		nativeType := members[id]
+		evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "managed_resource_group": group, "delete_by_default": true, "retention_supported": false, "request_id": response.requestID, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+		value, found := byID[id]
+		if !found {
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
+			continue
+		}
+		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: controller.ID, ManagedAssetID: value.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: source, Evidence: evidence, Confidence: 1})
+		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: controller.ID, Type: graph.RelationshipMemberOf, Source: source, Evidence: evidence, Confidence: 1})
 	}
 	return result, nil
 }
@@ -282,26 +301,26 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 // Group deletion takes precedence over per-resource lifetime policies. Resolve
 // the frozen membership once per contribution, including native external trees,
 // so an outside DNS zone cannot claim records already owned by the AKS cascade.
-type aksMemberKey struct {
+type managedGroupMemberKey struct {
 	connection    asset.ConnectionID
 	partition, id string
 }
 
-func aksKey(identity asset.Identity, nativeID string) aksMemberKey {
-	return aksMemberKey{identity.ConnectionID, identity.Partition, strings.ToLower(nativeID)}
+func managedGroupKey(identity asset.Identity, nativeID string) managedGroupMemberKey {
+	return managedGroupMemberKey{identity.ConnectionID, identity.Partition, strings.ToLower(nativeID)}
 }
 
-func aksManagedMembers(assets []asset.Asset) map[aksMemberKey]bool {
-	result := map[aksMemberKey]bool{}
+func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
+	result := map[managedGroupMemberKey]bool{}
 	for _, cluster := range assets {
-		if cluster.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(cluster.Identity.NativeType, aksType) {
+		if cluster.Identity.Provider != asset.ProviderAzure || (!strings.EqualFold(cluster.Identity.NativeType, aksType) && !strings.EqualFold(cluster.Identity.NativeType, monitorWorkspaceType)) {
 			continue
 		}
 		parts := strings.Split(cluster.Identity.NativeID, "/")
 		if len(parts) < 3 {
 			continue
 		}
-		group, err := aksNodeGroup(parts[2], cluster.Normalized)
+		group, err := controllerResourceGroup(parts[2], cluster.Identity.NativeType, cluster.Normalized)
 		if err != nil {
 			continue
 		}
@@ -311,16 +330,16 @@ func aksManagedMembers(assets []asset.Asset) map[aksMemberKey]bool {
 				candidates = append(candidates, value)
 			}
 		}
-		for id := range aksFrozenMembers(group, candidates) {
-			result[aksKey(cluster.Identity, id)] = true
+		for id := range managedGroupFrozenMembers(group, candidates) {
+			result[managedGroupKey(cluster.Identity, id)] = true
 		}
 	}
 	return result
 }
 
-func (a *action) aksImpacts(request contracts.ActionRequest, group string) (map[string]contracts.ActionImpact, error) {
+func (a *action) managedGroupImpacts(request contracts.ActionRequest, group string) (map[string]contracts.ActionImpact, error) {
 	root := request.Asset
-	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, aksType) {
+	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) || (a.kind.NativeType != aksType && a.kind.NativeType != monitorWorkspaceType) {
 		return nil, serviceDenied("invalid_aks_controller")
 	}
 	impacts := map[string]contracts.ActionImpact{}
@@ -339,7 +358,7 @@ func (a *action) aksImpacts(request contracts.ActionRequest, group string) (map[
 		impacts[id] = impact
 		assets = append(assets, impact.Asset)
 	}
-	members := aksFrozenMembers(group, assets)
+	members := managedGroupFrozenMembers(group, assets)
 	for id := range impacts {
 		if !members[id] {
 			return nil, serviceDenied("aks_external_resource_scope_changed")
@@ -348,23 +367,23 @@ func (a *action) aksImpacts(request contracts.ActionRequest, group string) (map[
 	return impacts, nil
 }
 
-func (a *action) aksPreflight(ctx context.Context, request contracts.ActionRequest, raw map[string]any, locks []any) (string, error) {
-	group, err := aksNodeGroup(a.client.subscription, object(raw["properties"]))
+func (a *action) managedGroupPreflight(ctx context.Context, request contracts.ActionRequest, raw map[string]any, locks []any) (string, error) {
+	group, err := controllerResourceGroup(a.client.subscription, a.kind.NativeType, object(raw["properties"]))
 	if err != nil {
 		return "", err
 	}
-	planned, err := aksNodeGroup(a.client.subscription, request.Asset.Normalized)
+	planned, err := controllerResourceGroup(a.client.subscription, a.kind.NativeType, request.Asset.Normalized)
 	if err != nil || group != planned || inResourceGroup(a.id, group) {
 		return "aks_node_resource_group_changed", nil
 	}
 	if err := serviceIncarnation(request.Asset, raw); err != nil {
 		return "", err
 	}
-	impacts, err := a.aksImpacts(request, group)
+	impacts, err := a.managedGroupImpacts(request, group)
 	if err != nil {
 		return "", err
 	}
-	resources, err := a.client.aksResources(ctx, a.id, group)
+	resources, err := a.client.managedGroupResources(ctx, a.id, group)
 	if err != nil {
 		return "", err
 	}
@@ -376,6 +395,14 @@ func (a *action) aksPreflight(ctx context.Context, request contracts.ActionReque
 			return "aks_resource_missing_from_plan", nil
 		}
 		visited[id] = true
+		if err := serviceCreationIdentity(impact.Asset, resource); err != nil {
+			return "", err
+		}
+		if a.kind.NativeType == monitorWorkspaceType && isDataCollectionType(kind) && text(impact.Asset.Normalized["_data_collection_configuration"]) == dataCollectionConfiguration(kind, resource) {
+			// Reviewed external unlinks can change the collection target's ETag.
+			// Its configuration and immutable creation identity must still match.
+			impact.Asset.Normalized = cloneNormalizedWithoutGeneration(impact.Asset.Normalized)
+		}
 		if err := serviceIncarnation(impact.Asset, resource); err != nil {
 			return "", err
 		}
@@ -452,12 +479,12 @@ func (a *action) aksPreflight(ctx context.Context, request contracts.ActionReque
 	return "", nil
 }
 
-func (a *action) aksGroupReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
-	group, err := aksNodeGroup(a.client.subscription, request.Asset.Normalized)
+func (a *action) managedGroupReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	group, err := controllerResourceGroup(a.client.subscription, a.kind.NativeType, request.Asset.Normalized)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	impacts, err := a.aksImpacts(request, group)
+	impacts, err := a.managedGroupImpacts(request, group)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}

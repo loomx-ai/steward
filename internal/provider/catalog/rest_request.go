@@ -79,6 +79,14 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		}
 		if pattern, ok := property["pattern"].(string); ok {
 			text, isString := value.(string)
+			// Monitor workspace names use this ECMA-262 leading-hyphen guard.
+			// Evaluate it explicitly before compiling the remaining RE2 pattern.
+			if strings.HasPrefix(pattern, "^(?!-)") {
+				if strings.HasPrefix(text, "-") {
+					return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
+				}
+				pattern = "^" + strings.TrimPrefix(pattern, "^(?!-)")
+			}
 			// Azure MySQL uses an ECMAScript trailing-hyphen lookbehind.
 			// Its anchored equivalent needs no backtracking regex engine.
 			if strings.HasSuffix(pattern, "(?<!-)$") {

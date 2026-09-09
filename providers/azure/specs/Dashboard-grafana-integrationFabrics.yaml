@@ -68,6 +68,9 @@ relationships:
 - type: depends_on
   targetType: Microsoft.OperationalInsights/workspaces
   targetIdPath: refs_microsoft_operationalinsights_workspaces
+- type: depends_on
+  targetType: Microsoft.Monitor/accounts
+  targetIdPath: refs_microsoft_monitor_accounts
 actions:
   delete:
     operation: Azure.Microsoft.Dashboard.IntegrationFabrics_Delete

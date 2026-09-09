@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "eae06546f33631ceb1e59230e8a9b48057904b694fcac6f2b2cb90e17302eec1",
+    "checksum": "41fa4acf38ed07a92459acd397f70db8b501db0bfb4ac81d97d80c1b4f1b260d",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "12f87444e59934a9c8862db426f39f5795e0744edc20eb9e3197d50ef4204d54",
+  "content_checksum": "d529cea49e341803abb61dde11f05d2f7f03a38d609784b9dcc48276f46507a5",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -13382,6 +13382,220 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/msi/resource-manager/Microsoft.ManagedIdentity/ManagedIdentity/stable/2023-01-31/ManagedIdentity.json"
+    },
+    {
+      "id": "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Delete",
+      "name": "AzureMonitorWorkspaces_Delete",
+      "service": "Microsoft.Monitor",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Monitor/accounts/{azureMonitorWorkspaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "azureMonitorWorkspaceName": {
+            "description": "The name of the Azure Monitor Workspace. The name is case insensitive",
+            "in": "path",
+            "name": "azureMonitorWorkspaceName",
+            "pattern": "^(?!-)[a-zA-Z0-9-]+[^-]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Monitor",
+        "version": "2023-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Monitor/accounts/{azureMonitorWorkspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/monitoringAccounts_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Get",
+      "name": "AzureMonitorWorkspaces_Get",
+      "service": "Microsoft.Monitor",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Monitor/accounts/{azureMonitorWorkspaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "azureMonitorWorkspaceName": {
+            "description": "The name of the Azure Monitor Workspace. The name is case insensitive",
+            "in": "path",
+            "name": "azureMonitorWorkspaceName",
+            "pattern": "^(?!-)[a-zA-Z0-9-]+[^-]$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "An Azure Monitor Workspace definition",
+        "properties": {
+          "etag": {
+            "description": "Resource entity tag (ETag)",
+            "readOnly": true,
+            "type": "string",
+            "x-ms-mutability": [
+              "read"
+            ]
+          },
+          "properties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AzureMonitorWorkspace"
+              }
+            ],
+            "description": "Resource properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Monitor",
+        "version": "2023-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Monitor/accounts/{azureMonitorWorkspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/monitoringAccounts_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_ListBySubscription",
+      "name": "AzureMonitorWorkspaces_ListBySubscription",
+      "service": "Microsoft.Monitor",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Monitor/accounts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-04-03"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A pageable list of resources",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results",
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of resources",
+            "items": {
+              "$ref": "#/definitions/AzureMonitorWorkspaceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Monitor",
+        "version": "2023-04-03",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Monitor/accounts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/monitoringAccounts_API.json"
     },
     {
       "id": "Azure.Microsoft.Network.ApplicationGateways_Delete",
@@ -34058,6 +34272,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Monitor/accounts",
+      "class": "observability.monitoring_environment",
+      "display_name": "Azure Monitor workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "accounts",
+        "read_operations": [
+          "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_ListBySubscription"
         ]
       }
     },

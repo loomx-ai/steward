@@ -768,6 +768,14 @@
       "operations": [
         "Resources"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitoringservice/resource-manager/Microsoft.Monitor/Accounts/stable/2023-04-03/monitoringAccounts_API.json",
+      "operations": [
+        "AzureMonitorWorkspaces_Get",
+        "AzureMonitorWorkspaces_ListBySubscription",
+        "AzureMonitorWorkspaces_Delete"
+      ]
     }
   ],
   "resource_types": [
@@ -3181,6 +3189,24 @@
         "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByRule",
         "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
         "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Monitor/accounts",
+      "class": "observability.monitoring_environment",
+      "display_name": "Azure Monitor workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "accounts",
+      "read_operations": [
+        "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_ListBySubscription"
       ]
     }
   ]

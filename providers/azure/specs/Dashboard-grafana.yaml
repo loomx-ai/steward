@@ -87,6 +87,9 @@ relationships:
 - type: depends_on
   targetType: Microsoft.ManagedIdentity/userAssignedIdentities
   targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: depends_on
+  targetType: Microsoft.Monitor/accounts
+  targetIdPath: refs_microsoft_monitor_accounts
 actions:
   delete:
     operation: Azure.Microsoft.Dashboard.Grafana_Delete

@@ -125,7 +125,7 @@ func NewResourceAttachments() *ResourceAttachments { return &ResourceAttachments
 
 func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
-	aksMembers := aksManagedMembers(assets)
+	aksMembers := managedGroupMembers(assets)
 	for _, controller := range assets {
 		if controller.Identity.Provider != asset.ProviderAzure || (controller.Identity.NativeType != vmType && controller.Identity.NativeType != nicType) {
 			continue
@@ -135,7 +135,7 @@ func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, asset
 			return result, err
 		}
 		for _, attachment := range attachments {
-			if aksMembers[aksKey(controller.Identity, controller.Identity.NativeID)] && aksMembers[aksKey(controller.Identity, attachment.id)] {
+			if aksMembers[managedGroupKey(controller.Identity, controller.Identity.NativeID)] && aksMembers[managedGroupKey(controller.Identity, attachment.id)] {
 				continue
 			}
 			evidence := map[string]any{"resource_type": attachment.kind, "instance_id": attachment.id, "attachment_slot": attachment.slot, "delete_by_default": attachment.delete, "lifecycle_kind": "azure_attached_resource_delete"}

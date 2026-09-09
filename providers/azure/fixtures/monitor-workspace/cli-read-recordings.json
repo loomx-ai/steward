@@ -1,0 +1,86 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/27554ab8a5375aab7529e6862934bf26afbb8762/src/azure-cli/azure/cli/command_modules/monitor/tests/latest/recordings/test_monitor_account.yaml",
+  "source_sha256": "dcb807788e905124f7e77fa36be0d8fced7a5235a8c4213e9808f7e8e457454c",
+  "recordings": [
+    {
+      "interaction_index": 4,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_monitor_account000001/providers/Microsoft.Monitor/accounts/ac000002?api-version=2023-04-03",
+      "status": 200,
+      "body": {
+        "properties": {
+          "accountId": "37827df4-459f-4d4e-b163-f18ce55e2f28",
+          "metrics": {
+            "prometheusQueryEndpoint": "https://ac000002-g6e2fjc5ejbtadgj.westus.prometheus.monitor.azure.com",
+            "internalId": "mac_37827df4-459f-4d4e-b163-f18ce55e2f28"
+          },
+          "provisioningState": "Succeeded",
+          "defaultIngestionSettings": {
+            "dataCollectionRuleResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MA_ac000002_westus_managed/providers/Microsoft.Insights/dataCollectionRules/ac000002",
+            "dataCollectionEndpointResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MA_ac000002_westus_managed/providers/Microsoft.Insights/dataCollectionEndpoints/ac000002"
+          },
+          "publicNetworkAccess": "Enabled"
+        },
+        "location": "westus",
+        "tags": {
+          "tag": "test",
+          "tag2": "test2"
+        },
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli_test_monitor_account000001/providers/microsoft.monitor/accounts/ac000002",
+        "name": "ac000002",
+        "type": "Microsoft.Monitor/accounts",
+        "etag": "\"a300cfcb-0000-0700-0000-6826bb500000\"",
+        "systemData": {
+          "createdBy": "recording-user",
+          "createdByType": "User",
+          "createdAt": "2025-05-16T04:12:44.7307417Z",
+          "lastModifiedBy": "recording-user",
+          "lastModifiedByType": "User",
+          "lastModifiedAt": "2025-05-16T04:13:01.1108704Z"
+        }
+      }
+    },
+    {
+      "interaction_index": 5,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_monitor_account000001/providers/Microsoft.Monitor/accounts?api-version=2023-04-03",
+      "status": 200,
+      "body": {
+        "value": [
+          {
+            "properties": {
+              "accountId": "37827df4-459f-4d4e-b163-f18ce55e2f28",
+              "metrics": {
+                "prometheusQueryEndpoint": "https://ac000002-g6e2fjc5ejbtadgj.westus.prometheus.monitor.azure.com",
+                "internalId": "mac_37827df4-459f-4d4e-b163-f18ce55e2f28"
+              },
+              "provisioningState": "Succeeded",
+              "defaultIngestionSettings": {
+                "dataCollectionRuleResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MA_ac000002_westus_managed/providers/Microsoft.Insights/dataCollectionRules/ac000002",
+                "dataCollectionEndpointResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MA_ac000002_westus_managed/providers/Microsoft.Insights/dataCollectionEndpoints/ac000002"
+              },
+              "publicNetworkAccess": "Enabled"
+            },
+            "location": "westus",
+            "tags": {
+              "tag": "test",
+              "tag2": "test2"
+            },
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli_test_monitor_account000001/providers/microsoft.monitor/accounts/ac000002",
+            "name": "ac000002",
+            "type": "Microsoft.Monitor/accounts",
+            "etag": "\"a300cfcb-0000-0700-0000-6826bb500000\"",
+            "systemData": {
+              "createdBy": "recording-user",
+              "createdByType": "User",
+              "createdAt": "2025-05-16T04:12:44.7307417Z",
+              "lastModifiedBy": "recording-user",
+              "lastModifiedByType": "User",
+              "lastModifiedAt": "2025-05-16T04:13:01.1108704Z"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -904,3 +904,34 @@ background evidence only, not acceptance evidence for this work.
   Azure Monitor workspace/default managed-group ownership, remaining mapped
   Azure services, tenant-global association support, independent environment and
   end-to-end acceptance, and publication remain open.
+
+### Azure Monitor workspace progress (acceptance remains open)
+
+- Azure Monitor workspace adds native subscription inventory, detail and deletion
+  from the pinned 2023-04-03 API. Azure now has 130 rules, 118 native deletion
+  actions and 407 operations from 74 root and 36 reference Swagger documents.
+- The two native default-ingestion IDs identify the managed resource group.
+  Repeated native membership/detail reads freeze all contained resources,
+  including unknown kinds, as reviewed workspace deletion impacts. An optional
+  group owner must agree with the workspace and remain unchanged. External
+  DCR/DCE associations become shared unlink prerequisites without acquiring
+  ownership of their monitored resources or destinations.
+- Native configuration and creation identity, locks, protection, missing inventory,
+  changed membership and retention block execution. Serialized recovery checks
+  workspace, group, every known child and external association before completion.
+  Native DELETE removes the entire managed group; no direct group deletion or
+  forced cascade is sent. Private endpoint connections remain frozen embedded
+  configuration with references to external endpoints.
+- Six test functions exercise actual planning, native protocol faults, recorded
+  reads, scoped asynchronous deletion, retention and restart readback. Three
+  unchanged Swagger examples and two Microsoft CLI responses have reproducible
+  provenance. Example pagination/schema and polling-scope inconsistencies are
+  explicitly tested. The [workspace evidence](providers/azure/fixtures/monitor-workspace/README.md)
+  distinguishes native evidence from synthetic polling/readback and records
+  API/version limits; no independent emulator or real-cloud acceptance is claimed.
+- Full Go tests, focused Azure/AKS/data-collection/plan/cleanup/catalog/contracts
+  race tests and vet pass. The new native fragment reproduces independently and
+  preserves all previous sources. Repeated catalog generation produces SHA-256
+  `3b9296e651a61aa53c04e733a94d2b675de888aaa7a66547315c33318ef300c6`.
+  Remaining mapped services, lifecycle composition, independent environment and
+  end-to-end acceptance, and publication remain open.

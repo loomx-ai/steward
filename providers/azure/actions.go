@@ -89,7 +89,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			}
 		}
 		if a.kind.NativeType == aksType {
-			read, err := a.aksGroupReadback(ctx, request)
+			read, err := a.managedGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists && err == nil, Evidence: map[string]any{"aks_cluster_absent": true}}, err
 		}
 		if HasServiceCascade(a.kind.NativeType) {
@@ -108,6 +108,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := dataCollectionIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := monitorWorkspaceIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := grafanaIncarnation(request.Asset, res.data); err != nil {
@@ -176,7 +179,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	switch a.kind.NativeType {
 	case aksType:
-		if reason, err := a.aksPreflight(ctx, request, res.data, locks); reason != "" || err != nil {
+		if reason, err := a.managedGroupPreflight(ctx, request, res.data, locks); reason != "" || err != nil {
 			return contracts.PreflightResult{Reason: reason}, err
 		}
 	case vnetType:
@@ -409,7 +412,7 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 			}
 		}
 		if a.kind.NativeType == aksType {
-			return a.aksGroupReadback(ctx, request)
+			return a.managedGroupReadback(ctx, request)
 		}
 		if HasServiceCascade(a.kind.NativeType) {
 			return a.serviceCascadeReadback(ctx, request)
