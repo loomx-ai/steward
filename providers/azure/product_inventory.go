@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"slices"
@@ -174,8 +175,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		item.Normalized["_inventory_source"] = productInventorySource
 		if target.ParentID != "" {
-			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
-			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
+			key := referenceKey(target.ParentType)
+			references, _ := item.Normalized[key].([]string)
+			references = append(references, target.ParentID)
+			sort.Strings(references)
+			item.Normalized[key] = slices.Compact(references)
+			if !slices.Contains(item.NetworkReferences, target.ParentID) {
+				item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
+			}
+			sort.Strings(item.NetworkReferences)
 		}
 		batch.Items = append(batch.Items, item)
 	}
@@ -253,6 +261,8 @@ func serviceCreationIdentity(planned asset.Asset, live map[string]any) error {
 	return nil
 }
 
+var errProductParentGenerationChanged = errors.New("Azure product parent changed during child discovery")
+
 func (c *client) verifyProductParent(ctx context.Context, target productTarget) error {
 	if target.ParentID == "" {
 		return nil
@@ -266,8 +276,11 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if err != nil {
 		return err
 	}
-	if !validResourceResponse(current, target.ParentID, target.ParentType) || productGeneration(current.data) != target.Generation {
-		return fmt.Errorf("Azure product parent changed during child discovery")
+	if !validResourceResponse(current, target.ParentID, target.ParentType) {
+		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
+	}
+	if productGeneration(current.data) != target.Generation {
+		return errProductParentGenerationChanged
 	}
 	return nil
 }

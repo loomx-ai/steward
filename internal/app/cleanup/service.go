@@ -638,7 +638,7 @@ func (s *Service) CreateExecution(ctx context.Context, request CreateExecutionRe
 		if err := ValidateExecutionConfirmation(aggregate.Task.Selectors, request.Confirmation); err != nil {
 			return err
 		}
-		if err := s.executionAuthorizer.AuthorizeExecution(ctx, actor, aggregate.Task.ResolvedAssetIDs); err != nil {
+		if err := s.executionAuthorizer.AuthorizeExecution(ctx, actor, plannedExecutionAssetIDs(aggregate)); err != nil {
 			return err
 		}
 		if err := ensureInventoryReconciled(ctx, repositories.Inventory(), []asset.ConnectionID{aggregate.Task.ConnectionID}); err != nil {
@@ -836,7 +836,7 @@ func (s *Service) ContinueExecution(ctx context.Context, request ContinueExecuti
 				return fmt.Errorf("%w: cleanup task %q is not failed: task=%s execution=%s", ErrExecutionNotContinuable, request.CleanupTaskID, aggregate.Task.Status, attempt.Status)
 			}
 		}
-		if err := s.executionAuthorizer.AuthorizeExecution(ctx, actor, aggregate.Task.ResolvedAssetIDs); err != nil {
+		if err := s.executionAuthorizer.AuthorizeExecution(ctx, actor, plannedExecutionAssetIDs(aggregate)); err != nil {
 			return err
 		}
 		currentAssets, err := repositories.Inventory().ListAssetsByIDs(
@@ -1467,6 +1467,14 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 			if relationship.SourceAssetID == id || relationship.TargetAssetID == id {
 				relationshipsByKey[relationshipIdentity(relationship)] = relationship
 			}
+			if relationship.ClosedAt == nil && relationship.SourceAssetID == id && relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] == true {
+				if endpoint := relationship.TargetAssetID; endpoint != "" {
+					if _, seen := queued[endpoint]; !seen {
+						queued[endpoint] = struct{}{}
+						queue = append(queue, endpoint)
+					}
+				}
+			}
 		}
 		for _, binding := range allBindings {
 			if binding.ControllerAssetID != id && binding.ManagedAssetID != id {
@@ -1504,6 +1512,31 @@ func lifecycleComponentFromSnapshot(selected []asset.AssetID, allAssets []asset.
 		return lifecycleBindingIdentity(bindings[i]) < lifecycleBindingIdentity(bindings[j])
 	})
 	return assets, relationships, bindings
+}
+
+// Authorization covers every reviewed destructive effect, including resources
+// added by authoritative prerequisites and controller-owned deletion impacts.
+func plannedExecutionAssetIDs(aggregate persistence.CleanupTaskAggregate) []asset.AssetID {
+	ids := map[asset.AssetID]bool{}
+	for _, id := range aggregate.Task.ResolvedAssetIDs {
+		ids[id] = true
+	}
+	for _, step := range aggregate.Steps {
+		if step.Action == "delete" {
+			ids[step.AssetID] = true
+		}
+	}
+	for _, impact := range aggregate.ImpactItems {
+		if impact.Expected == plan.ExpectedDelegatedDelete {
+			ids[impact.AssetID] = true
+		}
+	}
+	result := make([]asset.AssetID, 0, len(ids))
+	for id := range ids {
+		result = append(result, id)
+	}
+	sort.Slice(result, func(i, j int) bool { return result[i] < result[j] })
+	return result
 }
 
 func (s *Service) resolveSelectionCoverage(

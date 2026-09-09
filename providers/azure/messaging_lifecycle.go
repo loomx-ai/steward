@@ -205,6 +205,15 @@ func (c *client) messagingReplicationContext(ctx context.Context, kind, id strin
 			return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
 		}
 	}
+	if namespaceType == strings.ToLower(serviceBusNamespaceType) {
+		incoming, err := c.incomingMigrations(ctx)
+		if err != nil {
+			return "", "", err
+		}
+		if len(incoming[namespaceID]) > 0 {
+			return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
+		}
+	}
 	return "", creationGeneration(live.data), nil
 }
 

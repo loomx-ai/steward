@@ -337,3 +337,18 @@ background evidence only, not acceptance evidence for this work.
   ten offline metadata tests and the upstream recording checksum pass. Automatic
   geo-recovery unpairing, remaining service families and independent application/
   emulator/real-cloud acceptance are still open.
+
+- Incoming Service Bus migrations now use complete native subscription namespace
+  and migration lists. Cleaning the target adds the source configuration as an
+  authoritative shared prerequisite; selecting both namespaces deletes it once.
+  The unselected namespace and its entities remain intact. New incoming copying,
+  incomplete lists, changed namespace sets and missing configuration inventory
+  cannot authorize deletion. Namespace deletion races yield a retry instead of
+  successful absence. Native product inventory preserves both source and target
+  references. The generic planner/worker keeps required deletions as independent
+  frozen steps, honors retention, rejects cross-connection/partition expansion,
+  and authorizes every planned deletion and delegated effect on start/continue.
+  SQLite execution/restart tests and native Azure protocol tests cover shared
+  ordering, frozen proofs, authorization, target-only cleanup and sibling source
+  deletion. Full Go tests, vet and targeted races pass. Geo-recovery unpairing,
+  remaining service families and independent acceptance remain unfinished.

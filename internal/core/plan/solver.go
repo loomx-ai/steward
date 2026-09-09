@@ -37,7 +37,7 @@ type Result struct {
 	SnapshotHash string            `json:"snapshot_hash"`
 }
 
-func Solve(input Input) (Result, error) {
+func solveOnce(input Input) (Result, error) {
 	selected := uniqueAssetIDs(input.ResolvedAssetIDs)
 	if len(selected) == 0 {
 		return Result{}, fmt.Errorf("cleanup task requires at least one selected asset")

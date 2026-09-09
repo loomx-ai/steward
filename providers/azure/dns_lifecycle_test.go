@@ -230,13 +230,18 @@ func dnsRequest(t *testing.T, r *Runtime, assets []asset.Asset, root asset.Asset
 func servicePlanRequest(result plan.Result, assets []asset.Asset, root asset.Asset) contracts.ActionRequest {
 	request := contracts.ActionRequest{Asset: root, Action: "delete"}
 	var stepID plan.StepID
+	required := map[asset.AssetID]bool{}
 	for _, step := range result.Steps {
 		if step.AssetID == root.ID && step.Action == "delete" {
 			stepID, request.Parameters = step.ID, step.RequestOptions
+			prerequisites, _ := plan.RequiredDeletions(step)
+			for _, prerequisite := range prerequisites {
+				required[prerequisite.AssetID] = true
+			}
 		}
 	}
 	for _, step := range result.Steps {
-		if fmt.Sprint(step.Evidence["lifecycle_controller"]) != string(root.ID) || step.Action != "delete" {
+		if (!required[step.AssetID] && fmt.Sprint(step.Evidence["lifecycle_controller"]) != string(root.ID)) || step.Action != "delete" {
 			continue
 		}
 		for _, value := range assets {

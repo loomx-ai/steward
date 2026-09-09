@@ -792,8 +792,42 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 		IdempotencyKey: resumedProviderIdempotencyKey(attempt, action),
 	}
 	if !verificationOnly {
+		required, err := plan.RequiredDeletions(step)
+		if err != nil {
+			return err
+		}
+		seenPrerequisites := map[asset.AssetID]bool{}
+		for _, requirement := range required {
+			var prerequisite *plan.CleanupTaskStep
+			for i := range aggregate.Steps {
+				candidate := &aggregate.Steps[i]
+				if candidate.ID == requirement.StepID && candidate.AssetID == requirement.AssetID && candidate.Action == "delete" {
+					prerequisite = candidate
+					break
+				}
+			}
+			if prerequisite == nil {
+				return fmt.Errorf("required cleanup step is missing from the reviewed task")
+			}
+			if _, present := prerequisite.Evidence[plan.EvidencePlannedAsset]; !present {
+				return fmt.Errorf("required cleanup step has no frozen asset snapshot")
+			}
+			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, prerequisite.AssetID)
+			if err != nil {
+				return err
+			}
+			managed, err = plan.PlannedAsset(prerequisite.Evidence, managed)
+			if err != nil {
+				return err
+			}
+			if managed.Identity.Provider != plannedAsset.Identity.Provider || managed.Identity.ConnectionID != plannedAsset.Identity.ConnectionID || managed.Identity.Partition != plannedAsset.Identity.Partition {
+				return fmt.Errorf("required cleanup step belongs to another provider connection or partition")
+			}
+			request.PrerequisiteDeletions = append(request.PrerequisiteDeletions, contracts.ActionImpact{Asset: managed, ControllerID: step.AssetID, Delete: true})
+			seenPrerequisites[managed.ID] = true
+		}
 		for _, prerequisite := range aggregate.Steps {
-			if prerequisite.Action != "delete" || fmt.Sprint(prerequisite.Evidence["lifecycle_controller"]) != string(step.AssetID) || fmt.Sprint(prerequisite.Evidence["cleanup_policy"]) != string(graph.CleanupDirect) || !slices.Contains(step.DependsOn, prerequisite.ID) {
+			if prerequisite.Action != "delete" || seenPrerequisites[prerequisite.AssetID] || fmt.Sprint(prerequisite.Evidence["lifecycle_controller"]) != string(step.AssetID) || fmt.Sprint(prerequisite.Evidence["cleanup_policy"]) != string(graph.CleanupDirect) || !slices.Contains(step.DependsOn, prerequisite.ID) {
 				continue
 			}
 			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, prerequisite.AssetID)

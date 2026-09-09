@@ -1,0 +1,200 @@
+package plan
+
+import (
+	"encoding/json"
+	"fmt"
+	"slices"
+	"sort"
+	"strings"
+
+	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/core/graph"
+)
+
+const EvidenceRequiredDeletions = "required_deletions"
+
+// RequiredDeletion refers to the prerequisite step's frozen asset snapshot,
+// which survives closed inventory entries and subsequent scans.
+type RequiredDeletion struct {
+	AssetID asset.AssetID `json:"asset_id"`
+	StepID  StepID        `json:"step_id"`
+}
+
+func RequiredDeletions(step CleanupTaskStep) ([]RequiredDeletion, error) {
+	raw, present := step.Evidence[EvidenceRequiredDeletions]
+	if !present {
+		return nil, nil
+	}
+	payload, err := json.Marshal(raw)
+	if err != nil {
+		return nil, err
+	}
+	var prerequisites []RequiredDeletion
+	if err := json.Unmarshal(payload, &prerequisites); err != nil {
+		return nil, err
+	}
+	if len(prerequisites) == 0 {
+		return nil, fmt.Errorf("reviewed cleanup prerequisites are empty")
+	}
+	seen := map[asset.AssetID]bool{}
+	for _, prerequisite := range prerequisites {
+		if prerequisite.AssetID == "" || prerequisite.AssetID == step.AssetID || prerequisite.StepID == "" || prerequisite.StepID == step.ID || seen[prerequisite.AssetID] || !slices.Contains(step.DependsOn, prerequisite.StepID) {
+			return nil, fmt.Errorf("invalid reviewed cleanup prerequisite")
+		}
+		seen[prerequisite.AssetID] = true
+	}
+	return prerequisites, nil
+}
+
+func Solve(input Input) (Result, error) {
+	var requirements []graph.Relationship
+	for _, relationship := range activeRelationships(input.Relationships) {
+		if value, present := relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion]; present && value != false {
+			requirements = append(requirements, relationship)
+		}
+	}
+	if len(requirements) == 0 {
+		return solveOnce(input)
+	}
+	assets, err := indexAssets(input.Assets)
+	if err != nil {
+		return Result{}, err
+	}
+	input.ResolvedAssetIDs = slices.Clone(input.ResolvedAssetIDs)
+	selected := map[asset.AssetID]bool{}
+	for _, id := range input.ResolvedAssetIDs {
+		selected[id] = true
+	}
+	// Reusing the normal solver preserves retention and lifecycle authority
+	// semantics. Each pass adds at least one previously unselected asset.
+	for pass := 0; pass <= len(assets); pass++ {
+		result, err := solveOnce(input)
+		if err != nil {
+			return Result{}, err
+		}
+		steps := map[StepID]CleanupTaskStep{}
+		actionSteps := map[asset.AssetID]CleanupTaskStep{}
+		deleting := map[asset.AssetID]StepID{}
+		retained := map[asset.AssetID]bool{}
+		for _, step := range result.Steps {
+			steps[step.ID] = step
+			if step.Action == "delete" {
+				deleting[step.AssetID] = step.ID
+				actionSteps[step.AssetID] = step
+			}
+		}
+		for _, impact := range result.ImpactItems {
+			if impact.Expected == ExpectedDelegatedDelete && steps[impact.DelegatedTo].Action == "delete" {
+				deleting[impact.AssetID] = impact.DelegatedTo
+			} else if impact.Expected != ExpectedDelegatedDelete {
+				retained[impact.AssetID] = true
+			}
+		}
+		blockers := newBlockerSet()
+		for _, blocker := range result.Blockers {
+			blockers.add(blocker)
+		}
+		byStep := map[StepID]map[asset.AssetID]RequiredDeletion{}
+		added := false
+		for _, relationship := range requirements {
+			sourceStepID := deleting[relationship.SourceAssetID]
+			if sourceStepID == "" {
+				continue // A retained or skipped resource requires no mutation.
+			}
+			source := assets[relationship.SourceAssetID]
+			target, present := assets[relationship.TargetAssetID]
+			blocked := func(code BlockCode, message string) {
+				blockers.add(Blocker{Code: code, AssetID: relationship.TargetAssetID, ControllerID: steps[sourceStepID].AssetID, Message: message, Evidence: map[string]any{"relationship_id": relationship.ID, "required_by": relationship.SourceAssetID}})
+			}
+			if relationship.Evidence[graph.RelationshipEvidenceRequiredDeletion] != true || fmt.Sprint(relationship.Evidence[graph.RelationshipEvidenceAuthority]) != string(graph.AuthorityAuthoritative) || relationship.Type != graph.RelationshipDependsOn || relationship.Evidence[graph.RelationshipEvidenceDeletionOrder] != graph.DeletionOrderTargetBeforeSource || strings.TrimSpace(relationship.Source) == "" || !(relationship.Confidence >= graph.ExecutableConfidence && relationship.Confidence <= 1) {
+				blocked(BlockLifecycleAuthority, "required cleanup lacks authoritative provider evidence")
+				continue
+			}
+			if !present {
+				blocked(BlockAssetMissing, "required cleanup resource is missing from the planning snapshot")
+				continue
+			}
+			if target.ClosedAt != nil {
+				blocked(BlockAssetClosed, "required cleanup resource is already closed")
+				continue
+			}
+			if source.ID == target.ID || source.Identity.Provider == "" || source.Identity.ConnectionID == "" || source.Identity.Provider != target.Identity.Provider || source.Identity.ConnectionID != target.Identity.ConnectionID || source.Identity.Partition != target.Identity.Partition {
+				blocked(BlockCrossScopeDependency, "required cleanup resource is outside the source's provider connection or partition")
+				continue
+			}
+			retentionBinding := graph.LifecycleBinding{Evidence: map[string]any{"resource_type": target.Identity.NativeType}}
+			retainRequested := retained[target.ID] || explicitlyRetained(target, retentionBinding, input.RequestOptions[source.ID])
+			seenOwners := map[asset.AssetID]bool{}
+			for owner := steps[sourceStepID].AssetID; owner != "" && !seenOwners[owner]; {
+				seenOwners[owner] = true
+				retainRequested = retainRequested || explicitlyRetained(target, retentionBinding, input.RequestOptions[owner])
+				parent, present := actionSteps[owner].Evidence["lifecycle_controller"]
+				if !present {
+					break
+				}
+				owner = asset.AssetID(fmt.Sprint(parent))
+			}
+			if retainRequested {
+				blocked(BlockLifecycleAuthority, "required cleanup resource was explicitly retained")
+				continue
+			}
+			targetStepID := deleting[target.ID]
+			if targetStepID == "" && !selected[target.ID] {
+				selected[target.ID] = true
+				input.ResolvedAssetIDs = append(input.ResolvedAssetIDs, target.ID)
+				added = true
+				continue
+			}
+			// A required native DELETE must have its own action. Do not silently
+			// promote it to deletion of an unselected owning controller.
+			if targetStepID == "" || steps[targetStepID].AssetID != target.ID || targetStepID == sourceStepID {
+				blocked(BlockDirectCleanupInvalid, "required cleanup has no independent executable action")
+				continue
+			}
+			if byStep[sourceStepID] == nil {
+				byStep[sourceStepID] = map[asset.AssetID]RequiredDeletion{}
+			}
+			byStep[sourceStepID][target.ID] = RequiredDeletion{AssetID: target.ID, StepID: targetStepID}
+		}
+		if added {
+			continue
+		}
+		for i := range result.Steps {
+			step := &result.Steps[i]
+			var prerequisites []RequiredDeletion
+			for _, prerequisite := range byStep[step.ID] {
+				prerequisites = append(prerequisites, prerequisite)
+				if !slices.Contains(step.DependsOn, prerequisite.StepID) {
+					step.DependsOn = append(step.DependsOn, prerequisite.StepID)
+				}
+			}
+			if len(prerequisites) != 0 {
+				sort.Slice(prerequisites, func(i, j int) bool { return prerequisites[i].AssetID < prerequisites[j].AssetID })
+				sort.Slice(step.DependsOn, func(i, j int) bool { return step.DependsOn[i] < step.DependsOn[j] })
+				step.Evidence[EvidenceRequiredDeletions] = prerequisites
+				step.Evidence = cloneMap(step.Evidence)
+			}
+		}
+		// Required deletion precedes the action that causes a delegated
+		// effect, even if that effect has a separate verification step.
+		stepAssets := map[asset.AssetID]CleanupTaskStep{}
+		stepOwners := map[StepID]asset.AssetID{}
+		dependencies := map[asset.AssetID]map[asset.AssetID]struct{}{}
+		for _, step := range result.Steps {
+			stepAssets[step.AssetID], stepOwners[step.ID] = step, step.AssetID
+		}
+		for _, step := range result.Steps {
+			for _, dependency := range step.DependsOn {
+				addDependency(dependencies, step.AssetID, stepOwners[dependency])
+			}
+		}
+		ordered, acyclic := topologicalSteps(stepAssets, dependencies)
+		if !acyclic {
+			blockers.add(Blocker{Code: BlockDependencyCycle, Message: "resource dependency graph cannot be reduced to a cleanup DAG"})
+			ordered = stableSteps(stepAssets)
+		}
+		result.Steps, result.Blockers = ordered, blockers.values()
+		return result, nil
+	}
+	return Result{}, fmt.Errorf("cleanup prerequisite expansion did not converge")
+}

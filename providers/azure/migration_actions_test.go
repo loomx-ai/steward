@@ -25,6 +25,7 @@ func migrationScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset, ass
 	targetID := strings.ToLower(resourceID(serviceBusNamespaceType, "premium"))
 	target := map[string]any{"id": targetID, "name": "premium", "type": serviceBusNamespaceType, "location": "eastus", "properties": map[string]any{"createdAt": "2026-01-02T00:00:00Z", "provisioningState": "Succeeded"}}
 	s.add(target, "2024-01-01")
+	s.lists["/subscriptions/"+testSubscription+"/providers/microsoft.servicebus/namespaces"] = append(s.lists["/subscriptions/"+testSubscription+"/providers/microsoft.servicebus/namespaces"], target)
 	for _, collection := range []string{"queues", "topics", "authorizationrules", "disasterrecoveryconfigs", "migrationconfigurations", "privateendpointconnections", "networkrulesets"} {
 		s.lists[targetID+"/"+collection] = []any{}
 		s.version[targetID+"/"+collection] = "2024-01-01"
@@ -423,5 +424,31 @@ func TestMigrationRetainedTarget404CannotCompleteReadback(t *testing.T) {
 		if err == nil || !errors.As(err, &call) || call.Provider.Category == execution.ErrorNotFound {
 			t.Fatalf("retained target loss interpreted as successful deletion %v", err)
 		}
+	}
+}
+
+func TestMigrationProductInventoryPreservesSourceAndTargetDependencies(t *testing.T) {
+	_, r, assets, configuration, target := migrationScenario(t)
+	request := productRequest(r, serviceBusMigrationType)
+	var items []contracts.InventoryItem
+	for i := 0; i < 4; i++ {
+		batch, err := r.List(context.Background(), request)
+		if err != nil {
+			t.Fatal(err)
+		}
+		items = append(items, batch.Items...)
+		if batch.Complete {
+			break
+		}
+		request.Cursor = batch.NextCursor
+	}
+	if len(items) != 1 || items[0].NativeID != configuration.Identity.NativeID {
+		t.Fatalf("migration product inventory %+v", items)
+	}
+	want := []string{assets[0].Identity.NativeID, target.Identity.NativeID}
+	slices.Sort(want)
+	got, _ := items[0].Normalized[referenceKey(serviceBusNamespaceType)].([]string)
+	if !slices.Equal(got, want) || !slices.Equal(items[0].NetworkReferences, want) {
+		t.Fatalf("parent enrichment replaced target namespace reference: normalized=%v references=%v", got, items[0].NetworkReferences)
 	}
 }

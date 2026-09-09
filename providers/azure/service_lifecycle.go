@@ -201,6 +201,9 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	aksMembers := aksManagedMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {
@@ -330,6 +333,15 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any, locks []any) error {
+	if a.kind.NativeType == serviceBusNamespaceType {
+		incoming, err := a.client.incomingMigrations(ctx)
+		if err != nil {
+			return err
+		}
+		if len(incoming[a.id]) > 0 {
+			return serviceDenied("incoming_migration_requires_prior_deletion")
+		}
+	}
 	impacts, err := a.serviceImpacts(request)
 	if err != nil {
 		return err

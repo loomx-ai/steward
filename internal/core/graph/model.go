@@ -69,7 +69,11 @@ const (
 	LifecycleEvidenceUnselectedControllerAction       = "unselected_controller_action"
 	LifecycleUnselectedControllerSkip                 = "skip"
 	RelationshipEvidenceDeletionOrder                 = "deletion_order"
-	DeletionOrderTargetBeforeSource                   = "target_before_source"
+	// Required deletion is an independently executable prerequisite, not an
+	// ownership claim. Only authoritative provider evidence can expand a plan.
+	RelationshipEvidenceRequiredDeletion = "required_deletion"
+	RelationshipEvidenceAuthority        = "authority"
+	DeletionOrderTargetBeforeSource      = "target_before_source"
 )
 
 type LifecycleBinding struct {
