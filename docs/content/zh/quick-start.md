@@ -8,17 +8,17 @@ navTitle: "快速开始"
 
 ## 准备环境
 
-需要 Git、Go 1.26+、Node.js 22+、npm 和 make。构建时需要下载 Go 与 npm 依赖。
+选择一种[安装方式](./installation.md)。发布版二进制已包含本机运行所需内容；仅源码构建需要 Go 和 Node.js。
 
 <span id="run"></span>
 
 ## 安装并启动
 
 ```
-git clone https://github.com/loomx-ai/steward.git
-cd steward
-make install
-make run
+brew install loomx-ai/tap/steward
+mkdir -p "$HOME/steward-data"
+cd "$HOME/steward-data"
+steward server start
 ```
 
 打开 [http://127.0.0.1:8585](http://127.0.0.1:8585)，无需注册或登录。服务默认只接受本机访问。
@@ -26,7 +26,7 @@ make run
 按 Ctrl+C 停止服务。后续可直接运行已构建的程序：
 
 ```
-./bin/steward server start
+steward server start
 ```
 
 <span id="first-scan"></span>
@@ -45,6 +45,8 @@ make run
 <span id="development"></span>
 
 ## 开发模式
+
+在[源码目录](./installation.md#source)执行 `make install` 后运行：
 
 ```
 make dev

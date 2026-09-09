@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
 
-BIN := bin/steward
+BIN := bin/steward$(shell go env GOEXE)
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 DEV_PORTS := 5858 8585
 
 .PHONY: help install build run stop dev test lint format
@@ -25,7 +26,7 @@ build:
 	npm --prefix web run build
 	rm -f web/tsconfig.tsbuildinfo
 	mkdir -p bin
-	go build -tags withassets -o $(BIN) ./cmd/steward
+	CGO_ENABLED=1 go build -trimpath -tags withassets -ldflags "-s -w -X main.version=$(VERSION)" -o $(BIN) ./cmd/steward
 	@printf "Built %s/%s\n" "$(CURDIR)" "$(BIN)"
 
 run: build

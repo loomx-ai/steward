@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/loomx-ai/steward/migrations"
 	"github.com/pressly/goose/v3"
 )
 
@@ -16,6 +17,13 @@ var migrationMu sync.Mutex
 func Migrate(db *sql.DB, dialect, directory string) error {
 	migrationMu.Lock()
 	defer migrationMu.Unlock()
+	if directory == "" {
+		goose.SetBaseFS(migrations.Files)
+		directory = "."
+	} else {
+		goose.SetBaseFS(nil)
+	}
+	defer goose.SetBaseFS(nil)
 	if err := goose.SetDialect(dialect); err != nil {
 		return fmt.Errorf("set migration dialect: %w", err)
 	}

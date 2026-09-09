@@ -1,0 +1,189 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - '.github/workflows/release.yml'
+      - 'packaging/**'
+      - 'scripts/*release*'
+      - 'scripts/test_install.py'
+      - 'install.sh'
+      - 'internal/cli/**'
+      - 'internal/persistence/migrate*'
+      - 'internal/server/**'
+      - 'internal/webui/**'
+      - 'migrations/**'
+      - 'Makefile'
+      - 'go.mod'
+      - 'go.sum'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    uses: ./.github/workflows/test.yml
+
+  web:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Resolve version
+        id: version
+        env:
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          version="0.0.0-dev.${GITHUB_SHA:0:12}"
+          if [[ "$REF_TYPE" == tag ]]; then version="${REF_NAME#v}"; fi
+          python3 -c 'import sys; sys.path.insert(0, "scripts"); from release import version_arg; version_arg(sys.argv[1])' "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm --prefix web ci
+      - run: npm --prefix web run build
+      - run: python3 -m unittest discover -s scripts -p 'test_*release*.py'
+      - run: python3 -m unittest discover -s scripts -p 'test_install.py'
+      - uses: actions/upload-artifact@v6
+        with:
+          name: web-assets
+          path: internal/webui/dist
+          if-no-files-found: error
+
+  build:
+    needs: web
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15-intel, goos: darwin, goarch: amd64 }
+          - { runner: macos-15, goos: darwin, goarch: arm64 }
+          - { runner: ubuntu-24.04, goos: linux, goarch: amd64 }
+          - { runner: ubuntu-24.04-arm, goos: linux, goarch: arm64 }
+          - { runner: windows-2022, goos: windows, goarch: amd64, extension: '.exe' }
+    runs-on: ${{ matrix.runner }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      CGO_ENABLED: '1'
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      VERSION: ${{ needs.web.outputs.version }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v7
+        with:
+          name: web-assets
+          path: internal/webui/dist
+      - name: Install Linux C compiler
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+          echo 'CC=musl-gcc' >> "$GITHUB_ENV"
+      - name: Select Windows C compiler
+        if: runner.os == 'Windows'
+        run: |
+          C:/msys64/usr/bin/bash.exe -lc 'pacman --noconfirm --needed -S mingw-w64-x86_64-gcc'
+          echo 'C:/msys64/mingw64/bin' >> "$GITHUB_PATH"
+          echo 'CC=gcc' >> "$GITHUB_ENV"
+      - name: Set macOS compatibility target
+        if: runner.os == 'macOS'
+        run: |
+          echo 'MACOSX_DEPLOYMENT_TARGET=14.0' >> "$GITHUB_ENV"
+          echo 'CGO_CFLAGS=-O2 -g -mmacosx-version-min=14.0' >> "$GITHUB_ENV"
+          echo 'CGO_LDFLAGS=-mmacosx-version-min=14.0' >> "$GITHUB_ENV"
+      - name: Build standalone binary
+        env:
+          EXTENSION: ${{ matrix.extension }}
+        run: |
+          flags="-s -w -X main.version=$VERSION"
+          if [[ "$GOOS" == linux ]]; then flags="$flags -linkmode external -extldflags -static"; fi
+          go build -trimpath -tags 'withassets,netgo,osusergo,sqlite_omit_load_extension' -ldflags "$flags" -o "bin/steward$EXTENSION" ./cmd/steward
+      - name: Smoke test native binary
+        env:
+          EXTENSION: ${{ matrix.extension }}
+        run: python scripts/smoke-release.py "bin/steward$EXTENSION" "$VERSION"
+      - name: Package archive
+        env:
+          EXTENSION: ${{ matrix.extension }}
+        run: python scripts/release.py package --version "$VERSION" --target "${GOOS}_${GOARCH}" --binary "bin/steward$EXTENSION"
+      - name: Package Linux installers
+        if: runner.os == 'Linux'
+        run: |
+          go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v2.47.0
+          nfpm package --config packaging/nfpm.yaml --packager deb --target "dist/steward_${VERSION}_linux_${GOARCH}.deb"
+          nfpm package --config packaging/nfpm.yaml --packager rpm --target "dist/steward_${VERSION}_linux_${GOARCH}.rpm"
+          sudo dpkg -i "dist/steward_${VERSION}_linux_${GOARCH}.deb"
+          python scripts/smoke-release.py /usr/bin/steward "$VERSION"
+      - uses: actions/upload-artifact@v6
+        with:
+          name: packages-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: dist/*
+          if-no-files-found: error
+
+  package:
+    needs: [web, build]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: packages-*
+          merge-multiple: true
+          path: dist
+      - name: Generate manifests and checksums
+        env:
+          VERSION: ${{ needs.web.outputs.version }}
+        run: |
+          cp install.sh dist/install.sh
+          python3 scripts/release.py finalize --version "$VERSION"
+          cd dist
+          sha256sum --check checksums.txt
+      - uses: actions/upload-artifact@v6
+        with:
+          name: release
+          path: dist/*
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: [web, verify, package]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: release
+          path: dist
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.web.outputs.version }}
+        run: |
+          options=()
+          if [[ "$VERSION" == *-* ]]; then options+=(--prerelease --latest=false); fi
+          gh release create "v$VERSION" dist/* --verify-tag --title "Steward v$VERSION" --generate-notes "${options[@]}"

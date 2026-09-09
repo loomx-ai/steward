@@ -8,17 +8,17 @@ navTitle: "Quick start"
 
 ## Prerequisites
 
-Install Git, Go 1.26+, Node.js 22+, npm, and make. The build downloads Go and npm dependencies.
+Choose an [installation method](./installation.md). Release binaries include everything needed to run locally; Go and Node.js are only needed for source builds.
 
 <span id="run"></span>
 
 ## Install and start
 
 ```
-git clone https://github.com/loomx-ai/steward.git
-cd steward
-make install
-make run
+brew install loomx-ai/tap/steward
+mkdir -p "$HOME/steward-data"
+cd "$HOME/steward-data"
+steward server start
 ```
 
 Open [http://127.0.0.1:8585](http://127.0.0.1:8585). No account or login is required. The server accepts local connections by default.
@@ -26,7 +26,7 @@ Open [http://127.0.0.1:8585](http://127.0.0.1:8585). No account or login is requ
 Press Ctrl+C to stop. On subsequent starts, use the built binary:
 
 ```
-./bin/steward server start
+steward server start
 ```
 
 <span id="first-scan"></span>
@@ -45,6 +45,8 @@ With the server running, follow [First resource inventory](./tutorials/first-inv
 <span id="development"></span>
 
 ## Development mode
+
+From a [source checkout](./installation.md#source), after `make install`:
 
 ```
 make dev

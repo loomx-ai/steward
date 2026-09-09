@@ -33,28 +33,26 @@ Alibaba Cloud, AWS, Google Cloud (GCP), and Microsoft Azure.
 
 ## Quick start
 
-Requirements: Go 1.26+, Node.js 22+, and npm.
+Install on macOS or Linux with Homebrew:
 
 ```bash
-git clone https://github.com/loomx-ai/steward.git
-cd steward
-make install
-make dev
+brew install loomx-ai/tap/steward
+steward --version
+steward server start
 ```
 
-Open <http://127.0.0.1:5858>. No account or interactive login is required.
-The development proxy protects the API with an automatically generated token.
-
-To build and run the production server locally:
-
-```bash
-make run
-```
+Also available: [installation script, Scoop, deb/rpm, and standalone binaries](https://loomx.ai/steward/docs/installation).
+[GitHub Releases](https://github.com/loomx-ai/steward/releases) include macOS and
+Linux binaries for amd64/arm64, Windows amd64, and SHA-256 checksums. Release
+binaries include the web console and database migrations; Go and Node.js are
+not required.
 
 Open <http://127.0.0.1:8585> and start using Steward without logging in.
 SQLite data is stored in `.steward/steward.db`. A credential-encryption key is
 generated once in `.steward/credential-master-key`; keep it with your database
 backups. Existing databases must retain their original key.
+Always start from the same working directory. Stop the server and back up that
+directory before upgrading with `brew upgrade steward` or a newer release package.
 
 ### Network deployment
 
@@ -65,7 +63,7 @@ Steward over a network, configure token authentication and put it behind HTTPS:
 export STEWARD_AUTH_MODE=token
 export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
 export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
-./bin/steward server start --addr 0.0.0.0:8585
+steward server start --addr 0.0.0.0:8585
 ```
 
 Sign in using the configured token. Setting a token without an explicit mode
@@ -78,6 +76,20 @@ and auditing. These service tokens must never be distributed to browsers.
 
 ## Development
 
+Requirements: Git, Go 1.26+, Node.js 22+, npm, make, and a C compiler for SQLite.
+
+```bash
+git clone https://github.com/loomx-ai/steward.git
+cd steward
+make install
+make dev
+```
+
+Open <http://127.0.0.1:5858>. The development proxy uses an automatically
+generated token. Use `make run` to build and run the complete application on
+port 8585, or `make build` to produce `bin/steward` with the web console embedded.
+Plain `go install` does not bundle the console.
+
 ```bash
 make test
 make lint
@@ -86,6 +98,8 @@ make build
 
 PostgreSQL contract tests use `STEWARD_TEST_POSTGRES_DSN` and are skipped
 when it is not set.
+
+For release automation and Homebrew/Scoop publishing setup, see [RELEASING.md](RELEASING.md).
 
 Contributions are welcome. Please open an issue before proposing a substantial
 change, and include tests for changed behavior.

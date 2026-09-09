@@ -8,7 +8,9 @@ navTitle: "部署与维护"
 
 ## 构建服务
 
-在源码目录执行以下命令。产物包含 Web 界面，无需另起前端服务。
+使用发布版时，按[安装指南](./installation.md)安装，并在固定的数据目录运行 `steward server start`。二进制内含 Web 界面和数据库迁移脚本，无需另起前端服务或保留源码目录。
+
+自行构建时，在源码目录执行以下命令：
 
 ```
 make install
@@ -59,7 +61,7 @@ STEWARD_ADDR=0.0.0.0:8585
 ## 备份与升级
 
 1.  先停止服务，再备份整个 .steward 目录；若数据库或密钥在其他位置，也一并备份。PostgreSQL 使用数据库自己的备份工具。
-2.  更新到选定版本，重新执行 make install 和 make build。
+2.  使用原安装方式升级：`brew update && brew upgrade steward`、`scoop update steward`、安装脚本或新版软件包。源码安装则更新到选定版本，重新执行 `make install` 和 `make build`。
 3.  使用原工作目录、数据库和加密密钥启动。检查云连接并运行一次小范围扫描。
 
 <span id="troubleshooting"></span>

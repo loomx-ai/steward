@@ -8,7 +8,9 @@ navTitle: "Deployment"
 
 ## Build the server
 
-Run these commands from the source directory. The binary includes the web interface; no separate frontend server is needed.
+For a prebuilt release, follow [Installation](./installation.md) and run `steward server start` from a stable data directory. The binary includes the web interface and database migrations; no separate frontend server or source checkout is needed.
+
+To build yourself, run these commands from the source directory:
 
 ```
 make install
@@ -59,7 +61,7 @@ This is a configuration template: replace the placeholders. Users open the HTTPS
 ## Back up and upgrade
 
 1.  Stop the server, then back up the entire .steward directory. Include databases or keys stored elsewhere. Use database-native backup tools for PostgreSQL.
-2.  Update to the intended version, then run make install and make build.
+2.  Update using the original installation method: `brew update && brew upgrade steward`, `scoop update steward`, the installer, or a newer release package. For a source build, update to the intended version and run `make install` and `make build`.
 3.  Start with the original working directory, database, and key. Check connections and run a small scan.
 
 <span id="troubleshooting"></span>

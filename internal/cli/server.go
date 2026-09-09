@@ -101,7 +101,7 @@ func newServerStartCommand(version string) *cobra.Command {
 	cmd.Flags().StringVar(&addr, "addr", envDefault("STEWARD_ADDR", "127.0.0.1:8585"), "server listen address")
 	cmd.Flags().StringVar(&dbDriver, "db-driver", envDefault("STEWARD_DB_DRIVER", "sqlite"), "database driver: sqlite or postgres")
 	cmd.Flags().StringVar(&dsn, "db-dsn", "", "database DSN or SQLite path; defaults to STEWARD_DB_DSN")
-	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "migrations", "goose migration directory")
+	cmd.Flags().StringVar(&migrationsDir, "migrations-dir", "", "directory overriding the embedded database migrations")
 	cmd.Flags().StringVar(&statusPath, "status-file", defaultStatusPath(), "server status file")
 	cmd.Flags().StringVar(&authMode, "auth-mode", os.Getenv("STEWARD_AUTH_MODE"), "authentication mode: local, token, or cloud; defaults to local unless a token is configured")
 	cmd.Flags().StringVar(&authToken, "auth-token", os.Getenv("STEWARD_AUTH_TOKEN"), "bearer token for token or cloud authentication")
@@ -136,10 +136,11 @@ func newServerStopCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err := process.Signal(syscall.SIGTERM); err != nil {
+			defer process.Release()
+			if err := stopProcess(process); err != nil {
 				return err
 			}
-			fmt.Fprintf(cmd.OutOrStdout(), "sent SIGTERM to server pid %d\n", status.PID)
+			fmt.Fprintf(cmd.OutOrStdout(), "requested stop for server pid %d\n", status.PID)
 			return nil
 		},
 	}
@@ -200,14 +201,6 @@ func readServerStatus(path string) (ServerStatus, error) {
 		return ServerStatus{}, errors.New("server status is missing pid")
 	}
 	return status, nil
-}
-
-func processRunning(pid int) bool {
-	process, err := os.FindProcess(pid)
-	if err != nil {
-		return false
-	}
-	return process.Signal(syscall.Signal(0)) == nil
 }
 
 func defaultStatusPath() string {
