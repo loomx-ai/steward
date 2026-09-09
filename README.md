@@ -41,7 +41,7 @@ steward --version
 steward server start
 ```
 
-Also available: [installation script, Scoop, deb/rpm, and standalone binaries](https://loomx.ai/steward/docs/installation).
+Also available: [APT/DNF repositories, Scoop, installation script, and standalone binaries](https://loomx.ai/steward/docs/installation).
 [GitHub Releases](https://github.com/loomx-ai/steward/releases) include macOS and
 Linux binaries for amd64/arm64, Windows amd64, and SHA-256 checksums. Release
 binaries include the web console and database migrations; Go and Node.js are

@@ -26,8 +26,24 @@ gh workflow run sync.yml --repo loomx-ai/homebrew-tap
 ```
 
 The sync always resolves the latest stable release and never advances the tap
-to a prerelease. No Homebrew core, Scoop main, APT, RPM, Winget, Chocolatey, or
-Snap registry submission is performed.
+to a prerelease. The signed APT/RPM repositories are maintained in `loomx-ai/packages`. Its
+workflow verifies upstream checksums, signs package indexes and RPM packages,
+tests installation on five Linux distributions, and deploys to GitHub Pages.
+It checks hourly and refreshes expiring APT metadata weekly. Dispatch it after
+a stable release for immediate availability:
+
+```bash
+gh workflow run publish.yml --repo loomx-ai/packages
+```
+
+The package repository also publishes `releases.json` for the documentation
+version picker, plus a GPG signature for the latest release checksum file.
+The installation page keeps working with its embedded version if this index
+is temporarily unavailable. When releasing, update the fallback version and
+download hashes in both `docs/content/*/installation.md` files.
+
+No Homebrew core, Scoop main, Winget, Chocolatey, or Snap registry submission
+is performed.
 
 ## Preview a build
 
