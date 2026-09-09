@@ -1,0 +1,6 @@
+{
+  "metricsScopes": [
+    {"name": "locations/global/metricsScopes/123456", "createTime": "2026-01-02T03:04:05Z", "updateTime": "2026-08-10T04:05:06.123Z"},
+    {"name": "locations/global/metricsScopes/987654", "createTime": "2026-02-02T03:04:05Z", "updateTime": "2026-08-10T04:05:06.123Z"}
+  ]
+}

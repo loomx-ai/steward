@@ -590,3 +590,44 @@ background evidence only, not acceptance evidence for this work.
   DNS/namespace replacement cannot be distinguished within one instance.
   Five mapped GCP and 49 mapped Azure kinds still lack specifications; remaining
   lifecycle and independent environment acceptance work stays open.
+
+- GCP now has 179 explicit rules, 167 kinds with native deletion and 725 selected
+  methods from 53 Discovery documents and one pinned Cloud SDK archive. Native
+  Monitoring MetricsScope and MonitoredProject rules add four methods to the v1
+  fragment. Its existing Dashboard methods/schemas and all other source documents
+  remain unchanged; source refresh and both resource bindings reproduce exactly.
+- Scope inventory reads the complete unpaged native member set twice, preserves
+  project-number names, and validates parent identity, creation times, typed
+  tombstones, duplicates and completeness. Reverse lookup records incoming scopes
+  without extending the connection's mutation boundary. Unexpected continuations
+  and malformed/failed reads fail the shard. A SQLite scan verifies that permission
+  loss preserves all prior project-link observations.
+- The scope has no native DELETE. Steward retains the project-owned default self
+  link; independently selected external-project links have native unlink actions
+  and depend on their local scope. The actual solver produces one unlink step
+  without project/configuration cascade impacts. Both projects must authorize the
+  native unlink. Tombstoned links remain visible and independently removable.
+- Unlink preflight and readback validate both scope and link creation identities
+  through complete reads. Persisted phases bind the selected link, timestamps,
+  tombstone value and top-level Monitoring operation. Pending, malformed, failed,
+  cancelled, foreign and expired operations cannot replace final absence checks.
+  Scope 404 is a dependency failure; a DELETE 404 requires confirmed link absence.
+  Native DELETE has no etag/creation-time condition and cannot prevent relinking
+  between the final read and mutation. Unlink does not delete projects, metric
+  data or monitoring configuration, or prove downstream query caches converged.
+- Ten MetricsScope test functions include native schema validation, actual plan
+  solving, serialized restart, request IDs, complete reads and more than 75 fault
+  cases. Full Go tests, GCP/planner/cleanup/contracts/spec race tests, vet, source
+  refresh tests, documentation checks and deterministic generation pass.
+- Google's unmodified Config Connector mockgcp at
+  `673a61419de1b8e4f7d26070ce20dde2daa61da8` independently passed native project-link
+  creation, Steward inventory, unlink, LRO GET, serialized resume and absence over
+  local HTTP. The fixture harness and opt-in test are retained in the
+  [metrics-scope evidence](providers/gcp/fixtures/metrics-scope/README.md).
+  Its missing reverse-list method, IAM behavior and delayed operations still use
+  protocol tests; it does not enforce Steward's self-link protection. The
+  temporary server was stopped and its checkout/binary removed. No real-cloud
+  acceptance or complete Monitoring emulator coverage is claimed.
+- Four mapped GCP kinds and 49 mapped Azure kinds still lack specifications.
+  Remaining lifecycle behavior, broader monitoring configuration, independent
+  environment/end-to-end acceptance and final publication stay open.

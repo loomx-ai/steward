@@ -48,6 +48,27 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	}
 	for _, name := range operation.Call.RawPathParameters {
 		value, _ := parameters[name].(string)
+		if strings.HasPrefix(operation.ID, "monitoring.locations.global.metricsScopes.") {
+			kind := metricsScopeType
+			if operation.ID == metricsDelete {
+				kind = monitoredProjectType
+			}
+			id, err := c.metricsID(kind, value, true)
+			if err != nil {
+				return contracts.InvocationResult{}, err
+			}
+			if operation.ID == metricsDelete && last(id) == c.number {
+				return contracts.InvocationResult{}, groupDenied("metrics_scope_self_protected")
+			}
+			parameters[name] = strings.TrimPrefix(id, "//"+metricsHost+"/")
+			continue
+		}
+		if operation.ID == "monitoring.operations.get" {
+			if _, err := metricsOperationURL(map[string]any{"name": value}, ""); err != nil {
+				return contracts.InvocationResult{}, err
+			}
+			continue
+		}
 		// Discovery's {+parameter} controls URI expansion. BigQuery also uses
 		// it for scalar project/dataset IDs; it does not always mean a full name.
 		if !strings.Contains(value, "/") && !strings.HasPrefix(text(object(properties[name])["pattern"]), "^projects/") {
@@ -56,6 +77,12 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		parts := strings.Split(value, "/")
 		if len(parts) < 2 || parts[0] != "projects" || (parts[1] != c.project && parts[1] != c.number) {
 			return contracts.InvocationResult{}, fmt.Errorf("GCP invocation resource belongs to another project")
+		}
+	}
+	if operation.ID == metricsReverse {
+		value := parameters["monitoredResourceContainer"]
+		if value != "projects/"+c.project && value != "projects/"+c.number {
+			return contracts.InvocationResult{}, groupDenied("metrics_scope_reverse_project_changed")
 		}
 	}
 	if name := operation.Call.IdempotencyParameter; name != "" && invocation.IdempotencyKey != "" {
@@ -103,6 +130,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isMetricsScope(kind.NativeType) {
+		return c.metricsOperation(kind.NativeType, nativeID, method)
+	}
 	if isFusion(kind.NativeType) {
 		if _, err := c.fusionName(kind.NativeType, nativeID); err != nil {
 			return catalog.Operation{}, nil, err

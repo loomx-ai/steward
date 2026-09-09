@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "254473831c18c97fdf16b10bb81c606592e1d39e6d9954982d5c7b7d3ad6e8ab",
+    "checksum": "01e13eb7aad386ea8db8f6c13691e8a9d518d7633264bc27d3bccfe3118018f9",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "710d86171e4cf6b7cb2a5cdbbe53f74d15413364d9554902f86009821a83351e",
+  "content_checksum": "dcc325d7233f02421f18baea9b1b3ac97f0760038548778474a9d11f7847098e",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -88963,6 +88963,256 @@
       "source_uri": "https://managedkafka.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "monitoring.locations.global.metricsScopes.get",
+      "name": "get",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The resource name of the Metrics Scope. Example: locations/global/metricsScopes/{SCOPING_PROJECT_ID_OR_NUMBER}",
+            "location": "path",
+            "pattern": "^locations/global/metricsScopes/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a Metrics Scope (https://cloud.google.com/monitoring/settings#concept-scope) in Cloud Monitoring, which specifies one or more Google projects and zero or more AWS accounts to monitor together.",
+        "id": "MetricsScope",
+        "properties": {
+          "createTime": {
+            "description": "Output only. The time when this Metrics Scope was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "monitoredProjects": {
+            "description": "Output only. The list of projects monitored by this Metrics Scope.",
+            "items": {
+              "$ref": "MonitoredProject"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "name": {
+            "description": "Immutable. The resource name of the Monitoring Metrics Scope. On input, the resource name can be specified with the scoping project ID or number. On output, the resource name is specified with the scoping project number. Example: locations/global/metricsScopes/{SCOPING_PROJECT_ID_OR_NUMBER}",
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The time when this Metrics Scope record was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "monitoring.locations.global.metricsScopes.listMetricsScopesByMonitoredProject",
+      "name": "listMetricsScopesByMonitoredProject",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "monitoredResourceContainer": {
+            "description": "Required. The resource name of the Monitored Project being requested. Example: projects/{MONITORED_PROJECT_ID_OR_NUMBER}",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response for the ListMetricsScopesByMonitoredProject method.",
+        "id": "ListMetricsScopesByMonitoredProjectResponse",
+        "properties": {
+          "metricsScopes": {
+            "description": "A set of all metrics scopes that the specified monitored project has been added to.",
+            "items": {
+              "$ref": "MetricsScope"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject",
+        "endpoint": "https://monitoring.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "monitoring.locations.global.metricsScopes.projects.delete",
+      "name": "delete",
+      "service": "monitoring",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The resource name of the MonitoredProject. Example: locations/global/metricsScopes/{SCOPING_PROJECT_ID_OR_NUMBER}/projects/{MONITORED_PROJECT_ID_OR_NUMBER}Authorization requires the following Google IAM (https://cloud.google.com/iam) permissions on both the Metrics Scope and on the MonitoredProject: monitoring.metricsScopes.link",
+            "location": "path",
+            "pattern": "^locations/global/metricsScopes/[^/]+/projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is false, it means the operation is still in progress. If true, the operation is completed, and either error or response is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the name should be a resource name ending with operations/{unique_id}.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as Delete, the response is google.protobuf.Empty. If the original method is standard Get/Create/Update, the response should be the resource. For other methods, the response should have the type XxxResponse, where Xxx is the original method name. For example, if the original method name is TakeSnapshot(), the inferred response type is TakeSnapshotResponse.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "monitoring.operations.get",
+      "name": "get",
+      "service": "monitoring",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^operations/.*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is false, it means the operation is still in progress. If true, the operation is completed, and either error or response is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the name should be a resource name ending with operations/{unique_id}.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as Delete, the response is google.protobuf.Empty. If the original method is standard Get/Create/Update, the response should be the resource. For other methods, the response should have the type XxxResponse, where Xxx is the original method name. For example, if the original method name is TakeSnapshot(), the inferred response type is TakeSnapshotResponse.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "monitoring",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://monitoring.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "monitoring.projects.dashboards.delete",
       "name": "delete",
       "service": "monitoring",
@@ -106786,6 +107036,43 @@
         ],
         "list_operations": [
           "monitoring.projects.dashboards.list"
+        ]
+      }
+    },
+    {
+      "native_type": "monitoring.googleapis.com/MetricsScope",
+      "class": "observability.monitoring_environment",
+      "display_name": "Cloud Monitoring metrics scope",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "metricsScopes",
+        "read_operations": [
+          "monitoring.locations.global.metricsScopes.get"
+        ],
+        "list_operations": [
+          "monitoring.locations.global.metricsScopes.get"
+        ]
+      }
+    },
+    {
+      "native_type": "monitoring.googleapis.com/MonitoredProject",
+      "class": "observability.monitored_project",
+      "display_name": "Cloud Monitoring project link",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "projects",
+        "read_operations": [
+          "monitoring.locations.global.metricsScopes.get"
+        ],
+        "delete_operations": [
+          "monitoring.locations.global.metricsScopes.projects.delete"
+        ],
+        "list_operations": [
+          "monitoring.locations.global.metricsScopes.get"
         ]
       }
     },

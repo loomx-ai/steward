@@ -199,6 +199,11 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
+	if isMetricsScope(nativeType) {
+		if err := c.metricsIdentity(nativeType, nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	if nativeType == batchJobType {
 		normalized[batchProof] = batchConfiguration(data)
 	}
@@ -233,6 +238,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if nativeType == monitoredProjectType {
+		refs[metricsScopeType] = []string{strings.Join(strings.Split(nativeID, "/")[:7], "/")}
+	}
 	if isFusion(nativeType) {
 		var err error
 		refs, err = c.fusionReferences(nativeType, nativeID, data)
@@ -338,6 +346,16 @@ func resourceState(data map[string]any) string {
 }
 
 func (c *client) canonicalName(value string) string {
+	if strings.HasPrefix(value, "//"+metricsHost+"/locations/global/metricsScopes/") || strings.HasPrefix(value, "https://"+metricsHost+"/v1/locations/global/metricsScopes/") {
+		kind := metricsScopeType
+		if strings.Contains(value, "/projects/") {
+			kind = monitoredProjectType
+		}
+		if id, err := c.metricsID(kind, value, false); err == nil {
+			return id
+		}
+		return value
+	}
 	value = canonicalName(value)
 	if c.number != "" {
 		value = strings.Replace(value, "/projects/"+c.number+"/", "/projects/"+c.project+"/", 1)

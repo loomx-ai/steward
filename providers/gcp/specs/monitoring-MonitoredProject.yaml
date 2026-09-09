@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/MonitoredProject
+  class: observability.monitored_project
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring project link
+    zh-CN: Cloud Monitoring 项目关联
+  consoleLinkTemplate: https://console.cloud.google.com/monitoring/settings?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.locations.global.metricsScopes.get
+    parameters:
+      name: scope.metricsScopeName
+    itemsPath: monitoredProjects
+    identityPath: name
+  detail: &read
+    operation: monitoring.locations.global.metricsScopes.get
+    itemsPath: monitoredProjects
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: monitoring.locations.global.metricsScopes.projects.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read
+relationships:
+- type: depends_on
+  targetType: monitoring.googleapis.com/MetricsScope
+  targetIdPath: refs_monitoring_googleapis_com_MetricsScope

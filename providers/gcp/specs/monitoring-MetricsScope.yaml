@@ -1,0 +1,37 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: monitoring.googleapis.com/MetricsScope
+  class: observability.monitoring_environment
+presentation:
+  displayNames:
+    en-US: Cloud Monitoring metrics scope
+    zh-CN: Cloud Monitoring 指标范围
+  consoleLinkTemplate: https://console.cloud.google.com/monitoring/settings?project={projectId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: monitoring.locations.global.metricsScopes.get
+    parameters:
+      name: scope.metricsScopeName
+    itemsPath: $
+    identityPath: name
+  detail: &read
+    operation: monitoring.locations.global.metricsScopes.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+extensions:
+  hook: gcp.resource

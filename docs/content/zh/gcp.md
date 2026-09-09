@@ -40,6 +40,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | Cloud SQL | 实例 | 关闭删除保护后支持 |
 | Cloud Run | 服务 | 支持 |
 | Artifact Registry | 仓库 | 支持 |
+| Cloud Monitoring 指标范围 | 当前连接项目的指标范围、被监控项目关联及其他范围的反向引用 | 支持解除选中的项目关联；保留范围及其自身项目关联 |
 | Cloud TPU | 节点、排队资源和原生预留容量 | 节点与排队资源支持审查后清理；数据盘先解绑并保留；预留容量只读 |
 | Data Fusion | 实例、DNS 对等连接和命名空间 | 实例清理纳入审查过的命名空间与 DNS 对等连接；DNS 对等连接也支持独立删除 |
 | Batch | 作业、任务记录 | 删除作业时取消运行中的工作，并核实任务、VM 和磁盘影响；任务没有独立删除接口 |
@@ -65,6 +66,7 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 - **VM 磁盘和托管实例组**：磁盘与 IP 的原生删除策略会进入影响计划。对支持保留的资源，Steward 先通过原生操作修改策略并验证生效，再删除控制器。挂载关系或资源身份发生变化时会停止执行。
 - **删除保护**：获准清理 VM 后，Steward 会通过明确的原生准备阶段解除其删除保护；保护标签和 Cloud SQL 的删除保护仍会阻止删除。
 - **存储桶**：非空桶会被拒绝删除。Steward 不会先清空对象或对象版本来满足删除条件。
+- **指标范围**：解除项目关联会改变范围可以查询的指标，但会保留被监控项目、时序数据、仪表板和告警配置。范围及其自身项目关联只读；其他项目中的反向关联需要在各自连接中清理。参阅 Google 的[指标范围配置说明](https://docs.cloud.google.com/monitoring/settings/multiple-projects)。
 - **Cloud TPU**：清理排队资源时，先删除计划中的节点。节点清理会先解绑已有数据盘，确认磁盘仍然存在，再删除节点及其启动盘；所有节点消失后再删除排队请求。网络资源和预留容量作为独立资源保留。参阅 Google 的[排队资源删除契约](https://docs.cloud.google.com/tpu/docs/reference/rest/v2/projects.locations.queuedResources/delete)。
 - **Data Fusion**：实例清理包含计划中已审查的命名空间和 DNS 对等连接，并等待原生操作完成及资源消失。策略不可读、新增子资源或配置变化会阻止清理。用户数据及引用的存储、网络、服务账号、密钥和主题作为独立资源保留。参阅 Google 的[实例删除说明](https://docs.cloud.google.com/data-fusion/docs/how-to/delete-instance)。
 - **Batch**：选择作业后，一起审查其任务、VM 和磁盘。清理通过原生作业删除接口执行，并等待相关资源消失。已挂载且 `autoDelete=false` 的已有磁盘会保留；要求保留 Batch 创建的磁盘，或外部磁盘的删除设置不安全时，会停止清理。实例模板、存储桶、NFS 数据、密钥、Pub/Sub 主题、日志和输出数据仍作为独立资源保留。参阅 Google 的[作业删除行为](https://docs.cloud.google.com/batch/docs/delete-job)。
@@ -77,6 +79,8 @@ Dataform 文件夹清理会纳入其中的嵌套文件夹和仓库，逐一删�
 - **GKE**：计划包含已核实的节点与网络资源影响。删除集群前，会等待 Kubernetes Service、Ingress 和 Gateway 的 finalizer 完成。持久卷、已有 IP 和证书按已验证的策略保留；不支持的保留要求或无法确认的归属会阻止执行。控制平面端点必须可达；盘点需要对 `kube-system` Namespace 的 `get` 权限，以及对 Service、Ingress、已安装 Gateway 资源的 `list` 权限。清理还需要这些工作负载的 `delete` 权限、Container/Compute 的原生读取、删除和操作查询权限，以及节点组成员查询权限。不需要读取 Kubernetes Secret。
 
 执行前检查实际选择范围和[清理结果](./cleanup.md)。产品权限、保留策略、资源依赖和云端状态变化仍可能导致操作无法完成。
+
+指标范围盘点需要当前连接项目的 `resourcemanager.projects.get` 权限。解除被监控项目关联时，范围项目和被监控项目都需要 `monitoring.metricsScopes.link`，并需能够读取返回的 Monitoring 操作。盘点读取完整范围，范围不可读不能证明关联消失。执行前及等待期间会再次核对范围和关联的创建时间；API 不支持原子的创建时间或 etag 条件，清理期间应避免并发重新关联。参阅原生[读取](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/locations.global.metricsScopes/get)与[解除关联](https://docs.cloud.google.com/monitoring/api/ref_v3/rest/v1/locations.global.metricsScopes.projects/delete)契约。
 
 Dataform 盘点需要 `dataform.locations.list`，以及仓库、工作区、发布配置、工作流配置、工作流执行和编译结果各自的 `list` / `get` 权限。清理还需对可独立删除的类型授予 `delete`，取消运行中的执行另需 `dataform.workflowInvocations.cancel`。检查只读取密钥引用，不读取密钥内容。完整权限名称参阅 [Dataform 权限索引](https://docs.cloud.google.com/iam/docs/roles-permissions/dataform)。
 

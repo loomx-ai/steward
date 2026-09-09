@@ -196,12 +196,15 @@ resources:
   gcp:
     resources:
     - monitoring.googleapis.com/MetricsScope
+    - monitoring.googleapis.com/MonitoredProject
   azure:
     resources:
     - Microsoft.Insights/dataCollectionRules
   status: pending_verification
-  notes: Metrics-scope membership and monitoring configuration require explicit handling; project deletion
-    is never a substitute.
+  notes: Native scope/member inventory and reviewed project-link removal are implemented.
+    The scope and its self link remain project-owned; native APIs expose no independent scope delete.
+    Incoming scopes are references outside the connection boundary. Broader monitoring configuration
+    and real-cloud acceptance remain unverified.
 - alicloud: ACS::ARMS::GrafanaWorkspace
   spec: providers/alicloud/specs/arms-grafana-workspace.yaml
   class: observability.visualization
@@ -1927,6 +1930,7 @@ resources:
   gcp:
     resources:
     - monitoring.googleapis.com/MetricsScope
+    - monitoring.googleapis.com/MonitoredProject
   azure:
     resources:
     - Microsoft.Monitor/accounts

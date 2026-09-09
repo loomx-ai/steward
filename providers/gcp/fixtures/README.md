@@ -1,5 +1,8 @@
 # Google Cloud protocol fixtures
 
+[Metrics-scope fixtures](metrics-scope/README.md) cover native project-link
+inventory/cleanup, failure preservation and a retained independent mockgcp harness.
+
 [Data Fusion fixtures](datafusion/README.md) cover native instance/DNS cleanup,
 reviewed namespace impacts, complete list readback, restart recovery and a SQLite
 scan that preserves observations after an embedded IAM policy error.

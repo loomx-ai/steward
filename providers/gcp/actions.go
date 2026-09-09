@@ -24,7 +24,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -59,6 +59,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
+	}
+	if a.kind.NativeType == monitoredProjectType {
+		return a.metricsPreflight(ctx, request)
 	}
 	if isFusion(a.kind.NativeType) {
 		return a.fusionPreflight(ctx, request)
@@ -224,6 +227,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == monitoredProjectType {
+		return a.executeMetricsScope(ctx, request)
 	}
 	if a.kind.NativeType == dataprocClusterType && check.Evidence["dataproc_observing"] == true {
 		return contracts.ActionResult{Data: dataprocClusterPhase(request, ""), RetryAfter: 2 * time.Second}, nil
@@ -410,6 +416,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == monitoredProjectType {
+		return a.waitMetricsScope(ctx, request, result)
+	}
 	if isFusion(a.kind.NativeType) {
 		return a.waitFusion(ctx, request, result)
 	}
@@ -537,6 +546,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == monitoredProjectType {
+		return a.metricsReadback(ctx, request)
+	}
 	if isFusion(a.kind.NativeType) {
 		return a.fusionReadback(ctx, request)
 	}
@@ -592,6 +604,12 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 }
 
 func protectionReason(nativeType string, data map[string]any) string {
+	if nativeType == monitoredProjectType {
+		parts := strings.Split(text(data["name"]), "/")
+		if len(parts) >= 6 && parts[len(parts)-1] == parts[len(parts)-3] {
+			return "metrics_scope_self_protected"
+		}
+	}
 	if nativeType != instanceType && (data["deletionProtection"] == true || object(data["settings"])["deletionProtectionEnabled"] == true) {
 		return "deletion_protection_enabled"
 	}

@@ -61,6 +61,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP product inventory requires a resource kind")
 	}
 	nativeType := request.ResourceKind.NativeType
+	if isMetricsScope(nativeType) {
+		return r.listMetricsScope(ctx, c, request)
+	}
 	definition, ok := r.productDefinition(nativeType)
 	if !ok || definition.Discovery.List == nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP resource %q has no product discovery rule", nativeType)
@@ -684,6 +687,8 @@ func productParameters(input map[string]any, c *client, location string, parent 
 			result[key] = c.project
 		case "scope.projectPath":
 			result[key] = "projects/" + c.project
+		case "scope.metricsScopeName":
+			result[key] = "locations/global/metricsScopes/" + c.number
 		case "scope.location":
 			result[key] = location
 		case "scope.locationParent":

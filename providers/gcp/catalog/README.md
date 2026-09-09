@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 177 explicit resource rules and 721 selected methods
+The current catalog has 179 explicit resource rules and 725 selected methods
 from 53 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -48,6 +48,13 @@ Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
 Storage Transfer, Dataform, Batch, Dataproc, Discovery Engine, Cloud TPU and Data Fusion. Registration and wire tests do not close the full parity matrix.
+
+[Metrics-scope evidence](../fixtures/metrics-scope/README.md) covers project-number
+identities, complete scope/member reads, incoming scope references, protected self
+membership and independent project-link cleanup. The pinned Google mockgcp
+implementation independently verifies native GET/DELETE/LRO and final absence;
+its missing reverse-list method and IAM/delayed-operation cases use explicit
+protocol fixtures. Neither test source proves real-cloud acceptance.
 
 [Data Fusion protocol evidence](../fixtures/datafusion/README.md) covers regional
 instances, DNS peerings and full namespace policy lists. Instance deletion uses

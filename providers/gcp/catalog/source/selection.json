@@ -530,6 +530,10 @@
     {
       "source_uri": "https://monitoring.googleapis.com/$discovery/rest?version=v1",
       "methods": [
+        "monitoring.locations.global.metricsScopes.get",
+        "monitoring.locations.global.metricsScopes.listMetricsScopesByMonitoredProject",
+        "monitoring.locations.global.metricsScopes.projects.delete",
+        "monitoring.operations.get",
         "monitoring.projects.dashboards.delete",
         "monitoring.projects.dashboards.get",
         "monitoring.projects.dashboards.list"
@@ -4199,6 +4203,40 @@
       ],
       "read_operations": [
         "datafusion.projects.locations.instances.namespaces.list"
+      ]
+    },
+    {
+      "native_type": "monitoring.googleapis.com/MetricsScope",
+      "class": "observability.monitoring_environment",
+      "display_name": "Cloud Monitoring metrics scope",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "metricsScopes",
+      "read_operations": [
+        "monitoring.locations.global.metricsScopes.get"
+      ],
+      "list_operations": [
+        "monitoring.locations.global.metricsScopes.get"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "monitoring.googleapis.com/MonitoredProject",
+      "class": "observability.monitored_project",
+      "display_name": "Cloud Monitoring project link",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "projects",
+      "read_operations": [
+        "monitoring.locations.global.metricsScopes.get"
+      ],
+      "list_operations": [
+        "monitoring.locations.global.metricsScopes.get"
+      ],
+      "delete_operations": [
+        "monitoring.locations.global.metricsScopes.projects.delete"
       ]
     }
   ],
