@@ -25,6 +25,7 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
+	RedisRootConfiguration      string `json:"redis_root_configuration,omitempty"`
 	AppServiceRootConfiguration string `json:"app_service_root_configuration,omitempty"`
 	CDNProfileConfiguration     string `json:"cdn_profile_configuration,omitempty"`
 	MonitoredResource           string `json:"monitored_resource,omitempty"`
@@ -282,6 +283,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isRedisType(kind) {
+		values = append(values, redisConfiguration(kind, raw))
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }
@@ -329,6 +333,15 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
+	}
+	if target.RedisRootConfiguration != "" {
+		root, err := c.redisResource(ctx, redisRootID(target.ParentID))
+		if err != nil {
+			return err
+		}
+		if redisConfiguration(redisEnterpriseType, root) != target.RedisRootConfiguration {
+			return errProductParentGenerationChanged
+		}
 	}
 	if target.AppServiceRootConfiguration != "" {
 		root, err := c.appServiceParent(ctx, target.ParentID)
@@ -395,6 +408,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if definition.Metadata.NativeType == redisLinkType {
+			premium, err := redisPremium(parent.Raw)
+			if err != nil {
+				return nil, err
+			}
+			if !premium {
+				continue
+			}
+		}
 		if isAppFunction(definition.Metadata.NativeType) {
 			functionHost, err := appFunctionHost(parent.Raw)
 			if err != nil {
@@ -445,6 +467,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if parent.NativeType == redisDatabaseType {
+				target.RedisRootConfiguration = text(parent.Normalized["_redis_parent_configuration"])
+			}
 			if parent.NativeType == appSlotType {
 				target.AppServiceRootConfiguration = text(parent.Normalized["_app_service_parent_configuration"])
 			}

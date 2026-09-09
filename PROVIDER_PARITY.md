@@ -178,6 +178,48 @@ background evidence only, not acceptance evidence for this work.
   Azure/shared-contract race checks, vet, three offline importer tests and
   bilingual documentation checks pass. Remaining mapped families, controller
   gaps and full application/emulator/publication acceptance remain open.
+- Azure Redis adds eleven native rules and 35 operations: classic caches,
+  policies/assignments, firewall rules, links, patch schedules and private
+  endpoint connections; Enterprise/Managed Redis clusters, databases,
+  assignments and private endpoint connections. Native independent children
+  are reviewed prerequisites; built-in policies require cache cleanup.
+- Classic replica cleanup resolves the shared primary unlink from native
+  subscription-wide cache/link indexes and verifies both peers. Selecting the
+  secondary cache still includes that prerequisite once. Reciprocal views are
+  reviewed impacts; retention, duplicate links, inconsistent indexes, missing
+  primary views, changed peers and protection block deletion. Enterprise active
+  replication verifies all members and their roots, permits sequential healthy
+  deletion only with confirmed 404 departures, and checks surviving references
+  after target absence. New members, live unlinking and degraded groups require
+  a new review or separate recovery; no ForceUnlink action is introduced.
+- Frozen public/private configuration and parent/root context protect direct
+  actions and nested discovery. Native pagination failures, changing parent
+  sets, mismatched identities, incomplete reads and unknown SKUs fail closed.
+  Private persistence connection strings are removed from plans and API logs
+  while keyed digests detect changes. Native regional/signed operation URLs,
+  resource-bound persisted receipts, polling identities/errors and final
+  target/peer absence are verified by retained protocol tests.
+- Thirty-five original Swagger examples retain their hashes. Independent
+  schemas validate 22 original GET/LIST/status bodies and expose two original
+  nullability discrepancies; only private copies omit those nulls for secondary
+  shape checks. A native Enterprise assignment example incorrectly carries a
+  classic ARM identity; runtime rejects it and only the composite scenario
+  repairs it. Sixty-one checksum-pinned Microsoft CLI responses reproduce
+  byte-for-byte; nine recorded delete flows cover HTTP 200/202, signed polling
+  and restart. Empty auxiliary collections, reciprocal/active topology cases
+  and final GET 404s are explicitly synthetic. Native Enterprise name lookahead
+  handling has separate length/ASCII/hyphen boundary tests.
+- Azure now has 166 rules, 154 native DELETE bindings and 517 operations from
+  81 source plus 41 reference documents. A fresh eight-document Redis snapshot
+  exactly matches the selected source union; unrelated documents and prior
+  resource type entries are unchanged. Repeated generation produces SHA-256
+  `22c02582bfe05265ae6f5e30d8e13b87ceec794f4c808278d0f928aab24f0857`.
+  Full Go tests, Azure/shared-contract/plan/cleanup race checks, vet, three
+  offline catalog tests and bilingual documentation validation pass.
+  The [Redis evidence](providers/azure/fixtures/redis/README.md) documents source
+  versions, recording transformations, lifecycle boundaries and verification
+  limits. Remaining mapped services, controller gaps and full application,
+  independent-emulator and publication acceptance remain unfinished.
 - GCP now includes zonal/regional managed instance groups, InstanceGroups and
   autoscalers. Native member discovery records stateful disk/IP policy and shared
   read-only ownership. Cleanup prepares retention through abandonment, native

@@ -1,0 +1,247 @@
+[
+  {
+    "file": "RedisCacheAsyncOperationStatus.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAsyncOperationStatus.json",
+    "source_sha256": "7561547c2139d82bbfe8b2cdfc0143c582ff1e9e6a0bddc2f639223733879b3d",
+    "operation": "AsyncOperationStatus_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheList.json",
+    "source_sha256": "128f8766843c26eb83eb9a37866f1dffccfb196c79e9ec9368fa41bf9dd18227",
+    "operation": "Redis_ListBySubscription",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheGet.json",
+    "source_sha256": "cbddc630410773252eddb93d5f376f89cc99b7efe6178772dc8c24c0120dab3c",
+    "operation": "Redis_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheDelete.json",
+    "source_sha256": "e4aaebd60150951f589ea266b708e34ff197bd4c35ca584a7c7931fa175e2f72",
+    "operation": "Redis_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyList.json",
+    "source_sha256": "88880dba208e63654013c1e8e74cbd48a6290e7854bdf6825664d9bafc04a013",
+    "operation": "AccessPolicy_List",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyGet.json",
+    "source_sha256": "85762c1373881b2c64bbb68b5b2b642bae03d48f3d2b60855e27d6580782bca9",
+    "operation": "AccessPolicy_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyDelete.json",
+    "source_sha256": "5cf3979493e146705640e45ef552adabc22f35156d0d7f7cfc2f579f1094b54e",
+    "operation": "AccessPolicy_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyAssignmentList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyAssignmentList.json",
+    "source_sha256": "0c88d490d1139fbfe444bf94739179ed83157993a466b60372071c4fd11252b9",
+    "operation": "AccessPolicyAssignment_List",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyAssignmentGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyAssignmentGet.json",
+    "source_sha256": "0c61b1710383ea53bf4e8d998ccf030bfebd383107b8bb42d4154e73e8699b60",
+    "operation": "AccessPolicyAssignment_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheAccessPolicyAssignmentDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheAccessPolicyAssignmentDelete.json",
+    "source_sha256": "cb92fbc459cb66783cc9da5d6338c35484d02a3132d19f99dec41fc2c04c5b18",
+    "operation": "AccessPolicyAssignment_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheFirewallRulesList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheFirewallRulesList.json",
+    "source_sha256": "3516b0c0d2aa97282eafa6cc91d0a9181c8c11724c4f22097b1d6716583cfe28",
+    "operation": "FirewallRules_List",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheFirewallRuleGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheFirewallRuleGet.json",
+    "source_sha256": "7560480c38bd7e5b9fd263539a60eb71873c4fb05008f1c9faaac98621cc1c52",
+    "operation": "FirewallRules_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheFirewallRuleDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheFirewallRuleDelete.json",
+    "source_sha256": "a2771d77824952094600779e37268f5f8be6b3a0d6085a0b7b4116abf97cd086",
+    "operation": "FirewallRules_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheLinkedServer_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheLinkedServer_List.json",
+    "source_sha256": "b5080de4485fdd41ba89acda5a14d99c9125e2609bd5403d6cc4880ab1e230ae",
+    "operation": "LinkedServer_List",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheLinkedServer_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheLinkedServer_Get.json",
+    "source_sha256": "8a17fe87050bab3854d2fedbbd945960fb142cc68b946424c61b29edf9d046fb",
+    "operation": "LinkedServer_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheLinkedServer_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheLinkedServer_Delete.json",
+    "source_sha256": "a1a7f58ae9925d8805335ad5a0c9ba01e816c4dbc15694e35bd8d5777498fe57",
+    "operation": "LinkedServer_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCachePatchSchedulesList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCachePatchSchedulesList.json",
+    "source_sha256": "3444d9209cdf12f98991ac9f979e53bbe96c2bec7c1ecaa16e9d3861d6c0ff02",
+    "operation": "PatchSchedules_ListByRedisResource",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCachePatchSchedulesGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCachePatchSchedulesGet.json",
+    "source_sha256": "7f8bd95c89eedc7c04c12af542be9c89674aa7644ea0f7bced908eb328219788",
+    "operation": "PatchSchedules_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCachePatchSchedulesDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCachePatchSchedulesDelete.json",
+    "source_sha256": "73a976932d7acb5dd9558d6d797d636e56c43167f27ac866531888bb78870156",
+    "operation": "PatchSchedules_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheListPrivateEndpointConnections.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheListPrivateEndpointConnections.json",
+    "source_sha256": "bed23b7821ac3d42c472a0832f16a92972cb38ddff4cd1450a94d207d4bd1a72",
+    "operation": "PrivateEndpointConnections_List",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheGetPrivateEndpointConnection.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheGetPrivateEndpointConnection.json",
+    "source_sha256": "dfd01bb5f925350df0a79c9225be0f1cbfc3f816f2acce4ca473f80623b975a6",
+    "operation": "PrivateEndpointConnections_Get",
+    "family": "redis"
+  },
+  {
+    "file": "RedisCacheDeletePrivateEndpointConnection.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/examples/RedisCacheDeletePrivateEndpointConnection.json",
+    "source_sha256": "33a28f248ce13c0d2d56ef2bbb09bc1d2c893c51e19a5b537b986cd26bcf1d0f",
+    "operation": "PrivateEndpointConnections_Delete",
+    "family": "redis"
+  },
+  {
+    "file": "OperationsStatusGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/OperationsStatusGet.json",
+    "source_sha256": "4ffbc44e635aac551974e968f443c40a54e62582bc23692c0e48db227d2f8dea",
+    "operation": "OperationsStatus_Get",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseDelete.json",
+    "source_sha256": "d29d50ec44e3dda7ff2168c6843e8c6eee9ff749c60c3de9961d3f042657ad4e",
+    "operation": "RedisEnterprise_Delete",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseGet.json",
+    "source_sha256": "478dab9f79488021b3b8b60976b05b1a880b281759dbdcc2a2591bc98ab2b54e",
+    "operation": "RedisEnterprise_Get",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseList.json",
+    "source_sha256": "6cfb87c9379b76e697758f94365378f57755252ad93a09fc2feb50fd8442e65e",
+    "operation": "RedisEnterprise_List",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseDatabasesListByCluster.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseDatabasesListByCluster.json",
+    "source_sha256": "5d1a9308e3cd5bb412a3b2b6e324b9f6f38cddfd4a59410b0b9dd5c79ee1b3b7",
+    "operation": "Databases_ListByCluster",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseDatabasesGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseDatabasesGet.json",
+    "source_sha256": "c5eda8c4816e41c57b05470b23cdb1c4b9d3fdc5e438756b121b1ebd2ce049b6",
+    "operation": "Databases_Get",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseDatabasesDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseDatabasesDelete.json",
+    "source_sha256": "b5e76129346aced18c891b53a4dbfac4543205362aecc395cab9b72fc239aeac",
+    "operation": "Databases_Delete",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseAccessPolicyAssignmentGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseAccessPolicyAssignmentGet.json",
+    "source_sha256": "cb9297b7322c775088a7c7f5f707f51192e9c33b6632709d42d50658146a8cbd",
+    "operation": "AccessPolicyAssignment_Get",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseAccessPolicyAssignmentDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseAccessPolicyAssignmentDelete.json",
+    "source_sha256": "e4677d9c5d6df4a810fd5e8c3df3b8fe0d59266337998ef1a5ed0ea9ecc35e71",
+    "operation": "AccessPolicyAssignment_Delete",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseAccessPolicyAssignmentsList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseAccessPolicyAssignmentsList.json",
+    "source_sha256": "c2db8d9beb8636015735ccb3672e2d4f17a8716fb932610f156d938fb79e9e3a",
+    "operation": "AccessPolicyAssignment_List",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseListPrivateEndpointConnections.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseListPrivateEndpointConnections.json",
+    "source_sha256": "83e42551c6123d6743797eb05ddb9e5aae5871335c9ff7644d8a4195b4d687a7",
+    "operation": "PrivateEndpointConnections_List",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseGetPrivateEndpointConnection.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseGetPrivateEndpointConnection.json",
+    "source_sha256": "3c2460a77c5864a3db3692d6fe4f2a99ee76b8fc57705b90e727f94f39b34462",
+    "operation": "PrivateEndpointConnections_Get",
+    "family": "redisenterprise"
+  },
+  {
+    "file": "RedisEnterpriseDeletePrivateEndpointConnection.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/examples/RedisEnterpriseDeletePrivateEndpointConnection.json",
+    "source_sha256": "c4f6a53d166bf6acacb06db1dccebd9feed910c314db78dc0303bf9e1a970e5b",
+    "operation": "PrivateEndpointConnections_Delete",
+    "family": "redisenterprise"
+  }
+]

@@ -26,9 +26,14 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
-	appSiteType: {appSlotType, appFunctionType, appSiteCertificateType, appBindingType},
-	appSlotType: {appSlotFunctionType, appSlotCertificateType, appSlotBindingType},
-	cdnWAFType:  {}, frontDoorWAFType: {}, // Associations are shared prerequisites, not owned children.
+	redisType:           {redisPolicyType, redisAssignmentType, redisFirewallType, redisLinkType, redisPatchType, redisConnectionType},
+	redisPolicyType:     {redisAssignmentType},
+	redisLinkType:       {redisLinkType},
+	redisEnterpriseType: {redisDatabaseType, redisEnterpriseConnectionType},
+	redisDatabaseType:   {redisDatabaseAssignmentType},
+	appSiteType:         {appSlotType, appFunctionType, appSiteCertificateType, appBindingType},
+	appSlotType:         {appSlotFunctionType, appSlotCertificateType, appSlotBindingType},
+	cdnWAFType:          {}, frontDoorWAFType: {}, // Associations are shared prerequisites, not owned children.
 	// The native Profiles_Delete contract removes every subresource.
 	cdnProfileType:     {cdnEndpointType, afdEndpointType, afdDomainType, afdOriginGroupType, afdRuleSetType, afdSecurityPolicyType, afdSecretType},
 	cdnEndpointType:    {cdnOriginType, cdnOriginGroupType, cdnDomainType},
@@ -197,6 +202,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := redisIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isRedisType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := appServiceIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -367,7 +378,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			if child.kind == dataCollectionAssociationType {
+			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -571,6 +582,12 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 }
 
 func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if a.kind.NativeType == redisLinkType || a.kind.NativeType == redisDatabaseType {
+		done, err := a.redisReplicationReadback(ctx, request.Asset)
+		if err != nil || !done {
+			return contracts.ReadbackResult{Exists: true, State: "redis_replication_unlinking"}, err
+		}
+	}
 	if a.kind.NativeType == monitorWorkspaceType {
 		return a.monitorWorkspaceReadback(ctx, request)
 	}
@@ -611,7 +628,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
+	return (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
+		(parent == redisLinkType && child == redisLinkType && reason == "azure_redis_secondary_link") ||
+		(recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
 		((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
 		(messagingManagedConfiguration(child) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_messaging_managed_configuration") ||
 		(strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
@@ -631,6 +650,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isRedisType(parent.NativeType):
+		children, err = c.redisChildren(ctx, parent, raw)
 	case parent.NativeType == appSiteType || parent.NativeType == appSlotType:
 		children, err = c.appServiceChildren(ctx, parent, raw)
 	case isCDNType(parent.NativeType):
@@ -670,6 +691,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if parent.NativeType == redisType && children[i].kind == redisPolicyType && object(children[i].data["properties"])["type"] == "BuiltIn" {
+			children[i].direct = false
+		}
 		if recoveryType(children[i].kind) {
 			children[i].direct = !recoveryUnpaired(object(children[i].data["properties"]))
 		}
@@ -690,6 +714,12 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if redisSharedPrerequisite(parent, child) || redisLinkPeerRelation(parent, child) {
+		return true
+	}
+	if parent.Identity.NativeType == redisLinkType {
+		return false
+	}
 	if monitorWorkspaceAssociation(parent, child) {
 		return true
 	}

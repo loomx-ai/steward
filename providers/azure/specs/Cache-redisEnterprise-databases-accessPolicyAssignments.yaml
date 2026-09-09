@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cache/redisEnterprise/databases/accessPolicyAssignments
+  class: security.access_assignment
+presentation:
+  displayNames:
+    en-US: Redis Enterprise access assignment
+    zh-CN: Redis Enterprise 访问分配
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      clusterName: parent.normalized.arm_parameters.clusterName
+      databaseName: parent.normalized.arm_parameters.databaseName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cache/redisEnterprise/databases
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  accessPolicyName:
+    path: accessPolicyName
+    type: string
+  user:
+    path: user
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Cache/redisEnterprise/databases
+  targetIdPath: refs_microsoft_cache_redisenterprise_databases
+actions:
+  delete:
+    operation: Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_Get
+      itemsPath: $
+      identityPath: id

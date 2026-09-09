@@ -876,6 +876,51 @@
         "Policies_Get",
         "Policies_ListBySubscription"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redis/resource-manager/Microsoft.Cache/Redis/stable/2024-11-01/redis.json",
+      "operations": [
+        "AccessPolicyAssignment_Delete",
+        "AccessPolicyAssignment_Get",
+        "AccessPolicyAssignment_List",
+        "AccessPolicy_Delete",
+        "AccessPolicy_Get",
+        "AccessPolicy_List",
+        "FirewallRules_Delete",
+        "FirewallRules_Get",
+        "FirewallRules_List",
+        "LinkedServer_Delete",
+        "LinkedServer_Get",
+        "LinkedServer_List",
+        "PatchSchedules_Delete",
+        "PatchSchedules_Get",
+        "PatchSchedules_ListByRedisResource",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "Redis_Delete",
+        "Redis_Get",
+        "Redis_ListBySubscription",
+        "AsyncOperationStatus_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/redisenterprise/resource-manager/Microsoft.Cache/RedisEnterprise/stable/2025-07-01/redisenterprise.json",
+      "operations": [
+        "AccessPolicyAssignment_Delete",
+        "AccessPolicyAssignment_Get",
+        "AccessPolicyAssignment_List",
+        "Databases_Delete",
+        "Databases_Get",
+        "Databases_ListByCluster",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "RedisEnterprise_Delete",
+        "RedisEnterprise_Get",
+        "RedisEnterprise_List",
+        "OperationsStatus_Get"
+      ]
     }
   ],
   "resource_types": [
@@ -3787,6 +3832,215 @@
       ],
       "response_types": [
         "Microsoft.Web/sites/hostNameBindings"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis",
+      "display_name": "Azure Cache for Redis",
+      "class": "database.cache",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "redis",
+      "read_operations": [
+        "Azure.Microsoft.Cache.Redis_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.Redis_ListBySubscription"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.Redis_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/accessPolicies",
+      "display_name": "Redis access policy",
+      "class": "security.access_policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accessPolicies",
+      "read_operations": [
+        "Azure.Microsoft.Cache.AccessPolicy_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.AccessPolicy_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.AccessPolicy_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/accessPolicyAssignments",
+      "display_name": "Redis access assignment",
+      "class": "security.access_assignment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accessPolicyAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.AccessPolicyAssignment_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.AccessPolicyAssignment_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.AccessPolicyAssignment_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/firewallRules",
+      "display_name": "Redis firewall rule",
+      "class": "network.firewall_rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "firewallRules",
+      "read_operations": [
+        "Azure.Microsoft.Cache.FirewallRules_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.FirewallRules_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.FirewallRules_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/linkedServers",
+      "display_name": "Redis replication link",
+      "class": "database.replication_link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "linkedServers",
+      "read_operations": [
+        "Azure.Microsoft.Cache.LinkedServer_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.LinkedServer_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.LinkedServer_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/patchSchedules",
+      "display_name": "Redis patch schedule",
+      "class": "compute.maintenance_schedule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "patchSchedules",
+      "read_operations": [
+        "Azure.Microsoft.Cache.PatchSchedules_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.PatchSchedules_ListByRedisResource"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.PatchSchedules_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redis/privateEndpointConnections",
+      "display_name": "Redis private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.PrivateEndpointConnections_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.RedisManagementClient.PrivateEndpointConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redisEnterprise",
+      "display_name": "Redis Enterprise / Managed Redis",
+      "class": "database.cache",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "redisEnterprise",
+      "read_operations": [
+        "Azure.Microsoft.Cache.RedisEnterprise_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.RedisEnterprise_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.RedisEnterprise_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redisEnterprise/databases",
+      "display_name": "Redis Enterprise database",
+      "class": "database.database",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "databases",
+      "read_operations": [
+        "Azure.Microsoft.Cache.Databases_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.Databases_ListByCluster"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.Databases_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redisEnterprise/databases/accessPolicyAssignments",
+      "display_name": "Redis Enterprise access assignment",
+      "class": "security.access_assignment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accessPolicyAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.AccessPolicyAssignment_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cache/redisEnterprise/privateEndpointConnections",
+      "display_name": "Redis Enterprise private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.PrivateEndpointConnections_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cache.RedisEnterpriseManagementClient.PrivateEndpointConnections_Delete"
       ]
     }
   ]

@@ -28,7 +28,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 155 resource types; 143 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 166 resource types; 154 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -39,6 +39,7 @@ Steward recognizes 155 resource types; 143 have native deletion actions, subject
 | Storage | Storage accounts and Blob containers | Empty resources only |
 | SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; standalone `master` deletion is prohibited |
 | PostgreSQL / MySQL | Flexible servers | Supported |
+| Redis | Classic caches, access policies/assignments, firewall rules, replication links, patch schedules and private endpoint connections; Enterprise / Managed Redis clusters, databases, assignments and private endpoint connections | Reviewed child deletion precedes parents; classic replication unlinks first; healthy active replication verifies all members |
 | App Service | Web Apps / Function Apps, deployment slots, functions, certificates, hostname bindings and service plans | Apps/slots review owned child cascades; plans remain separate; certificates require unused TLS bindings |
 | CDN and Front Door | Profiles, classic endpoints/origins/origin groups/domains; Front Door endpoints/routes/origin groups/origins/domains/rule sets/rules/security associations/certificate references | Profiles and owned child trees use reviewed cascades; shared references require ordered cleanup |
 | WAF | CDN and Front Door policies | Reviewed referring endpoint/security-association deletion precedes policy deletion; classic Front Door references still block cleanup |
@@ -59,6 +60,7 @@ Service Bus autoforwarding dependencies resolve to a queue or topic in the same 
 
 ## Cleanup protections
 
+- **Redis:** Cache/database deletion removes its data. Independent children must be deleted first; built-in classic policies require cache cleanup. Selecting either classic replica includes the shared primary-side unlink and any reciprocal view in review. Retaining a link view blocks unlinking. Reads must cover subscription-wide classic caches and linked peers, including other resource groups. Enterprise active replication checks all participants; later deletions may accept a smaller group only after departed members return 404. New or inconsistent membership, unhealthy links, changed configuration, locks and protected peers block cleanup. Degraded groups require separate recovery; Steward does not force-unlink them. Completion also checks surviving replicas no longer reference the deleted target. See [classic replication](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-geo-replication) and [active replication](https://learn.microsoft.com/en-us/azure/redis/how-to-active-geo-replication).
 - **Management locks:** Subscription, resource-group, resource, and relevant descendant locks block deletion. Steward checks locks during inventory and again immediately before deletion, and never removes them.
 - **Managed resources:** Provider-owned resources require their supported owning controller, except members with an explicitly supported independent action. AKS deletion includes its reviewed node resource group; arbitrary deletion of managed-group resources remains prohibited.
 - **VM attachments:** Plans show native auto-delete disks, NICs and public IPs. Supported retention changes use conditional native updates before deletion and survive worker restart. VM extensions remain part of the VM's deletion impacts. Uniform scale-set unmanaged VHD cleanup and disk detachment are not yet implemented.

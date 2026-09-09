@@ -1,0 +1,83 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Cache/redisEnterprise/databases
+  class: database.database
+presentation:
+  displayNames:
+    en-US: Redis Enterprise database
+    zh-CN: Redis Enterprise 数据库
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Cache.Databases_ListByCluster
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      clusterName: parent.normalized.arm_parameters.clusterName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Cache.Databases_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Cache/redisEnterprise
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  clientProtocol:
+    path: clientProtocol
+    type: string
+  port:
+    path: port
+    type: number
+  clusteringPolicy:
+    path: clusteringPolicy
+    type: string
+  evictionPolicy:
+    path: evictionPolicy
+    type: string
+  persistence:
+    path: persistence
+    type: object
+  modules:
+    path: modules
+    type: array
+  geoReplication:
+    path: geoReplication
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Cache/redisEnterprise
+  targetIdPath: refs_microsoft_cache_redisenterprise
+actions:
+  delete:
+    operation: Azure.Microsoft.Cache.Databases_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Cache.Databases_Get
+      itemsPath: $
+      identityPath: id

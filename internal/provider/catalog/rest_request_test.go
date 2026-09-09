@@ -3,6 +3,7 @@ package catalog
 import (
 	"encoding/json"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -42,6 +43,18 @@ func TestBindOfficialRESTRequests(t *testing.T) {
 	parameters["api-version"] = "2099-01-01"
 	if _, err := BindREST(op, parameters); err == nil {
 		t.Fatal("API version override accepted")
+	}
+}
+
+func TestRESTRedisEnterpriseNativeNameBoundaries(t *testing.T) {
+	pattern := "^(?=.{1,60}$)[A-Za-z0-9]+(-[A-Za-z0-9]+)*$"
+	property := map[string]any{"in": "path", "pattern": pattern}
+	op := Operation{ID: "Azure.Microsoft.Cache.RedisEnterprise_Get", Call: &OperationCall{Style: "azure-rest", Endpoint: "https://management.azure.com", Method: "GET", Path: "/clusters/{name}", Version: "2025-07-01"}, InputSchema: map[string]any{"properties": map[string]any{"name": property}}}
+	for name, valid := range map[string]bool{"a": true, "A1-cache": true, strings.Repeat("a", 60): true, "": false, strings.Repeat("a", 61): false, "-cache": false, "cache-": false, "two--hyphens": false, "under_score": false, "中文": false, "a\n": false, "a/b": false} {
+		_, err := BindREST(op, map[string]any{"name": name})
+		if (err == nil) != valid || property["pattern"] != pattern {
+			t.Fatalf("Redis Enterprise name %q: %v", name, err)
+		}
 	}
 }
 

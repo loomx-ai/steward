@@ -95,6 +95,14 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 				}
 				pattern = strings.TrimSuffix(pattern, "(?<!-)$") + "$"
 			}
+			// Redis Enterprise names use a bounded ECMA-262 lookahead.
+			// The remaining native pattern accepts only ASCII characters.
+			if strings.HasPrefix(pattern, "^(?=.{1,60}$)") {
+				if len(text) < 1 || len(text) > 60 {
+					return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
+				}
+				pattern = "^" + strings.TrimPrefix(pattern, "^(?=.{1,60}$)")
+			}
 			rule, err := regexp.Compile(pattern)
 			if err != nil || !isString || !rule.MatchString(text) {
 				return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)

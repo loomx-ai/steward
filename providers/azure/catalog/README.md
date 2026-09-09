@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 145 current resource rules discover through native product List operations.
+All 166 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 452 operations from
-77 root documents and 38 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 517 operations from
+81 root documents and 41 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -305,3 +305,14 @@ Sensitive configuration uses keyed comparison; native CDN None-error placeholder
 are distinguished from actual polling failures. Original examples, known schema
 inconsistencies and versioned CLI replay are retained in the
 [CDN evidence](../fixtures/cdn/README.md). External WAF/DNS lifecycles remain separate.
+
+Redis adds eleven native rules and 35 operations from classic 2024-11-01 and
+Enterprise 2025-07-01. Independent children precede parent deletion; built-in
+policies and reciprocal classic link views require their owning controller.
+Classic replication contributes a shared primary unlink when either cache is
+selected. Enterprise active replication checks every peer and allows verified
+member departures while rejecting new or contradictory membership. Native
+parent/context checks, sensitive configuration digests and peer readback cover
+resumed deletion. The [Redis evidence](../fixtures/redis/README.md) records 35
+unchanged Swagger examples, 61 Microsoft CLI responses, native inconsistencies,
+replay adaptations and the limits of protocol verification.

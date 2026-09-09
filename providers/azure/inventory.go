@@ -279,6 +279,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.redisInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.appServiceInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -439,6 +442,13 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		}
 	}
 	networkRefs := []string{}
+	if nativeType == redisAssignmentType {
+		policyID, err := redisPolicyReference(id, raw)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		addReference(refs, redisPolicyType, policyID)
+	}
 	for target, ids := range refs {
 		sort.Strings(ids)
 		normalized[referenceKey(target)] = ids
@@ -672,6 +682,9 @@ func safeResource(value any) any {
 				continue
 			}
 			if strings.EqualFold(key, "settings") && (typed["typeHandlerVersion"] != nil || typed["extensionType"] != nil) {
+				continue
+			}
+			if strings.Contains(strings.ToLower(strings.ReplaceAll(strings.ReplaceAll(key, "-", ""), "_", "")), "connectionstring") {
 				continue
 			}
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
