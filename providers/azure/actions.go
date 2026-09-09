@@ -83,6 +83,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	res, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
+		if a.kind.NativeType == serviceBusMigrationType {
+			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
+				return contracts.PreflightResult{}, err
+			}
+		}
 		if a.kind.NativeType == aksType {
 			read, err := a.aksGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: !read.Exists && err == nil, Evidence: map[string]any{"aks_cluster_absent": true}}, err
@@ -105,6 +110,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if reason := protectionReason(a.kind, res.data); reason != "" {
 		return contracts.PreflightResult{Reason: reason}, nil
 	}
+	if reason, creation, err := a.client.messagingReplicationContext(ctx, a.kind.NativeType, a.id); reason != "" || err != nil {
+		return contracts.PreflightResult{Reason: reason}, err
+	} else if expected := text(request.Asset.Normalized["_messaging_namespace_creation"]); expected != "" && expected != creation {
+		return contracts.PreflightResult{Reason: "messaging_namespace_recreated"}, nil
+	}
 	parts := strings.Split(a.id, "/")
 	group, err := a.client.request(ctx, "GET", apiURL(strings.Join(parts[:5], "/"), resourcesVersion))
 	if err != nil {
@@ -122,6 +132,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if locked(a.id, locks) {
 		return contracts.PreflightResult{Reason: "azure_management_lock"}, nil
+	}
+	if a.kind.NativeType == serviceBusMigrationType {
+		if err := a.migrationPreflight(ctx, request.Asset, res.data, locks); err != nil {
+			return contracts.PreflightResult{}, err
+		}
 	}
 	if err := a.validateScaleSetVMOwner(ctx, request, res.data); err != nil {
 		return contracts.PreflightResult{}, err
@@ -203,6 +218,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if a.kind.NativeType == vmType || a.kind.NativeType == nicType {
 		return a.prepareAttachments(ctx, request)
 	}
+	if a.kind.NativeType == serviceBusMigrationType {
+		return a.prepareMigration(ctx, request)
+	}
 	return a.delete(ctx, request)
 }
 
@@ -260,8 +278,11 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 	if phase == "prepare_attachments" {
 		return a.waitAttachmentPreparation(ctx, request, result)
 	}
+	if phase == "revert_migration" || phase == "await_migration" {
+		return a.waitMigrationPreparation(ctx, request, result)
+	}
 	if phase != "" {
-		if phase != "delete" || (a.kind.NativeType != vmType && a.kind.NativeType != nicType) {
+		if phase != "delete" || (a.kind.NativeType != vmType && a.kind.NativeType != nicType && a.kind.NativeType != serviceBusMigrationType) {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure action phase")
 		}
 		result.ProviderOperationID = text(result.Data["operation"])
@@ -343,6 +364,11 @@ func (a *action) validateOperationURL(endpoint string) error {
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	res, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
+		if a.kind.NativeType == serviceBusMigrationType {
+			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
+				return contracts.ReadbackResult{}, err
+			}
+		}
 		if a.kind.NativeType == aksType {
 			return a.aksGroupReadback(ctx, request)
 		}
@@ -414,7 +440,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_messaging_managed_configuration":
+	case "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing":
 		return true
 	default:
 		return false

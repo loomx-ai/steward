@@ -180,6 +180,11 @@ func TestNativeStandaloneCreationIdentitySurvivesOrdinaryUpdates(t *testing.T) {
 				s := newDNSScenario()
 				raw := map[string]any{"id": tc.id, "type": tc.kind, "etag": "original", "properties": map[string]any{tc.field: "original-creation", "provisioningState": "Succeeded", "eTag": "original-schema"}}
 				s.add(raw, tc.version)
+				if strings.HasPrefix(tc.kind, eventHubNamespaceType+"/") {
+					parentID := strings.Join(strings.Split(strings.ToLower(tc.id), "/")[:9], "/")
+					s.add(map[string]any{"id": parentID, "type": eventHubNamespaceType, "properties": map[string]any{"createdAt": "namespace-creation", "provisioningState": "Succeeded"}}, "2024-01-01")
+					s.lists[parentID+"/disasterrecoveryconfigs"] = []any{}
+				}
 				r := s.runtime(t)
 				value := dnsAsset(t, r, raw)
 				encoded, _ := json.Marshal(value)

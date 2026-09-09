@@ -1,0 +1,40 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/f86c78ae126c4f3c8e110a116dde8e6f0cfdc04e/src/azure-cli/azure/cli/command_modules/servicebus/tests/latest/recordings/test_sb_migration.yaml",
+  "source_sha256": "99215f7a9e67f4695983b54bed0310eead7d8b19c6611621b3d3cf25b879cfc6",
+  "recorded_api_version": "2026-01-01",
+  "note": "Selected request methods/URIs and unchanged response bodies from the official Azure CLI recording. The runtime independently binds the 2024-01-01 Swagger operation; this recording establishes state transitions, not execution against that API version. No request or response headers are retained.",
+  "interactions": [
+    {
+      "interaction": 64,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/%24default?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/$default\",\"name\":\"sb-pre-nscli000004\",\"type\":\"Microsoft.ServiceBus/Namespaces/migrationconfigurations\",\"location\":\"southcentralus\",\"properties\":{\"provisioningState\":\"Accepted\",\"targetNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000005\",\"postMigrationName\":\"clipostmigration000008\",\"migrationState\":\"Active\"}}",
+      "response_body_sha256": "43a2132b25fd52c787c760225b264790e3905c46e108aeb8c6aff31fe639e434"
+    },
+    {
+      "interaction": 65,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/%24default?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/$default\",\"name\":\"sb-pre-nscli000004\",\"type\":\"Microsoft.ServiceBus/Namespaces/migrationconfigurations\",\"location\":\"southcentralus\",\"properties\":{\"provisioningState\":\"Succeeded\",\"targetNamespace\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000005\",\"postMigrationName\":\"clipostmigration000008\",\"pendingReplicationOperationsCount\":0,\"migrationState\":\"Active\"}}",
+      "response_body_sha256": "d4b9a098c1e64f0c38589adaed09a942a8e22d5056f4fca1750c6efc6c129b45"
+    },
+    {
+      "interaction": 66,
+      "method": "POST",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/%24default/revert?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "",
+      "response_body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "interaction": 67,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/%24default?api-version=2026-01-01",
+      "status": 200,
+      "response_body": "{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_sb_migration000001/providers/Microsoft.ServiceBus/namespaces/sb-pre-nscli000004/migrationConfigurations/$default\",\"name\":\"sb-pre-nscli000004\",\"type\":\"Microsoft.ServiceBus/Namespaces/migrationconfigurations\",\"location\":\"southcentralus\",\"properties\":{\"provisioningState\":\"Succeeded\",\"targetNamespace\":\"\",\"postMigrationName\":\"clipostmigration000008\",\"migrationState\":\"Active\"}}",
+      "response_body_sha256": "6d0f77e1579d1c0e128645cc6998db9255258866f4459537d49998c23f8eeb76"
+    }
+  ]
+}

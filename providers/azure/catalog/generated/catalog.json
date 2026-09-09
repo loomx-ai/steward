@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "969ed4cb1337d038a6f048c3f7890b8ddcffdd1801d1c93bc645c4e556b9e7e7",
+    "checksum": "bb054512479b2000a5e31e8ec3ad1a499651144d17f59d10da046dd024f9217c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "bea2371604e3d07a9b85452433278fac100010ef1aa2720e41a73f6ee5257372",
+  "content_checksum": "74581b7cc8504365369bd6295022609a436ffc0a2615ba6b338bb4ebbccd0a1a",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -23194,6 +23194,80 @@
         "protocol": "HTTPS",
         "method": "GET",
         "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/migrationConfigurations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/stable/2024-01-01/migrationconfigs.json"
+    },
+    {
+      "id": "Azure.Microsoft.ServiceBus.MigrationConfigs_Revert",
+      "name": "MigrationConfigs_Revert",
+      "service": "Microsoft.ServiceBus",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/migrationConfigurations/{configName}/revert",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "configName": {
+            "description": "The configuration name. Should always be \"$default\".",
+            "enum": [
+              "$default"
+            ],
+            "in": "path",
+            "name": "configName",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "MigrationConfigurationName"
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "namespaceName": {
+            "description": "The namespace name",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 6,
+            "name": "namespaceName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "Subscription credentials that uniquely identify a Microsoft Azure subscription. The subscription ID forms part of the URI for every service call.",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ServiceBus",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/migrationConfigurations/{configName}/revert",
         "endpoint": "https://management.azure.com",
         "body_type": "json",
         "parameter_position": "query"

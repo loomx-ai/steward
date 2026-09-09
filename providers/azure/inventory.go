@@ -295,6 +295,16 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
 	reason := protectionReason(kind, raw)
+	if replicationReason, creation, err := c.messagingReplicationContext(ctx, nativeType, id); err != nil {
+		return contracts.InventoryItem{}, err
+	} else {
+		if creation != "" {
+			normalized["_messaging_namespace_creation"] = creation
+		}
+		if replicationReason != "" && (reason == "" || controllerOnlyReason(reason)) {
+			reason = replicationReason
+		}
+	}
 	if groupOwners[groupID] != "" && (reason == "" || controllerOnlyReason(reason)) {
 		reason = "azure_managed_resource_group"
 	}
@@ -313,6 +323,11 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if nativeType == serviceBusMigrationType {
+		if err := c.migrationInventory(ctx, id, raw, normalized, refs); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	if err := c.serviceBusForwardReferences(ctx, nativeType, id, raw, refs); err != nil {
 		return contracts.InventoryItem{}, err
 	}

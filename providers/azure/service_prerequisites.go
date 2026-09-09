@@ -29,10 +29,11 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
-	hostGroupType:      {hostType},
-	capacityGroupType:  {capacityType},
-	vpnGatewayType:     {vpnConnectionType, vpnNATRuleType},
-	expressGatewayType: {expressConnectionType},
+	serviceBusNamespaceType: {serviceBusMigrationType},
+	hostGroupType:           {hostType},
+	capacityGroupType:       {capacityType},
+	vpnGatewayType:          {vpnConnectionType, vpnNATRuleType},
+	expressGatewayType:      {expressConnectionType},
 }
 
 func servicePrerequisiteKind(parent, child string) bool {
@@ -65,10 +66,11 @@ func serviceParentConfiguration(kind string, raw map[string]any) string {
 		delete(object(safe["systemData"]), field)
 	}
 	fields := map[string][]string{
-		hostGroupType:      {"hosts"},
-		capacityGroupType:  {"capacityReservations"},
-		vpnGatewayType:     {"connections", "natRules"},
-		expressGatewayType: {"expressRouteConnections"},
+		serviceBusNamespaceType: {"updatedAt"},
+		hostGroupType:           {"hosts"},
+		capacityGroupType:       {"capacityReservations"},
+		vpnGatewayType:          {"connections", "natRules"},
+		expressGatewayType:      {"expressRouteConnections"},
 	}
 	for _, field := range fields[kind] {
 		delete(object(safe["properties"]), field)

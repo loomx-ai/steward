@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/url"
 	"strings"
+
+	"github.com/loomx-ai/steward/internal/core/asset"
 )
 
 // Autoforwarding points to a queue or topic in the same namespace. The native
@@ -92,20 +95,117 @@ func messagingManagedConfiguration(kind string) bool {
 
 func messagingDeletionReason(kind string, raw map[string]any) string {
 	properties := object(raw["properties"])
+	if (kind == serviceBusNamespaceType+"/authorizationRules" || kind == eventHubNamespaceType+"/authorizationRules") && strings.EqualFold(last(strings.TrimRight(text(raw["id"]), "/")), "RootManageSharedAccessKey") {
+		// The provider's permission reference explicitly excludes the default
+		// namespace rule from independent DELETE.
+		// https://learn.microsoft.com/azure/role-based-access-control/permissions/integration
+		return "azure_messaging_default_authorization_rule"
+	}
 	if kind == serviceBusRecoveryType || kind == eventHubRecoveryType {
 		// Azure requires failover or breaking the pairing before deleting an
 		// active alias. Failing over is not part of an ordinary cleanup action.
 		// https://learn.microsoft.com/azure/event-hubs/resource-manager-exceptions
-		if text(properties["partnerNamespace"]) != "" || !strings.EqualFold(text(properties["role"]), "PrimaryNotReplicating") || !replicationIdle(properties) {
+		if text(properties["partnerNamespace"]) != "" || !strings.EqualFold(text(properties["role"]), "PrimaryNotReplicating") || !strings.EqualFold(text(properties["provisioningState"]), "Succeeded") || !replicationIdle(properties) {
 			return "azure_messaging_recovery_requires_unpairing"
 		}
 	}
 	if kind == serviceBusMigrationType {
-		if !strings.EqualFold(text(properties["migrationState"]), "Active") || !replicationIdle(properties) {
+		if !replicationCountValid(properties) {
+			return "azure_messaging_migration_in_progress"
+		}
+		switch strings.ToLower(text(properties["migrationState"])) {
+		case "active", "initiating", "syncing", "reverting":
+		default:
+			return "azure_messaging_migration_in_progress"
+		}
+		if text(properties["targetNamespace"]) == "" && !migrationReady(properties) {
 			return "azure_messaging_migration_in_progress"
 		}
 	}
 	return ""
+}
+
+func replicationCountValid(properties map[string]any) bool {
+	value := properties["pendingReplicationOperationsCount"]
+	switch value := value.(type) {
+	case nil:
+		return true
+	case json.Number:
+		number, err := value.Int64()
+		return err == nil && number >= 0
+	case float64:
+		return value >= 0 && !math.IsInf(value, 0) && math.Trunc(value) == value
+	case int:
+		return value >= 0
+	case int64:
+		return value >= 0
+	default:
+		return false
+	}
+}
+
+// Entity DELETE can be replicated into the other namespace. Inspect the native
+// namespace configuration even when deleting only a queue or consumer group.
+// https://learn.microsoft.com/azure/service-bus-messaging/service-bus-geo-dr
+// https://learn.microsoft.com/azure/event-hubs/event-hubs-geo-dr
+// Schema registry metadata also replicates, though registered schemas do not:
+// https://learn.microsoft.com/azure/reliability/reliability-event-hubs
+func messagingReplicatedEntity(kind string) bool {
+	for _, namespace := range []string{serviceBusNamespaceType, eventHubNamespaceType} {
+		if !strings.HasPrefix(kind, namespace+"/") {
+			continue
+		}
+		suffix := strings.TrimPrefix(kind, namespace+"/")
+		return !strings.HasPrefix(suffix, "disasterRecoveryConfigs") && suffix != "migrationConfigurations" &&
+			suffix != "privateEndpointConnections" && suffix != "networkRuleSets" && suffix != "networkSecurityPerimeterConfigurations"
+	}
+	return false
+}
+
+func (c *client) messagingReplicationContext(ctx context.Context, kind, id string) (reason, creation string, err error) {
+	if !messagingReplicatedEntity(kind) {
+		return "", "", nil
+	}
+	parts := strings.Split(id, "/")
+	if len(parts) < 11 {
+		return "", "", fmt.Errorf("invalid Azure messaging entity namespace")
+	}
+	namespaceID := strings.Join(parts[:9], "/")
+	_, namespaceType, err := parseID(namespaceID)
+	if err != nil {
+		return "", "", err
+	}
+	definition, _ := findType(namespaceType)
+	endpoint, err := c.resourceURL(definition, namespaceID)
+	if err != nil {
+		return "", "", err
+	}
+	live, err := c.request(ctx, "GET", endpoint)
+	if err != nil {
+		return "", "", err
+	}
+	if !validResourceResponse(live, namespaceID, definition.NativeType) {
+		return "", "", fmt.Errorf("Azure messaging namespace identity mismatch")
+	}
+	types := []string{definition.NativeType + "/disasterRecoveryConfigs"}
+	if definition.NativeType == serviceBusNamespaceType {
+		types = append(types, serviceBusMigrationType)
+	}
+	children, err := c.nativeServiceChildren(ctx, asset.Identity{NativeID: namespaceID, NativeType: definition.NativeType}, live.data, types)
+	if err != nil {
+		return "", "", err
+	}
+	for _, child := range children {
+		properties := object(child.data["properties"])
+		if child.kind == serviceBusMigrationType {
+			if text(properties["targetNamespace"]) != "" || !migrationReady(properties) {
+				return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
+			}
+		} else if messagingDeletionReason(child.kind, child.data) != "" || !strings.EqualFold(text(properties["provisioningState"]), "Succeeded") {
+			return "azure_messaging_replication_requires_unpairing", creationGeneration(live.data), nil
+		}
+	}
+	return "", creationGeneration(live.data), nil
 }
 
 func replicationIdle(properties map[string]any) bool {

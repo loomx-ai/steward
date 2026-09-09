@@ -322,3 +322,18 @@ background evidence only, not acceptance evidence for this work.
   pass; bilingual Azure docs reflect the current conditions. Active geo-recovery
   unpairing, migration workflows, dedicated Event Hubs clusters, other families
   and independent emulator/application/real-cloud acceptance remain unfinished.
+
+- Azure now binds 373 native operations. Service Bus migration cleanup snapshots
+  source/target namespace creation identity and migration configuration, waits
+  for synchronization, submits native Revert, verifies the cleared target link,
+  and deletes the configuration before its source namespace. Persisted phases
+  resume without repeating an acknowledged Revert; the target and copied
+  entities remain intact. Missing dependencies cannot become successful target
+  absence in the cleanup worker. Official immutable Azure CLI response bodies
+  independently establish the state transitions (recorded API 2026-01-01), while
+  runtime route tests use the selected 2024-01-01 Swagger. Default namespace
+  authorization rules require controller deletion, and standalone entity actions
+  re-read replication context before mutation. Full Go/vet, targeted race tests,
+  ten offline metadata tests and the upstream recording checksum pass. Automatic
+  geo-recovery unpairing, remaining service families and independent application/
+  emulator/real-cloud acceptance are still open.

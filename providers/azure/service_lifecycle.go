@@ -269,6 +269,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			childKind, known := findType(child.kind)
 			directAllowed := known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
+			if text(target.Normalized["cleanup_protection_reason"]) == "azure_messaging_replication_requires_unpairing" {
+				directAllowed = false
+			}
 			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: policy, DirectCleanupAllowed: directAllowed, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
@@ -472,7 +475,8 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (messagingManagedConfiguration(child) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_messaging_managed_configuration") ||
+	return ((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
+		(messagingManagedConfiguration(child) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_messaging_managed_configuration") ||
 		(strings.EqualFold(parent, vpnConnectionType) && strings.EqualFold(child, vpnLinkConnectionType) && reason == "azure_vpn_connection_managed_link") ||
 		(strings.EqualFold(parent, scaleSetVMType) && strings.EqualFold(child, diskType) && reason == "azure_managed_resource") ||
 		((strings.EqualFold(child, scaleSetNICType) || strings.EqualFold(child, scaleSetIPConfigType) || strings.EqualFold(child, scaleSetPublicIPType)) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) && reason == "azure_scale_set_managed_network") ||
@@ -509,6 +513,11 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if children[i].kind == serviceBusMigrationType {
+			// A paired migration must first be aborted by its own persisted
+			// action. Namespace DELETE cannot stand in for native Revert.
+			children[i].direct = text(object(children[i].data["properties"])["targetNamespace"]) != ""
+		}
 	}
 	if native {
 		return children, nil // nativeServiceChildren already re-read the parent.

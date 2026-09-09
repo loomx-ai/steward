@@ -169,6 +169,12 @@ func TestMessagingNativeProductRoutesAndIndependentDeletion(t *testing.T) {
 				action, _ = dnsRequest(t, r, assets, target)
 			}
 			operation, err := driver.Execute(context.Background(), action)
+			if tc.kind == namespaceKind+"/authorizationRules" {
+				if err == nil || len(s.deletes) != 0 || items[0].Normalized["cleanup_controller_only"] != true {
+					t.Fatal("default namespace authorization rule allowed independent deletion")
+				}
+				return
+			}
 			if err != nil || len(s.deletes) != 1 || s.deletes[0] != target.Identity.NativeID {
 				t.Fatalf("native delete %+v %v", s.deletes, err)
 			}

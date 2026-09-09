@@ -592,7 +592,8 @@
       "operations": [
         "MigrationConfigs_Delete",
         "MigrationConfigs_Get",
-        "MigrationConfigs_List"
+        "MigrationConfigs_List",
+        "MigrationConfigs_Revert"
       ]
     },
     {
