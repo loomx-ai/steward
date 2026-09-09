@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -844,6 +845,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 
 	started := make(chan asset.AssetID, len(assets))
 	release := make(chan struct{})
+	releaseAll := sync.OnceFunc(func() { close(release) })
 	driver := &blockingActionDriver{started: started, release: release}
 	handler := cleanup.NewExecutionHandler(
 		planner,
@@ -867,6 +869,7 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 	go func() { workerDone <- worker.Run(workerCtx) }()
 	workerStopped := false
 	t.Cleanup(func() {
+		releaseAll()
 		if workerStopped {
 			return
 		}
@@ -895,7 +898,9 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 	case <-time.After(100 * time.Millisecond):
 	}
 
-	close(release)
+	// Free one slot first so this assertion does not wait behind all 20
+	// completed actions' SQLite writes on a shared CI runner.
+	release <- struct{}{}
 	select {
 	case <-started:
 	case err := <-workerErrors:
@@ -904,7 +909,8 @@ func TestCleanupWorkerProcessesTwentyProviderCallsConcurrently(t *testing.T) {
 		t.Fatal("queued independent cleanup action did not start")
 	}
 
-	deadline := time.After(3 * time.Second)
+	releaseAll()
+	deadline := time.After(10 * time.Second)
 	for {
 		stored, err := repositories.Executions().GetExecution(ctx, created.ID)
 		if err != nil {
