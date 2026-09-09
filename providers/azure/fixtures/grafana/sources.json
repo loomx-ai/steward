@@ -1,0 +1,74 @@
+[
+  {
+    "file": "Grafana_List.json",
+    "operation": "Grafana_List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/Grafana_List.json",
+    "source_sha256": "d256bf281683de2a65f6f9f7e25d39043044f91223d724e93d7c1f5950b17942"
+  },
+  {
+    "file": "Grafana_Get.json",
+    "operation": "Grafana_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/Grafana_Get.json",
+    "source_sha256": "b7ccfc7c8fde57e482e7ceb78c1a07aa41d144efcc9f636317b7a6e326a6edfa"
+  },
+  {
+    "file": "Grafana_Delete.json",
+    "operation": "Grafana_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/Grafana_Delete.json",
+    "source_sha256": "fb7e2a1cfb419af407683352b1737835655f182340f2550b0891304b8ea88c98"
+  },
+  {
+    "file": "IntegrationFabrics_List.json",
+    "operation": "IntegrationFabrics_List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/IntegrationFabrics_List.json",
+    "source_sha256": "6838064c978409fe45615cb8eddf459f0d290d8d35dbd12ae3402d49a25b6d11"
+  },
+  {
+    "file": "IntegrationFabrics_Get.json",
+    "operation": "IntegrationFabrics_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/IntegrationFabrics_Get.json",
+    "source_sha256": "a465e983c59787ac2217139ea356911d9c7bbd370b77985256f19ffddc34079c"
+  },
+  {
+    "file": "IntegrationFabrics_Delete.json",
+    "operation": "IntegrationFabrics_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/IntegrationFabrics_Delete.json",
+    "source_sha256": "5901eba424aebcdc6b744a0f83d43f37228e19eb6726a6bafc15344678c2b298"
+  },
+  {
+    "file": "ManagedPrivateEndpoints_List.json",
+    "operation": "ManagedPrivateEndpoints_List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/ManagedPrivateEndpoints_List.json",
+    "source_sha256": "faddf64ec841d2677a72de013f97cce837913ccae22d4fc60693fb475ac854b9"
+  },
+  {
+    "file": "ManagedPrivateEndpoints_Get.json",
+    "operation": "ManagedPrivateEndpoints_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/ManagedPrivateEndpoints_Get.json",
+    "source_sha256": "e9ef268d52b71447a8277d1b0841e09b228f059496e1ce8afbb440191862fed2"
+  },
+  {
+    "file": "ManagedPrivateEndpoints_Delete.json",
+    "operation": "ManagedPrivateEndpoints_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/ManagedPrivateEndpoints_Delete.json",
+    "source_sha256": "bcf9971605fd295439b1f61c7897545d696aa180fd55997bf1a23c8bfd0558e5"
+  },
+  {
+    "file": "PrivateEndpointConnections_List.json",
+    "operation": "PrivateEndpointConnections_List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/PrivateEndpointConnections_List.json",
+    "source_sha256": "66bb69e4a9547665680069eea3f543e541a39e39c9f869c64f21cf1f7864c422"
+  },
+  {
+    "file": "PrivateEndpointConnections_Get.json",
+    "operation": "PrivateEndpointConnections_Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/PrivateEndpointConnections_Get.json",
+    "source_sha256": "43cb5e2df2a9633eb5a09d2db23ca68ea6c0d86da31b46551ecf0add6779b9ca"
+  },
+  {
+    "file": "PrivateEndpointConnections_Delete.json",
+    "operation": "PrivateEndpointConnections_Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/examples/PrivateEndpointConnections_Delete.json",
+    "source_sha256": "69814b5cc7b3aedb532e6c7d51819f0e202234f6b51e93cf43fdca4fbc5d489e"
+  }
+]

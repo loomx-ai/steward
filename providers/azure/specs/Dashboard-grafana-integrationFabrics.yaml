@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Dashboard/grafana/integrationFabrics
+  class: observability.integration
+presentation:
+  displayNames:
+    en-US: Grafana integration fabric
+    zh-CN: Grafana 集成配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Dashboard.IntegrationFabrics_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      workspaceName: parent.normalized.arm_parameters.workspaceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Dashboard.IntegrationFabrics_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Dashboard/grafana
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  targetResourceId:
+    path: targetResourceId
+    type: string
+  dataSourceResourceId:
+    path: dataSourceResourceId
+    type: string
+  scenarios:
+    path: scenarios
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Dashboard/grafana
+  targetIdPath: refs_microsoft_dashboard_grafana
+- type: depends_on
+  targetType: Microsoft.ContainerService/managedClusters
+  targetIdPath: refs_microsoft_containerservice_managedclusters
+- type: depends_on
+  targetType: Microsoft.OperationalInsights/workspaces
+  targetIdPath: refs_microsoft_operationalinsights_workspaces
+actions:
+  delete:
+    operation: Azure.Microsoft.Dashboard.IntegrationFabrics_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Dashboard.IntegrationFabrics_Get
+      itemsPath: $
+      identityPath: id

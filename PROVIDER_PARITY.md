@@ -839,3 +839,38 @@ background evidence only, not acceptance evidence for this work.
   This closes the GCP resource-type registration gap, not all behavior parity.
   Remaining lifecycle composition, API capability differences, independent
   environment/end-to-end acceptance and publication are still open.
+
+- Azure now has 126 explicit rules, 114 kinds with native deletion and 392
+  selected operations. Grafana workspace, managed private endpoint, service-side
+  connection and integration fabric add 12 operations from pinned 2025-08-01
+  Swagger. The new root and three common-type documents reproduce exactly;
+  all preceding 100 source documents are unchanged.
+- Native parent/child product inventory freezes management configuration and
+  creation identity where exposed. Child cursors bind their current parent.
+  Two complete native child passes feed the actual solver; all three kinds use
+  independent deletion prerequisites before workspace DELETE. Locks, protected
+  tags, changed configuration/parents, missing inventory, retention and unreadable
+  collections prevent unsafe execution. External data sources, AKS clusters,
+  consumer private endpoints and user-assigned identities remain dependencies.
+- Microsoft CLI recordings exposed signed ProviderHub operation URLs without
+  subscription paths. Grafana polling now accepts only the native provider/region
+  shape with a persisted resource binding, validates returned operation/target
+  identity, and hides signing parameters in API logs. Ordinary ARM requests remain
+  subscription-bound. Serialized resume, failure/cancellation, expired operations
+  and final native child/resource absence have retained regression coverage.
+- Seven Grafana test functions cover native inventory and planning, independent
+  child deletion, pagination and more than 50 fault/variant cases. The 12 original
+  Swagger examples are retained, including their invalid IDs/type and connection
+  state; tests detect these inconsistencies and use explicit corrected protocol
+  identities. Three Microsoft CLI sequences retain 21 native polling responses.
+  Their 2023-09-01 version, replaced signing values, synthetic surrounding lists
+  and final absence are disclosed in the [Grafana evidence](providers/azure/fixtures/grafana/README.md).
+  This is recorded/protocol evidence, not independent emulator or real-cloud
+  verification. The inspected localaz emulator has no Grafana handler.
+- Full Go tests, focused Azure/cleanup/contracts race checks, vet, three offline
+  Azure source-refresh tests and documentation checks pass. Two catalog generations
+  produce SHA-256 `0f7a1bce94febfbcdff2a7f203b8b54e67003c626c7b66de35e865231dcd77da`.
+  Grafana data-plane objects are not individually inventoried; native DELETE has
+  no atomic configuration condition. There are still 48 mapped Azure kinds without
+  specifications. Remaining lifecycle composition, independent environment and
+  end-to-end acceptance, and publication remain open.

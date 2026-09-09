@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "95ab83b136174d93a12bd5486572e255ad0804ae649991933ccdb732ad6a8acf",
+    "checksum": "8f870fd5bf8ae6ac5729efdcc29c08b2551a652f83e636be3b6bc50832ab0e93",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "38fe224c371ef818cb170e0186dde4082dd1f55c501545fabc95fd71edcf1777",
+  "content_checksum": "9ba69ff890a2fc751260bf56ec3895b67a6c566c70069da680e8360cb39c8497",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -7332,6 +7332,912 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/postgresql/resource-manager/Microsoft.DBforPostgreSQL/stable/2024-08-01/FlexibleServers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.Grafana_Delete",
+      "name": "Grafana_Delete",
+      "service": "Microsoft.Dashboard",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.Grafana_Get",
+      "name": "Grafana_Get",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The grafana resource type.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource."
+          },
+          "location": {
+            "description": "The geo-location where the resource lives",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/ManagedGrafanaProperties",
+            "description": "Properties specific to the grafana resource."
+          },
+          "sku": {
+            "$ref": "#/definitions/ResourceSku",
+            "description": "The Sku of the grafana resource."
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.Grafana_List",
+      "name": "Grafana_List",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Dashboard/grafana",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paged collection of ManagedGrafana items",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ManagedGrafana items on this page",
+            "items": {
+              "$ref": "#/definitions/ManagedGrafana"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Dashboard/grafana",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.IntegrationFabrics_Delete",
+      "name": "IntegrationFabrics_Delete",
+      "service": "Microsoft.Dashboard",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics/{integrationFabricName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "integrationFabricName": {
+            "description": "The integration fabric name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "integrationFabricName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,18}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics/{integrationFabricName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.IntegrationFabrics_Get",
+      "name": "IntegrationFabrics_Get",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics/{integrationFabricName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "integrationFabricName": {
+            "description": "The integration fabric name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "integrationFabricName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,18}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The integration fabric resource type.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/IntegrationFabricProperties"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics/{integrationFabricName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.IntegrationFabrics_List",
+      "name": "IntegrationFabrics_List",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paged collection of IntegrationFabric items",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The IntegrationFabric items on this page",
+            "items": {
+              "$ref": "#/definitions/IntegrationFabric"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/integrationFabrics",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Delete",
+      "name": "ManagedPrivateEndpoints_Delete",
+      "service": "Microsoft.Dashboard",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "managedPrivateEndpointName": {
+            "description": "The managed private endpoint name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "managedPrivateEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Get",
+      "name": "ManagedPrivateEndpoints_Get",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "managedPrivateEndpointName": {
+            "description": "The managed private endpoint name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "managedPrivateEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The managed private endpoint resource type.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ManagedPrivateEndpointModelProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_List",
+      "name": "ManagedPrivateEndpoints_List",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list of managed private endpoints of a grafana resource",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ManagedPrivateEndpointModel items on this page",
+            "items": {
+              "$ref": "#/definitions/ManagedPrivateEndpointModel"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/managedPrivateEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.Dashboard",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The private endpoint connection name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The private endpoint connection name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The Private Endpoint Connection resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "id": "Azure.Microsoft.Dashboard.PrivateEndpointConnections_List",
+      "name": "PrivateEndpointConnections_List",
+      "service": "Microsoft.Dashboard",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "workspaceName": {
+            "description": "The workspace name of Azure Managed Grafana.",
+            "in": "path",
+            "name": "workspaceName",
+            "pattern": "^[a-zA-Z][a-z0-9A-Z-]{0,28}[a-z0-9A-Z]$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a PrivateEndpointConnection list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The PrivateEndpointConnection items on this page",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Dashboard",
+        "version": "2025-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Dashboard/grafana/{workspaceName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
     },
     {
       "id": "Azure.Microsoft.EventHub.ApplicationGroup_Delete",
@@ -31823,6 +32729,86 @@
         ],
         "list_operations": [
           "Azure.Microsoft.DBforPostgreSQL.Servers_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana",
+      "class": "observability.visualization",
+      "display_name": "Azure Managed Grafana",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "grafana",
+        "read_operations": [
+          "Azure.Microsoft.Dashboard.Grafana_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Dashboard.Grafana_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Dashboard.Grafana_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/integrationFabrics",
+      "class": "observability.integration",
+      "display_name": "Grafana integration fabric",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "integrationFabrics",
+        "read_operations": [
+          "Azure.Microsoft.Dashboard.IntegrationFabrics_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Dashboard.IntegrationFabrics_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Dashboard.IntegrationFabrics_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Grafana managed private endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "managedPrivateEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Grafana private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Dashboard.PrivateEndpointConnections_List"
         ]
       }
     },

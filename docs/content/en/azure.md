@@ -28,7 +28,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 122 resource types; 110 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 126 resource types; 114 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -46,6 +46,7 @@ Steward recognizes 122 resource types; 110 have native deletion actions, subject
 | Service Bus | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases use reviewed unpairing before deletion |
 | Event Hubs | Dedicated clusters, namespaces, event hubs, consumer groups, authorization rules, recovery aliases, schema/application groups and private endpoint connections | Cluster cleanup first deletes reviewed member namespaces; native namespace/event-hub cascades and paired-alias unpairing are supported |
 | Operations and identity | Log Analytics workspaces and user-assigned managed identities | Supported |
+| Managed Grafana | Workspaces, managed private endpoints, private endpoint connections and integration fabrics | Reviewed child deletion precedes workspace deletion; each resource also has an independent native action |
 | Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only |
 
 Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configurations, recovery-alias authorization views, Uniform scale-set network resources and VPN connection links have no independent native delete action. The default namespace authorization rule, `RootManageSharedAccessKey`, also requires namespace deletion. These resources appear in the owning controller's reviewed deletion impacts. Retaining an intrinsic child blocks that controller's deletion. Resource-group, Key Vault and Container Apps environment cleanup remains unimplemented.
@@ -66,7 +67,8 @@ Service Bus autoforwarding dependencies resolve to a queue or topic in the same 
 - **Concurrent changes:** Native creation identifiers are rechecked before deletion. Reviewed service trees also verify generation, membership, locks and protections. A recreated resource or an unreviewed descendant requires a fresh scan and plan.
 - **App Service:** Deleting an app explicitly preserves its App Service plan. Select the plan separately when it should also be removed.
 - **Asynchronous operations:** Steward follows ARM operation-status headers and performs a fresh resource GET to confirm absence. Failed or canceled operations remain failures. Forced deletion and purge options are not enabled.
+- **Managed Grafana:** Workspace deletion requires native read/list/delete access to all three child collections. Child retention blocks workspace deletion. Steward checks native configuration and parent identity, deletes each child as a reviewed prerequisite, then confirms child and workspace absence. Linked data sources, AKS clusters and consumer private endpoints remain separate resources. SMTP passwords are excluded from inventory and logs. The API has no conditional deletion header, so configuration checks cannot prevent a simultaneous external write. See the native [workspace](https://learn.microsoft.com/en-us/rest/api/managed-grafana/grafana/delete?view=rest-managed-grafana-2025-08-01), [managed private endpoint](https://learn.microsoft.com/en-us/rest/api/managed-grafana/managed-private-endpoints/delete?view=rest-managed-grafana-2025-08-01) and [integration fabric](https://learn.microsoft.com/en-us/rest/api/managed-grafana/integration-fabrics/delete?view=rest-managed-grafana-2025-08-01) operations.
 
 Review the [cleanup selection and results](./cleanup.md). Database and registry deletion can remove their contained data. Azure permissions, retention settings, dependencies, and concurrent changes can still prevent an action. See Microsoft's [management locks](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources), [VM deletion settings](https://learn.microsoft.com/en-us/azure/virtual-machines/delete), and [asynchronous operation behavior](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
 
-The expanded coverage has retained native HTTP protocol tests and unchanged official response fixtures. Independent emulator and real-cloud validation of these additions remains outstanding.
+The expanded coverage has retained native HTTP protocol tests and unchanged official response fixtures. Grafana also replays Microsoft's recorded CLI deletion responses, including signed operation URLs and delayed completion; the earlier API version and synthetic final absence are documented in the evidence. This is not independent emulator or real-cloud validation by Steward.

@@ -26,6 +26,8 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	// These are direct prerequisites; only their own APIs remove each child.
+	grafanaType: {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
 	// The dedicated cluster's native namespace list contains external ARM IDs.
 	// Delete each namespace through its own reviewed lifecycle first.
 	eventHubClusterType: {eventHubNamespaceType},
@@ -182,6 +184,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := grafanaIncarnation(planned, live); err != nil {
+		return err
+	}
 	if recoveryType(planned.Identity.NativeType) && text(planned.Normalized["_recovery_configuration"]) != "" && text(planned.Normalized["_recovery_configuration"]) == recoveryConfiguration(live) {
 		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
 	}
@@ -541,6 +546,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case strings.EqualFold(parent.NativeType, grafanaType):
+		children, err = c.grafanaChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, eventHubClusterType):
 		children, err = c.eventHubClusterNamespaces(ctx, parent)
 	case strings.EqualFold(parent.NativeType, scaleSetType):

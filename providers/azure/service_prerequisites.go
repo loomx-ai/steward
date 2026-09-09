@@ -29,6 +29,8 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	// Native child DELETEs are available in the pinned Grafana REST API.
+	grafanaType:             {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
 	eventHubClusterType:     {eventHubNamespaceType},
 	serviceBusNamespaceType: {serviceBusMigrationType, serviceBusRecoveryType},
 	eventHubNamespaceType:   {eventHubRecoveryType},
@@ -68,6 +70,7 @@ func serviceParentConfiguration(kind string, raw map[string]any) string {
 		delete(object(safe["systemData"]), field)
 	}
 	fields := map[string][]string{
+		grafanaType:             {"privateEndpointConnections"},
 		serviceBusNamespaceType: {"updatedAt"},
 		eventHubNamespaceType:   {"updatedAt"},
 		hostGroupType:           {"hosts"},

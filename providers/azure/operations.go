@@ -56,7 +56,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	}
 	operationID := operationLocation(result.header)
 	if operationID != "" {
-		if err := c.validateURL(operationID); err != nil {
+		validate := c.validateURL
+		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.Dashboard.") && grafanaGlobalOperation(operationID) {
+			validate = func(endpoint string) error { return validateGrafanaGlobalOperation(endpoint, "") }
+		}
+		if err := validate(operationID); err != nil {
 			return contracts.InvocationResult{}, err
 		}
 	}

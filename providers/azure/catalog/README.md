@@ -26,7 +26,16 @@ network. The catalog records API contracts, not proof that credentials have
 permission, that a provider emulator supports every operation, or that live
 deletion has been verified.
 
-All 122 current resource rules discover through native product List operations.
+Grafana adds four versioned native rules and 12 operations. Its three child
+collections are independently deleted as reviewed workspace prerequisites.
+Configuration, creation, parent scope and final absence are checked through
+native product APIs. Microsoft CLI recordings additionally verify signed
+ProviderHub operation polling, persisted resource binding and log sanitization.
+The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
+uncorrected example inconsistencies, schema checks, replay transformations and
+the distinction between protocol, recorded and live-cloud verification.
+
+All 126 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 380 operations from
-70 root documents and 30 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 392 operations from
+71 root documents and 33 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.

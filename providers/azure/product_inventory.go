@@ -231,6 +231,9 @@ func productGeneration(raw map[string]any) string {
 	if len(extra) != 0 {
 		values = append(values, extra)
 	}
+	if kind := grafanaKind(raw); kind != "" {
+		values = append(values, grafanaConfiguration(kind, raw))
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }

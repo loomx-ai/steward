@@ -107,6 +107,12 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := serviceCreationIdentity(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := grafanaIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.grafanaParentPreflight(ctx, request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if a.kind.NativeType == eventHubNamespaceType {
 		planned, live := request.Asset.Normalized["clusterArmId"], object(res.data["properties"])["clusterArmId"]
 		if !messagingNamespaceValueValid(planned) || !messagingNamespaceValueValid(live) || ((text(planned) != "" || text(live) != "") && (!eventHubClusterReference(live, text(planned)) || !eventHubClusterReference(planned, text(live)))) {
@@ -274,7 +280,11 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 			return contracts.ActionResult{}, err
 		}
 	}
-	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: map[string]any{"polling": polling}, RetryAfter: retryAfter(res.header)}, nil
+	data := map[string]any{"polling": polling}
+	if isGrafanaType(a.kind.NativeType) && operation != "" {
+		data["grafana_operation_binding"] = a.grafanaOperationBinding(operation)
+	}
+	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: data, RetryAfter: retryAfter(res.header)}, nil
 }
 func operationError(response response) error {
 	data := response.data
@@ -320,11 +330,17 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
 		}
-		res, err := a.client.request(ctx, "GET", result.ProviderOperationID)
+		if isGrafanaType(a.kind.NativeType) && text(result.Data["grafana_operation_binding"]) != a.grafanaOperationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("Grafana polling receipt does not match its resource")
+		}
+		res, err := a.client.requestAt(ctx, "GET", result.ProviderOperationID, nil, nil, a.validateOperationURL)
 		if err != nil && !isNotFound(err) {
 			return contracts.WaitResult{}, err
 		}
 		if err == nil {
+			if err := a.grafanaOperationResponse(result.ProviderOperationID, res); err != nil {
+				return contracts.WaitResult{}, err
+			}
 			if err := operationError(res); err != nil {
 				return contracts.WaitResult{}, err
 			}
@@ -345,6 +361,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if isGrafanaType(a.kind.NativeType) && grafanaGlobalOperation(endpoint) {
+		return validateGrafanaGlobalOperation(endpoint, a.location)
+	}
 	if err := a.client.validateURL(endpoint); err != nil {
 		return err
 	}

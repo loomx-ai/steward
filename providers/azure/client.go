@@ -174,11 +174,23 @@ func (c *client) request(ctx context.Context, method, endpoint string) (response
 }
 
 func (c *client) requestBody(ctx context.Context, method, endpoint string, body []byte, headers map[string]string) (out response, failure error) {
-	if err := c.validateURL(endpoint); err != nil {
+	return c.requestAt(ctx, method, endpoint, body, headers, c.validateURL)
+}
+
+// Only native operation polling supplies its action-specific validator here.
+// Ordinary inventory and mutation requests stay subscription-bound.
+func (c *client) requestAt(ctx context.Context, method, endpoint string, body []byte, headers map[string]string, validate func(string) error) (out response, failure error) {
+	if err := validate(endpoint); err != nil {
 		return response{}, err
 	}
 	u, _ := url.Parse(endpoint)
-	requestLog := map[string]any{"method": method, "path": u.Path, "query": u.Query()}
+	query := u.Query()
+	if strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") {
+		// ProviderHub may return signed polling URLs. Keep them privately for
+		// resume, and exclude their signing material from API logs.
+		query = url.Values{"api-version": query["api-version"]}
+	}
+	requestLog := map[string]any{"method": method, "path": u.Path, "query": query}
 	if len(body) > 0 {
 		var value any
 		if json.Unmarshal(body, &value) != nil {

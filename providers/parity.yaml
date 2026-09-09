@@ -219,7 +219,17 @@ resources:
   azure:
     resources:
     - Microsoft.Dashboard/grafana
+    - Microsoft.Dashboard/grafana/managedPrivateEndpoints
+    - Microsoft.Dashboard/grafana/privateEndpointConnections
+    - Microsoft.Dashboard/grafana/integrationFabrics
   status: pending_verification
+  notes: Azure Grafana uses native product inventory and reviewed independent deletion of all three
+    ARM child collections before workspace deletion. Native configuration, parent identity, management
+    locks and final resource absence are checked. Versioned Swagger examples and Microsoft CLI
+    recorded DELETE/LRO responses are retained; signed ProviderHub polling is bound to its resource.
+    External data sources and consumer private endpoints remain dependencies. Grafana data-plane
+    configuration is not individually inventoried. Independent emulator and real-cloud acceptance
+    remain open.
 - alicloud: ACS::ARMS::TraceApp
   spec: providers/alicloud/specs/arms-trace-app.yaml
   class: observability.apm_application

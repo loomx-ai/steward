@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 122 类资源，其中 110 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 126 类资源，其中 114 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -46,6 +46,7 @@ Steward 识别 122 类资源，其中 110 类具有原生删除操作，执行�
 | Service Bus | 命名空间、队列、主题、订阅、规则、授权规则、灾难恢复别名、迁移配置、私有终结点连接 | 支持原生操作及经过审查的命名空间/实体级联；迁移清理先中止复制再删除；配对别名经审查后先解除配对再删除 |
 | Event Hubs | 专用集群、命名空间、事件中心、消费者组、授权规则、灾难恢复别名、架构组/应用组、私有终结点连接 | 集群清理先删除经审查的成员命名空间；支持命名空间/事件中心级联及配对别名的解配对流程 |
 | 运维与身份 | Log Analytics 工作区、用户分配的托管身份 | 支持 |
+| 托管 Grafana | 工作区、托管专用终结点、专用终结点连接、集成配置 | 先删除经过审查的子资源，再删除工作区；各资源也支持独立原生操作 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
@@ -66,7 +67,8 @@ Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的
 - **并发变更**：删除前重新核对原生创建标识；服务资源树还会核对版本、成员清单、锁与保护设置。资源被重建或出现未审查的子资源时，需要重新扫描和生成计划。
 - **App Service**：删除应用时显式保留 App Service Plan；需要删除计划时，应单独选择。
 - **异步操作**：Steward 跟踪 ARM 返回的操作状态，再重新读取资源确认其不存在。失败或取消的操作仍记为失败，不启用强制删除或永久清除选项。
+- **托管 Grafana**：删除工作区需要三类子资源的原生读取、列举和删除权限；保留子资源会阻止工作区删除。Steward 核对原生配置与父资源身份，先执行已审查的子资源删除，再核验子资源和工作区均不存在。连接的数据源、AKS 集群和用户侧私有终结点仍作为独立资源保留。SMTP 密码不进入盘点和日志。原生 API 没有条件删除请求头，配置检查无法防止同时发生的外部修改。参阅[工作区](https://learn.microsoft.com/en-us/rest/api/managed-grafana/grafana/delete?view=rest-managed-grafana-2025-08-01)、[托管专用终结点](https://learn.microsoft.com/en-us/rest/api/managed-grafana/managed-private-endpoints/delete?view=rest-managed-grafana-2025-08-01)和[集成配置](https://learn.microsoft.com/en-us/rest/api/managed-grafana/integration-fabrics/delete?view=rest-managed-grafana-2025-08-01)原生操作。
 
 执行前审查[清理选择与结果](./cleanup.md)。删除数据库或容器注册表可能删除其内部数据。Azure 权限、保留策略、依赖关系和并发变更仍可能阻止操作。参阅微软的[管理锁](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources)、[VM 删除设置](https://learn.microsoft.com/en-us/azure/virtual-machines/delete)和[异步操作说明](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations)。
 
-这些扩展能力已保留原生 HTTP 协议测试及未修改的官方响应样例；独立模拟器与真实云验证仍待完成。
+这些扩展能力已保留原生 HTTP 协议测试及未修改的官方响应样例。Grafana 还重放了微软 CLI 的删除录制响应，覆盖签名轮询地址和延迟完成；较早的录制 API 版本及补充的最终不存在响应均在证据文档中说明。这不代表 Steward 完成了独立模拟器或真实云验证。

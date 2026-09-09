@@ -729,6 +729,23 @@
         "WebApps_ListByResourceGroup",
         "WebApps_Update"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json",
+      "operations": [
+        "Grafana_Get",
+        "Grafana_List",
+        "Grafana_Delete",
+        "ManagedPrivateEndpoints_Get",
+        "ManagedPrivateEndpoints_List",
+        "ManagedPrivateEndpoints_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "PrivateEndpointConnections_Delete",
+        "IntegrationFabrics_Get",
+        "IntegrationFabrics_List",
+        "IntegrationFabrics_Delete"
+      ]
     }
   ],
   "resource_types": [
@@ -3014,6 +3031,78 @@
       ],
       "list_operations": [
         "Azure.Microsoft.EventHub.Clusters_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana",
+      "class": "observability.visualization",
+      "display_name": "Azure Managed Grafana",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "grafana",
+      "read_operations": [
+        "Azure.Microsoft.Dashboard.Grafana_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Dashboard.Grafana_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Dashboard.Grafana_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Grafana managed private endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "managedPrivateEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Dashboard.ManagedPrivateEndpoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Grafana private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Dashboard.PrivateEndpointConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Dashboard.PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Dashboard/grafana/integrationFabrics",
+      "class": "observability.integration",
+      "display_name": "Grafana integration fabric",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "integrationFabrics",
+      "read_operations": [
+        "Azure.Microsoft.Dashboard.IntegrationFabrics_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Dashboard.IntegrationFabrics_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Dashboard.IntegrationFabrics_List"
       ]
     }
   ]
