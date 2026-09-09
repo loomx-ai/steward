@@ -24,6 +24,8 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	dataformFolderType:                              {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
+	dataformTeamFolderType:                          {children: []string{dataformFolderType, dataformRepositoryType}, directChildren: []string{dataformFolderType, dataformRepositoryType}},
 	dataformRepositoryType:                          {children: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType, "dataform.googleapis.com/CompilationResult"}, directChildren: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType}, forceParameter: "force"},
 	"bigtableadmin.googleapis.com/Instance":         {children: []string{"bigtableadmin.googleapis.com/Cluster", "bigtableadmin.googleapis.com/Table"}},
 	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic"}},
@@ -54,6 +56,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if isDataformFolder(parent.NativeType) {
+		return c.dataformFolderChildren(ctx, parent, data)
+	}
 	rule, ok := serviceCascadeRules[parent.NativeType]
 	if !ok {
 		return nil, nil

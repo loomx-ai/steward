@@ -16,6 +16,7 @@ import (
 const inventorySource = "cloud-asset-inventory"
 const actionHook = "gcp.resource"
 const productInventorySource = "product-api"
+const dataformInventorySource = "dataform-visible"
 
 //go:generate go run ../../cmd/cataloggen -provider gcp -format google-discovery -source catalog/source/discovery.json -output catalog/generated/catalog.json
 //go:embed catalog/generated/catalog.json specs/*.yaml
@@ -108,7 +109,7 @@ func loadProviderData() (providerMetadata, error) {
 		if actionable != (len(kind.DeleteOperations) > 0) || (actionable && !slices.Contains(kind.DeleteOperations, deletion.Operation)) {
 			return result, fmt.Errorf("GCP resource %q delete binding differs from spec", kind.NativeType)
 		}
-		if definition.Discovery.Source == productInventorySource && (definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation)) {
+		if (definition.Discovery.Source == productInventorySource || definition.Discovery.Source == dataformInventorySource) && (definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation)) {
 			return result, fmt.Errorf("GCP resource %q list binding differs from spec", kind.NativeType)
 		}
 		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {

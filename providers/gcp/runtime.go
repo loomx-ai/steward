@@ -50,6 +50,9 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 	return []contracts.InventorySource{
 		{Name: inventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, NetworkClosure: true},
 		{Name: productInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
+		// Native folder searches are filtered by caller visibility. Losing access
+		// must not close a previously observed folder as if it had been deleted.
+		{Name: dataformInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true},
 	}
 }
 func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {

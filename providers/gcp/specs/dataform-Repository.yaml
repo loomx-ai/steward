@@ -75,6 +75,12 @@ relationships:
 - type: depends_on
   targetType: iam.googleapis.com/ServiceAccount
   targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: dataform.googleapis.com/Folder
+  targetIdPath: refs_dataform_googleapis_com_Folder
+- type: depends_on
+  targetType: dataform.googleapis.com/TeamFolder
+  targetIdPath: refs_dataform_googleapis_com_TeamFolder
 actions:
   delete:
     operation: dataform.projects.locations.repositories.delete

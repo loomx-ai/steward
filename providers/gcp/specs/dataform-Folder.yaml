@@ -1,0 +1,75 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/Folder
+  class: data.folder
+presentation:
+  displayNames:
+    en-US: Dataform folder
+    zh-CN: Dataform 文件夹
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: dataform-visible
+  list:
+    operation: dataform.projects.locations.queryUserRootContents
+    parameters:
+      location: scope.locationParent
+    itemsPath: entries
+    identityPath: folder.name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.folders.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  updateTime:
+    path: updateTime
+    type: string
+  creatorIamPrincipal:
+    path: creatorIamPrincipal
+    type: string
+  containingFolder:
+    path: containingFolder
+    type: string
+  teamFolderName:
+    path: teamFolderName
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataform.googleapis.com/Folder
+  targetIdPath: refs_dataform_googleapis_com_Folder
+- type: depends_on
+  targetType: dataform.googleapis.com/TeamFolder
+  targetIdPath: refs_dataform_googleapis_com_TeamFolder
+actions:
+  delete:
+    operation: dataform.projects.locations.folders.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataform.projects.locations.folders.get
+      itemsPath: $
+      identityPath: name

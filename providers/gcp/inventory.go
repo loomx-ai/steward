@@ -83,7 +83,7 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -95,6 +95,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Source == productInventorySource {
 		return r.listProduct(ctx, c, request, nil)
+	}
+	if request.Source == dataformInventorySource {
+		return r.listDataformFolders(ctx, c, request)
 	}
 	nativeType := ""
 	if request.ResourceKind != nil {
@@ -114,7 +117,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	for _, value := range array(data["assets"]) {
 		raw := object(value)
 		// A broad CAI scan indexes unknown kinds. Known kinds have a separate
-		// authoritative product shard, so stale CAI data cannot overwrite it.
+		// native source, so stale CAI data cannot overwrite its observations.
 		if request.Source == inventorySource && r.usesProductSource(text(raw["assetType"])) {
 			continue
 		}

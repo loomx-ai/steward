@@ -104958,6 +104958,105 @@
     {
       "document": {
         "methods": {
+          "dataform.projects.locations.folders.delete": {
+            "description": "Deletes a single Folder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}",
+            "httpMethod": "DELETE",
+            "id": "dataform.projects.locations.folders.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The Folder's name.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Empty"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.folders.get": {
+            "description": "Fetches a single Folder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.folders.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The Folder's name.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Folder"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.folders.queryFolderContents": {
+            "description": "Returns the contents of a given Folder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/folders/{foldersId}:queryFolderContents",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.folders.queryFolderContents",
+            "parameterOrder": [
+              "folder"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "folder": {
+                "description": "Required. Resource name of the Folder to list contents for. Format: projects/*/locations/*/folders/*",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "orderBy": {
+                "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: display_name (default), create_time, last_modified_time. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "pageSize": {
+                "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Page token received from a previous `QueryFolderContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+folder}:queryFolderContents",
+            "response": {
+              "$ref": "QueryFolderContentsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
           "dataform.projects.locations.list": {
             "description": "Lists information about the supported locations for this service. This method lists locations based on the resource scope provided in the ListLocationsRequest.name field: * **Global locations**: If `name` is empty, the method lists the public locations available to all projects. * **Project-specific locations**: If `name` follows the format `projects/{project}`, the method lists locations visible to that specific project. This includes public, private, or other project-specific locations enabled for the project. For gRPC and client library implementations, the resource name is passed as the `name` field. For direct service calls, the resource name is incorporated into the request path based on the specific service implementation and version.",
             "flatPath": "v1/projects/{projectsId}/locations",
@@ -105000,6 +105099,53 @@
             "path": "v1/{+name}/locations",
             "response": {
               "$ref": "ListLocationsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.queryUserRootContents": {
+            "description": "Returns the contents of a caller's root folder in a given location. The root folder contains all resources that are created by the user and not contained in any other folder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}:queryUserRootContents",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.queryUserRootContents",
+            "parameterOrder": [
+              "location"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "location": {
+                "description": "Required. Location of the user root folder to list contents for. Format: projects/*/locations/*",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "orderBy": {
+                "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: display_name (default), created_at, last_modified_at. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "pageSize": {
+                "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Page token received from a previous `QueryUserRootContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryUserRootFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+location}:queryUserRootContents",
+            "response": {
+              "$ref": "QueryUserRootContentsResponse"
             },
             "scopes": [
               "https://www.googleapis.com/auth/bigquery",
@@ -105587,6 +105733,152 @@
               "https://www.googleapis.com/auth/bigquery",
               "https://www.googleapis.com/auth/cloud-platform"
             ]
+          },
+          "dataform.projects.locations.teamFolders.delete": {
+            "description": "Deletes a single TeamFolder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}",
+            "httpMethod": "DELETE",
+            "id": "dataform.projects.locations.teamFolders.delete",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The TeamFolder's name.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "Empty"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.teamFolders.get": {
+            "description": "Fetches a single TeamFolder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.teamFolders.get",
+            "parameterOrder": [
+              "name"
+            ],
+            "parameters": {
+              "name": {
+                "description": "Required. The TeamFolder's name.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+name}",
+            "response": {
+              "$ref": "TeamFolder"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.teamFolders.queryContents": {
+            "description": "Returns the contents of a given TeamFolder.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/teamFolders/{teamFoldersId}:queryContents",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.teamFolders.queryContents",
+            "parameterOrder": [
+              "teamFolder"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "orderBy": {
+                "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: `display_name` (default), `create_time`, last_modified_time. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "pageSize": {
+                "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Page token received from a previous `QueryTeamFolderContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryTeamFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+                "location": "query",
+                "type": "string"
+              },
+              "teamFolder": {
+                "description": "Required. Resource name of the TeamFolder to list contents for. Format: `projects/*/locations/*/teamFolders/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+                "required": true,
+                "type": "string"
+              }
+            },
+            "path": "v1/{+teamFolder}:queryContents",
+            "response": {
+              "$ref": "QueryTeamFolderContentsResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
+          },
+          "dataform.projects.locations.teamFolders.search": {
+            "description": "Returns all TeamFolders in a given location that the caller has access to and match the provided filter.",
+            "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/teamFolders:search",
+            "httpMethod": "GET",
+            "id": "dataform.projects.locations.teamFolders.search",
+            "parameterOrder": [
+              "location"
+            ],
+            "parameters": {
+              "filter": {
+                "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "location": {
+                "description": "Required. Location in which to query TeamFolders. Format: `projects/*/locations/*`.",
+                "location": "path",
+                "pattern": "^projects/[^/]+/locations/[^/]+$",
+                "required": true,
+                "type": "string"
+              },
+              "orderBy": {
+                "description": "Optional. Field to additionally sort results by. Supported keywords: `display_name` (default), `create_time`, `last_modified_time`. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+                "location": "query",
+                "type": "string"
+              },
+              "pageSize": {
+                "description": "Optional. Maximum number of `TeamFolders` to return. The server may return fewer items than requested. If unspecified, the server will pick a default of `page_size` = 50.",
+                "format": "int32",
+                "location": "query",
+                "type": "integer"
+              },
+              "pageToken": {
+                "description": "Optional. Page token received from a previous `SearchTeamFolders` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `SearchTeamFolders`, with the exception of `page_size`, must match the call that provided the page token.",
+                "location": "query",
+                "type": "string"
+              }
+            },
+            "path": "v1/{+location}/teamFolders:search",
+            "response": {
+              "$ref": "SearchTeamFoldersResponse"
+            },
+            "scopes": [
+              "https://www.googleapis.com/auth/bigquery",
+              "https://www.googleapis.com/auth/cloud-platform"
+            ]
           }
         },
         "name": "dataform",
@@ -105773,6 +106065,67 @@
             "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
             "id": "Empty",
             "properties": {},
+            "type": "object"
+          },
+          "Folder": {
+            "description": "Represents a Dataform Folder. This is a resource that is used to organize Files and other Folders and provide hierarchical access controls.",
+            "id": "Folder",
+            "properties": {
+              "containingFolder": {
+                "description": "Optional. The containing Folder resource name. This should take the format: projects/{project}/locations/{location}/folders/{folder}, projects/{project}/locations/{location}/teamFolders/{teamFolder}, or just \"\" if this is a root Folder. This field can only be updated through MoveFolder.",
+                "type": "string"
+              },
+              "createTime": {
+                "description": "Output only. The timestamp of when the Folder was created.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              },
+              "creatorIamPrincipal": {
+                "description": "Output only. The IAM principal identifier of the creator of the Folder.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "displayName": {
+                "description": "Required. The Folder's user-friendly name.",
+                "type": "string"
+              },
+              "internalMetadata": {
+                "description": "Output only. All the metadata information that is used internally to serve the resource. For example: timestamps, flags, status fields, etc. The format of this field is a JSON string.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Identifier. The Folder's name.",
+                "type": "string"
+              },
+              "teamFolderName": {
+                "description": "Output only. The resource name of the TeamFolder that this Folder is associated with. This should take the format: projects/{project}/locations/{location}/teamFolders/{teamFolder}. If this is not set, the Folder is not associated with a TeamFolder and is a UserFolder.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "updateTime": {
+                "description": "Output only. The timestamp of when the Folder was last updated.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FolderContentsEntry": {
+            "description": "Represents a single content entry.",
+            "id": "FolderContentsEntry",
+            "properties": {
+              "folder": {
+                "$ref": "Folder",
+                "description": "A subfolder."
+              },
+              "repository": {
+                "$ref": "Repository",
+                "description": "A repository."
+              }
+            },
             "type": "object"
           },
           "GcsRepositorySnapshotDestination": {
@@ -106187,6 +106540,60 @@
             },
             "type": "object"
           },
+          "QueryFolderContentsResponse": {
+            "description": "`QueryFolderContents` response message.",
+            "id": "QueryFolderContentsResponse",
+            "properties": {
+              "entries": {
+                "description": "List of entries in the folder.",
+                "items": {
+                  "$ref": "FolderContentsEntry"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "QueryTeamFolderContentsResponse": {
+            "description": "`QueryTeamFolderContents` response message.",
+            "id": "QueryTeamFolderContentsResponse",
+            "properties": {
+              "entries": {
+                "description": "List of entries in the TeamFolder.",
+                "items": {
+                  "$ref": "TeamFolderContentsEntry"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "QueryUserRootContentsResponse": {
+            "description": "`QueryUserRootContents` response message.",
+            "id": "QueryUserRootContentsResponse",
+            "properties": {
+              "entries": {
+                "description": "List of entries in the folder.",
+                "items": {
+                  "$ref": "RootContentsEntry"
+                },
+                "type": "array"
+              },
+              "nextPageToken": {
+                "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
           "ReleaseConfig": {
             "description": "Represents a Dataform release configuration.",
             "id": "ReleaseConfig",
@@ -106306,6 +106713,21 @@
             },
             "type": "object"
           },
+          "RootContentsEntry": {
+            "description": "Represents a single content entry.",
+            "id": "RootContentsEntry",
+            "properties": {
+              "folder": {
+                "$ref": "Folder",
+                "description": "A subfolder."
+              },
+              "repository": {
+                "$ref": "Repository",
+                "description": "A repository."
+              }
+            },
+            "type": "object"
+          },
           "ScheduledExecutionRecord": {
             "description": "A record of an attempt to create a workflow invocation for this workflow config.",
             "id": "ScheduledExecutionRecord",
@@ -106344,6 +106766,24 @@
                 "format": "google-datetime",
                 "readOnly": true,
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SearchTeamFoldersResponse": {
+            "description": "`SearchTeamFolders` response message.",
+            "id": "SearchTeamFoldersResponse",
+            "properties": {
+              "nextPageToken": {
+                "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+                "type": "string"
+              },
+              "results": {
+                "description": "List of TeamFolders that match the search query.",
+                "items": {
+                  "$ref": "TeamFolderSearchResult"
+                },
+                "type": "array"
               }
             },
             "type": "object"
@@ -106405,6 +106845,69 @@
               "schema": {
                 "description": "Optional. The action's schema (BigQuery dataset ID), within `database`.",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "TeamFolder": {
+            "description": "Represents a Dataform TeamFolder. This is a resource that sits at the project level and is used to organize Repositories and Folders with hierarchical access controls. They provide a team context and stricter access controls.",
+            "id": "TeamFolder",
+            "properties": {
+              "createTime": {
+                "description": "Output only. The timestamp of when the TeamFolder was created.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              },
+              "creatorIamPrincipal": {
+                "description": "Output only. The IAM principal identifier of the creator of the TeamFolder.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "displayName": {
+                "description": "Required. The TeamFolder's user-friendly name.",
+                "type": "string"
+              },
+              "internalMetadata": {
+                "description": "Output only. All the metadata information that is used internally to serve the resource. For example: timestamps, flags, status fields, etc. The format of this field is a JSON string.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Identifier. The TeamFolder's name.",
+                "type": "string"
+              },
+              "updateTime": {
+                "description": "Output only. The timestamp of when the TeamFolder was last updated.",
+                "format": "google-datetime",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "TeamFolderContentsEntry": {
+            "description": "Represents a single content entry.",
+            "id": "TeamFolderContentsEntry",
+            "properties": {
+              "folder": {
+                "$ref": "Folder",
+                "description": "A subfolder."
+              },
+              "repository": {
+                "$ref": "Repository",
+                "description": "A repository."
+              }
+            },
+            "type": "object"
+          },
+          "TeamFolderSearchResult": {
+            "description": "Represents a single content entry.",
+            "id": "TeamFolderSearchResult",
+            "properties": {
+              "teamFolder": {
+                "$ref": "TeamFolder",
+                "description": "A TeamFolder resource that is in the project / location."
               }
             },
             "type": "object"
@@ -109628,6 +110131,46 @@
         ],
         "read_operations": [
           "dataform.projects.locations.repositories.compilationResults.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "data.folder",
+      "displayName": "Dataform folder",
+      "nativeType": "dataform.googleapis.com/Folder",
+      "rest": {
+        "collection": "folders",
+        "delete_operations": [
+          "dataform.projects.locations.folders.delete"
+        ],
+        "list_operations": [
+          "dataform.projects.locations.queryUserRootContents"
+        ],
+        "read_operations": [
+          "dataform.projects.locations.folders.get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "data.folder",
+      "displayName": "Dataform team folder",
+      "nativeType": "dataform.googleapis.com/TeamFolder",
+      "rest": {
+        "collection": "teamFolders",
+        "delete_operations": [
+          "dataform.projects.locations.teamFolders.delete"
+        ],
+        "list_operations": [
+          "dataform.projects.locations.teamFolders.search"
+        ],
+        "read_operations": [
+          "dataform.projects.locations.teamFolders.get"
         ]
       },
       "scopeKinds": [

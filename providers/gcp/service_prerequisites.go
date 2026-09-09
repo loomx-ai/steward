@@ -17,7 +17,14 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 		identity := prerequisite.Asset.Identity
 		id := identity.NativeID
 		kind, known := findType(identity.NativeType)
-		if !known || len(kind.DeleteOperations) == 0 || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderGCP || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, request.Asset.Identity.NativeID+"/") || !slices.Contains(serviceCascadeRules[a.kind.NativeType].directChildren, identity.NativeType) {
+		if !known || len(kind.DeleteOperations) == 0 || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderGCP || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !slices.Contains(serviceCascadeRules[a.kind.NativeType].directChildren, identity.NativeType) {
+			return groupDenied("invalid_service_prerequisite")
+		}
+		if isDataformFolder(a.kind.NativeType) {
+			if err := a.client.dataformFolderRelation(request.Asset.Identity, request.Asset.Normalized, identity.NativeType, id, prerequisite.Asset.Normalized); err != nil {
+				return err
+			}
+		} else if !strings.HasPrefix(id, request.Asset.Identity.NativeID+"/") {
 			return groupDenied("invalid_service_prerequisite")
 		}
 		seen[id], assetIDs[prerequisite.Asset.ID] = true, true

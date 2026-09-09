@@ -163,7 +163,7 @@ func TestProductIncompleteAndMalformedResponsesCannotComplete(t *testing.T) {
 
 func TestBroadCAIDoesNotOverwriteKnownProductKinds(t *testing.T) {
 	r := protocolRuntime(t, func(request *http.Request) (*http.Response, error) {
-		return apiResponse(request, 200, `{"readTime":"2026-09-08T10:00:00Z","assets":[{"name":"//compute.googleapis.com/projects/sample-project/global/networks/stale","assetType":"compute.googleapis.com/Network"},{"name":"//example.googleapis.com/projects/sample-project/things/unknown","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"unknown"}}}]}`), nil
+		return apiResponse(request, 200, `{"readTime":"2026-09-08T10:00:00Z","assets":[{"name":"//compute.googleapis.com/projects/sample-project/global/networks/stale","assetType":"compute.googleapis.com/Network"},{"name":"//dataform.googleapis.com/projects/sample-project/locations/us-central1/folders/stale","assetType":"dataform.googleapis.com/Folder"},{"name":"//dataform.googleapis.com/projects/sample-project/locations/us-central1/teamFolders/stale","assetType":"dataform.googleapis.com/TeamFolder"},{"name":"//example.googleapis.com/projects/sample-project/things/unknown","assetType":"example.googleapis.com/Thing","resource":{"data":{"name":"unknown"}}}]}`), nil
 	})
 	for _, source := range r.InventorySources() {
 		if source.Name == inventorySource && source.AuthoritativeDefault {

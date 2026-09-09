@@ -403,3 +403,23 @@ background evidence only, not acceptance evidence for this work.
   races, offline source checks, catalog regeneration and bilingual documentation
   checks pass. Dataform folder/team-folder trees, other service families and the
   independent emulator/application/real-cloud acceptance scope remain unfinished.
+
+- GCP now has 151 rules, 146 kinds with native deletion and 624 selected methods.
+  Dataform Folder and TeamFolder use their eight additional native methods for
+  regional visible-root discovery, recursive content queries, detail reads and
+  single-resource deletion. Physical sibling IDs are joined using native parent
+  backlinks and inherited team identity. Every nested folder/repository is an
+  independent prerequisite; repository descendants reuse cancellation and
+  reviewed compilation-result cleanup. Frozen proofs include the complete
+  ancestor chain, preventing a moved or recreated ancestor from authorizing
+  child writes or resumed cancellation. Native searches are permission-filtered:
+  the dedicated nonauthoritative source retains missing observations rather
+  than treating visibility loss as deletion. Synthetic wire scenarios cover
+  nested/shared roots, paging/cursor drift, cyclic or forged membership,
+  partial and failed reads, retention/protection, ordered deletion and restart.
+  A SQLite inventory-worker integration uses the real GCP adapter to confirm
+  that an empty successful native scan does not close hidden folders. Full Go
+  tests, vet, GCP/shared-contract race tests, 12 offline source tests,
+  deterministic generation and bilingual documentation checks pass. Independent
+  emulator/application/real-cloud acceptance and the remaining Azure/GCP
+  resource families and lifecycle gaps are still unfinished.

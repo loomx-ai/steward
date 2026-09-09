@@ -20,3 +20,21 @@ The fixture includes separate repositories in two regions, a running invocation,
 scheduled release/workflow configurations, and references to existing Git, Secret
 Manager, service-account and KMS resources. Tests preserve these external resources
 and BigQuery outputs while cleaning only the selected repository tree.
+
+`dataform_folders_test.go` adds a synthetic native folder server around this
+fixture: two regions, personal and shared roots, a team folder, nested folders
+and their repository. Search results and native content memberships are separate
+from the implementation's catalog and lifecycle rules. Tests verify complete
+paging, cursor scope/configuration binding, real parent backlinks, the complete
+ancestor chain, ordered independent child deletion, cancellation recovery,
+retention/protection blocks, partial/error replies, moves and recreation. The
+SQLite inventory-worker test also checks that a successful empty search after
+visibility loss does not mark an earlier folder observation deleted or closed.
+
+Folder contracts:
+
+- [Team-folder search](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.teamFolders/search) only returns folders accessible to the caller.
+- [User-root contents](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations/queryUserRootContents) and [folder contents](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.folders/queryFolderContents) use a Folder/Repository entry union with native page tokens.
+- [Team-folder contents](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.teamFolders/queryContents) uses the `dataform.folders.queryContents` permission.
+- [Single folder deletion](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.folders/delete) and [team-folder deletion](https://docs.cloud.google.com/dataform/reference/rest/v1/projects.locations.teamFolders/delete) take only a resource name and return an empty JSON object. The runtime verifies reviewed children absent before these requests.
+- [Code asset folders](https://docs.cloud.google.com/dataform/docs/organize-code-assets) organize single-file assets with hierarchical access controls.

@@ -37,7 +37,7 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 149 explicit resource rules and 616 selected methods
+The current catalog has 151 explicit resource rules and 624 selected methods
 from 45 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
@@ -76,6 +76,25 @@ requires native absence; cancellation does not roll back completed BigQuery work
 The repository's external Git remote, Secret Manager values and BigQuery outputs
 are not deleted by this lifecycle. Native contracts and synthetic wire-fixture
 provenance are linked in [the Dataform fixture notes](../fixtures/dataform/README.md).
+
+Dataform Folder and TeamFolder discovery combines regional team-folder searches,
+user-root content queries and recursive native content queries. These organize
+BigQuery single-file code assets; the virtual user root is not a resource to
+delete. Search is filtered by caller access, so the `dataform-visible` source
+does not claim authoritative project coverage or close missing observations.
+Permission loss can hide a still-existing folder even when the search succeeds.
+The inventory worker retains those observations until absence is established.
+
+Folder and repository IDs are physical siblings under a location. Native
+`containingFolder` and inherited `teamFolderName` establish their actual tree;
+configuration proofs bind the complete ancestor chain, including for repository
+child actions and cancellation recovery. Each member is planned as a separate
+prerequisite; its GET must return 404 before the folder's single-resource DELETE.
+Two content passes and detail reads reject moved, recreated, duplicate, cyclic,
+unreviewed or unreadable members. Folder-tree cleanup reuses the repository and
+workflow cancellation lifecycle. The API exposes no atomic condition spanning
+these separate native reads and writes, so concurrent changes after the final
+check remain a native API limitation.
 
 Cloud DNS record identity includes both the fully qualified name and the record
 type, including wildcard names. BigQuery binds scalar project/dataset/table IDs

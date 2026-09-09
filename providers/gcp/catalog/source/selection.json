@@ -784,7 +784,11 @@
     {
       "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1",
       "methods": [
+        "dataform.projects.locations.folders.delete",
+        "dataform.projects.locations.folders.get",
+        "dataform.projects.locations.folders.queryFolderContents",
         "dataform.projects.locations.list",
+        "dataform.projects.locations.queryUserRootContents",
         "dataform.projects.locations.repositories.compilationResults.get",
         "dataform.projects.locations.repositories.compilationResults.list",
         "dataform.projects.locations.repositories.delete",
@@ -802,7 +806,11 @@
         "dataform.projects.locations.repositories.workflowInvocations.list",
         "dataform.projects.locations.repositories.workspaces.delete",
         "dataform.projects.locations.repositories.workspaces.get",
-        "dataform.projects.locations.repositories.workspaces.list"
+        "dataform.projects.locations.repositories.workspaces.list",
+        "dataform.projects.locations.teamFolders.delete",
+        "dataform.projects.locations.teamFolders.get",
+        "dataform.projects.locations.teamFolders.queryContents",
+        "dataform.projects.locations.teamFolders.search"
       ]
     }
   ],
@@ -3537,6 +3545,42 @@
       "delete_operations": [],
       "list_operations": [
         "dataform.projects.locations.repositories.compilationResults.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/Folder",
+      "collection": "folders",
+      "class": "data.folder",
+      "display_name": "Dataform folder",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.folders.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.folders.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.queryUserRootContents"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/TeamFolder",
+      "collection": "teamFolders",
+      "class": "data.folder",
+      "display_name": "Dataform team folder",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.teamFolders.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.teamFolders.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.teamFolders.search"
       ]
     }
   ],

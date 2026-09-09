@@ -27,12 +27,13 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	API                 spec.ProductAPISpec `json:"api"`
-	Parameters          map[string]any      `json:"parameters"`
-	ParentType          string              `json:"parent_type,omitempty"`
-	ParentID            string              `json:"parent_id,omitempty"`
-	ParentUID           string              `json:"parent_uid,omitempty"`
-	ParentConfiguration string              `json:"parent_configuration,omitempty"`
+	API                  spec.ProductAPISpec `json:"api"`
+	Parameters           map[string]any      `json:"parameters"`
+	ParentType           string              `json:"parent_type,omitempty"`
+	ParentID             string              `json:"parent_id,omitempty"`
+	ParentUID            string              `json:"parent_uid,omitempty"`
+	ParentConfiguration  string              `json:"parent_configuration,omitempty"`
+	ParentContainerChain string              `json:"parent_container_chain,omitempty"`
 }
 type productRecord struct {
 	Data     map[string]any
@@ -48,6 +49,9 @@ func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, b
 	return spec.ResourceKindSpec{}, false
 }
 func (r *Runtime) usesProductSource(nativeType string) bool {
+	if isDataformFolder(nativeType) {
+		return true
+	}
 	_, ok := r.productDefinition(nativeType)
 	return ok
 }
@@ -190,6 +194,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			continue
 		}
 		item.Normalized["_inventory_source"] = productInventorySource
+		if err := c.enrichDataformContainer(ctx, &item, record.Data); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 		if target.ParentID != "" {
 			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
 			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
@@ -198,6 +205,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 			if isDataform(nativeType) {
 				item.Normalized["_dataform_parent_configuration"] = target.ParentConfiguration
+				item.Normalized[dataformContainerChain] = target.ParentContainerChain
 			}
 		}
 		batch.Items = append(batch.Items, item)
@@ -410,7 +418,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 						break
 					}
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: text(parent.Normalized[dataformProof])})
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: text(parent.Normalized[dataformProof]), ParentContainerChain: text(parent.Normalized[dataformContainerChain])})
 			}
 		}
 	}

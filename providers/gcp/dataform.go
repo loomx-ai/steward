@@ -27,6 +27,8 @@ func isDataform(kind string) bool { return strings.HasPrefix(kind, "dataform.goo
 // native comparison available, together with the repository creation time.
 func dataformConfiguration(kind string, raw map[string]any) string {
 	fields := map[string][]string{
+		"Folder":             {"createTime", "displayName", "creatorIamPrincipal", "containingFolder", "teamFolderName"},
+		"TeamFolder":         {"createTime", "displayName", "creatorIamPrincipal"},
 		"Repository":         {"name", "createTime", "displayName", "labels", "containingFolder", "teamFolderName", "gitRemoteSettings", "npmrcEnvironmentVariablesSecretVersion", "kmsKeyName", "workspaceCompilationOverrides", "serviceAccount"},
 		"Workspace":          {"name", "createTime", "disableMoves", "privateResourceMetadata"},
 		"ReleaseConfig":      {"name", "gitCommitish", "disabled", "cronSchedule", "codeCompilationConfig", "timeZone"},
@@ -92,6 +94,13 @@ func (c *client) verifyDataformParent(ctx context.Context, target productTarget)
 	if c.canonicalName("//dataform.googleapis.com/"+text(live["name"])) != target.ParentID || dataformConfiguration(target.ParentType, live) != target.ParentConfiguration {
 		return groupDenied("dataform_parent_changed")
 	}
+	proofs, err := c.dataformContainers(ctx, target.ParentType, target.ParentID, live)
+	if err != nil {
+		return err
+	}
+	if dataformContainersHash(proofs) != target.ParentContainerChain {
+		return groupDenied("dataform_container_chain_changed")
+	}
 	return nil
 }
 
@@ -109,10 +118,14 @@ func (a *action) dataformPreflight(ctx context.Context, request contracts.Action
 	if err := dataformSameResource(a.kind.NativeType, request.Asset.Normalized, live); err != nil {
 		return err
 	}
-	if a.kind.NativeType != dataformRepositoryType {
+	if a.kind.NativeType == dataformRepositoryType || a.kind.NativeType == dataformFolderType {
+		if err := a.verifyDataformContainer(ctx, request, live); err != nil {
+			return err
+		}
+	} else if a.kind.NativeType != dataformTeamFolderType {
 		parent := request.Asset.Identity.NativeID[:strings.LastIndex(request.Asset.Identity.NativeID, "/")]
 		parent = parent[:strings.LastIndex(parent, "/")]
-		if err := a.client.verifyDataformParent(ctx, productTarget{ParentType: dataformRepositoryType, ParentID: parent, ParentConfiguration: text(request.Asset.Normalized["_dataform_parent_configuration"])}); err != nil {
+		if err := a.client.verifyDataformParent(ctx, productTarget{ParentType: dataformRepositoryType, ParentID: parent, ParentConfiguration: text(request.Asset.Normalized["_dataform_parent_configuration"]), ParentContainerChain: text(request.Asset.Normalized[dataformContainerChain])}); err != nil {
 			return contracts.DependencyReadError(err)
 		}
 	}

@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "cb1d28176129b2078db1634e00a4ccf4c0776c3c2ebf93eb12ea7f21f7ae58cb",
+    "checksum": "c17f8fa3eb3ca8d606bc321ac955a9307e7fc4bc5684a86569ffa2981176797d",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ef12b45323c6539570fb1ef6d1c56af4d3784da5ed828eb0beea75655d02396d",
+  "content_checksum": "039c7c8e50260a75c7fe102bfbf56441e4391f612de271ed0412f9d69c4d98c4",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -72485,6 +72485,207 @@
       "source_uri": "https://container.googleapis.com/$discovery/rest?version=v1"
     },
     {
+      "id": "dataform.projects.locations.folders.delete",
+      "name": "delete",
+      "service": "dataform",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The Folder's name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.folders.get",
+      "name": "get",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The Folder's name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a Dataform Folder. This is a resource that is used to organize Files and other Folders and provide hierarchical access controls.",
+        "id": "Folder",
+        "properties": {
+          "containingFolder": {
+            "description": "Optional. The containing Folder resource name. This should take the format: projects/{project}/locations/{location}/folders/{folder}, projects/{project}/locations/{location}/teamFolders/{teamFolder}, or just \"\" if this is a root Folder. This field can only be updated through MoveFolder.",
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. The timestamp of when the Folder was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "creatorIamPrincipal": {
+            "description": "Output only. The IAM principal identifier of the creator of the Folder.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Required. The Folder's user-friendly name.",
+            "type": "string"
+          },
+          "internalMetadata": {
+            "description": "Output only. All the metadata information that is used internally to serve the resource. For example: timestamps, flags, status fields, etc. The format of this field is a JSON string.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. The Folder's name.",
+            "type": "string"
+          },
+          "teamFolderName": {
+            "description": "Output only. The resource name of the TeamFolder that this Folder is associated with. This should take the format: projects/{project}/locations/{location}/teamFolders/{teamFolder}. If this is not set, the Folder is not associated with a TeamFolder and is a UserFolder.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The timestamp of when the Folder was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.folders.queryFolderContents",
+      "name": "queryFolderContents",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{folder}:queryFolderContents",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "folder": {
+            "description": "Required. Resource name of the Folder to list contents for. Format: projects/*/locations/*/folders/*",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/folders/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: display_name (default), create_time, last_modified_time. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Page token received from a previous `QueryFolderContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "`QueryFolderContents` response message.",
+        "id": "QueryFolderContentsResponse",
+        "properties": {
+          "entries": {
+            "description": "List of entries in the folder.",
+            "items": {
+              "$ref": "FolderContentsEntry"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "entries"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{folder}:queryFolderContents",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "folder"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "dataform.projects.locations.list",
       "name": "list",
       "service": "dataform",
@@ -72558,6 +72759,85 @@
         "endpoint": "https://dataform.googleapis.com",
         "raw_path_parameters": [
           "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.queryUserRootContents",
+      "name": "queryUserRootContents",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{location}:queryUserRootContents",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "Required. Location of the user root folder to list contents for. Format: projects/*/locations/*",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: display_name (default), created_at, last_modified_at. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Page token received from a previous `QueryUserRootContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryUserRootFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "`QueryUserRootContents` response message.",
+        "id": "QueryUserRootContentsResponse",
+        "properties": {
+          "entries": {
+            "description": "List of entries in the folder.",
+            "items": {
+              "$ref": "RootContentsEntry"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "entries"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{location}:queryUserRootContents",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "location"
         ],
         "body_type": "json",
         "parameter_position": "query"
@@ -73849,6 +74129,277 @@
         "endpoint": "https://dataform.googleapis.com",
         "raw_path_parameters": [
           "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.teamFolders.delete",
+      "name": "delete",
+      "service": "dataform",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The TeamFolder's name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }",
+        "id": "Empty",
+        "properties": {},
+        "type": "object"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.teamFolders.get",
+      "name": "get",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The TeamFolder's name.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a Dataform TeamFolder. This is a resource that sits at the project level and is used to organize Repositories and Folders with hierarchical access controls. They provide a team context and stricter access controls.",
+        "id": "TeamFolder",
+        "properties": {
+          "createTime": {
+            "description": "Output only. The timestamp of when the TeamFolder was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "creatorIamPrincipal": {
+            "description": "Output only. The IAM principal identifier of the creator of the TeamFolder.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "displayName": {
+            "description": "Required. The TeamFolder's user-friendly name.",
+            "type": "string"
+          },
+          "internalMetadata": {
+            "description": "Output only. All the metadata information that is used internally to serve the resource. For example: timestamps, flags, status fields, etc. The format of this field is a JSON string.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. The TeamFolder's name.",
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The timestamp of when the TeamFolder was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.teamFolders.queryContents",
+      "name": "queryContents",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{teamFolder}:queryContents",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to additionally sort results by. Will order Folders before Repositories, and then by `order_by` in ascending order. Supported keywords: `display_name` (default), `create_time`, last_modified_time. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of paths to return. The server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Page token received from a previous `QueryTeamFolderContents` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `QueryTeamFolderContents`, with the exception of `page_size`, must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          },
+          "teamFolder": {
+            "description": "Required. Resource name of the TeamFolder to list contents for. Format: `projects/*/locations/*/teamFolders/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/teamFolders/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "`QueryTeamFolderContents` response message.",
+        "id": "QueryTeamFolderContentsResponse",
+        "properties": {
+          "entries": {
+            "description": "List of entries in the TeamFolder.",
+            "items": {
+              "$ref": "TeamFolderContentsEntry"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "entries"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{teamFolder}:queryContents",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "teamFolder"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "dataform.projects.locations.teamFolders.search",
+      "name": "search",
+      "service": "dataform",
+      "method": "GET",
+      "path": "/v1/{location}/teamFolders:search",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Optional filtering for the returned list. Filtering is currently only supported on the `display_name` field. Example: * `filter=\"display_name=\"MyFolder\"\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "Required. Location in which to query TeamFolders. Format: `projects/*/locations/*`.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to additionally sort results by. Supported keywords: `display_name` (default), `create_time`, `last_modified_time`. Examples: * `orderBy=\"display_name\"` * `orderBy=\"display_name desc\"`",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. Maximum number of `TeamFolders` to return. The server may return fewer items than requested. If unspecified, the server will pick a default of `page_size` = 50.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Page token received from a previous `SearchTeamFolders` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `SearchTeamFolders`, with the exception of `page_size`, must match the call that provided the page token.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "`SearchTeamFolders` response message.",
+        "id": "SearchTeamFoldersResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+            "type": "string"
+          },
+          "results": {
+            "description": "List of TeamFolders that match the search query.",
+            "items": {
+              "$ref": "TeamFolderSearchResult"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "results"
+      },
+      "call": {
+        "product": "dataform",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{location}/teamFolders:search",
+        "endpoint": "https://dataform.googleapis.com",
+        "raw_path_parameters": [
+          "location"
         ],
         "body_type": "json",
         "parameter_position": "query"
@@ -96504,6 +97055,26 @@
       }
     },
     {
+      "native_type": "dataform.googleapis.com/Folder",
+      "class": "data.folder",
+      "display_name": "Dataform folder",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "folders",
+        "read_operations": [
+          "dataform.projects.locations.folders.get"
+        ],
+        "delete_operations": [
+          "dataform.projects.locations.folders.delete"
+        ],
+        "list_operations": [
+          "dataform.projects.locations.queryUserRootContents"
+        ]
+      }
+    },
+    {
       "native_type": "dataform.googleapis.com/ReleaseConfig",
       "class": "data.configuration",
       "display_name": "Dataform release configuration",
@@ -96540,6 +97111,26 @@
         ],
         "list_operations": [
           "dataform.projects.locations.repositories.list"
+        ]
+      }
+    },
+    {
+      "native_type": "dataform.googleapis.com/TeamFolder",
+      "class": "data.folder",
+      "display_name": "Dataform team folder",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "teamFolders",
+        "read_operations": [
+          "dataform.projects.locations.teamFolders.get"
+        ],
+        "delete_operations": [
+          "dataform.projects.locations.teamFolders.delete"
+        ],
+        "list_operations": [
+          "dataform.projects.locations.teamFolders.search"
         ]
       }
     },
