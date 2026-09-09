@@ -13,7 +13,7 @@ import (
 )
 
 func (a *action) infraActionIdentity(request contracts.ActionRequest) ([]infraMember, string, error) {
-	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || a.identity.Partition != "google-cloud" || text(request.Asset.Normalized[infraProof]) == "" || (a.kind.NativeType != infraDeployment && a.kind.NativeType != infraPreview) {
+	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || text(request.Asset.Normalized[infraProof]) == "" || (a.kind.NativeType != infraDeployment && a.kind.NativeType != infraPreview) {
 		return nil, "", groupDenied("infra_action_changed")
 	}
 	if err := a.client.infraIdentity(a.kind.NativeType, a.identity.NativeID, request.Asset.Normalized); err != nil {

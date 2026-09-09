@@ -14,6 +14,9 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
+// Connections use gcp; accept the historical google-cloud identity spelling too.
+func gcpPartition(partition string) bool { return partition == "gcp" || partition == "google-cloud" }
+
 type action struct {
 	identity         asset.Identity
 	client           *client
@@ -24,7 +27,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -59,6 +62,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
+	}
+	if isFirewall(a.kind.NativeType) {
+		return a.firewallPreflight(ctx, request)
 	}
 	if a.kind.NativeType == infraGroup {
 		return a.infraGroupPreflight(ctx, request)
@@ -233,6 +239,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if isFirewall(a.kind.NativeType) {
+		return a.executeFirewall(ctx, request)
 	}
 	if a.kind.NativeType == infraGroup {
 		return a.executeInfraGroup(ctx, request, text(check.Evidence["infra_stage"]))
@@ -428,6 +437,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if isFirewall(a.kind.NativeType) {
+		return a.waitFirewall(ctx, request, result)
+	}
 	if a.kind.NativeType == infraGroup {
 		return a.waitInfraGroup(ctx, request, result)
 	}
@@ -564,6 +576,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if isFirewall(a.kind.NativeType) {
+		return a.firewallReadback(ctx, request)
+	}
 	if a.kind.NativeType == infraGroup {
 		return a.infraGroupReadback(ctx, request)
 	}

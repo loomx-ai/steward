@@ -15,6 +15,8 @@ Each GCP connection accesses one project with a service account JSON key. The se
 
 Steward validates project access and the inventory permission. A successful connection check does not prove that every cleanup API is allowed. Keys are encrypted using the deployment's credential-encryption key. Use **Replace credential** when rotating a key; the target project must remain the same.
 
+To manage hierarchical firewall policies, also enter the optional **Firewall scope**, such as `organizations/123` or `folders/456`. This explicitly adds that organization or folder and its descendant folders to the connection's firewall-policy scope. Project access alone does not enable it. The service account needs Resource Manager reads for this tree and native firewall-policy permissions. Include the global scope when scanning. Removing or changing this setting does not mark previously observed policies as deleted; their old cleanup plans must be reviewed again.
+
 Steward accepts service account JSON keys for the standard Google Cloud endpoints. It does not use ambient `gcloud` credentials or credentials from the machine's metadata service. See Google's [service account key guidance](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys) and [Cloud Asset Inventory list permissions](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list).
 
 ## Run your first scan
@@ -34,6 +36,7 @@ Steward lists the resources below through their native product APIs. Cloud Asset
 | --- | --- | --- |
 | Compute Engine | VM instances; zonal and regional persistent disks; snapshots; images; instance templates; managed instance groups, instance groups and autoscalers | Supported |
 | VPC | Networks, subnets, firewall rules, routes, Cloud Routers | Supported |
+| Firewall policies | Hierarchical policies within the configured firewall scope; global and regional network policies; native associations | Remove reviewed associations before deleting a policy; associations can also be removed independently |
 | Load balancing and addresses | Regional and global IP addresses and forwarding rules; regional/global backend services; health checks, including legacy HTTP(S) checks; target pools; network endpoint groups; URL maps; HTTP/HTTPS proxies; SSL certificates | Supported |
 | Cloud Storage | Buckets | Empty buckets only |
 | Pub/Sub | Topics and subscriptions | Supported |
@@ -64,6 +67,7 @@ A **regional VPC cleanup group** selects resources in that region and retains th
 
 ## Deletion protections
 
+- **Firewall policies:** Cleanup first removes each reviewed association using its native API, then deletes the policy and its rules. Removing an association changes firewall enforcement for its target; the network, organization or folder remains. The target must stay within the configured scope, and changed policies, associations or target identities block the plan. Hierarchical cleanup also checks the target's association list. The APIs cannot atomically bind these reads to deletion, and same-name associations have no creation token. Avoid concurrent policy changes during cleanup. See Google's [hierarchical policy guide](https://docs.cloud.google.com/firewall/docs/manage-hierarchical-firewall-policies) and [global network policy guide](https://docs.cloud.google.com/firewall/docs/use-network-firewall-policies).
 - **VM disks and managed groups:** Native disk/IP deletion policy appears in the impact plan. Supported retention is applied through native operations and verified before deleting the controller. Changed attachments or resource identities block execution.
 - **Deletion protection:** VM deletion protection is removed as an explicit native preparation phase during authorized cleanup. Protected labels and Cloud SQL deletion protection still block deletion.
 - **Storage buckets:** Nonempty buckets are rejected. Steward does not empty objects or object versions to make a bucket deletable.

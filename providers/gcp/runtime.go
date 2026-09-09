@@ -44,6 +44,7 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 	return []contracts.CredentialSchema{{Type: asset.CredentialGCPServiceAccount, LabelKey: "credentials.gcpServiceAccount", Fields: []contracts.CredentialField{
 		{Key: "project_id", LabelKey: "credentials.projectId", InputType: "text", Required: true},
 		{Key: "service_account_json", LabelKey: "credentials.serviceAccountJson", InputType: "textarea", Required: true, Secret: true},
+		{Key: "firewall_policy_parent", LabelKey: "credentials.firewallPolicyParent", InputType: "text"},
 	}}}
 }
 func (r *Runtime) InventorySources() []contracts.InventorySource {
@@ -53,6 +54,9 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		// Native folder searches are filtered by caller visibility. Losing access
 		// must not close a previously observed folder as if it had been deleted.
 		{Name: dataformInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true},
+		// An optional hierarchy scope can change independently of the project.
+		// Losing that scope must not close previously observed policies or links.
+		{Name: firewallInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
 	}
 }
 func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {
@@ -68,6 +72,11 @@ func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {
 		return nil, fmt.Errorf("Google Cloud returned a different project")
 	}
 	c.project = text(data["projectId"])
+	if c.firewallParent != "" {
+		if _, err := c.firewallContainer(ctx, c.firewallParent); err != nil {
+			return nil, err
+		}
+	}
 	return data, nil
 }
 func (r *Runtime) ValidateConnection(ctx context.Context, credential contracts.Credential) (contracts.ConnectionIdentity, error) {

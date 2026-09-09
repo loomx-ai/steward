@@ -26,6 +26,8 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	firewallPolicyType:                              {children: []string{firewallAssociationType}, directChildren: []string{firewallAssociationType}},
+	networkFirewallPolicyType:                       {children: []string{networkFirewallAssociationType}, directChildren: []string{networkFirewallAssociationType}},
 	fusionInstanceType:                              {children: []string{fusionDNSType, fusionNamespaceType}, forceParameter: "force"},
 	tpuQueueType:                                    {children: []string{tpuNodeType}, directChildren: []string{tpuNodeType}},
 	tpuNodeType:                                     {children: []string{"compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk"}},
@@ -71,6 +73,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if isFirewallPolicy(parent.NativeType) {
+		return c.firewallChildren(ctx, parent, data)
+	}
 	if isFusion(parent.NativeType) {
 		return c.fusionChildren(ctx, parent, data)
 	}
@@ -278,6 +283,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if target == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
+			}
+			if isFirewall(child.kind) {
+				if _, err := s.client.firewallSaved(*target); err != nil {
+					return result, err
+				}
+				if err := firewallSame(target.Normalized, child.data); err != nil {
+					return result, err
+				}
 			}
 			if err := serviceIncarnation(target.Normalized, child.data); err != nil {
 				return result, err

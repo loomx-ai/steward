@@ -730,3 +730,53 @@ background evidence only, not acceptance evidence for this work.
   behavior, independent environment/end-to-end acceptance and publication remain
   open. The parity rows remain pending; resource-rule counts do not establish
   complete behavioral parity.
+
+- GCP now has 190 explicit rules, 173 kinds with native deletion and 761 selected
+  methods from 54 Discovery documents and one pinned Cloud SDK archive. Three
+  rules add hierarchical FirewallPolicy and native hierarchical/network policy
+  associations. Fourteen new methods cover Compute and Resource Manager. The
+  selected fragments and 35 retained schemas match their official sources; all
+  earlier 747 generated operations and the other 53 source documents are unchanged.
+- Hierarchical policy inventory requires an explicit `firewall_policy_parent`
+  organization/folder scope, includes its descendant folders, and verifies live
+  ownership and target ancestry. Project access does not imply this authority.
+  Global scans use a non-authoritative hierarchy source so changed configuration
+  or lost visibility cannot close prior observations. Global/regional network
+  policies retain their native project source. Complete lists, detail reads,
+  target identities, membership and configuration bind cursor/review snapshots.
+- The actual solver creates one native removal prerequisite per association,
+  followed by policy DELETE. Independent association removal is also supported.
+  Rules and unreviewed association changes block old plans; networks, organizations,
+  folders and unrelated policies remain. Native GETs and hierarchical target-side
+  association lists verify absence. Persisted native operation phases bind policy
+  numeric identity, target, request UUID, actual operation type and reviewed
+  configuration through JSON restart, delayed completion and expired LROs.
+- Twelve protocol/schema/integration test functions cover all three policy scopes,
+  native failures, changed membership/ownership, malformed responses, altered plans,
+  retention, operation recovery and independent absence. The actual registry,
+  inventory Creator, worker and SQLite test exercises six shards and nine assets,
+  preserves observations after denied reads/scope removal, and solves an executable
+  persisted plan. This exposed and fixed common inventory projection overwriting
+  native names and structured configuration with display metadata. Regressions
+  also verify validated `gcp` connection partitions and persisted MetricsScope,
+  Deployment, Preview and DeploymentGroup actions.
+- Full Go tests, GCP/inventory/planner/cleanup/contracts/spec/runtime race tests,
+  vet, 12 offline source/release tests, Web contract and 663 component tests,
+  bilingual documentation checks and deterministic catalog generation pass.
+  Google's unmodified pinned Config Connector mock independently passed native
+  unassociated hierarchical policy creation, GET/DELETE, global organization LRO,
+  serialized restart and final GET absence. The run forwarded 14 native calls,
+  with two explicit GET-wrapped list shims and 16 Resource Manager fixture reads.
+  The server was stopped and its temporary checkout/binary removed.
+- The [firewall-policy evidence](providers/gcp/fixtures/firewall-policy/README.md)
+  retains contracts, permissions, source hashes, harness and verification limits.
+  Upstream lacks association and global/regional network-policy handlers; those
+  workflows have protocol coverage, without independent emulator or real-cloud
+  acceptance. Native writes have no atomic fingerprint condition; identical
+  same-name associations have no creation token. Management-plane absence does
+  not prove packet-processing convergence. Cloud NGFW remains a functional mapping
+  to Alibaba network ACLs, with different packet-filtering behavior.
+- Two mapped GCP kinds and 49 mapped Azure kinds still lack specifications.
+  Composed preparations, remaining lifecycle behavior, independent environment
+  and end-to-end acceptance, and publication remain open. The parity rows remain
+  pending; rule counts alone do not establish complete behavioral parity.

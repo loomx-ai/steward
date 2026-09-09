@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 179 explicit resource rules and 725 selected methods
-from 53 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 190 explicit resource rules and 761 selected methods
+from 54 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -48,6 +48,16 @@ Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
 Storage Transfer, Dataform, Batch, Dataproc, Discovery Engine, Cloud TPU and Data Fusion. Registration and wire tests do not close the full parity matrix.
+
+[Firewall-policy evidence](../fixtures/firewall-policy/README.md) covers explicitly
+scoped organization/folder policies, global/regional network policies and native
+association prerequisites. Complete policy, membership and owner-tree reads bind
+inventory and reviewed cleanup. Associations use native GET/removeAssociation
+methods; their composite inventory names do not invent REST collection endpoints.
+Persisted native operations and final readback validate policy incarnation and
+target ownership after restart. The pinned Google mock independently verifies
+unassociated hierarchical policy deletion; association and network-policy cases
+use protocol fixtures. These APIs have no atomic configuration condition.
 
 [Metrics-scope evidence](../fixtures/metrics-scope/README.md) covers project-number
 identities, complete scope/member reads, incoming scope references, protected self

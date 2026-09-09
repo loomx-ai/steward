@@ -3,6 +3,7 @@ package inventory_test
 import (
 	"context"
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -1020,5 +1021,39 @@ func sequenceIDs(ids ...string) func() string {
 		id := ids[index]
 		index++
 		return id
+	}
+}
+
+// Native provider fields and common display fields can use the same JSON keys
+// with different meanings. Persist both without changing the native snapshot.
+func TestProjectionPreservesNativeFieldsAndDisplayMetadata(t *testing.T) {
+	repository := newInventoryRepository()
+	service := inventory.NewService(repository)
+	shard := asset.ScanShard{ID: "shard", ScanRunID: "run", Provider: asset.ProviderGCP, ScopeID: "scope", Source: "product-api"}
+	connection := asset.CloudConnection{ID: "connection", Provider: asset.ProviderGCP, Partition: "gcp"}
+	kind := asset.ResourceKind{ID: "gcp:compute.googleapis.com/Instance", Provider: asset.ProviderGCP, NativeType: "compute.googleapis.com/Instance", Capabilities: asset.CapabilitySet{asset.CapabilityIndexed}, BundleRevision: "test"}
+	for _, native := range []map[string]any{
+		{"name": "projects/project/zones/us-central1-a/instances/instance", "state": map[string]any{"status": "ACTIVE"}, "location": map[string]any{"zone": "us-central1-a"}, "tags": map[string]any{"fingerprint": "native-fingerprint", "items": []any{"firewall-tag"}}},
+		{"fingerprint": "native-without-display-fields"},
+	} {
+		item := contracts.InventoryItem{NativeType: kind.NativeType, NativeID: "//compute.googleapis.com/projects/project/zones/us-central1-a/instances/instance", ResourceKind: kind, Name: "Friendly name", State: "running", Location: "us-central1", Tags: map[string]string{"environment": "test"}, Normalized: native}
+		if err := service.ProjectBatch(context.Background(), &shard, connection, contracts.InventoryBatch{Items: []contracts.InventoryItem{item}}, inventory.ProjectionOptions{ObservedAt: time.Now()}); err != nil {
+			t.Fatal(err)
+		}
+		for _, value := range repository.assets {
+			if value.Name != item.Name || value.State != item.State || value.Location != item.Location || !reflect.DeepEqual(value.Tags, item.Tags) {
+				t.Fatalf("display metadata changed: %+v", value)
+			}
+			if !reflect.DeepEqual(value.Normalized, native) {
+				t.Fatalf("provider identity/configuration overwritten: %+v", value.Normalized)
+			}
+			observations := repository.observations[value.ID]
+			if len(observations) == 0 || !reflect.DeepEqual(observations[len(observations)-1].Normalized, native) {
+				t.Fatal("native observation changed")
+			}
+		}
+	}
+	if len(repository.assets) != 1 {
+		t.Fatal("projection absent")
 	}
 }

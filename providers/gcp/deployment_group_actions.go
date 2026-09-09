@@ -21,7 +21,7 @@ func infraGroupChildRequest(request contracts.ActionRequest, root asset.Asset) c
 }
 
 func (a *action) infraGroupActionIdentity(request contracts.ActionRequest) ([]infraMember, string, error) {
-	if a.kind.NativeType != infraGroup || request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || a.identity.Partition != "google-cloud" || text(request.Asset.Normalized[infraProof]) == "" {
+	if a.kind.NativeType != infraGroup || request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || text(request.Asset.Normalized[infraProof]) == "" {
 		return nil, "", groupDenied("infra_group_action_changed")
 	}
 	if err := a.client.infraIdentity(infraGroup, a.identity.NativeID, request.Asset.Normalized); err != nil {

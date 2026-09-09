@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/FirewallPolicy
+  class: network.acl
+presentation:
+  displayNames:
+    en-US: Hierarchical firewall policy
+    zh-CN: 层级防火墙策略
+scope:
+  kind: global
+discovery:
+  source: firewall-visible
+  list:
+    operation: compute.firewallPolicies.list
+    itemsPath: items
+    identityPath: selfLink
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: maxResults
+      maxPageSize: 500
+  detail: &read
+    operation: compute.firewallPolicies.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: shortName
+    type: string
+  resourceId:
+    path: id
+    type: string
+  parent:
+    path: parent
+    type: string
+  description:
+    path: description
+    type: string
+  createdAt:
+    path: creationTimestamp
+    type: string
+  rules:
+    path: rules
+    type: array
+  associations:
+    path: associations
+    type: array
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: compute.firewallPolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

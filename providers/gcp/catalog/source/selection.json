@@ -22,6 +22,12 @@
         "compute.externalVpnGateways.delete",
         "compute.externalVpnGateways.get",
         "compute.externalVpnGateways.list",
+        "compute.firewallPolicies.delete",
+        "compute.firewallPolicies.get",
+        "compute.firewallPolicies.getAssociation",
+        "compute.firewallPolicies.list",
+        "compute.firewallPolicies.listAssociations",
+        "compute.firewallPolicies.removeAssociation",
         "compute.firewalls.delete",
         "compute.firewalls.get",
         "compute.firewalls.list",
@@ -41,6 +47,7 @@
         "compute.globalNetworkEndpointGroups.get",
         "compute.globalOperations.get",
         "compute.globalOperations.list",
+        "compute.globalOrganizationOperations.get",
         "compute.healthChecks.aggregatedList",
         "compute.healthChecks.delete",
         "compute.healthChecks.get",
@@ -91,6 +98,8 @@
         "compute.networkFirewallPolicies.aggregatedList",
         "compute.networkFirewallPolicies.delete",
         "compute.networkFirewallPolicies.get",
+        "compute.networkFirewallPolicies.getAssociation",
+        "compute.networkFirewallPolicies.removeAssociation",
         "compute.networks.delete",
         "compute.networks.get",
         "compute.networks.list",
@@ -129,6 +138,8 @@
         "compute.regionNetworkEndpointGroups.get",
         "compute.regionNetworkFirewallPolicies.delete",
         "compute.regionNetworkFirewallPolicies.get",
+        "compute.regionNetworkFirewallPolicies.getAssociation",
+        "compute.regionNetworkFirewallPolicies.removeAssociation",
         "compute.regionOperations.get",
         "compute.regionOperations.list",
         "compute.regionSecurityPolicies.delete",
@@ -301,6 +312,9 @@
     {
       "source_uri": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v3",
       "methods": [
+        "cloudresourcemanager.folders.get",
+        "cloudresourcemanager.folders.list",
+        "cloudresourcemanager.organizations.get",
         "cloudresourcemanager.projects.get"
       ]
     },
@@ -4399,6 +4413,64 @@
         "config.projects.locations.deploymentGroups.revisions.list"
       ],
       "delete_operations": []
+    },
+    {
+      "native_type": "compute.googleapis.com/FirewallPolicy",
+      "collection": "firewallPolicies",
+      "class": "network.acl",
+      "display_name": "Hierarchical firewall policy",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.firewallPolicies.get"
+      ],
+      "delete_operations": [
+        "compute.firewallPolicies.delete"
+      ],
+      "list_operations": [
+        "compute.firewallPolicies.list"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/FirewallPolicyAssociation",
+      "collection": "associations",
+      "class": "network.association",
+      "display_name": "Hierarchical firewall policy association",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "compute.firewallPolicies.getAssociation"
+      ],
+      "delete_operations": [
+        "compute.firewallPolicies.removeAssociation"
+      ],
+      "list_operations": [
+        "compute.firewallPolicies.get"
+      ]
+    },
+    {
+      "native_type": "compute.googleapis.com/NetworkFirewallPolicyAssociation",
+      "collection": "associations",
+      "class": "network.association",
+      "display_name": "Network firewall policy association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "read_operations": [
+        "compute.networkFirewallPolicies.getAssociation",
+        "compute.regionNetworkFirewallPolicies.getAssociation"
+      ],
+      "delete_operations": [
+        "compute.networkFirewallPolicies.removeAssociation",
+        "compute.regionNetworkFirewallPolicies.removeAssociation"
+      ],
+      "list_operations": [
+        "compute.networkFirewallPolicies.get",
+        "compute.regionNetworkFirewallPolicies.get"
+      ]
     }
   ],
   "sdk_documents": [

@@ -13,7 +13,7 @@ import (
 )
 
 func (a *action) metricsActionIdentity(request contracts.ActionRequest) error {
-	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || a.identity.Partition != "google-cloud" || a.kind.NativeType != monitoredProjectType || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
+	if request.Action != "delete" || request.Asset.ID == "" || request.Asset.Identity != a.identity || a.identity.Provider != asset.ProviderGCP || !gcpPartition(a.identity.Partition) || a.kind.NativeType != monitoredProjectType || len(request.LifecycleImpacts) != 0 || len(request.PrerequisiteDeletions) != 0 {
 		return groupDenied("metrics_scope_action_changed")
 	}
 	if _, _, err := a.client.metricsOperation(a.kind.NativeType, a.identity.NativeID, "DELETE"); err != nil {

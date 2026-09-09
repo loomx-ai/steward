@@ -1,0 +1,161 @@
+{
+  "revision": "20260820",
+  "schemas": {
+    "Folder": {
+      "description": "A folder in an organization's resource hierarchy, used to organize that organization's resources.",
+      "id": "Folder",
+      "properties": {
+        "configuredCapabilities": {
+          "description": "Output only. Optional capabilities configured for this folder (via UpdateCapability API). Example: `folders/123/capabilities/app-management`.",
+          "items": {
+            "type": "string"
+          },
+          "readOnly": true,
+          "type": "array"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the folder was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteTime": {
+          "description": "Output only. Timestamp when the folder was requested to be deleted.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The folder's display name. A folder's display name must be unique amongst its siblings. For example, no two folders with the same parent can share the same display name. The display name must start and end with a letter or digit, may contain letters, digits, spaces, hyphens and underscores and can be no longer than 30 characters. This is captured by the regular expression: `[\\p{L}\\p{N}]([\\p{L}\\p{N}_- ]{0,28}[\\p{L}\\p{N}])?`.",
+          "type": "string"
+        },
+        "etag": {
+          "description": "Output only. A checksum computed by the server based on the current value of the folder resource. This may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "managementProject": {
+          "description": "Output only. Management Project associated with this folder (if app-management capability is enabled). Example: `projects/google-mp-123` OUTPUT ONLY.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Identifier. The resource name of the folder. Its format is `folders/{folder_id}`, for example: \"folders/1234\".",
+          "type": "string"
+        },
+        "parent": {
+          "description": "Required. The folder's parent's resource name. Updates to the folder's parent must be performed using MoveFolder.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The lifecycle state of the folder. Updates to the state must be performed using DeleteFolder and UndeleteFolder.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ],
+          "enumDescriptions": [
+            "Unspecified state.",
+            "The normal and active state.",
+            "The folder has been marked for deletion by the user."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "tags": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Optional. Input only. Immutable. Tag keys/values directly bound to this folder. Each item in the map must be expressed as \" : \". For example: \"123/environment\" : \"production\", \"123/costCenter\" : \"marketing\" Note: Currently this field is in Preview.",
+          "type": "object"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when the folder was last modified.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ListFoldersResponse": {
+      "description": "The ListFolders response message.",
+      "id": "ListFoldersResponse",
+      "properties": {
+        "folders": {
+          "description": "A possibly paginated list of folders that are direct descendants of the specified parent resource.",
+          "items": {
+            "$ref": "Folder"
+          },
+          "type": "array"
+        },
+        "nextPageToken": {
+          "description": "A pagination token returned from a previous call to `ListFolders` that indicates from where listing should continue.",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "Organization": {
+      "description": "The root node in the resource hierarchy to which a particular entity's (a company, for example) resources belong.",
+      "id": "Organization",
+      "properties": {
+        "createTime": {
+          "description": "Output only. Timestamp when the Organization was created.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "deleteTime": {
+          "description": "Output only. Timestamp when the Organization was requested for deletion.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        },
+        "directoryCustomerId": {
+          "description": "Immutable. The G Suite / Workspace customer id used in the Directory API.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Output only. A human-readable string that refers to the organization in the Google Cloud Console. This string is set by the server and cannot be changed. The string will be set to the primary domain (for example, \"google.com\") of the Google Workspace customer that owns the organization.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "etag": {
+          "description": "Output only. A checksum computed by the server based on the current value of the Organization resource. This may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "name": {
+          "description": "Output only. The resource name of the organization. This is the organization's relative path in the API. Its format is \"organizations/[organization_id]\". For example, \"organizations/1234\".",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The organization's current lifecycle state.",
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETE_REQUESTED"
+          ],
+          "enumDescriptions": [
+            "Unspecified state. This is only useful for distinguishing unset values.",
+            "The normal and active state.",
+            "The organization has been marked for deletion by the user."
+          ],
+          "readOnly": true,
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Output only. Timestamp when the Organization was last modified.",
+          "format": "google-datetime",
+          "readOnly": true,
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "source_sha256": "e46acd311b9d23a7ddac98ab85e2d9edaec3df9105f66679821c055c8e1c6131",
+  "source_uri": "https://cloudresourcemanager.googleapis.com/$discovery/rest?version=v3"
+}

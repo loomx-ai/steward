@@ -46,8 +46,14 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			}
 		}
 	}
+	if err := c.firewallInvocation(ctx, operation, parameters); err != nil {
+		return contracts.InvocationResult{}, err
+	}
 	for _, name := range operation.Call.RawPathParameters {
 		value, _ := parameters[name].(string)
+		if firewallContainerInvocation(operation.ID) {
+			continue
+		}
 		if operation.Call.Product == "config" {
 			for _, part := range strings.Split(value, "/") {
 				if !segmentPattern.MatchString(part) || part == "." || part == ".." || part == "-" {
@@ -147,6 +153,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	}
 	if isMetricsScope(kind.NativeType) {
 		return c.metricsOperation(kind.NativeType, nativeID, method)
+	}
+	if isFirewall(kind.NativeType) {
+		return c.firewallResourceOperation(kind.NativeType, nativeID, method)
 	}
 	if isFusion(kind.NativeType) {
 		if _, err := c.fusionName(kind.NativeType, nativeID); err != nil {

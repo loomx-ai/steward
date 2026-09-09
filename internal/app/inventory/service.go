@@ -651,9 +651,13 @@ func normalizedSnapshot(item contracts.InventoryItem) (map[string]any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if normalized == nil {
-		normalized = make(map[string]any)
+	// Provider-normalized configuration is an authoritative payload. Adding or
+	// replacing common display fields changes native names, structured tags and
+	// configuration fingerprints. Asset already stores those display fields.
+	if normalized != nil {
+		return normalized, nil
 	}
+	normalized = make(map[string]any)
 	if item.Name != "" {
 		normalized["name"] = item.Name
 	}

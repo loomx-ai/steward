@@ -25,8 +25,8 @@ func TestComputeExtendedResourceWireLifecycles(t *testing.T) {
 		{"Interconnect", "interconnects", "global", false},
 		{"InterconnectAttachment", "interconnectAttachments", "regions/us-central1", true},
 		{"NetworkAttachment", "networkAttachments", "regions/us-central1", true},
-		{"NetworkFirewallPolicy", "firewallPolicies", "global", true},
-		{"NetworkFirewallPolicy", "firewallPolicies", "regions/us-central1", true},
+		// Firewall policies use the complete policy/association lifecycle in
+		// TestFirewallPoliciesNativePlanAndRestart for both native scopes.
 		{"NodeGroup", "nodeGroups", "zones/us-central1-a", true},
 		{"NodeTemplate", "nodeTemplates", "regions/us-central1", true},
 		{"Reservation", "reservations", "zones/us-central1-a", true},

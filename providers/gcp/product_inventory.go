@@ -49,7 +49,7 @@ func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, b
 	return spec.ResourceKindSpec{}, false
 }
 func (r *Runtime) usesProductSource(nativeType string) bool {
-	if isDataformFolder(nativeType) {
+	if isDataformFolder(nativeType) || isFirewall(nativeType) {
 		return true
 	}
 	_, ok := r.productDefinition(nativeType)
@@ -61,6 +61,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP product inventory requires a resource kind")
 	}
 	nativeType := request.ResourceKind.NativeType
+	if isFirewall(nativeType) {
+		return r.listFirewall(ctx, c, request)
+	}
 	if isMetricsScope(nativeType) {
 		return r.listMetricsScope(ctx, c, request)
 	}

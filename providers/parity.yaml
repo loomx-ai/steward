@@ -1684,8 +1684,11 @@ resources:
     resources:
     - Microsoft.Network/networkSecurityGroups
   status: pending_verification
-  notes: Global/regional NetworkFirewallPolicy methods are implemented. Hierarchical FirewallPolicy
-    remains unfinished and requires organization/folder scope. Cloud NGFW uses stateful packet
+  notes: Hierarchical FirewallPolicy requires an explicitly configured organization/folder scope.
+    It and global/regional NetworkFirewallPolicy use reviewed native association-removal prerequisites,
+    persisted operations and final readback. Independent Google mock coverage proves unassociated
+    hierarchical deletion only; association/network-policy and real-cloud acceptance remain open.
+    Cloud NGFW uses stateful packet
     filtering; these are functional mappings, not an assertion of identical network ACL behavior.
   sources:
   - https://docs.cloud.google.com/compute/docs/reference/rest/v1/networkFirewallPolicies

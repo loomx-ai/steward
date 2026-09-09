@@ -17,6 +17,8 @@ Steward 会验证项目访问权限和资源盘点权限。连接验证成功不
 
 Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使用机器上已有的 `gcloud` 凭据或元数据服务凭据。参阅 Google 的[服务账号密钥管理建议](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys)和[Cloud Asset Inventory 列表权限](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list)。
 
+管理层级防火墙策略时，还需在连接中填写可选的**防火墙范围**，例如 `organizations/123` 或 `folders/456`。该设置明确纳入对应组织或文件夹及其下级文件夹中的防火墙策略；项目访问权限不会自动启用此范围。服务账号需具备该层级的 Resource Manager 读取权限和原生防火墙策略权限，扫描时需包含全局范围。移除或修改此设置不会把历史策略记录判为已删除，旧清理计划也需重新审查。
+
 ## 完成第一次扫描
 
 1. 切换到新建的 Google Cloud 连接，核对目标项目 ID。
@@ -34,6 +36,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | --- | --- | --- |
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| 防火墙策略 | 配置范围内的层级策略、全局和地域级网络策略及原生关联 | 先解除审查过的关联，再删除策略；也支持独立解除关联 |
 | 负载均衡与地址 | 地域和全局 IP 地址、转发规则、地域和全局后端服务、健康检查（含旧版 HTTP/HTTPS）、目标池、网络端点组、URL Map、HTTP/HTTPS 代理、SSL 证书 | 支持 |
 | Cloud Storage | 存储桶 | 仅空桶 |
 | Pub/Sub | 主题、订阅 | 支持 |
@@ -64,6 +67,7 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 
 ## 删除保护
 
+- **防火墙策略：** 清理时先逐项调用原生 API 解除审查过的关联，再删除策略及其规则。解除关联会改变目标的防火墙规则应用情况，网络、组织或文件夹本身仍保留。目标必须仍在配置范围内；策略、关联或目标身份变化会阻止旧计划执行。层级策略还会查询目标侧关联列表。API 无法把这些读取与删除绑定为原子操作，同名关联也没有创建标识；清理期间应避免并发修改。参阅 Google 的[层级策略指南](https://docs.cloud.google.com/firewall/docs/manage-hierarchical-firewall-policies)和[全局网络策略指南](https://docs.cloud.google.com/firewall/docs/use-network-firewall-policies)。
 - **VM 磁盘和托管实例组**：磁盘与 IP 的原生删除策略会进入影响计划。对支持保留的资源，Steward 先通过原生操作修改策略并验证生效，再删除控制器。挂载关系或资源身份发生变化时会停止执行。
 - **删除保护**：获准清理 VM 后，Steward 会通过明确的原生准备阶段解除其删除保护；保护标签和 Cloud SQL 的删除保护仍会阻止删除。
 - **存储桶**：非空桶会被拒绝删除。Steward 不会先清空对象或对象版本来满足删除条件。

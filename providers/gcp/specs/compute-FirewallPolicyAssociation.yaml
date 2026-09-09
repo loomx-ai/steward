@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: compute.googleapis.com/FirewallPolicyAssociation
+  class: network.association
+presentation:
+  displayNames:
+    en-US: Hierarchical firewall policy association
+    zh-CN: 层级防火墙策略关联
+scope:
+  kind: global
+discovery:
+  source: firewall-visible
+  parent:
+    nativeType: compute.googleapis.com/FirewallPolicy
+    source: firewall-visible
+  list:
+    operation: compute.firewallPolicies.get
+    itemsPath: associations
+    identityPath: name
+  detail: &read
+    operation: compute.firewallPolicies.getAssociation
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  attachmentTarget:
+    path: attachmentTarget
+    type: string
+  firewallPolicyId:
+    path: firewallPolicyId
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/FirewallPolicy
+  targetIdPath: refs_compute_googleapis_com_FirewallPolicy
+actions:
+  delete:
+    operation: compute.firewallPolicies.removeAssociation
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

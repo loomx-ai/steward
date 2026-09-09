@@ -83,7 +83,7 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -92,6 +92,12 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
+	if request.Source == firewallInventorySource {
+		if request.ResourceKind == nil || firewallParentType(request.ResourceKind.NativeType) != firewallPolicyType {
+			return contracts.InventoryBatch{}, groupDenied("firewall_inventory_source_invalid")
+		}
+		return r.listFirewall(ctx, c, request)
 	}
 	if request.Source == productInventorySource {
 		return r.listProduct(ctx, c, request, nil)
@@ -244,6 +250,22 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if isFirewall(nativeType) {
+		if !isFirewallPolicy(nativeType) {
+			parent, _, err := c.firewallIdentityParts(nativeType, nativeID)
+			if err != nil {
+				return contracts.InventoryItem{}, err
+			}
+			refs[firewallParentType(nativeType)] = []string{parent}
+			if nativeType == networkFirewallAssociationType {
+				refs["compute.googleapis.com/Network"] = []string{c.canonicalName(text(data["attachmentTarget"]))}
+			}
+		} else if nativeType == networkFirewallPolicyType {
+			for _, value := range array(data["associations"]) {
+				refs["compute.googleapis.com/Network"] = append(refs["compute.googleapis.com/Network"], c.canonicalName(text(object(value)["attachmentTarget"])))
+			}
+		}
+	}
 	if isInfra(nativeType) {
 		refs = c.infraReferences(nativeType, nativeID, data)
 	}

@@ -32,11 +32,12 @@ var projectPattern = regexp.MustCompile(`^[a-z][a-z0-9-]{4,61}[a-z0-9]$|^[0-9]+$
 var segmentPattern = regexp.MustCompile(`^[A-Za-z0-9_.:@()-]+$`)
 
 type client struct {
-	http        *http.Client
-	project     string
-	number      string
-	email       string
-	fingerprint [32]byte
+	http           *http.Client
+	project        string
+	number         string
+	email          string
+	firewallParent string
+	fingerprint    [32]byte
 }
 
 func newClient(credential contracts.Credential, transport http.RoundTripper) (*client, error) {
@@ -72,6 +73,10 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	if !projectPattern.MatchString(project) {
 		return invalid()
 	}
+	firewallParent := strings.TrimSpace(credential.Values["firewall_policy_parent"])
+	if firewallParent != "" && !firewallContainerName(firewallParent) {
+		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "Firewall policy scope must be organizations/ID or folders/ID.", nil)
+	}
 	block, rest := pem.Decode([]byte(key.PrivateKey))
 	if block == nil || len(strings.TrimSpace(string(rest))) != 0 {
 		return invalid()
@@ -87,7 +92,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
-	return &client{project: project, email: key.Email, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw)), http: &http.Client{
+	return &client{project: project, email: key.Email, firewallParent: firewallParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent)), http: &http.Client{
 		Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
 }
