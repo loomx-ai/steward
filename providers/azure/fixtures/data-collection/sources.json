@@ -1,0 +1,72 @@
+[
+  {
+    "file": "DataCollectionEndpointsDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionEndpointsDelete.json",
+    "source_sha256": "42480c225cda0abbbf1413855b4cc0df93d2c47b69c9950a4c9dcabbecb4cbb5"
+  },
+  {
+    "file": "DataCollectionEndpointsGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionEndpointsGet.json",
+    "source_sha256": "fafe8069dc9a2ff54f4a5a0394c48a7ba5e46df72509615a0c5d892c6c7ff01b"
+  },
+  {
+    "file": "DataCollectionEndpointsListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionEndpointsListBySubscription.json",
+    "source_sha256": "0fcb4310855bbe4bc1feeffa85c36fc534d35d037a94d98b54529ff52cfa8556"
+  },
+  {
+    "file": "DataCollectionRuleAssociationsDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRuleAssociationsDelete.json",
+    "source_sha256": "e6149e5e11c688d155cc888bf7fac014ecbdc07cd40378b3ad728bb828947b8a"
+  },
+  {
+    "file": "DataCollectionRuleAssociationsGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRuleAssociationsGet.json",
+    "source_sha256": "b96f71f57686b7690b68c244f7aa2ec6ea05eaab4d993dbd27edfda207153822"
+  },
+  {
+    "file": "DataCollectionRuleAssociationsListByDataCollectionEndpoint.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRuleAssociationsListByDataCollectionEndpoint.json",
+    "source_sha256": "061693e03e6259dfe5f13255061a7689c1c958f48e227f17126841f7c539eafd"
+  },
+  {
+    "file": "DataCollectionRuleAssociationsListByResource.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRuleAssociationsListByResource.json",
+    "source_sha256": "8b71c8d7f4762e5bd08f9e5e8d0fbcb9029c3c8c5c6b42428631ef69f875d55d"
+  },
+  {
+    "file": "DataCollectionRuleAssociationsListByRule.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRuleAssociationsListByRule.json",
+    "source_sha256": "08c4135865d9d943290f3c13eefd7145bd0194d33f2adc6140d928fc558f2a41"
+  },
+  {
+    "file": "DataCollectionRulesDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRulesDelete.json",
+    "source_sha256": "3642249812ce656b77811518f4eb831e5acbf0d21ffb108b462a360c307d953a"
+  },
+  {
+    "file": "DataCollectionRulesGet.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRulesGet.json",
+    "source_sha256": "45809cd919fe429aaed4cea9fea737b2b086fba38b2fc0e1c1af49f880d97471"
+  },
+  {
+    "file": "DataCollectionRulesListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/examples/DataCollectionRulesListBySubscription.json",
+    "source_sha256": "757662f5b15360056c7b2802f130bb189d95a5b91c826af301057a7fcb199b06"
+  },
+  {
+    "file": "ResourcesBasicQuery.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/examples/ResourcesBasicQuery.json",
+    "source_sha256": "c8e4ba1600c9aa18262c2eca423a81c952b10433fa23b2d46b52a481c8a8c363"
+  },
+  {
+    "file": "ResourcesFirstPageQuery.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/examples/ResourcesFirstPageQuery.json",
+    "source_sha256": "216046a8a40b3a1fc1123de2cdd0f9ef60a79b98762fb93848f6f51c47672c57"
+  },
+  {
+    "file": "ResourcesNextPageQuery.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/examples/ResourcesNextPageQuery.json",
+    "source_sha256": "1bccf9fa10e8f089e2f45a087805a3d714f83092bf30d4f172c6e1786d6c5521"
+  }
+]

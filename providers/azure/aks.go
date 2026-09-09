@@ -162,6 +162,9 @@ func aksNativeAsset(raw map[string]any) asset.Asset {
 }
 
 func aksExternalRelation(parent, child asset.Asset) bool {
+	if strings.EqualFold(child.Identity.NativeType, dataCollectionAssociationType) {
+		return false // Deleting the group does not prove external associations are unlinked.
+	}
 	if strings.EqualFold(parent.Identity.NativeType, vnetType) && strings.EqualFold(child.Identity.NativeType, privateDNSLinkType) {
 		return strings.EqualFold(text(object(child.Normalized["virtualNetwork"])["id"]), parent.Identity.NativeID)
 	}

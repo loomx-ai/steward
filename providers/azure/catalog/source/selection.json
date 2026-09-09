@@ -746,6 +746,28 @@
         "IntegrationFabrics_List",
         "IntegrationFabrics_Delete"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json",
+      "operations": [
+        "DataCollectionRules_Get",
+        "DataCollectionRules_ListBySubscription",
+        "DataCollectionRules_Delete",
+        "DataCollectionEndpoints_Get",
+        "DataCollectionEndpoints_ListBySubscription",
+        "DataCollectionEndpoints_Delete",
+        "DataCollectionRuleAssociations_Get",
+        "DataCollectionRuleAssociations_ListByResource",
+        "DataCollectionRuleAssociations_ListByRule",
+        "DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+        "DataCollectionRuleAssociations_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/resourcegraph.json",
+      "operations": [
+        "Resources"
+      ]
     }
   ],
   "resource_types": [
@@ -3103,6 +3125,62 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Dashboard.IntegrationFabrics_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionRules",
+      "class": "observability.monitoring_configuration",
+      "display_name": "Data collection rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dataCollectionRules",
+      "read_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRules_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionEndpoints",
+      "class": "observability.ingestion_endpoint",
+      "display_name": "Data collection endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dataCollectionEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Insights.DataCollectionEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.DataCollectionEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.DataCollectionEndpoints_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionRuleAssociations",
+      "class": "observability.monitoring_association",
+      "display_name": "Data collection rule association",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dataCollectionRuleAssociations",
+      "read_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByRule",
+        "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+        "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource"
       ]
     }
   ]

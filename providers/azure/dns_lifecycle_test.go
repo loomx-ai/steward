@@ -113,6 +113,7 @@ func TestDNSRecordNativeWireAndConditionalDeletion(t *testing.T) {
 }
 
 type dnsScenario struct {
+	graph        []any
 	records      map[string]map[string]any
 	lists        map[string][]any
 	gone         map[string]bool
@@ -142,6 +143,17 @@ func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 			if response, handled := s.handle(req); handled {
 				return response, nil
 			}
+		}
+		if req.Method == "POST" && req.URL.Path == "/providers/Microsoft.ResourceGraph/resources" {
+			var body map[string]any
+			if json.NewDecoder(req.Body).Decode(&body) != nil || text(body["query"]) != dataCollectionGraphQuery || req.URL.Query().Get("api-version") != "2024-04-01" || fmt.Sprint(body["subscriptions"]) != "["+testSubscription+"]" || object(body["options"])["allowPartialScopes"] != false || text(object(body["options"])["resultFormat"]) != "objectArray" {
+				t.Fatal("wrong native subscription-bound association query")
+			}
+			rows := s.graph
+			if rows == nil {
+				rows = []any{}
+			}
+			return jsonResponse(200, map[string]any{"count": len(rows), "totalRecords": len(rows), "resultTruncated": "false", "data": rows}, nil), nil
 		}
 		if req.Method == "DELETE" {
 			if s.records[id] == nil {

@@ -1,0 +1,116 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/dataCollectionRules
+  class: observability.monitoring_configuration
+presentation:
+  displayNames:
+    en-US: Data collection rule
+    zh-CN: 数据采集规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.DataCollectionRules_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  immutableId:
+    path: immutableId
+    type: string
+  description:
+    path: description
+    type: string
+  dataCollectionEndpointId:
+    path: dataCollectionEndpointId
+    type: string
+  dataSources:
+    path: dataSources
+    type: object
+  directDataSources:
+    path: directDataSources
+    type: object
+  destinations:
+    path: destinations
+    type: object
+  dataFlows:
+    path: dataFlows
+    type: array
+  streamDeclarations:
+    path: streamDeclarations
+    type: object
+  endpoints:
+    path: endpoints
+    type: object
+  references:
+    path: references
+    type: object
+  agentSettings:
+    path: agentSettings
+    type: object
+  ingestionQuotas:
+    path: ingestionQuotas
+    type: object
+  identity:
+    path: identity
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Insights/dataCollectionEndpoints
+  targetIdPath: refs_microsoft_insights_datacollectionendpoints
+- type: depends_on
+  targetType: Microsoft.OperationalInsights/workspaces
+  targetIdPath: refs_microsoft_operationalinsights_workspaces
+- type: depends_on
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces
+- type: depends_on
+  targetType: Microsoft.EventHub/namespaces/eventhubs
+  targetIdPath: refs_microsoft_eventhub_namespaces_eventhubs
+- type: depends_on
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: depends_on
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.DataCollectionRules_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.DataCollectionRules_Get
+      itemsPath: $
+      identityPath: id
+    parameters:
+      deleteAssociations: false

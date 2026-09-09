@@ -255,6 +255,49 @@
             "type": "object",
             "x-ms-azure-resource": true
           },
+          "Sku": {
+            "description": "The resource model definition representing SKU",
+            "properties": {
+              "capacity": {
+                "description": "If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "family": {
+                "description": "If the service has different generations of hardware, for the same SKU, then that can be captured here.",
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the SKU. Ex - P3. It is typically a letter+number code",
+                "type": "string"
+              },
+              "size": {
+                "description": "The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. ",
+                "type": "string"
+              },
+              "tier": {
+                "$ref": "#/definitions/SkuTier"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "SkuTier": {
+            "description": "This field is required to be implemented by the Resource Provider if the service has more than one tier, but is not required on a PUT.",
+            "enum": [
+              "Free",
+              "Basic",
+              "Standard",
+              "Premium"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "SkuTier"
+            }
+          },
           "TrackedResource": {
             "allOf": [
               {
@@ -375,6 +418,23 @@
       },
       "source_sha256": "8f69ddbcdd8f3df61a156a129e70db08b3a03f2ec710de07f30273ec27492de3",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v3/types.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "parameters": {
+          "ApiVersionParameter": {
+            "description": "The API version to use for this operation.",
+            "in": "query",
+            "minLength": 1,
+            "name": "api-version",
+            "required": true,
+            "type": "string"
+          }
+        }
+      },
+      "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v5/types.json"
     },
     {
       "dependency": false,
@@ -1919,6 +1979,3962 @@
       },
       "source_sha256": "cae55a9a4dc6c86cc7b056982ee7516f744209c7b379597f553563e08fb2b0c8",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AdxDestination": {
+            "description": "Azure Data Explorer (Adx) destination.",
+            "properties": {
+              "databaseName": {
+                "description": "The name of the database to which data will be ingested.",
+                "type": "string"
+              },
+              "ingestionUri": {
+                "description": "The ingestion uri of the Adx resource.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "resourceId": {
+                "description": "The ARM resource id of the Adx resource.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AgentSetting": {
+            "description": "A setting used to control an agent behavior on a host machine",
+            "properties": {
+              "name": {
+                "$ref": "#/definitions/KnownAgentSettingName",
+                "description": "The name of the setting.\nMust be part of the list of supported settings"
+              },
+              "value": {
+                "description": "The value of the setting",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AgentSettingsSpec": {
+            "description": "An agent setting",
+            "properties": {
+              "logs": {
+                "description": "All the settings that are applicable to the logs agent (AMA)",
+                "items": {
+                  "$ref": "#/definitions/AgentSetting"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ApplicationInsights": {
+            "properties": {
+              "name": {
+                "description": "The name of the reference used as an alias when referencing this application insights in Otel data sources",
+                "type": "string"
+              },
+              "resourceId": {
+                "description": "Id of the application insights resource",
+                "format": "arm-id",
+                "type": "string"
+              }
+            },
+            "required": [
+              "resourceId",
+              "name"
+            ],
+            "type": "object"
+          },
+          "AzureMonitorMetricsDestination": {
+            "description": "Azure Monitor Metrics destination.",
+            "properties": {
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ColumnDefinition": {
+            "description": "Definition of custom data column.",
+            "properties": {
+              "name": {
+                "description": "The name of the column.",
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/definitions/KnownColumnDefinitionType",
+                "description": "The type of the column data."
+              }
+            },
+            "type": "object"
+          },
+          "ConfigurationAccessEndpointSpec": {
+            "description": "Definition of the endpoint used for accessing configuration.",
+            "properties": {
+              "endpoint": {
+                "description": "The endpoint. This property is READ-ONLY.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionEndpoint": {
+            "description": "Definition of data collection endpoint.",
+            "properties": {
+              "configurationAccess": {
+                "$ref": "#/definitions/DataCollectionEndpointConfigurationAccess",
+                "description": "The endpoint used by clients to access their configuration."
+              },
+              "description": {
+                "description": "Description of the data collection endpoint.",
+                "type": "string"
+              },
+              "failoverConfiguration": {
+                "$ref": "#/definitions/DataCollectionEndpointFailoverConfiguration",
+                "description": "Metadata for the resource. This property can only be updated by Log Analytics Control Plane for Data Collection Endpoint with Log Analytics Destination.",
+                "readOnly": true
+              },
+              "immutableId": {
+                "description": "The immutable ID of this data collection endpoint resource. This property is READ-ONLY.",
+                "type": "string"
+              },
+              "logsIngestion": {
+                "$ref": "#/definitions/DataCollectionEndpointLogsIngestion",
+                "description": "The endpoint used by clients to ingest logs."
+              },
+              "metadata": {
+                "$ref": "#/definitions/DataCollectionEndpointMetadata",
+                "description": "Metadata for the resource. This property can only be updated by Log Analytics Control Plane for Data Collection Endpoint with Log Analytics Destination.",
+                "readOnly": true
+              },
+              "metricsIngestion": {
+                "$ref": "#/definitions/DataCollectionEndpointMetricsIngestion",
+                "description": "The endpoint used by clients to ingest metrics."
+              },
+              "networkAcls": {
+                "$ref": "#/definitions/DataCollectionEndpointNetworkAcls",
+                "description": "Network access control rules for the endpoints."
+              },
+              "privateLinkScopedResources": {
+                "description": "List of Azure Monitor Private Link Scope Resources to which this data collection endpoint resource is associated. This property is READ-ONLY.",
+                "items": {
+                  "$ref": "#/definitions/PrivateLinkScopedResource"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/KnownDataCollectionEndpointProvisioningState",
+                "description": "The resource provisioning state. This property is READ-ONLY.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionEndpointConfigurationAccess": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ConfigurationAccessEndpointSpec"
+              }
+            ],
+            "description": "The endpoint used by clients to access their configuration.",
+            "type": "object"
+          },
+          "DataCollectionEndpointFailoverConfiguration": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/FailoverConfigurationSpec"
+              }
+            ],
+            "description": "Metadata for the resource. This property can only be updated by Log Analytics Control Plane for Data Collection Endpoint with Log Analytics Destination.",
+            "type": "object"
+          },
+          "DataCollectionEndpointLogsIngestion": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LogsIngestionEndpointSpec"
+              }
+            ],
+            "description": "The endpoint used by clients to ingest logs.",
+            "type": "object"
+          },
+          "DataCollectionEndpointMetadata": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Metadata"
+              }
+            ],
+            "description": "Metadata for the resource. This property can only be updated by Log Analytics Control Plane for Data Collection Endpoint with Log Analytics Destination.",
+            "type": "object"
+          },
+          "DataCollectionEndpointMetricsIngestion": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/MetricsIngestionEndpointSpec"
+              }
+            ],
+            "description": "The endpoint used by clients to ingest metrics.",
+            "type": "object"
+          },
+          "DataCollectionEndpointNetworkAcls": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/NetworkRuleSet"
+              }
+            ],
+            "description": "Network access control rules for the endpoints.",
+            "type": "object"
+          },
+          "DataCollectionEndpointResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Definition of ARM tracked top level resource.",
+            "properties": {
+              "etag": {
+                "description": "Resource entity tag (ETag).",
+                "readOnly": true,
+                "type": "string"
+              },
+              "identity": {
+                "$ref": "#/definitions/DataCollectionEndpointResourceIdentity",
+                "description": "Managed service identity of the resource."
+              },
+              "kind": {
+                "$ref": "#/definitions/KnownDataCollectionEndpointResourceKind",
+                "description": "The kind of the resource."
+              },
+              "properties": {
+                "$ref": "#/definitions/DataCollectionEndpointResourceProperties",
+                "x-ms-client-flatten": true
+              },
+              "sku": {
+                "$ref": "#/definitions/DataCollectionEndpointResourceSku",
+                "description": "The SKU of the resource."
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionEndpointResourceIdentity": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity"
+              }
+            ],
+            "description": "Managed service identity of the resource.",
+            "type": "object"
+          },
+          "DataCollectionEndpointResourceListResult": {
+            "description": "The response of a DataCollectionEndpointResource list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The DataCollectionEndpointResource items on this page",
+                "items": {
+                  "$ref": "#/definitions/DataCollectionEndpointResource"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "DataCollectionEndpointResourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DataCollectionEndpoint"
+              }
+            ],
+            "type": "object"
+          },
+          "DataCollectionEndpointResourceSku": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Sku"
+              }
+            ],
+            "description": "The SKU of the resource.",
+            "type": "object"
+          },
+          "DataCollectionRule": {
+            "description": "Definition of what monitoring data to collect and where that data should be sent.",
+            "properties": {
+              "agentSettings": {
+                "$ref": "#/definitions/DataCollectionRuleAgentSettings",
+                "description": "Agent settings used to modify agent behavior on a given host"
+              },
+              "dataCollectionEndpointId": {
+                "description": "The resource ID of the data collection endpoint that this rule can be used with.",
+                "type": "string"
+              },
+              "dataFlows": {
+                "description": "The specification of data flows.",
+                "items": {
+                  "$ref": "#/definitions/DataFlow"
+                },
+                "type": "array"
+              },
+              "dataSources": {
+                "$ref": "#/definitions/DataCollectionRuleDataSources",
+                "description": "The specification of data sources.\nThis property is optional and can be omitted if the rule is meant to be used via direct calls to the provisioned endpoint."
+              },
+              "description": {
+                "description": "Description of the data collection rule.",
+                "type": "string"
+              },
+              "destinations": {
+                "$ref": "#/definitions/DataCollectionRuleDestinations",
+                "description": "The specification of destinations."
+              },
+              "directDataSources": {
+                "$ref": "#/definitions/DataCollectionRuleDirectDataSources",
+                "description": "The specification of direct data sources.\nThis property is optional and can be omitted."
+              },
+              "endpoints": {
+                "$ref": "#/definitions/DataCollectionRuleEndpoints",
+                "description": "Defines the ingestion endpoints to send data to via this rule.",
+                "readOnly": true
+              },
+              "immutableId": {
+                "description": "The immutable ID of this data collection rule. This property is READ-ONLY.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "ingestionQuotas": {
+                "$ref": "#/definitions/DataCollectionRuleIngestionQuotas",
+                "description": "The specification for ingestion limits",
+                "readOnly": true
+              },
+              "metadata": {
+                "$ref": "#/definitions/DataCollectionRuleMetadata",
+                "description": "Metadata about the resource",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/KnownDataCollectionRuleProvisioningState",
+                "description": "The resource provisioning state.",
+                "readOnly": true
+              },
+              "references": {
+                "$ref": "#/definitions/DataCollectionRuleReferences",
+                "description": "Defines all the references that may be used in other sections of the DCR"
+              },
+              "streamDeclarations": {
+                "additionalProperties": {
+                  "$ref": "#/definitions/StreamDeclaration"
+                },
+                "description": "Declaration of custom streams used in this rule.",
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionRuleAgentSettings": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AgentSettingsSpec"
+              }
+            ],
+            "description": "Agent settings used to modify agent behavior on a given host",
+            "type": "object"
+          },
+          "DataCollectionRuleAssociation": {
+            "description": "Definition of association of a data collection rule with a monitored Azure resource.",
+            "properties": {
+              "dataCollectionEndpointId": {
+                "description": "The resource ID of the data collection endpoint that is to be associated.",
+                "type": "string"
+              },
+              "dataCollectionRuleId": {
+                "description": "The resource ID of the data collection rule that is to be associated.",
+                "type": "string"
+              },
+              "description": {
+                "description": "Description of the association.",
+                "type": "string"
+              },
+              "metadata": {
+                "$ref": "#/definitions/DataCollectionRuleAssociationMetadata",
+                "description": "Metadata about the resource",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/KnownDataCollectionRuleAssociationProvisioningState",
+                "description": "The resource provisioning state.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionRuleAssociationMetadata": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Metadata"
+              }
+            ],
+            "description": "Metadata about the resource",
+            "type": "object"
+          },
+          "DataCollectionRuleAssociationProxyOnlyResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Definition of generic ARM proxy resource.",
+            "properties": {
+              "etag": {
+                "description": "Resource entity tag (ETag).",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResourceProperties",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionRuleAssociationProxyOnlyResourceListResult": {
+            "description": "The response of a DataCollectionRuleAssociationProxyOnlyResource list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The DataCollectionRuleAssociationProxyOnlyResource items on this page",
+                "items": {
+                  "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResource"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "DataCollectionRuleAssociationProxyOnlyResourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DataCollectionRuleAssociation"
+              }
+            ],
+            "type": "object"
+          },
+          "DataCollectionRuleDataSources": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DataSourcesSpec"
+              }
+            ],
+            "description": "The specification of data sources.\nThis property is optional and can be omitted if the rule is meant to be used via direct calls to the provisioned endpoint.",
+            "type": "object"
+          },
+          "DataCollectionRuleDestinations": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DestinationsSpec"
+              }
+            ],
+            "description": "The specification of destinations.",
+            "type": "object"
+          },
+          "DataCollectionRuleDirectDataSources": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DirectDataSourcesSpec"
+              }
+            ],
+            "description": "The specification of direct data sources.\nThis property is optional and can be omitted.",
+            "type": "object"
+          },
+          "DataCollectionRuleEndpoints": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/EndpointsSpec"
+              }
+            ],
+            "description": "Defines the ingestion endpoints to send data to via this rule.",
+            "type": "object"
+          },
+          "DataCollectionRuleIngestionQuotas": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/IngestionQuotas"
+              }
+            ],
+            "description": "The specification for ingestion limits",
+            "type": "object"
+          },
+          "DataCollectionRuleMetadata": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Metadata"
+              }
+            ],
+            "description": "Metadata about the resource",
+            "type": "object"
+          },
+          "DataCollectionRuleReferences": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ReferencesSpec"
+              }
+            ],
+            "description": "Defines all the references that may be used in other sections of the DCR",
+            "type": "object"
+          },
+          "DataCollectionRuleResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Definition of ARM tracked top level resource.",
+            "properties": {
+              "etag": {
+                "description": "Resource entity tag (ETag).",
+                "readOnly": true,
+                "type": "string"
+              },
+              "identity": {
+                "$ref": "#/definitions/DataCollectionRuleResourceIdentity",
+                "description": "Managed service identity of the resource."
+              },
+              "kind": {
+                "$ref": "#/definitions/KnownDataCollectionRuleResourceKind",
+                "description": "The kind of the resource."
+              },
+              "properties": {
+                "$ref": "#/definitions/DataCollectionRuleResourceProperties",
+                "x-ms-client-flatten": true
+              },
+              "sku": {
+                "$ref": "#/definitions/DataCollectionRuleResourceSku",
+                "description": "The SKU of the resource."
+              }
+            },
+            "type": "object"
+          },
+          "DataCollectionRuleResourceIdentity": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/managedidentity.json#/definitions/ManagedServiceIdentity"
+              }
+            ],
+            "description": "Managed service identity of the resource.",
+            "type": "object"
+          },
+          "DataCollectionRuleResourceListResult": {
+            "description": "The response of a DataCollectionRuleResource list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The DataCollectionRuleResource items on this page",
+                "items": {
+                  "$ref": "#/definitions/DataCollectionRuleResource"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "DataCollectionRuleResourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DataCollectionRule"
+              }
+            ],
+            "type": "object"
+          },
+          "DataCollectionRuleResourceSku": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Sku"
+              }
+            ],
+            "description": "The SKU of the resource.",
+            "type": "object"
+          },
+          "DataFlow": {
+            "description": "Definition of which streams are sent to which destinations.",
+            "properties": {
+              "builtInTransform": {
+                "description": "The builtIn transform to transform stream data",
+                "type": "string"
+              },
+              "captureOverflow": {
+                "description": "Flag to enable overflow column in LA destinations",
+                "type": "boolean"
+              },
+              "destinations": {
+                "description": "List of destinations for this data flow.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "outputStream": {
+                "description": "The output stream of the transform. Only required if the transform changes data to a different stream.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams for this data flow.",
+                "items": {
+                  "$ref": "#/definitions/KnownDataFlowStreams"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform stream data.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DataImportSources": {
+            "properties": {
+              "eventHub": {
+                "$ref": "#/definitions/DataImportSourcesEventHub",
+                "description": "Definition of Event Hub configuration."
+              }
+            },
+            "type": "object"
+          },
+          "DataImportSourcesEventHub": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/EventHubDataSource"
+              }
+            ],
+            "description": "Definition of Event Hub configuration.",
+            "type": "object"
+          },
+          "DataSourcesSpec": {
+            "description": "Specification of data sources that will be collected.",
+            "properties": {
+              "dataImports": {
+                "$ref": "#/definitions/DataSourcesSpecDataImports",
+                "description": "Specifications of pull based data sources"
+              },
+              "etwProviders": {
+                "description": "The list of ETW providers data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/EtwProviderDataSource"
+                },
+                "type": "array"
+              },
+              "extensions": {
+                "description": "The list of Azure VM extension data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/ExtensionDataSource"
+                },
+                "type": "array"
+              },
+              "iisLogs": {
+                "description": "The list of IIS logs source configurations.",
+                "items": {
+                  "$ref": "#/definitions/IisLogsDataSource"
+                },
+                "type": "array"
+              },
+              "logFiles": {
+                "description": "The list of Log files source configurations.",
+                "items": {
+                  "$ref": "#/definitions/LogFilesDataSource"
+                },
+                "type": "array"
+              },
+              "otelLogs": {
+                "description": "The list of Otel Logs data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelLogsDataSource"
+                },
+                "type": "array"
+              },
+              "otelMetrics": {
+                "description": "The list of OTel metrics data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelMetricsDataSource"
+                },
+                "type": "array"
+              },
+              "otelTraces": {
+                "description": "The list of Otel traces data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelTracesDataSource"
+                },
+                "type": "array"
+              },
+              "performanceCounters": {
+                "description": "The list of performance counter data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/PerfCounterDataSource"
+                },
+                "type": "array"
+              },
+              "performanceCountersOTel": {
+                "description": "The list of Open Telemetry performance counter data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/PerformanceCountersOTelDataSource"
+                },
+                "type": "array"
+              },
+              "platformTelemetry": {
+                "description": "The list of platform telemetry configurations",
+                "items": {
+                  "$ref": "#/definitions/PlatformTelemetryDataSource"
+                },
+                "type": "array"
+              },
+              "prometheusForwarder": {
+                "description": "The list of Prometheus forwarder data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/PrometheusForwarderDataSource"
+                },
+                "type": "array"
+              },
+              "syslog": {
+                "description": "The list of Syslog data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/SyslogDataSource"
+                },
+                "type": "array"
+              },
+              "windowsEventLogs": {
+                "description": "The list of Windows Event Log data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/WindowsEventLogDataSource"
+                },
+                "type": "array"
+              },
+              "windowsFirewallLogs": {
+                "description": "The list of Windows Firewall logs source configurations.",
+                "items": {
+                  "$ref": "#/definitions/WindowsFirewallLogsDataSource"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "DataSourcesSpecDataImports": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/DataImportSources"
+              }
+            ],
+            "description": "Specifications of pull based data sources",
+            "type": "object"
+          },
+          "DestinationsSpec": {
+            "description": "Specification of destinations that can be used in data flows.",
+            "properties": {
+              "azureDataExplorer": {
+                "description": "List of Azure Data Explorer destinations.",
+                "items": {
+                  "$ref": "#/definitions/AdxDestination"
+                },
+                "type": "array"
+              },
+              "azureMonitorMetrics": {
+                "$ref": "#/definitions/DestinationsSpecAzureMonitorMetrics",
+                "description": "Azure Monitor Metrics destination."
+              },
+              "eventHubs": {
+                "description": "List of Event Hubs destinations.",
+                "items": {
+                  "$ref": "#/definitions/EventHubDestination"
+                },
+                "type": "array"
+              },
+              "eventHubsDirect": {
+                "description": "List of Event Hubs Direct destinations.",
+                "items": {
+                  "$ref": "#/definitions/EventHubDirectDestination"
+                },
+                "type": "array"
+              },
+              "logAnalytics": {
+                "description": "List of Log Analytics destinations.",
+                "items": {
+                  "$ref": "#/definitions/LogAnalyticsDestination"
+                },
+                "type": "array"
+              },
+              "microsoftFabric": {
+                "description": "List of Microsoft Fabric destinations.",
+                "items": {
+                  "$ref": "#/definitions/MicrosoftFabricDestination"
+                },
+                "type": "array"
+              },
+              "monitoringAccounts": {
+                "description": "List of monitoring account destinations.",
+                "items": {
+                  "$ref": "#/definitions/MonitoringAccountDestination"
+                },
+                "type": "array"
+              },
+              "storageAccounts": {
+                "description": "List of storage accounts destinations.",
+                "items": {
+                  "$ref": "#/definitions/StorageBlobDestination"
+                },
+                "type": "array"
+              },
+              "storageBlobsDirect": {
+                "description": "List of Storage Blob Direct destinations. To be used only for sending data directly to store from the agent.",
+                "items": {
+                  "$ref": "#/definitions/StorageBlobDestination"
+                },
+                "type": "array"
+              },
+              "storageTablesDirect": {
+                "description": "List of Storage Table Direct destinations.",
+                "items": {
+                  "$ref": "#/definitions/StorageTableDestination"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "DestinationsSpecAzureMonitorMetrics": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AzureMonitorMetricsDestination"
+              }
+            ],
+            "description": "Azure Monitor Metrics destination.",
+            "type": "object"
+          },
+          "DirectDataSourcesSpec": {
+            "description": "Specification of direct data sources that will be collected.",
+            "properties": {
+              "otelLogs": {
+                "description": "The list of OTel logs data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelLogsDirectDataSource"
+                },
+                "type": "array"
+              },
+              "otelMetrics": {
+                "description": "The list of OTel metrics data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelMetricsDirectDataSource"
+                },
+                "type": "array"
+              },
+              "otelTraces": {
+                "description": "The list of OTel traces data source configurations.",
+                "items": {
+                  "$ref": "#/definitions/OtelTracesDirectDataSource"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "EndpointsSpec": {
+            "description": "This defines all the ingestion endpoints that can be used by this rule",
+            "properties": {
+              "logsIngestion": {
+                "description": "The ingestion endpoint for logs",
+                "readOnly": true,
+                "type": "string"
+              },
+              "metricsIngestion": {
+                "description": "The ingestion endpoint for metrics",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EnrichmentData": {
+            "description": "All the enrichment data sources referenced in data flows",
+            "properties": {
+              "storageBlobs": {
+                "description": "All the storage blobs used as enrichment data sources",
+                "items": {
+                  "$ref": "#/definitions/StorageBlob"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorResponseCommonV2": {
+            "description": "Common error response for all Azure Resource Manager APIs to return error details for failed operations. (This also follows the OData error response format.).",
+            "properties": {
+              "error": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorDetail",
+                "description": "The error object."
+              }
+            },
+            "type": "object"
+          },
+          "EtwProviderDataSource": {
+            "description": "Enables an ETW provider logs to be collected by this data collection rule.",
+            "properties": {
+              "eventIds": {
+                "description": "Events Ids to collect",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "keyword": {
+                "description": "Event's membership in a set of event categories",
+                "type": "string"
+              },
+              "logLevel": {
+                "$ref": "#/definitions/KnownEtwProviderDataSourceLogLevel",
+                "description": "Minimal level of detail to be logged"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "provider": {
+                "description": "The provider GUID or class name for event source",
+                "type": "string"
+              },
+              "providerType": {
+                "$ref": "#/definitions/KnownEtwProviderType",
+                "description": "Provider type specification: By Manifest GUID or by Event Source name"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams",
+              "provider",
+              "providerType"
+            ],
+            "type": "object"
+          },
+          "EventHubDataSource": {
+            "properties": {
+              "consumerGroup": {
+                "description": "Event Hub consumer group name",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "stream": {
+                "description": "The stream to collect from EventHub",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubDestination": {
+            "properties": {
+              "eventHubResourceId": {
+                "description": "The resource ID of the event hub.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubDirectDestination": {
+            "properties": {
+              "eventHubResourceId": {
+                "description": "The resource ID of the event hub.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ExtensionDataSource": {
+            "description": "Definition of which data will be collected from a separate VM extension that integrates with the Azure Monitor Agent.\nCollected from either Windows and Linux machines, depending on which extension is defined.",
+            "properties": {
+              "extensionName": {
+                "description": "The name of the VM extension.",
+                "type": "string"
+              },
+              "extensionSettings": {
+                "description": "The extension settings. The format is specific for particular extension."
+              },
+              "inputDataSources": {
+                "description": "The list of data sources this extension needs data from.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownExtensionDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "extensionName"
+            ],
+            "type": "object"
+          },
+          "FailoverConfigurationSpec": {
+            "properties": {
+              "activeLocation": {
+                "description": "Active location where data flow will occur.",
+                "type": "string"
+              },
+              "locations": {
+                "description": "Locations that are configured for failover.",
+                "items": {
+                  "$ref": "#/definitions/LocationSpec"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "IisLogsDataSource": {
+            "description": "Enables IIS logs to be collected by this data collection rule.",
+            "properties": {
+              "logDirectories": {
+                "description": "Absolute paths file location",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "IIS streams",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform the data source. This is a deprecated property and will be removed in future versions.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "IngestionQuotas": {
+            "properties": {
+              "logs": {
+                "$ref": "#/definitions/IngestionQuotasLogs"
+              }
+            },
+            "type": "object"
+          },
+          "IngestionQuotasLogs": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LogsQuotaSpec"
+              }
+            ],
+            "type": "object"
+          },
+          "KnownAgentSettingName": {
+            "description": "The name of the setting.\nMust be part of the list of supported settings",
+            "enum": [
+              "MaxDiskQuotaInMB",
+              "UseTimeReceivedForForwardedEvents",
+              "Tags"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownAgentSettingName",
+              "values": [
+                {
+                  "description": "MaxDiskQuotaInMB",
+                  "name": "MaxDiskQuotaInMB",
+                  "value": "MaxDiskQuotaInMB"
+                },
+                {
+                  "description": "UseTimeReceivedForForwardedEvents",
+                  "name": "UseTimeReceivedForForwardedEvents",
+                  "value": "UseTimeReceivedForForwardedEvents"
+                },
+                {
+                  "description": "Tags",
+                  "name": "Tags",
+                  "value": "Tags"
+                }
+              ]
+            }
+          },
+          "KnownColumnDefinitionType": {
+            "description": "The type of the column data.",
+            "enum": [
+              "string",
+              "int",
+              "long",
+              "real",
+              "boolean",
+              "datetime",
+              "dynamic"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownColumnDefinitionType",
+              "values": [
+                {
+                  "description": "string",
+                  "name": "string",
+                  "value": "string"
+                },
+                {
+                  "description": "int",
+                  "name": "int",
+                  "value": "int"
+                },
+                {
+                  "description": "long",
+                  "name": "long",
+                  "value": "long"
+                },
+                {
+                  "description": "real",
+                  "name": "real",
+                  "value": "real"
+                },
+                {
+                  "description": "boolean",
+                  "name": "boolean",
+                  "value": "boolean"
+                },
+                {
+                  "description": "datetime",
+                  "name": "datetime",
+                  "value": "datetime"
+                },
+                {
+                  "description": "dynamic",
+                  "name": "dynamic",
+                  "value": "dynamic"
+                }
+              ]
+            }
+          },
+          "KnownDataCollectionEndpointProvisioningState": {
+            "description": "The resource provisioning state. This property is READ-ONLY.",
+            "enum": [
+              "Creating",
+              "Updating",
+              "Deleting",
+              "Succeeded",
+              "Canceled",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataCollectionEndpointProvisioningState",
+              "values": [
+                {
+                  "description": "Creating",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "Updating",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "Deleting",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                },
+                {
+                  "description": "Succeeded",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Canceled",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "Failed",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "KnownDataCollectionEndpointResourceKind": {
+            "description": "The kind of the resource.",
+            "enum": [
+              "Linux",
+              "Windows"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataCollectionEndpointResourceKind",
+              "values": [
+                {
+                  "description": "Linux",
+                  "name": "Linux",
+                  "value": "Linux"
+                },
+                {
+                  "description": "Windows",
+                  "name": "Windows",
+                  "value": "Windows"
+                }
+              ]
+            }
+          },
+          "KnownDataCollectionRuleAssociationProvisioningState": {
+            "description": "The resource provisioning state.",
+            "enum": [
+              "Creating",
+              "Updating",
+              "Deleting",
+              "Succeeded",
+              "Canceled",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataCollectionRuleAssociationProvisioningState",
+              "values": [
+                {
+                  "description": "Creating",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "Updating",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "Deleting",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                },
+                {
+                  "description": "Succeeded",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Canceled",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "Failed",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "KnownDataCollectionRuleProvisioningState": {
+            "description": "The resource provisioning state.",
+            "enum": [
+              "Creating",
+              "Updating",
+              "Deleting",
+              "Succeeded",
+              "Canceled",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataCollectionRuleProvisioningState",
+              "values": [
+                {
+                  "description": "Creating",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "Updating",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "Deleting",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                },
+                {
+                  "description": "Succeeded",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Canceled",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "Failed",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "KnownDataCollectionRuleResourceKind": {
+            "description": "The kind of the resource.",
+            "enum": [
+              "Linux",
+              "Windows"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataCollectionRuleResourceKind",
+              "values": [
+                {
+                  "description": "Linux",
+                  "name": "Linux",
+                  "value": "Linux"
+                },
+                {
+                  "description": "Windows",
+                  "name": "Windows",
+                  "value": "Windows"
+                }
+              ]
+            }
+          },
+          "KnownDataFlowStreams": {
+            "enum": [
+              "Microsoft-Event",
+              "Microsoft-InsightsMetrics",
+              "Microsoft-Perf",
+              "Microsoft-Syslog",
+              "Microsoft-WindowsEvent"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownDataFlowStreams",
+              "values": [
+                {
+                  "description": "Microsoft-Event",
+                  "name": "Microsoft-Event",
+                  "value": "Microsoft-Event"
+                },
+                {
+                  "description": "Microsoft-InsightsMetrics",
+                  "name": "Microsoft-InsightsMetrics",
+                  "value": "Microsoft-InsightsMetrics"
+                },
+                {
+                  "description": "Microsoft-Perf",
+                  "name": "Microsoft-Perf",
+                  "value": "Microsoft-Perf"
+                },
+                {
+                  "description": "Microsoft-Syslog",
+                  "name": "Microsoft-Syslog",
+                  "value": "Microsoft-Syslog"
+                },
+                {
+                  "description": "Microsoft-WindowsEvent",
+                  "name": "Microsoft-WindowsEvent",
+                  "value": "Microsoft-WindowsEvent"
+                }
+              ]
+            }
+          },
+          "KnownEtwProviderDataSourceLogLevel": {
+            "description": "Minimal level of detail to be logged",
+            "enum": [
+              "Critical",
+              "Error",
+              "Warning",
+              "Informational",
+              "Verbose"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownEtwProviderDataSourceLogLevel",
+              "values": [
+                {
+                  "description": "Critical",
+                  "name": "Critical",
+                  "value": "Critical"
+                },
+                {
+                  "description": "Error",
+                  "name": "Error",
+                  "value": "Error"
+                },
+                {
+                  "description": "Warning",
+                  "name": "Warning",
+                  "value": "Warning"
+                },
+                {
+                  "description": "Informational",
+                  "name": "Informational",
+                  "value": "Informational"
+                },
+                {
+                  "description": "Verbose",
+                  "name": "Verbose",
+                  "value": "Verbose"
+                }
+              ]
+            }
+          },
+          "KnownEtwProviderType": {
+            "description": "Provider type specification: By Manifest GUID or by Event Source name",
+            "enum": [
+              "EventSource",
+              "Manifest"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownEtwProviderType",
+              "values": [
+                {
+                  "description": "EventSource",
+                  "name": "EventSource",
+                  "value": "EventSource"
+                },
+                {
+                  "description": "Manifest",
+                  "name": "Manifest",
+                  "value": "Manifest"
+                }
+              ]
+            }
+          },
+          "KnownExtensionDataSourceStreams": {
+            "enum": [
+              "Microsoft-Event",
+              "Microsoft-InsightsMetrics",
+              "Microsoft-Perf",
+              "Microsoft-Syslog",
+              "Microsoft-WindowsEvent"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownExtensionDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-Event",
+                  "name": "Microsoft-Event",
+                  "value": "Microsoft-Event"
+                },
+                {
+                  "description": "Microsoft-InsightsMetrics",
+                  "name": "Microsoft-InsightsMetrics",
+                  "value": "Microsoft-InsightsMetrics"
+                },
+                {
+                  "description": "Microsoft-Perf",
+                  "name": "Microsoft-Perf",
+                  "value": "Microsoft-Perf"
+                },
+                {
+                  "description": "Microsoft-Syslog",
+                  "name": "Microsoft-Syslog",
+                  "value": "Microsoft-Syslog"
+                },
+                {
+                  "description": "Microsoft-WindowsEvent",
+                  "name": "Microsoft-WindowsEvent",
+                  "value": "Microsoft-WindowsEvent"
+                }
+              ]
+            }
+          },
+          "KnownLocationSpecProvisioningStatus": {
+            "description": "The resource provisioning state in this location.",
+            "enum": [
+              "Creating",
+              "Updating",
+              "Deleting",
+              "Succeeded",
+              "Canceled",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownLocationSpecProvisioningStatus",
+              "values": [
+                {
+                  "description": "Creating",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "Updating",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "Deleting",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                },
+                {
+                  "description": "Succeeded",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Canceled",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "Failed",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "KnownLogFileTextSettingsRecordStartTimestampFormat": {
+            "description": "One of the supported timestamp formats",
+            "enum": [
+              "ISO 8601",
+              "YYYY-MM-DD HH:MM:SS",
+              "M/D/YYYY HH:MM:SS AM/PM",
+              "Mon DD, YYYY HH:MM:SS",
+              "yyMMdd HH:mm:ss",
+              "ddMMyy HH:mm:ss",
+              "MMM d hh:mm:ss",
+              "dd/MMM/yyyy:HH:mm:ss zzz",
+              "yyyy-MM-ddTHH:mm:ssK"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownLogFileTextSettingsRecordStartTimestampFormat",
+              "values": [
+                {
+                  "description": "ISO 8601",
+                  "name": "ISO 8601",
+                  "value": "ISO 8601"
+                },
+                {
+                  "description": "YYYY-MM-DD HH:MM:SS",
+                  "name": "YYYY-MM-DD HH:MM:SS",
+                  "value": "YYYY-MM-DD HH:MM:SS"
+                },
+                {
+                  "description": "M/D/YYYY HH:MM:SS AM/PM",
+                  "name": "M/D/YYYY HH:MM:SS AM/PM",
+                  "value": "M/D/YYYY HH:MM:SS AM/PM"
+                },
+                {
+                  "description": "Mon DD, YYYY HH:MM:SS",
+                  "name": "Mon DD, YYYY HH:MM:SS",
+                  "value": "Mon DD, YYYY HH:MM:SS"
+                },
+                {
+                  "description": "yyMMdd HH:mm:ss",
+                  "name": "yyMMdd HH:mm:ss",
+                  "value": "yyMMdd HH:mm:ss"
+                },
+                {
+                  "description": "ddMMyy HH:mm:ss",
+                  "name": "ddMMyy HH:mm:ss",
+                  "value": "ddMMyy HH:mm:ss"
+                },
+                {
+                  "description": "MMM d hh:mm:ss",
+                  "name": "MMM d hh:mm:ss",
+                  "value": "MMM d hh:mm:ss"
+                },
+                {
+                  "description": "dd/MMM/yyyy:HH:mm:ss zzz",
+                  "name": "dd/MMM/yyyy:HH:mm:ss zzz",
+                  "value": "dd/MMM/yyyy:HH:mm:ss zzz"
+                },
+                {
+                  "description": "yyyy-MM-ddTHH:mm:ssK",
+                  "name": "yyyy-MM-ddTHH:mm:ssK",
+                  "value": "yyyy-MM-ddTHH:mm:ssK"
+                }
+              ]
+            }
+          },
+          "KnownLogFilesDataSourceFormat": {
+            "description": "The data format of the log files",
+            "enum": [
+              "json",
+              "text"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownLogFilesDataSourceFormat",
+              "values": [
+                {
+                  "description": "json",
+                  "name": "json",
+                  "value": "json"
+                },
+                {
+                  "description": "text",
+                  "name": "text",
+                  "value": "text"
+                }
+              ]
+            }
+          },
+          "KnownOtelLogsDataSourceStreams": {
+            "enum": [
+              "Microsoft-OTel-Logs"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownOtelLogsDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-OTel-Logs",
+                  "name": "Microsoft-OTel-Logs",
+                  "value": "Microsoft-OTel-Logs"
+                }
+              ]
+            }
+          },
+          "KnownOtelLogsDirectDataSourceStreams": {
+            "enum": [
+              "Microsoft-OTel-Logs"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownOtelLogsDirectDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-OTel-Logs",
+                  "name": "Microsoft-OTel-Logs",
+                  "value": "Microsoft-OTel-Logs"
+                }
+              ]
+            }
+          },
+          "KnownOtelTracesDataSourceStreams": {
+            "enum": [
+              "Microsoft-OTel-Traces-Spans",
+              "Microsoft-OTel-Traces-Events",
+              "Microsoft-OTel-Traces-Resources"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownOtelTracesDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-OTel-Traces-Spans",
+                  "name": "Microsoft-OTel-Traces-Spans",
+                  "value": "Microsoft-OTel-Traces-Spans"
+                },
+                {
+                  "description": "Microsoft-OTel-Traces-Events",
+                  "name": "Microsoft-OTel-Traces-Events",
+                  "value": "Microsoft-OTel-Traces-Events"
+                },
+                {
+                  "description": "Microsoft-OTel-Traces-Resources",
+                  "name": "Microsoft-OTel-Traces-Resources",
+                  "value": "Microsoft-OTel-Traces-Resources"
+                }
+              ]
+            }
+          },
+          "KnownOtelTracesDirectDataSourceStreams": {
+            "enum": [
+              "Microsoft-OTel-Traces-Spans",
+              "Microsoft-OTel-Traces-Events",
+              "Microsoft-OTel-Traces-Resources"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownOtelTracesDirectDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-OTel-Traces-Spans",
+                  "name": "Microsoft-OTel-Traces-Spans",
+                  "value": "Microsoft-OTel-Traces-Spans"
+                },
+                {
+                  "description": "Microsoft-OTel-Traces-Events",
+                  "name": "Microsoft-OTel-Traces-Events",
+                  "value": "Microsoft-OTel-Traces-Events"
+                },
+                {
+                  "description": "Microsoft-OTel-Traces-Resources",
+                  "name": "Microsoft-OTel-Traces-Resources",
+                  "value": "Microsoft-OTel-Traces-Resources"
+                }
+              ]
+            }
+          },
+          "KnownPerfCounterDataSourceStreams": {
+            "enum": [
+              "Microsoft-Perf",
+              "Microsoft-InsightsMetrics"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownPerfCounterDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-Perf",
+                  "name": "Microsoft-Perf",
+                  "value": "Microsoft-Perf"
+                },
+                {
+                  "description": "Microsoft-InsightsMetrics",
+                  "name": "Microsoft-InsightsMetrics",
+                  "value": "Microsoft-InsightsMetrics"
+                }
+              ]
+            }
+          },
+          "KnownPerformanceCountersOTelDataSourceStreams": {
+            "enum": [
+              "Microsoft-OtelPerfMetrics"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownPerformanceCountersOTelDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-OtelPerfMetrics",
+                  "name": "Microsoft-OtelPerfMetrics",
+                  "value": "Microsoft-OtelPerfMetrics"
+                }
+              ]
+            }
+          },
+          "KnownPrometheusForwarderDataSourceStreams": {
+            "enum": [
+              "Microsoft-PrometheusMetrics"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownPrometheusForwarderDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-PrometheusMetrics",
+                  "name": "Microsoft-PrometheusMetrics",
+                  "value": "Microsoft-PrometheusMetrics"
+                }
+              ]
+            }
+          },
+          "KnownPublicNetworkAccessOptions": {
+            "description": "The configuration to set whether network access from public internet to the endpoints are allowed.",
+            "enum": [
+              "Enabled",
+              "Disabled",
+              "SecuredByPerimeter"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownPublicNetworkAccessOptions",
+              "values": [
+                {
+                  "description": "Enabled",
+                  "name": "Enabled",
+                  "value": "Enabled"
+                },
+                {
+                  "description": "Disabled",
+                  "name": "Disabled",
+                  "value": "Disabled"
+                },
+                {
+                  "description": "SecuredByPerimeter",
+                  "name": "SecuredByPerimeter",
+                  "value": "SecuredByPerimeter"
+                }
+              ]
+            }
+          },
+          "KnownStorageBlobLookupType": {
+            "description": "The type of lookup to perform on the blob",
+            "enum": [
+              "String",
+              "Cidr"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownStorageBlobLookupType",
+              "values": [
+                {
+                  "description": "String",
+                  "name": "String",
+                  "value": "String"
+                },
+                {
+                  "description": "Cidr",
+                  "name": "Cidr",
+                  "value": "Cidr"
+                }
+              ]
+            }
+          },
+          "KnownSyslogDataSourceFacilityNames": {
+            "enum": [
+              "*",
+              "alert",
+              "audit",
+              "auth",
+              "authpriv",
+              "clock",
+              "cron",
+              "daemon",
+              "ftp",
+              "kern",
+              "local0",
+              "local1",
+              "local2",
+              "local3",
+              "local4",
+              "local5",
+              "local6",
+              "local7",
+              "lpr",
+              "mail",
+              "mark",
+              "news",
+              "nopri",
+              "ntp",
+              "syslog",
+              "user",
+              "uucp"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownSyslogDataSourceFacilityNames",
+              "values": [
+                {
+                  "description": "*",
+                  "name": "Asterisk",
+                  "value": "*"
+                },
+                {
+                  "description": "alert",
+                  "name": "alert",
+                  "value": "alert"
+                },
+                {
+                  "description": "audit",
+                  "name": "audit",
+                  "value": "audit"
+                },
+                {
+                  "description": "auth",
+                  "name": "auth",
+                  "value": "auth"
+                },
+                {
+                  "description": "authpriv",
+                  "name": "authpriv",
+                  "value": "authpriv"
+                },
+                {
+                  "description": "clock",
+                  "name": "clock",
+                  "value": "clock"
+                },
+                {
+                  "description": "cron",
+                  "name": "cron",
+                  "value": "cron"
+                },
+                {
+                  "description": "daemon",
+                  "name": "daemon",
+                  "value": "daemon"
+                },
+                {
+                  "description": "ftp",
+                  "name": "ftp",
+                  "value": "ftp"
+                },
+                {
+                  "description": "kern",
+                  "name": "kern",
+                  "value": "kern"
+                },
+                {
+                  "description": "local0",
+                  "name": "local0",
+                  "value": "local0"
+                },
+                {
+                  "description": "local1",
+                  "name": "local1",
+                  "value": "local1"
+                },
+                {
+                  "description": "local2",
+                  "name": "local2",
+                  "value": "local2"
+                },
+                {
+                  "description": "local3",
+                  "name": "local3",
+                  "value": "local3"
+                },
+                {
+                  "description": "local4",
+                  "name": "local4",
+                  "value": "local4"
+                },
+                {
+                  "description": "local5",
+                  "name": "local5",
+                  "value": "local5"
+                },
+                {
+                  "description": "local6",
+                  "name": "local6",
+                  "value": "local6"
+                },
+                {
+                  "description": "local7",
+                  "name": "local7",
+                  "value": "local7"
+                },
+                {
+                  "description": "lpr",
+                  "name": "lpr",
+                  "value": "lpr"
+                },
+                {
+                  "description": "mail",
+                  "name": "mail",
+                  "value": "mail"
+                },
+                {
+                  "description": "mark",
+                  "name": "mark",
+                  "value": "mark"
+                },
+                {
+                  "description": "news",
+                  "name": "news",
+                  "value": "news"
+                },
+                {
+                  "description": "nopri",
+                  "name": "nopri",
+                  "value": "nopri"
+                },
+                {
+                  "description": "ntp",
+                  "name": "ntp",
+                  "value": "ntp"
+                },
+                {
+                  "description": "syslog",
+                  "name": "syslog",
+                  "value": "syslog"
+                },
+                {
+                  "description": "user",
+                  "name": "user",
+                  "value": "user"
+                },
+                {
+                  "description": "uucp",
+                  "name": "uucp",
+                  "value": "uucp"
+                }
+              ]
+            }
+          },
+          "KnownSyslogDataSourceLogLevels": {
+            "enum": [
+              "Debug",
+              "Info",
+              "Notice",
+              "Warning",
+              "Error",
+              "Critical",
+              "Alert",
+              "Emergency",
+              "*"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownSyslogDataSourceLogLevels",
+              "values": [
+                {
+                  "description": "Debug",
+                  "name": "Debug",
+                  "value": "Debug"
+                },
+                {
+                  "description": "Info",
+                  "name": "Info",
+                  "value": "Info"
+                },
+                {
+                  "description": "Notice",
+                  "name": "Notice",
+                  "value": "Notice"
+                },
+                {
+                  "description": "Warning",
+                  "name": "Warning",
+                  "value": "Warning"
+                },
+                {
+                  "description": "Error",
+                  "name": "Error",
+                  "value": "Error"
+                },
+                {
+                  "description": "Critical",
+                  "name": "Critical",
+                  "value": "Critical"
+                },
+                {
+                  "description": "Alert",
+                  "name": "Alert",
+                  "value": "Alert"
+                },
+                {
+                  "description": "Emergency",
+                  "name": "Emergency",
+                  "value": "Emergency"
+                },
+                {
+                  "description": "*",
+                  "name": "Asterisk",
+                  "value": "*"
+                }
+              ]
+            }
+          },
+          "KnownSyslogDataSourceStreams": {
+            "enum": [
+              "Microsoft-Syslog"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownSyslogDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-Syslog",
+                  "name": "Microsoft-Syslog",
+                  "value": "Microsoft-Syslog"
+                }
+              ]
+            }
+          },
+          "KnownWindowsEventLogDataSourceStreams": {
+            "enum": [
+              "Microsoft-WindowsEvent",
+              "Microsoft-Event"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownWindowsEventLogDataSourceStreams",
+              "values": [
+                {
+                  "description": "Microsoft-WindowsEvent",
+                  "name": "Microsoft-WindowsEvent",
+                  "value": "Microsoft-WindowsEvent"
+                },
+                {
+                  "description": "Microsoft-Event",
+                  "name": "Microsoft-Event",
+                  "value": "Microsoft-Event"
+                }
+              ]
+            }
+          },
+          "KnownWindowsFirewallLogsDataSourceProfileFilter": {
+            "enum": [
+              "Domain",
+              "Private",
+              "Public"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "KnownWindowsFirewallLogsDataSourceProfileFilter",
+              "values": [
+                {
+                  "description": "Domain",
+                  "name": "Domain",
+                  "value": "Domain"
+                },
+                {
+                  "description": "Private",
+                  "name": "Private",
+                  "value": "Private"
+                },
+                {
+                  "description": "Public",
+                  "name": "Public",
+                  "value": "Public"
+                }
+              ]
+            }
+          },
+          "LocationSpec": {
+            "properties": {
+              "location": {
+                "description": "Name of location.",
+                "type": "string"
+              },
+              "provisioningStatus": {
+                "$ref": "#/definitions/KnownLocationSpecProvisioningStatus",
+                "description": "The resource provisioning state in this location."
+              }
+            },
+            "type": "object"
+          },
+          "LogAnalyticsDestination": {
+            "description": "Log Analytics destination.",
+            "properties": {
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "workspaceId": {
+                "description": "The Customer ID of the Log Analytics workspace.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "workspaceResourceId": {
+                "description": "The resource ID of the Log Analytics workspace.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "LogFileSettings": {
+            "description": "Settings for different log file formats",
+            "properties": {
+              "text": {
+                "$ref": "#/definitions/LogFileSettingsText",
+                "description": "Text settings"
+              }
+            },
+            "type": "object"
+          },
+          "LogFileSettingsText": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LogFileTextSettings"
+              }
+            ],
+            "description": "Text settings",
+            "type": "object"
+          },
+          "LogFileTextSettings": {
+            "description": "Settings for text log files",
+            "properties": {
+              "recordStartTimestampFormat": {
+                "$ref": "#/definitions/KnownLogFileTextSettingsRecordStartTimestampFormat",
+                "description": "One of the supported timestamp formats"
+              }
+            },
+            "required": [
+              "recordStartTimestampFormat"
+            ],
+            "type": "object"
+          },
+          "LogFilesDataSource": {
+            "description": "Definition of which custom log files will be collected by this data collection rule",
+            "properties": {
+              "filePatterns": {
+                "description": "File Patterns where the log files are located",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "format": {
+                "$ref": "#/definitions/KnownLogFilesDataSourceFormat",
+                "description": "The data format of the log files"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "settings": {
+                "$ref": "#/definitions/LogFilesDataSourceSettings",
+                "description": "The log files specific settings."
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data source",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform the data source. This is a deprecated property and will be removed in future versions.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "streams",
+              "filePatterns",
+              "format"
+            ],
+            "type": "object"
+          },
+          "LogFilesDataSourceSettings": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LogFileSettings"
+              }
+            ],
+            "description": "The log files specific settings.",
+            "type": "object"
+          },
+          "LogsIngestionEndpointSpec": {
+            "description": "Definition of the endpoint used for ingesting logs.",
+            "properties": {
+              "endpoint": {
+                "description": "The endpoint. This property is READ-ONLY.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "LogsQuotaSpec": {
+            "properties": {
+              "maxRequestsPerMinute": {
+                "type": "string"
+              },
+              "maxSizePerMinuteInGB": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Metadata": {
+            "description": "Metadata about the resource",
+            "properties": {
+              "provisionedBy": {
+                "description": "Azure offering managing this resource on-behalf-of customer.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisionedByImmutableId": {
+                "description": "Immutable Id of azure offering managing this resource on-behalf-of customer.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisionedByResourceId": {
+                "description": "Resource Id of azure offering managing this resource on-behalf-of customer.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MetricsIngestionEndpointSpec": {
+            "description": "Definition of the endpoint used for ingesting metrics.",
+            "properties": {
+              "endpoint": {
+                "description": "The endpoint. This property is READ-ONLY.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MicrosoftFabricDestination": {
+            "description": "Microsoft Fabric destination (non-Azure).",
+            "properties": {
+              "artifactId": {
+                "description": "The artifact id of the Microsoft Fabric resource.",
+                "type": "string"
+              },
+              "databaseName": {
+                "description": "The name of the database to which data will be ingested.",
+                "type": "string"
+              },
+              "ingestionUri": {
+                "description": "The ingestion uri of the Microsoft Fabric resource.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The tenant id of the Microsoft Fabric resource.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MonitoringAccountDestination": {
+            "description": "Monitoring account destination.",
+            "properties": {
+              "accountId": {
+                "description": "The immutable ID of the account.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "accountResourceId": {
+                "description": "The resource ID of the monitoring account.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "NetworkRuleSet": {
+            "description": "Definition of the network rules.",
+            "properties": {
+              "publicNetworkAccess": {
+                "$ref": "#/definitions/KnownPublicNetworkAccessOptions",
+                "description": "The configuration to set whether network access from public internet to the endpoints are allowed."
+              }
+            },
+            "type": "object"
+          },
+          "OtelDataSourceResourceAttributeRouting": {
+            "description": "Enables OTLP (logs, traces, and metrics) payload routing",
+            "properties": {
+              "attributeName": {
+                "description": "The name of the resource attribute to match.",
+                "type": "string"
+              },
+              "attributeValue": {
+                "description": "The value of the resource attribute to match.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "OtelLogsDataSource": {
+            "description": "Enables Otel logs to be collected by this data collection rule.",
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference alias to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "replaceResourceIdWithReference": {
+                "description": "Specifies whether to replace the default resourceId in the log record with the resourceId of the referenced resource being used for enrichment.",
+                "type": "boolean"
+              },
+              "resourceAttributeRouting": {
+                "$ref": "#/definitions/OtelLogsDataSourceResourceAttributeRouting",
+                "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute."
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownOtelLogsDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "OtelLogsDataSourceResourceAttributeRouting": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OtelDataSourceResourceAttributeRouting"
+              }
+            ],
+            "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute.",
+            "type": "object"
+          },
+          "OtelLogsDirectDataSource": {
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "replaceResourceIdWithReference": {
+                "description": "Specifies whether to replace the default resourceId in the log record with the resourceId of the referenced resource being used for enrichment.",
+                "type": "boolean"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownOtelLogsDirectDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "OtelMetricsDataSource": {
+            "description": "Definition of OTel metrics configuration.",
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "resourceAttributeRouting": {
+                "$ref": "#/definitions/OtelMetricsDataSourceResourceAttributeRouting",
+                "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute."
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "OtelMetricsDataSourceResourceAttributeRouting": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OtelDataSourceResourceAttributeRouting"
+              }
+            ],
+            "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute.",
+            "type": "object"
+          },
+          "OtelMetricsDirectDataSource": {
+            "description": "Definition of OTel metrics configuration.",
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "OtelTracesDataSource": {
+            "description": "Enables Otel Traces to be collected by this data collection rule.",
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "replaceResourceIdWithReference": {
+                "description": "Specifies whether to replace the default resourceId in the log record with the resourceId of the referenced resource being used for enrichment.",
+                "type": "boolean"
+              },
+              "resourceAttributeRouting": {
+                "$ref": "#/definitions/OtelTracesDataSourceResourceAttributeRouting",
+                "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute."
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownOtelTracesDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "OtelTracesDataSourceResourceAttributeRouting": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OtelDataSourceResourceAttributeRouting"
+              }
+            ],
+            "description": "Specifies the routing policy based on OTLP payload resource attributes to route subset of the payload according to matching resource attribute.",
+            "type": "object"
+          },
+          "OtelTracesDirectDataSource": {
+            "description": "Enables Otel Traces to be collected by this data collection rule.",
+            "properties": {
+              "enrichWithReference": {
+                "description": "Specifies the reference to enrich the telemetry signal with.",
+                "type": "string"
+              },
+              "enrichWithResourceAttributes": {
+                "description": "Specifies the list of resource attributes that need to be added as labels/dimensions to the telemetry data for further enrichment.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "replaceResourceIdWithReference": {
+                "description": "Specifies whether to replace the default resourceId in the log record with the resourceId of the referenced resource being used for enrichment.",
+                "type": "boolean"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownOtelTracesDirectDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "PerfCounterDataSource": {
+            "description": "Definition of which performance counters will be collected and how they will be collected by this data collection rule.\nCollected from both Windows and Linux machines where the counter is present.",
+            "properties": {
+              "counterSpecifiers": {
+                "description": "A list of specifier names of the performance counters you want to collect.\nUse a wildcard (*) to collect a counter for all instances.\nTo get a list of performance counters on Windows, run the command 'typeperf'.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "samplingFrequencyInSeconds": {
+                "description": "The number of seconds between consecutive counter measurements (samples).",
+                "format": "int32",
+                "type": "integer"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownPerfCounterDataSourceStreams"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform the data source. This is a deprecated property and will be removed in future versions.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PerformanceCountersOTelDataSource": {
+            "description": "Definition of which Open Telemetry performance counters will be collected and how they will be collected by this data collection rule.\nCollected from both Windows and Linux machines where the counter is present.",
+            "properties": {
+              "counterSpecifiers": {
+                "description": "A list of specifier names of the performance counters you want to collect.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "samplingFrequencyInSeconds": {
+                "description": "The number of seconds between consecutive counter measurements (samples).",
+                "format": "int32",
+                "type": "integer"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownPerformanceCountersOTelDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "PlatformTelemetryDataSource": {
+            "description": "Definition of platform telemetry data source configuration",
+            "properties": {
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of platform telemetry streams to collect",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          },
+          "PrivateLinkScopedResource": {
+            "properties": {
+              "resourceId": {
+                "description": "The resourceId of the Azure Monitor Private Link Scope Scoped Resource through which this DCE is associated with a Azure Monitor Private Link Scope.",
+                "type": "string"
+              },
+              "scopeId": {
+                "description": "The immutableId of the Azure Monitor Private Link Scope Resource to which the association is.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PrometheusForwarderDataSource": {
+            "description": "Definition of Prometheus metrics forwarding configuration.",
+            "properties": {
+              "customVMScrapeConfig": {
+                "description": "Custom VM Scrape Config that defines scrape jobs",
+                "items": {},
+                "type": "array"
+              },
+              "labelIncludeFilter": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The list of label inclusion filters in the form of label \"name-value\" pairs.\nCurrently only one label is supported: 'microsoft_metrics_include_label'.\nLabel values are matched case-insensitively.",
+                "type": "object"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownPrometheusForwarderDataSourceStreams"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ReferencesSpec": {
+            "description": "This section defines all the references that may be used in other sections of the DCR",
+            "properties": {
+              "applicationInsights": {
+                "description": "Application Insights references to be used on OTel metrics/logs enrichment",
+                "items": {
+                  "$ref": "#/definitions/ApplicationInsights"
+                },
+                "type": "array"
+              },
+              "enrichmentData": {
+                "$ref": "#/definitions/ReferencesSpecEnrichmentData",
+                "description": "All the enrichment data sources referenced in data flows"
+              }
+            },
+            "type": "object"
+          },
+          "ReferencesSpecEnrichmentData": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/EnrichmentData"
+              }
+            ],
+            "description": "All the enrichment data sources referenced in data flows",
+            "type": "object"
+          },
+          "StorageBlob": {
+            "properties": {
+              "blobUrl": {
+                "description": "Url of the storage blob",
+                "type": "string"
+              },
+              "lookupType": {
+                "$ref": "#/definitions/KnownStorageBlobLookupType",
+                "description": "The type of lookup to perform on the blob"
+              },
+              "name": {
+                "description": "The name of the enrichment data source used as an alias when referencing this data source in data flows",
+                "type": "string"
+              },
+              "resourceId": {
+                "description": "Resource Id of the storage account that hosts the blob",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "StorageBlobDestination": {
+            "properties": {
+              "containerName": {
+                "description": "The container name of the Storage Blob.",
+                "type": "string"
+              },
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "storageAccountResourceId": {
+                "description": "The resource ID of the storage account.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "StorageTableDestination": {
+            "properties": {
+              "name": {
+                "description": "A friendly name for the destination.\nThis name should be unique across all destinations (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "storageAccountResourceId": {
+                "description": "The resource ID of the storage account.",
+                "type": "string"
+              },
+              "tableName": {
+                "description": "The name of the Storage Table.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "StreamDeclaration": {
+            "description": "Declaration of a custom stream.",
+            "properties": {
+              "columns": {
+                "description": "List of columns used by data in this stream.",
+                "items": {
+                  "$ref": "#/definitions/ColumnDefinition"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "SyslogDataSource": {
+            "description": "Definition of which syslog data will be collected and how it will be collected.\nOnly collected from Linux machines.",
+            "properties": {
+              "facilityNames": {
+                "description": "The list of facility names.",
+                "items": {
+                  "$ref": "#/definitions/KnownSyslogDataSourceFacilityNames"
+                },
+                "type": "array"
+              },
+              "logLevels": {
+                "description": "The log levels to collect.",
+                "items": {
+                  "$ref": "#/definitions/KnownSyslogDataSourceLogLevels"
+                },
+                "type": "array"
+              },
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownSyslogDataSourceStreams"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform the data source. This is a deprecated property and will be removed in future versions.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "WindowsEventLogDataSource": {
+            "description": "Definition of which Windows Event Log events will be collected and how they will be collected.\nOnly collected from Windows machines.",
+            "properties": {
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "streams": {
+                "description": "List of streams that this data source will be sent to.\nA stream indicates what schema will be used for this data and usually what table in Log Analytics the data will be sent to.",
+                "items": {
+                  "$ref": "#/definitions/KnownWindowsEventLogDataSourceStreams"
+                },
+                "type": "array"
+              },
+              "transformKql": {
+                "description": "The KQL query to transform the data source. This is a deprecated property and will be removed in future versions.",
+                "type": "string"
+              },
+              "xPathQueries": {
+                "description": "A list of Windows Event Log queries in XPATH format.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "WindowsFirewallLogsDataSource": {
+            "description": "Enables Firewall logs to be collected by this data collection rule.",
+            "properties": {
+              "name": {
+                "description": "A friendly name for the data source.\nThis name should be unique across all data sources (regardless of type) within the data collection rule.",
+                "type": "string"
+              },
+              "profileFilter": {
+                "description": "Firewall logs profile filter",
+                "items": {
+                  "$ref": "#/definitions/KnownWindowsFirewallLogsDataSourceProfileFilter"
+                },
+                "type": "array"
+              },
+              "streams": {
+                "description": "Firewall logs streams",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "streams"
+            ],
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Provides comprehensive operations for working with Azure Monitor data collection rules, endpoints, and associations. This API enables management of telemetry collection, transformation, and routing configurations.",
+          "title": "Azure Monitor Data Collection Control Plane API",
+          "version": "2024-03-11",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionEndpoints": {
+            "get": {
+              "description": "Lists all data collection endpoints in the specified subscription",
+              "operationId": "DataCollectionEndpoints_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionEndpointResourceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Lists all data collection endpoints in the specified subscription",
+              "tags": [
+                "DataCollectionEndpoints"
+              ],
+              "x-ms-examples": {
+                "List data collection endpoints by subscription": {
+                  "$ref": "./examples/DataCollectionEndpointsListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionRules": {
+            "get": {
+              "description": "Lists all data collection rules in the specified subscription.",
+              "operationId": "DataCollectionRules_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleResourceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Lists all data collection rules in the specified subscription.",
+              "tags": [
+                "DataCollectionRules"
+              ],
+              "x-ms-examples": {
+                "List data collection rules by subscription": {
+                  "$ref": "./examples/DataCollectionRulesListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}": {
+            "delete": {
+              "description": "Deletes a data collection endpoint.",
+              "operationId": "DataCollectionEndpoints_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection endpoint. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionEndpointName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Deletes a data collection endpoint.",
+              "tags": [
+                "DataCollectionEndpoints"
+              ],
+              "x-ms-examples": {
+                "Delete data collection endpoint": {
+                  "$ref": "./examples/DataCollectionEndpointsDelete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Returns the specified data collection endpoint.",
+              "operationId": "DataCollectionEndpoints_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection endpoint. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionEndpointName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionEndpointResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Returns the specified data collection endpoint.",
+              "tags": [
+                "DataCollectionEndpoints"
+              ],
+              "x-ms-examples": {
+                "Get data collection endpoint": {
+                  "$ref": "./examples/DataCollectionEndpointsGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}/associations": {
+            "get": {
+              "description": "Lists associations for the specified data collection endpoint.",
+              "operationId": "DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection endpoint. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionEndpointName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResourceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Lists associations for the specified data collection endpoint.",
+              "tags": [
+                "DataCollectionRuleAssociations"
+              ],
+              "x-ms-examples": {
+                "List associations for specified data collection endpoint": {
+                  "$ref": "./examples/DataCollectionRuleAssociationsListByDataCollectionEndpoint.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}": {
+            "delete": {
+              "description": "Deletes a data collection rule.",
+              "operationId": "DataCollectionRules_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection rule. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionRuleName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "default": false,
+                  "description": "If set to 'true' then all associations of this data collection rule will also be deleted",
+                  "in": "query",
+                  "name": "deleteAssociations",
+                  "required": false,
+                  "type": "boolean"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Deletes a data collection rule.",
+              "tags": [
+                "DataCollectionRules"
+              ],
+              "x-ms-examples": {
+                "Delete data collection rule": {
+                  "$ref": "./examples/DataCollectionRulesDelete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Returns the specified data collection rule.",
+              "operationId": "DataCollectionRules_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection rule. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionRuleName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Returns the specified data collection rule.",
+              "tags": [
+                "DataCollectionRules"
+              ],
+              "x-ms-examples": {
+                "Get data collection rule": {
+                  "$ref": "./examples/DataCollectionRulesGet.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}/associations": {
+            "get": {
+              "description": "Lists associations for the specified data collection rule.",
+              "operationId": "DataCollectionRuleAssociations_ListByRule",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the data collection rule. The name is case insensitive.",
+                  "in": "path",
+                  "name": "dataCollectionRuleName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "(Optional) The continuation token for paginated responses",
+                  "in": "query",
+                  "name": "$skipToken",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "description": "(Optional) The max number of items to return per page",
+                  "format": "int32",
+                  "in": "query",
+                  "name": "$top",
+                  "required": false,
+                  "type": "integer"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResourceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Lists associations for the specified data collection rule.",
+              "tags": [
+                "DataCollectionRuleAssociations"
+              ],
+              "x-ms-examples": {
+                "List associations for specified data collection rule": {
+                  "$ref": "./examples/DataCollectionRuleAssociationsListByRule.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations": {
+            "get": {
+              "description": "Lists associations for the specified resource.",
+              "operationId": "DataCollectionRuleAssociations_ListByResource",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "minLength": 1,
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResourceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Lists associations for the specified resource.",
+              "tags": [
+                "DataCollectionRuleAssociations"
+              ],
+              "x-ms-examples": {
+                "List associations for specified resource": {
+                  "$ref": "./examples/DataCollectionRuleAssociationsListByResource.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}": {
+            "delete": {
+              "description": "Deletes an association.",
+              "operationId": "DataCollectionRuleAssociations_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "minLength": 1,
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The name of the association. The name is case insensitive.",
+                  "in": "path",
+                  "name": "associationName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Deletes an association.",
+              "tags": [
+                "DataCollectionRuleAssociations"
+              ],
+              "x-ms-examples": {
+                "Delete association": {
+                  "$ref": "./examples/DataCollectionRuleAssociationsDelete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Returns the specified association.",
+              "operationId": "DataCollectionRuleAssociations_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "minLength": 1,
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The name of the association. The name is case insensitive.",
+                  "in": "path",
+                  "name": "associationName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponseCommonV2"
+                  }
+                }
+              },
+              "summary": "Returns the specified association.",
+              "tags": [
+                "DataCollectionRuleAssociations"
+              ],
+              "x-ms-examples": {
+                "Get association": {
+                  "$ref": "./examples/DataCollectionRuleAssociationsGet.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "78e41e00ae17c4099d855d933fc18ab2b88728e7730ed9760525cbc80893df8c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "Facet": {
+            "description": "A facet containing additional statistics on the response of a query. Can be either FacetResult or FacetError.",
+            "discriminator": "resultType",
+            "properties": {
+              "expression": {
+                "description": "Facet expression, same as in the corresponding facet request.",
+                "type": "string"
+              },
+              "resultType": {
+                "description": "Result type",
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression",
+              "resultType"
+            ],
+            "type": "object"
+          },
+          "FacetRequest": {
+            "description": "A request to compute additional statistics (facets) over the query results.",
+            "properties": {
+              "expression": {
+                "description": "The column or list of columns to summarize by",
+                "type": "string"
+              },
+              "options": {
+                "$ref": "#/definitions/FacetRequestOptions",
+                "description": "The options for facet evaluation"
+              }
+            },
+            "required": [
+              "expression"
+            ],
+            "type": "object"
+          },
+          "FacetRequestOptions": {
+            "description": "The options for facet evaluation",
+            "properties": {
+              "$top": {
+                "description": "The maximum number of facet rows that should be returned.",
+                "format": "int32",
+                "maximum": 1000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "filter": {
+                "description": "Specifies the filter condition for the 'where' clause which will be run on main query's result, just before the actual faceting.",
+                "type": "string"
+              },
+              "sortBy": {
+                "description": "The column name or query expression to sort on. Defaults to count if not present.",
+                "type": "string"
+              },
+              "sortOrder": {
+                "default": "desc",
+                "description": "The sorting order by the selected column (count by default).",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "FacetSortOrder",
+                  "values": [
+                    {
+                      "description": "asc",
+                      "name": "asc",
+                      "value": "asc"
+                    },
+                    {
+                      "description": "desc",
+                      "name": "desc",
+                      "value": "desc"
+                    }
+                  ]
+                }
+              }
+            },
+            "type": "object"
+          },
+          "QueryRequest": {
+            "description": "Describes a query to be executed.",
+            "properties": {
+              "facets": {
+                "description": "An array of facet requests to be computed against the query result.",
+                "items": {
+                  "$ref": "#/definitions/FacetRequest"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "managementGroups": {
+                "description": "Azure management groups against which to execute the query. Example: [ 'mg1', 'mg2' ]",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "options": {
+                "$ref": "#/definitions/QueryRequestOptions",
+                "description": "The query evaluation options"
+              },
+              "query": {
+                "description": "The resources query.",
+                "type": "string"
+              },
+              "subscriptions": {
+                "description": "Azure subscriptions against which to execute the query.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "query"
+            ],
+            "type": "object"
+          },
+          "QueryRequestOptions": {
+            "description": "The options for query evaluation",
+            "properties": {
+              "$skip": {
+                "description": "The number of rows to skip from the beginning of the results. Overrides the next page offset when ```$skipToken``` property is present.",
+                "format": "int32",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "$skipToken": {
+                "description": "Continuation token for pagination, capturing the next page size and offset, as well as the context of the query.",
+                "type": "string"
+              },
+              "$top": {
+                "description": "The maximum number of rows that the query should return. Overrides the page size when ```$skipToken``` property is present.",
+                "format": "int32",
+                "maximum": 1000,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "allowPartialScopes": {
+                "default": false,
+                "description": "Only applicable for tenant and management group level queries to decide whether to allow partial scopes for result in case the number of subscriptions exceed allowed limits.",
+                "type": "boolean"
+              },
+              "authorizationScopeFilter": {
+                "default": "AtScopeAndBelow",
+                "description": "Defines what level of authorization resources should be returned based on the which subscriptions and management groups are passed as scopes.",
+                "enum": [
+                  "AtScopeAndBelow",
+                  "AtScopeAndAbove",
+                  "AtScopeExact",
+                  "AtScopeAboveAndBelow"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "AuthorizationScopeFilter",
+                  "values": [
+                    {
+                      "description": "AtScopeAndBelow",
+                      "name": "AtScopeAndBelow",
+                      "value": "AtScopeAndBelow"
+                    },
+                    {
+                      "description": "AtScopeAndAbove",
+                      "name": "AtScopeAndAbove",
+                      "value": "AtScopeAndAbove"
+                    },
+                    {
+                      "description": "AtScopeExact",
+                      "name": "AtScopeExact",
+                      "value": "AtScopeExact"
+                    },
+                    {
+                      "description": "AtScopeAboveAndBelow",
+                      "name": "AtScopeAboveAndBelow",
+                      "value": "AtScopeAboveAndBelow"
+                    }
+                  ]
+                }
+              },
+              "resultFormat": {
+                "default": "objectArray",
+                "description": "Defines in which format query result returned.",
+                "enum": [
+                  "table",
+                  "objectArray"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "ResultFormat",
+                  "values": [
+                    {
+                      "description": "table",
+                      "name": "table",
+                      "value": "table"
+                    },
+                    {
+                      "description": "objectArray",
+                      "name": "objectArray",
+                      "value": "objectArray"
+                    }
+                  ]
+                }
+              }
+            },
+            "type": "object"
+          },
+          "QueryResponse": {
+            "description": "Query result.",
+            "properties": {
+              "$skipToken": {
+                "description": "When present, the value can be passed to a subsequent query call (together with the same query and scopes used in the current request) to retrieve the next page of data.",
+                "type": "string"
+              },
+              "count": {
+                "description": "Number of records returned in the current response. In the case of paging, this is the number of records in the current page.",
+                "format": "int64",
+                "type": "integer"
+              },
+              "data": {
+                "description": "Query output in JObject array or Table format."
+              },
+              "facets": {
+                "description": "Query facets.",
+                "items": {
+                  "$ref": "#/definitions/Facet"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "resultTruncated": {
+                "$ref": "#/definitions/ResultTruncated",
+                "description": "Indicates whether the query results are truncated."
+              },
+              "totalRecords": {
+                "description": "Number of total records matching the query.",
+                "format": "int64",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "totalRecords",
+              "count",
+              "resultTruncated",
+              "data"
+            ],
+            "type": "object"
+          },
+          "ResourceGraphCommon.Error": {
+            "description": "Error details.",
+            "properties": {
+              "code": {
+                "description": "Error code identifying the specific error.",
+                "type": "string"
+              },
+              "details": {
+                "description": "Error details",
+                "items": {
+                  "$ref": "#/definitions/ResourceGraphCommon.ErrorDetails"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "message": {
+                "description": "A human readable error message.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "title": "Error info.",
+            "type": "object"
+          },
+          "ResourceGraphCommon.ErrorDetails": {
+            "additionalProperties": {},
+            "description": "Error details.",
+            "properties": {
+              "code": {
+                "description": "Error code identifying the specific error.",
+                "type": "string"
+              },
+              "message": {
+                "description": "A human readable error message.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "title": "Error details.",
+            "type": "object"
+          },
+          "ResourceGraphCommon.ErrorResponse": {
+            "description": "An error response from the API.",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/ResourceGraphCommon.Error",
+                "description": "Error information."
+              }
+            },
+            "required": [
+              "error"
+            ],
+            "title": "Error response.",
+            "type": "object"
+          },
+          "ResultTruncated": {
+            "description": "Indicates whether the query results are truncated.",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "ResultTruncated",
+              "values": [
+                {
+                  "description": "true",
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "description": "false",
+                  "name": "false",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Resource Graph API Reference",
+          "title": "Azure Resource Graph",
+          "version": "2024-04-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/providers/Microsoft.ResourceGraph/resources": {
+            "post": {
+              "description": "Queries the resources managed by Azure Resource Manager for scopes specified in the request.",
+              "externalDocs": {
+                "description": "Learn more about the query syntax here",
+                "url": "https://aka.ms/resource-graph/learntoquery"
+              },
+              "operationId": "Resources",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The request body",
+                  "in": "body",
+                  "name": "query",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/QueryRequest"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The request has succeeded.",
+                  "schema": {
+                    "$ref": "#/definitions/QueryResponse"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ResourceGraphCommon.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Resources"
+              ],
+              "x-ms-examples": {
+                "Access a properties field": {
+                  "$ref": "./examples/ResourcesPropertiesQuery.json"
+                },
+                "Basic management group query": {
+                  "$ref": "./examples/ResourcesMgBasicQuery.json"
+                },
+                "Basic query": {
+                  "$ref": "./examples/ResourcesBasicQuery.json"
+                },
+                "Basic tenant query": {
+                  "$ref": "./examples/ResourcesTenantBasicQuery.json"
+                },
+                "Complex query": {
+                  "$ref": "./examples/ResourcesComplexQuery.json"
+                },
+                "Filter resources": {
+                  "$ref": "./examples/ResourcesFilterQuery.json"
+                },
+                "First page query": {
+                  "$ref": "./examples/ResourcesFirstPageQuery.json"
+                },
+                "Next page query": {
+                  "$ref": "./examples/ResourcesNextPageQuery.json"
+                },
+                "Query with a facet request": {
+                  "$ref": "./examples/ResourcesFacetQuery.json"
+                },
+                "Random page query": {
+                  "$ref": "./examples/ResourcesRandomPageQuery.json"
+                },
+                "Summarize resources by location": {
+                  "$ref": "./examples/ResourcesSummarizeQuery.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "b9cc4a440858bb51f10474cd36208dee324ddbddb8ce06fd31378efea5a6d111",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/resourcegraph.json"
     },
     {
       "dependency": true,
@@ -68853,6 +72869,68 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Dashboard.IntegrationFabrics_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.monitoring_configuration",
+      "displayName": "Data collection rule",
+      "nativeType": "Microsoft.Insights/dataCollectionRules",
+      "rest": {
+        "collection": "dataCollectionRules",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.ingestion_endpoint",
+      "displayName": "Data collection endpoint",
+      "nativeType": "Microsoft.Insights/dataCollectionEndpoints",
+      "rest": {
+        "collection": "dataCollectionEndpoints",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_ListBySubscription"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.monitoring_association",
+      "displayName": "Data collection rule association",
+      "nativeType": "Microsoft.Insights/dataCollectionRuleAssociations",
+      "rest": {
+        "collection": "dataCollectionRuleAssociations",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByRule",
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Get"
         ]
       },
       "scopeKinds": [

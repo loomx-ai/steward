@@ -88,12 +88,25 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		ids = kind.DeleteOperations
 	}
 	parts := strings.Split(id, "/")
-	for _, id := range ids {
-		operation, ok := metadata.catalog.Operation(id)
+	for _, operationID := range ids {
+		operation, ok := metadata.catalog.Operation(operationID)
 		if !ok || operation.Call == nil || operation.Call.Method != method {
 			continue
 		}
 		template := strings.Split(operation.Call.Path, "/")
+		// Monitor associations are extension resources. Their native resourceUri
+		// consumes the complete, already validated ARM parent path.
+		if kind.NativeType == dataCollectionAssociationType && operation.Call.Path == "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}" {
+			parent, err := dataCollectionMonitoredResource(nativeID)
+			if err != nil {
+				return catalog.Operation{}, nil, err
+			}
+			parameters := map[string]any{"resourceUri": strings.TrimPrefix(parent, "/"), "associationName": last(id)}
+			if _, err := catalog.BindREST(operation, parameters); err != nil {
+				return catalog.Operation{}, nil, err
+			}
+			return operation, parameters, nil
+		}
 		if len(template) != len(parts) {
 			continue
 		}

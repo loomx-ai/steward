@@ -107,6 +107,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := serviceCreationIdentity(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := dataCollectionIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := grafanaIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}

@@ -279,6 +279,19 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if isDataCollectionType(nativeType) {
+		normalized["_data_collection_configuration"] = dataCollectionConfiguration(nativeType, raw)
+		if value := safe["identity"]; value != nil {
+			normalized["identity"] = value
+		}
+		if nativeType == dataCollectionAssociationType {
+			parent, err := dataCollectionMonitoredResource(id)
+			if err != nil || len(dataCollectionReferences(raw)) == 0 {
+				return contracts.InventoryItem{}, serviceDenied("invalid_data_collection_association")
+			}
+			normalized["monitoredResourceId"] = parent
+		}
+	}
 	if isGrafanaType(nativeType) {
 		normalized["_grafana_configuration"] = grafanaConfiguration(nativeType, raw)
 		if nativeType != grafanaType {
@@ -483,6 +496,15 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if isGrafanaType(nativeType) {
 		fields["privatelinkresourceid"], fields["datasourceresourceid"], fields["azuremonitorworkspaceresourceid"] = true, true, true
 	}
+	if isDataCollectionType(nativeType) {
+		for _, key := range []string{"datacollectionruleid", "datacollectionendpointid", "eventhubresourceid", "storageaccountresourceid", "accountresourceid", "resourceid"} {
+			fields[key] = true
+		}
+		if nativeType == dataCollectionAssociationType {
+			parent, _ := dataCollectionMonitoredResource(self)
+			add(parent)
+		}
+	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true
 	}
@@ -584,7 +606,7 @@ func safeResource(value any) any {
 				"requestheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
 				continue
 			}
-			if strings.EqualFold(key, "storagePath") {
+			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") {
 				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
 					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
 					result[key] = endpoint.String()

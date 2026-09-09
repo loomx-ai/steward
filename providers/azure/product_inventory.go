@@ -25,11 +25,12 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	Endpoint   string `json:"endpoint"`
-	ParentID   string `json:"parent_id,omitempty"`
-	ParentType string `json:"parent_type,omitempty"`
-	Generation string `json:"generation,omitempty"`
-	Location   string `json:"location,omitempty"`
+	MonitoredResource string `json:"monitored_resource,omitempty"`
+	Endpoint          string `json:"endpoint"`
+	ParentID          string `json:"parent_id,omitempty"`
+	ParentType        string `json:"parent_type,omitempty"`
+	Generation        string `json:"generation,omitempty"`
+	Location          string `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -134,7 +135,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 		}
 		seen[id] = true
-		if target.ParentID != "" && !strings.EqualFold(id, u.Path+"/"+last(id)) {
+		if kind.NativeType == dataCollectionAssociationType {
+			if err := dataCollectionTargetMembership(raw, target); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		} else if target.ParentID != "" && !strings.EqualFold(id, u.Path+"/"+last(id)) {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product child belongs to another parent")
 		}
 		readURL, err := c.resourceURL(kind, id)
@@ -154,6 +159,35 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if kind.NativeType == dataCollectionAssociationType {
+			if err := dataCollectionTargetMembership(data, target); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if err := serviceListedIncarnation(raw, data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if !dataCollectionSameReferences(raw, data) {
+				return contracts.InventoryBatch{}, serviceDenied("data_collection_association_changed")
+			}
+			// Prefer a live rule, then a live endpoint, then the monitored resource
+			// for orphan discovery. A deleted target cannot hide its surviving link.
+			canonical, err := c.dataCollectionCanonicalTarget(ctx, data, targets)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if canonical.ParentID != "" && canonical.ParentID != target.ParentID {
+				indexed, err := c.dataCollectionAssociations(ctx, asset.Identity{NativeID: canonical.ParentID, NativeType: canonical.ParentType})
+				if err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				if !slices.ContainsFunc(indexed, func(child serviceChild) bool {
+					return child.id == id && productGeneration(child.data) == productGeneration(data)
+				}) {
+					return contracts.InventoryBatch{}, serviceDenied("data_collection_reverse_indexes_disagree")
+				}
+				continue
+			}
+		}
 		data["id"] = id
 		data["type"] = kind.NativeType
 		if text(data["name"]) == "" {
@@ -234,6 +268,9 @@ func productGeneration(raw map[string]any) string {
 	if kind := grafanaKind(raw); kind != "" {
 		values = append(values, grafanaConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isDataCollectionType(kind) {
+		values = append(values, dataCollectionConfiguration(kind, raw), properties["immutableId"])
+	}
 	encoded, _ := json.Marshal(values)
 	return fmt.Sprintf("%x", sha256.Sum256(encoded))
 }
@@ -245,7 +282,7 @@ func creationGeneration(raw map[string]any) string {
 	if value := object(raw["systemData"])["createdAt"]; value != nil {
 		values["systemData.createdAt"] = value
 	}
-	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "immutableId", "accountId"} {
 		if value := object(raw["properties"])[field]; value != nil {
 			values[field] = value
 		}
@@ -295,23 +332,29 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			return nil, fmt.Errorf("Azure product parent requires an authoritative source")
 		}
 		parents = nil
-		kind := r.resourceKind(parent.NativeType)
-		parentRequest := request
-		parentRequest.ResourceKind = &kind
-		parentRequest.Cursor = ""
-		// Child resources can have their own region, and resource groups are
-		// globally scoped. Enumerate the native parent set across the subscription.
-		parentRequest.Scope = asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}
-		for {
-			batch, err := r.listProduct(ctx, c, parentRequest, ancestors)
-			if err != nil {
-				return nil, err
+		parentTypes := []string{parent.NativeType}
+		if definition.Metadata.NativeType == dataCollectionAssociationType {
+			parentTypes = append(parentTypes, dataCollectionEndpointType)
+		}
+		for _, parentType := range parentTypes {
+			kind := r.resourceKind(parentType)
+			parentRequest := request
+			parentRequest.ResourceKind = &kind
+			parentRequest.Cursor = ""
+			// Child resources can have their own region, and resource groups are
+			// globally scoped. Enumerate the native parent set across the subscription.
+			parentRequest.Scope = asset.Scope{Kind: asset.ScopeSubscription, NativeID: c.subscription}
+			for {
+				batch, err := r.listProduct(ctx, c, parentRequest, ancestors)
+				if err != nil {
+					return nil, err
+				}
+				parents = append(parents, batch.Items...)
+				if batch.Complete {
+					break
+				}
+				parentRequest.Cursor = batch.NextCursor
 			}
-			parents = append(parents, batch.Items...)
-			if batch.Complete {
-				break
-			}
-			parentRequest.Cursor = batch.NextCursor
 		}
 		sort.Slice(parents, func(i, j int) bool { return parents[i].NativeID < parents[j].NativeID })
 		for i := 1; i < len(parents); i++ {
@@ -332,7 +375,13 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				continue
 			}
 		}
-		bound, err := c.bindProductList(api, request.Scope.NativeID, parent)
+		var bound catalog.RESTRequest
+		var err error
+		if definition.Metadata.NativeType == dataCollectionAssociationType {
+			bound, err = c.dataCollectionAssociationList(parent.NativeID, parent.NativeType)
+		} else {
+			bound, err = c.bindProductList(api, request.Scope.NativeID, parent)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -342,6 +391,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			target.Generation = productGeneration(parent.Raw)
 		}
 		targets = append(targets, target)
+	}
+	if definition.Metadata.NativeType == dataCollectionAssociationType {
+		return c.dataCollectionOrphanTargets(ctx, targets)
 	}
 	return targets, nil
 }

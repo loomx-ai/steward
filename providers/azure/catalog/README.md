@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 126 current resource rules discover through native product List operations.
+All 129 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 392 operations from
-71 root documents and 33 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 404 operations from
+73 root documents and 34 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -264,3 +264,20 @@ namespace membership, recreation, inherited locks and protected resources block
 cleanup. A known creation time less than four hours old prevents deletion in
 accordance with Azure's minimum cluster lifetime. Five unchanged Swagger
 examples and retained protocol/restart tests verify these contracts.
+
+Monitor data collection adds three explicit resource types and eleven native
+operations from the pinned 2024-03-11 dataCollection.json. Association inventory
+combines both native reverse indexes and binds cursors to their complete target
+set; resourceUri preserves the monitored resource's full extension path.
+Shared required-deletion relationships add each unlink once without asserting
+exclusive ownership. A subscription-bound Resource Graph query supplements
+orphan discovery, followed by native GET/ListByResource confirmation. Its
+indexing delay and resource-level RBAC visibility are documented in the evidence.
+Two native list/GET passes, frozen configuration and
+creation identity, locks, prerequisite absence and final readback guard cleanup.
+DCR deletion explicitly binds deleteAssociations=false. Fourteen unchanged
+Swagger examples, independent native-schema validation and three extracted
+Microsoft CLI responses are retained in the
+[data collection evidence](../fixtures/data-collection/README.md).
+Workspace managed-group lifecycle support and real-cloud acceptance are still
+unfinished; native deletion has no atomic conditional header.

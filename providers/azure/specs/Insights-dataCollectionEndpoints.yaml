@@ -1,0 +1,90 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/dataCollectionEndpoints
+  class: observability.ingestion_endpoint
+presentation:
+  displayNames:
+    en-US: Data collection endpoint
+    zh-CN: 数据采集终结点
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Insights.DataCollectionEndpoints_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.DataCollectionEndpoints_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  zoneId:
+    path: zone_id
+    type: string
+  tags:
+    path: tags
+    type: object
+  immutableId:
+    path: immutableId
+    type: string
+  description:
+    path: description
+    type: string
+  configurationAccess:
+    path: configurationAccess
+    type: object
+  logsIngestion:
+    path: logsIngestion
+    type: object
+  metricsIngestion:
+    path: metricsIngestion
+    type: object
+  networkAcls:
+    path: networkAcls
+    type: object
+  privateLinkScopedResources:
+    path: privateLinkScopedResources
+    type: array
+  failoverConfiguration:
+    path: failoverConfiguration
+    type: object
+  metadata:
+    path: metadata
+    type: object
+  identity:
+    path: identity
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.DataCollectionEndpoints_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.DataCollectionEndpoints_Get
+      itemsPath: $
+      identityPath: id

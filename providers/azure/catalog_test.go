@@ -85,6 +85,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if strings.EqualFold(match[1], "subscriptionId") {
 					value = testSubscription
 				}
+				if match[1] == "resourceUri" {
+					value = strings.TrimPrefix(resourceID(vmType, "monitored"), "/")
+				}
 				nativeID = strings.ReplaceAll(nativeID, match[0], value)
 			}
 			endpoint, err := c.resourceURL(kind, nativeID)

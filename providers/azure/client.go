@@ -177,8 +177,8 @@ func (c *client) requestBody(ctx context.Context, method, endpoint string, body 
 	return c.requestAt(ctx, method, endpoint, body, headers, c.validateURL)
 }
 
-// Only native operation polling supplies its action-specific validator here.
-// Ordinary inventory and mutation requests stay subscription-bound.
+// Native operation polling and the fixed Resource Graph discovery query supply
+// their own validators. Ordinary inventory and mutations stay subscription-bound.
 func (c *client) requestAt(ctx context.Context, method, endpoint string, body []byte, headers map[string]string, validate func(string) error) (out response, failure error) {
 	if err := validate(endpoint); err != nil {
 		return response{}, err

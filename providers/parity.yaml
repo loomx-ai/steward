@@ -200,11 +200,16 @@ resources:
   azure:
     resources:
     - Microsoft.Insights/dataCollectionRules
+    - Microsoft.Insights/dataCollectionEndpoints
+    - Microsoft.Insights/dataCollectionRuleAssociations
+    - Microsoft.Monitor/accounts
   status: pending_verification
   notes: Native scope/member inventory and reviewed project-link removal are implemented.
     The scope and its self link remain project-owned; native APIs expose no independent scope delete.
     Incoming scopes are references outside the connection boundary. Broader monitoring configuration
-    and real-cloud acceptance remain unverified.
+    and real-cloud acceptance remain unverified. Azure data collection rules, endpoints and extension
+    associations now use native product inventory and reviewed shared unlink prerequisites.
+    Azure Monitor workspace ownership and its default managed resource group remain unfinished.
 - alicloud: ACS::ARMS::GrafanaWorkspace
   spec: providers/alicloud/specs/arms-grafana-workspace.yaml
   class: observability.visualization

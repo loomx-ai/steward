@@ -874,3 +874,33 @@ background evidence only, not acceptance evidence for this work.
   no atomic configuration condition. There are still 48 mapped Azure kinds without
   specifications. Remaining lifecycle composition, independent environment and
   end-to-end acceptance, and publication remain open.
+
+### Azure Monitor data collection progress (acceptance remains open)
+
+- Azure now has 129 explicit rules, 117 native deletion actions and 404 native
+  operations from 73 root Swagger documents and 34 reference documents. Three
+  data-collection rules bind the official 2024-03-11 API. The new source fragment
+  reproduces independently; all prior source values are preserved.
+- Inventory combines rule/endpoint reverse indexes, supports native extension
+  resourceUri paths and validates linkage, scope, pagination and parent sets.
+  A fixed subscription-bound Resource Graph query adds orphan discovery, with
+  native GET/ListByResource confirmation and orphan-bound cursors; its eventual
+  consistency and resource-level RBAC limits remain explicit.
+  Dual-target indexes must agree. Shared required-deletion relationships include
+  each reviewed association once; they claim no ownership of monitored resources.
+  DCR DELETE fixes deleteAssociations=false. Native configuration, immutable
+  creation IDs, locks, managed groups and final prerequisite absence are verified.
+  Blob enrichment URL credentials are removed from inventory and API logs.
+- Nine retained test functions cover the actual planner, all three native
+  actions, retention, serialized recovery, drift and failed/inconsistent
+  inventory. Fourteen unchanged Swagger examples and three Microsoft CLI response
+  extracts have checksum provenance; native GET payloads pass independent schema
+  validation. The earlier recorded API, updated association response and
+  synthetic surrounding reads are disclosed in the
+  [data collection evidence](providers/azure/fixtures/data-collection/README.md).
+- Full Go tests, Azure/plan/cleanup/contracts targeted race tests and vet pass.
+  Repeated generation produces catalog SHA-256
+  675db1670c8271c0bf3387c09b8dc88345dd9288d848e09ec4dc49c61e00c11e.
+  Azure Monitor workspace/default managed-group ownership, remaining mapped
+  Azure services, tenant-global association support, independent environment and
+  end-to-end acceptance, and publication remain open.

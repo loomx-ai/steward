@@ -26,6 +26,8 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	dataCollectionRuleType:     {dataCollectionAssociationType},
+	dataCollectionEndpointType: {dataCollectionAssociationType},
 	// These are direct prerequisites; only their own APIs remove each child.
 	grafanaType: {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
 	// The dedicated cluster's native namespace list contains external ARM IDs.
@@ -167,7 +169,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 }
 
 func serviceListedIncarnation(listed, live map[string]any) error {
-	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "eTag"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "eTag", "immutableId", "accountId"} {
 		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
 			return fmt.Errorf("Azure resource incarnation changed")
 		}
@@ -184,6 +186,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := dataCollectionIncarnation(planned, live); err != nil {
+		return err
+	}
 	if err := grafanaIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -297,6 +302,13 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
+			}
+			if child.kind == dataCollectionAssociationType {
+				// Reverse indexes establish an unlink prerequisite, not ownership
+				// of the monitored resource or a potentially shared association.
+				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+				continue
 			}
 			childKind, known := findType(child.kind)
 			directAllowed := known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
@@ -546,6 +558,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isDataCollectionType(parent.NativeType):
+		children, err = c.dataCollectionAssociations(ctx, parent)
 	case strings.EqualFold(parent.NativeType, grafanaType):
 		children, err = c.grafanaChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, eventHubClusterType):
@@ -593,6 +607,8 @@ func serviceChildRelation(parent, child asset.Asset) bool {
 		return true
 	}
 	switch {
+	case isDataCollectionType(parent.Identity.NativeType) && strings.EqualFold(child.Identity.NativeType, dataCollectionAssociationType):
+		return dataCollectionAssociationMembership(map[string]any{"id": child.Identity.NativeID, "properties": child.Normalized}, parent.Identity.NativeID) == nil
 	case strings.EqualFold(parent.Identity.NativeType, eventHubClusterType):
 		return strings.EqualFold(child.Identity.NativeType, eventHubNamespaceType) && eventHubClusterReference(child.Normalized["clusterArmId"], parent.Identity.NativeID)
 	case strings.EqualFold(parent.Identity.NativeType, scaleSetVMType) && strings.EqualFold(child.Identity.NativeType, diskType):

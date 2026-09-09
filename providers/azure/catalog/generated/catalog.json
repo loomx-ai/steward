@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8f870fd5bf8ae6ac5729efdcc29c08b2551a652f83e636be3b6bc50832ab0e93",
+    "checksum": "eae06546f33631ceb1e59230e8a9b48057904b694fcac6f2b2cb90e17302eec1",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9ba69ff890a2fc751260bf56ec3895b67a6c566c70069da680e8360cb39c8497",
+  "content_checksum": "12f87444e59934a9c8862db426f39f5795e0744edc20eb9e3197d50ef4204d54",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -11852,6 +11852,806 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/SchemaRegistry.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionEndpoints_Delete",
+      "name": "DataCollectionEndpoints_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionEndpointName": {
+            "description": "The name of the data collection endpoint. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionEndpoints_Get",
+      "name": "DataCollectionEndpoints_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionEndpointName": {
+            "description": "The name of the data collection endpoint. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Definition of ARM tracked top level resource.",
+        "properties": {
+          "etag": {
+            "description": "Resource entity tag (ETag).",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/DataCollectionEndpointResourceIdentity",
+            "description": "Managed service identity of the resource."
+          },
+          "kind": {
+            "$ref": "#/definitions/KnownDataCollectionEndpointResourceKind",
+            "description": "The kind of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/DataCollectionEndpointResourceProperties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/DataCollectionEndpointResourceSku",
+            "description": "The SKU of the resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionEndpoints_ListBySubscription",
+      "name": "DataCollectionEndpoints_ListBySubscription",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DataCollectionEndpointResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataCollectionEndpointResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataCollectionEndpointResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Delete",
+      "name": "DataCollectionRuleAssociations_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "associationName": {
+            "description": "The name of the association. The name is case insensitive.",
+            "in": "path",
+            "name": "associationName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "minLength": 1,
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Get",
+      "name": "DataCollectionRuleAssociations_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "associationName": {
+            "description": "The name of the association. The name is case insensitive.",
+            "in": "path",
+            "name": "associationName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "minLength": 1,
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Definition of generic ARM proxy resource.",
+        "properties": {
+          "etag": {
+            "description": "Resource entity tag (ETag).",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResourceProperties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+      "name": "DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}/associations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionEndpointName": {
+            "description": "The name of the data collection endpoint. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionEndpointName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DataCollectionRuleAssociationProxyOnlyResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataCollectionRuleAssociationProxyOnlyResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionEndpoints/{dataCollectionEndpointName}/associations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource",
+      "name": "DataCollectionRuleAssociations_ListByResource",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "minLength": 1,
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DataCollectionRuleAssociationProxyOnlyResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataCollectionRuleAssociationProxyOnlyResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByRule",
+      "name": "DataCollectionRuleAssociations_ListByRule",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}/associations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "(Optional) The continuation token for paginated responses",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string"
+          },
+          "$top": {
+            "description": "(Optional) The max number of items to return per page",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionRuleName": {
+            "description": "The name of the data collection rule. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DataCollectionRuleAssociationProxyOnlyResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataCollectionRuleAssociationProxyOnlyResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataCollectionRuleAssociationProxyOnlyResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}/associations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRules_Delete",
+      "name": "DataCollectionRules_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionRuleName": {
+            "description": "The name of the data collection rule. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "deleteAssociations": {
+            "default": false,
+            "description": "If set to 'true' then all associations of this data collection rule will also be deleted",
+            "in": "query",
+            "name": "deleteAssociations",
+            "required": false,
+            "type": "boolean"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRules_Get",
+      "name": "DataCollectionRules_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataCollectionRuleName": {
+            "description": "The name of the data collection rule. The name is case insensitive.",
+            "in": "path",
+            "name": "dataCollectionRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Definition of ARM tracked top level resource.",
+        "properties": {
+          "etag": {
+            "description": "Resource entity tag (ETag).",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/DataCollectionRuleResourceIdentity",
+            "description": "Managed service identity of the resource."
+          },
+          "kind": {
+            "$ref": "#/definitions/KnownDataCollectionRuleResourceKind",
+            "description": "The kind of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/DataCollectionRuleResourceProperties",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/DataCollectionRuleResourceSku",
+            "description": "The SKU of the resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/dataCollectionRules/{dataCollectionRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription",
+      "name": "DataCollectionRules_ListBySubscription",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-03-11"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a DataCollectionRuleResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataCollectionRuleResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataCollectionRuleResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2024-03-11",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/dataCollectionRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
     },
     {
       "id": "Azure.Microsoft.KeyVault.Vaults_Delete",
@@ -23798,6 +24598,88 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json"
     },
     {
+      "id": "Azure.Microsoft.ResourceGraph.Resources",
+      "name": "Resources",
+      "service": "Microsoft.ResourceGraph",
+      "method": "POST",
+      "path": "/providers/Microsoft.ResourceGraph/resources",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "query": {
+            "description": "The request body",
+            "in": "body",
+            "name": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/QueryRequest"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Query result.",
+        "properties": {
+          "$skipToken": {
+            "description": "When present, the value can be passed to a subsequent query call (together with the same query and scopes used in the current request) to retrieve the next page of data.",
+            "type": "string"
+          },
+          "count": {
+            "description": "Number of records returned in the current response. In the case of paging, this is the number of records in the current page.",
+            "format": "int64",
+            "type": "integer"
+          },
+          "data": {
+            "description": "Query output in JObject array or Table format."
+          },
+          "facets": {
+            "description": "Query facets.",
+            "items": {
+              "$ref": "#/definitions/Facet"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          },
+          "resultTruncated": {
+            "$ref": "#/definitions/ResultTruncated",
+            "description": "Indicates whether the query results are truncated."
+          },
+          "totalRecords": {
+            "description": "Number of total records matching the query.",
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "totalRecords",
+          "count",
+          "resultTruncated",
+          "data"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ResourceGraph",
+        "version": "2024-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/providers/Microsoft.ResourceGraph/resources",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/resourcegraph/resource-manager/Microsoft.ResourceGraph/ResourceGraph/stable/2024-04-01/resourcegraph.json"
+    },
+    {
       "id": "Azure.Microsoft.ServiceBus.DisasterRecoveryConfigs_BreakPairing",
       "name": "DisasterRecoveryConfigs_BreakPairing",
       "service": "Microsoft.ServiceBus",
@@ -33075,6 +33957,68 @@
         ],
         "list_operations": [
           "Azure.Microsoft.EventHub.SchemaRegistry_ListByNamespace"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionEndpoints",
+      "class": "observability.ingestion_endpoint",
+      "display_name": "Data collection endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "dataCollectionEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionEndpoints_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionRuleAssociations",
+      "class": "observability.monitoring_association",
+      "display_name": "Data collection rule association",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "dataCollectionRuleAssociations",
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByRule",
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByDataCollectionEndpoint",
+          "Azure.Microsoft.Insights.DataCollectionRuleAssociations_ListByResource"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/dataCollectionRules",
+      "class": "observability.monitoring_configuration",
+      "display_name": "Data collection rule",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "dataCollectionRules",
+        "read_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription"
         ]
       }
     },
