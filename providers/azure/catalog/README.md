@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 130 current resource rules discover through native product List operations.
+All 131 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 407 operations from
-74 root documents and 36 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 410 operations from
+75 root documents and 36 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -290,3 +290,10 @@ creation identity, locks, changed membership and final group/known-child absence
 are checked with the same group machinery used by AKS. The
 [workspace evidence](../fixtures/monitor-workspace/README.md) retains three native
 examples, their schema/header inconsistencies and two Microsoft CLI read responses.
+
+Container Instances adds native subscription inventory and group deletion from
+2025-09-01. Embedded containers share the group lifecycle; external volumes remain
+independent. Sanitized configuration, keyed sensitive-value comparison, explicit
+network/identity references, native final absence and managed-group preflight have
+retained tests. See the [Container Instances evidence](../fixtures/container-instances/README.md)
+for original Swagger examples, native CLI response replay and verification limits.

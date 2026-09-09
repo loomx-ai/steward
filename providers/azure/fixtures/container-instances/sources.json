@@ -1,0 +1,27 @@
+[
+  {
+    "file": "ContainerGroupsList.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/examples/ContainerGroupsList.json",
+    "source_sha256": "82682985dbead250dc627dee3934d95193ed2c7ecc2b626a81bebc5588e097f6"
+  },
+  {
+    "file": "ContainerGroupsGetPriority.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/examples/ContainerGroupsGetPriority.json",
+    "source_sha256": "70ec03fe9b4627526dd632df3eb65d986be1906dcac57af612d7ade983ad9b7a"
+  },
+  {
+    "file": "ContainerGroupsGet_Failed.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/examples/ContainerGroupsGet_Failed.json",
+    "source_sha256": "2b610a4da9c814efc1a6c1f46aaa47aed8bd8c1f8e4e543ee9e3077c17e2956d"
+  },
+  {
+    "file": "ContainerGroupsGet_Succeeded.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/examples/ContainerGroupsGet_Succeeded.json",
+    "source_sha256": "807b7af20a9986ba00c908e5d6abc1661153b5d2b339a7caa28ee73f509aa48a"
+  },
+  {
+    "file": "ContainerGroupsDelete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/examples/ContainerGroupsDelete.json",
+    "source_sha256": "93918adde137f98ad05a3e3a3985dcf9f4a1e9f2aeabf9bed1c49b39f11a6811"
+  }
+]

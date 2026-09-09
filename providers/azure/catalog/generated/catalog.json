@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "41fa4acf38ed07a92459acd397f70db8b501db0bfb4ac81d97d80c1b4f1b260d",
+    "checksum": "8855f184f610f4aabc986f861e8bee818dc4777bb0c9635b56b9c6aee8faf74c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d529cea49e341803abb61dde11f05d2f7f03a38d609784b9dcc48276f46507a5",
+  "content_checksum": "425b7f41d672a47f8f062665d96718b6841099a3d942db76fd1158dca2d6d34a",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -5834,6 +5834,267 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerInstance.ContainerGroups_Delete",
+      "name": "ContainerGroups_Delete",
+      "service": "Microsoft.ContainerInstance",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerInstance/containerGroups/{containerGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-09-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerGroupName": {
+            "description": "The name of the container group.",
+            "in": "path",
+            "name": "containerGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A container group.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/ContainerGroupIdentity",
+            "description": "The identity of the container group, if configured."
+          },
+          "location": {
+            "description": "The resource location of the container group.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ContainerGroupPropertiesProperties",
+            "description": "The container group properties",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The resource tags.",
+            "type": "object"
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerInstance",
+        "version": "2025-09-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerInstance/containerGroups/{containerGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/containerInstance.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerInstance.ContainerGroups_Get",
+      "name": "ContainerGroups_Get",
+      "service": "Microsoft.ContainerInstance",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerInstance/containerGroups/{containerGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-09-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "containerGroupName": {
+            "description": "The name of the container group.",
+            "in": "path",
+            "name": "containerGroupName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A container group.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/ContainerGroupIdentity",
+            "description": "The identity of the container group, if configured."
+          },
+          "location": {
+            "description": "The resource location of the container group.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ContainerGroupPropertiesProperties",
+            "description": "The container group properties",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The resource tags.",
+            "type": "object"
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerInstance",
+        "version": "2025-09-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerInstance/containerGroups/{containerGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/containerInstance.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerInstance.ContainerGroups_List",
+      "name": "ContainerGroups_List",
+      "service": "Microsoft.ContainerInstance",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerInstance/containerGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-09-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a container group list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ListResultContainerGroup items on this page",
+            "items": {
+              "$ref": "#/definitions/ListResultContainerGroup"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerInstance",
+        "version": "2025-09-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerInstance/containerGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/containerInstance.json"
     },
     {
       "id": "Azure.Microsoft.ContainerRegistry.Registries_Delete",
@@ -33741,6 +34002,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Compute.VirtualMachineExtensions_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerInstance/containerGroups",
+      "class": "compute.container_group",
+      "display_name": "Container instance group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "containerGroups",
+        "read_operations": [
+          "Azure.Microsoft.ContainerInstance.ContainerGroups_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerInstance.ContainerGroups_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerInstance.ContainerGroups_List"
         ]
       }
     },

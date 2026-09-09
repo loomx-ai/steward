@@ -279,6 +279,16 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if nativeType == containerGroupType {
+		if err := validateContainerGroup(raw); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized["_container_group_configuration"] = containerGroupConfiguration(raw)
+		normalized["_container_group_private_configuration"] = c.containerGroupPrivateConfiguration(raw)
+		if value := safe["identity"]; value != nil {
+			normalized["identity"] = value
+		}
+	}
 	if nativeType == groupType {
 		normalized["_managed_group_owner"] = strings.ToLower(text(raw["managedBy"]))
 	}
@@ -520,6 +530,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if strings.EqualFold(nativeType, monitorWorkspaceType) {
 		fields["datacollectionruleresourceid"], fields["datacollectionendpointresourceid"] = true, true
 	}
+	if strings.EqualFold(nativeType, containerGroupType) {
+		fields["subnetids"], fields["identity"] = true, true
+	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true
 	}
@@ -612,16 +625,17 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
-			if strings.EqualFold(key, "settings") && typed["typeHandlerVersion"] != nil {
+			if strings.EqualFold(key, "settings") && (typed["typeHandlerVersion"] != nil || typed["extensionType"] != nil) {
 				continue
 			}
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
-				"requestheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword":
+				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
+				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue":
 				continue
 			}
-			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") {
+			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") {
 				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
 					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
 					result[key] = endpoint.String()

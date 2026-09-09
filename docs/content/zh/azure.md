@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 130 类资源，其中 118 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 131 类资源，其中 119 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ Steward 识别 130 类资源，其中 118 类具有原生删除操作，执行�
 | SQL | 逻辑服务器、数据库、弹性池 | 服务器清理包含已审查的数据库与弹性池；禁止独立删除 `master` |
 | PostgreSQL / MySQL | Flexible Server | 支持 |
 | App Service | Web App / Function App、App Service Plan | 分别支持清理 |
-| 容器 | 容器注册表、Container App、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
+| 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
 | DNS 与私有终结点 | 公有/私有 DNS 区域及记录、私有 DNS 链接、Private Endpoint 与 DNS 区域组 | 级联审查包含已验证的托管网卡和外部 DNS 记录；系统 DNS 记录不可独立删除 |
 | Virtual WAN 网关 | VPN/ExpressRoute 网关、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理 |
 | Service Bus | 命名空间、队列、主题、订阅、规则、授权规则、灾难恢复别名、迁移配置、私有终结点连接 | 支持原生操作及经过审查的命名空间/实体级联；迁移清理先中止复制再删除；配对别名经审查后先解除配对再删除 |
@@ -78,3 +78,5 @@ Monitor 数据采集需要订阅范围的规则、终结点列举与读取权限
 这些扩展能力已保留原生 HTTP 协议测试及未修改的官方响应样例。Grafana 和 Monitor 数据采集还重放了微软 CLI 的删除录制响应；较早的录制 API 版本及补充的最终不存在响应均在证据文档中说明。这不代表 Steward 完成了独立模拟器或真实云验证。
 
 删除 Azure Monitor 工作区还会删除默认摄取托管资源组及组内全部资源。计划会审查完整影响，包括尚未识别的组内资源类型；保留任何组成员都会阻止删除。两个原生默认摄取资源 ID 及任何 managedBy 值必须相互一致。工作区数据不支持软删除恢复。私有连接属于冻结的工作区配置，引用的外部网络终结点不会仅因被引用而纳入托管组。参阅[微软的工作区管理说明](https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage)。
+
+Container Instances 容器组支持原生清单与删除。普通容器和初始化容器共享组的生命周期，外部 Azure Files 文件共享保持独立。子网、托管身份和返回的 Log Analytics 资源 ID 作为依赖引用。执行时核对已审阅的配置，敏感值通过与连接绑定的摘要比较；轮换凭据后需要重新扫描。命令、配置值和凭据不会以明文写入清单或日志。删除返回 HTTP 200 后仍须原生读取确认资源消失。参见[容器组删除约定](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01)。

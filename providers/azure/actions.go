@@ -113,6 +113,12 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := monitorWorkspaceIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := containerGroupIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.client.containerGroupPrivateIncarnation(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := grafanaIncarnation(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}

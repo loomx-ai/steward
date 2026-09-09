@@ -935,3 +935,36 @@ background evidence only, not acceptance evidence for this work.
   `3b9296e651a61aa53c04e733a94d2b675de888aaa7a66547315c33318ef300c6`.
   Remaining mapped services, lifecycle composition, independent environment and
   end-to-end acceptance, and publication remain open.
+
+### Azure Container Instances progress (acceptance remains open)
+
+- Container instance groups now use native 2025-09-01 subscription List, Get and
+  Delete. Azure has 131 explicit rules, 119 native deletion actions and 410
+  operations from 75 root and 36 reference Swagger documents. The new source
+  fragment reproduces independently and preserves all 110 preceding documents.
+- Embedded containers and init containers share the native group lifecycle;
+  external volumes remain independent. Native subnet, managed-identity and
+  supplied Log Analytics resource IDs become references. No external ARM identity
+  is guessed from storage names or vault URLs. Native configuration, creation
+  identity, ETag, protection, locks and managed ownership are checked before
+  deletion. Configuration excludes runtime instance state and assigned IP/FQDN.
+- Connection-keyed HMACs bind returned sensitive configuration when ACI supplies
+  no native ETag. Commands, environment/config-map values, keys, probe headers,
+  extension settings and URL credentials are removed from inventory and logs.
+  Sensitive-value drift also blocks AKS managed-group planning and execution;
+  credential rotation requires a rescan. Omitted native values and identical
+  recreation without an immutable ID remain unobservable.
+- Eight retained test functions cover actual planning, native inventory,
+  pagination/scope faults, configuration/creation drift, managed-group integration,
+  logging, native 200/202 deletion, asynchronous failure and serialized readback.
+  Five unchanged Swagger examples pass independent schema validation; three
+  original Microsoft CLI responses reproduce byte-for-byte. The older recorded
+  API, LIST route transformation and synthetic polling/absence are documented in
+  the [Container Instances evidence](providers/azure/fixtures/container-instances/README.md).
+  HTTP 200 with an old resource body and successful polling cannot hide a survivor.
+- Full Go tests, Azure/AKS/Monitor/plan/cleanup/contracts focused race tests, vet,
+  three offline refresh tests and deterministic generation pass. The catalog
+  SHA-256 is `d74987d4c53c74e6d52dfc9a99416d7f47f6ad465c231baa97d21ade9d8bdf87`.
+  This is native-example, recorded-response and protocol evidence; independent
+  emulator/cloud acceptance, remaining mapped services, lifecycle composition,
+  end-to-end verification and publication remain open.

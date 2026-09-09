@@ -187,6 +187,9 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := containerGroupIncarnation(planned, live); err != nil {
+		return err
+	}
 	if strings.EqualFold(planned.Identity.NativeType, groupType) {
 		if expected, captured := planned.Normalized["_managed_group_owner"]; captured && !strings.EqualFold(text(expected), text(live["managedBy"])) {
 			return serviceDenied("managed_resource_group_owner_changed")

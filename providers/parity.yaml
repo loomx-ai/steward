@@ -997,6 +997,9 @@ resources:
     resources:
     - Microsoft.ContainerInstance/containerGroups
   status: pending_verification
+  notes: Azure Container Instances uses native group inventory and deletion; embedded containers share its lifetime,
+    external volumes remain independent, and configuration/private-value drift blocks cleanup. Native examples
+    and Microsoft CLI response replay are retained; independent cloud acceptance remains open.
 - alicloud: ACS::ECI::ImageCache
   spec: providers/alicloud/specs/eci-image-cache.yaml
   class: compute.image_cache

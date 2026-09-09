@@ -28,7 +28,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 130 resource types; 118 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 131 resource types; 119 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -40,7 +40,7 @@ Steward recognizes 130 resource types; 118 have native deletion actions, subject
 | SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; standalone `master` deletion is prohibited |
 | PostgreSQL / MySQL | Flexible servers | Supported |
 | App Service | Web Apps / Function Apps and App Service plans | Supported as separate resources |
-| Containers | Container registries, Container Apps and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
+| Containers | Container registries, Container Apps, Container Instances groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
 | DNS and private endpoints | Public/private zones and records, private DNS links, private endpoints and DNS zone groups | Reviewed controller cascades include verified managed NICs and external DNS records; DNS system records cannot be deleted independently |
 | Virtual WAN gateways | VPN/ExpressRoute gateways, connections, VPN NAT rules and links | Connection/NAT prerequisites are explicit; VPN links belong to their connection |
 | Service Bus | Namespaces, queues, topics, subscriptions, rules, authorization rules, recovery aliases, migration configurations and private endpoint connections | Native actions and reviewed namespace/entity cascades; migration cleanup aborts copying before deletion; paired recovery aliases use reviewed unpairing before deletion |
@@ -78,3 +78,5 @@ Review the [cleanup selection and results](./cleanup.md). Database and registry 
 The expanded coverage has retained native HTTP protocol tests and unchanged official response fixtures. Grafana also replays Microsoft's recorded CLI deletion responses, including signed operation URLs and delayed completion; the earlier API version and synthetic final absence are documented in the evidence. This is not independent emulator or real-cloud validation by Steward.
 
 Azure Monitor workspace deletion also removes its default ingestion managed resource group and all resources in it. The plan reviews that full impact, including unrecognized contained types, and blocks retention of a group member. Both native default-ingestion IDs and any managedBy value must agree. The workspace data has no soft-delete recovery. Private connections are frozen workspace configuration; their external network endpoints are not included in the managed group merely by being referenced. See [Microsoft’s workspace management guide](https://learn.microsoft.com/en-us/azure/azure-monitor/metrics/azure-monitor-workspace-manage).
+
+Container Instances groups use native inventory and deletion. Their containers and init containers share the group lifetime; external Azure Files shares remain independent. Subnets, managed identities and supplied Log Analytics resource IDs are references. Returned configuration, including sensitive values through a connection-keyed digest, must match the review; credential rotation requires a rescan. Commands, configuration values and credentials are removed from inventory and logs. HTTP 200 deletion responses still require native absence readback. See the [container-group deletion contract](https://learn.microsoft.com/en-us/rest/api/container-instances/container-groups/delete?view=rest-container-instances-2025-09-01).

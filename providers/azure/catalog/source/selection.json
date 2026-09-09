@@ -776,6 +776,14 @@
         "AzureMonitorWorkspaces_ListBySubscription",
         "AzureMonitorWorkspaces_Delete"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/containerinstance/resource-manager/Microsoft.ContainerInstance/ContainerInstance/stable/2025-09-01/containerInstance.json",
+      "operations": [
+        "ContainerGroups_Get",
+        "ContainerGroups_List",
+        "ContainerGroups_Delete"
+      ]
     }
   ],
   "resource_types": [
@@ -3207,6 +3215,24 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Monitor.AzureMonitorWorkspaces_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ContainerInstance/containerGroups",
+      "display_name": "Container instance group",
+      "class": "compute.container_group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "containerGroups",
+      "read_operations": [
+        "Azure.Microsoft.ContainerInstance.ContainerGroups_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ContainerInstance.ContainerGroups_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerInstance.ContainerGroups_Delete"
       ]
     }
   ]
