@@ -88,6 +88,7 @@ func (c *client) groupList(ctx context.Context, id, method, itemsPath string) ([
 }
 
 func (c *client) nativeList(ctx context.Context, operation catalog.Operation, parameters map[string]any, itemsPath string) ([]map[string]any, error) {
+	parameters = cloneParameters(parameters)
 	properties := object(operation.InputSchema["properties"])
 	if properties["maxResults"] != nil {
 		parameters["maxResults"] = 500

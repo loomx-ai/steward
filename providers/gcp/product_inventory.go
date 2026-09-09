@@ -27,11 +27,12 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	API        spec.ProductAPISpec `json:"api"`
-	Parameters map[string]any      `json:"parameters"`
-	ParentType string              `json:"parent_type,omitempty"`
-	ParentID   string              `json:"parent_id,omitempty"`
-	ParentUID  string              `json:"parent_uid,omitempty"`
+	API                 spec.ProductAPISpec `json:"api"`
+	Parameters          map[string]any      `json:"parameters"`
+	ParentType          string              `json:"parent_type,omitempty"`
+	ParentID            string              `json:"parent_id,omitempty"`
+	ParentUID           string              `json:"parent_uid,omitempty"`
+	ParentConfiguration string              `json:"parent_configuration,omitempty"`
 }
 type productRecord struct {
 	Data     map[string]any
@@ -90,6 +91,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
+	if err := c.verifyDataformParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	parameters := cloneParameters(target.Parameters)
 	if pagination := target.API.Pagination; pagination != nil {
 		if cursor.Token != "" {
@@ -106,7 +110,21 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			parameters[pagination.PageSizeParameter] = limit
 		}
 	}
-	result, err := r.Invoke(ctx, contracts.Invocation{ConnectionID: request.ConnectionID, Operation: target.API.Operation, Parameters: parameters})
+	var result contracts.InvocationResult
+	if isDataform(nativeType) {
+		// Keep native secret references inside the provider until configuration
+		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
+		// payloads before they leave this boundary.
+		metadata, _ := providerData()
+		operation, _ := metadata.catalog.Operation(target.API.Operation)
+		bound, bindErr := catalog.BindREST(operation, parameters)
+		if bindErr != nil {
+			return contracts.InventoryBatch{}, bindErr
+		}
+		result, err = c.requestResult(ctx, bound.Method, bound.URL, nil, bound.Body)
+	} else {
+		result, err = r.Invoke(ctx, contracts.Invocation{ConnectionID: request.ConnectionID, Operation: target.API.Operation, Parameters: parameters})
+	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -142,6 +160,23 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
+		if isDataform(nativeType) {
+			endpoint, err := c.resourceURL(kind, id)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			live, err := c.request(ctx, "GET", endpoint, nil)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if c.canonicalName("//dataform.googleapis.com/"+text(live["name"])) != id {
+				return contracts.InventoryBatch{}, groupDenied("dataform_identity_changed")
+			}
+			if err := dataformSameResource(nativeType, record.Data, live); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			record.Data = live
+		}
 		location := record.Location
 		if location == "" {
 			location = last(text(record.Data["location"]))
@@ -161,8 +196,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			if nativeType == nodePoolType {
 				item.Normalized["_gke_cluster_uid"] = target.ParentUID
 			}
+			if isDataform(nativeType) {
+				item.Normalized["_dataform_parent_configuration"] = target.ParentConfiguration
+			}
 		}
 		batch.Items = append(batch.Items, item)
+	}
+	if err := c.verifyDataformParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
 	}
 	next := ""
 	if pagination := target.API.Pagination; pagination != nil {
@@ -369,7 +410,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 						break
 					}
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID})
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: text(parent.Normalized[dataformProof])})
 			}
 		}
 	}

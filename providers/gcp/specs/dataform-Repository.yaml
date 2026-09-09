@@ -1,0 +1,87 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/Repository
+  class: data.repository
+presentation:
+  displayNames:
+    en-US: Dataform repository
+    zh-CN: Dataform 仓库
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery/dataform?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataform.projects.locations.repositories.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: repositories
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.repositories.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+  displayName:
+    path: displayName
+    type: string
+  labels:
+    path: labels
+    type: object
+  gitRemoteSettings:
+    path: gitRemoteSettings
+    type: object
+  workspaceCompilationOverrides:
+    path: workspaceCompilationOverrides
+    type: object
+  serviceAccount:
+    path: serviceAccount
+    type: string
+  kmsKeyName:
+    path: kmsKeyName
+    type: string
+  containingFolder:
+    path: containingFolder
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: depends_on
+  targetType: secretmanager.googleapis.com/Secret
+  targetIdPath: refs_secretmanager_googleapis_com_Secret
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+actions:
+  delete:
+    operation: dataform.projects.locations.repositories.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataform.projects.locations.repositories.get
+      itemsPath: $
+      identityPath: name

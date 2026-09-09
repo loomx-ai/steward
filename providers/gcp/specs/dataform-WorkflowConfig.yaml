@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/WorkflowConfig
+  class: data.configuration
+presentation:
+  displayNames:
+    en-US: Dataform workflow configuration
+    zh-CN: Dataform 工作流配置
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery/dataform?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataform.projects.locations.repositories.workflowConfigs.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: workflowConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.repositories.workflowConfigs.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataform.googleapis.com/Repository
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+  releaseConfig:
+    path: releaseConfig
+    type: string
+  cronSchedule:
+    path: cronSchedule
+    type: string
+  timeZone:
+    path: timeZone
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+  invocationConfig:
+    path: invocationConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataform.googleapis.com/Repository
+  targetIdPath: refs_dataform_googleapis_com_Repository
+- type: depends_on
+  targetType: dataform.googleapis.com/ReleaseConfig
+  targetIdPath: refs_dataform_googleapis_com_ReleaseConfig
+actions:
+  delete:
+    operation: dataform.projects.locations.repositories.workflowConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataform.projects.locations.repositories.workflowConfigs.get
+      itemsPath: $
+      identityPath: name

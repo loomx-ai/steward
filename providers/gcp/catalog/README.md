@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 143 explicit resource rules and 597 selected methods
-from 44 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 149 explicit resource rules and 616 selected methods
+from 45 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -47,7 +47,35 @@ Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
 Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
-Storage Transfer. Registration and wire tests do not close the full parity matrix.
+Storage Transfer and Dataform. Registration and wire tests do not close the full parity matrix.
+
+Dataform v1 uses service-native location and repository lists to discover its
+workspaces, release/workflow configurations, workflow invocations and compilation
+results. Detail reads bind configuration proofs before redaction; child cursors
+and actions also bind the containing repository's configuration and creation
+time. Native IAM/service-account/KMS/secret references remain external dependencies.
+Compilation source fields are historical provenance, not invented live dependencies
+on workspaces or release configurations.
+
+Repository cleanup has four kinds of independently deleted prerequisites and a
+reviewed compilation-result cascade. Both native membership passes must agree;
+the second pass follows every child detail read, so a workflow created while
+another collection is being read blocks deletion. Native GETs verify every
+reviewed prerequisite absent before `force=true`, and all reviewed compilation
+results absent afterwards. The API offers no atomic membership condition on
+`force`; concurrent writers can still change membership after the final read.
+ReleaseConfig exposes neither creation identity nor ETag, so an identically
+recreated config in the same repository cannot be distinguished by its API.
+These native limitations are not replaced with invented version tokens.
+
+Running workflow invocations use POST `:cancel`, persist the cancellation phase,
+wait for RUNNING/CANCELING to finish, then issue their native DELETE. Restarting a
+saved phase verifies target/configuration/parent identity and does not resend
+the acknowledged cancellation. Terminal invocations delete directly. Completion
+requires native absence; cancellation does not roll back completed BigQuery work.
+The repository's external Git remote, Secret Manager values and BigQuery outputs
+are not deleted by this lifecycle. Native contracts and synthetic wire-fixture
+provenance are linked in [the Dataform fixture notes](../fixtures/dataform/README.md).
 
 Cloud DNS record identity includes both the fully qualified name and the record
 type, including wildcard names. BigQuery binds scalar project/dataset/table IDs

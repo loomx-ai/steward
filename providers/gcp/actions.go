@@ -72,6 +72,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := a.dataformPreflight(ctx, request, data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if resourceSoftDeleted(a.kind.NativeType, data) {
 		return contracts.PreflightResult{Allowed: true, Absent: true, Evidence: map[string]any{"state": "soft_deleted"}}, nil
 	}
@@ -187,6 +190,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if a.kind.NativeType == clusterType {
 		return a.prepareGKENetwork(ctx, request)
+	}
+	if a.kind.NativeType == dataformInvocationType {
+		return a.prepareDataformInvocation(ctx, request)
 	}
 	return a.delete(ctx, request)
 }
@@ -307,6 +313,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if a.kind.NativeType == dataformInvocationType && text(result.Data["phase"]) != "" {
+		return a.waitDataformInvocation(ctx, request, result)
+	}
 	if a.kind.NativeType == clusterType && text(result.Data["phase"]) != "" {
 		return a.waitGKENetwork(ctx, request, result)
 	}
@@ -414,6 +423,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 		return contracts.ReadbackResult{Exists: false}, nil
 	}
 	if err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if err := a.dataformPreflight(ctx, request, data); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	if resourceSoftDeleted(a.kind.NativeType, data) {

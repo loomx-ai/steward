@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/ReleaseConfig
+  class: data.configuration
+presentation:
+  displayNames:
+    en-US: Dataform release configuration
+    zh-CN: Dataform 发布配置
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery/dataform?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataform.projects.locations.repositories.releaseConfigs.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: releaseConfigs
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.repositories.releaseConfigs.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataform.googleapis.com/Repository
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+  gitCommitish:
+    path: gitCommitish
+    type: string
+  cronSchedule:
+    path: cronSchedule
+    type: string
+  timeZone:
+    path: timeZone
+    type: string
+  disabled:
+    path: disabled
+    type: boolean
+  codeCompilationConfig:
+    path: codeCompilationConfig
+    type: object
+  releaseCompilationResult:
+    path: releaseCompilationResult
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataform.googleapis.com/Repository
+  targetIdPath: refs_dataform_googleapis_com_Repository
+actions:
+  delete:
+    operation: dataform.projects.locations.repositories.releaseConfigs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataform.projects.locations.repositories.releaseConfigs.get
+      itemsPath: $
+      identityPath: name

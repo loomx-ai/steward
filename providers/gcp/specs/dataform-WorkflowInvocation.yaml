@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/WorkflowInvocation
+  class: data.job
+presentation:
+  displayNames:
+    en-US: Dataform workflow invocation
+    zh-CN: Dataform 工作流执行
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery/dataform?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataform.projects.locations.repositories.workflowInvocations.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: workflowInvocations
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.repositories.workflowInvocations.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataform.googleapis.com/Repository
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+  compilationResult:
+    path: compilationResult
+    type: string
+  resolvedCompilationResult:
+    path: resolvedCompilationResult
+    type: string
+  workflowConfig:
+    path: workflowConfig
+    type: string
+  invocationConfig:
+    path: invocationConfig
+    type: object
+  invocationTiming:
+    path: invocationTiming
+    type: object
+  pipelineConfig:
+    path: pipelineConfig
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataform.googleapis.com/Repository
+  targetIdPath: refs_dataform_googleapis_com_Repository
+actions:
+  delete:
+    operation: dataform.projects.locations.repositories.workflowInvocations.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataform.projects.locations.repositories.workflowInvocations.get
+      itemsPath: $
+      identityPath: name

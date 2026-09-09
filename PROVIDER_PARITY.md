@@ -383,3 +383,23 @@ background evidence only, not acceptance evidence for this work.
   regeneration and bilingual documentation checks pass. Remaining service
   families, standalone replicated entities and independent emulator/
   application/real-cloud acceptance are still unfinished.
+
+- GCP now has 149 rules and 616 native methods from 45 Discovery documents and
+  one pinned Cloud SDK archive. Dataform repositories, workspaces, release and
+  workflow configurations, invocation records and compilation results use native
+  regional discovery, complete paging, detail reads, canonical project aliases
+  and configuration/parent proofs. Repository plans contain four independently
+  deletable child kinds and reviewed compilation-result impacts; every child
+  prerequisite must be absent before repository force deletion. Two complete
+  membership passes catch changes while reading another child collection.
+  Running invocations persist native cancellation, wait for a terminal state,
+  delete their record and confirm native absence across serialized restarts.
+  External Git, secrets and BigQuery outputs remain separate. Retained synthetic
+  wire fixtures exercise both regions, empty/intermediate pages, child-only
+  selection, retention, missing/foreign members, drift, malformed replies,
+  permission/rate-limit/provider failures and recovery tampering. Native force
+  has no atomic membership condition; ReleaseConfig has no creation token, so
+  these API limitations are explicitly documented. Full Go tests, vet, relevant
+  races, offline source checks, catalog regeneration and bilingual documentation
+  checks pass. Dataform folder/team-folder trees, other service families and the
+  independent emulator/application/real-cloud acceptance scope remain unfinished.

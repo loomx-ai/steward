@@ -780,6 +780,30 @@
         "storagetransfer.projects.agentPools.get",
         "storagetransfer.projects.agentPools.list"
       ]
+    },
+    {
+      "source_uri": "https://dataform.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "dataform.projects.locations.list",
+        "dataform.projects.locations.repositories.compilationResults.get",
+        "dataform.projects.locations.repositories.compilationResults.list",
+        "dataform.projects.locations.repositories.delete",
+        "dataform.projects.locations.repositories.get",
+        "dataform.projects.locations.repositories.list",
+        "dataform.projects.locations.repositories.releaseConfigs.delete",
+        "dataform.projects.locations.repositories.releaseConfigs.get",
+        "dataform.projects.locations.repositories.releaseConfigs.list",
+        "dataform.projects.locations.repositories.workflowConfigs.delete",
+        "dataform.projects.locations.repositories.workflowConfigs.get",
+        "dataform.projects.locations.repositories.workflowConfigs.list",
+        "dataform.projects.locations.repositories.workflowInvocations.cancel",
+        "dataform.projects.locations.repositories.workflowInvocations.delete",
+        "dataform.projects.locations.repositories.workflowInvocations.get",
+        "dataform.projects.locations.repositories.workflowInvocations.list",
+        "dataform.projects.locations.repositories.workspaces.delete",
+        "dataform.projects.locations.repositories.workspaces.get",
+        "dataform.projects.locations.repositories.workspaces.list"
+      ]
     }
   ],
   "resource_types": [
@@ -3407,6 +3431,112 @@
       "delete_operations": [],
       "list_operations": [
         "networkconnectivity.projects.locations.global.hubs.routeTables.routes.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/Repository",
+      "collection": "repositories",
+      "class": "data.repository",
+      "display_name": "Dataform repository",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.repositories.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.repositories.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/Workspace",
+      "collection": "workspaces",
+      "class": "data.workspace",
+      "display_name": "Dataform workspace",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.workspaces.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.repositories.workspaces.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.repositories.workspaces.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/ReleaseConfig",
+      "collection": "releaseConfigs",
+      "class": "data.configuration",
+      "display_name": "Dataform release configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.releaseConfigs.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.repositories.releaseConfigs.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.repositories.releaseConfigs.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/WorkflowConfig",
+      "collection": "workflowConfigs",
+      "class": "data.configuration",
+      "display_name": "Dataform workflow configuration",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.workflowConfigs.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.repositories.workflowConfigs.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.repositories.workflowConfigs.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/WorkflowInvocation",
+      "collection": "workflowInvocations",
+      "class": "data.job",
+      "display_name": "Dataform workflow invocation",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.workflowInvocations.get"
+      ],
+      "delete_operations": [
+        "dataform.projects.locations.repositories.workflowInvocations.delete"
+      ],
+      "list_operations": [
+        "dataform.projects.locations.repositories.workflowInvocations.list"
+      ]
+    },
+    {
+      "native_type": "dataform.googleapis.com/CompilationResult",
+      "collection": "compilationResults",
+      "class": "data.compilation",
+      "display_name": "Dataform compilation result",
+      "scope_kinds": [
+        "region"
+      ],
+      "read_operations": [
+        "dataform.projects.locations.repositories.compilationResults.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "dataform.projects.locations.repositories.compilationResults.list"
       ]
     }
   ],

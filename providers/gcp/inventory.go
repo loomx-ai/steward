@@ -196,11 +196,21 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
+	if isDataform(nativeType) {
+		normalized[dataformProof] = dataformConfiguration(nativeType, data)
+	}
 	if reason := protectionReason(nativeType, data); reason != "" {
 		normalized["cleanup_protected"] = true
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if nativeType == "dataform.googleapis.com/WorkflowConfig" {
+		id := c.canonicalName("//dataform.googleapis.com/" + text(data["releaseConfig"]))
+		kind, _ := findType("dataform.googleapis.com/ReleaseConfig")
+		if _, err := c.resourceURL(kind, id); err == nil {
+			refs[kind.NativeType] = []string{id}
+		}
+	}
 	networkIDs := refs["compute.googleapis.com/Network"]
 	subnetIDs := refs["compute.googleapis.com/Subnetwork"]
 	if len(networkIDs) == 1 {
@@ -326,6 +336,7 @@ func references(c *client, data map[string]any) map[string][]string {
 		"multicastProducerAssociation": "networkservices.googleapis.com/MulticastProducerAssociation", "multicastConsumerAssociation": "networkservices.googleapis.com/MulticastConsumerAssociation", "placementPolicy": "compute.googleapis.com/ResourcePolicy",
 		"origin": "networkservices.googleapis.com/EdgeCacheOrigin", "failoverOrigin": "networkservices.googleapis.com/EdgeCacheOrigin", "keyset": "networkservices.googleapis.com/EdgeCacheKeyset", "signedRequestKeyset": "networkservices.googleapis.com/EdgeCacheKeyset", "edgeSslCertificates": "certificatemanager.googleapis.com/Certificate",
 		"secretVersion": "secretmanager.googleapis.com/Secret", "secretAccessKeyVersion": "secretmanager.googleapis.com/Secret",
+		"authenticationTokenSecretVersion": "secretmanager.googleapis.com/Secret", "userPrivateKeySecretVersion": "secretmanager.googleapis.com/Secret", "npmrcEnvironmentVariablesSecretVersion": "secretmanager.googleapis.com/Secret",
 	} {
 		fields[key] = target
 	}

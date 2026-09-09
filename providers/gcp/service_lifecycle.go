@@ -17,12 +17,14 @@ const serviceCascadeSource = "gcp:service-cascade"
 
 type serviceCascadeRule struct {
 	children       []string
+	directChildren []string
 	forceParameter string
 }
 
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	dataformRepositoryType:                          {children: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType, "dataform.googleapis.com/CompilationResult"}, directChildren: []string{"dataform.googleapis.com/Workspace", "dataform.googleapis.com/WorkflowConfig", "dataform.googleapis.com/ReleaseConfig", dataformInvocationType}, forceParameter: "force"},
 	"bigtableadmin.googleapis.com/Instance":         {children: []string{"bigtableadmin.googleapis.com/Cluster", "bigtableadmin.googleapis.com/Table"}},
 	"managedkafka.googleapis.com/Cluster":           {children: []string{"managedkafka.googleapis.com/Topic"}},
 	"spanner.googleapis.com/Instance":               {children: []string{"spanner.googleapis.com/Database"}},
@@ -48,6 +50,7 @@ func (r *Runtime) ServiceLifecycle(ctx context.Context, id asset.ConnectionID) (
 type serviceChild struct {
 	kind, id string
 	data     map[string]any
+	direct   bool
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
@@ -56,7 +59,24 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 		return nil, nil
 	}
 	parentKind, _ := findType(parent.NativeType)
-	if _, err := c.resourceURL(parentKind, parent.NativeID); err != nil {
+	parentURL, err := c.resourceURL(parentKind, parent.NativeID)
+	if err != nil {
+		return nil, err
+	}
+	verifyParent := func() error {
+		if !isDataform(parent.NativeType) {
+			return nil
+		}
+		live, err := c.request(ctx, "GET", parentURL, nil)
+		if err != nil {
+			return err
+		}
+		if c.canonicalName("//dataform.googleapis.com/"+text(live["name"])) != parent.NativeID {
+			return groupDenied("dataform_parent_changed")
+		}
+		return dataformSameResource(parent.NativeType, data, live)
+	}
+	if err := verifyParent(); err != nil {
 		return nil, err
 	}
 	metadata, err := providerData()
@@ -65,6 +85,7 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 	}
 	parentItem := contracts.InventoryItem{NativeType: parent.NativeType, NativeID: parent.NativeID, Normalized: data}
 	var result []serviceChild
+	var membershipChecks []func() error
 	seen := map[string]bool{}
 	for _, childType := range rule.children {
 		var found bool
@@ -91,6 +112,7 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 				return nil, err
 			}
 			kind, _ := findType(childType)
+			generation := map[string]string{}
 			for _, record := range records {
 				id, err := c.productIdentity(kind, operation, parameters, api.IdentityPath, productRecord{Data: record})
 				if err != nil {
@@ -116,14 +138,53 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, dat
 				if err := serviceIncarnation(record, live); err != nil {
 					return nil, err
 				}
-				result = append(result, serviceChild{kind: childType, id: id, data: live})
+				if err := dataformSameResource(childType, record, live); err != nil {
+					return nil, err
+				}
+				if isDataform(childType) {
+					generation[id] = dataformConfiguration(childType, live)
+				}
+				result = append(result, serviceChild{kind: childType, id: id, data: live, direct: slices.Contains(rule.directChildren, childType)})
+			}
+			if isDataform(childType) {
+				// Scheduled work may create members during detail reads. Reconcile a
+				// second complete native set after ALL child detail reads, so work
+				// created while reading another collection cannot slip through.
+				membershipChecks = append(membershipChecks, func() error {
+					again, err := c.nativeList(ctx, operation, parameters, api.ItemsPath)
+					if err != nil {
+						return err
+					}
+					for _, record := range again {
+						id, err := c.productIdentity(kind, operation, parameters, api.IdentityPath, productRecord{Data: record})
+						if err != nil {
+							return err
+						}
+						if generation[id] == "" || generation[id] != dataformConfiguration(childType, record) {
+							return groupDenied("dataform_membership_changed")
+						}
+						delete(generation, id)
+					}
+					if len(generation) != 0 {
+						return groupDenied("dataform_membership_changed")
+					}
+					return nil
+				})
 			}
 		}
 		if !found {
 			return nil, fmt.Errorf("service cascade child has no resource rule")
 		}
 	}
+	for _, verify := range membershipChecks {
+		if err := verify(); err != nil {
+			return nil, err
+		}
+	}
 	sort.Slice(result, func(i, j int) bool { return result[i].id < result[j].id })
+	if err := verifyParent(); err != nil {
+		return nil, err
+	}
 	return result, nil
 }
 
@@ -150,6 +211,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		}
 		for _, child := range children {
 			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+			policy := graph.CleanupDelegate
+			if child.direct {
+				policy = graph.CleanupDirect
+				delete(evidence, graph.LifecycleEvidenceControllerDeleteGuaranteed)
+				delete(evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
+			}
 			var target *asset.Asset
 			for i := range assets {
 				candidate := &assets[i]
@@ -167,7 +234,10 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(target.Normalized, child.data); err != nil {
 				return result, err
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			if err := dataformSameResource(child.kind, target.Normalized, child.data); err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: policy, DirectCleanupAllowed: child.direct, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}
@@ -185,6 +255,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	if err := serviceIncarnation(request.Asset.Normalized, live); err != nil {
 		return err
 	}
+	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
+		return err
+	}
 	impacts, err := groupImpacts(request)
 	if err != nil {
 		return err
@@ -197,6 +270,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			return err
 		}
 		for _, child := range children {
+			if child.direct {
+				return groupDenied("service_prerequisite_still_exists")
+			}
 			key := groupImpactKey{parent.ID, child.id}
 			impact, ok := impacts[key]
 			if !ok || impact.Asset.Identity.NativeType != child.kind {
@@ -207,6 +283,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			}
 			visited[key] = true
 			if err := serviceIncarnation(impact.Asset.Normalized, child.data); err != nil {
+				return err
+			}
+			if err := dataformSameResource(child.kind, impact.Asset.Normalized, child.data); err != nil {
 				return err
 			}
 			if protectedComputeLabels(child.data) || protectionReason(child.kind, child.data) != "" {
@@ -271,7 +350,7 @@ func (a *action) serviceImpactDescendant(request contracts.ActionRequest, impact
 			}
 		}
 		rule, known := serviceCascadeRules[parent.Identity.NativeType]
-		if !known || !slices.Contains(rule.children, current.Asset.Identity.NativeType) || !strings.HasPrefix(current.Asset.Identity.NativeID, parent.Identity.NativeID+"/") {
+		if !known || !slices.Contains(rule.children, current.Asset.Identity.NativeType) || slices.Contains(rule.directChildren, current.Asset.Identity.NativeType) || !strings.HasPrefix(current.Asset.Identity.NativeID, parent.Identity.NativeID+"/") {
 			return false
 		}
 		if parent.ID == request.Asset.ID {
@@ -292,6 +371,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 		return contracts.ReadbackResult{}, groupDenied("service_parent_identity_changed")
 	}
 	if _, err := groupImpacts(request); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	for _, impact := range request.LifecycleImpacts {

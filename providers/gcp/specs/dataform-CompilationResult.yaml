@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataform.googleapis.com/CompilationResult
+  class: data.compilation
+presentation:
+  displayNames:
+    en-US: Dataform compilation result
+    zh-CN: Dataform 编译结果
+  consoleLinkTemplate: https://console.cloud.google.com/bigquery/dataform?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataform.projects.locations.repositories.compilationResults.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: compilationResults
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataform.projects.locations.repositories.compilationResults.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataform.googleapis.com/Repository
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  state:
+    path: state
+    type: string
+  codeCompilationConfig:
+    path: codeCompilationConfig
+    type: object
+  gitCommitish:
+    path: gitCommitish
+    type: string
+  workspace:
+    path: workspace
+    type: string
+  releaseConfig:
+    path: releaseConfig
+    type: string
+  resolvedGitCommitSha:
+    path: resolvedGitCommitSha
+    type: string
+  compilationErrors:
+    path: compilationErrors
+    type: array
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataform.googleapis.com/Repository
+  targetIdPath: refs_dataform_googleapis_com_Repository

@@ -1,0 +1,91 @@
+{
+  "repositories": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse",
+      "createTime": "2025-01-01T00:00:00Z",
+      "displayName": "Warehouse",
+      "labels": {
+        "team": "analytics"
+      },
+      "gitRemoteSettings": {
+        "url": "https://github.com/example/warehouse.git",
+        "defaultBranch": "main",
+        "authenticationTokenSecretVersion": "projects/sample-project/secrets/git-credential/versions/1"
+      },
+      "npmrcEnvironmentVariablesSecretVersion": "projects/sample-project/secrets/npm-config/versions/1",
+      "serviceAccount": "dataform@sample-project.iam.gserviceaccount.com",
+      "kmsKeyName": "projects/sample-project/locations/us-central1/keyRings/data/cryptoKeys/repository"
+    },
+    {
+      "name": "projects/sample-project/locations/europe-west1/repositories/other",
+      "createTime": "2025-02-01T00:00:00Z"
+    }
+  ],
+  "workspaces": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse/workspaces/development",
+      "createTime": "2025-01-02T00:00:00Z",
+      "privateResourceMetadata": {
+        "userScoped": true
+      }
+    },
+    {
+      "name": "projects/sample-project/locations/europe-west1/repositories/other/workspaces/other",
+      "createTime": "2025-02-02T00:00:00Z"
+    }
+  ],
+  "releaseConfigs": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse/releaseConfigs/hourly",
+      "gitCommitish": "main",
+      "cronSchedule": "0 * * * *",
+      "timeZone": "UTC",
+      "releaseCompilationResult": "projects/sample-project/locations/us-central1/repositories/warehouse/compilationResults/compiled",
+      "recentScheduledReleaseRecords": [
+        {
+          "releaseTime": "2025-01-04T00:00:00Z",
+          "compilationResult": "projects/sample-project/locations/us-central1/repositories/warehouse/compilationResults/compiled"
+        }
+      ]
+    }
+  ],
+  "workflowConfigs": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse/workflowConfigs/transform",
+      "createTime": "2025-01-03T00:00:00Z",
+      "releaseConfig": "projects/sample-project/locations/us-central1/repositories/warehouse/releaseConfigs/hourly",
+      "cronSchedule": "5 * * * *",
+      "timeZone": "UTC",
+      "invocationConfig": {
+        "includedTags": [
+          "daily"
+        ],
+        "transitiveDependenciesIncluded": true
+      }
+    }
+  ],
+  "workflowInvocations": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse/workflowInvocations/running",
+      "state": "RUNNING",
+      "workflowConfig": "projects/sample-project/locations/us-central1/repositories/warehouse/workflowConfigs/transform",
+      "resolvedCompilationResult": "projects/sample-project/locations/us-central1/repositories/warehouse/compilationResults/compiled",
+      "invocationTiming": {
+        "startTime": "2025-01-04T00:05:00Z"
+      }
+    }
+  ],
+  "compilationResults": [
+    {
+      "name": "projects/sample-project/locations/us-central1/repositories/warehouse/compilationResults/compiled",
+      "createTime": "2025-01-04T00:00:00Z",
+      "releaseConfig": "projects/sample-project/locations/us-central1/repositories/warehouse/releaseConfigs/hourly",
+      "gitCommitish": "main",
+      "resolvedGitCommitSha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "codeCompilationConfig": {
+        "defaultDatabase": "sample-project",
+        "defaultSchema": "analytics"
+      }
+    }
+  ]
+}
