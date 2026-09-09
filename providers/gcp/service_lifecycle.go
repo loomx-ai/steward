@@ -26,6 +26,7 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	identityGroupType:                               {children: []string{identityMemberType}},
 	firewallPolicyType:                              {children: []string{firewallAssociationType}, directChildren: []string{firewallAssociationType}},
 	networkFirewallPolicyType:                       {children: []string{networkFirewallAssociationType}, directChildren: []string{networkFirewallAssociationType}},
 	fusionInstanceType:                              {children: []string{fusionDNSType, fusionNamespaceType}, forceParameter: "force"},
@@ -73,6 +74,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if parent.NativeType == identityGroupType {
+		return c.identityChildren(ctx, parent, data)
+	}
 	if isFirewallPolicy(parent.NativeType) {
 		return c.firewallChildren(ctx, parent, data)
 	}
@@ -284,6 +288,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
+			if isIdentityGroup(child.kind) {
+				if _, err := s.client.identitySaved(*target); err != nil {
+					return result, err
+				}
+				if err := identitySame(target.Normalized, child.data); err != nil {
+					return result, err
+				}
+			}
 			if isFirewall(child.kind) {
 				if _, err := s.client.firewallSaved(*target); err != nil {
 					return result, err
@@ -320,7 +332,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				evidence["native_job_uid"] = parent.Normalized["uid"]
 				evidence["native_batch_cleanup_only"] = true
 			}
-			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct || isDiscovery(child.kind) || child.kind == fusionDNSType, EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, DirectCleanupAllowed: child.direct || isDiscovery(child.kind) || child.kind == fusionDNSType || child.kind == identityMemberType && !identityGroupDynamic(parent.Normalized), EvidenceSource: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}
 	}

@@ -37,6 +37,7 @@ type client struct {
 	number         string
 	email          string
 	firewallParent string
+	identityParent string
 	fingerprint    [32]byte
 }
 
@@ -77,6 +78,10 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	if firewallParent != "" && !firewallContainerName(firewallParent) {
 		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "Firewall policy scope must be organizations/ID or folders/ID.", nil)
 	}
+	identityParent := strings.TrimSpace(credential.Values["identity_group_parent"])
+	if identityParent != "" && !identityParentValid(identityParent) {
+		return nil, contracts.NewCredentialValidationError("credential_fields_invalid", "Identity group scope must be customers/CUSTOMER_ID or identitysources/ID.", nil)
+	}
 	block, rest := pem.Decode([]byte(key.PrivateKey))
 	if block == nil || len(strings.TrimSpace(string(rest))) != 0 {
 		return invalid()
@@ -92,7 +97,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// The JWT package owns signing and token refresh. Credentials cannot choose a
 	// token endpoint, credential file, executable, impersonation URL, or universe.
 	config := jwt.Config{Email: key.Email, PrivateKey: []byte(key.PrivateKey), PrivateKeyID: key.PrivateKeyID, TokenURL: tokenURL, Scopes: []string{"https://www.googleapis.com/auth/cloud-platform", "https://www.googleapis.com/auth/userinfo.email"}}
-	return &client{project: project, email: key.Email, firewallParent: firewallParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent)), http: &http.Client{
+	return &client{project: project, email: key.Email, firewallParent: firewallParent, identityParent: identityParent, fingerprint: sha256.Sum256([]byte(project + "\x00" + raw + "\x00" + firewallParent + "\x00" + identityParent)), http: &http.Client{
 		Transport: &tokenTransport{base: transport, config: config}, Timeout: 60 * time.Second, CheckRedirect: noRedirect,
 	}}, nil
 }
@@ -243,6 +248,7 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 		var call *contracts.ProviderCallError
 		if errors.As(failure, &call) {
 			call.Provider.RequestID = result.RequestID
+			call.Cause = googleResponseStatus(response.StatusCode)
 		}
 	}()
 	payload, err := io.ReadAll(io.LimitReader(response.Body, (32<<20)+1))
@@ -282,7 +288,7 @@ func requestJSON(ctx context.Context, httpClient *http.Client, method string, u 
 	if method == http.MethodGet && response.StatusCode != http.StatusOK {
 		return result, apiError(response.StatusCode, "incomplete_response", nil, "")
 	}
-	if (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com" || discoveryAPIHost(u.Host)) && response.StatusCode != http.StatusOK {
+	if (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com" || discoveryAPIHost(u.Host) || u.Host == identityHost) && response.StatusCode != http.StatusOK {
 		return result, apiError(response.StatusCode, "unexpected_native_response", nil, "")
 	}
 	if _, present := data["error"]; (u.Host == "dataform.googleapis.com" || u.Host == "batch.googleapis.com" || u.Host == "dataproc.googleapis.com") && present {
@@ -298,6 +304,11 @@ func allowedHost(host string) bool {
 	metadata, err := providerData()
 	return err == nil && metadata.hosts[host]
 }
+
+// googleResponseStatus distinguishes an actual resource response from OAuth errors.
+type googleResponseStatus int
+
+func (s googleResponseStatus) Error() string { return "Google HTTP status " + strconv.Itoa(int(s)) }
 
 func apiError(status int, code string, detail map[string]any, retry string) error {
 	category := execution.ErrorProviderFailure

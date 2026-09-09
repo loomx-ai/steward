@@ -1,0 +1,39 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudidentity.googleapis.com/Membership
+  class: identity.group_membership
+presentation:
+  displayNames:
+    en-US: Cloud Identity membership
+    zh-CN: Cloud Identity 组成员关系
+scope:
+  kind: global
+discovery:
+  source: identity-groups-visible
+  list:
+    operation: cloudidentity.groups.memberships.list
+    itemsPath: memberships
+    identityPath: name
+  detail: &read
+    operation: cloudidentity.groups.memberships.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name: preferredMemberKey.id
+  createTime: createTime
+  updateTime: updateTime
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: cloudidentity.groups.memberships.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read
+relationships:
+- type: depends_on
+  targetType: cloudidentity.googleapis.com/Group
+  targetIdPath: refs_cloudidentity_googleapis_com_Group

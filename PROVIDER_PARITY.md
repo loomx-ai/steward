@@ -803,3 +803,39 @@ background evidence only, not acceptance evidence for this work.
 - One mapped GCP kind (Cloud Identity Group) and 49 mapped Azure kinds still lack
   specifications. Remaining lifecycle composition, API capability differences,
   independent environment/end-to-end acceptance and publication stay open.
+
+- GCP now has 193 resource rules, 175 kinds with native deletion and 768 selected
+  methods. Cloud Identity Group and Membership use the optional explicit
+  customer/identity-source directory, native FULL views and non-authoritative
+  visibility observations. Service-account Groups Admin access does not require
+  domain-wide delegation. Project ownership does not grant directory authority.
+- Reviewed group cleanup includes its native member-link cascade. Independent
+  ordinary membership unlink retains the containing group and all member entities;
+  locked groups remain protected and dynamic membership management stays native.
+  Complete snapshots freeze native IDs, creation/configuration, aliases, roles,
+  expiration, security settings and dynamic queries. Scope changes, partial pages,
+  unreadable resources, changed plans and surviving native links block completion.
+- The cleanup worker now passes its persisted execution receipt to readback using
+  a transient non-JSON field. A matched native done receipt can resolve Cloud
+  Identity's ambiguous post-delete 403; a permission error alone cannot prove
+  absence. OAuth/401/5xx errors and failed, lost or corrupt receipts remain errors.
+  SQLite worker restarts between DELETE, wait and readback verify no replay and
+  correct group/member tombstones; live survivors cannot succeed.
+- Full Go tests, vet, focused races including the native mock and SQLite worker,
+  frontend type/contracts and documentation checks pass. All preceding 55 source
+  documents remain unchanged. The seven new methods reproduce exactly from the
+  official v1 document, and two catalog generations produce SHA-256
+  `8b2126219876844c2b13427659fde625a994f47918ad6b405b09f3fe4ab06cfd`.
+- Google's pinned mockcloudidentity independently verifies unique IDs, native
+  GET/DELETE, done-only responses, membership unlink and ambiguous group absence.
+  Its explicit v1beta1 version alias and GET-backed lists are disclosed; its
+  missing membership cascade is detected as a survivor, not replaced with false
+  absence. The [identity-group evidence](providers/gcp/fixtures/identity-groups/README.md)
+  retains 15 native schemas, source hashes, the harness and reproduction commands.
+  Native DELETE has no atomic configuration condition. Incoming/cross-directory
+  access effects, external product references and real-cloud acceptance remain
+  separate coverage.
+- No mapped GCP kind now lacks a specification; 49 mapped Azure kinds still do.
+  This closes the GCP resource-type registration gap, not all behavior parity.
+  Remaining lifecycle composition, API capability differences, independent
+  environment/end-to-end acceptance and publication are still open.

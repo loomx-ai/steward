@@ -46,12 +46,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			}
 		}
 	}
+	if err := c.identityInvocation(ctx, operation, parameters); err != nil {
+		return contracts.InvocationResult{}, err
+	}
 	if err := c.firewallInvocation(ctx, operation, parameters); err != nil {
 		return contracts.InvocationResult{}, err
 	}
 	for _, name := range operation.Call.RawPathParameters {
 		value, _ := parameters[name].(string)
-		if firewallContainerInvocation(operation.ID) {
+		if firewallContainerInvocation(operation.ID) || operation.Call.Product == "cloudidentity" {
 			continue
 		}
 		if operation.Call.Product == "config" {
@@ -146,6 +149,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isIdentityGroup(kind.NativeType) {
+		return identityResourceOperation(metadata, kind.NativeType, nativeID, method)
+	}
 	if kind.NativeType == organizationType {
 		return organizationOperation(metadata, nativeID, method)
 	}

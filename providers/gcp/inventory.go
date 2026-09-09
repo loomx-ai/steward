@@ -83,7 +83,7 @@ func (c *client) assetPageResult(ctx context.Context, cursor, nativeType string,
 	return result, nil
 }
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != dataformInventorySource && request.Source != firewallInventorySource && request.Source != organizationInventorySource && request.Source != identityInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported GCP inventory source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
@@ -92,6 +92,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeProject && request.Scope.NativeID != c.project && request.Scope.NativeID != c.number {
 		return contracts.InventoryBatch{}, fmt.Errorf("GCP inventory belongs to another project")
+	}
+	if request.Source == identityInventorySource {
+		return r.listIdentityGroups(ctx, c, request)
 	}
 	if request.Source == organizationInventorySource {
 		return r.listOrganization(ctx, c, request)
@@ -252,7 +255,17 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protected"] = true
 		normalized["cleanup_protection_reason"] = reason
 	}
+	if nativeType == identityGroupType && identityGroupProtected(data) {
+		normalized["cleanup_protected"] = true
+		normalized["cleanup_protection_reason"] = "identity_group_locked_or_protected"
+	}
 	refs := references(c, data)
+	if isIdentityGroup(nativeType) {
+		refs = map[string][]string{}
+		if nativeType == identityMemberType {
+			refs[identityGroupType] = []string{"//" + identityHost + "/" + identityGroupName(text(data["name"]))}
+		}
+	}
 	if isFirewall(nativeType) {
 		if !isFirewallPolicy(nativeType) {
 			parent, _, err := c.firewallIdentityParts(nativeType, nativeID)

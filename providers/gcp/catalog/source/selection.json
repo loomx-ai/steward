@@ -994,6 +994,18 @@
         "config.projects.locations.previews.resourceDrifts.get",
         "config.projects.locations.previews.resourceDrifts.list"
       ]
+    },
+    {
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "cloudidentity.groups.delete",
+        "cloudidentity.groups.get",
+        "cloudidentity.groups.getSecuritySettings",
+        "cloudidentity.groups.list",
+        "cloudidentity.groups.memberships.delete",
+        "cloudidentity.groups.memberships.get",
+        "cloudidentity.groups.memberships.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4485,6 +4497,42 @@
       ],
       "scope_kinds": [
         "global"
+      ]
+    },
+    {
+      "native_type": "cloudidentity.googleapis.com/Group",
+      "collection": "groups",
+      "class": "identity.group",
+      "display_name": "Cloud Identity group",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "cloudidentity.groups.get"
+      ],
+      "delete_operations": [
+        "cloudidentity.groups.delete"
+      ],
+      "list_operations": [
+        "cloudidentity.groups.list"
+      ]
+    },
+    {
+      "native_type": "cloudidentity.googleapis.com/Membership",
+      "collection": "memberships",
+      "class": "identity.group_membership",
+      "display_name": "Cloud Identity membership",
+      "scope_kinds": [
+        "global"
+      ],
+      "read_operations": [
+        "cloudidentity.groups.memberships.get"
+      ],
+      "delete_operations": [
+        "cloudidentity.groups.memberships.delete"
+      ],
+      "list_operations": [
+        "cloudidentity.groups.memberships.list"
       ]
     }
   ],

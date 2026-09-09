@@ -1059,6 +1059,9 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 			if expired {
 				return h.failDeletionCheck(ctx, &attempt, aggregate, step, &action, readbackState(action.Readback), deletionCheckTimeout)
 			}
+			request.ExecutionResult = &contracts.ActionResult{
+				ProviderRequestID: action.ProviderRequestID, ProviderOperationID: action.ProviderOperationID, Data: cloneRequest(action.ProviderResult),
+			}
 			readback, err := driver.Readback(checkCtx, request)
 			checkDeadlineExceeded := errors.Is(checkCtx.Err(), context.DeadlineExceeded)
 			cancelCheck()

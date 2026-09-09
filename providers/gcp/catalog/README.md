@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 191 explicit resource rules and 761 selected methods
-from 54 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 193 explicit resource rules and 768 selected methods
+from 55 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -48,6 +48,13 @@ Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
 Storage Transfer, Dataform, Batch, Dataproc, Discovery Engine, Cloud TPU and Data Fusion. Registration and wire tests do not close the full parity matrix.
+
+[Cloud Identity evidence](../fixtures/identity-groups/README.md) covers explicitly
+scoped directory groups and memberships, full native snapshots, reviewed member
+link cascades, independent unlink and persisted deletion receipts. Permission
+errors alone cannot prove absence. The pinned Google mock independently exercises
+native GET/DELETE and done-only operation behavior through an explicit v1beta1
+version alias; its missing list and cascade behavior is documented and tested.
 
 [Firewall-policy evidence](../fixtures/firewall-policy/README.md) covers explicitly
 scoped organization/folder policies, global/regional network policies and native

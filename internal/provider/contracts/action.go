@@ -19,6 +19,9 @@ type ActionRequest struct {
 	// PrerequisiteDeletions come from reviewed direct-child steps on which
 	// this step depends. Providers must still verify native absence.
 	PrerequisiteDeletions []ActionImpact `json:"prerequisite_deletions,omitempty"`
+	// ExecutionResult is supplied only for readback, from the persisted provider
+	// receipt. It survives worker restart and is never a caller-supplied parameter.
+	ExecutionResult *ActionResult `json:"-"`
 }
 
 type ActionImpact struct {

@@ -112,6 +112,11 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 				return nil, err
 			}
 		}
+		if operation.Call.Product == "cloudidentity" {
+			if err := identityListShape(response.Data, itemsPath); err != nil {
+				return nil, err
+			}
+		}
 		records, err := productRecords(response.Data, itemsPath)
 		if err != nil {
 			return nil, err

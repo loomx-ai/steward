@@ -44,6 +44,7 @@ func (r *Runtime) CredentialSchemas() []contracts.CredentialSchema {
 	return []contracts.CredentialSchema{{Type: asset.CredentialGCPServiceAccount, LabelKey: "credentials.gcpServiceAccount", Fields: []contracts.CredentialField{
 		{Key: "project_id", LabelKey: "credentials.projectId", InputType: "text", Required: true},
 		{Key: "service_account_json", LabelKey: "credentials.serviceAccountJson", InputType: "textarea", Required: true, Secret: true},
+		{Key: "identity_group_parent", LabelKey: "credentials.identityGroupParent", InputType: "text"},
 		{Key: "firewall_policy_parent", LabelKey: "credentials.firewallPolicyParent", InputType: "text"},
 	}}}
 }
@@ -57,6 +58,8 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		// An optional hierarchy scope can change independently of the project.
 		// Losing that scope must not close previously observed policies or links.
 		{Name: firewallInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
+		// Directory lists are visibility filtered and the optional root can change.
+		{Name: identityInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
 		// Project moves and lost ancestor visibility do not delete organizations.
 		{Name: organizationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeProject, asset.ScopeGlobal}, KindSpecific: true},
 	}
@@ -78,6 +81,9 @@ func (c *client) projectIdentity(ctx context.Context) (map[string]any, error) {
 		if _, err := c.firewallContainer(ctx, c.firewallParent); err != nil {
 			return nil, err
 		}
+	}
+	if err := c.validateIdentityDirectory(ctx); err != nil {
+		return nil, err
 	}
 	return data, nil
 }

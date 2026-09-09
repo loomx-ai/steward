@@ -15,6 +15,8 @@ navTitle: "Google Cloud"
 
 Steward 会验证项目访问权限和资源盘点权限。连接验证成功不代表拥有所有清理 API 的权限。密钥使用部署环境的凭据加密密钥加密保存；轮换时使用「替换凭证」，目标项目必须保持一致。
 
+如需管理 Cloud Identity 身份组，请填写可选的**组目录**，例如 `customers/C01234567` 或 `identitysources/source-1`，并启用 Cloud Identity API。服务账号还需要对应目录的组管理权限；项目权限本身不足以授权。Google 支持[无需全域委派的服务账号 Groups Admin 配置](https://docs.cloud.google.com/identity/docs/how-to/setup)。扫描时包含全局范围；更换目录或失去可见性不会把旧观测误标为已删除。
+
 Steward 支持标准 Google Cloud 端点的服务账号 JSON 密钥，不会使用机器上已有的 `gcloud` 凭据或元数据服务凭据。参阅 Google 的[服务账号密钥管理建议](https://docs.cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys)和[Cloud Asset Inventory 列表权限](https://docs.cloud.google.com/asset-inventory/docs/reference/rest/v1/assets/list)。
 
 管理层级防火墙策略时，还需在连接中填写可选的**防火墙范围**，例如 `organizations/123` 或 `folders/456`。该设置明确纳入对应组织或文件夹及其下级文件夹中的防火墙策略；项目访问权限不会自动启用此范围。服务账号需具备该层级的 Resource Manager 读取权限和原生防火墙策略权限，扫描时需包含全局范围。移除或修改此设置不会把历史策略记录判为已删除，旧清理计划也需重新审查。
@@ -36,6 +38,7 @@ Steward 通过产品原生 API 盘点下表中的资源，Cloud Asset Inventory 
 | --- | --- | --- |
 | Compute Engine | VM 实例、可用区与地域级持久磁盘、快照、镜像、实例模板、托管实例组、实例组和自动扩缩器 | 支持 |
 | VPC | 网络、子网、防火墙规则、路由、Cloud Router | 支持 |
+| Cloud Identity | 配置目录中的身份组及成员关系 | 审查后删除身份组；普通成员关系也可独立删除 |
 | Resource Manager | 沿文件夹父级链发现当前项目所属的组织 | 只读；公开的 v3 API 没有组织删除方法 |
 | 防火墙策略 | 配置范围内的层级策略、全局和地域级网络策略及原生关联 | 先解除审查过的关联，再删除策略；也支持独立解除关联 |
 | 负载均衡与地址 | 地域和全局 IP 地址、转发规则、地域和全局后端服务、健康检查（含旧版 HTTP/HTTPS）、目标池、网络端点组、URL Map、HTTP/HTTPS 代理、SSL 证书 | 支持 |
@@ -70,6 +73,7 @@ Google VPC 可以跨地域。Steward 在各地域的网络视图中展示同一�
 
 ## 删除保护
 
+- **Cloud Identity 身份组：** 删除组会清理计划中的成员关系，保留成员用户、服务账号和嵌套组对象。锁定组受保护；动态组成员由 Google 管理，Steward 不会逐项删除。组配置或成员关系变化会阻止旧计划。组删除不可恢复，并会改变访问权限；外部 IAM 绑定及其他产品中的引用需另行审查。单独出现权限错误不能证明删除成功。参阅 Google 的[组删除契约](https://docs.cloud.google.com/identity/docs/reference/rest/v1/groups/delete)和[身份模型](https://docs.cloud.google.com/architecture/identity/overview-google-authentication)。
 - **防火墙策略：** 清理时先逐项调用原生 API 解除审查过的关联，再删除策略及其规则。解除关联会改变目标的防火墙规则应用情况，网络、组织或文件夹本身仍保留。目标必须仍在配置范围内；策略、关联或目标身份变化会阻止旧计划执行。层级策略还会查询目标侧关联列表。API 无法把这些读取与删除绑定为原子操作，同名关联也没有创建标识；清理期间应避免并发修改。参阅 Google 的[层级策略指南](https://docs.cloud.google.com/firewall/docs/manage-hierarchical-firewall-policies)和[全局网络策略指南](https://docs.cloud.google.com/firewall/docs/use-network-firewall-policies)。
 - **VM 磁盘和托管实例组**：磁盘与 IP 的原生删除策略会进入影响计划。对支持保留的资源，Steward 先通过原生操作修改策略并验证生效，再删除控制器。挂载关系或资源身份发生变化时会停止执行。
 - **删除保护**：获准清理 VM 后，Steward 会通过明确的原生准备阶段解除其删除保护；保护标签和 Cloud SQL 的删除保护仍会阻止删除。

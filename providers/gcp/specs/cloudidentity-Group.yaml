@@ -1,0 +1,35 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: cloudidentity.googleapis.com/Group
+  class: identity.group
+presentation:
+  displayNames:
+    en-US: Cloud Identity group
+    zh-CN: Cloud Identity 身份组
+scope:
+  kind: global
+discovery:
+  source: identity-groups-visible
+  list:
+    operation: cloudidentity.groups.list
+    itemsPath: groups
+    identityPath: name
+  detail: &read
+    operation: cloudidentity.groups.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name: displayName
+  createTime: createTime
+  updateTime: updateTime
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: cloudidentity.groups.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *read

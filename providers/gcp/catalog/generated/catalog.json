@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "0e39952f41a2b5e587deaf0d064a0377bab96bdb9376a65555300723a5e2c438",
+    "checksum": "9749072fc673992a7959290c0dd56813f88e28d9a1893b1722388095324ed667",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "36886b5cc40fa0d6822c74ea804e21c2ee12d98de32d9eb0c3c6616355396088",
+  "content_checksum": "70fdcfdf3042885accdd18a84df9f628637199eb6198f535ccbd00277087ea2b",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -13262,6 +13262,576 @@
         "parameter_position": "query"
       },
       "source_uri": "https://cloudfunctions.googleapis.com/$discovery/rest?version=v2"
+    },
+    {
+      "id": "cloudidentity.groups.delete",
+      "name": "delete",
+      "service": "cloudidentity",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Group` to retrieve. Must be of the form `groups/{group}`.",
+            "location": "path",
+            "pattern": "^groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.get",
+      "name": "get",
+      "service": "cloudidentity",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Group` to retrieve. Must be of the form `groups/{group}`.",
+            "location": "path",
+            "pattern": "^groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A group within the Cloud Identity Groups API. A `Group` is a collection of entities, where each entity is either a user, another group, or a service account.",
+        "id": "Group",
+        "properties": {
+          "additionalGroupKeys": {
+            "description": "Output only. Additional group keys associated with the Group.",
+            "items": {
+              "$ref": "EntityKey"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "createTime": {
+            "description": "Output only. The time when the `Group` was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "description": {
+            "description": "An extended description to help users determine the purpose of a `Group`. Must not be longer than 4,096 characters.",
+            "type": "string"
+          },
+          "displayName": {
+            "description": "The display name of the `Group`.",
+            "type": "string"
+          },
+          "dynamicGroupMetadata": {
+            "$ref": "DynamicGroupMetadata",
+            "description": "Optional. Dynamic group metadata like queries and status."
+          },
+          "groupKey": {
+            "$ref": "EntityKey",
+            "description": "Required. The `EntityKey` of the `Group`."
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Required. One or more label entries that apply to the Group. Labels contain a key with an empty value. Google Groups are the default type of group and have a label with a key of `cloudidentity.googleapis.com/groups.discussion_forum` and an empty value. Existing Google Groups can have an additional label with a key of `cloudidentity.googleapis.com/groups.security` and an empty value added to them. **This is an immutable change and the security label cannot be removed once added.** Dynamic groups have a label with a key of `cloudidentity.googleapis.com/groups.dynamic`. Identity-mapped groups for Cloud Search have a label with a key of `system/groups/external` and an empty value. Google Groups can be [locked](https://support.google.com/a?p=locked-groups). To lock a group, add a label with a key of `cloudidentity.googleapis.com/groups.locked` and an empty value. Doing so locks the group. To unlock the group, remove this label.",
+            "type": "object"
+          },
+          "name": {
+            "description": "Output only. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Group`. Shall be of the form `groups/{group}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. Immutable. The resource name of the entity under which this `Group` resides in the Cloud Identity resource hierarchy. Must be of the form `identitysources/{identity_source}` for external [identity-mapped groups](https://support.google.com/a/answer/9039510) or `customers/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https://support.google.com/cloudidentity/answer/10070793)",
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The time when the `Group` was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.getSecuritySettings",
+      "name": "getSecuritySettings",
+      "service": "cloudidentity",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The security settings to retrieve. Format: `groups/{group_id}/securitySettings`",
+            "location": "path",
+            "pattern": "^groups/[^/]+/securitySettings$",
+            "required": true,
+            "type": "string"
+          },
+          "readMask": {
+            "description": "Field-level read mask of which fields to return. \"*\" returns all fields. If not specified, all fields will be returned. May only contain the following field: `member_restriction`.",
+            "format": "google-fieldmask",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The definition of security settings.",
+        "id": "SecuritySettings",
+        "properties": {
+          "memberRestriction": {
+            "$ref": "MemberRestriction",
+            "description": "The Member Restriction value"
+          },
+          "name": {
+            "description": "Output only. The resource name of the security settings. Shall be of the form `groups/{group_id}/securitySettings`.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.list",
+      "name": "list",
+      "service": "cloudidentity",
+      "method": "GET",
+      "path": "/v1/groups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "The maximum number of results to return. Note that the number of results returned may be less than this value even if there are more available results. To fetch all results, clients must continue calling this method repeatedly until the response no longer contains a `next_page_token`. If unspecified, defaults to 200 for `View.BASIC` and to 50 for `View.FULL`. Must not be greater than 1000 for `View.BASIC` or 500 for `View.FULL`.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The `next_page_token` value returned from a previous list request, if any.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent resource under which to list all `Group` resources. Must be of the form `identitysources/{identity_source}` for external- identity-mapped groups or `customers/{customer_id}` for Google Groups. The `customer_id` must begin with \"C\" (for example, 'C046psxkn'). [Find your customer ID.] (https://support.google.com/cloudidentity/answer/10070793)",
+            "location": "query",
+            "type": "string"
+          },
+          "view": {
+            "description": "The level of detail to be returned. If unspecified, defaults to `View.BASIC`.",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "BASIC",
+              "FULL"
+            ],
+            "enumDescriptions": [
+              "Default. Should not be used.",
+              "Only basic resource information is returned.",
+              "All resource information is returned."
+            ],
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Response message for ListGroups operation.",
+        "id": "ListGroupsResponse",
+        "properties": {
+          "groups": {
+            "description": "Groups returned in response to list request. The results are not sorted.",
+            "items": {
+              "$ref": "Group"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "Token to retrieve the next page of results, or empty if there are no more results available for listing.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "groups"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/groups",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.memberships.delete",
+      "name": "delete",
+      "service": "cloudidentity",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Membership` to delete. Must be of the form `groups/{group}/memberships/{membership}`",
+            "location": "path",
+            "pattern": "^groups/[^/]+/memberships/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.memberships.get",
+      "name": "get",
+      "service": "cloudidentity",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Membership` to retrieve. Must be of the form `groups/{group}/memberships/{membership}`.",
+            "location": "path",
+            "pattern": "^groups/[^/]+/memberships/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A membership within the Cloud Identity Groups API. A `Membership` defines a relationship between a `Group` and an entity belonging to that `Group`, referred to as a \"member\".",
+        "id": "Membership",
+        "properties": {
+          "createTime": {
+            "description": "Output only. The time when the `Membership` was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deliverySetting": {
+            "description": "Output only. Delivery setting associated with the membership.",
+            "enum": [
+              "DELIVERY_SETTING_UNSPECIFIED",
+              "ALL_MAIL",
+              "DIGEST",
+              "DAILY",
+              "NONE",
+              "DISABLED"
+            ],
+            "enumDescriptions": [
+              "Default. Should not be used.",
+              "Represents each mail should be delivered",
+              "Represents 1 email for every 25 messages.",
+              "Represents daily summary of messages.",
+              "Represents no delivery.",
+              "Represents disabled state."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Output only. The [resource name](https://cloud.google.com/apis/design/resource_names) of the `Membership`. Shall be of the form `groups/{group}/memberships/{membership}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "preferredMemberKey": {
+            "$ref": "EntityKey",
+            "description": "Required. Immutable. The `EntityKey` of the member."
+          },
+          "roles": {
+            "description": "The `MembershipRole`s that apply to the `Membership`. If unspecified, defaults to a single `MembershipRole` with `name` `MEMBER`. Must not contain duplicate `MembershipRole`s with the same `name`.",
+            "items": {
+              "$ref": "MembershipRole"
+            },
+            "type": "array"
+          },
+          "type": {
+            "description": "Output only. The type of the membership.",
+            "enum": [
+              "TYPE_UNSPECIFIED",
+              "USER",
+              "SERVICE_ACCOUNT",
+              "GROUP",
+              "SHARED_DRIVE",
+              "CBCM_BROWSER",
+              "CHROME_OS_DEVICE",
+              "OTHER"
+            ],
+            "enumDescriptions": [
+              "Default. Should not be used.",
+              "Represents user type.",
+              "Represents service account type.",
+              "Represents group type.",
+              "Represents Shared drive.",
+              "Represents a CBCM-managed Chrome Browser type.",
+              "Represents a ChromeOS-managed ChromeOS device type.",
+              "Represents other type."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. The time when the `Membership` was last updated.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "cloudidentity.groups.memberships.list",
+      "name": "list",
+      "service": "cloudidentity",
+      "method": "GET",
+      "path": "/v1/{parent}/memberships",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "pageSize": {
+            "description": "The maximum number of results to return. Note that the number of results returned may be less than this value even if there are more available results. To fetch all results, clients must continue calling this method repeatedly until the response no longer contains a `next_page_token`. If unspecified, defaults to 200 for `GroupView.BASIC` and to 50 for `GroupView.FULL`. Must not be greater than 1000 for `GroupView.BASIC` or 500 for `GroupView.FULL`.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "The `next_page_token` value returned from a previous search request, if any.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent `Group` resource under which to lookup the `Membership` name. Must be of the form `groups/{group}`.",
+            "location": "path",
+            "pattern": "^groups/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "view": {
+            "description": "The level of detail to be returned. If unspecified, defaults to `View.BASIC`.",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "BASIC",
+              "FULL"
+            ],
+            "enumDescriptions": [
+              "Default. Should not be used.",
+              "Only basic resource information is returned.",
+              "All resource information is returned."
+            ],
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for MembershipsService.ListMemberships.",
+        "id": "ListMembershipsResponse",
+        "properties": {
+          "memberships": {
+            "description": "The `Membership`s under the specified `parent`.",
+            "items": {
+              "$ref": "Membership"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "A continuation token to retrieve the next page of results, or empty if there are no more results available.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "memberships"
+      },
+      "call": {
+        "product": "cloudidentity",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/memberships",
+        "endpoint": "https://cloudidentity.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://cloudidentity.googleapis.com/$discovery/rest?version=v1"
     },
     {
       "id": "cloudkms.projects.locations.get",
@@ -109693,6 +110263,46 @@
         ],
         "list_operations": [
           "cloudfunctions.projects.locations.functions.list"
+        ]
+      }
+    },
+    {
+      "native_type": "cloudidentity.googleapis.com/Group",
+      "class": "identity.group",
+      "display_name": "Cloud Identity group",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "groups",
+        "read_operations": [
+          "cloudidentity.groups.get"
+        ],
+        "delete_operations": [
+          "cloudidentity.groups.delete"
+        ],
+        "list_operations": [
+          "cloudidentity.groups.list"
+        ]
+      }
+    },
+    {
+      "native_type": "cloudidentity.googleapis.com/Membership",
+      "class": "identity.group_membership",
+      "display_name": "Cloud Identity membership",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "memberships",
+        "read_operations": [
+          "cloudidentity.groups.memberships.get"
+        ],
+        "delete_operations": [
+          "cloudidentity.groups.memberships.delete"
+        ],
+        "list_operations": [
+          "cloudidentity.groups.memberships.list"
         ]
       }
     },

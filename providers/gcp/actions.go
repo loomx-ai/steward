@@ -27,7 +27,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType) || isFusion(value.Identity.NativeType) || isMetricsScope(value.Identity.NativeType) || isInfra(value.Identity.NativeType) || isFirewall(value.Identity.NativeType) || isIdentityGroup(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -62,6 +62,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
+	}
+	if isIdentityGroup(a.kind.NativeType) {
+		return a.identityPreflight(ctx, request)
 	}
 	if isFirewall(a.kind.NativeType) {
 		return a.firewallPreflight(ctx, request)
@@ -239,6 +242,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if isIdentityGroup(a.kind.NativeType) {
+		return a.executeIdentityGroup(ctx, request)
 	}
 	if isFirewall(a.kind.NativeType) {
 		return a.executeFirewall(ctx, request)
@@ -437,6 +443,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if isIdentityGroup(a.kind.NativeType) {
+		return a.waitIdentityGroup(ctx, request, result)
+	}
 	if isFirewall(a.kind.NativeType) {
 		return a.waitFirewall(ctx, request, result)
 	}
@@ -576,6 +585,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if isIdentityGroup(a.kind.NativeType) {
+		return a.identityReadback(ctx, request)
+	}
 	if isFirewall(a.kind.NativeType) {
 		return a.firewallReadback(ctx, request)
 	}

@@ -623,8 +623,13 @@ resources:
     resources: &id032
     - Microsoft.Graph/groups
   status: pending_verification
-  notes: Directory-wide group management requires explicit directory scope and suitable OAuth permissions,
-    beyond project/subscription inventory.
+  notes: GCP Group and Membership use an explicit customer/identity-source directory and native FULL
+    snapshots. Reviewed group cleanup verifies its member-link cascade; ordinary links support independent
+    unlink, while users and nested group objects are retained. Locked groups remain protected. Persisted
+    done receipts resolve ambiguous post-delete 403 responses; errors alone never prove absence. Native
+    schema, SQLite restart, protocol and pinned Google mock tests cover this path, with an explicit
+    v1beta1 version alias and missing upstream list/cascade limitations. Cross-directory access impacts
+    and real-cloud acceptance remain open. Azure directory support still requires verification.
 - alicloud: ACS::CBWP::CommonBandwidthPackage
   spec: providers/alicloud/specs/common-bandwidth-package.yaml
   class: network.bandwidth_package
