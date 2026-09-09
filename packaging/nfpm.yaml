@@ -1,0 +1,19 @@
+name: steward
+arch: ${GOARCH}
+platform: linux
+version: ${VERSION}
+maintainer: LoomX
+description: Discover, understand, and safely clean up cloud resources.
+homepage: https://loomx.ai/steward
+license: Apache-2.0
+depends:
+  - ca-certificates
+contents:
+  - src: bin/steward
+    dst: /usr/bin/steward
+    file_info:
+      mode: 0755
+  - src: LICENSE
+    dst: /usr/share/licenses/steward/LICENSE
+  - src: README.md
+    dst: /usr/share/doc/steward/README.md

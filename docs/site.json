@@ -29,7 +29,7 @@
     "index",
     {
       "label": {"en": "Get started", "zh": "开始使用"},
-      "items": ["intro", "quick-start", "tutorials/first-inventory"]
+      "items": ["intro", "installation", "quick-start", "tutorials/first-inventory"]
     },
     {
       "label": {"en": "Cloud platforms", "zh": "云平台"},

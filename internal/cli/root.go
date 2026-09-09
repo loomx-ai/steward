@@ -6,6 +6,7 @@ func NewRootCommand(version string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "steward",
 		Short:         "Steward local server",
+		Version:       version,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}

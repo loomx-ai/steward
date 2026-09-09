@@ -1,6 +1,7 @@
 # --- Go ---
 # Binaries and build output
 bin/
+dist/
 *.exe
 *.exe~
 *.dll

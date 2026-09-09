@@ -30,24 +30,19 @@ Steward 是一个开源云治理服务，提供资产盘点、拓扑分析、治
 
 ## 快速开始
 
-需要 Go 1.26+、Node.js 22+ 和 npm。
+macOS 或 Linux 使用 Homebrew 安装：
 
 ```bash
-git clone https://github.com/loomx-ai/steward.git
-cd steward
-make install
-make dev
+brew install loomx-ai/tap/steward
+steward --version
+steward server start
 ```
 
-打开 <http://127.0.0.1:5858>。无需注册账户或手动登录。开发代理会通过自动生成的令牌保护 API。
-
-在本地构建并运行生产服务：
-
-```bash
-make run
-```
+也支持[安装脚本、Scoop、deb/rpm 和独立二进制](https://loomx.ai/steward/docs/installation)。[GitHub Releases](https://github.com/loomx-ai/steward/releases) 提供 macOS/Linux amd64、arm64 和 Windows amd64 产物及 SHA-256 校验文件。发布版内含 Web 控制台和数据库迁移脚本，无需 Go 或 Node.js。
 
 打开 <http://127.0.0.1:8585>，直接使用，无需登录。SQLite 数据默认保存在 `.steward/steward.db`，凭证加密密钥首次启动时自动保存在 `.steward/credential-master-key`。备份时请同时保存数据库和密钥；已有数据库必须继续使用原来的密钥。
+
+始终从同一工作目录启动。升级前先停止服务并备份数据，再执行 `brew upgrade steward` 或安装新版本软件包。
 
 ### 网络部署
 
@@ -57,7 +52,7 @@ make run
 export STEWARD_AUTH_MODE=token
 export STEWARD_AUTH_TOKEN="$(openssl rand -hex 32)"
 export STEWARD_CREDENTIAL_MASTER_KEY="$(openssl rand -base64 32)"
-./bin/steward server start --addr 0.0.0.0:8585
+steward server start --addr 0.0.0.0:8585
 ```
 
 使用配置的 Token 登录。未指定认证模式但已设置 Token 时，也会使用 Token 模式，以兼容已有部署。
@@ -66,6 +61,17 @@ Steward Cloud 使用独立的账户和工作区网关。内部实例以 `STEWARD
 
 ## 开发
 
+需要 Git、Go 1.26+、Node.js 22+、npm、make，以及供 SQLite 使用的 C 编译器。
+
+```bash
+git clone https://github.com/loomx-ai/steward.git
+cd steward
+make install
+make dev
+```
+
+打开 <http://127.0.0.1:5858>，开发代理通过自动生成的令牌保护 API。使用 `make run` 构建并在 8585 端口运行完整应用，或用 `make build` 生成内嵌 Web 控制台的 `bin/steward`。单独执行 `go install` 不包含控制台。
+
 ```bash
 make test
 make lint
@@ -73,6 +79,8 @@ make build
 ```
 
 PostgreSQL 仓储契约测试使用 `STEWARD_TEST_POSTGRES_DSN`；未设置时自动跳过。
+
+发布自动化与 Homebrew/Scoop 仓库配置见 [RELEASING.md](RELEASING.md)。
 
 欢迎贡献。较大的改动请先创建 issue，并为行为变更补充测试。
 

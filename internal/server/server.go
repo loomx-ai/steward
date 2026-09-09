@@ -230,9 +230,6 @@ func openRepositories(config Config) (persistence.Repositories, error) {
 	if driver == "" {
 		driver = "sqlite"
 	}
-	if strings.TrimSpace(config.MigrationsDir) == "" {
-		config.MigrationsDir = "migrations"
-	}
 	switch driver {
 	case "sqlite":
 		if strings.TrimSpace(config.DSN) == "" {
