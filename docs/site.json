@@ -27,22 +27,33 @@
   ],
   "navigation": [
     "index",
+    "installation",
+    "intro",
     {
-      "label": {"en": "Get started", "zh": "开始使用"},
-      "items": ["intro", "installation", "quick-start", "tutorials/first-inventory"]
+      "label": {"en": "Tutorials", "zh": "教程"},
+      "items": ["tutorials", "quick-start", "tutorials/first-inventory"]
+    },
+    {
+      "label": {"en": "Documentation", "zh": "使用文档"},
+      "items": ["guides", "connections", "scans", "resources", "topology", "cleanup"]
     },
     {
       "label": {"en": "Cloud platforms", "zh": "云平台"},
-      "items": ["connections", "alicloud", "aws", "gcp", "azure"]
+      "items": ["alicloud", "aws", "gcp", "azure"]
     },
     {
-      "label": {"en": "Use Steward", "zh": "使用指南"},
-      "items": ["scans", "resources", "topology", "cleanup"]
+      "label": {"en": "Operate Steward", "zh": "部署与配置"},
+      "items": ["deployment", "configuration", "troubleshooting"]
     },
     {
-      "label": {"en": "Deployment", "zh": "部署与运维"},
-      "items": ["deployment"]
+      "label": {"en": "Developers", "zh": "开发者"},
+      "items": ["development"]
     }
   ],
-  "legacyAssets": "/docs/steward/"
+  "legacyAssets": "/docs/steward/",
+  "primaryNavigation": [
+    {"page": "installation", "label": {"en": "Install", "zh": "安装"}},
+    {"page": "tutorials", "label": {"en": "Tutorials", "zh": "教程"}},
+    {"page": "guides", "label": {"en": "Documentation", "zh": "文档"}}
+  ]
 }

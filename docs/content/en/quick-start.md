@@ -8,22 +8,40 @@ navTitle: "Quick start"
 
 ## Prerequisites
 
-Choose an [installation method](./installation.md). Release binaries include everything needed to run locally; Go and Node.js are only needed for source builds.
+Choose an [installation method](./installation.md). Steward includes the web console and database; no additional runtime is required.
 
 <span id="run"></span>
 
-## Install and start
+## Start Steward
 
-```
-brew install loomx-ai/tap/steward
+<div data-docs-tabs data-label="Start commands">
+<div data-tab="macOS / Linux">
+
+### macOS / Linux
+
+```sh
 mkdir -p "$HOME/steward-data"
 cd "$HOME/steward-data"
 steward server start
 ```
 
+</div>
+<div data-tab="Windows">
+
+### Windows
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME/steward-data" | Out-Null
+Set-Location "$HOME/steward-data"
+steward server start
+```
+
+</div>
+</div>
+
 Open [http://127.0.0.1:8585](http://127.0.0.1:8585). No account or login is required. The server accepts local connections by default.
 
-Press Ctrl+C to stop. On subsequent starts, use the built binary:
+Press Ctrl+C to stop. On subsequent starts, use the same working directory:
 
 ```
 steward server start
@@ -42,18 +60,6 @@ With the server running, follow [First resource inventory](./tutorials/first-inv
 
 [Credential types and connection setup →](./connections.md)
 
-<span id="development"></span>
-
-## Development mode
-
-From a [source checkout](./installation.md#source), after `make install`:
-
-```
-make dev
-```
-
-Open [http://127.0.0.1:5858](http://127.0.0.1:5858). The frontend supports hot reload, and the proxy uses a generated token for API access. Do not run it alongside make run: both use the same API port.
-
 <span id="data"></span>
 
 ## Where data lives
@@ -62,4 +68,4 @@ The default database is .steward/steward.db; the credential key is .steward/cred
 
 <aside class="docs-note">Back up the database and its original key together. Replacing the key makes existing cloud credentials unreadable.</aside>
 
-[Network access, backups, and upgrades →](./deployment.md)
+[Network access and backups →](./deployment.md)

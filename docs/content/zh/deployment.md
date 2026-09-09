@@ -1,24 +1,22 @@
 ---
-title: "部署与维护"
-description: "固定数据目录和加密密钥，通过 HTTPS 提供网络访问。"
-navTitle: "部署与维护"
+title: "部署 Steward"
+description: "运行服务、配置网络访问并备份数据。"
+navTitle: "部署服务"
 ---
 
 <span id="build"></span>
 
-## 构建服务
+## 运行服务
 
-使用发布版时，按[安装指南](./installation.md)安装，并在固定的数据目录运行 `steward server start`。二进制内含 Web 界面和数据库迁移脚本，无需另起前端服务或保留源码目录。
+按[安装指南](./installation.md)安装 Steward，并在固定目录启动：
 
-自行构建时，在源码目录执行以下命令：
-
-```
-make install
-make build
-./bin/steward server start
+```sh
+mkdir -p "$HOME/steward-data"
+cd "$HOME/steward-data"
+steward server start
 ```
 
-本机访问使用默认的 127.0.0.1:8585。使用进程管理器部署时，将工作目录固定到 Steward 目录，并为 .steward 目录保留写权限。
+使用进程管理器时，将工作目录设为该目录，并为 `.steward/` 保留写权限。
 
 <span id="network"></span>
 
@@ -43,43 +41,12 @@ STEWARD_ADDR=0.0.0.0:8585
 
 以上是配置模板，需替换占位值。用户通过 HTTPS 打开界面后，使用保存的 Token 登录。从本机模式迁移时，加密密钥必须使用原 .steward/credential-master-key 中的值。
 
-<span id="config"></span>
-
-## 常用配置
-
-| 变量 | 用途 / 默认值 |
-| --- | --- |
-| `STEWARD_ADDR` | 监听地址；127.0.0.1:8585 |
-| `STEWARD_DB_DRIVER` | sqlite / postgres；默认 sqlite |
-| `STEWARD_DB_DSN` | SQLite 路径或 PostgreSQL 连接串 |
-| `STEWARD_CREDENTIAL_MASTER_KEY` | 32 字节密钥的 Base64 编码；必须持久保存 |
-| `STEWARD_SCAN_CONCURRENCY` | 扫描并发；默认 4，必须为正整数 |
-| `STEWARD_AUTH_ROLE` | viewer / operator / admin；Token 对应角色，默认 admin |
-
 <span id="backup"></span>
 
-## 备份与升级
+## 备份数据
 
-1.  先停止服务，再备份整个 .steward 目录；若数据库或密钥在其他位置，也一并备份。PostgreSQL 使用数据库自己的备份工具。
-2.  使用原安装方式升级：`brew update && brew upgrade steward`、`scoop update steward`、安装脚本或新版软件包。源码安装则更新到选定版本，重新执行 `make install` 和 `make build`。
-3.  使用原工作目录、数据库和加密密钥启动。检查云连接并运行一次小范围扫描。
+停止服务后，备份整个 `.steward/` 目录，包括数据库和原始凭证密钥。数据库或密钥配置在其他位置时也需一并保存；PostgreSQL 使用数据库自己的备份工具。
 
-<span id="troubleshooting"></span>
+恢复时使用原数据库、原密钥和相同的工作目录。更换密钥会导致已有凭证无法解密。
 
-## 常见问题
-
-### 界面为空，没有资源
-
-检查当前连接、扫描范围和失败目标；新建连接不会自动完成资源扫描。
-
-### 重启后凭证无法解密
-
-恢复原密钥，核对数据库和工作目录。不要用新密钥覆盖旧密钥。
-
-### 清理提示没有权限
-
-查看对应资源日志。连接验证通过或扫描成功，不代表有删除权限。
-
-### 需要提交问题
-
-附上版本、操作步骤、错误码和脱敏后的请求 ID。不要提交 Token、AccessKey、数据库或加密密钥。 [GitHub Issues ↗](https://github.com/loomx-ai/steward/issues)
+[配置参考 →](./configuration.md) · [故障排查 →](./troubleshooting.md)
