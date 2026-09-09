@@ -911,6 +911,26 @@
         "discoveryengine.projects.locations.collections.list",
         "discoveryengine.projects.locations.collections.operations.get"
       ]
+    },
+    {
+      "source_uri": "https://tpu.googleapis.com/$discovery/rest?version=v2",
+      "methods": [
+        "tpu.projects.locations.list",
+        "tpu.projects.locations.nodes.delete",
+        "tpu.projects.locations.nodes.get",
+        "tpu.projects.locations.nodes.list",
+        "tpu.projects.locations.nodes.patch",
+        "tpu.projects.locations.operations.get",
+        "tpu.projects.locations.queuedResources.delete",
+        "tpu.projects.locations.queuedResources.get",
+        "tpu.projects.locations.queuedResources.list"
+      ]
+    },
+    {
+      "source_uri": "https://tpu.googleapis.com/$discovery/rest?version=v2alpha1",
+      "methods": [
+        "tpu.projects.locations.reservations.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4058,6 +4078,58 @@
       "list_operations": [
         "discoveryengine.projects.locations.collections.dataStores.siteSearchEngine.targetSites.list"
       ]
+    },
+    {
+      "native_type": "tpu.googleapis.com/Node",
+      "class": "compute.accelerator",
+      "display_name": "Cloud TPU node",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "nodes",
+      "read_operations": [
+        "tpu.projects.locations.nodes.get"
+      ],
+      "list_operations": [
+        "tpu.projects.locations.nodes.list"
+      ],
+      "delete_operations": [
+        "tpu.projects.locations.nodes.delete"
+      ]
+    },
+    {
+      "native_type": "tpu.googleapis.com/QueuedResource",
+      "class": "compute.capacity_request",
+      "display_name": "Cloud TPU queued resource",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "queuedResources",
+      "read_operations": [
+        "tpu.projects.locations.queuedResources.get"
+      ],
+      "list_operations": [
+        "tpu.projects.locations.queuedResources.list"
+      ],
+      "delete_operations": [
+        "tpu.projects.locations.queuedResources.delete"
+      ]
+    },
+    {
+      "native_type": "tpu.googleapis.com/Reservation",
+      "class": "compute.reservation",
+      "display_name": "Cloud TPU reservation",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "reservations",
+      "read_operations": [
+        "tpu.projects.locations.reservations.list"
+      ],
+      "list_operations": [
+        "tpu.projects.locations.reservations.list"
+      ],
+      "delete_operations": []
     }
   ],
   "sdk_documents": [

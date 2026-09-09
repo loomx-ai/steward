@@ -508,3 +508,38 @@ background evidence only, not acceptance evidence for this work.
   Engine; protocol tests are not independent emulator or real-cloud acceptance.
   Seven mapped GCP kinds and 49 mapped Azure kinds still lack specifications;
   the remaining lifecycle and independent environment acceptance work stays open.
+
+- GCP now has 174 rules, 164 kinds with native deletion and 713 selected methods
+  from 51 Discovery documents and one pinned Cloud SDK archive. Cloud TPU adds
+  native Node and QueuedResource cleanup plus read-only Reservation inventory.
+  Native v2 locations.list enumerates zones for both v2 resources and the
+  v2alpha1 reservation list; reservation detail uses the complete list because
+  the API has no individual GET/DELETE. Queue inventory freezes actual Node IDs,
+  incarnation/configuration proofs and retained-disk proofs, including allocated
+  single-node names and documented multislice names. Cleanup uses reviewed direct
+  Node prerequisites and plain queued-request DELETE. Each Node first detaches
+  its existing data disks with native v2 PATCH, verifies attachment removal and
+  the retained disk identities, then deletes the Node. The pinned official SDK
+  provides independently retained evidence for the data_disks update mask.
+  Shared disks remain referenced/retained; network, service-account, CMEK and
+  reservation dependencies enter native inventory. Node/queue metadata is hashed
+  before redaction in inventory, Invoke and logs. Serialized phases bind the
+  reviewed resource/configuration/impacts, validate native LRO scope and metadata,
+  and resume state settling, detachment and deletion without replaying completed
+  mutations. Missing dependency reads cannot establish root absence; final
+  resource reads also reject replacements appearing after an earlier 404.
+  Tests cover native scopes/aliases/paging, read-only reservations, exact shared
+  plans, retention, ordered mutation, orphaned nodes, incomplete/denied reads,
+  changed membership/configuration/UIDs, corrupt operations/phases, expired LROs,
+  delayed attachment removal and restart. A SQLite scan-worker test preserves
+  observations after queue-read permission loss. Full Go tests and vet pass;
+  GCP/planner/cleanup/contracts race checks pass, with all TPU race tests repeated
+  after the final absence guard. Ten offline source tests, exact new-source
+  selection checks, unchanged prior-source checks, deterministic generation and
+  bilingual documentation checks pass. Official emulator and floci-gcp service
+  lists do not include TPU; no independent TPU emulator or real-cloud acceptance
+  is claimed. Native writes lack atomic configuration/incarnation conditions.
+  Disk retention is not a backup; v2alpha1-only per-worker disk attachments and
+  Compute/GKE-managed TPU hardware are outside this Cloud TPU API workflow.
+  Six mapped GCP kinds and 49 mapped Azure kinds still lack specifications; the
+  remaining lifecycle and independent environment acceptance work stays open.

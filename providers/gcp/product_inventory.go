@@ -124,7 +124,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) {
+	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -179,6 +179,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
+		if isTPU(nativeType) {
+			if err := c.tpuIdentity(nativeType, id, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if !strings.HasPrefix(id, c.canonicalName("//"+tpuHost+"/"+text(parameters["parent"]))+"/"+kind.Collection+"/") {
+				return contracts.InventoryBatch{}, groupDenied("tpu_list_parent_changed")
+			}
+		}
 		if isDiscovery(nativeType) {
 			if err := c.discoveryIdentity(nativeType, id, record.Data); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -217,13 +225,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if isDiscovery(nativeType) {
+			if isTPU(nativeType) {
+				live, err = c.tpuRead(ctx, nativeType, id)
+			} else if isDiscovery(nativeType) {
 				live, err = c.discoveryRead(ctx, nativeType, id)
 			} else {
 				live, err = c.request(ctx, "GET", endpoint, nil)
@@ -235,7 +245,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				if err := c.dataprocIdentity(nativeType, id, live); err != nil {
 					return contracts.InventoryBatch{}, err
 				}
-			} else if !isDiscovery(nativeType) && c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
+			} else if !isDiscovery(nativeType) && !isTPU(nativeType) && c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
 				return contracts.InventoryBatch{}, groupDenied("dataform_identity_changed")
 			}
 			if isDiscovery(nativeType) {
@@ -259,6 +269,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 			if nativeType == batchJobType {
 				if _, err := c.batchTaskGroups(id, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+			}
+			if isTPU(nativeType) {
+				if err := tpuSameResource(nativeType, record.Data, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				live, err = c.tpuInventoryData(ctx, nativeType, id, live)
+				if err != nil {
 					return contracts.InventoryBatch{}, err
 				}
 			}
@@ -589,8 +608,12 @@ func (c *client) productLocations(ctx context.Context, resource catalog.Operatio
 	if err != nil {
 		return nil, false, err
 	}
+	version := resource.Call.Version
+	if resource.Call.Product == "tpu" {
+		version = "v2"
+	}
 	for _, operation := range metadata.catalog.Operations {
-		if operation.Call == nil || operation.ID != resource.Call.Product+".projects.locations.list" || operation.Call.Version != resource.Call.Version {
+		if operation.Call == nil || operation.ID != resource.Call.Product+".projects.locations.list" || operation.Call.Version != version {
 			continue
 		}
 		records, err := c.nativeList(ctx, operation, map[string]any{"name": "projects/" + c.project}, "locations")
@@ -607,6 +630,9 @@ func (c *client) productLocations(ctx context.Context, resource catalog.Operatio
 			}
 			if !segmentPattern.MatchString(location) || location == "." || location == ".." || strings.Contains(location, "/") || seen[location] || (name != "projects/"+c.project+"/locations/"+location && name != "projects/"+c.number+"/locations/"+location) {
 				return nil, true, fmt.Errorf("invalid or duplicate GCP product location")
+			}
+			if resource.Call.Product == "tpu" && regionOf(location) == location {
+				return nil, true, groupDenied("tpu_location_not_zone")
 			}
 			seen[location] = true
 			locations = append(locations, location)
@@ -762,6 +788,9 @@ func checkListCompleteness(data map[string]any) error {
 }
 
 func (c *client) productIdentity(kind resourceType, operation catalog.Operation, parameters map[string]any, identityPath string, record productRecord) (string, error) {
+	if isTPU(kind.NativeType) {
+		return c.tpuID(kind.NativeType, text(productValue(record.Data, identityPath)))
+	}
 	if isDiscovery(kind.NativeType) {
 		return c.discoveryID(kind.NativeType, text(productValue(record.Data, identityPath)))
 	}

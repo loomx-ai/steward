@@ -1,5 +1,8 @@
 # Google Cloud protocol fixtures
 
+[Cloud TPU fixtures](tpu/README.md) cover native zonal discovery, reviewed queued
+requests and nodes, durable-disk detachment/retention and restart recovery.
+
 [Discovery Engine fixtures](discoveryengine/README.md) cover native collections,
 apps/data stores and their reviewed child resources, regional API origins,
 ancestry proofs, asynchronous deletion/recovery and a SQLite inventory scan.

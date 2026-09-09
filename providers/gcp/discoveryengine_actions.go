@@ -13,6 +13,9 @@ import (
 )
 
 func (a *action) readResource(ctx context.Context) (map[string]any, error) {
+	if isTPU(a.kind.NativeType) {
+		return a.client.tpuRead(ctx, a.kind.NativeType, a.identity.NativeID)
+	}
 	if isDiscovery(a.kind.NativeType) {
 		return a.client.discoveryRead(ctx, a.kind.NativeType, a.identity.NativeID)
 	}

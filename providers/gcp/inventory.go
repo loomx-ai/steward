@@ -206,6 +206,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized[dataprocProof] = dataprocConfiguration(data)
 		normalized["_dataproc_region"] = dataprocRegion(nativeID)
 	}
+	if isTPU(nativeType) {
+		if err := c.tpuIdentity(nativeType, nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[tpuProof] = tpuConfiguration(nativeType, data, false)
+		normalized[tpuBaseProof] = tpuConfiguration(nativeType, data, true)
+	}
 	if isDiscovery(nativeType) {
 		if err := c.discoveryIdentity(nativeType, nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err
@@ -220,6 +227,13 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if isTPU(nativeType) {
+		var err error
+		refs, err = c.tpuReferences(nativeType, nativeID, data)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	}
 	if nativeType == batchJobType {
 		refs = references(c, c.batchDependencyData(data))
 	}
@@ -286,6 +300,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		actionable = err == nil
 	}
 	sanitize := safePayload
+	if isTPU(nativeType) {
+		sanitize = safeTPUPayload
+	}
 	if isDiscovery(nativeType) {
 		sanitize = safeDiscoveryPayload
 	}
@@ -313,7 +330,7 @@ func (c *client) canonicalName(value string) string {
 }
 
 func canonicalName(value string) string {
-	value = discoveryCanonical(strings.TrimSpace(value))
+	value = tpuCanonical(discoveryCanonical(strings.TrimSpace(value)))
 	for _, prefix := range []string{"https://container.googleapis.com/v1/", "https://container.googleapis.com/v1beta1/"} {
 		if strings.HasPrefix(value, prefix) {
 			value = "//container.googleapis.com/" + strings.TrimPrefix(value, prefix)

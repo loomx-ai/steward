@@ -37,8 +37,8 @@ non-authoritative index for kinds without product rules; it does not overwrite
 or close the resources owned by product shards. Network target selection uses
 live Compute list methods.
 
-The current catalog has 171 explicit resource rules and 703 selected methods
-from 49 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
+The current catalog has 174 explicit resource rules and 713 selected methods
+from 51 official Discovery documents and one pinned Cloud SDK archive. Extended Compute rules cover VPN and
 Interconnect, Private Service Connect, reservations and sole-tenant resources,
 network firewall/Cloud Armor policies, SSL policies and remaining proxy/backend
 variants. Product rules also cover Redis, DNS, BigQuery, Firestore, Bigtable,
@@ -47,7 +47,7 @@ Certificate Manager, IAM, fleets, Cloud Run jobs, Service Directory, Logging and
 Monitoring, Vertex AI, App Hub, Backup and DR, Dataplex, Datastream,
 Sensitive Data Protection, Cloud Domains, IAP, Network Connectivity Center,
 Cloud NGFW, VPC Flow Logs, Network Services, Media CDN, Cloud Multicast and
-Storage Transfer, Dataform and Batch. Registration and wire tests do not close the full parity matrix.
+Storage Transfer, Dataform, Batch, Dataproc, Discovery Engine and Cloud TPU. Registration and wire tests do not close the full parity matrix.
 
 Batch v1 uses native regional Job lists and embedded TaskGroup names to discover
 Tasks. TaskGroups have no independent resource endpoint; Tasks have GET/LIST but

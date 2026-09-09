@@ -70,6 +70,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		return result, err
 	}
 	result.Data = safePayload(result.Data)
+	if operation.Call.Product == "tpu" {
+		result.Data = safeTPUPayload(result.Data)
+	}
 	if operation.Call.Product == "discoveryengine" {
 		result.Data = safeDiscoveryPayload(result.Data)
 	}
@@ -97,6 +100,18 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isTPU(kind.NativeType) {
+		if _, err := c.tpuName(kind.NativeType, nativeID); err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		if kind.NativeType == tpuReservationType && method == "GET" {
+			op, ok := metadata.catalog.Operation("tpu.projects.locations.reservations.list")
+			if !ok {
+				return catalog.Operation{}, nil, groupDenied("tpu_reservation_method_missing")
+			}
+			return op, map[string]any{"parent": strings.Join(strings.Split(name, "/")[:4], "/")}, nil
+		}
+	}
 	if isDiscovery(kind.NativeType) {
 		parts := strings.Split(name, "/")
 		if len(parts) < 6 || parts[0] != "projects" || parts[2] != "locations" || !discoveryLocation(parts[3]) || parts[4] != "collections" {
@@ -109,7 +124,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	parts := strings.Split(name, "/")
 	for i, part := range parts {
 		validRecordName := kind.NativeType == dnsRecordSetType && i == len(parts)-2 && dnsRecordName(part)
-		if (!segmentPattern.MatchString(part) && !validRecordName) || part == "." || part == ".." {
+		if (!segmentPattern.MatchString(part) && !validRecordName && !(isTPU(kind.NativeType) && i == len(parts)-1 && tpuSegment(part))) || part == "." || part == ".." {
 			return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource path")
 		}
 	}

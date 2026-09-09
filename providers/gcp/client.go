@@ -172,6 +172,9 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		u.RawQuery = merged.Encode()
 	}
 	sanitize := safePayload
+	if u.Host == tpuHost {
+		sanitize = safeTPUPayload
+	}
 	if discoveryAPIHost(u.Host) {
 		sanitize = safeDiscoveryPayload
 	}

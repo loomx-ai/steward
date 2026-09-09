@@ -1,0 +1,38 @@
+{
+  "source_uri": "https://dl.google.com/dl/cloudsdk/channels/rapid/components/google-cloud-sdk-core-20260831161632.tar.gz",
+  "source_sha256": "cecc5d244c10e3bc8ef7449937569c40339b90686b902fd48b4afc6f47ebfeb3",
+  "files": [
+    {
+      "path": "lib/surface/compute/tpus/tpu_vm/update.yaml",
+      "sha256": "f5d352ae0b5ccda6f70554fc13ed3bdcaae14526b3ee27a52410505e158aeed0",
+      "excerpts": [
+        {
+          "first_line": 1,
+          "last_line": 37,
+          "text": "- release_tracks: [GA, ALPHA]\n  help_text:\n    brief: Update a Cloud TPU VM node.\n    description: Update a Cloud TPU VM node.\n    examples: |\n      To modify a TPU VM node with ID `my-tpu` in the default user project and compute/zone by\n      updating the description to \"A new description\", run:\n\n        $ {command} my-tpu --description=\"A new description\"\n\n      To modify a TPU VM node with ID `my-tpu` in the default user project, network and compute/zone\n      (with other defaults supplied by API) by adding labels `k0`, with value `value0` and label\n      `k1` with value `value1` and removing labels with key `k2`, run:\n\n        $ {command} my-tpu --update-labels=k0=value0,k1=value1 --remove-labels=k2\n\n      Labels can be used to identify the TPU VM node. To list TPU VM nodes with the `k1:value1`\n      label, run:\n\n        $ {parent_command} list --filter='labels.k1=value1'\n\n      To list only the labels when describing a resource, use `--format` to filter the result:\n\n        $ {parent_command} describe my-tpu --format=\"default(labels)\"\n\n  request:\n    collection: tpu.projects.locations.nodes\n    ALPHA:\n      api_version: v2alpha1\n      modify_request_hooks:\n      - googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:GenerateUpdateMask:api_version=v2alpha1\n    GA:\n      api_version: v2\n      modify_request_hooks:\n      - googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:GenerateUpdateMask:api_version=v2\n\n  async:\n"
+        }
+      ]
+    },
+    {
+      "path": "lib/googlecloudsdk/command_lib/compute/tpus/tpu_vm/util.py",
+      "sha256": "2a84db30fd5d31e4b4b17c605b4dfeaf461a4814f168f041a9265a3ca02a06ce",
+      "excerpts": [
+        {
+          "first_line": 1,
+          "last_line": 15,
+          "text": "# -*- coding: utf-8 -*- #\n# Copyright 2021 Google LLC. All Rights Reserved.\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n#    http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n\"\"\"CLI Utilities for Cloud TPU VM commands.\"\"\"\n"
+        },
+        {
+          "first_line": 116,
+          "last_line": 138,
+          "text": "def GenerateUpdateMask(api_version='v2'):\n  \"\"\"Request hook for constructing the updateMask for update requests.\"\"\"\n\n  def Process(unused_ref, args, request):\n    \"\"\"Request hook for constructing the updateMask for update requests.\n\n    Args:\n      unused_ref: ref to the service.\n      args: The args for this method.\n      request: The request to be made.\n\n    Returns:\n      Request with updateMask field populated.\n\n    Raises:\n      NoFieldsSpecifiedError: if no fields were specified.\n      AttachDiskError: if the request for attaching a disk is invalid.\n      DetachDiskError: if the request for detaching a disk is invalid.\n    \"\"\"\n\n    update_mask = set()\n    tpu_messages = GetMessagesModule(version=api_version)\n\n"
+        },
+        {
+          "first_line": 246,
+          "last_line": 290,
+          "text": "    elif args.IsKnownAndSpecified('detach_disk'):\n      # validates worker\n      if not args.IsKnownAndSpecified('worker'):\n        args.worker = ['all']\n      is_all_workers_specified = ValidateWorkerIdsField(args)\n      if is_all_workers_specified:\n        args.worker = []\n\n      if not request.node.dataDisks:\n        raise DetachDiskError(\n            'argument --detach-disk: No data disks to detach from current TPU '\n            'VM.'\n        )\n      source_disk_list = []\n      for disk in request.node.dataDisks:\n        source_disk_list.append(disk.sourceDisk)\n      for i, source_disk in enumerate(source_disk_list):\n        if args.detach_disk != source_disk:\n          continue\n        if is_all_workers_specified:\n          del request.node.dataDisks[i]\n          break\n        worker_diff = set(\n            request.node.dataDisks[i].workerIds) - set(args.worker)\n        if not worker_diff:\n          del request.node.dataDisks[i]\n          break\n        request.node.dataDisks[i].workerIds = sorted(worker_diff)\n        break\n      else:\n        raise DetachDiskError(\n            'argument --detach-disk: The specified data disk '\n            + args.detach_disk + ' is not currently attached to the TPU VM.'\n        )\n      update_mask.add('data_disks')\n\n    if not update_mask:\n      raise NoFieldsSpecifiedError(\n          'No fields would change as a result of this update; must specify at '\n          'least one field to update.')\n\n    request.updateMask = ','.join(update_mask)\n    return request\n\n  return Process\n"
+        }
+      ]
+    }
+  ]
+}

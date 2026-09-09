@@ -24,6 +24,8 @@ type serviceCascadeRule struct {
 // These are documented native cascades, not an inference from resource nesting.
 // New rules must cover the native child set, reviewed impact and final readback.
 var serviceCascadeRules = map[string]serviceCascadeRule{
+	tpuQueueType:                                    {children: []string{tpuNodeType}, directChildren: []string{tpuNodeType}},
+	tpuNodeType:                                     {children: []string{"compute.googleapis.com/Disk", "compute.googleapis.com/RegionDisk"}},
 	discoveryHost + "/Collection":                   {children: []string{discoveryHost + "/Engine", discoveryHost + "/DataStore"}, directChildren: []string{discoveryHost + "/Engine", discoveryHost + "/DataStore"}},
 	discoveryHost + "/Engine":                       {children: []string{discoveryHost + "/Control", discoveryHost + "/ServingConfig", discoveryHost + "/Session", discoveryHost + "/Conversation", discoveryHost + "/Assistant"}},
 	discoveryHost + "/DataStore":                    {children: []string{discoveryHost + "/Schema", discoveryHost + "/Control", discoveryHost + "/ServingConfig", discoveryHost + "/Session", discoveryHost + "/Conversation", discoveryHost + "/Branch", discoveryHost + "/SiteSearchEngine"}},
@@ -63,6 +65,9 @@ type serviceChild struct {
 }
 
 func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, data map[string]any) ([]serviceChild, error) {
+	if isTPU(parent.NativeType) {
+		return c.tpuChildren(ctx, parent, data)
+	}
 	if isDiscovery(parent.NativeType) {
 		return c.discoveryChildren(ctx, parent, data)
 	}
@@ -258,6 +263,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(target.Normalized, child.data); err != nil {
 				return result, err
 			}
+			if err := tpuSameResource(child.kind, target.Normalized, child.data); err != nil {
+				return result, err
+			}
+			if parent.Identity.NativeType == tpuNodeType && (text(target.Normalized["id"]) != text(child.data["id"]) || batchComputeConfiguration(child.kind, target.Normalized) != batchComputeConfiguration(child.kind, child.data)) {
+				return result, groupDenied("tpu_retained_disk_changed")
+			}
 			if err := discoverySameResource(child.kind, target.Normalized, child.data); err != nil {
 				return result, err
 			}
@@ -279,6 +290,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 }
 
 func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.ActionRequest, live map[string]any) error {
+	if isTPU(a.kind.NativeType) {
+		return nil
+	} // TPU verifies peer nodes and retained disks in its own preflight.
 	if a.kind.NativeType == batchJobType {
 		return a.batchPreflight(ctx, request, live)
 	}

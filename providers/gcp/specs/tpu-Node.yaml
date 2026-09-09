@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: tpu.googleapis.com/Node
+  class: compute.accelerator
+presentation:
+  displayNames:
+    en-US: Cloud TPU node
+    zh-CN: Cloud TPU 节点
+  consoleLinkTemplate: https://console.cloud.google.com/compute/tpus?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: tpu.projects.locations.nodes.list
+    parameters:
+      parent: scope.locationParent
+    itemsPath: nodes
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail: &id001
+    operation: tpu.projects.locations.nodes.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+  createTime:
+    path: createTime
+    type: string
+  id:
+    path: id
+    type: string
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: tpu.projects.locations.nodes.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read: *id001
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: compute.googleapis.com/Disk
+  targetIdPath: refs_compute_googleapis_com_Disk
+- type: depends_on
+  targetType: compute.googleapis.com/RegionDisk
+  targetIdPath: refs_compute_googleapis_com_RegionDisk
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: depends_on
+  targetType: tpu.googleapis.com/QueuedResource
+  targetIdPath: refs_tpu_googleapis_com_QueuedResource

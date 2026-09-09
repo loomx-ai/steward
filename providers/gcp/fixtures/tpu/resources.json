@@ -1,0 +1,159 @@
+{
+  "projects/sample-project/locations/us-central2-b/queuedResources/training": {
+    "name": "projects/sample-project/locations/us-central2-b/queuedResources/training",
+    "createTime": "2026-08-01T00:00:00Z",
+    "state": {
+      "state": "ACTIVE",
+      "activeData": {}
+    },
+    "reservationName": "projects/sample-project/locations/us-central2-b/reservations/committed",
+    "tpu": {
+      "nodeSpec": [
+        {
+          "parent": "projects/sample-project/locations/us-central2-b",
+          "multisliceParams": {
+            "nodeCount": 2
+          },
+          "node": {
+            "acceleratorType": "v4-8",
+            "runtimeVersion": "tpu-ubuntu2204-base",
+            "networkConfig": {
+              "network": "training-network",
+              "subnetwork": "training-subnet"
+            },
+            "serviceAccount": {
+              "email": "trainer@sample-project.iam.gserviceaccount.com",
+              "scope": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ]
+            },
+            "metadata": {
+              "custom": "TPU_PRIVATE_TEMPLATE"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "projects/sample-project/locations/us-central2-b/reservations/committed": {
+    "name": "projects/sample-project/locations/us-central2-b/reservations/committed",
+    "state": "ACTIVE",
+    "standard": {
+      "resourceType": "v4",
+      "capacityUnits": "CHIPS",
+      "size": 8,
+      "interval": {
+        "startTime": "2026-01-01T00:00:00Z",
+        "endTime": "2027-01-01T00:00:00Z"
+      },
+      "usage": {
+        "total": "8"
+      }
+    }
+  },
+  "projects/sample-project/locations/us-central2-b/nodes/training-0": {
+    "name": "projects/sample-project/locations/us-central2-b/nodes/training-0",
+    "id": "1000",
+    "createTime": "2026-08-01T00:01:00Z",
+    "state": "READY",
+    "apiVersion": "V2",
+    "queuedResource": "projects/sample-project/locations/us-central2-b/queuedResources/training",
+    "acceleratorType": "v4-8",
+    "runtimeVersion": "tpu-ubuntu2204-base",
+    "networkConfig": {
+      "network": "training-network",
+      "subnetwork": "training-subnet"
+    },
+    "serviceAccount": {
+      "email": "trainer@sample-project.iam.gserviceaccount.com"
+    },
+    "dataDisks": [
+      {
+        "sourceDisk": "projects/sample-project/zones/us-central2-b/disks/data-0",
+        "mode": "READ_WRITE"
+      }
+    ],
+    "metadata": {
+      "custom": "TPU_PRIVATE_NODE"
+    },
+    "description": "TPU_PRIVATE_DESCRIPTION",
+    "labels": {
+      "team": "training"
+    },
+    "networkEndpoints": [
+      {
+        "ipAddress": "10.0.0.2",
+        "port": 8470
+      }
+    ]
+  },
+  "projects/sample-project/zones/us-central2-b/disks/data-0": {
+    "name": "data-0",
+    "id": "2000",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b/disks/data-0",
+    "creationTimestamp": "2026-07-01T00:00:00Z",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b/diskTypes/pd-balanced",
+    "sizeGb": "100",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b",
+    "status": "READY"
+  },
+  "projects/sample-project/locations/us-central2-b/nodes/training-1": {
+    "name": "projects/sample-project/locations/us-central2-b/nodes/training-1",
+    "id": "1001",
+    "createTime": "2026-08-01T00:01:00Z",
+    "state": "READY",
+    "apiVersion": "V2",
+    "queuedResource": "projects/sample-project/locations/us-central2-b/queuedResources/training",
+    "acceleratorType": "v4-8",
+    "runtimeVersion": "tpu-ubuntu2204-base",
+    "networkConfig": {
+      "network": "training-network",
+      "subnetwork": "training-subnet"
+    },
+    "serviceAccount": {
+      "email": "trainer@sample-project.iam.gserviceaccount.com"
+    },
+    "dataDisks": [
+      {
+        "sourceDisk": "projects/sample-project/zones/us-central2-b/disks/data-1",
+        "mode": "READ_WRITE"
+      }
+    ],
+    "metadata": {
+      "custom": "TPU_PRIVATE_NODE"
+    },
+    "description": "TPU_PRIVATE_DESCRIPTION",
+    "labels": {
+      "team": "training"
+    },
+    "networkEndpoints": [
+      {
+        "ipAddress": "10.0.0.3",
+        "port": 8470
+      }
+    ]
+  },
+  "projects/sample-project/zones/us-central2-b/disks/data-1": {
+    "name": "data-1",
+    "id": "2001",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b/disks/data-1",
+    "creationTimestamp": "2026-07-01T00:00:00Z",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b/diskTypes/pd-balanced",
+    "sizeGb": "100",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central2-b",
+    "status": "READY"
+  },
+  "projects/sample-project/locations/europe-west4-a/nodes/standalone": {
+    "name": "projects/sample-project/locations/europe-west4-a/nodes/standalone",
+    "id": "3000",
+    "createTime": "2026-08-02T00:00:00Z",
+    "state": "STOPPED",
+    "apiVersion": "V2",
+    "acceleratorType": "v5litepod-4",
+    "runtimeVersion": "tpu-ubuntu2204-base",
+    "networkConfig": {
+      "network": "projects/sample-project/global/networks/training-network",
+      "subnetwork": "projects/sample-project/regions/europe-west4/subnetworks/europe-subnet"
+    }
+  }
+}

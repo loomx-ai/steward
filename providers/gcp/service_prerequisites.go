@@ -20,7 +20,17 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 		if !known || len(kind.DeleteOperations) == 0 || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderGCP || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !slices.Contains(serviceCascadeRules[a.kind.NativeType].directChildren, identity.NativeType) {
 			return groupDenied("invalid_service_prerequisite")
 		}
-		if isDataformFolder(a.kind.NativeType) {
+		if a.kind.NativeType == tpuQueueType {
+			if err := a.client.tpuIdentity(tpuNodeType, id, prerequisite.Asset.Normalized); err != nil {
+				return err
+			}
+			if text(prerequisite.Asset.Normalized[tpuProof]) == "" || text(prerequisite.Asset.Normalized[tpuQueueProof]) != text(request.Asset.Normalized[tpuProof]) {
+				return groupDenied("tpu_prerequisite_proof_changed")
+			}
+			if err := a.client.tpuQueueRelation(request.Asset.Identity.NativeID, request.Asset.Normalized, id, prerequisite.Asset.Normalized); err != nil {
+				return err
+			}
+		} else if isDataformFolder(a.kind.NativeType) {
 			if err := a.client.dataformFolderRelation(request.Asset.Identity, request.Asset.Normalized, identity.NativeType, id, prerequisite.Asset.Normalized); err != nil {
 				return err
 			}

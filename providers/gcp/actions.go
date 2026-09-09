@@ -24,7 +24,7 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType) || isDiscovery(value.Identity.NativeType) || isTPU(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
 		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
@@ -59,6 +59,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
+	}
+	if isTPU(a.kind.NativeType) {
+		return a.tpuPreflight(ctx, request)
 	}
 	if err := a.discoveryActionIdentity(request); err != nil {
 		return contracts.PreflightResult{}, err
@@ -231,6 +234,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		}
 		return contracts.ActionResult{RetryAfter: 2 * time.Second}, nil
 	}
+	if isTPU(a.kind.NativeType) {
+		return a.prepareTPU(ctx, request)
+	}
 	if a.kind.NativeType == managerType {
 		return a.prepareManagedGroup(ctx, request)
 	}
@@ -398,6 +404,9 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if isTPU(a.kind.NativeType) {
+		return a.waitTPU(ctx, request, result)
+	}
 	if isDiscovery(a.kind.NativeType) {
 		return a.waitDiscovery(ctx, request, result)
 	}
@@ -519,6 +528,9 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if isTPU(a.kind.NativeType) {
+		return a.tpuReadback(ctx, request)
+	}
 	if err := a.discoveryActionIdentity(request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
