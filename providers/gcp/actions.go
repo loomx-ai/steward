@@ -15,6 +15,7 @@ import (
 )
 
 type action struct {
+	identity         asset.Identity
 	client           *client
 	kind             resourceType
 	endpoint         string
@@ -23,8 +24,8 @@ type action struct {
 }
 
 func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
-	if value.Identity.NativeType == batchJobType && (id == "" || id != value.Identity.ConnectionID) {
-		return nil, groupDenied("batch_connection_changed")
+	if (value.Identity.NativeType == batchJobType || isDataproc(value.Identity.NativeType)) && (id == "" || id != value.Identity.ConnectionID) {
+		return nil, groupDenied("native_connection_changed")
 	}
 	kind, ok := findType(value.Identity.NativeType)
 	if !ok || value.Identity.Provider != asset.ProviderGCP || len(kind.DeleteOperations) == 0 {
@@ -42,7 +43,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	return &action{client: c, kind: kind, endpoint: endpoint, deleteOperation: operation, deleteParameters: parameters}, nil
+	return &action{identity: value.Identity, client: c, kind: kind, endpoint: endpoint, deleteOperation: operation, deleteParameters: parameters}, nil
 }
 func (a *action) DeletionCheckTimeout() time.Duration {
 	if a.isGKE() {
@@ -56,6 +57,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
+	if err := a.dataprocActionIdentity(request); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
 		if a.isGKE() {
@@ -65,6 +69,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		if a.kind.NativeType == managerType {
 			read, err := a.managedGroupReadback(ctx, request)
 			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"manager_absent": true}}, err
+		}
+		if a.kind.NativeType == dataprocClusterType {
+			read, err := a.dataprocReadback(ctx, request)
+			return contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists, Evidence: map[string]any{"dataproc_observing": true}}, err
 		}
 		if HasServiceCascade(a.kind.NativeType) {
 			read, err := a.serviceCascadeReadback(ctx, request)
@@ -78,6 +86,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := a.dataformPreflight(ctx, request, data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := a.dataprocPreflight(request, data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if resourceSoftDeleted(a.kind.NativeType, data) {
 		return contracts.PreflightResult{Allowed: true, Absent: true, Evidence: map[string]any{"state": "soft_deleted"}}, nil
 	}
@@ -88,6 +99,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if strings.HasPrefix(a.kind.NativeType, "compute.googleapis.com/") && text(request.Asset.Normalized["id"]) != "" && text(request.Asset.Normalized["id"]) != text(data["id"]) {
 		return contracts.PreflightResult{Reason: "resource_identity_changed"}, nil
+	}
+	if strings.HasPrefix(a.kind.NativeType, "compute.googleapis.com/") && a.kind.NativeType != managerType {
+		if owned, err := a.client.dataprocComputeHasCluster(ctx, a.kind.NativeType, data); err != nil || owned {
+			return contracts.PreflightResult{Reason: "dataproc_compute_requires_cluster_cleanup"}, err
+		}
 	}
 	if protectedComputeLabels(data) {
 		return contracts.PreflightResult{Reason: "protected_labels"}, nil
@@ -100,6 +116,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	if a.kind.NativeType == "gkehub.googleapis.com/Membership" && len(object(object(data["endpoint"])["gkeCluster"])) == 0 {
 		return contracts.PreflightResult{Reason: "membership_requires_native_cluster_unregister"}, nil
+	}
+	if a.kind.NativeType == dataprocClusterType {
+		if err := a.dataprocClusterPreflight(ctx, request, data); err != nil {
+			return contracts.PreflightResult{}, err
+		}
 	}
 	if err := a.serviceCascadePreflight(ctx, request, data); err != nil {
 		return contracts.PreflightResult{}, err
@@ -165,6 +186,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 			return contracts.PreflightResult{Reason: "bucket_not_empty"}, nil
 		}
 	}
+	if a.kind.NativeType == dataprocClusterType {
+		return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"dataproc_observing": object(data["status"])["state"] == "DELETING"}}, nil
+	}
 	if a.kind.NativeType == batchJobType {
 		return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"batch_deleting": object(data["status"])["state"] == "DELETION_IN_PROGRESS"}}, nil
 	}
@@ -181,6 +205,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	}
 	if check.Absent {
 		return contracts.ActionResult{}, nil
+	}
+	if a.kind.NativeType == dataprocClusterType && check.Evidence["dataproc_observing"] == true {
+		return contracts.ActionResult{Data: dataprocClusterPhase(request, ""), RetryAfter: 2 * time.Second}, nil
 	}
 	if check.Evidence["manager_absent"] == true || check.Evidence["gke_absent"] == true || check.Evidence["service_parent_absent"] == true {
 		if a.kind.NativeType == batchJobType {
@@ -203,6 +230,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 	if a.kind.NativeType == dataformInvocationType {
 		return a.prepareDataformInvocation(ctx, request)
 	}
+	if a.kind.NativeType == dataprocJobType {
+		return a.prepareDataprocJob(ctx, request)
+	}
 	if a.kind.NativeType == batchJobType && check.Evidence["batch_deleting"] == true {
 		return contracts.ActionResult{Data: batchPhase(request, ""), RetryAfter: 2 * time.Second}, nil
 	}
@@ -221,6 +251,15 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 		// Execute has just verified the complete live child set against the
 		// reviewed plan. Only documented native cascade switches are enabled.
 		parameters[parameter] = true
+	}
+	if a.kind.NativeType == dataprocClusterType {
+		parameters["clusterUuid"] = request.Asset.Normalized["clusterUuid"]
+	}
+	if a.kind.NativeType == dataprocTemplateType {
+		parameters["version"] = request.Asset.Normalized["version"]
+		if parameters["version"] == nil {
+			parameters["version"] = 0
+		}
 	}
 	if property := object(object(a.deleteOperation.InputSchema["properties"])["etag"]); property != nil {
 		if etag := text(request.Asset.Normalized["etag"]); etag != "" {
@@ -255,6 +294,13 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	operation, err := a.operationURL(data)
 	if err != nil {
 		return contracts.ActionResult{}, err
+	}
+	if a.kind.NativeType == dataprocClusterType {
+		operation, err = a.dataprocOperation(data, request)
+		if err != nil {
+			return contracts.ActionResult{}, err
+		}
+		return contracts.ActionResult{ProviderRequestID: response.RequestID, ProviderOperationID: operation, Data: dataprocClusterPhase(request, operation), RetryAfter: 2 * time.Second}, nil
 	}
 	if a.kind.NativeType == batchJobType {
 		operation, err = a.batchOperation(data, request)
@@ -332,6 +378,19 @@ func operationError(data map[string]any, requestID string) error {
 	return &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProviderFailure, Code: "operation_failed", Message: contracts.SafeProviderValidationMessage, RequestID: requestID}}
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.dataprocActionIdentity(request); err != nil {
+		return contracts.WaitResult{}, err
+	}
+	if a.kind.NativeType == dataprocClusterType {
+		if len(result.Data) == 0 && result.ProviderOperationID == "" {
+			read, err := a.dataprocReadback(ctx, request)
+			return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State}, err
+		}
+		return a.waitDataprocCluster(ctx, request, result)
+	}
+	if a.kind.NativeType == dataprocJobType && len(result.Data) > 0 {
+		return a.waitDataprocJob(ctx, request, result)
+	}
 	if a.kind.NativeType == batchJobType {
 		// Execute may return an empty result when its initial read already proved
 		// the reviewed job and all effects absent, or DELETE itself returned 404.
@@ -437,6 +496,12 @@ func (a *action) waitOperation(ctx context.Context, operationID string) (contrac
 	return contracts.WaitResult{Done: true}, nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.dataprocActionIdentity(request); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if a.kind.NativeType == dataprocClusterType {
+		return a.dataprocReadback(ctx, request)
+	}
 	data, err := a.client.request(ctx, "GET", a.endpoint, nil)
 	if isNotFound(err) {
 		if a.isGKE() {
@@ -454,6 +519,9 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 		return contracts.ReadbackResult{}, err
 	}
 	if err := a.dataformPreflight(ctx, request, data); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	if err := a.dataprocPreflight(request, data); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
 	if a.kind.NativeType == batchJobType {

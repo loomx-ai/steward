@@ -41,6 +41,9 @@ func (a *action) plannedGroup(ctx context.Context, request contracts.ActionReque
 	if err != nil || owned {
 		return managedGroup{}, "managed_group_requires_gke_cleanup", err
 	}
+	if owned, err := a.client.dataprocComputeHasCluster(ctx, managerType, live); err != nil || owned {
+		return managedGroup{}, "dataproc_compute_requires_cluster_cleanup", err
+	}
 	group, err := a.client.loadManagedGroup(ctx, request.Asset.Identity.NativeID, live, pendingVM...)
 	if err != nil {
 		return group, "", err

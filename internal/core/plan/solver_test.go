@@ -759,3 +759,61 @@ func impactByAsset(values []plan.ImpactItem) map[asset.AssetID]plan.ImpactItem {
 	}
 	return result
 }
+
+func TestOptionalDirectChildRetainsHistoryUnlessSelected(t *testing.T) {
+	for _, test := range []struct {
+		name                                      string
+		selected, retain, protect, weak, required bool
+		steps, impacts, blockers                  int
+		outcome                                   plan.ExpectedOutcome
+	}{
+		{name: "default retention", steps: 1, impacts: 1, outcome: plan.ExpectedProviderDefaultRetain},
+		{name: "selected child", selected: true, steps: 2},
+		{name: "explicit retention overrides selection", selected: true, retain: true, steps: 1, impacts: 1, outcome: plan.ExpectedRetainExplicit},
+		{name: "protected history survives", protect: true, steps: 1, impacts: 1, outcome: plan.ExpectedProviderDefaultRetain},
+		{name: "protected selected child", selected: true, protect: true, blockers: 1},
+		{name: "weak authority cannot retain silently", weak: true, blockers: 1},
+		{name: "mandatory child remains mandatory", required: true, steps: 2},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			member := binding("cluster", "history", graph.OwnershipExclusive, graph.CleanupDirect, 1)
+			member.DirectCleanupAllowed = true
+			member.Evidence = map[string]any{"retention_supported": !test.required, "delete_by_default": test.required}
+			if test.weak {
+				member.Confidence = 0.1
+			}
+			input := plan.Input{Assets: []asset.Asset{actionable("cluster"), actionable("history")}, ResolvedAssetIDs: []asset.AssetID{"cluster"}, LifecycleBindings: []graph.LifecycleBinding{member}}
+			if test.selected {
+				input.ResolvedAssetIDs = append(input.ResolvedAssetIDs, "history")
+			}
+			if test.retain {
+				input.RequestOptions = map[asset.AssetID]map[string]any{"cluster": {"retain_resources": []string{"history"}}}
+			}
+			if test.protect {
+				input.Protections = []plan.ProtectionPolicy{{AssetID: "history", Protected: true}}
+			}
+			result, err := plan.Solve(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.blockers > 0 {
+				if len(result.Blockers) == 0 {
+					t.Fatalf("missing blocker: %+v", result)
+				}
+				return
+			}
+			if len(result.Blockers) != 0 || len(result.Steps) != test.steps || len(result.ImpactItems) != test.impacts {
+				t.Fatalf("wrong plan: %+v", result)
+			}
+			if test.impacts > 0 && result.ImpactItems[0].Expected != test.outcome {
+				t.Fatalf("wrong retention: %+v", result.ImpactItems)
+			}
+			if test.selected && !test.retain {
+				root, child := stepForAsset(result.Steps, "cluster"), stepForAsset(result.Steps, "history")
+				if len(root.DependsOn) != 1 || root.DependsOn[0] != child.ID {
+					t.Fatalf("child deletion is not prerequisite: %+v", result.Steps)
+				}
+			}
+		})
+	}
+}

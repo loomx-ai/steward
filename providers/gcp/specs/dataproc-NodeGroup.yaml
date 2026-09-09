@@ -1,0 +1,55 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataproc.googleapis.com/NodeGroup
+  class: compute.node_pool
+presentation:
+  displayNames:
+    en-US: Dataproc node group
+    zh-CN: Dataproc 节点组
+  consoleLinkTemplate: https://console.cloud.google.com/dataproc/nodeGroups?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataproc.projects.regions.clusters.get
+    parameters:
+      projectId: scope.project
+      region: parent.normalized._dataproc_region
+      clusterName: parent.normalized.clusterName
+    itemsPath: config.auxiliaryNodeGroups
+    identityPath: nodeGroup.name
+  detail:
+    operation: dataproc.projects.regions.clusters.nodeGroups.get
+    itemsPath: $
+    identityPath: name
+  parent:
+    source: product-api
+    nativeType: dataproc.googleapis.com/Cluster
+fields:
+  name:
+    path: name
+    type: string
+  roles:
+    path: roles
+    type: array
+  nodeGroupConfig:
+    path: nodeGroupConfig
+    type: object
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: dataproc.googleapis.com/Cluster
+  targetIdPath: refs_dataproc_googleapis_com_Cluster
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket

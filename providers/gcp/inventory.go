@@ -202,6 +202,10 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	if nativeType == batchJobType {
 		normalized[batchProof] = batchConfiguration(data)
 	}
+	if isDataproc(nativeType) {
+		normalized[dataprocProof] = dataprocConfiguration(data)
+		normalized["_dataproc_region"] = dataprocRegion(nativeID)
+	}
 	if isDataform(nativeType) {
 		normalized[dataformProof] = dataformConfiguration(nativeType, data)
 	}
@@ -212,6 +216,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	refs := references(c, data)
 	if nativeType == batchJobType {
 		refs = references(c, c.batchDependencyData(data))
+	}
+	if isDataproc(nativeType) {
+		refs = c.dataprocReferences(nativeType, nativeID, data)
 	}
 	if nativeType == "dataform.googleapis.com/WorkflowConfig" {
 		id := c.canonicalName("//dataform.googleapis.com/" + text(data["releaseConfig"]))
@@ -304,6 +311,9 @@ func canonicalName(value string) string {
 	value = strings.Replace(value, "//cloudsql.googleapis.com/", "//sqladmin.googleapis.com/", 1)
 	if strings.HasPrefix(value, "//container.googleapis.com/") {
 		value = strings.Replace(value, "/zones/", "/locations/", 1)
+	}
+	if strings.HasPrefix(value, "//dataproc.googleapis.com/") && (strings.Contains(value, "/autoscalingPolicies/") || strings.Contains(value, "/workflowTemplates/")) {
+		value = strings.Replace(value, "/locations/", "/regions/", 1)
 	}
 	return value
 }

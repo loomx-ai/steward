@@ -3656,3 +3656,88 @@ type workConflictConnectionRepository struct {
 func (workConflictConnectionRepository) PutConnectionIfUnchanged(context.Context, asset.CloudConnection, time.Time) error {
 	return persistence.ErrConflict
 }
+
+func TestOptionalDirectChildUsesRetainedImpactOrFrozenPrerequisite(t *testing.T) {
+	for _, mode := range []string{"default", "selected", "explicit-retain"} {
+		t.Run(mode, func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openPlanningRepositories(t)
+			now := time.Date(2026, 9, 9, 0, 0, 0, 0, time.UTC)
+			root := planningAsset("cluster", "c-1", "ACS::CS::Cluster", "cluster-native", now)
+			child := planningAsset("history", "c-1", "ACS::ECS::Instance", "history-native", now)
+			binding := planningBinding("optional-history", "cluster", "history", graph.OwnershipExclusive, graph.CleanupDirect, "optional-graph", now)
+			binding.DirectCleanupAllowed = true
+			binding.Evidence["delete_by_default"] = false
+			binding.Evidence["retention_supported"] = true
+			seedPlanningSnapshot(t, repositories, "scope-a", "optional-graph", []asset.Asset{root, child}, []graph.LifecycleBinding{binding})
+			planner := cleanup.NewService(repositories, bundleResolver{asset.ProviderAliCloud: {Provider: asset.ProviderAliCloud, Revision: "bundle-a", Hash: "spec-a"}}, cleanup.WithClock(func() time.Time { return now }), cleanup.WithTaskIDGenerator(func() string { return "cln-optional" }), cleanup.WithExecutionIDGenerator(func() string { return "exec-optional" }))
+			req := cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(root.ID)}, CreatedBy: "operator"}
+			if mode != "default" {
+				req.Selectors = append(req.Selectors, assetSelector(child.ID))
+			}
+			if mode == "explicit-retain" {
+				req.RequestOptions = map[asset.AssetID]map[string]any{root.ID: {"retain_resources": []string{string(child.ID)}}}
+			}
+			aggregate, err := planner.CreateTask(ctx, req)
+			if err != nil || aggregate.Task.Status != plan.StatusReady {
+				t.Fatalf("optional child plan %+v %v", aggregate, err)
+			}
+			if _, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: aggregate.Task.ID, RequestedBy: "operator", IdempotencyKey: "optional", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}); err != nil {
+				t.Fatal(err)
+			}
+			parentDriver := &scriptedActionDriver{pollInterval: time.Second, readback: contracts.ReadbackResult{Exists: false}}
+			childDriver := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+			resolver := cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+				if value.ID == root.ID {
+					return parentDriver, nil
+				}
+				return childDriver, nil
+			})
+			handler := cleanup.NewExecutionHandler(planner, resolver)
+			parentJob := cleanupExecutionJobForAsset(t, repositories, aggregate.Task.ID, root.ID)
+			var retry *cleanup.RetryError
+			if mode == "selected" {
+				if err := handler.Handle(ctx, parentJob); err != nil && !errors.As(err, &retry) {
+					t.Fatal(err)
+				}
+				if parentDriver.executeCalls != 0 {
+					t.Fatal("parent ran before selected history deletion")
+				}
+				if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, aggregate.Task.ID, child.ID)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := handler.Handle(ctx, parentJob); !errors.As(err, &retry) {
+				t.Fatalf("parent wait not persisted %v", err)
+			}
+			current, err := repositories.Inventory().GetAsset(ctx, child.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if mode != "selected" && (current.ClosedAt != nil || childDriver.executeCalls != 0) {
+				t.Fatal("retained history was deleted")
+			}
+			current.Normalized = map[string]any{"changed_after_plan": true}
+			if err := repositories.Inventory().PutAsset(ctx, current); err != nil {
+				t.Fatal(err)
+			}
+			handler = cleanup.NewExecutionHandler(planner, resolver)
+			if err := handler.Handle(ctx, parentJob); err != nil && !errors.As(err, &retry) {
+				t.Fatal(err)
+			}
+			if parentDriver.executeCalls != 1 || len(parentDriver.waitRequests) != 1 {
+				t.Fatal("parent action replayed after restart")
+			}
+			request := parentDriver.waitRequests[0]
+			if mode == "selected" {
+				if len(request.PrerequisiteDeletions) != 1 || len(request.LifecycleImpacts) != 0 || request.PrerequisiteDeletions[0].Asset.Normalized["changed_after_plan"] != nil {
+					t.Fatalf("selected history lost frozen prerequisite %+v", request)
+				}
+			} else {
+				if len(request.PrerequisiteDeletions) != 0 || len(request.LifecycleImpacts) != 1 || request.LifecycleImpacts[0].Delete || request.LifecycleImpacts[0].Asset.Normalized["changed_after_plan"] != nil {
+					t.Fatalf("history lost frozen retention %+v", request)
+				}
+			}
+		})
+	}
+}

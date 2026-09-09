@@ -1,0 +1,500 @@
+{
+  "projects/sample-project/zones/us-central1-a/instances/analytics-m": {
+    "name": "analytics-m",
+    "id": "110",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-m",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "metadata": {
+      "items": [
+        {
+          "key": "dataproc-cluster-uuid",
+          "value": "2f5548a5-590b-4e95-ab78-a3f0db3181f0"
+        },
+        {
+          "key": "dataproc-cluster-name",
+          "value": "analytics"
+        },
+        {
+          "key": "dataproc-region",
+          "value": "us-central1"
+        },
+        {
+          "key": "startup-script",
+          "value": "DATAPROC_PRIVATE_VM_SCRIPT"
+        }
+      ]
+    },
+    "serviceAccounts": [
+      {
+        "email": "spark@sample-project.iam.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/cloud-platform"
+        ]
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/data",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/subnetworks/data"
+      }
+    ],
+    "disks": [
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-m-boot",
+        "deviceName": "boot",
+        "boot": true,
+        "type": "PERSISTENT",
+        "mode": "READ_WRITE",
+        "autoDelete": true
+      },
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/disks/input-data",
+        "deviceName": "input",
+        "type": "PERSISTENT",
+        "mode": "READ_ONLY",
+        "autoDelete": false,
+        "boot": false
+      }
+    ]
+  },
+  "projects/sample-project/zones/us-central1-a/disks/analytics-m-boot": {
+    "name": "analytics-m-boot",
+    "id": "210",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-m-boot",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "sizeGb": "100",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/diskTypes/pd-standard",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-m"
+    ]
+  },
+  "projects/sample-project/zones/us-central1-a/instances/analytics-w": {
+    "name": "analytics-w",
+    "id": "111",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-w",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "metadata": {
+      "items": [
+        {
+          "key": "dataproc-cluster-uuid",
+          "value": "2f5548a5-590b-4e95-ab78-a3f0db3181f0"
+        },
+        {
+          "key": "dataproc-cluster-name",
+          "value": "analytics"
+        },
+        {
+          "key": "dataproc-region",
+          "value": "us-central1"
+        },
+        {
+          "key": "startup-script",
+          "value": "DATAPROC_PRIVATE_VM_SCRIPT"
+        }
+      ]
+    },
+    "serviceAccounts": [
+      {
+        "email": "spark@sample-project.iam.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/cloud-platform"
+        ]
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/data",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/subnetworks/data"
+      }
+    ],
+    "disks": [
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-w-boot",
+        "deviceName": "boot",
+        "boot": true,
+        "type": "PERSISTENT",
+        "mode": "READ_WRITE",
+        "autoDelete": true
+      }
+    ]
+  },
+  "projects/sample-project/zones/us-central1-a/disks/analytics-w-boot": {
+    "name": "analytics-w-boot",
+    "id": "211",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-w-boot",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "sizeGb": "100",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/diskTypes/pd-standard",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-w"
+    ]
+  },
+  "projects/sample-project/zones/us-central1-a/instances/analytics-a": {
+    "name": "analytics-a",
+    "id": "112",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-a",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "machineType": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "metadata": {
+      "items": [
+        {
+          "key": "dataproc-cluster-uuid",
+          "value": "2f5548a5-590b-4e95-ab78-a3f0db3181f0"
+        },
+        {
+          "key": "dataproc-cluster-name",
+          "value": "analytics"
+        },
+        {
+          "key": "dataproc-region",
+          "value": "us-central1"
+        },
+        {
+          "key": "startup-script",
+          "value": "DATAPROC_PRIVATE_VM_SCRIPT"
+        }
+      ]
+    },
+    "serviceAccounts": [
+      {
+        "email": "spark@sample-project.iam.gserviceaccount.com",
+        "scopes": [
+          "https://www.googleapis.com/auth/cloud-platform"
+        ]
+      }
+    ],
+    "networkInterfaces": [
+      {
+        "name": "nic0",
+        "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/data",
+        "subnetwork": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/subnetworks/data"
+      }
+    ],
+    "disks": [
+      {
+        "source": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-a-boot",
+        "deviceName": "boot",
+        "boot": true,
+        "type": "PERSISTENT",
+        "mode": "READ_WRITE",
+        "autoDelete": true
+      }
+    ]
+  },
+  "projects/sample-project/zones/us-central1-a/disks/analytics-a-boot": {
+    "name": "analytics-a-boot",
+    "id": "212",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/disks/analytics-a-boot",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "labels": {
+      "goog-dataproc-cluster-uuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+      "goog-dataproc-cluster-name": "analytics",
+      "goog-dataproc-location": "us-central1"
+    },
+    "sizeGb": "100",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/diskTypes/pd-standard",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-a"
+    ]
+  },
+  "projects/sample-project/regions/us-central1/disks/input-data": {
+    "name": "input-data",
+    "id": "310",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/disks/input-data",
+    "region": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1",
+    "sizeGb": "50",
+    "type": "https://www.googleapis.com/compute/v1/projects/sample-project/regions/us-central1/diskTypes/pd-standard",
+    "users": [
+      "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instances/analytics-m"
+    ]
+  },
+  "projects/sample-project/regions/us-central1/clusters/analytics": {
+    "projectId": "sample-project",
+    "clusterName": "analytics",
+    "clusterUuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0",
+    "status": {
+      "state": "RUNNING",
+      "detail": "DATAPROC_PRIVATE_STATUS"
+    },
+    "config": {
+      "gceClusterConfig": {
+        "zoneUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+        "networkUri": "global/networks/data",
+        "subnetworkUri": "regions/us-central1/subnetworks/data",
+        "serviceAccount": "spark@sample-project.iam.gserviceaccount.com",
+        "internalIpOnly": true,
+        "metadata": {
+          "custom": "DATAPROC_PRIVATE_CLUSTER_META"
+        }
+      },
+      "masterConfig": {
+        "numInstances": 1,
+        "instanceNames": [
+          "analytics-m"
+        ],
+        "instanceReferences": [
+          {
+            "instanceName": "analytics-m",
+            "instanceId": "110",
+            "publicKey": "DATAPROC_PRIVATE_MASTER_KEY"
+          }
+        ],
+        "machineTypeUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2"
+      },
+      "secondaryWorkerConfig": {
+        "numInstances": 1,
+        "instanceNames": [
+          "analytics-w"
+        ],
+        "instanceReferences": [
+          {
+            "instanceName": "analytics-w",
+            "instanceId": "111"
+          }
+        ],
+        "managedGroupConfig": {
+          "instanceGroupManagerUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroupManagers/analytics-workers",
+          "instanceTemplateName": "analytics-template"
+        }
+      },
+      "auxiliaryNodeGroups": [
+        {
+          "nodeGroupId": "aux-real-17",
+          "nodeGroup": {
+            "name": "projects/sample-project/regions/us-central1/clusters/analytics/nodeGroups/aux-real-17",
+            "roles": [
+              "DRIVER"
+            ],
+            "nodeGroupConfig": {
+              "numInstances": 1,
+              "instanceNames": [
+                "analytics-a"
+              ],
+              "instanceReferences": [
+                {
+                  "instanceName": "analytics-a",
+                  "instanceId": "112",
+                  "publicKey": "DATAPROC_PRIVATE_AUX_KEY"
+                }
+              ],
+              "machineTypeUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2"
+            }
+          }
+        }
+      ],
+      "configBucket": "spark-staging",
+      "tempBucket": "spark-temp",
+      "autoscalingConfig": {
+        "policyUri": "projects/sample-project/regions/us-central1/autoscalingPolicies/elastic"
+      },
+      "softwareConfig": {
+        "properties": {
+          "spark:spark.password": "DATAPROC_PRIVATE_PROPERTY"
+        }
+      },
+      "initializationActions": [
+        {
+          "executableFile": "gs://spark-init/bootstrap.sh"
+        }
+      ],
+      "encryptionConfig": {
+        "gcePdKmsKeyName": "projects/sample-project/locations/us-central1/keyRings/spark/cryptoKeys/disk"
+      }
+    }
+  },
+  "projects/sample-project/regions/us-central1/clusters/analytics/nodeGroups/aux-real-17": {
+    "name": "projects/sample-project/regions/us-central1/clusters/analytics/nodeGroups/aux-real-17",
+    "roles": [
+      "DRIVER"
+    ],
+    "nodeGroupConfig": {
+      "numInstances": 1,
+      "instanceNames": [
+        "analytics-a"
+      ],
+      "instanceReferences": [
+        {
+          "instanceName": "analytics-a",
+          "instanceId": "112",
+          "publicKey": "DATAPROC_PRIVATE_AUX_KEY"
+        }
+      ],
+      "machineTypeUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/machineTypes/n2-standard-2"
+    }
+  },
+  "projects/sample-project/zones/us-central1-a/instanceGroupManagers/analytics-workers": {
+    "name": "analytics-workers",
+    "id": "410",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroupManagers/analytics-workers",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "instanceGroup": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroups/analytics-workers",
+    "instanceTemplate": "https://www.googleapis.com/compute/v1/projects/sample-project/global/instanceTemplates/analytics-template",
+    "targetSize": 1,
+    "status": {
+      "isStable": true,
+      "versionTarget": {
+        "isReached": true
+      }
+    }
+  },
+  "projects/sample-project/zones/us-central1-a/instanceGroups/analytics-workers": {
+    "name": "analytics-workers",
+    "id": "411",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a/instanceGroups/analytics-workers",
+    "zone": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/us-central1-a",
+    "network": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/data"
+  },
+  "projects/sample-project/global/instanceTemplates/analytics-template": {
+    "name": "analytics-template",
+    "id": "510",
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/global/instanceTemplates/analytics-template",
+    "properties": {
+      "metadata": {
+        "items": [
+          {
+            "key": "dataproc-cluster-uuid",
+            "value": "2f5548a5-590b-4e95-ab78-a3f0db3181f0"
+          },
+          {
+            "key": "dataproc-cluster-name",
+            "value": "analytics"
+          },
+          {
+            "key": "dataproc-region",
+            "value": "us-central1"
+          },
+          {
+            "key": "startup-script",
+            "value": "DATAPROC_PRIVATE_VM_SCRIPT"
+          }
+        ]
+      },
+      "machineType": "n2-standard-2"
+    }
+  },
+  "projects/sample-project/regions/us-central1/jobs/spark-1": {
+    "reference": {
+      "projectId": "sample-project",
+      "jobId": "spark-1"
+    },
+    "jobUuid": "bf818d7c-576e-402d-a16c-9f936e09228a",
+    "placement": {
+      "clusterName": "analytics",
+      "clusterUuid": "2f5548a5-590b-4e95-ab78-a3f0db3181f0"
+    },
+    "status": {
+      "state": "RUNNING",
+      "details": "DATAPROC_PRIVATE_JOB_STATUS"
+    },
+    "sparkJob": {
+      "mainClass": "Example",
+      "args": [
+        "DATAPROC_PRIVATE_ARGS"
+      ],
+      "jarFileUris": [
+        "gs://spark-code/task.jar"
+      ],
+      "properties": {
+        "password": "DATAPROC_PRIVATE_JOB_PROPERTIES"
+      }
+    }
+  },
+  "projects/sample-project/regions/us-central1/jobs/historical": {
+    "reference": {
+      "jobId": "historical"
+    },
+    "jobUuid": "19c45bfa-d7c8-43d9-a54a-7fc39c88d378",
+    "placement": {
+      "clusterName": "analytics",
+      "clusterUuid": "2c58627b-2bd4-4df4-9036-36a921af38b9"
+    },
+    "status": {
+      "state": "DONE"
+    },
+    "pysparkJob": {
+      "mainPythonFileUri": "gs://spark-code/old.py"
+    }
+  },
+  "projects/sample-project/regions/us-central1/autoscalingPolicies/elastic": {
+    "id": "elastic",
+    "name": "projects/sample-project/regions/us-central1/autoscalingPolicies/elastic",
+    "workerConfig": {
+      "minInstances": 2,
+      "maxInstances": 10
+    },
+    "basicAlgorithm": {
+      "yarnConfig": {
+        "scaleUpFactor": 0.5,
+        "scaleDownFactor": 0.5
+      }
+    }
+  },
+  "projects/sample-project/regions/us-central1/workflowTemplates/hourly": {
+    "id": "hourly",
+    "name": "projects/sample-project/regions/us-central1/workflowTemplates/hourly",
+    "version": 3,
+    "placement": {
+      "clusterSelector": {
+        "clusterLabels": {
+          "environment": "dev"
+        }
+      }
+    },
+    "jobs": [
+      {
+        "stepId": "transform",
+        "sparkJob": {
+          "mainClass": "Example",
+          "args": [
+            "DATAPROC_PRIVATE_WORKFLOW_ARG"
+          ]
+        }
+      }
+    ]
+  },
+  "projects/sample-project/regions/europe-west1/clusters/analytics": {
+    "projectId": "sample-project",
+    "clusterName": "analytics",
+    "clusterUuid": "e9f4be2b-a194-4a88-ac12-62a0fb2a3d3c",
+    "status": {
+      "state": "RUNNING"
+    },
+    "config": {
+      "gceClusterConfig": {
+        "zoneUri": "https://www.googleapis.com/compute/v1/projects/sample-project/zones/europe-west1-b"
+      },
+      "masterConfig": {
+        "numInstances": 0
+      }
+    }
+  }
+}

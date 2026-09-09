@@ -19,6 +19,7 @@ func safePayload(value map[string]any) map[string]any {
 	redact = func(value any) {
 		switch object := value.(type) {
 		case map[string]any:
+			redactDataprocPayload(object)
 			for key, child := range object {
 				switch strings.ToLower(key) {
 				case "error":
@@ -54,7 +55,7 @@ func safePayload(value map[string]any) map[string]any {
 						for _, raw := range array(metadata["items"]) {
 							if item, ok := raw.(map[string]any); ok {
 								switch text(item["key"]) {
-								case "created-by", "instance-template", "cluster-name", "cluster-uid":
+								case "created-by", "instance-template", "cluster-name", "cluster-uid", "dataproc-cluster-uuid", "dataproc-cluster-name", "dataproc-region":
 								default:
 									item["value"] = "[REDACTED]"
 								}

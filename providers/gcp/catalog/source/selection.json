@@ -824,6 +824,26 @@
         "batch.projects.locations.list",
         "batch.projects.locations.operations.get"
       ]
+    },
+    {
+      "source_uri": "https://dataproc.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "dataproc.projects.regions.autoscalingPolicies.delete",
+        "dataproc.projects.regions.autoscalingPolicies.get",
+        "dataproc.projects.regions.autoscalingPolicies.list",
+        "dataproc.projects.regions.clusters.delete",
+        "dataproc.projects.regions.clusters.get",
+        "dataproc.projects.regions.clusters.list",
+        "dataproc.projects.regions.clusters.nodeGroups.get",
+        "dataproc.projects.regions.jobs.cancel",
+        "dataproc.projects.regions.jobs.delete",
+        "dataproc.projects.regions.jobs.get",
+        "dataproc.projects.regions.jobs.list",
+        "dataproc.projects.regions.operations.get",
+        "dataproc.projects.regions.workflowTemplates.delete",
+        "dataproc.projects.regions.workflowTemplates.get",
+        "dataproc.projects.regions.workflowTemplates.list"
+      ]
     }
   ],
   "resource_types": [
@@ -3627,6 +3647,94 @@
       "delete_operations": [],
       "list_operations": [
         "batch.projects.locations.jobs.taskGroups.tasks.list"
+      ]
+    },
+    {
+      "native_type": "dataproc.googleapis.com/Cluster",
+      "class": "data.cluster",
+      "display_name": "Dataproc cluster",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "dataproc.projects.regions.clusters.get"
+      ],
+      "delete_operations": [
+        "dataproc.projects.regions.clusters.delete"
+      ],
+      "list_operations": [
+        "dataproc.projects.regions.clusters.list"
+      ]
+    },
+    {
+      "native_type": "dataproc.googleapis.com/Job",
+      "class": "compute.job",
+      "display_name": "Dataproc job",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "jobs",
+      "read_operations": [
+        "dataproc.projects.regions.jobs.get"
+      ],
+      "delete_operations": [
+        "dataproc.projects.regions.jobs.delete"
+      ],
+      "list_operations": [
+        "dataproc.projects.regions.jobs.list"
+      ]
+    },
+    {
+      "native_type": "dataproc.googleapis.com/NodeGroup",
+      "class": "compute.node_pool",
+      "display_name": "Dataproc node group",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "nodeGroups",
+      "read_operations": [
+        "dataproc.projects.regions.clusters.nodeGroups.get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "dataproc.projects.regions.clusters.get"
+      ]
+    },
+    {
+      "native_type": "dataproc.googleapis.com/AutoscalingPolicy",
+      "class": "compute.scaling_policy",
+      "display_name": "Dataproc autoscaling policy",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "autoscalingPolicies",
+      "read_operations": [
+        "dataproc.projects.regions.autoscalingPolicies.get"
+      ],
+      "delete_operations": [
+        "dataproc.projects.regions.autoscalingPolicies.delete"
+      ],
+      "list_operations": [
+        "dataproc.projects.regions.autoscalingPolicies.list"
+      ]
+    },
+    {
+      "native_type": "dataproc.googleapis.com/WorkflowTemplate",
+      "class": "automation.workflow",
+      "display_name": "Dataproc workflow template",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "workflowTemplates",
+      "read_operations": [
+        "dataproc.projects.regions.workflowTemplates.get"
+      ],
+      "delete_operations": [
+        "dataproc.projects.regions.workflowTemplates.delete"
+      ],
+      "list_operations": [
+        "dataproc.projects.regions.workflowTemplates.list"
       ]
     }
   ],

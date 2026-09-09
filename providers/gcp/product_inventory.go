@@ -95,6 +95,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
+	if err := c.verifyDataprocParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	if err := c.verifyBatchParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -118,7 +121,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isDataform(nativeType) || isBatch(nativeType) {
+	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -142,6 +145,18 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	if err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
 	}
+	identityPath := target.API.IdentityPath
+	if nativeType == dataprocNodeGroupType {
+		groups, err := c.dataprocNodeGroups(target.ParentID, result.Data)
+		if err != nil {
+			return contracts.InventoryBatch{}, err
+		}
+		records = nil
+		for _, group := range groups {
+			records = append(records, productRecord{Data: group})
+		}
+		identityPath = "name"
+	}
 	batch.RequestID = result.RequestID
 	kind, _ := findType(nativeType)
 	metadata, _ := providerData()
@@ -151,13 +166,25 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		if resourceSoftDeleted(nativeType, record.Data) {
 			continue
 		}
-		id, err := c.productIdentity(kind, operation, parameters, target.API.IdentityPath, record)
+		id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
 		if isBatch(nativeType) {
 			if err := c.batchChildIdentity(nativeType, id, text(parameters["parent"])); err != nil {
 				return contracts.InventoryBatch{}, err
+			}
+		}
+		if isDataproc(nativeType) {
+			if err := c.dataprocIdentity(nativeType, id, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			region := text(parameters["region"])
+			if region == "" {
+				region = last(text(parameters["parent"]))
+			}
+			if region != dataprocRegion(id) {
+				return contracts.InventoryBatch{}, groupDenied("dataproc_list_scope_changed")
 			}
 		}
 		// Aggregate Compute collections can contain kinds with separate global and
@@ -172,7 +199,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) || isBatch(nativeType) {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
@@ -181,13 +208,20 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
-			if c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
+			if isDataproc(nativeType) {
+				if err := c.dataprocIdentity(nativeType, id, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+			} else if c.canonicalName("//"+strings.Split(nativeType, "/")[0]+"/"+text(live["name"])) != id {
 				return contracts.InventoryBatch{}, groupDenied("dataform_identity_changed")
 			}
 			if err := dataformSameResource(nativeType, record.Data, live); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			if err := batchSameResource(nativeType, record.Data, live); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if err := dataprocSameResource(nativeType, record.Data, live); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			if nativeType == batchJobType {
@@ -220,6 +254,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 				item.Normalized[batchParentProof] = target.ParentConfiguration
 				item.Normalized["_batch_job_uid"] = target.ParentUID
 			}
+			if nativeType == dataprocNodeGroupType {
+				item.Normalized[dataprocParentProof] = target.ParentConfiguration
+				item.Normalized["_dataproc_cluster_uuid"] = target.ParentUID
+			}
 			if nativeType == nodePoolType {
 				item.Normalized["_gke_cluster_uid"] = target.ParentUID
 			}
@@ -229,6 +267,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		batch.Items = append(batch.Items, item)
+	}
+	if err := c.verifyDataprocParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
 	}
 	if err := c.verifyBatchParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
@@ -380,7 +421,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		}
 		regional := false
 		for _, value := range parameters {
-			if value == "scope.location" || value == "scope.locationParent" || value == "scope.iapTunnelLocationParent" {
+			if value == "scope.location" || value == "scope.locationParent" || value == "scope.regionParent" || value == "scope.iapTunnelLocationParent" {
 				regional = true
 			}
 		}
@@ -413,7 +454,24 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			if regional && !onlyGlobal && !serviceLocationList {
 				if !regionLookup {
 					var err error
-					regions, err = r.DiscoverRegions(ctx, request.ConnectionID)
+					if isDataproc(request.ResourceKind.NativeType) {
+						var native []map[string]any
+						native, err = c.batchList(ctx, "compute.regions.list", map[string]any{"project": c.project}, "items")
+						for _, item := range native {
+							name := text(item["name"])
+							if name == "" || !segmentPattern.MatchString(name) || name == "." || name == ".." {
+								return nil, groupDenied("dataproc_region_invalid")
+							}
+							if item["status"] != "DOWN" {
+								regions = append(regions, contracts.DiscoveredRegion{RegionID: name, Name: name})
+							}
+						}
+						if err == nil && len(regions) == 0 {
+							return nil, groupDenied("dataproc_regions_incomplete")
+						}
+					} else {
+						regions, err = r.DiscoverRegions(ctx, request.ConnectionID)
+					}
 					if err != nil {
 						return nil, err
 					}
@@ -452,7 +510,7 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 					return nil, err
 				}
 				parentUID := ""
-				for _, field := range []string{"uid", "uniqueId", "id"} {
+				for _, field := range []string{"uid", "uniqueId", "id", "clusterUuid"} {
 					if parentUID = text(parent.Normalized[field]); parentUID != "" {
 						break
 					}
@@ -460,6 +518,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				configuration := text(parent.Normalized[dataformProof])
 				if parent.NativeType == batchJobType {
 					configuration = text(parent.Normalized[batchProof])
+				}
+				if parent.NativeType == dataprocClusterType {
+					configuration = text(parent.Normalized[dataprocProof])
 				}
 				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: text(parent.Normalized[dataformContainerChain])})
 			}
@@ -526,6 +587,8 @@ func productParameters(input map[string]any, c *client, location string, parent 
 			result[key] = location
 		case "scope.locationParent":
 			result[key] = "projects/" + c.project + "/locations/" + location
+		case "scope.regionParent":
+			result[key] = "projects/" + c.project + "/regions/" + location
 		case "scope.allLocationsParent":
 			result[key] = "projects/" + c.project + "/locations/-"
 		case "scope.iapTunnelLocationParent":

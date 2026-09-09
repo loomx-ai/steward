@@ -1,0 +1,100 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataproc.googleapis.com/Cluster
+  class: data.cluster
+presentation:
+  displayNames:
+    en-US: Dataproc cluster
+    zh-CN: Dataproc 集群
+  consoleLinkTemplate: https://console.cloud.google.com/dataproc/clusters?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataproc.projects.regions.clusters.list
+    parameters:
+      projectId: scope.project
+      region: scope.location
+    itemsPath: clusters
+    identityPath: clusterName
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataproc.projects.regions.clusters.get
+    itemsPath: $
+    identityPath: clusterName
+fields:
+  name:
+    path: clusterName
+    type: string
+  state:
+    path: status.state
+    type: string
+  clusterUuid:
+    path: clusterUuid
+    type: string
+  config:
+    path: config
+    type: object
+  virtualClusterConfig:
+    path: virtualClusterConfig
+    type: object
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: compute.googleapis.com/NodeGroup
+  targetIdPath: refs_compute_googleapis_com_NodeGroup
+- type: depends_on
+  targetType: compute.googleapis.com/Reservation
+  targetIdPath: refs_compute_googleapis_com_Reservation
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: dataproc.googleapis.com/AutoscalingPolicy
+  targetIdPath: refs_dataproc_googleapis_com_AutoscalingPolicy
+- type: depends_on
+  targetType: container.googleapis.com/Cluster
+  targetIdPath: refs_container_googleapis_com_Cluster
+- type: depends_on
+  targetType: container.googleapis.com/NodePool
+  targetIdPath: refs_container_googleapis_com_NodePool
+- type: depends_on
+  targetType: dataproc.googleapis.com/Cluster
+  targetIdPath: refs_dataproc_googleapis_com_Cluster
+actions:
+  delete:
+    operation: dataproc.projects.regions.clusters.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataproc.projects.regions.clusters.get
+      itemsPath: $
+      identityPath: clusterName

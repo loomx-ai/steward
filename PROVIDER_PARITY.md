@@ -445,3 +445,32 @@ background evidence only, not acceptance evidence for this work.
   from the Job API; these limits are documented. Ten mapped GCP kinds and
   49 mapped Azure kinds still lack specifications. The remaining lifecycle
   behavior and independent emulator/application/real-cloud acceptance are open.
+
+- GCP now has 158 rules, 151 kinds with native deletion and 646 selected methods
+  from 47 Discovery documents and one pinned Cloud SDK archive. Dataproc Cluster,
+  Job, NodeGroup, AutoscalingPolicy and WorkflowTemplate use native regional APIs;
+  auxiliary groups derive their actual IDs from cluster configuration. Cluster
+  cleanup reviews native VM references, managed groups, generated templates,
+  automatic disks and retained external disks, then uses only Dataproc deletion
+  guarded by the cluster UUID. Job history is retained unless explicitly selected;
+  selected active jobs are cancelled and their records deleted before the cluster.
+  Historical jobs are matched by cluster UUID, not a reused cluster name. Virtual
+  clusters retain their GKE cluster/pools. Standalone Compute cleanup checks for
+  the original Dataproc controller. Frozen ancestry, configuration proofs, complete
+  membership queries and restarted operation/readback checks reject changed,
+  incomplete, protected or unreviewed effects, including remaining orphan disks
+  after a VM or the cluster disappears. Native workflow deletion binds its version.
+  Synthetic HTTP fixtures cover regional/alias identity, real auxiliary IDs,
+  cancellation, retention, pagination/cursor drift, malformed/failed reads,
+  operation errors, throttling, recreation and restart. SQLite scan tests preserve
+  node-group observations after parent permission loss; shared SQLite cleanup
+  tests verify optional direct-child retention and frozen prerequisite restoration.
+  Full Go tests, vet, GCP/planner/cleanup/contracts race tests, 12 offline source
+  tests, deterministic generation and bilingual documentation checks pass. The
+  reviewed official emulator catalog and floci-gcp service list do not list
+  Dataproc; these tests are not independent emulator or real-cloud acceptance.
+  Native APIs cannot atomically lock cluster/job/Compute membership, and removed
+  identity labels/metadata are not always recoverable. Policy/template GETs lack
+  immutable incarnation UUIDs, while jobs/policies lack configuration preconditions.
+  Nine mapped GCP kinds and 49 mapped Azure kinds still lack specifications;
+  remaining lifecycle and independent environment acceptance work stays open.

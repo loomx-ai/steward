@@ -763,7 +763,7 @@ func validateParameterExpressions(
 			continue
 		}
 		switch text {
-		case "scope.location", "scope.project", "scope.projectPath", "scope.locationParent", "scope.allLocationsParent", "scope.iapTunnelLocationParent", "scope.subscription":
+		case "scope.location", "scope.project", "scope.projectPath", "scope.locationParent", "scope.regionParent", "scope.allLocationsParent", "scope.iapTunnelLocationParent", "scope.subscription":
 		case "parent.nativeId":
 			if !parentExpressions {
 				return fmt.Errorf("%s parameter %q cannot reference %q", usage, parameter, text)

@@ -449,6 +449,16 @@ func (h *computeGroups) Contribute(ctx context.Context, scope asset.ScopeID, ass
 	if err != nil {
 		return result, err
 	}
+	dataproc, dataprocOwned, err := h.contributeDataproc(ctx, assets)
+	if err != nil {
+		return result, err
+	}
+	result.Bindings = append(result.Bindings, dataproc.Bindings...)
+	result.Relationships = append(result.Relationships, dataproc.Relationships...)
+	result.Unresolved = append(result.Unresolved, dataproc.Unresolved...)
+	for id := range dataprocOwned {
+		gkeOwned[id] = true
+	}
 	managedVMs := map[asset.AssetID]bool{}
 	for _, value := range assets {
 		if gkeOwned[value.Identity.NativeID] && value.Identity.NativeType == instanceType {

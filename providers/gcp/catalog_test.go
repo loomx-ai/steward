@@ -51,8 +51,9 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 		}
 		for _, relation := range compiled.Definition.Relationships {
 			// Origins may reference another origin for failover, and folders
-			// may reference a different folder as their physical parent.
-			if relation.TargetType == kind.NativeType && kind.NativeType != "networkservices.googleapis.com/EdgeCacheOrigin" && kind.NativeType != dataformFolderType {
+			// may reference a different folder as their physical parent. Dataproc
+			// virtual clusters can use another cluster as a Spark history server.
+			if relation.TargetType == kind.NativeType && kind.NativeType != "networkservices.googleapis.com/EdgeCacheOrigin" && kind.NativeType != dataformFolderType && kind.NativeType != dataprocClusterType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}

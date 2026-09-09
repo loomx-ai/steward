@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataproc.googleapis.com/AutoscalingPolicy
+  class: compute.scaling_policy
+presentation:
+  displayNames:
+    en-US: Dataproc autoscaling policy
+    zh-CN: Dataproc 伸缩策略
+  consoleLinkTemplate: https://console.cloud.google.com/dataproc/autoscalingPolicies?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataproc.projects.regions.autoscalingPolicies.list
+    parameters:
+      parent: scope.regionParent
+    itemsPath: policies
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataproc.projects.regions.autoscalingPolicies.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: id
+    type: string
+  basicAlgorithm:
+    path: basicAlgorithm
+    type: object
+  workerConfig:
+    path: workerConfig
+    type: object
+  secondaryWorkerConfig:
+    path: secondaryWorkerConfig
+    type: object
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+actions:
+  delete:
+    operation: dataproc.projects.regions.autoscalingPolicies.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataproc.projects.regions.autoscalingPolicies.get
+      itemsPath: $
+      identityPath: name

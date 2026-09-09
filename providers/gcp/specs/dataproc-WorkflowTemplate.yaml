@@ -1,0 +1,99 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataproc.googleapis.com/WorkflowTemplate
+  class: automation.workflow
+presentation:
+  displayNames:
+    en-US: Dataproc workflow template
+    zh-CN: Dataproc 工作流模板
+  consoleLinkTemplate: https://console.cloud.google.com/dataproc/workflowTemplates?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataproc.projects.regions.workflowTemplates.list
+    parameters:
+      parent: scope.regionParent
+    itemsPath: templates
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataproc.projects.regions.workflowTemplates.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: id
+    type: string
+  version:
+    path: version
+    type: integer
+  createTime:
+    path: createTime
+    type: string
+  placement:
+    path: placement
+    type: object
+  jobs:
+    path: jobs
+    type: array
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: compute.googleapis.com/Network
+  targetIdPath: refs_compute_googleapis_com_Network
+- type: depends_on
+  targetType: compute.googleapis.com/Subnetwork
+  targetIdPath: refs_compute_googleapis_com_Subnetwork
+- type: depends_on
+  targetType: compute.googleapis.com/NodeGroup
+  targetIdPath: refs_compute_googleapis_com_NodeGroup
+- type: depends_on
+  targetType: compute.googleapis.com/Reservation
+  targetIdPath: refs_compute_googleapis_com_Reservation
+- type: depends_on
+  targetType: iam.googleapis.com/ServiceAccount
+  targetIdPath: refs_iam_googleapis_com_ServiceAccount
+- type: depends_on
+  targetType: cloudkms.googleapis.com/CryptoKey
+  targetIdPath: refs_cloudkms_googleapis_com_CryptoKey
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+- type: depends_on
+  targetType: dataproc.googleapis.com/AutoscalingPolicy
+  targetIdPath: refs_dataproc_googleapis_com_AutoscalingPolicy
+- type: depends_on
+  targetType: container.googleapis.com/Cluster
+  targetIdPath: refs_container_googleapis_com_Cluster
+- type: depends_on
+  targetType: container.googleapis.com/NodePool
+  targetIdPath: refs_container_googleapis_com_NodePool
+- type: depends_on
+  targetType: dataproc.googleapis.com/Cluster
+  targetIdPath: refs_dataproc_googleapis_com_Cluster
+actions:
+  delete:
+    operation: dataproc.projects.regions.workflowTemplates.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataproc.projects.regions.workflowTemplates.get
+      itemsPath: $
+      identityPath: name

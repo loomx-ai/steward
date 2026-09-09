@@ -187,6 +187,10 @@ func solveOnce(input Input) (Result, error) {
 						blockers.add(Blocker{Code: BlockDirectCleanupInvalid, AssetID: managedID, ControllerID: controllerID, Message: "direct child cleanup lacks authoritative exclusive lifecycle evidence"})
 						continue
 					}
+				}
+				_, childSelected := selectedSet[managedID]
+				optionalRetained := binding.CleanupPolicy == graph.CleanupDirect && binding.Evidence["retention_supported"] == true && (retainRequested || (binding.Evidence["delete_by_default"] == false && !childSelected))
+				if binding.CleanupPolicy == graph.CleanupDirect && inheritedRetention == "" && !optionalRetained {
 					directChildren[managedID] = effectiveStepOwner
 					nextStepOwner = managedID
 				} else {
@@ -531,7 +535,7 @@ func impactExpectation(binding graph.LifecycleBinding, managed asset.Asset, opti
 		}
 		return ExpectedDelegatedDelete
 	}
-	if binding.CleanupPolicy == graph.CleanupRetain {
+	if binding.CleanupPolicy == graph.CleanupRetain || binding.CleanupPolicy == graph.CleanupDirect && binding.Evidence["retention_supported"] == true && binding.Evidence["delete_by_default"] == false {
 		return ExpectedProviderDefaultRetain
 	}
 	return ExpectedUnknown

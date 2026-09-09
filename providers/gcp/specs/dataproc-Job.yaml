@@ -1,0 +1,70 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: dataproc.googleapis.com/Job
+  class: compute.job
+presentation:
+  displayNames:
+    en-US: Dataproc job
+    zh-CN: Dataproc 作业
+  consoleLinkTemplate: https://console.cloud.google.com/dataproc/jobs?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: dataproc.projects.regions.jobs.list
+    parameters:
+      projectId: scope.project
+      region: scope.location
+    itemsPath: jobs
+    identityPath: reference.jobId
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 100
+  detail:
+    operation: dataproc.projects.regions.jobs.get
+    itemsPath: $
+    identityPath: reference.jobId
+fields:
+  name:
+    path: reference.jobId
+    type: string
+  state:
+    path: status.state
+    type: string
+  jobUuid:
+    path: jobUuid
+    type: string
+  placement:
+    path: placement
+    type: object
+  scheduling:
+    path: scheduling
+    type: object
+  projectId:
+    path: project_id
+    type: string
+  labels:
+    path: labels
+    type: object
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: storage.googleapis.com/Bucket
+  targetIdPath: refs_storage_googleapis_com_Bucket
+actions:
+  delete:
+    operation: dataproc.projects.regions.jobs.delete
+    idempotency: readback
+    waiter: gcp_operation
+    readback: gcp_absent
+    read:
+      operation: dataproc.projects.regions.jobs.get
+      itemsPath: $
+      identityPath: reference.jobId
