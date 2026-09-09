@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: gcp
+  nativeType: config.googleapis.com/Revision
+  class: orchestration.revision
+presentation:
+  displayNames:
+    en-US: Infrastructure Manager revision
+    zh-CN: Infrastructure Manager 修订
+  consoleLinkTemplate: https://console.cloud.google.com/infra-manager/deployments?project={projectId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  parent:
+    nativeType: config.googleapis.com/Deployment
+    source: product-api
+  list:
+    operation: config.projects.locations.deployments.revisions.list
+    parameters:
+      parent: parent.nativeId
+    itemsPath: revisions
+    identityPath: name
+    pagination:
+      type: token
+      tokenParameter: pageToken
+      tokenPath: nextPageToken
+      pageSizeParameter: pageSize
+      maxPageSize: 1000
+  detail: &read
+    operation: config.projects.locations.deployments.revisions.get
+    itemsPath: $
+    identityPath: name
+fields:
+  name:
+    path: name
+    type: string
+  projectId:
+    path: project_id
+    type: string
+  state:
+    path: state
+    type: string
+extensions:
+  hook: gcp.resource
+relationships:
+- type: depends_on
+  targetType: config.googleapis.com/Deployment
+  targetIdPath: refs_config_googleapis_com_Deployment

@@ -172,6 +172,9 @@ func (c *client) requestResult(ctx context.Context, method, endpoint string, que
 		u.RawQuery = merged.Encode()
 	}
 	sanitize := safePayload
+	if u.Host == infraHost {
+		sanitize = safeInfraPayload
+	}
 	if u.Host == fusionHost {
 		sanitize = safeFusionPayload
 	}

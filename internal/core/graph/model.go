@@ -60,11 +60,14 @@ const (
 )
 
 const (
-	LifecycleEvidenceWaitUntilAbsentBeforeDependents  = "wait_until_absent_before_dependents"
-	LifecycleEvidenceWaitTimeoutSeconds               = "wait_timeout_seconds"
-	LifecycleEvidenceWaitPollSeconds                  = "wait_poll_seconds"
-	LifecycleEvidenceControllerDeleteGuaranteed       = "controller_delete_guaranteed"
-	LifecycleEvidenceControllerIntegratedResource     = "controller_integrated_resource"
+	LifecycleEvidenceWaitUntilAbsentBeforeDependents = "wait_until_absent_before_dependents"
+	LifecycleEvidenceWaitTimeoutSeconds              = "wait_timeout_seconds"
+	LifecycleEvidenceWaitPollSeconds                 = "wait_poll_seconds"
+	LifecycleEvidenceControllerDeleteGuaranteed      = "controller_delete_guaranteed"
+	LifecycleEvidenceControllerIntegratedResource    = "controller_integrated_resource"
+	// Controller metadata disappears with its controller even when all provisioned
+	// resources are retained. Explicit retention of that metadata remains invalid.
+	LifecycleEvidenceControllerMetadata               = "controller_metadata"
 	LifecycleEvidenceControllerVerifiesManagedAbsence = "controller_verifies_managed_absence"
 	LifecycleEvidenceUnselectedControllerAction       = "unselected_controller_action"
 	LifecycleUnselectedControllerSkip                 = "skip"

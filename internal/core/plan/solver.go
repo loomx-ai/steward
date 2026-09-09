@@ -542,7 +542,7 @@ func impactExpectation(binding graph.LifecycleBinding, managed asset.Asset, opti
 }
 
 func explicitlyRetained(managed asset.Asset, binding graph.LifecycleBinding, options map[string]any) bool {
-	if retained, ok := options["retain_all_resources"].(bool); ok && retained {
+	if retained, ok := options["retain_all_resources"].(bool); ok && retained && binding.Evidence[graph.LifecycleEvidenceControllerMetadata] != true {
 		return true
 	}
 	for _, id := range stringValues(options["retain_resources"]) {

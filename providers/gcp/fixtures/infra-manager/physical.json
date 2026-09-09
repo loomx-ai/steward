@@ -1,0 +1,40 @@
+{
+  "//compute.googleapis.com/projects/sample-project/global/networks/old-network": {
+    "autoCreateSubnetworks": false,
+    "creationTimestamp": "2026-08-01T00:00:00Z",
+    "id": "654",
+    "name": "old-network",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/old-network"
+  },
+  "//compute.googleapis.com/projects/sample-project/global/networks/owned-network": {
+    "autoCreateSubnetworks": false,
+    "creationTimestamp": "2026-08-01T00:00:00Z",
+    "id": "321",
+    "name": "owned-network",
+    "routingConfig": {
+      "routingMode": "REGIONAL"
+    },
+    "selfLink": "https://www.googleapis.com/compute/v1/projects/sample-project/global/networks/owned-network"
+  },
+  "//storage.googleapis.com/infra-owned-data": {
+    "id": "infra-owned-data",
+    "kind": "storage#bucket",
+    "location": "US",
+    "metageneration": "1",
+    "name": "infra-owned-data",
+    "projectNumber": "123456",
+    "timeCreated": "2026-08-01T00:00:00Z"
+  },
+  "//storage.googleapis.com/infra-source": {
+    "id": "infra-source",
+    "kind": "storage#bucket",
+    "location": "US",
+    "metageneration": "1",
+    "name": "infra-source",
+    "projectNumber": "123456",
+    "timeCreated": "2026-08-01T00:00:00Z"
+  }
+}

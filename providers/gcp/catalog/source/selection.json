@@ -953,6 +953,27 @@
       "methods": [
         "datafusion.projects.locations.instances.namespaces.list"
       ]
+    },
+    {
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1",
+      "methods": [
+        "config.projects.locations.deployments.delete",
+        "config.projects.locations.deployments.get",
+        "config.projects.locations.deployments.list",
+        "config.projects.locations.deployments.revisions.get",
+        "config.projects.locations.deployments.revisions.list",
+        "config.projects.locations.deployments.revisions.resources.get",
+        "config.projects.locations.deployments.revisions.resources.list",
+        "config.projects.locations.list",
+        "config.projects.locations.operations.get",
+        "config.projects.locations.previews.delete",
+        "config.projects.locations.previews.get",
+        "config.projects.locations.previews.list",
+        "config.projects.locations.previews.resourceChanges.get",
+        "config.projects.locations.previews.resourceChanges.list",
+        "config.projects.locations.previews.resourceDrifts.get",
+        "config.projects.locations.previews.resourceDrifts.list"
+      ]
     }
   ],
   "resource_types": [
@@ -4238,6 +4259,106 @@
       "delete_operations": [
         "monitoring.locations.global.metricsScopes.projects.delete"
       ]
+    },
+    {
+      "native_type": "config.googleapis.com/Deployment",
+      "class": "orchestration.stack",
+      "display_name": "Infrastructure Manager deployment",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "deployments",
+      "read_operations": [
+        "config.projects.locations.deployments.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.deployments.list"
+      ],
+      "delete_operations": [
+        "config.projects.locations.deployments.delete"
+      ]
+    },
+    {
+      "native_type": "config.googleapis.com/Revision",
+      "class": "orchestration.revision",
+      "display_name": "Infrastructure Manager revision",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "revisions",
+      "read_operations": [
+        "config.projects.locations.deployments.revisions.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.deployments.revisions.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "config.googleapis.com/Resource",
+      "class": "orchestration.managed_resource",
+      "display_name": "Infrastructure Manager resource record",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "resources",
+      "read_operations": [
+        "config.projects.locations.deployments.revisions.resources.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.deployments.revisions.resources.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "config.googleapis.com/Preview",
+      "class": "orchestration.preview",
+      "display_name": "Infrastructure Manager preview",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "previews",
+      "read_operations": [
+        "config.projects.locations.previews.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.previews.list"
+      ],
+      "delete_operations": [
+        "config.projects.locations.previews.delete"
+      ]
+    },
+    {
+      "native_type": "config.googleapis.com/ResourceChange",
+      "class": "orchestration.resource_change",
+      "display_name": "Infrastructure Manager resource change",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "resourceChanges",
+      "read_operations": [
+        "config.projects.locations.previews.resourceChanges.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.previews.resourceChanges.list"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "config.googleapis.com/ResourceDrift",
+      "class": "orchestration.resource_drift",
+      "display_name": "Infrastructure Manager resource drift",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "resourceDrifts",
+      "read_operations": [
+        "config.projects.locations.previews.resourceDrifts.get"
+      ],
+      "list_operations": [
+        "config.projects.locations.previews.resourceDrifts.list"
+      ],
+      "delete_operations": []
     }
   ],
   "sdk_documents": [

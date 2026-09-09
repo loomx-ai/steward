@@ -8,6 +8,47 @@ import (
 	"github.com/loomx-ai/steward/internal/core/plan"
 )
 
+func TestRetainingProvisionedResourcesStillDeletesControllerMetadata(t *testing.T) {
+	metadata := binding("stack", "revision", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	metadata.Evidence = map[string]any{graph.LifecycleEvidenceControllerMetadata: true, "retention_supported": false}
+	managed := binding("stack", "bucket", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	managed.Evidence = map[string]any{"retention_supported": true}
+	input := plan.Input{Assets: []asset.Asset{actionable("stack"), actionable("revision"), actionable("bucket")}, ResolvedAssetIDs: []asset.AssetID{"stack"}, LifecycleBindings: []graph.LifecycleBinding{metadata, managed}, RequestOptions: map[asset.AssetID]map[string]any{"stack": {"retain_all_resources": true}}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 2 {
+		t.Fatalf("cannot retain provisioned resources: %+v %v", result, err)
+	}
+	for _, impact := range result.ImpactItems {
+		want := plan.ExpectedRetainExplicit
+		if impact.AssetID == "revision" {
+			want = plan.ExpectedDelegatedDelete
+		}
+		if impact.Expected != want {
+			t.Fatalf("retention hid metadata loss: %+v", impact)
+		}
+	}
+	input.RequestOptions["stack"]["retain_resources"] = []string{"revision"}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) == 0 {
+		t.Fatal("explicit metadata retention must remain unsupported")
+	}
+	// Retaining the controller itself also retains its metadata and descendants.
+	outer := binding("application", "stack", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	input.Assets = append(input.Assets, actionable("application"))
+	input.ResolvedAssetIDs = []asset.AssetID{"application"}
+	input.LifecycleBindings = append(input.LifecycleBindings, outer)
+	input.RequestOptions = map[asset.AssetID]map[string]any{"application": {"retain_resources": []string{"stack"}}}
+	result, err = plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 || len(result.ImpactItems) != 3 {
+		t.Fatalf("retained controller lost its metadata: %+v %v", result, err)
+	}
+	for _, impact := range result.ImpactItems {
+		if impact.Expected != plan.ExpectedRetainExplicit {
+			t.Fatalf("retained stack's metadata would be deleted: %+v", impact)
+		}
+	}
+}
+
 func TestDirectControllerFallbackIncludesItsTransitiveImpacts(t *testing.T) {
 	parent := binding("cluster", "pool", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
 	parent.DirectCleanupAllowed = true

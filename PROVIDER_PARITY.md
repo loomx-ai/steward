@@ -631,3 +631,54 @@ background evidence only, not acceptance evidence for this work.
 - Four mapped GCP kinds and 49 mapped Azure kinds still lack specifications.
   Remaining lifecycle behavior, broader monitoring configuration, independent
   environment/end-to-end acceptance and final publication stay open.
+
+- GCP now has 185 explicit rules, 169 kinds with native deletion and 741 selected
+  methods from 54 Discovery documents and one pinned Cloud SDK archive. Infra
+  Manager adds native regional Config v1 Deployments, Revisions, Resources,
+  Previews, ResourceChanges and ResourceDrifts with 16 methods. The selected
+  fragment and retained schemas reproduce exactly from the official source;
+  all earlier source documents remain unchanged.
+- Inventory reconciles native metadata list/detail responses, two complete child
+  sets and the root configuration. Child cursors bind their revision/deployment
+  identity. Physical ownership requires one current reconciled Terraform record,
+  an explicitly supported whole-object type, matching state/CAI identities and
+  native product readback. Historical revisions and preview proposals establish
+  no physical ownership. Root/latest execution accounts and source buckets remain
+  dependencies; Terraform state, source objects and credentials are not exported.
+- The actual solver includes controller metadata and native physical cascades.
+  Deployment DELETE uses native `force=true`, UUID request IDs and whole-deployment
+  `DELETE` or `ABANDON`; preview deletion removes only preview metadata. Retaining
+  provisioned resources still deletes controller metadata. Unknown Terraform
+  records require explicit ABANDON, partial retention and unsupported options are
+  rejected, and locks are never removed. Physical child drivers check their own
+  reviewed cascades; preparation-dependent VM/MIG, GKE and TPU flows currently
+  block Terraform destruction and remain unfinished composition work.
+- Persisted phases handle settling deployments, already-running deletion and
+  serialized restart. Config operation target, region, verb, version, cancellation,
+  failure and Deployment/Preview response types are validated. Completion requires
+  metadata, physical and transitive native readback; a missing root or expired LRO
+  does not prove physical cleanup. ABANDON checks retained descendants against the
+  reviewed configuration. Immutable identity fields distinguish replacement during
+  legitimate deletion transitions where the product exposes them.
+- Seventeen Infra Manager test functions cover the native HTTP boundary, actual
+  contributor/solver, SQLite scan recovery, serialized actions and more than 100
+  fault cases. Sixty-eight source-backed Terraform state-ID/CAI contracts also
+  test foreign identities, non-owning types and documented CAI API aliases. These
+  verify exact native GET routing, not successful deletion of every mapped product.
+  A deployment containing a GKE node pool exercises nested VM/disk deletion and
+  retention through the existing native fixtures. Official payload schemas are
+  checked by an independent JSON Schema validator.
+- Full Go tests, GCP/planner/cleanup/contracts/spec race checks, vet, ten offline
+  source tests, documentation checks and deterministic generation pass. Infra
+  Manager race tests were repeated after the final CAI alias correction. The
+  [Infra Manager evidence](providers/gcp/fixtures/infra-manager/README.md) records
+  pinned Discovery/HashiCorp sources, hashes, contracts and verification limits.
+  Google's inspected Config Connector mock implements DeploymentGroup, but has no
+  Deployment/Preview CRUD handlers; no independent Config deletion emulator or
+  real-cloud acceptance is claimed. The APIs provide no atomic configuration
+  condition across Terraform's native product mutations.
+- The parity map now also names native DeploymentGroup and DeploymentGroupRevision,
+  exposing their still-unimplemented deprovisioning workflow. Five mapped GCP kinds
+  and 49 mapped Azure kinds lack specifications. Composed preparations, broader
+  Terraform mappings, remaining lifecycle behavior, independent environment and
+  end-to-end acceptance, and final publication remain open.

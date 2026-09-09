@@ -98,6 +98,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		return batch, nil
 	}
 	target := targets[cursor.Target]
+	if err := c.verifyInfraParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
+	}
 	if err := c.verifyFusionParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -130,7 +133,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 	}
 	var result contracts.InvocationResult
-	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) {
+	if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 		// Keep native secret references inside the provider until configuration
 		// proofs and dependency IDs have been derived. inventoryItem sanitizes all
 		// payloads before they leave this boundary.
@@ -149,6 +152,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	}
 	if err = checkListCompleteness(result.Data); err != nil {
 		return contracts.InventoryBatch{}, fmt.Errorf("%s: %w", target.API.Operation, err)
+	}
+	if isInfra(nativeType) {
+		if err := infraListShape(result.Data, target.API.ItemsPath); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 	}
 	var records []productRecord
 	if nativeType != discoverySiteType {
@@ -184,6 +192,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		id, err := c.productIdentity(kind, operation, parameters, identityPath, record)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
+		}
+		if isInfra(nativeType) {
+			if err := c.infraIdentity(nativeType, id, record.Data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+			if !strings.HasPrefix(id, c.canonicalName("//"+infraHost+"/"+text(parameters["parent"]))+"/") {
+				return contracts.InventoryBatch{}, groupDenied("infra_list_scope_changed")
+			}
 		}
 		if isFusion(nativeType) {
 			if err := c.fusionIdentity(nativeType, id, record.Data); err != nil {
@@ -236,13 +252,15 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("GCP list returned duplicate resource %q", id)
 		}
 		seenIDs[id] = true
-		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) {
+		if isDataform(nativeType) || isBatch(nativeType) || isDataproc(nativeType) || isDiscovery(nativeType) || isTPU(nativeType) || isFusion(nativeType) || isInfra(nativeType) {
 			endpoint, err := c.resourceURL(kind, id)
 			if err != nil {
 				return contracts.InventoryBatch{}, err
 			}
 			var live map[string]any
-			if isFusion(nativeType) {
+			if isInfra(nativeType) {
+				live, err = c.infraRead(ctx, nativeType, id)
+			} else if isFusion(nativeType) {
 				live, err = c.fusionRead(ctx, nativeType, id)
 			} else if isTPU(nativeType) {
 				live, err = c.tpuRead(ctx, nativeType, id)
@@ -271,6 +289,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 					}
 				}
 			}
+			if isInfra(nativeType) {
+				if err := infraSame(record.Data, live); err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+			}
 			if err := fusionSameResource(nativeType, record.Data, live); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
@@ -297,6 +320,16 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 					return contracts.InventoryBatch{}, err
 				}
 			}
+
+			if nativeType == infraDeployment || nativeType == infraPreview {
+				members, err := c.infraSnapshot(ctx, nativeType, id, live)
+				if err != nil {
+					return contracts.InventoryBatch{}, err
+				}
+				encoded, _ := json.Marshal(members)
+				live[infraManifestKey] = string(encoded)
+				live[infraSnapshotKey] = infraManifestHash(infraConfiguration(live), string(encoded))
+			}
 			record.Data = live
 		}
 		location := record.Location
@@ -316,6 +349,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, err
 		}
 		if target.ParentID != "" {
+			if isInfra(nativeType) {
+				item.Normalized[infraParentProof] = target.ParentConfiguration
+				if target.ParentType == infraRevision {
+					item.Normalized[infraRootProof] = target.ParentContainerChain
+				} else {
+					item.Normalized[infraRootProof] = target.ParentConfiguration
+				}
+			}
 			item.Normalized[referenceKey(target.ParentType)] = []string{target.ParentID}
 			item.NetworkReferences = append(item.NetworkReferences, target.ParentID)
 			if isFusion(nativeType) {
@@ -344,6 +385,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		batch.Items = append(batch.Items, item)
+	}
+	if err := c.verifyInfraParent(ctx, target); err != nil {
+		return contracts.InventoryBatch{}, err
 	}
 	if err := c.verifyFusionParent(ctx, target); err != nil {
 		return contracts.InventoryBatch{}, err
@@ -610,6 +654,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 					}
 				}
 				configuration := text(parent.Normalized[dataformProof])
+				if isInfra(parent.NativeType) {
+					configuration = text(parent.Normalized[infraProof])
+				}
 				if parent.NativeType == fusionInstanceType {
 					configuration = text(parent.Normalized[fusionProof])
 				}
@@ -619,7 +666,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				if parent.NativeType == dataprocClusterType {
 					configuration = text(parent.Normalized[dataprocProof])
 				}
-				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: text(parent.Normalized[dataformContainerChain])})
+				chain := text(parent.Normalized[dataformContainerChain])
+				if isInfra(parent.NativeType) {
+					chain = text(parent.Normalized[infraRootProof])
+				}
+				targets = append(targets, productTarget{API: api, Parameters: resolved, ParentType: parent.NativeType, ParentID: parent.NativeID, ParentUID: parentUID, ParentConfiguration: configuration, ParentContainerChain: chain})
 			}
 		}
 	}

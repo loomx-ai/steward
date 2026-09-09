@@ -48,6 +48,13 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	}
 	for _, name := range operation.Call.RawPathParameters {
 		value, _ := parameters[name].(string)
+		if operation.Call.Product == "config" {
+			for _, part := range strings.Split(value, "/") {
+				if !segmentPattern.MatchString(part) || part == "." || part == ".." || part == "-" {
+					return contracts.InvocationResult{}, groupDenied("infra_invocation_path_invalid")
+				}
+			}
+		}
 		if strings.HasPrefix(operation.ID, "monitoring.locations.global.metricsScopes.") {
 			kind := metricsScopeType
 			if operation.ID == metricsDelete {
@@ -97,6 +104,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		return result, err
 	}
 	result.Data = safePayload(result.Data)
+	if operation.Call.Product == "config" {
+		result.Data = safeInfraPayload(result.Data)
+	}
 	if operation.Call.Product == "datafusion" {
 		result.Data = safeFusionPayload(result.Data)
 	}
@@ -130,6 +140,11 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		return catalog.Operation{}, nil, fmt.Errorf("invalid GCP resource identity")
 	}
 	name := strings.TrimPrefix(nativeID, prefix)
+	if isInfra(kind.NativeType) {
+		if _, err := c.infraName(kind.NativeType, nativeID); err != nil {
+			return catalog.Operation{}, nil, err
+		}
+	}
 	if isMetricsScope(kind.NativeType) {
 		return c.metricsOperation(kind.NativeType, nativeID, method)
 	}

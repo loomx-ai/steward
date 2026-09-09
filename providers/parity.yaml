@@ -2086,13 +2086,16 @@ resources:
     - delete
   gcp:
     resources:
+    - config.googleapis.com/DeploymentGroup
+    - config.googleapis.com/DeploymentGroupRevision
     - config.googleapis.com/Deployment
   azure:
     resources:
     - Microsoft.Resources/deploymentStacks
   status: pending_verification
-  notes: Regional/fleet orchestration structure differs. Managed resource ownership and detach/delete
-    policies must be implemented explicitly.
+  notes: GCP deployment groups require native deprovisioning before metadata deletion and explicit
+    referenced-deployment policy; this group workflow remains unfinished. Deployment resource
+    ownership and whole-deployment DELETE/ABANDON are implemented separately.
 - alicloud: ACS::ROS::Stack
   spec: providers/alicloud/specs/ros-stack.yaml
   class: orchestration.stack
@@ -2104,6 +2107,8 @@ resources:
   gcp:
     resources:
     - config.googleapis.com/Deployment
+    - config.googleapis.com/Revision
+    - config.googleapis.com/Resource
   azure:
     resources:
     - Microsoft.Resources/deploymentStacks

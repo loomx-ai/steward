@@ -1,0 +1,204 @@
+{
+  "projects/sample-project/locations/europe-west1/deployments/stack-a": {
+    "createTime": "2026-08-15T00:00:00Z",
+    "lockState": "UNLOCKED",
+    "name": "projects/sample-project/locations/europe-west1/deployments/stack-a",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "FAILED",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    }
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a": {
+    "annotations": {
+      "private": "INFRA_PRIVATE_ANNOTATION"
+    },
+    "artifactsGcsBucket": "gs://infra-source/logs",
+    "createTime": "2026-08-01T00:00:00Z",
+    "labels": {
+      "environment": "test"
+    },
+    "latestRevision": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1",
+    "lockState": "UNLOCKED",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a",
+    "providerConfig": {
+      "sourceType": "SERVICE_MAINTAINED"
+    },
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "ACTIVE",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    },
+    "tfVersion": "1.5.7",
+    "updateTime": "2026-08-20T00:00:00Z"
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-0": {
+    "action": "CREATE",
+    "applyResults": {
+      "outputs": {
+        "connection": {
+          "sensitive": true,
+          "value": "INFRA_PRIVATE_OUTPUT"
+        }
+      }
+    },
+    "createTime": "2026-08-01T00:00:00Z",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-0",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "APPLIED",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    }
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-0/resources/old-network": {
+    "caiAssets": {
+      "compute.googleapis.com/Network": {
+        "fullResourceName": "//compute.googleapis.com/projects/sample-project/global/networks/old-network"
+      }
+    },
+    "intent": "CREATE",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-0/resources/old-network",
+    "state": "RECONCILED",
+    "terraformInfo": {
+      "address": "module.stack.google_compute_network.old_network",
+      "id": "projects/sample-project/global/networks/old-network",
+      "type": "google_compute_network"
+    }
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1": {
+    "action": "UPDATE",
+    "applyResults": {
+      "outputs": {
+        "connection": {
+          "sensitive": true,
+          "value": "INFRA_PRIVATE_OUTPUT"
+        }
+      }
+    },
+    "createTime": "2026-08-20T00:00:00Z",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "APPLIED",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    }
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1/resources/bucket": {
+    "caiAssets": {
+      "storage.googleapis.com/Bucket": {
+        "fullResourceName": "//storage.googleapis.com/infra-owned-data"
+      }
+    },
+    "intent": "CREATE",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1/resources/bucket",
+    "state": "RECONCILED",
+    "terraformInfo": {
+      "address": "module.stack.google_storage_bucket.bucket",
+      "id": "infra-owned-data",
+      "type": "google_storage_bucket"
+    }
+  },
+  "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1/resources/network": {
+    "caiAssets": {
+      "compute.googleapis.com/Network": {
+        "fullResourceName": "//compute.googleapis.com/projects/sample-project/global/networks/owned-network"
+      }
+    },
+    "intent": "CREATE",
+    "name": "projects/sample-project/locations/us-central1/deployments/stack-a/revisions/r-1/resources/network",
+    "state": "RECONCILED",
+    "terraformInfo": {
+      "address": "module.stack.google_compute_network.network",
+      "id": "projects/sample-project/global/networks/owned-network",
+      "type": "google_compute_network"
+    }
+  },
+  "projects/sample-project/locations/us-central1/previews/destroy-a": {
+    "createTime": "2026-08-21T00:00:00Z",
+    "deployment": "projects/sample-project/locations/us-central1/deployments/stack-a",
+    "name": "projects/sample-project/locations/us-central1/previews/destroy-a",
+    "previewArtifacts": {
+      "artifacts": "gs://infra-source/INFRA_PRIVATE_ARTIFACTS"
+    },
+    "previewMode": "DELETE",
+    "serviceAccount": "projects/sample-project/serviceAccounts/terraform@sample-project.iam.gserviceaccount.com",
+    "state": "SUCCEEDED",
+    "terraformBlueprint": {
+      "gcsSource": "gs://infra-source/config.zip#100",
+      "inputValues": {
+        "credential": {
+          "inputValue": "INFRA_PRIVATE_INPUT"
+        }
+      }
+    },
+    "tfVersion": "1.5.7"
+  },
+  "projects/sample-project/locations/us-central1/previews/destroy-a/resourceChanges/network": {
+    "intent": "DELETE",
+    "name": "projects/sample-project/locations/us-central1/previews/destroy-a/resourceChanges/network",
+    "propertyChanges": [
+      {
+        "after": "INFRA_PRIVATE_AFTER",
+        "afterSensitivePaths": [
+          ""
+        ],
+        "before": "INFRA_PRIVATE_BEFORE",
+        "beforeSensitivePaths": [
+          ""
+        ],
+        "path": "description"
+      }
+    ],
+    "terraformInfo": {
+      "actions": [
+        "delete"
+      ],
+      "address": "module.stack.google_compute_network.network",
+      "provider": "registry.terraform.io/hashicorp/google",
+      "resourceName": "network",
+      "type": "google_compute_network"
+    }
+  },
+  "projects/sample-project/locations/us-central1/previews/destroy-a/resourceDrifts/network": {
+    "name": "projects/sample-project/locations/us-central1/previews/destroy-a/resourceDrifts/network",
+    "propertyDrifts": [
+      {
+        "after": "INFRA_PRIVATE_AFTER",
+        "afterSensitivePaths": [
+          ""
+        ],
+        "before": "INFRA_PRIVATE_BEFORE",
+        "beforeSensitivePaths": [
+          ""
+        ],
+        "path": "description"
+      }
+    ],
+    "terraformInfo": {
+      "address": "module.stack.google_compute_network.network",
+      "provider": "registry.terraform.io/hashicorp/google",
+      "resourceName": "network",
+      "type": "google_compute_network"
+    }
+  }
+}

@@ -48,7 +48,10 @@ var serviceCascadeRules = map[string]serviceCascadeRule{
 	"networkconnectivity.googleapis.com/RouteTable": {children: []string{"networkconnectivity.googleapis.com/Route"}},
 }
 
-func HasServiceCascade(nativeType string) bool { _, ok := serviceCascadeRules[nativeType]; return ok }
+func HasServiceCascade(nativeType string) bool {
+	_, ok := serviceCascadeRules[nativeType]
+	return ok || nativeType == infraDeployment || nativeType == infraPreview
+}
 
 type serviceCascades struct{ client *client }
 
@@ -232,6 +235,16 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	result := governance.Contribution{}
 	for _, parent := range assets {
 		if parent.Identity.Provider != asset.ProviderGCP || !HasServiceCascade(parent.Identity.NativeType) {
+			continue
+		}
+		if parent.Identity.NativeType == infraDeployment || parent.Identity.NativeType == infraPreview {
+			contribution, err := s.contributeInfra(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
 		children, err := s.client.serviceChildren(ctx, parent.Identity, parent.Normalized)

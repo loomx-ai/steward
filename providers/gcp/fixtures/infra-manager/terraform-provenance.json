@@ -1,0 +1,417 @@
+{
+  "provider_commit": "08e8f4f28ecac4783bd9174dded1480ba0a6061d",
+  "cai_source": "https://docs.cloud.google.com/asset-inventory/docs/asset-names",
+  "cai_sha256": "6e3fbd4f152ca4d0de443c1bc74f8b0a163ba81da2751d596507a735082538b9",
+  "resources": {
+    "google_compute_network": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_network.go",
+      "sha256": "fb3ad7a423d8b905d1e49a7dfee5fd3b8e6ad71deab69a7f548a6814973b128e",
+      "set_id_line": 441,
+      "state_id_format": "projects/{{project}}/global/networks/{{name}}"
+    },
+    "google_compute_subnetwork": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_subnetwork.go",
+      "sha256": "a4bf81eaa030407ebc13984c81fea52e678853ae14f7e34b3a3f82bc0ee04ac5",
+      "set_id_line": 951,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/subnetworks/{{name}}"
+    },
+    "google_compute_firewall": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_firewall.go",
+      "sha256": "f530f831106834dde57eb62d092da52ff7d462a5c25ad665b46dd8143c8a8b93",
+      "set_id_line": 703,
+      "state_id_format": "projects/{{project}}/global/firewalls/{{name}}"
+    },
+    "google_compute_disk": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_disk.go",
+      "sha256": "c996dedc40c5932ea3d0f553c152f4aa24995ea8662778e6fa1cd1d5e663b2f1",
+      "set_id_line": 1238,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/disks/{{name}}"
+    },
+    "google_compute_region_disk": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_disk.go",
+      "sha256": "7773155541b36697610245f1965fd5a44b55b10fe5e7cc72d750adf1d1e55103",
+      "set_id_line": 775,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/disks/{{name}}"
+    },
+    "google_compute_snapshot": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_snapshot.go",
+      "sha256": "a39686e41d18c78feb85cdb456d76dbcd96d4927bb08e413463e0f11b0b0d08c",
+      "set_id_line": 555,
+      "state_id_format": "projects/{{project}}/global/snapshots/{{name}}"
+    },
+    "google_compute_image": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_image.go",
+      "sha256": "e01ae66c24bdd02a4eb533e8a16322ea7cd254df6bfb799d49f14d80a8a60a72",
+      "set_id_line": 855,
+      "state_id_format": "projects/{{project}}/global/images/{{name}}"
+    },
+    "google_compute_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_instance.go",
+      "sha256": "31c51c7b4c67027a12e723b2f63a641038d6210b1d05fd5f4e473ece55a2f302",
+      "set_id_line": 2002,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/instances/{{name}}"
+    },
+    "google_compute_instance_template": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_instance_template.go",
+      "sha256": "406b7654028c143ceffc76d38da34ad95774dba81c999085ec94bdcb6aa80494",
+      "set_id_line": 1707,
+      "state_id_format": "projects/{{project}}/global/instanceTemplates/{{name}}"
+    },
+    "google_compute_region_instance_template": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_instance_template.go",
+      "sha256": "9c4d6f17b0d6c03069ab15d3517f8284259b14c7b6ef5cd13f5899c70921aff7",
+      "set_id_line": 1369,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/instanceTemplates/{{name}}"
+    },
+    "google_compute_instance_group": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_instance_group.go",
+      "sha256": "7fd941f64a82fcfc00b84206a20fc1186635cea2d368b559a324124ad23e4c87",
+      "set_id_line": 222,
+      "state_id_format": "projects/{{project_id}}/zones/{{zone}}/instanceGroups/{{instance_group_id}}"
+    },
+    "google_compute_instance_group_manager": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_instance_group_manager.go",
+      "sha256": "4e6461c75ed80eb7d1ace326fc2400163e6bac2c6c2bb5da6af3fb4b5c3547c1",
+      "set_id_line": 845,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/instanceGroupManagers/{{name}}"
+    },
+    "google_compute_region_instance_group_manager": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_instance_group_manager.go",
+      "sha256": "dc6daf6e331c7d0be5ac626c876c54f18187b2ab5d4927d05a339fa7a63aa95f",
+      "set_id_line": 775,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/instanceGroupManagers/{{name}}"
+    },
+    "google_compute_autoscaler": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_autoscaler.go",
+      "sha256": "07dff76d16e86817ee795ac005134c80a44d2e7ec52409bd3658f0343a4f205f",
+      "set_id_line": 586,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/autoscalers/{{name}}"
+    },
+    "google_compute_region_autoscaler": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_autoscaler.go",
+      "sha256": "29ca145dee7c0644a80acb66647b4b28398807328b269ccf4455148cb2351caf",
+      "set_id_line": 585,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/autoscalers/{{name}}"
+    },
+    "google_compute_address": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_address.go",
+      "sha256": "a1bb5e7beee3fff27004f1b99205aa0b76854b429a69f939cb3db2b086726354",
+      "set_id_line": 523,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/addresses/{{name}}"
+    },
+    "google_compute_global_address": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_global_address.go",
+      "sha256": "de6c9ec935a7264cd040835e238a27e4c4566b97b163a978514ce9ed630443f8",
+      "set_id_line": 394,
+      "state_id_format": "projects/{{project}}/global/addresses/{{name}}"
+    },
+    "google_compute_router": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_router.go",
+      "sha256": "4c9082b0fa854a6904e96937b0151e46d0de70bdb3c94513ed7044dd0851484b",
+      "set_id_line": 486,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/routers/{{name}}"
+    },
+    "google_compute_route": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_route.go",
+      "sha256": "883e5e1916be9b36d1716e3ae87baf64ac9f7c9c61f7162d17df3d2a8b0b63b2",
+      "set_id_line": 579,
+      "state_id_format": "projects/{{project}}/global/routes/{{name}}"
+    },
+    "google_compute_forwarding_rule": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_forwarding_rule.go",
+      "sha256": "dc85abb982c7aead57b1cd62555b6f44e4c20eac5f1a5f1f83a329ef0b06d26f",
+      "set_id_line": 954,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/forwardingRules/{{name}}"
+    },
+    "google_compute_global_forwarding_rule": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_global_forwarding_rule.go",
+      "sha256": "171d1e8bf3b95a2d77e5a5963d2ca13d0d896c8e29ae359eb2c219a9c0a17717",
+      "set_id_line": 727,
+      "state_id_format": "projects/{{project}}/global/forwardingRules/{{name}}"
+    },
+    "google_compute_backend_service": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_backend_service.go",
+      "sha256": "57bbbb7767673cd3252a782795b593df15570d2b06868129163d3b2f8c2b3b24",
+      "set_id_line": 1996,
+      "state_id_format": "projects/{{project}}/global/backendServices/{{name}}"
+    },
+    "google_compute_region_backend_service": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_backend_service.go",
+      "sha256": "36ee8eb842b37abbda1aa53a44c6a9224b1067b6c4322d9fc0dfeafa832402bb",
+      "set_id_line": 1819,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/backendServices/{{name}}"
+    },
+    "google_compute_backend_bucket": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_backend_bucket.go",
+      "sha256": "a77a9f7be9686eb8fa8fee6be2227432499161f028e10c88378f34be5d003cf9",
+      "set_id_line": 501,
+      "state_id_format": "projects/{{project}}/global/backendBuckets/{{name}}"
+    },
+    "google_compute_health_check": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_health_check.go",
+      "sha256": "ceb58b3e2e3b45ed6d60f3578ef9f3dc26743f77bb3c1284a7555c659ea0283f",
+      "set_id_line": 981,
+      "state_id_format": "projects/{{project}}/global/healthChecks/{{name}}"
+    },
+    "google_compute_region_health_check": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_health_check.go",
+      "sha256": "b104d2d887d33800eda49866ad27383112d57592d53776dbdbadb1bb6f70a12b",
+      "set_id_line": 894,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/healthChecks/{{name}}"
+    },
+    "google_compute_http_health_check": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_http_health_check.go",
+      "sha256": "18b6d006fe9a80caca0333e43dbe7e7a2fd8712e4f0e61f950f3ebd27015b83b",
+      "set_id_line": 342,
+      "state_id_format": "projects/{{project}}/global/httpHealthChecks/{{name}}"
+    },
+    "google_compute_https_health_check": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_https_health_check.go",
+      "sha256": "523f52085dd304f875b8d1d97b9df170992e36f875230094c6d4609da45b89b2",
+      "set_id_line": 342,
+      "state_id_format": "projects/{{project}}/global/httpsHealthChecks/{{name}}"
+    },
+    "google_compute_url_map": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_url_map.go",
+      "sha256": "10d27212a549f81c1806677ac4ca8071a30b84f05d476d5e4c67bc60e33abf29",
+      "set_id_line": 4729,
+      "state_id_format": "projects/{{project}}/global/urlMaps/{{name}}"
+    },
+    "google_compute_region_url_map": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_url_map.go",
+      "sha256": "f3bc40c0ef15db571a6f74c9081df01cfd29e55a8a3826b2f689b812768d7356",
+      "set_id_line": 3067,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/urlMaps/{{name}}"
+    },
+    "google_compute_ssl_certificate": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_ssl_certificate.go",
+      "sha256": "f24dac392418d1abe6c95e63b8e23db1816255a5229ce05ea22d507b3e48d41d",
+      "set_id_line": 332,
+      "state_id_format": "projects/{{project}}/global/sslCertificates/{{name}}"
+    },
+    "google_compute_region_ssl_certificate": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_ssl_certificate.go",
+      "sha256": "2c1eaec909d5b1981d7d5710cffb19e1d3eff16995fdd73b7b28b514de368605",
+      "set_id_line": 362,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/sslCertificates/{{name}}"
+    },
+    "google_compute_security_policy": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_security_policy.go",
+      "sha256": "20d9b43f344e7006f29142917be45f5aaf13287b49a5087117ed9e3ff852b4c8",
+      "set_id_line": 891,
+      "state_id_format": "projects/{{project}}/global/securityPolicies/{{name}}"
+    },
+    "google_compute_region_security_policy": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_security_policy.go",
+      "sha256": "ce3bb47c5f94b4eeb5e8162dac801e6a8a6aee933e95925489b667103b9c05d2",
+      "set_id_line": 903,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/securityPolicies/{{name}}"
+    },
+    "google_compute_network_endpoint_group": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_network_endpoint_group.go",
+      "sha256": "2dce0b0a41707796b00c488d64847914e2f1d0c336d70cb1b201dc91035e54bf",
+      "set_id_line": 347,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_region_network_endpoint_group": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_region_network_endpoint_group.go",
+      "sha256": "ef218069a410d6673f9cb3cdaf67200f329196476c8ca1d98bcfe8e48c559973",
+      "set_id_line": 494,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_global_network_endpoint_group": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_global_network_endpoint_group.go",
+      "sha256": "0dc12211d4c60fcede24941acbc8ff25a51183c70ad119fae1412cfb84db4540",
+      "set_id_line": 272,
+      "state_id_format": "projects/{{project}}/global/networkEndpointGroups/{{name}}"
+    },
+    "google_compute_network_attachment": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_network_attachment.go",
+      "sha256": "30c4fa946eded8401c0b7531c3e8d5e8ebf37126e05b86da004f6266f853b434",
+      "set_id_line": 363,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/networkAttachments/{{name}}"
+    },
+    "google_compute_resource_policy": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_resource_policy.go",
+      "sha256": "617da8ff4f7e77417780ba51dde99587b6a6d2c55726e033b7519aa0f1b78db6",
+      "set_id_line": 623,
+      "state_id_format": "projects/{{project}}/regions/{{region}}/resourcePolicies/{{name}}"
+    },
+    "google_compute_reservation": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/compute/resource_compute_reservation.go",
+      "sha256": "4de4389d5323aaae681a60786b34d5d70d171136efdba14fc29c9948eab0a2e5",
+      "set_id_line": 734,
+      "state_id_format": "projects/{{project}}/zones/{{zone}}/reservations/{{name}}"
+    },
+    "google_storage_bucket": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/storage/resource_storage_bucket.go",
+      "sha256": "38681735c6eca43791a63cb272375bb808f8477b3d951ef12a320a16ca832a6f",
+      "set_id_line": 1015,
+      "state_id_format": "{{name}}"
+    },
+    "google_pubsub_topic": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/pubsub/resource_pubsub_topic.go",
+      "sha256": "bbd7b889aaa85237599bcf753e60f7d21b9345723186cd0237f8f587c2c45dbf",
+      "set_id_line": 781,
+      "state_id_format": "projects/{{project}}/topics/{{name}}"
+    },
+    "google_pubsub_subscription": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/pubsub/resource_pubsub_subscription.go",
+      "sha256": "3617b493c7a6f6aacc81766aa8ad61d393a99154ebb3ebad2675b52f4ff3c81c",
+      "set_id_line": 942,
+      "state_id_format": "projects/{{project}}/subscriptions/{{name}}"
+    },
+    "google_cloud_run_v2_service": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/cloudrunv2/resource_cloud_run_v2_service.go",
+      "sha256": "263cb5668b5c5e7408f8d35582a5948e092d7b66cbbc04b1765da2d90834d4a4",
+      "set_id_line": 1815,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/services/{{name}}"
+    },
+    "google_cloud_run_v2_job": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/cloudrunv2/resource_cloud_run_v2_job.go",
+      "sha256": "d8153ba13f70328e71797854c255d7e2e638978105bec2c5cb42c738e69ff26c",
+      "set_id_line": 1223,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/jobs/{{name}}"
+    },
+    "google_container_cluster": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/container/resource_container_cluster.go",
+      "sha256": "2b5d212aa0078f0dff4f74dcf11b42fed68fe6767d765d20ee6f164a1a100316",
+      "set_id_line": 3258,
+      "state_id_format": "projects/{{project_id}}/locations/{{location}}/clusters/{{cluster_id}}"
+    },
+    "google_container_node_pool": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/container/resource_container_node_pool.go",
+      "sha256": "7ceec95a477c844a44a2ad8d196a27a35bf33f21e5df356c10977c7a5065f58d",
+      "set_id_line": 897,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/clusters/{{cluster}}/nodePools/{{name}}"
+    },
+    "google_service_account": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/resourcemanager/resource_google_service_account.go",
+      "sha256": "4effb11a5537fa9754ab66b8ed9ca3d1126f427d8a79bde994abc9ffd9ec2223",
+      "set_id_line": 180,
+      "state_id_format": "projects/{{project}}/serviceAccounts/{{email}}"
+    },
+    "google_sql_database_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/sql/resource_sql_database_instance.go",
+      "sha256": "22b3fef029a8c33e28273a6d1c5aa505398ac47a25824306d78e2f61358c08cc",
+      "set_id_line": 1831,
+      "state_id_format": "projects/{{project}}/instances/{{name}}"
+    },
+    "google_secret_manager_secret": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/secretmanager/resource_secret_manager_secret.go",
+      "sha256": "0b49f64aa0f65e76405fc66e0084f05291f71be29f8f6fe3bdbc7b363af0c994",
+      "set_id_line": 559,
+      "state_id_format": "projects/{{project}}/secrets/{{secret_id}}"
+    },
+    "google_artifact_registry_repository": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/artifactregistry/resource_artifact_registry_repository.go",
+      "sha256": "20fc055c48d88f9341f4bda653e33f10eae95b1517077bc79632f316435ddbc6",
+      "set_id_line": 1077,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/repositories/{{repository_id}}"
+    },
+    "google_redis_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/redis/resource_redis_instance.go",
+      "sha256": "99029a22a027ff82948f2f383d1134b88d5d2687998d87de425f032a87a4912a",
+      "set_id_line": 879,
+      "state_id_format": "projects/{{project}}/locations/{{region}}/instances/{{name}}"
+    },
+    "google_spanner_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/spanner/resource_spanner_instance.go",
+      "sha256": "c8df3090b2dcbee9488337aebc9de95397b544c81e381044fda7fe28e8957adb",
+      "set_id_line": 640,
+      "state_id_format": "{{project}}/{{name}}"
+    },
+    "google_spanner_database": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/spanner/resource_spanner_database.go",
+      "sha256": "2ccd49c9b94148d2fcd9f27d65bd863c73a6e2debed5ca7b3b40bb6b21b8f469",
+      "set_id_line": 455,
+      "state_id_format": "{{instance}}/{{name}}"
+    },
+    "google_bigtable_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/bigtable/resource_bigtable_instance.go",
+      "sha256": "8e723760c6ba1fcde512a0cda5ddf2aa9f801d59243a87e4ca821af911543def",
+      "set_id_line": 336,
+      "state_id_format": "projects/{{project}}/instances/{{name}}"
+    },
+    "google_bigtable_table": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/bigtable/resource_bigtable_table.go",
+      "sha256": "a7b52e192196ddaff6e709c36347314a8a85547c4147d73bd498d28c75d57441",
+      "set_id_line": 379,
+      "state_id_format": "projects/{{project}}/instances/{{instance_name}}/tables/{{name}}"
+    },
+    "google_alloydb_cluster": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/alloydb/resource_alloydb_cluster.go",
+      "sha256": "e07cc27f4db14a2d1eae182002fcba6969c7ff4c72ae68c1de2e9154a65c9d96",
+      "set_id_line": 1142,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/clusters/{{cluster_id}}"
+    },
+    "google_alloydb_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/alloydb/resource_alloydb_instance.go",
+      "sha256": "358fff48ac144db9a7f706f7d6eea2b5ef7f44784811eb0b1daba22b0d5ff3ef",
+      "set_id_line": 715,
+      "state_id_format": "{{cluster}}/instances/{{instance_id}}"
+    },
+    "google_filestore_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/filestore/resource_filestore_instance.go",
+      "sha256": "9e12005df3e7f9c93d55add553909166ca944e386f7678cfaa92e42db7895518",
+      "set_id_line": 822,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/instances/{{name}}"
+    },
+    "google_data_fusion_instance": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/datafusion/resource_data_fusion_instance.go",
+      "sha256": "10f4dcf7964aa4dafa312500fb740ddd83f3f308cbc129a629afbdc030a3dc03",
+      "set_id_line": 753,
+      "state_id_format": "projects/{{project}}/locations/{{region}}/instances/{{name}}"
+    },
+    "google_dataform_repository": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/dataform/resource_dataform_repository.go",
+      "sha256": "867fa6a2739fcbca7c11ade15b5808720f9ab98e91fed7c3f7869c56765ed135",
+      "set_id_line": 398,
+      "state_id_format": "projects/{{project}}/locations/{{region}}/repositories/{{name}}"
+    },
+    "google_tpu_v2_vm": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google-beta/c7a6d05ccb84424b850bb71c894db4826955a638/google-beta/services/tpuv2/resource_tpu_v2_vm.go",
+      "sha256": "004002c4ec5c07c86f5b6f5a0be63855ca1c20781b046f620d4fb6c024ddc4fc",
+      "set_id_line": 751,
+      "state_id_format": "projects/{{project}}/locations/{{zone}}/nodes/{{name}}"
+    },
+    "google_cloud_tasks_queue": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/cloudtasks/resource_cloud_tasks_queue.go",
+      "sha256": "0648c060aaad96cbce1fd550ed99cd80be3b91711d39f46aadb8c65e75f1dcba",
+      "set_id_line": 655,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/queues/{{name}}"
+    },
+    "google_datastream_stream": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/datastream/resource_datastream_stream.go",
+      "sha256": "1e6a79ac3b35a6d46078e41d055feca91f45b755dacf4315ac309f94819ce1a4",
+      "set_id_line": 2828,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/streams/{{stream_id}}"
+    },
+    "google_datastream_connection_profile": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/datastream/resource_datastream_connection_profile.go",
+      "sha256": "2a680301b309ea7c5a6a5520e29ee39d97a0407f73f189fc310aab0f6129bb6a",
+      "set_id_line": 883,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/connectionProfiles/{{connection_profile_id}}"
+    },
+    "google_datastream_private_connection": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/datastream/resource_datastream_private_connection.go",
+      "sha256": "816348abfbf525370035e64ef44399bb65e034cff7003719bfff84f7ee96bd6a",
+      "set_id_line": 404,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/privateConnections/{{private_connection_id}}"
+    },
+    "google_certificate_manager_certificate": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/certificatemanager/resource_certificate_manager_certificate.go",
+      "sha256": "5ec7a4bceca8bb9cfac694f12e5437cac58a2c6998fde745d648b1eda5e93a18",
+      "set_id_line": 497,
+      "state_id_format": "projects/{{project}}/locations/{{location}}/certificates/{{name}}"
+    },
+    "google_certificate_manager_certificate_map": {
+      "url": "https://raw.githubusercontent.com/hashicorp/terraform-provider-google/08e8f4f28ecac4783bd9174dded1480ba0a6061d/google/services/certificatemanager/resource_certificate_manager_certificate_map.go",
+      "sha256": "9ba3e1bdde16ff2a380d7e92c0a0ec2c834065ee2d87ae5dbe7e8c0876c1f211",
+      "set_id_line": 318,
+      "state_id_format": "projects/{{project}}/locations/global/certificateMaps/{{name}}"
+    }
+  },
+  "cai_alias_source": "https://cloud.google.com/asset-inventory/docs/asset-types",
+  "cai_alias_sha256": "e270808543c64ac73f76bb060a262f1b311acbbc9cd5e5761ea59a1a771224a5"
+}

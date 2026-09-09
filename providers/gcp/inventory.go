@@ -199,6 +199,12 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 	normalized["_inventory_source"] = inventorySource
 	normalized["project_id"] = c.project
 	normalized["project_number"] = c.number
+	if isInfra(nativeType) {
+		if err := c.infraIdentity(nativeType, nativeID, data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized[infraProof] = infraConfiguration(data)
+	}
 	if isMetricsScope(nativeType) {
 		if err := c.metricsIdentity(nativeType, nativeID, data); err != nil {
 			return contracts.InventoryItem{}, err
@@ -238,6 +244,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(c, data)
+	if isInfra(nativeType) {
+		refs = c.infraReferences(nativeType, nativeID, data)
+	}
 	if nativeType == monitoredProjectType {
 		refs[metricsScopeType] = []string{strings.Join(strings.Split(nativeID, "/")[:7], "/")}
 	}
@@ -321,6 +330,9 @@ func (r *Runtime) inventoryItem(c *client, raw map[string]any) (contracts.Invent
 		actionable = err == nil
 	}
 	sanitize := safePayload
+	if isInfra(nativeType) {
+		sanitize = safeInfraPayload
+	}
 	if isFusion(nativeType) {
 		sanitize = safeFusionPayload
 	}
@@ -364,7 +376,7 @@ func (c *client) canonicalName(value string) string {
 }
 
 func canonicalName(value string) string {
-	value = fusionCanonical(tpuCanonical(discoveryCanonical(strings.TrimSpace(value))))
+	value = infraCanonical(fusionCanonical(tpuCanonical(discoveryCanonical(strings.TrimSpace(value)))))
 	for _, prefix := range []string{"https://container.googleapis.com/v1/", "https://container.googleapis.com/v1beta1/"} {
 		if strings.HasPrefix(value, prefix) {
 			value = "//container.googleapis.com/" + strings.TrimPrefix(value, prefix)

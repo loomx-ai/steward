@@ -4,10 +4,10 @@
   "source": {
     "format": "google-discovery",
     "uri": "catalog/source/discovery.json",
-    "checksum": "01e13eb7aad386ea8db8f6c13691e8a9d518d7633264bc27d3bccfe3118018f9",
+    "checksum": "f8aff716290ca78ae0b94d740fc1c4f1da2c19aa52c3382abf7581efd11c4790",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "dcc325d7233f02421f18baea9b1b3ac97f0760038548778474a9d11f7847098e",
+  "content_checksum": "b65f8390c60b8203623cecd15aa728e6dc84469be63b631d756420ccb6778b6e",
   "operations": [
     {
       "id": "aiplatform.projects.locations.customJobs.operations.get",
@@ -71545,6 +71545,1678 @@
       "source_uri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest"
     },
     {
+      "id": "config.projects.locations.deployments.delete",
+      "name": "delete",
+      "service": "config",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "deletePolicy": {
+            "description": "Optional. Policy on how resources actuated by the deployment should be deleted. If unspecified, the default behavior is to delete the underlying resources.",
+            "enum": [
+              "DELETE_POLICY_UNSPECIFIED",
+              "DELETE",
+              "ABANDON"
+            ],
+            "enumDescriptions": [
+              "Unspecified policy, resources will be deleted.",
+              "Deletes resources actuated by the deployment.",
+              "Abandons resources and only deletes the deployment and its metadata."
+            ],
+            "location": "query",
+            "type": "string"
+          },
+          "force": {
+            "description": "Optional. If set to true, any revisions for this deployment will also be deleted. (Otherwise, the request will only work if the deployment has no revisions.)",
+            "location": "query",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Required. The name of the Deployment in the format: 'projects/{project_id}/locations/{location}/deployments/{deployment}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "requestId": {
+            "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "requestId"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the deployment. Format: 'projects/{project_id}/locations/{location}/deployments/{deployment}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A Deployment is a group of resources and configs managed and provisioned by Infra Manager.",
+        "id": "Deployment",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify deployments during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+            "type": "object"
+          },
+          "artifactsGcsBucket": {
+            "description": "User-defined location of Cloud Build logs and artifacts in Google Cloud Storage. Format: `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the field is not set or empty. Default bucket format: `gs://--blueprint-config` Constraints: - The bucket needs to be in the same project as the deployment - The path cannot be within the path of `gcs_source` - The field cannot be updated, including changing its presence",
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. Time when the deployment was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deleteBuild": {
+            "description": "Output only. Cloud Build instance UUID associated with deleting this deployment.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deleteLogs": {
+            "description": "Output only. Location of Cloud Build logs in Google Cloud Storage, populated when deleting this deployment. Format: `gs://{bucket}/{object}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deleteResults": {
+            "$ref": "ApplyResults",
+            "description": "Output only. Location of artifacts from a DeleteDeployment operation.",
+            "readOnly": true
+          },
+          "errorCode": {
+            "description": "Output only. Error code describing errors that may have occurred.",
+            "enum": [
+              "ERROR_CODE_UNSPECIFIED",
+              "REVISION_FAILED",
+              "CLOUD_BUILD_PERMISSION_DENIED",
+              "DELETE_BUILD_API_FAILED",
+              "DELETE_BUILD_RUN_FAILED",
+              "BUCKET_CREATION_PERMISSION_DENIED",
+              "BUCKET_CREATION_FAILED",
+              "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+            ],
+            "enumDescriptions": [
+              "No error code was specified.",
+              "The revision failed. See Revision for more details.",
+              "Cloud Build failed due to a permission issue.",
+              "Cloud Build job associated with a deployment deletion could not be started.",
+              "Cloud Build job associated with a deployment deletion was started but failed.",
+              "Cloud Storage bucket creation failed due to a permission issue.",
+              "Cloud Storage bucket creation failed due to an issue unrelated to permissions.",
+              "Failed to import values from an external source."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "errorLogs": {
+            "description": "Output only. Location of Terraform error logs in Google Cloud Storage. Format: `gs://{bucket}/{object}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "importExistingResources": {
+            "description": "By default, Infra Manager will return a failure when Terraform encounters a 409 code (resource conflict error) during actuation. If this flag is set to true, Infra Manager will instead attempt to automatically import the resource into the Terraform state (for supported resource types) and continue actuation. Not all resource types are supported, refer to documentation.",
+            "type": "boolean"
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. User-defined metadata for the deployment.",
+            "type": "object"
+          },
+          "latestRevision": {
+            "description": "Output only. Revision name that was most recently applied. Format: `projects/{project}/locations/{location}/deployments/{deployment}/ revisions/{revision}`",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lockState": {
+            "description": "Output only. Current lock state of the deployment.",
+            "enum": [
+              "LOCK_STATE_UNSPECIFIED",
+              "LOCKED",
+              "UNLOCKED",
+              "LOCKING",
+              "UNLOCKING",
+              "LOCK_FAILED",
+              "UNLOCK_FAILED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the lock state is omitted.",
+              "The deployment is locked.",
+              "The deployment is unlocked.",
+              "The deployment is being locked.",
+              "The deployment is being unlocked.",
+              "The deployment has failed to lock.",
+              "The deployment has failed to unlock."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. Resource name of the deployment. Format: `projects/{project}/locations/{location}/deployments/{deployment}`",
+            "type": "string"
+          },
+          "providerConfig": {
+            "$ref": "ProviderConfig",
+            "description": "Optional. This field specifies the provider configurations."
+          },
+          "quotaValidation": {
+            "description": "Optional. Input to control quota checks for resources in terraform configuration files. There are limited resources on which quota validation applies.",
+            "enum": [
+              "QUOTA_VALIDATION_UNSPECIFIED",
+              "ENABLED",
+              "ENFORCED"
+            ],
+            "enumDescriptions": [
+              "The default value. QuotaValidation on terraform configuration files will be disabled in this case.",
+              "Enable computing quotas for resources in terraform configuration files to get visibility on resources with insufficient quotas.",
+              "Enforce quota checks so deployment fails if there isn't sufficient quotas available to deploy resources in terraform configuration files."
+            ],
+            "type": "string"
+          },
+          "serviceAccount": {
+            "description": "Required. User-specified Service Account (SA) credentials to be used when actuating resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. Current state of the deployment.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "CREATING",
+              "ACTIVE",
+              "UPDATING",
+              "DELETING",
+              "FAILED",
+              "SUSPENDED",
+              "DELETED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the state is omitted.",
+              "The deployment is being created.",
+              "The deployment is healthy.",
+              "The deployment is being updated.",
+              "The deployment is being deleted.",
+              "The deployment has encountered an unexpected error.",
+              "The deployment is no longer being actively reconciled. This may be the result of recovering the project after deletion.",
+              "The deployment has been deleted."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "stateDetail": {
+            "description": "Output only. Additional information regarding the current state.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "terraformBlueprint": {
+            "$ref": "TerraformBlueprint",
+            "description": "A blueprint described using Terraform's HashiCorp Configuration Language as a root module."
+          },
+          "tfErrors": {
+            "description": "Output only. Errors encountered when deleting this deployment. Errors are truncated to 10 entries, see `delete_results` and `error_logs` for full details.",
+            "items": {
+              "$ref": "TerraformError"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "tfVersion": {
+            "description": "Output only. The current Terraform version set on the deployment. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+            "readOnly": true,
+            "type": "string"
+          },
+          "tfVersionConstraint": {
+            "description": "The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. Time when the deployment was last modified.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "workerPool": {
+            "description": "The user-specified Cloud Build worker pool resource in which the Cloud Build job will execute. Format: `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If this field is unspecified, the default Cloud Build worker pool will be used.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/deployments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Lists the Deployments that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/deployments/bar - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - Deployments in CREATING state. state=CREATING",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "When requesting a page of resources, 'page_size' specifies number of resources to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Token returned by previous call to 'ListDeployments' which specifies the position in the list from where to continue listing the resources.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the Deployments are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "id": "ListDeploymentsResponse",
+        "properties": {
+          "deployments": {
+            "description": "List of Deployments.",
+            "items": {
+              "$ref": "Deployment"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "Token to be supplied to the next ListDeployments request via `page_token` to obtain the next set of results.",
+            "type": "string"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/deployments",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.revisions.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the Revision in the format: 'projects/{project_id}/locations/{location}/deployments/{deployment}/revisions/{revision}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+/revisions/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A child resource of a Deployment generated by a 'CreateDeployment' or 'UpdateDeployment' call. Each Revision contains metadata pertaining to a snapshot of a particular Deployment.",
+        "id": "Revision",
+        "properties": {
+          "action": {
+            "description": "Output only. The action which created this revision",
+            "enum": [
+              "ACTION_UNSPECIFIED",
+              "CREATE",
+              "UPDATE",
+              "DELETE"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the action is omitted.",
+              "The revision was generated by creating a deployment.",
+              "The revision was generated by updating a deployment.",
+              "The revision was deleted."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "applyResults": {
+            "$ref": "ApplyResults",
+            "description": "Output only. Outputs and artifacts from applying a deployment.",
+            "readOnly": true
+          },
+          "build": {
+            "description": "Output only. Cloud Build instance UUID associated with this revision.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. Time when the revision was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "errorCode": {
+            "description": "Output only. Code describing any errors that may have occurred.",
+            "enum": [
+              "ERROR_CODE_UNSPECIFIED",
+              "CLOUD_BUILD_PERMISSION_DENIED",
+              "APPLY_BUILD_API_FAILED",
+              "APPLY_BUILD_RUN_FAILED",
+              "QUOTA_VALIDATION_FAILED",
+              "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+            ],
+            "enumDescriptions": [
+              "No error code was specified.",
+              "Cloud Build failed due to a permission issue.",
+              "Cloud Build job associated with creating or updating a deployment could not be started.",
+              "Cloud Build job associated with creating or updating a deployment was started but failed.",
+              "quota validation failed for one or more resources in terraform configuration files.",
+              "Failed to import values from an external source."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "errorLogs": {
+            "description": "Output only. Location of Terraform error logs in Google Cloud Storage. Format: `gs://{bucket}/{object}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "importExistingResources": {
+            "description": "Output only. By default, Infra Manager will return a failure when Terraform encounters a 409 code (resource conflict error) during actuation. If this flag is set to true, Infra Manager will instead attempt to automatically import the resource into the Terraform state (for supported resource types) and continue actuation. Not all resource types are supported, refer to documentation.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "logs": {
+            "description": "Output only. Location of Revision operation logs in `gs://{bucket}/{object}` format.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Revision name. Format: `projects/{project}/locations/{location}/deployments/{deployment}/ revisions/{revision}`",
+            "type": "string"
+          },
+          "providerConfig": {
+            "$ref": "ProviderConfig",
+            "description": "Output only. This field specifies the provider configurations.",
+            "readOnly": true
+          },
+          "quotaValidation": {
+            "description": "Optional. Input to control quota checks for resources in terraform configuration files. There are limited resources on which quota validation applies.",
+            "enum": [
+              "QUOTA_VALIDATION_UNSPECIFIED",
+              "ENABLED",
+              "ENFORCED"
+            ],
+            "enumDescriptions": [
+              "The default value. QuotaValidation on terraform configuration files will be disabled in this case.",
+              "Enable computing quotas for resources in terraform configuration files to get visibility on resources with insufficient quotas.",
+              "Enforce quota checks so deployment fails if there isn't sufficient quotas available to deploy resources in terraform configuration files."
+            ],
+            "type": "string"
+          },
+          "quotaValidationResults": {
+            "description": "Output only. Cloud Storage path containing quota validation results. This field is set when a user sets Deployment.quota_validation field to ENABLED or ENFORCED. Format: `gs://{bucket}/{object}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "serviceAccount": {
+            "description": "Output only. User-specified Service Account (SA) to be used as credential to manage resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+            "readOnly": true,
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. Current state of the revision.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "APPLYING",
+              "APPLIED",
+              "FAILED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the state is omitted.",
+              "The revision is being applied.",
+              "The revision was applied successfully.",
+              "The revision could not be applied successfully."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "stateDetail": {
+            "description": "Output only. Additional info regarding the current state.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "terraformBlueprint": {
+            "$ref": "TerraformBlueprint",
+            "description": "Output only. A blueprint described using Terraform's HashiCorp Configuration Language as a root module.",
+            "readOnly": true
+          },
+          "tfErrors": {
+            "description": "Output only. Errors encountered when creating or updating this deployment. Errors are truncated to 10 entries, see `delete_results` and `error_logs` for full details.",
+            "items": {
+              "$ref": "TerraformError"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "tfVersion": {
+            "description": "Output only. The version of Terraform used to create the Revision. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+            "readOnly": true,
+            "type": "string"
+          },
+          "tfVersionConstraint": {
+            "description": "Output only. The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+            "readOnly": true,
+            "type": "string"
+          },
+          "updateTime": {
+            "description": "Output only. Time when the revision was last modified.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "workerPool": {
+            "description": "Output only. The user-specified Cloud Build worker pool resource in which the Cloud Build job will execute. Format: `projects/{project}/locations/{location}/workerPools/{workerPoolId}`. If this field is unspecified, the default Cloud Build worker pool will be used.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.revisions.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/revisions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Lists the Revisions that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/deployments/dep/revisions/bar - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - Revisions in CREATING state. state=CREATING",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "When requesting a page of resources, `page_size` specifies number of resources to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Token returned by previous call to 'ListRevisions' which specifies the position in the list from where to continue listing the resources.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the Revisions are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}/deployments/{deployment}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A response to a 'ListRevisions' call. Contains a list of Revisions.",
+        "id": "ListRevisionsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token to request the next page of resources from the 'ListRevisions' method. The value of an empty string means that there are no more resources to return.",
+            "type": "string"
+          },
+          "revisions": {
+            "description": "List of Revisions.",
+            "items": {
+              "$ref": "Revision"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/revisions",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.revisions.resources.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the Resource in the format: 'projects/{project_id}/locations/{location}/deployments/{deployment}/revisions/{revision}/resource/{resource}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+/revisions/[^/]+/resources/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Resource represents a Google Cloud Platform resource actuated by IM. Resources are child resources of Revisions.",
+        "id": "Resource",
+        "properties": {
+          "caiAssets": {
+            "additionalProperties": {
+              "$ref": "ResourceCAIInfo"
+            },
+            "description": "Output only. Map of Cloud Asset Inventory (CAI) type to CAI info (e.g. CAI ID). CAI type format follows https://cloud.google.com/asset-inventory/docs/supported-asset-types",
+            "readOnly": true,
+            "type": "object"
+          },
+          "intent": {
+            "description": "Output only. Intent of the resource.",
+            "enum": [
+              "INTENT_UNSPECIFIED",
+              "CREATE",
+              "UPDATE",
+              "DELETE",
+              "RECREATE",
+              "UNCHANGED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the intent is omitted.",
+              "Infra Manager will create this Resource.",
+              "Infra Manager will update this Resource.",
+              "Infra Manager will delete this Resource.",
+              "Infra Manager will destroy and recreate this Resource.",
+              "Infra Manager will leave this Resource untouched."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Output only. Resource name. Format: `projects/{project}/locations/{location}/deployments/{deployment}/revisions/{revision}/resources/{resource}`",
+            "readOnly": true,
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. Current state of the resource.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "PLANNED",
+              "IN_PROGRESS",
+              "RECONCILED",
+              "FAILED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the state is omitted.",
+              "Resource has been planned for reconcile.",
+              "Resource is actively reconciling into the intended state.",
+              "Resource has reconciled to intended state.",
+              "Resource failed to reconcile."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "terraformInfo": {
+            "$ref": "ResourceTerraformInfo",
+            "description": "Output only. Terraform-specific info if this resource was created using Terraform.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.deployments.revisions.resources.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/resources",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Lists the Resources that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/deployments/dep/revisions/bar/resources/baz",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "When requesting a page of resources, 'page_size' specifies number of resources to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Token returned by previous call to 'ListResources' which specifies the position in the list from where to continue listing the resources.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the Resources are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}/deployments/{deployment}/revisions/{revision}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/deployments/[^/]+/revisions/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A response to a 'ListResources' call. Contains a list of Resources.",
+        "id": "ListResourcesResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token to request the next page of resources from the 'ListResources' method. The value of an empty string means that there are no more resources to return.",
+            "type": "string"
+          },
+          "resources": {
+            "description": "List of Resources.",
+            "items": {
+              "$ref": "Resource"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/resources",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}/locations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "extraLocationTypes": {
+            "description": "Optional. Do not use this field unless explicitly documented otherwise. This is primarily for internal usage.",
+            "location": "query",
+            "repeated": true,
+            "type": "string"
+          },
+          "filter": {
+            "description": "A filter to narrow down results to a preferred subset. The filtering language accepts strings like `\"displayName=tokyo\"`, and is documented in more detail in [AIP-160](https://google.aip.dev/160).",
+            "location": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The resource that owns the locations collection, if applicable.",
+            "location": "path",
+            "pattern": "^projects/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "The maximum number of results to return. If not set, the service selects a default.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "A page token received from the `next_page_token` field in the response. Send that page token to receive the subsequent page.",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response message for Locations.ListLocations.",
+        "id": "ListLocationsResponse",
+        "properties": {
+          "locations": {
+            "description": "A list of locations that matches the specified filter in the request.",
+            "items": {
+              "$ref": "Location"
+            },
+            "type": "array"
+          },
+          "nextPageToken": {
+            "description": "The standard List next-page token.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "input_token_path": "pageToken",
+        "output_token_path": "nextPageToken",
+        "items_path": "locations"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}/locations",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.operations.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "The name of the operation resource.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/operations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.delete",
+      "name": "delete",
+      "service": "config",
+      "method": "DELETE",
+      "path": "/v1/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the Preview in the format: 'projects/{project_id}/locations/{location}/previews/{preview}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+$",
+            "required": true,
+            "type": "string"
+          },
+          "requestId": {
+            "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+            "location": "query",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "This resource represents a long-running operation that is the result of a network API call.",
+        "id": "Operation",
+        "properties": {
+          "done": {
+            "description": "If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.",
+            "type": "boolean"
+          },
+          "error": {
+            "$ref": "Status",
+            "description": "The error result of the operation in case of failure or cancellation."
+          },
+          "metadata": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata. Any method that returns a long-running operation should document the metadata type, if any.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.",
+            "type": "string"
+          },
+          "response": {
+            "additionalProperties": {
+              "description": "Properties of the object. Contains field @type with type URL.",
+              "type": "any"
+            },
+            "description": "The normal, successful response of the operation. If the original method returns no data on success, such as `Delete`, the response is `google.protobuf.Empty`. If the original method is standard `Get`/`Create`/`Update`, the response should be the resource. For other methods, the response should have the type `XxxResponse`, where `Xxx` is the original method name. For example, if the original method name is `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query",
+        "idempotency_parameter": "requestId"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the preview. Format: 'projects/{project_id}/locations/{location}/previews/{preview}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A preview represents a set of actions Infra Manager would perform to move the resources towards the desired state as specified in the configuration.",
+        "id": "Preview",
+        "properties": {
+          "annotations": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. Arbitrary key-value metadata storage e.g. to help client tools identify preview during automation. See https://google.aip.dev/148#annotations for details on format and size limitations.",
+            "type": "object"
+          },
+          "artifactsGcsBucket": {
+            "description": "User-defined location of Cloud Build logs, artifacts, and in Google Cloud Storage. Format: `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the field is not set or empty Default Bucket Format: `gs://--blueprint-config` Constraints: - The bucket needs to be in the same project as the deployment - The path cannot be within the path of `gcs_source` If omitted and deployment resource ref provided has artifacts_gcs_bucket defined, that artifact bucket is used.",
+            "type": "string"
+          },
+          "build": {
+            "description": "Output only. Cloud Build instance UUID associated with this preview.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "createTime": {
+            "description": "Output only. Time the preview was created.",
+            "format": "google-datetime",
+            "readOnly": true,
+            "type": "string"
+          },
+          "deployment": {
+            "description": "Optional. Deployment reference. If specified, the preview will be performed using the provided deployment's current state and use any relevant fields from the deployment unless explicitly specified in the preview create request.",
+            "type": "string"
+          },
+          "errorCode": {
+            "description": "Output only. Code describing any errors that may have occurred.",
+            "enum": [
+              "ERROR_CODE_UNSPECIFIED",
+              "CLOUD_BUILD_PERMISSION_DENIED",
+              "BUCKET_CREATION_PERMISSION_DENIED",
+              "BUCKET_CREATION_FAILED",
+              "DEPLOYMENT_LOCK_ACQUIRE_FAILED",
+              "PREVIEW_BUILD_API_FAILED",
+              "PREVIEW_BUILD_RUN_FAILED",
+              "EXTERNAL_VALUE_SOURCE_IMPORT_FAILED"
+            ],
+            "enumDescriptions": [
+              "No error code was specified.",
+              "Cloud Build failed due to a permissions issue.",
+              "Cloud Storage bucket failed to create due to a permissions issue.",
+              "Cloud Storage bucket failed for a non-permissions-related issue.",
+              "Acquiring lock on provided deployment reference failed.",
+              "Preview encountered an error when trying to access Cloud Build API.",
+              "Preview created a build but build failed and logs were generated.",
+              "Failed to import values from an external source."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "errorLogs": {
+            "description": "Output only. Link to tf-error.ndjson file, which contains the full list of the errors encountered during a Terraform preview. Format: `gs://{bucket}/{object}`.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "errorStatus": {
+            "$ref": "Status",
+            "description": "Output only. Additional information regarding the current state.",
+            "readOnly": true
+          },
+          "labels": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. User-defined labels for the preview.",
+            "type": "object"
+          },
+          "logs": {
+            "description": "Output only. Location of preview logs in `gs://{bucket}/{object}` format.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. Resource name of the preview. Resource name can be user provided or server generated ID if unspecified. Format: `projects/{project}/locations/{location}/previews/{preview}`",
+            "type": "string"
+          },
+          "previewArtifacts": {
+            "$ref": "PreviewArtifacts",
+            "description": "Output only. Artifacts from preview.",
+            "readOnly": true
+          },
+          "previewMode": {
+            "description": "Optional. Current mode of preview.",
+            "enum": [
+              "PREVIEW_MODE_UNSPECIFIED",
+              "DEFAULT",
+              "DELETE"
+            ],
+            "enumDescriptions": [
+              "Unspecified policy, default mode will be used.",
+              "DEFAULT mode generates an execution plan for reconciling current resource state into expected resource state.",
+              "DELETE mode generates as execution plan for destroying current resources."
+            ],
+            "type": "string"
+          },
+          "providerConfig": {
+            "$ref": "ProviderConfig",
+            "description": "Optional. This field specifies the provider configurations."
+          },
+          "serviceAccount": {
+            "description": "Required. User-specified Service Account (SA) credentials to be used when previewing resources. Format: `projects/{projectID}/serviceAccounts/{serviceAccount}`",
+            "type": "string"
+          },
+          "state": {
+            "description": "Output only. Current state of the preview.",
+            "enum": [
+              "STATE_UNSPECIFIED",
+              "CREATING",
+              "SUCCEEDED",
+              "APPLYING",
+              "STALE",
+              "DELETING",
+              "FAILED",
+              "DELETED"
+            ],
+            "enumDescriptions": [
+              "The default value. This value is used if the state is unknown.",
+              "The preview is being created.",
+              "The preview has succeeded.",
+              "The preview is being applied.",
+              "The preview is stale. A preview can become stale if a revision has been applied after this preview was created.",
+              "The preview is being deleted.",
+              "The preview has encountered an unexpected error.",
+              "The preview has been deleted."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "terraformBlueprint": {
+            "$ref": "TerraformBlueprint",
+            "description": "The terraform blueprint to preview."
+          },
+          "tfErrors": {
+            "description": "Output only. Summary of errors encountered during Terraform preview. It has a size limit of 10, i.e. only top 10 errors will be summarized here.",
+            "items": {
+              "$ref": "TerraformError"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "tfVersion": {
+            "description": "Output only. The current Terraform version set on the preview. It is in the format of \"Major.Minor.Patch\", for example, \"1.3.10\".",
+            "readOnly": true,
+            "type": "string"
+          },
+          "tfVersionConstraint": {
+            "description": "The user-specified Terraform version constraint. Example: \"=1.3.10\".",
+            "type": "string"
+          },
+          "workerPool": {
+            "description": "The user-specified Worker Pool resource in which the Cloud Build job will execute. Format projects/{project}/locations/{location}/workerPools/{workerPoolId} If this field is unspecified, the default Cloud Build worker pool will be used. If omitted and deployment resource ref provided has worker_pool defined, that worker pool is used.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/previews",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Lists the Deployments that match the filter expression. A filter expression filters the resources listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/deployments/bar - Filter by labels: - Resources that have a key called 'foo' labels.foo:* - Resources that have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter by state: - Deployments in CREATING state. state=CREATING",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. When requesting a page of resources, 'page_size' specifies number of resources to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Token returned by previous call to 'ListDeployments' which specifies the position in the list from where to continue listing the resources.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the Previews are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A response to a `ListPreviews` call. Contains a list of Previews.",
+        "id": "ListPreviewsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "Token to be supplied to the next ListPreviews request via `page_token` to obtain the next set of results.",
+            "type": "string"
+          },
+          "previews": {
+            "description": "List of Previews.",
+            "items": {
+              "$ref": "Preview"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Locations that could not be reached.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/previews",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.resourceChanges.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the resource change to retrieve. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceChanges/{resource_change}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+/resourceChanges/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A resource change represents a change to a resource in the state file.",
+        "id": "ResourceChange",
+        "properties": {
+          "intent": {
+            "description": "Output only. The intent of the resource change.",
+            "enum": [
+              "INTENT_UNSPECIFIED",
+              "CREATE",
+              "UPDATE",
+              "DELETE",
+              "RECREATE",
+              "UNCHANGED"
+            ],
+            "enumDescriptions": [
+              "The default value.",
+              "The resource will be created.",
+              "The resource will be updated.",
+              "The resource will be deleted.",
+              "The resource will be recreated.",
+              "The resource will be untouched."
+            ],
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Identifier. The name of the resource change. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceChanges/{resource_change}'.",
+            "type": "string"
+          },
+          "propertyChanges": {
+            "description": "Output only. The property changes of the resource change.",
+            "items": {
+              "$ref": "PropertyChange"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "terraformInfo": {
+            "$ref": "ResourceChangeTerraformInfo",
+            "description": "Output only. Terraform info of the resource change.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.resourceChanges.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/resourceChanges",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Lists the resource changes that match the filter expression. A filter expression filters the resource changes listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/previews/dep/resourceChanges/baz",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. When requesting a page of resource changes, 'page_size' specifies number of resource changes to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Token returned by previous call to 'ListResourceChanges' which specifies the position in the list from where to continue listing the resource changes.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the ResourceChanges are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}/previews/{preview}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A response to a 'ListResourceChanges' call. Contains a list of ResourceChanges.",
+        "id": "ListResourceChangesResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token to request the next page of resources from the 'ListResourceChanges' method. The value of an empty string means that there are no more resources to return.",
+            "type": "string"
+          },
+          "resourceChanges": {
+            "description": "List of ResourceChanges.",
+            "items": {
+              "$ref": "ResourceChange"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/resourceChanges",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.resourceDrifts.get",
+      "name": "get",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "name": {
+            "description": "Required. The name of the resource drift to retrieve. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceDrifts/{resource_drift}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+/resourceDrifts/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A resource drift represents a drift to a resource in the state file.",
+        "id": "ResourceDrift",
+        "properties": {
+          "name": {
+            "description": "Identifier. The name of the resource drift. Format: 'projects/{project_id}/locations/{location}/previews/{preview}/resourceDrifts/{resource_drift}'.",
+            "type": "string"
+          },
+          "propertyDrifts": {
+            "description": "Output only. The property drifts of the resource drift.",
+            "items": {
+              "$ref": "PropertyDrift"
+            },
+            "readOnly": true,
+            "type": "array"
+          },
+          "terraformInfo": {
+            "$ref": "ResourceDriftTerraformInfo",
+            "description": "Output only. Terraform info of the resource drift.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{name}",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "name"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
+      "id": "config.projects.locations.previews.resourceDrifts.list",
+      "name": "list",
+      "service": "config",
+      "method": "GET",
+      "path": "/v1/{parent}/resourceDrifts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "filter": {
+            "description": "Optional. Lists the resource drifts that match the filter expression. A filter expression filters the resource drifts listed in the response. The expression must be of the form '{field} {operator} {value}' where operators: '\u003c', '\u003e', '\u003c=', '\u003e=', '!=', '=', ':' are supported (colon ':' represents a HAS operator which is roughly synonymous with equality). {field} can refer to a proto or JSON field, or a synthetic field. Field names can be camelCase or snake_case. Examples: - Filter by name: name = \"projects/foo/locations/us-central1/previews/dep/resourceDrifts/baz",
+            "location": "query",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Optional. Field to use to sort the list.",
+            "location": "query",
+            "type": "string"
+          },
+          "pageSize": {
+            "description": "Optional. When requesting a page of resource drifts, 'page_size' specifies number of resource drifts to return. If unspecified, at most 500 will be returned. The maximum value is 1000.",
+            "format": "int32",
+            "location": "query",
+            "type": "integer"
+          },
+          "pageToken": {
+            "description": "Optional. Token returned by previous call to 'ListResourceDrifts' which specifies the position in the list from where to continue listing the resource drifts.",
+            "location": "query",
+            "type": "string"
+          },
+          "parent": {
+            "description": "Required. The parent in whose context the ResourceDrifts are listed. The parent value is in the format: 'projects/{project_id}/locations/{location}/previews/{preview}'.",
+            "location": "path",
+            "pattern": "^projects/[^/]+/locations/[^/]+/previews/[^/]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A response to a 'ListResourceDrifts' call. Contains a list of ResourceDrifts.",
+        "id": "ListResourceDriftsResponse",
+        "properties": {
+          "nextPageToken": {
+            "description": "A token to request the next page of resources from the 'ListResourceDrifts' method. The value of an empty string means that there are no more resources to return.",
+            "type": "string"
+          },
+          "resourceDrifts": {
+            "description": "List of ResourceDrifts.",
+            "items": {
+              "$ref": "ResourceDrift"
+            },
+            "type": "array"
+          },
+          "unreachable": {
+            "description": "Unreachable resources, if any.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "config",
+        "version": "v1",
+        "style": "google-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/v1/{parent}/resourceDrifts",
+        "endpoint": "https://config.googleapis.com",
+        "raw_path_parameters": [
+          "parent"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://config.googleapis.com/$discovery/rest?version=v1"
+    },
+    {
       "id": "container.projects.locations.clusters.delete",
       "name": "delete",
       "service": "container",
@@ -105902,6 +107574,114 @@
         ],
         "list_operations": [
           "compute.vpnTunnels.aggregatedList"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/Deployment",
+      "class": "orchestration.stack",
+      "display_name": "Infrastructure Manager deployment",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "deployments",
+        "read_operations": [
+          "config.projects.locations.deployments.get"
+        ],
+        "delete_operations": [
+          "config.projects.locations.deployments.delete"
+        ],
+        "list_operations": [
+          "config.projects.locations.deployments.list"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/Preview",
+      "class": "orchestration.preview",
+      "display_name": "Infrastructure Manager preview",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "previews",
+        "read_operations": [
+          "config.projects.locations.previews.get"
+        ],
+        "delete_operations": [
+          "config.projects.locations.previews.delete"
+        ],
+        "list_operations": [
+          "config.projects.locations.previews.list"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/Resource",
+      "class": "orchestration.managed_resource",
+      "display_name": "Infrastructure Manager resource record",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "resources",
+        "read_operations": [
+          "config.projects.locations.deployments.revisions.resources.get"
+        ],
+        "list_operations": [
+          "config.projects.locations.deployments.revisions.resources.list"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/ResourceChange",
+      "class": "orchestration.resource_change",
+      "display_name": "Infrastructure Manager resource change",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "resourceChanges",
+        "read_operations": [
+          "config.projects.locations.previews.resourceChanges.get"
+        ],
+        "list_operations": [
+          "config.projects.locations.previews.resourceChanges.list"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/ResourceDrift",
+      "class": "orchestration.resource_drift",
+      "display_name": "Infrastructure Manager resource drift",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "resourceDrifts",
+        "read_operations": [
+          "config.projects.locations.previews.resourceDrifts.get"
+        ],
+        "list_operations": [
+          "config.projects.locations.previews.resourceDrifts.list"
+        ]
+      }
+    },
+    {
+      "native_type": "config.googleapis.com/Revision",
+      "class": "orchestration.revision",
+      "display_name": "Infrastructure Manager revision",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "revisions",
+        "read_operations": [
+          "config.projects.locations.deployments.revisions.get"
+        ],
+        "list_operations": [
+          "config.projects.locations.deployments.revisions.list"
         ]
       }
     },

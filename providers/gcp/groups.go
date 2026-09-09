@@ -107,6 +107,11 @@ func (c *client) nativeList(ctx context.Context, operation catalog.Operation, pa
 		if err := checkListCompleteness(response.Data); err != nil {
 			return nil, err
 		}
+		if operation.Call.Product == "config" {
+			if err := infraListShape(response.Data, itemsPath); err != nil {
+				return nil, err
+			}
+		}
 		records, err := productRecords(response.Data, itemsPath)
 		if err != nil {
 			return nil, err
