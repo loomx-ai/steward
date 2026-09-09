@@ -29,6 +29,8 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	cdnWAFType:                 {cdnEndpointType},
+	frontDoorWAFType:           {afdSecurityPolicyType},
 	afdEndpointType:            {afdSecurityPolicyType},
 	afdDomainType:              {afdRouteType, afdSecurityPolicyType},
 	afdOriginGroupType:         {afdRouteType, afdRuleSetType, afdRuleType},
@@ -114,7 +116,7 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		identity := prerequisite.Asset.Identity
 		id, nativeType, err := parseID(identity.NativeID)
-		if err != nil || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(nativeType, identity.NativeType) || !servicePrerequisiteKind(a.kind.NativeType, identity.NativeType) || (!serviceChildRelation(request.Asset, prerequisite.Asset) && !incomingMigrationPrerequisite(request.Asset, prerequisite.Asset) && !recoveryPrerequisite(request.Asset, prerequisite.Asset) && !cdnPrerequisite(request.Asset, prerequisite.Asset)) {
+		if err != nil || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(nativeType, identity.NativeType) || !servicePrerequisiteKind(a.kind.NativeType, identity.NativeType) || (!serviceChildRelation(request.Asset, prerequisite.Asset) && !incomingMigrationPrerequisite(request.Asset, prerequisite.Asset) && !recoveryPrerequisite(request.Asset, prerequisite.Asset) && !cdnPrerequisite(request.Asset, prerequisite.Asset) && !wafPrerequisite(request.Asset, prerequisite.Asset)) {
 			return serviceDenied("invalid_service_prerequisite")
 		}
 		seen[id], assetIDs[prerequisite.Asset.ID] = true, true

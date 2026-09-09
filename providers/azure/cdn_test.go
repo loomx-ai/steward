@@ -79,6 +79,9 @@ func TestCDNNativeExamplesAndSchemas(t *testing.T) {
 		for path, value := range object(native["paths"]) {
 			for method, value := range object(value) {
 				op := object(value)
+				if strings.HasPrefix(text(op["operationId"]), "Policies_") {
+					continue // WAF responses have their own independent evidence suite.
+				}
 				if object(object(op["responses"])["200"])["schema"] == nil {
 					continue
 				}

@@ -282,6 +282,20 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.cdnInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, err
 	}
+	if isWAFType(nativeType) {
+		links, err := wafLinks(nativeType, raw)
+		if err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized["_waf_links"] = links
+		normalized["_waf_configuration"] = wafConfiguration(nativeType, raw)
+		normalized["_waf_private_configuration"] = c.privateConfiguration(wafSnapshot(nativeType, raw))
+	}
+	if reference, err := wafPolicyReference(nativeType, raw); err != nil {
+		return contracts.InventoryItem{}, err
+	} else if reference != "" {
+		normalized["_waf_policy"] = reference
+	}
 	if nativeType == containerGroupType {
 		if err := validateContainerGroup(raw); err != nil {
 			return contracts.InventoryItem{}, err
@@ -642,6 +656,9 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
+			if typed["matchVariable"] != nil && (key == "matchValue" || key == "matchValues") {
+				continue
+			}
 			if strings.HasSuffix(text(typed["typeName"]), "ConditionParameters") && key == "matchValues" {
 				continue
 			}
@@ -655,7 +672,7 @@ func safeResource(value any) any {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
 				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
-				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata":
+				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody":
 				continue
 			}
 			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") {

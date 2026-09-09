@@ -51,6 +51,9 @@ extensions:
   hook: azure.resource
 relationships:
 - type: depends_on
+  targetType: Microsoft.Network/frontDoorWebApplicationFirewallPolicies
+  targetIdPath: refs_microsoft_network_frontdoorwebapplicationfirewallpolicies
+- type: depends_on
   targetType: Microsoft.Cdn/profiles
   targetIdPath: refs_microsoft_cdn_profiles
 - type: depends_on

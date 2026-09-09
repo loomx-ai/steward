@@ -107,8 +107,9 @@ independent group deletion; endpoint/profile cleanup reviews its owned group.
 Steward does not rewrite surviving endpoint routing to force deletion.
 
 External origins, DNS zones, Key Vault secrets/certificates, identities and WAF
-policies remain independent. WAF policy resource lifecycles and external DNS
-record unlinking are not implemented by this resource family. Native service
+policies remain independent. The separate [WAF lifecycle](../waf/README.md)
+supports CDN and Front Door policies with reviewed referrer removal. External DNS
+record unlinking is not implemented by this resource family. Native service
 rejections, including external associations, remain errors. Rule values and
 validation/signing secrets are removed from inventory and logs; keyed configuration
 digests still detect returned sensitive changes. Credential rotation requires a

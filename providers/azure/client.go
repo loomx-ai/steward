@@ -257,7 +257,7 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 }
 
 func requestID(header http.Header) string {
-	for _, name := range []string{"x-ms-request-id", "x-ms-correlation-request-id", "request-id"} {
+	for _, name := range []string{"x-ms-request-id", "x-ms-correlation-request-id", "request-id", "x-ms-original-request-ids"} {
 		if value := header.Get(name); value != "" {
 			return value
 		}

@@ -28,7 +28,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 145 resource types; 133 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 147 resource types; 135 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -41,6 +41,7 @@ Steward recognizes 145 resource types; 133 have native deletion actions, subject
 | PostgreSQL / MySQL | Flexible servers | Supported |
 | App Service | Web Apps / Function Apps and App Service plans | Supported as separate resources |
 | CDN and Front Door | Profiles, classic endpoints/origins/origin groups/domains; Front Door endpoints/routes/origin groups/origins/domains/rule sets/rules/security associations/certificate references | Profiles and owned child trees use reviewed cascades; shared references require ordered cleanup |
+| WAF | CDN and Front Door policies | Reviewed referring endpoint/security-association deletion precedes policy deletion; classic Front Door references still block cleanup |
 | Containers | Container registries, Container Apps, Container Instances groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
 | DNS and private endpoints | Public/private zones and records, private DNS links, private endpoints and DNS zone groups | Reviewed controller cascades include verified managed NICs and external DNS records; DNS system records cannot be deleted independently |
 | Virtual WAN gateways | VPN/ExpressRoute gateways, connections, VPN NAT rules and links | Connection/NAT prerequisites are explicit; VPN links belong to their connection |
@@ -85,3 +86,5 @@ Container Instances groups use native inventory and deletion. Their containers a
 CDN and Front Door profiles use separate native child collections according to SKU. Cleanup reviews every contained resource and blocks retention of a cascade member. Independent domain, origin-group, rule-set and certificate-reference deletion includes the routes, rules or associations that must first be removed. A shared prerequisite is deleted once; deleting an entire profile can cover its internal references in the same reviewed cascade. External origins, Key Vault data, DNS zones and WAF policies remain independent. Active classic endpoint references block independent origin-group deletion until routing is updated or the endpoint is selected. Inventory and cleanup require native read/list access to the profile and relevant child collections, including referring routes and security associations. Signed async operations and final resource/child absence checks survive restart. See the native [profile deletion contract](https://learn.microsoft.com/en-us/rest/api/cdn/profiles/delete?view=rest-cdn-2025-04-15) and [rule-set cleanup guidance](https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-configure-rule-set).
 
 Batch-mode Front Door rules are shown inside their rule set and share its lifetime. Keep the entire rule set to retain those rules. Origin-group overrides in batch rules add the referring rule set to the required deletions; routes using that rule set must also be removed first. Classic-mode rules retain individual deletion, with a fresh parent rule-set check. See Microsoft’s [batch rule management guide](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch).
+
+WAF policy deletion includes its embedded rules. Any referring CDN endpoint or Front Door security association must be reviewed and deleted first; retaining it blocks policy deletion. Active classic Front Door frontend/routing references remain blockers until removed outside Steward. Inventory needs policy and referrer read access; cleanup also needs their delete permissions and operation-status access. Policy configuration, locks and all remaining associations are rechecked before deletion, and a successful response still requires final absence verification. See the [Front Door policy deletion contract](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01).

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8b0ae095f1a80b6b438d7c2824f56df68666fc071545d6efd253a763501d8d80",
+    "checksum": "0a636b265b4e2b8e8eb49015025058a180c9e2684a864de1e65585b431571d9f",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e5281cd81827f5b8289c6501ebe7de982751538f28b9a56057d2e633cd0a9696",
+  "content_checksum": "2f5a658c886c5991058e438182304d4e59947d98b649e65e094f02d1b8b71f1a",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -3068,6 +3068,224 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-04-15/cdn.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Policies_Delete",
+      "name": "Policies_Delete",
+      "service": "Microsoft.Cdn",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies/{policyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyName": {
+            "description": "The name of the CdnWebApplicationFirewallPolicy.",
+            "in": "path",
+            "maxLength": 128,
+            "name": "policyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies/{policyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Policies_Get",
+      "name": "Policies_Get",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies/{policyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyName": {
+            "description": "The name of the CdnWebApplicationFirewallPolicy.",
+            "in": "path",
+            "maxLength": 128,
+            "name": "policyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Defines web application firewall policy for Azure CDN.",
+        "properties": {
+          "etag": {
+            "description": "Gets a unique read-only string that changes whenever the resource is updated.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/CdnWebApplicationFirewallPolicyProperties",
+            "description": "Properties of the web application firewall policy.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "The pricing tier (defines a CDN provider, feature list and rate) of the CdnWebApplicationFirewallPolicy."
+          }
+        },
+        "required": [
+          "sku"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies/{policyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Cdn.Policies_List",
+      "name": "Policies_List",
+      "service": "Microsoft.Cdn",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-12-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines a list of WebApplicationFirewallPolicies for Azure CDN. It contains a list of WebApplicationFirewallPolicy objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The CdnWebApplicationFirewallPolicy items on this page",
+            "items": {
+              "$ref": "#/definitions/CdnWebApplicationFirewallPolicy"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Cdn",
+        "version": "2025-12-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Cdn/cdnWebApplicationFirewallPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Cdn.Profiles_Delete",
@@ -22647,6 +22865,212 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/networkWatcher.json"
     },
     {
+      "id": "Azure.Microsoft.Network.Policies_Delete",
+      "name": "Policies_Delete",
+      "service": "Microsoft.Network",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/{policyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyName": {
+            "description": "The name of the Web Application Firewall Policy.",
+            "in": "path",
+            "maxLength": 128,
+            "name": "policyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2025-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/{policyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.Policies_Get",
+      "name": "Policies_Get",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/{policyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "policyName": {
+            "description": "The name of the Web Application Firewall Policy.",
+            "in": "path",
+            "maxLength": 128,
+            "name": "policyName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/Resource"
+          }
+        ],
+        "description": "Defines web application firewall policy.",
+        "properties": {
+          "etag": {
+            "description": "Gets a unique read-only string that changes whenever the resource is updated.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/WebApplicationFirewallPolicyProperties",
+            "description": "Properties of the web application firewall policy.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/Sku",
+            "description": "The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2025-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/{policyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Network.Policies_ListBySubscription",
+      "name": "Policies_ListBySubscription",
+      "service": "Microsoft.Network",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines a list of WebApplicationFirewallPolicies. It contains a list of WebApplicationFirewallPolicy objects and a URL link to get the next set of results.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The WebApplicationFirewallPolicy items on this page",
+            "items": {
+              "$ref": "#/definitions/WebApplicationFirewallPolicy"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Network",
+        "version": "2025-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.Network.PrivateDnsManagementClient.RecordSets_Delete",
       "name": "RecordSets_Delete",
       "service": "Microsoft.Network",
@@ -36967,6 +37391,27 @@
       }
     },
     {
+      "native_type": "Microsoft.Cdn/cdnWebApplicationFirewallPolicies",
+      "class": "security.waf_policy",
+      "display_name": "CDN WAF policy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "cdnWebApplicationFirewallPolicies",
+        "read_operations": [
+          "Azure.Microsoft.Cdn.Policies_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Cdn.Policies_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Cdn.Policies_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Cdn/profiles",
       "class": "network.cdn",
       "display_name": "CDN / Front Door profile",
@@ -38625,6 +39070,27 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Network.FirewallPolicies_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Network/frontDoorWebApplicationFirewallPolicies",
+      "class": "security.waf_policy",
+      "display_name": "Front Door WAF policy",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "frontDoorWebApplicationFirewallPolicies",
+        "read_operations": [
+          "Azure.Microsoft.Network.Policies_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Network.Policies_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Network.Policies_ListBySubscription"
         ]
       }
     },

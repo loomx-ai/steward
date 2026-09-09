@@ -1,0 +1,487 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/5813689875f128709e8db10903e893138a064236/src/front-door/azext_front_door/tests/latest/recordings/test_waf_policy_basic.yaml",
+  "source_sha256": "74fea5e660d039b73b17087ba1f939d4a136be8a666f35017a68fbd131f519e6",
+  "recordings": [
+    {
+      "interaction_index": 26,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/cli000002?api-version=2025-11-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000002",
+        "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+        "name": "cli000002",
+        "location": "Global",
+        "tags": {
+          "test": "best"
+        },
+        "sku": {
+          "name": "Premium_AzureFrontDoor"
+        },
+        "properties": {
+          "policySettings": {
+            "enabledState": "Disabled",
+            "mode": "Prevention",
+            "redirectUrl": "http://www.microsoft.com",
+            "customBlockResponseStatusCode": 405,
+            "customBlockResponseBody": "YiBvZHk=",
+            "requestBodyCheck": "Enabled",
+            "javascriptChallengeExpirationInMinutes": 30,
+            "captchaExpirationInMinutes": 30,
+            "logScrubbing": null
+          },
+          "customRules": {
+            "rules": []
+          },
+          "managedRules": {
+            "managedRuleSets": [],
+            "exceptionsList": {
+              "exceptions": []
+            }
+          },
+          "frontendEndpointLinks": [],
+          "securityPolicyLinks": [],
+          "resourceState": "Enabled",
+          "provisioningState": "Succeeded"
+        }
+      }
+    },
+    {
+      "interaction_index": 27,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies?api-version=2025-11-01",
+      "status": 200,
+      "headers": {
+        "x-ms-original-request-ids": [
+          "316306a7-cba3-4380-bb92-a6159d63c53d"
+        ]
+      },
+      "body": {
+        "value": [
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000002",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000002",
+            "location": "Global",
+            "tags": {
+              "test": "best"
+            },
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Disabled",
+                "mode": "Prevention",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": 405,
+                "customBlockResponseBody": "YiBvZHk=",
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000004",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000004",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Prevention",
+                "redirectUrl": null,
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000005",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000005",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000006",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000006",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": 406,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000007",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000007",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": 406,
+                "customBlockResponseBody": "YiBvZHk=",
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000008",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000008",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": null,
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "interaction_index": 28,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies/cli000002?api-version=2025-11-01",
+      "status": 204,
+      "headers": {},
+      "body": null
+    },
+    {
+      "interaction_index": 29,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg000001/providers/Microsoft.Network/FrontDoorWebApplicationFirewallPolicies?api-version=2025-11-01",
+      "status": 200,
+      "headers": {
+        "x-ms-original-request-ids": [
+          "a9234eae-1c42-4a7d-b6e3-d51cd1e8a0e6"
+        ]
+      },
+      "body": {
+        "value": [
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000004",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000004",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Prevention",
+                "redirectUrl": null,
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000005",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000005",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000006",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000006",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": 406,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000007",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000007",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": "http://www.microsoft.com",
+                "customBlockResponseStatusCode": 406,
+                "customBlockResponseBody": "YiBvZHk=",
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          },
+          {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/clitest.rg000001/providers/Microsoft.Network/frontdoorwebapplicationfirewallpolicies/cli000008",
+            "type": "Microsoft.Network/frontdoorwebapplicationfirewallpolicies",
+            "name": "cli000008",
+            "location": "Global",
+            "tags": {},
+            "sku": {
+              "name": "Premium_AzureFrontDoor"
+            },
+            "properties": {
+              "policySettings": {
+                "enabledState": "Enabled",
+                "mode": "Detection",
+                "redirectUrl": null,
+                "customBlockResponseStatusCode": null,
+                "customBlockResponseBody": null,
+                "requestBodyCheck": "Enabled",
+                "javascriptChallengeExpirationInMinutes": 30,
+                "captchaExpirationInMinutes": 30,
+                "logScrubbing": null
+              },
+              "customRules": {
+                "rules": []
+              },
+              "managedRules": {
+                "managedRuleSets": [],
+                "exceptionsList": {
+                  "exceptions": []
+                }
+              },
+              "frontendEndpointLinks": [],
+              "securityPolicyLinks": [],
+              "resourceState": "Enabled",
+              "provisioningState": "Succeeded"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

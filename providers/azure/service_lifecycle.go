@@ -26,6 +26,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	cdnWAFType: {}, frontDoorWAFType: {}, // Associations are shared prerequisites, not owned children.
 	// The native Profiles_Delete contract removes every subresource.
 	cdnProfileType:     {cdnEndpointType, afdEndpointType, afdDomainType, afdOriginGroupType, afdRuleSetType, afdSecurityPolicyType, afdSecretType},
 	cdnEndpointType:    {cdnOriginType, cdnOriginGroupType, cdnDomainType},
@@ -194,6 +195,14 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := wafIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isWAFType(planned.Identity.NativeType) {
+		// Native ETags also change when prerequisite associations disappear.
+		// wafIncarnation and the keyed digest bind all remaining configuration.
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := cdnIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -245,6 +254,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeCDNReferences(ctx, assets, &result); err != nil {
 		return result, err
 	}
+	if err := s.contributeWAFReferences(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	aksMembers := managedGroupMembers(assets)
 	parents := slices.Clone(assets)
 	sort.SliceStable(parents, func(i, j int) bool {
@@ -252,6 +264,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if isWAFType(parent.Identity.NativeType) {
+			continue // Already contributed through the native reverse indexes.
+		}
 		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)] {
 			continue
 		}

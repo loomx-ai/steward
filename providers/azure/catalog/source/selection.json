@@ -837,9 +837,20 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/openapi.json",
       "operations": [
+        "Policies_Delete",
+        "Policies_Get",
+        "Policies_List",
         "RuleSets_Delete",
         "RuleSets_Get",
         "RuleSets_ListByProfile"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/openapi.json",
+      "operations": [
+        "Policies_Delete",
+        "Policies_Get",
+        "Policies_ListBySubscription"
       ]
     }
   ],
@@ -3556,6 +3567,44 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.Cdn.Secrets_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Cdn/cdnWebApplicationFirewallPolicies",
+      "display_name": "CDN WAF policy",
+      "class": "security.waf_policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "cdnWebApplicationFirewallPolicies",
+      "read_operations": [
+        "Azure.Microsoft.Cdn.Policies_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Cdn.Policies_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Cdn.Policies_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Network/frontDoorWebApplicationFirewallPolicies",
+      "display_name": "Front Door WAF policy",
+      "class": "security.waf_policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "frontDoorWebApplicationFirewallPolicies",
+      "read_operations": [
+        "Azure.Microsoft.Network.Policies_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Network.Policies_ListBySubscription"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Network.Policies_Delete"
       ]
     }
   ]

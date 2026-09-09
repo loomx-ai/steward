@@ -1027,3 +1027,37 @@ background evidence only, not acceptance evidence for this work.
   Full Go tests, CDN/shared-contract race checks, vet, offline importer tests and
   bilingual documentation checks pass. External WAF/DNS lifecycles, remaining
   service families and provider/application acceptance are still outstanding.
+
+- Azure now supports both CDN and Front Door WAF policies with six native
+  GET/LIST/DELETE bindings from pinned stable 2025-12-01 and 2025-11-01 Swagger.
+  Native reverse association indexes and reciprocal referrer reads establish
+  explicit deletion prerequisites for CDN endpoints and Front Door security
+  policies. These are shared references, not ownership. Retention, incomplete
+  indexes, missing observations and unsupported classic Front Door references
+  block cleanup. Embedded policy rules share the policy lifetime.
+- WAF cleanup allows reviewed reverse-index/ETag changes from unlinking while
+  preserving the configuration, location, available creation identity and keyed
+  private-content digest. Match values and response bodies are removed from
+  inventory/logs. Native final absence, prerequisite readback and operation
+  receipts survive JSON restart. Tests also exercise both collection scopes,
+  changing RG sets, paging/permission failures, foreign continuations, locks,
+  private/configuration drift and synchronous/asynchronous deletion failures.
+- Six unchanged examples and four unchanged CLI response bodies are retained
+  with provenance and a reproducible extractor. Independent offline schema
+  checks document the four original null-field inconsistencies. The CLI uses
+  the selected 2025-11-01 API and proves DELETE 204 plus subsequent LIST absence;
+  final resource GET 404, reciprocal associations and poll status bodies are
+  injected protocol scenarios. The official DELETE example's older
+  `frontdoors/.../operationResults` URL is also exercised. No independent WAF
+  lifecycle emulator or live Azure deletion is claimed.
+- At this step Azure has 147 rules, 135 native DELETE bindings and 458 operations,
+  with 79 source and 38 reference documents. A fresh four-document native WAF
+  snapshot matches; unrelated documents and existing resource-type entries are
+  unchanged. Full regression caught a shared-reference overwrite during snapshot
+  assembly; the original definitions were restored before validation passed.
+  Repeated catalog generation produces SHA-256
+  `eeadd8fd6297e2ab6259e5cc04eb6286cdcce71de82152d7437527cbe0afb94e`.
+  Full Go tests, Azure/shared-contract race checks, vet, all three offline
+  importer tests and bilingual documentation checks pass. Classic Front Door
+  lifecycles, remaining mapped families and full provider/application acceptance
+  remain unfinished.

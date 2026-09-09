@@ -1,0 +1,32 @@
+[
+  {
+    "file": "cdn/Policies_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/WafPolicyGet.json",
+    "source_sha256": "dddbbc755f4cf322e9631853d34d3d45348c2e4c49107ba2b55743b627efcf94"
+  },
+  {
+    "file": "cdn/Policies_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/WafListPolicies.json",
+    "source_sha256": "93dfb2faf37c912d25d7481885b61e8238a178e6cedc892e7901994a37c4fee4"
+  },
+  {
+    "file": "cdn/Policies_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cdn/resource-manager/Microsoft.Cdn/Cdn/stable/2025-12-01/examples/WafPolicyDelete.json",
+    "source_sha256": "c435907d7195491e73fe044d99488eb4cb68aaafaa1d797a5c9279b907a90e4a"
+  },
+  {
+    "file": "frontdoor/Policies_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/examples/WafPolicyGet.json",
+    "source_sha256": "aef810018f29f079409ef2eea6cf4df05a9630c24dc7ef6fc4291049363b68a2"
+  },
+  {
+    "file": "frontdoor/Policies_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/examples/WafListPoliciesUnderSubscription.json",
+    "source_sha256": "2de86bc50b69a76a65d4086a7247f822212f540c2834914dff0aedc5a1e60f6c"
+  },
+  {
+    "file": "frontdoor/Policies_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/frontdoor/resource-manager/Microsoft.Network/FrontDoor/stable/2025-11-01/examples/WafPolicyDelete.json",
+    "source_sha256": "917eba2349ae20bf00ef0ace8c7de87a53a13909f8fa180c31e24e2ba5f7f893"
+  }
+]

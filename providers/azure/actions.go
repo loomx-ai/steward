@@ -125,6 +125,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := a.cdnPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := a.wafPreflight(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.grafanaParentPreflight(ctx, request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -302,6 +305,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 	if isCDNType(a.kind.NativeType) && operation != "" {
 		data["cdn_operation_binding"] = a.operationBinding(operation)
 	}
+	if isWAFType(a.kind.NativeType) && operation != "" {
+		data["waf_operation_binding"] = a.operationBinding(operation)
+	}
 	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: data, RetryAfter: retryAfter(res.header)}, nil
 }
 func operationError(response response) error {
@@ -353,6 +359,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if isCDNType(a.kind.NativeType) && text(result.Data["cdn_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("CDN polling receipt does not match its resource")
+		}
+		if isWAFType(a.kind.NativeType) && text(result.Data["waf_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("WAF polling receipt does not match its resource")
 		}
 		res, err := a.client.requestAt(ctx, "GET", result.ProviderOperationID, nil, nil, a.validateOperationURL)
 		if err != nil && !isNotFound(err) {
