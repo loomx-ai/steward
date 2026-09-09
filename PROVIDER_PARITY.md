@@ -139,6 +139,45 @@ background evidence only, not acceptance evidence for this work.
   failed operations and restart behavior. AKS external attachment retention,
   other controllers, GCP cluster lifecycle and the broader acceptance scope
   remain unfinished.
+
+- Azure App Service now adds eight explicit kinds: deployment slots,
+  production/slot functions, subscription/application/slot certificates and
+  production/slot hostname bindings. Twenty-four new operations and the five
+  existing WebApps operations use pinned stable 2025-05-01 native metadata.
+  App/slot deletion reviews every modeled child and verifies its final absence;
+  retention blocks the controller. Default hostnames require controller cleanup,
+  and native function kind governs child discovery. Service plans, Key Vault
+  data and external domains remain independent.
+- App Service native configuration, private-content digests and parent/root
+  context bind cleanup and nested pagination. Full native TLS state and hostname
+  reads block certificate deletion when an ID or thumbprint matches, without
+  inferring ownership or authorizing unrelated hostname deletion. Missing TLS
+  evidence, malformed thumbprints, missing/new children, configuration drift,
+  locks, foreign/cyclic/partial pages and failed child reads block cleanup.
+  Individual function package/read-only errors are preserved. Persisted async
+  operation tests require target-bound receipts and final resource absence.
+- Fifteen unchanged native examples have provenance; all ten selected original
+  GET/LIST bodies pass independent offline schema checks. Four synthetic
+  function/hostname details also validate against native schemas. Eighteen
+  unchanged CLI responses use the same selected API version and verify real
+  TLS states, omitted unbound fields, slot response type aliases, certificate
+  names containing spaces, DELETE 200 and plan retention. Final 404s, selected
+  detail bodies and composed child collections are explicitly synthetic.
+- A native SiteCertificates parameter pattern rejects legal hyphenated/leading-
+  digit application names. The original metadata is preserved; a narrowly
+  scoped runtime binding correction follows official site naming rules and is
+  independently regression-tested. No actual SiteCertificates call with such a
+  name, independent App Service ARM emulator or live deletion is claimed.
+- Azure now has 155 rules, 143 native DELETE bindings and 482 operations, with
+  79 source and 38 reference documents. A fresh four-document source snapshot
+  matches. WebApps replaces its prior source; old common definitions are pruned
+  to remaining references and required v5 definitions are added. All unrelated
+  documents and prior type entries are unchanged. Repeated catalog generation
+  produces SHA-256 `f1aa080ea33f22bea3fdc35792afc67d42d7c1fd39a9d7370ef8a1e7775a2c7f`;
+  all 18 recorded-response extractions reproduce identically. Full Go tests,
+  Azure/shared-contract race checks, vet, three offline importer tests and
+  bilingual documentation checks pass. Remaining mapped families, controller
+  gaps and full application/emulator/publication acceptance remain open.
 - GCP now includes zonal/regional managed instance groups, InstanceGroups and
   autoscalers. Native member discovery records stateful disk/IP policy and shared
   read-only ownership. Cleanup prepares retention through abandonment, native

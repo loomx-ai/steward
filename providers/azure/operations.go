@@ -4,11 +4,32 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"maps"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
+
+// SiteCertificates' 2025-05-01 Swagger contradicts App Service naming rules by
+// rejecting hyphens and leading digits in the parent site name. Keep the source
+// unchanged and correct only this known runtime constraint. DNS names returned
+// by ARM use their ASCII/Punycode form.
+// https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftweb
+func bindAzureREST(operation catalog.Operation, parameters map[string]any) (catalog.RESTRequest, error) {
+	if operation.Call != nil && operation.Call.Version == "2025-05-01" && strings.HasPrefix(operation.ID, "Azure.Microsoft.Web.SiteCertificates_") {
+		properties := object(operation.InputSchema["properties"])
+		if object(properties["name"])["pattern"] == "^[A-z][A-z0-9]*$" {
+			operation.InputSchema = maps.Clone(operation.InputSchema)
+			properties = maps.Clone(properties)
+			name := maps.Clone(object(properties["name"]))
+			name["pattern"] = "^[A-Za-z0-9][A-Za-z0-9-]{0,58}[A-Za-z0-9]$"
+			properties["name"] = name
+			operation.InputSchema["properties"] = properties
+		}
+	}
+	return catalog.BindREST(operation, parameters)
+}
 
 func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (contracts.InvocationResult, error) {
 	metadata, err := providerData()
@@ -40,7 +61,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 		}
 		parameters[name] = c.subscription
 	}
-	request, err := catalog.BindREST(operation, parameters)
+	request, err := bindAzureREST(operation, parameters)
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
@@ -102,7 +123,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 				return catalog.Operation{}, nil, err
 			}
 			parameters := map[string]any{"resourceUri": strings.TrimPrefix(parent, "/"), "associationName": last(id)}
-			if _, err := catalog.BindREST(operation, parameters); err != nil {
+			if _, err := bindAzureREST(operation, parameters); err != nil {
 				return catalog.Operation{}, nil, err
 			}
 			return operation, parameters, nil
@@ -133,7 +154,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 				}
 			}
 		}
-		if _, err := catalog.BindREST(operation, parameters); err == nil {
+		if _, err := bindAzureREST(operation, parameters); err == nil {
 			return operation, parameters, nil
 		}
 	}
@@ -145,6 +166,6 @@ func (c *client) resourceURL(kind resourceType, nativeID string) (string, error)
 	if err != nil {
 		return "", err
 	}
-	request, err := catalog.BindREST(operation, parameters)
+	request, err := bindAzureREST(operation, parameters)
 	return request.URL, err
 }

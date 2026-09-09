@@ -1,0 +1,80 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Web/sites/certificates
+  class: security.certificate
+presentation:
+  displayNames:
+    en-US: App certificate
+    zh-CN: 应用证书
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Web.SiteCertificates_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      name: parent.normalized.arm_parameters.name
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Web.SiteCertificates_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Web/sites
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  thumbprint:
+    path: thumbprint
+    type: string
+  expirationDate:
+    path: expirationDate
+    type: string
+  subjectName:
+    path: subjectName
+    type: string
+  hostNames:
+    path: hostNames
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+- type: uses
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.Web/serverfarms
+  targetIdPath: refs_microsoft_web_serverfarms
+actions:
+  delete:
+    operation: Azure.Microsoft.Web.SiteCertificates_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Web.SiteCertificates_Get
+      itemsPath: $
+      identityPath: id

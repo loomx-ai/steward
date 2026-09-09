@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Web/sites/functions
+  class: compute.function
+presentation:
+  displayNames:
+    en-US: Azure function
+    zh-CN: Azure 函数
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Web.WebApps_ListFunctions
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      name: parent.normalized.arm_parameters.name
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Web.WebApps_GetFunction
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Web/sites
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  language:
+    path: language
+    type: string
+  isDisabled:
+    path: isDisabled
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+actions:
+  delete:
+    operation: Azure.Microsoft.Web.WebApps_DeleteFunction
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Web.WebApps_GetFunction
+      itemsPath: $
+      identityPath: id

@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 147 类资源，其中 135 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 155 类资源，其中 143 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ Steward 识别 147 类资源，其中 135 类具有原生删除操作，执行�
 | Storage | 存储账户、Blob 容器 | 仅空资源 |
 | SQL | 逻辑服务器、数据库、弹性池 | 服务器清理包含已审查的数据库与弹性池；禁止独立删除 `master` |
 | PostgreSQL / MySQL | Flexible Server | 支持 |
-| App Service | Web App / Function App、App Service Plan | 分别支持清理 |
+| App Service | Web App / Function App、部署槽、函数、证书、主机名绑定与服务计划 | 应用/部署槽审查所属子资源的级联影响；服务计划保持独立；证书须无 TLS 绑定 |
 | CDN 与 Front Door | 配置、经典终结点/源站/源站组/域名；Front Door 终结点/路由/源站组/源站/域名/规则集/规则/安全关联/证书引用 | 配置及所属子资源审查级联影响；共享引用按依赖顺序清理 |
 | WAF | CDN 与 Front Door 策略 | 先删除已审查的引用终结点或安全关联，再删除策略；经典 Front Door 引用仍阻止清理 |
 | 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
@@ -88,3 +88,5 @@ CDN 与 Front Door 根据 SKU 使用各自的原生子资源集合。清理前�
 Front Door 批量模式的规则显示在规则集内，并随整个规则集保留或删除。要保留这些规则，请保留整个规则集。批量规则中的源站组覆盖配置会将引用它的规则集加入前置删除步骤；使用该规则集的路由也必须先删除。经典模式仍支持单条规则删除，并在执行前重新核对父规则集。参见微软的[批量规则管理指南](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch)。
 
 删除 WAF 策略也会删除其内嵌规则。引用该策略的 CDN 终结点或 Front Door 安全关联必须先经审查并删除；保留引用方会阻止策略删除。经典 Front Door 前端或路由引用仍需在 Steward 外解除。清点需要策略与引用方的读取权限，清理还需要各自的删除及操作状态查询权限。执行前重新核对策略配置、锁和全部剩余关联；成功响应后仍须确认资源最终不存在。参见 [Front Door 策略删除契约](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01)。
+
+App Service 清理会审查部署槽、函数、应用证书和主机名绑定。保留子资源会阻止应用或部署槽删除；默认主机名随所属应用或部署槽清理，服务计划保持独立。独立删除证书需要读取所有应用及部署槽的 TLS 状态和主机名绑定；任何匹配的证书 ID 或指纹都会阻止删除。请先移除相关绑定并重新扫描。通过部署包运行的函数可能不支持单个删除，Steward 会保留 Azure 返回的错误。清点和清理需要子资源的原生读取、列举权限，以及所选操作的删除权限。参见[应用删除契约](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01)与[部署包行为](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)。

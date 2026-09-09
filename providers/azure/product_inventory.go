@@ -25,13 +25,14 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	CDNProfileConfiguration string `json:"cdn_profile_configuration,omitempty"`
-	MonitoredResource       string `json:"monitored_resource,omitempty"`
-	Endpoint                string `json:"endpoint"`
-	ParentID                string `json:"parent_id,omitempty"`
-	ParentType              string `json:"parent_type,omitempty"`
-	Generation              string `json:"generation,omitempty"`
-	Location                string `json:"location,omitempty"`
+	AppServiceRootConfiguration string `json:"app_service_root_configuration,omitempty"`
+	CDNProfileConfiguration     string `json:"cdn_profile_configuration,omitempty"`
+	MonitoredResource           string `json:"monitored_resource,omitempty"`
+	Endpoint                    string `json:"endpoint"`
+	ParentID                    string `json:"parent_id,omitempty"`
+	ParentType                  string `json:"parent_type,omitempty"`
+	Generation                  string `json:"generation,omitempty"`
+	Location                    string `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -329,6 +330,15 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
 	}
+	if target.AppServiceRootConfiguration != "" {
+		root, err := c.appServiceParent(ctx, target.ParentID)
+		if err != nil {
+			return err
+		}
+		if appServiceConfiguration(appSiteType, root) != target.AppServiceRootConfiguration {
+			return errProductParentGenerationChanged
+		}
+	}
 	if target.CDNProfileConfiguration != "" {
 		profile, err := c.cdnProfile(ctx, target.ParentID)
 		if err != nil {
@@ -385,6 +395,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if isAppFunction(definition.Metadata.NativeType) {
+			functionHost, err := appFunctionHost(parent.Raw)
+			if err != nil {
+				return nil, err
+			}
+			if !functionHost {
+				continue
+			}
+		}
 		if parent.NativeType == afdRuleSetType && definition.Metadata.NativeType == afdRuleType {
 			batch, err := cdnBatchMode(parent.Raw)
 			if err != nil {
@@ -426,6 +445,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if parent.NativeType == appSlotType {
+				target.AppServiceRootConfiguration = text(parent.Normalized["_app_service_parent_configuration"])
+			}
 			if isCDNType(parent.NativeType) {
 				target.CDNProfileConfiguration = text(parent.Normalized["_cdn_profile_configuration"])
 			}
@@ -489,7 +511,7 @@ func (c *client) bindProductList(api *spec.ProductAPISpec, location string, pare
 			}
 		}
 	}
-	bound, err := catalog.BindREST(operation, parameters)
+	bound, err := bindAzureREST(operation, parameters)
 	if err != nil {
 		return catalog.RESTRequest{}, err
 	}

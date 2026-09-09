@@ -279,6 +279,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.appServiceInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.cdnInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, err
 	}
@@ -564,6 +567,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if strings.EqualFold(nativeType, containerGroupType) {
 		fields["subnetids"], fields["identity"] = true, true
 	}
+	if isAppServiceType(nativeType) {
+		fields["function_app_id"], fields["domainid"], fields["certificateresourceid"], fields["privateendpointarmresourceid"] = true, true, true, true
+	}
 	if strings.EqualFold(nativeType, "Microsoft.Network/networkWatchers/connectionMonitors") {
 		fields["resourceid"] = true
 	}
@@ -672,10 +678,10 @@ func safeResource(value any) any {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
 				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
-				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody":
+				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody", "pfxblob", "files", "config", "testdata", "secretsfilehref", "customdomainverificationid", "appcommandline":
 				continue
 			}
-			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") {
+			if strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") || strings.HasSuffix(strings.ToLower(key), "href") || key == "invoke_url_template" {
 				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
 					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
 					result[key] = endpoint.String()

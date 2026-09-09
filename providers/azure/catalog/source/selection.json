@@ -721,12 +721,36 @@
       ]
     },
     {
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json",
       "operations": [
+        "Certificates_Delete",
+        "Certificates_Get",
+        "Certificates_List",
+        "SiteCertificates_Delete",
+        "SiteCertificates_DeleteSlot",
+        "SiteCertificates_Get",
+        "SiteCertificates_GetSlot",
+        "SiteCertificates_List",
+        "SiteCertificates_ListSlot",
         "WebApps_Delete",
+        "WebApps_DeleteFunction",
+        "WebApps_DeleteHostNameBinding",
+        "WebApps_DeleteHostNameBindingSlot",
+        "WebApps_DeleteInstanceFunctionSlot",
+        "WebApps_DeleteSlot",
         "WebApps_Get",
+        "WebApps_GetFunction",
+        "WebApps_GetHostNameBinding",
+        "WebApps_GetHostNameBindingSlot",
+        "WebApps_GetInstanceFunctionSlot",
+        "WebApps_GetSlot",
         "WebApps_List",
         "WebApps_ListByResourceGroup",
+        "WebApps_ListFunctions",
+        "WebApps_ListHostNameBindings",
+        "WebApps_ListHostNameBindingsSlot",
+        "WebApps_ListInstanceFunctionsSlot",
+        "WebApps_ListSlots",
         "WebApps_Update"
       ]
     },
@@ -3605,6 +3629,164 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.Network.Policies_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots",
+      "display_name": "App Service deployment slot",
+      "class": "compute.service_slot",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "slots",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_GetSlot"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.WebApps_ListSlots"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_DeleteSlot"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/functions",
+      "display_name": "Azure function",
+      "class": "compute.function",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "functions",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_GetFunction"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.WebApps_ListFunctions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_DeleteFunction"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/functions",
+      "display_name": "Deployment slot function",
+      "class": "compute.function",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "functions",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_GetInstanceFunctionSlot"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.WebApps_ListInstanceFunctionsSlot"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_DeleteInstanceFunctionSlot"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/certificates",
+      "display_name": "App Service certificate",
+      "class": "security.certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.Web.Certificates_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.Certificates_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.Certificates_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/certificates",
+      "display_name": "App certificate",
+      "class": "security.certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/certificates",
+      "display_name": "Deployment slot certificate",
+      "class": "security.certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_GetSlot"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_ListSlot"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.SiteCertificates_DeleteSlot"
+      ],
+      "response_types": [
+        "Microsoft.Web/sites/certificates"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/hostNameBindings",
+      "display_name": "App hostname binding",
+      "class": "network.domain_binding",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hostNameBindings",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_GetHostNameBinding"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.WebApps_ListHostNameBindings"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_DeleteHostNameBinding"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/hostNameBindings",
+      "display_name": "Deployment slot hostname binding",
+      "class": "network.domain_binding",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hostNameBindings",
+      "read_operations": [
+        "Azure.Microsoft.Web.WebApps_GetHostNameBindingSlot"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Web.WebApps_ListHostNameBindingsSlot"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Web.WebApps_DeleteHostNameBindingSlot"
+      ],
+      "response_types": [
+        "Microsoft.Web/sites/hostNameBindings"
       ]
     }
   ]

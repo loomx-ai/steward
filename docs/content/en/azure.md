@@ -28,7 +28,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 147 resource types; 135 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 155 resource types; 143 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -39,7 +39,7 @@ Steward recognizes 147 resource types; 135 have native deletion actions, subject
 | Storage | Storage accounts and Blob containers | Empty resources only |
 | SQL | Logical servers, databases and elastic pools | Server cleanup includes its reviewed databases and pools; standalone `master` deletion is prohibited |
 | PostgreSQL / MySQL | Flexible servers | Supported |
-| App Service | Web Apps / Function Apps and App Service plans | Supported as separate resources |
+| App Service | Web Apps / Function Apps, deployment slots, functions, certificates, hostname bindings and service plans | Apps/slots review owned child cascades; plans remain separate; certificates require unused TLS bindings |
 | CDN and Front Door | Profiles, classic endpoints/origins/origin groups/domains; Front Door endpoints/routes/origin groups/origins/domains/rule sets/rules/security associations/certificate references | Profiles and owned child trees use reviewed cascades; shared references require ordered cleanup |
 | WAF | CDN and Front Door policies | Reviewed referring endpoint/security-association deletion precedes policy deletion; classic Front Door references still block cleanup |
 | Containers | Container registries, Container Apps, Container Instances groups and AKS | AKS cleanup reviews its node resource group and known nested or externally managed descendants |
@@ -88,3 +88,5 @@ CDN and Front Door profiles use separate native child collections according to S
 Batch-mode Front Door rules are shown inside their rule set and share its lifetime. Keep the entire rule set to retain those rules. Origin-group overrides in batch rules add the referring rule set to the required deletions; routes using that rule set must also be removed first. Classic-mode rules retain individual deletion, with a fresh parent rule-set check. See Microsoft’s [batch rule management guide](https://learn.microsoft.com/en-us/azure/frontdoor/rule-set-batch).
 
 WAF policy deletion includes its embedded rules. Any referring CDN endpoint or Front Door security association must be reviewed and deleted first; retaining it blocks policy deletion. Active classic Front Door frontend/routing references remain blockers until removed outside Steward. Inventory needs policy and referrer read access; cleanup also needs their delete permissions and operation-status access. Policy configuration, locks and all remaining associations are rechecked before deletion, and a successful response still requires final absence verification. See the [Front Door policy deletion contract](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01).
+
+App Service cleanup includes reviewed deployment slots, functions, application certificates and hostname bindings. Retaining a child blocks app/slot deletion; default hostnames require their owning app or slot. App Service plans remain separate. Independent certificate deletion requires read access to all application/slot TLS states and hostname bindings; any matching certificate ID or thumbprint blocks it. Remove the relevant binding and rescan before deleting the certificate. Individual function deletion can be unavailable when code runs from a deployment package; Azure's error is preserved. Inventory and cleanup require native child read/list permissions plus the delete permissions for selected actions. See the [application deletion contract](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01) and [deployment package behavior](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package).

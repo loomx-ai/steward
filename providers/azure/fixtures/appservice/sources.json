@@ -1,0 +1,77 @@
+[
+  {
+    "file": "Certificates_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/ListCertificates.json",
+    "source_sha256": "ac5fb1a60f7db80288d8fec85de9b78cc6163f8a4256fecd28f7ba8864499095"
+  },
+  {
+    "file": "WebApps_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/ListWebApps.json",
+    "source_sha256": "f142cab60115f27253a1ea621e9849cfcc7fb38281062136fb511ac86e3fef17"
+  },
+  {
+    "file": "Certificates_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/GetCertificate.json",
+    "source_sha256": "47b8bc7c5eb0e0fc4abfd8f45e60addb07a01de836e2050ea119cb9e405f0210"
+  },
+  {
+    "file": "Certificates_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/DeleteCertificate.json",
+    "source_sha256": "1b5482ecfd34a7b8ecb5bbca229783fafd9d8f0d7a69a378841c3485e3585891"
+  },
+  {
+    "file": "WebApps_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/GetWebApp.json",
+    "source_sha256": "9799569c6f364919fc34b47ef17959a9762ad206870cff2263b8697da4a9da2e"
+  },
+  {
+    "file": "WebApps_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/DeleteWebApp.json",
+    "source_sha256": "95cef402651e7621ed0ead87a2fefa5e9aa9162c33c71ccbe7d5717c12d4043c"
+  },
+  {
+    "file": "SiteCertificates_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/ListSiteCertificatesByResourceGroup.json",
+    "source_sha256": "5f176b5ea41ee35db30252122bbd164d935f75f5b18a0d75cbc0745dd44c10bf"
+  },
+  {
+    "file": "SiteCertificates_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/GetSiteCertificate.json",
+    "source_sha256": "0725e384dbf31c001f1496c6289f9b315c2b149b20081adc2452fdd59b902730"
+  },
+  {
+    "file": "SiteCertificates_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/DeleteSiteCertificate.json",
+    "source_sha256": "82bc9d69acbb5026a1bb1011a008b9ebef093b7cac2df6d1ee09ec5596d90646"
+  },
+  {
+    "file": "WebApps_ListSlots.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/ListWebAppSlots.json",
+    "source_sha256": "e639b7cf7bb5fca17283307ca47b248f19eb7a43f7914a75926a49bc5a3a5ce5"
+  },
+  {
+    "file": "WebApps_GetSlot.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/GetWebAppSlot.json",
+    "source_sha256": "a48e9d4f3d3fbe292473203330dc6cf14630b5403bc870b3c3a19857f89a1b89"
+  },
+  {
+    "file": "WebApps_DeleteSlot.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/DeleteWebAppSlot.json",
+    "source_sha256": "83d3b405d1a22fb86da0913f8ef40edcfb9abdd53dc37725a7407c1e433dc619"
+  },
+  {
+    "file": "SiteCertificates_ListSlot.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/ListSiteCertificatesByResourceGroupSlot.json",
+    "source_sha256": "59263fac0c179a1a11f9069c69b54a1a62aee42e64eb863605905ecca57ce69c"
+  },
+  {
+    "file": "SiteCertificates_GetSlot.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/GetSiteCertificateSlot.json",
+    "source_sha256": "610edb8cbe34bb7b8f101d4d662bb0c0be016359c8e07fc0060a8cc1fd13fa92"
+  },
+  {
+    "file": "SiteCertificates_DeleteSlot.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/examples/DeleteSiteCertificateSlot.json",
+    "source_sha256": "1b5b62998ec59660ae30a7fc33391f220569ccdedf6521b67c62003288641d74"
+  }
+]

@@ -26,7 +26,9 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
-	cdnWAFType: {}, frontDoorWAFType: {}, // Associations are shared prerequisites, not owned children.
+	appSiteType: {appSlotType, appFunctionType, appSiteCertificateType, appBindingType},
+	appSlotType: {appSlotFunctionType, appSlotCertificateType, appSlotBindingType},
+	cdnWAFType:  {}, frontDoorWAFType: {}, // Associations are shared prerequisites, not owned children.
 	// The native Profiles_Delete contract removes every subresource.
 	cdnProfileType:     {cdnEndpointType, afdEndpointType, afdDomainType, afdOriginGroupType, afdRuleSetType, afdSecurityPolicyType, afdSecretType},
 	cdnEndpointType:    {cdnOriginType, cdnOriginGroupType, cdnDomainType},
@@ -195,6 +197,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := appServiceIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isAppServiceType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := wafIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -623,6 +631,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case parent.NativeType == appSiteType || parent.NativeType == appSlotType:
+		children, err = c.appServiceChildren(ctx, parent, raw)
 	case isCDNType(parent.NativeType):
 		children, err = c.cdnChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, monitorWorkspaceType):

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "0a636b265b4e2b8e8eb49015025058a180c9e2684a864de1e65585b431571d9f",
+    "checksum": "0126997e91f0314719f1eed7f04b00ed3de733c2663190b341244ae352ad6721",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2f5a658c886c5991058e438182304d4e59947d98b649e65e094f02d1b8b71f1a",
+  "content_checksum": "669ba8012762b8693f992f29e4110f86710394d8976c64e5bed4216e3efe5d6d",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -35289,6 +35289,703 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/AppServicePlans.json"
     },
     {
+      "id": "Azure.Microsoft.Web.Certificates_Delete",
+      "name": "Certificates_Delete",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/certificates/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/certificates/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.Certificates_Get",
+      "name": "Certificates_Get",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/certificates/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "SSL certificate for an app.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/CertificateProperties",
+            "description": "Certificate resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/certificates/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.Certificates_List",
+      "name": "Certificates_List",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/certificates",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "Return only information specified in the filter (using OData syntax). For example: $filter=KeyVaultId eq 'KeyVaultId'",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of certificates.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Certificate items on this page",
+            "items": {
+              "$ref": "#/definitions/Certificate"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Web/certificates",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_Delete",
+      "name": "SiteCertificates_Delete",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates/{certificateName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "certificateName": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "certificateName",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates/{certificateName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_DeleteSlot",
+      "name": "SiteCertificates_DeleteSlot",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates/{certificateName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "certificateName": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "certificateName",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API will create a binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates/{certificateName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_Get",
+      "name": "SiteCertificates_Get",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates/{certificateName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "certificateName": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "certificateName",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "SSL certificate for an app.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/CertificateProperties",
+            "description": "Certificate resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates/{certificateName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_GetSlot",
+      "name": "SiteCertificates_GetSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates/{certificateName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "certificateName": {
+            "description": "Name of the certificate.",
+            "in": "path",
+            "name": "certificateName",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API will create a binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "SSL certificate for an app.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/CertificateProperties",
+            "description": "Certificate resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates/{certificateName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_List",
+      "name": "SiteCertificates_List",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of certificates.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Certificate items on this page",
+            "items": {
+              "$ref": "#/definitions/Certificate"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/certificates",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.SiteCertificates_ListSlot",
+      "name": "SiteCertificates_ListSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the site.",
+            "in": "path",
+            "name": "name",
+            "pattern": "^[A-z][A-z0-9]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API will create a binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of certificates.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Certificate items on this page",
+            "items": {
+              "$ref": "#/definitions/Certificate"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/certificates",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.Web.WebApps_Delete",
       "name": "WebApps_Delete",
       "service": "Microsoft.Web",
@@ -35299,7 +35996,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2023-12-01"
+              "2025-05-01"
             ],
             "in": "query",
             "type": "string"
@@ -35308,46 +36005,47 @@
             "description": "Specify false if you want to keep empty App Service plan. By default, empty App Service plan is deleted.",
             "in": "query",
             "name": "deleteEmptyServerFarm",
+            "required": false,
             "type": "boolean"
           },
           "deleteMetrics": {
             "description": "If true, web app metrics are also deleted.",
             "in": "query",
             "name": "deleteMetrics",
+            "required": false,
             "type": "boolean"
           },
           "name": {
-            "description": "Name of the app to delete.",
+            "description": "Name of the app.",
             "in": "path",
             "name": "name",
             "required": true,
             "type": "string"
           },
           "resourceGroupName": {
-            "description": "Name of the resource group to which the resource belongs.",
+            "description": "The name of the resource group. The name is case insensitive.",
             "in": "path",
             "maxLength": 90,
             "minLength": 1,
             "name": "resourceGroupName",
-            "pattern": "^[-\\w\\._\\(\\)]+[^\\.]$",
             "required": true,
             "type": "string",
             "x-ms-parameter-location": "method"
           },
           "subscriptionId": {
-            "description": "Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
             "name": "subscriptionId",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "client"
+            "type": "string"
           }
         },
         "type": "object"
       },
       "call": {
         "product": "Microsoft.Web",
-        "version": "2023-12-01",
+        "version": "2025-05-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "DELETE",
@@ -35356,7 +36054,355 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_DeleteFunction",
+      "name": "WebApps_DeleteFunction",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions/{functionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "Function name.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_DeleteHostNameBinding",
+      "name": "WebApps_DeleteHostNameBinding",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostName": {
+            "description": "Hostname in the hostname binding.",
+            "in": "path",
+            "name": "hostName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_DeleteHostNameBindingSlot",
+      "name": "WebApps_DeleteHostNameBindingSlot",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostName": {
+            "description": "Hostname in the hostname binding.",
+            "in": "path",
+            "name": "hostName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API the named binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_DeleteInstanceFunctionSlot",
+      "name": "WebApps_DeleteInstanceFunctionSlot",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions/{functionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "Function name.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_DeleteSlot",
+      "name": "WebApps_DeleteSlot",
+      "service": "Microsoft.Web",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deleteEmptyServerFarm": {
+            "description": "Specify false if you want to keep empty App Service plan. By default, empty App Service plan is deleted.",
+            "in": "query",
+            "name": "deleteEmptyServerFarm",
+            "required": false,
+            "type": "boolean"
+          },
+          "deleteMetrics": {
+            "description": "If true, web app metrics are also deleted.",
+            "in": "query",
+            "name": "deleteMetrics",
+            "required": false,
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. By default, this API returns the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Web.WebApps_Get",
@@ -35369,7 +36415,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2023-12-01"
+              "2025-05-01"
             ],
             "in": "query",
             "type": "string"
@@ -35382,23 +36428,22 @@
             "type": "string"
           },
           "resourceGroupName": {
-            "description": "Name of the resource group to which the resource belongs.",
+            "description": "The name of the resource group. The name is case insensitive.",
             "in": "path",
             "maxLength": 90,
             "minLength": 1,
             "name": "resourceGroupName",
-            "pattern": "^[-\\w\\._\\(\\)]+[^\\.]$",
             "required": true,
             "type": "string",
             "x-ms-parameter-location": "method"
           },
           "subscriptionId": {
-            "description": "Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
             "name": "subscriptionId",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "client"
+            "type": "string"
           }
         },
         "type": "object"
@@ -35406,334 +36451,26 @@
       "output_schema": {
         "allOf": [
           {
-            "$ref": "#/definitions/Resource"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
           }
         ],
         "description": "A web app, a mobile app backend, or an API app.",
         "properties": {
           "extendedLocation": {
-            "$ref": "#/definitions/ExtendedLocation"
+            "$ref": "#/definitions/ExtendedLocation",
+            "description": "Extended Location."
           },
           "identity": {
-            "$ref": "#/definitions/ManagedServiceIdentity"
+            "$ref": "#/definitions/ManagedServiceIdentity",
+            "description": "Managed service identity."
+          },
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
           },
           "properties": {
+            "$ref": "#/definitions/SiteProperties",
             "description": "Site resource specific properties",
-            "properties": {
-              "availabilityState": {
-                "description": "Management information availability state for the app.",
-                "enum": [
-                  "Normal",
-                  "Limited",
-                  "DisasterRecoveryMode"
-                ],
-                "readOnly": true,
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "SiteAvailabilityState"
-                }
-              },
-              "clientAffinityEnabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to enable client affinity; \u003ccode\u003efalse\u003c/code\u003e to stop sending session affinity cookies, which route client requests in the same session to the same instance. Default is \u003ccode\u003etrue\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "clientCertEnabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to enable client certificate authentication (TLS mutual authentication); otherwise, \u003ccode\u003efalse\u003c/code\u003e. Default is \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "clientCertExclusionPaths": {
-                "description": "client certificate authentication comma-separated exclusion paths",
-                "type": "string"
-              },
-              "clientCertMode": {
-                "description": "This composes with ClientCertEnabled setting.\n- ClientCertEnabled: false means ClientCert is ignored.\n- ClientCertEnabled: true and ClientCertMode: Required means ClientCert is required.\n- ClientCertEnabled: true and ClientCertMode: Optional means ClientCert is optional or accepted.",
-                "enum": [
-                  "Required",
-                  "Optional",
-                  "OptionalInteractiveUser"
-                ],
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "ClientCertMode"
-                }
-              },
-              "cloningInfo": {
-                "$ref": "#/definitions/CloningInfo",
-                "description": "If specified during app creation, the app is cloned from a source app.",
-                "x-ms-mutability": [
-                  "create"
-                ]
-              },
-              "containerSize": {
-                "description": "Size of the function container.",
-                "format": "int32",
-                "type": "integer"
-              },
-              "customDomainVerificationId": {
-                "description": "Unique identifier that verifies the custom domains assigned to the app. Customer will add this id to a txt record for verification.",
-                "type": "string"
-              },
-              "dailyMemoryTimeQuota": {
-                "description": "Maximum allowed daily memory-time quota (applicable on dynamic apps only).",
-                "format": "int32",
-                "type": "integer"
-              },
-              "daprConfig": {
-                "$ref": "#/definitions/DaprConfig",
-                "description": "Dapr configuration of the app."
-              },
-              "defaultHostName": {
-                "description": "Default hostname of the app. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "dnsConfiguration": {
-                "$ref": "#/definitions/SiteDnsConfig",
-                "description": "Property to configure various DNS related settings for a site."
-              },
-              "enabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if the app is enabled; otherwise, \u003ccode\u003efalse\u003c/code\u003e. Setting this value to false disables the app (takes the app offline).",
-                "type": "boolean"
-              },
-              "enabledHostNames": {
-                "description": "Enabled hostnames for the app.Hostnames need to be assigned (see HostNames) AND enabled. Otherwise,\nthe app is not served on those hostnames.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "endToEndEncryptionEnabled": {
-                "description": "Whether to use end to end encryption between the FrontEnd and the Worker",
-                "type": "boolean"
-              },
-              "functionAppConfig": {
-                "$ref": "#/definitions/FunctionAppConfig",
-                "description": "Configuration specific of the Azure Function app."
-              },
-              "hostNameSslStates": {
-                "description": "Hostname SSL states are used to manage the SSL bindings for app's hostnames.",
-                "items": {
-                  "$ref": "#/definitions/HostNameSslState"
-                },
-                "type": "array",
-                "x-ms-identifiers": [
-                  "name"
-                ]
-              },
-              "hostNames": {
-                "description": "Hostnames associated with the app.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "hostNamesDisabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to disable the public hostnames of the app; otherwise, \u003ccode\u003efalse\u003c/code\u003e.\n If \u003ccode\u003etrue\u003c/code\u003e, the app is only accessible via API management process.",
-                "type": "boolean"
-              },
-              "hostingEnvironmentProfile": {
-                "$ref": "#/definitions/HostingEnvironmentProfile",
-                "description": "App Service Environment to use for the app.",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "httpsOnly": {
-                "description": "HttpsOnly: configures a web site to accept only https requests. Issues redirect for\nhttp requests",
-                "type": "boolean"
-              },
-              "hyperV": {
-                "default": false,
-                "description": "Hyper-V sandbox.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "inProgressOperationId": {
-                "description": "Specifies an operation id if this site has a pending operation.",
-                "example": "00000000-0000-0000-0000-000000000000",
-                "format": "uuid",
-                "readOnly": true,
-                "type": "string"
-              },
-              "isDefaultContainer": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if the app is a default container; otherwise, \u003ccode\u003efalse\u003c/code\u003e.",
-                "readOnly": true,
-                "type": "boolean"
-              },
-              "isXenon": {
-                "default": false,
-                "description": "Obsolete: Hyper-V sandbox.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "keyVaultReferenceIdentity": {
-                "description": "Identity to use for Key Vault Reference authentication.",
-                "type": "string"
-              },
-              "lastModifiedTimeUtc": {
-                "description": "Last time the app was modified, in UTC. Read-only.",
-                "format": "date-time",
-                "readOnly": true,
-                "type": "string"
-              },
-              "managedEnvironmentId": {
-                "description": "Azure Resource Manager ID of the customer's selected Managed Environment on which to host this app. This must be of the form /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.App/managedEnvironments/{managedEnvironmentName}",
-                "type": "string"
-              },
-              "maxNumberOfWorkers": {
-                "description": "Maximum number of workers.\nThis only applies to Functions container.",
-                "format": "int32",
-                "readOnly": true,
-                "type": "integer"
-              },
-              "outboundIpAddresses": {
-                "description": "List of IP addresses that the app uses for outbound connections (e.g. database access). Includes VIPs from tenants that site can be hosted with current settings. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "possibleOutboundIpAddresses": {
-                "description": "List of IP addresses that the app uses for outbound connections (e.g. database access). Includes VIPs from all tenants except dataComponent. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "publicNetworkAccess": {
-                "description": "Property to allow or block all public traffic. Allowed Values: 'Enabled', 'Disabled' or an empty string.",
-                "type": "string"
-              },
-              "redundancyMode": {
-                "description": "Site redundancy mode",
-                "enum": [
-                  "None",
-                  "Manual",
-                  "Failover",
-                  "ActiveActive",
-                  "GeoRedundant"
-                ],
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "RedundancyMode"
-                }
-              },
-              "repositorySiteName": {
-                "description": "Name of the repository site.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "reserved": {
-                "default": false,
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if reserved; otherwise, \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "resourceConfig": {
-                "$ref": "#/definitions/ResourceConfig",
-                "description": "Function app resource requirements."
-              },
-              "resourceGroup": {
-                "description": "Name of the resource group the app belongs to. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "scmSiteAlsoStopped": {
-                "default": false,
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to stop SCM (KUDU) site when the app is stopped; otherwise, \u003ccode\u003efalse\u003c/code\u003e. The default is \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "serverFarmId": {
-                "description": "Resource ID of the associated App Service plan, formatted as: \"/subscriptions/{subscriptionID}/resourceGroups/{groupName}/providers/Microsoft.Web/serverfarms/{appServicePlanName}\".",
-                "type": "string"
-              },
-              "siteConfig": {
-                "$ref": "#/definitions/SiteConfig",
-                "description": "Configuration of the app."
-              },
-              "slotSwapStatus": {
-                "$ref": "#/definitions/SlotSwapStatus",
-                "description": "Status of the last deployment slot swap operation.",
-                "readOnly": true
-              },
-              "state": {
-                "description": "Current state of the app.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "storageAccountRequired": {
-                "description": "Checks if Customer provided storage account is required",
-                "type": "boolean"
-              },
-              "suspendedTill": {
-                "description": "App suspended till in case memory-time quota is exceeded.",
-                "format": "date-time",
-                "readOnly": true,
-                "type": "string"
-              },
-              "targetSwapSlot": {
-                "description": "Specifies which deployment slot this app will swap into. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "trafficManagerHostNames": {
-                "description": "Azure Traffic Manager hostnames associated with the app. Read-only.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "usageState": {
-                "description": "State indicating whether the app has exceeded its quota usage. Read-only.",
-                "enum": [
-                  "Normal",
-                  "Exceeded"
-                ],
-                "readOnly": true,
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "UsageState"
-                }
-              },
-              "virtualNetworkSubnetId": {
-                "description": "Azure Resource Manager ID of the Virtual network and subnet to be joined by Regional VNET Integration.\nThis must be of the form /subscriptions/{subscriptionName}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}",
-                "type": "string"
-              },
-              "vnetBackupRestoreEnabled": {
-                "description": "To enable Backup and Restore operations over virtual network",
-                "type": "boolean"
-              },
-              "vnetContentShareEnabled": {
-                "description": "To enable accessing content over virtual network",
-                "type": "boolean"
-              },
-              "vnetImagePullEnabled": {
-                "description": "To enable pulling image over Virtual Network",
-                "type": "boolean"
-              },
-              "vnetRouteAllEnabled": {
-                "description": "Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied.",
-                "type": "boolean"
-              },
-              "workloadProfileName": {
-                "description": "Workload profile name for function app to execute on.",
-                "type": "string"
-              }
-            },
-            "type": "object",
             "x-ms-client-flatten": true
           }
         },
@@ -35741,7 +36478,7 @@
       },
       "call": {
         "product": "Microsoft.Web",
-        "version": "2023-12-01",
+        "version": "2025-05-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -35750,7 +36487,449 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_GetFunction",
+      "name": "WebApps_GetFunction",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions/{functionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "Function name.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Function information.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/FunctionEnvelopeProperties",
+            "description": "FunctionEnvelope resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_GetHostNameBinding",
+      "name": "WebApps_GetHostNameBinding",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostName": {
+            "description": "Hostname in the hostname binding.",
+            "in": "path",
+            "name": "hostName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A hostname binding object.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/HostNameBindingProperties",
+            "description": "HostNameBinding resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings/{hostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_GetHostNameBindingSlot",
+      "name": "WebApps_GetHostNameBindingSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "hostName": {
+            "description": "Hostname in the hostname binding.",
+            "in": "path",
+            "name": "hostName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API the named binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A hostname binding object.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/HostNameBindingProperties",
+            "description": "HostNameBinding resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings/{hostName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_GetInstanceFunctionSlot",
+      "name": "WebApps_GetInstanceFunctionSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions/{functionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "Function name.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Function information.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/FunctionEnvelopeProperties",
+            "description": "FunctionEnvelope resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_GetSlot",
+      "name": "WebApps_GetSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. By default, this API returns the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A web app, a mobile app backend, or an API app.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "#/definitions/ExtendedLocation",
+            "description": "Extended Location."
+          },
+          "identity": {
+            "$ref": "#/definitions/ManagedServiceIdentity",
+            "description": "Managed service identity."
+          },
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/SiteProperties",
+            "description": "Site resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Web.WebApps_List",
@@ -35763,18 +36942,18 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2023-12-01"
+              "2025-05-01"
             ],
             "in": "query",
             "type": "string"
           },
           "subscriptionId": {
-            "description": "Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
             "name": "subscriptionId",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "client"
+            "type": "string"
           }
         },
         "type": "object"
@@ -35783,12 +36962,12 @@
         "description": "Collection of App Service apps.",
         "properties": {
           "nextLink": {
-            "description": "Link to next page of resources.",
-            "readOnly": true,
+            "description": "The link to the next page of items",
+            "format": "uri",
             "type": "string"
           },
           "value": {
-            "description": "Collection of resources.",
+            "description": "The Site items on this page",
             "items": {
               "$ref": "#/definitions/Site"
             },
@@ -35806,7 +36985,7 @@
       },
       "call": {
         "product": "Microsoft.Web",
-        "version": "2023-12-01",
+        "version": "2025-05-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -35815,7 +36994,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Web.WebApps_ListByResourceGroup",
@@ -35828,7 +37007,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2023-12-01"
+              "2025-05-01"
             ],
             "in": "query",
             "type": "string"
@@ -35837,26 +37016,26 @@
             "description": "Specify \u003cstrong\u003etrue\u003c/strong\u003e to include deployment slots in results. The default is false, which only gives you the production slot of all apps.",
             "in": "query",
             "name": "includeSlots",
+            "required": false,
             "type": "boolean"
           },
           "resourceGroupName": {
-            "description": "Name of the resource group to which the resource belongs.",
+            "description": "The name of the resource group. The name is case insensitive.",
             "in": "path",
             "maxLength": 90,
             "minLength": 1,
             "name": "resourceGroupName",
-            "pattern": "^[-\\w\\._\\(\\)]+[^\\.]$",
             "required": true,
             "type": "string",
             "x-ms-parameter-location": "method"
           },
           "subscriptionId": {
-            "description": "Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
             "name": "subscriptionId",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "client"
+            "type": "string"
           }
         },
         "type": "object"
@@ -35865,12 +37044,12 @@
         "description": "Collection of App Service apps.",
         "properties": {
           "nextLink": {
-            "description": "Link to next page of resources.",
-            "readOnly": true,
+            "description": "The link to the next page of items",
+            "format": "uri",
             "type": "string"
           },
           "value": {
-            "description": "Collection of resources.",
+            "description": "The Site items on this page",
             "items": {
               "$ref": "#/definitions/Site"
             },
@@ -35888,7 +37067,7 @@
       },
       "call": {
         "product": "Microsoft.Web",
-        "version": "2023-12-01",
+        "version": "2025-05-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -35897,7 +37076,431 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_ListFunctions",
+      "name": "WebApps_ListFunctions",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of Kudu function information elements.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FunctionEnvelope items on this page",
+            "items": {
+              "$ref": "#/definitions/FunctionEnvelope"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/functions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_ListHostNameBindings",
+      "name": "WebApps_ListHostNameBindings",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of hostname bindings.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The HostNameBinding items on this page",
+            "items": {
+              "$ref": "#/definitions/HostNameBinding"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/hostNameBindings",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_ListHostNameBindingsSlot",
+      "name": "WebApps_ListHostNameBindingsSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot. If a slot is not specified, the API the named binding for the production slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of hostname bindings.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The HostNameBinding items on this page",
+            "items": {
+              "$ref": "#/definitions/HostNameBinding"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/hostNameBindings",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_ListInstanceFunctionsSlot",
+      "name": "WebApps_ListInstanceFunctionsSlot",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Site name.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "slot": {
+            "description": "Name of the deployment slot.",
+            "in": "path",
+            "name": "slot",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of Kudu function information elements.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FunctionEnvelope items on this page",
+            "items": {
+              "$ref": "#/definitions/FunctionEnvelope"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slot}/functions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Web.WebApps_ListSlots",
+      "name": "WebApps_ListSlots",
+      "service": "Microsoft.Web",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-05-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the app.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of App Service apps.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Site items on this page",
+            "items": {
+              "$ref": "#/definitions/Site"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Web",
+        "version": "2025-05-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Web.WebApps_Update",
@@ -35910,25 +37513,24 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2023-12-01"
+              "2025-05-01"
             ],
             "in": "query",
             "type": "string"
           },
           "name": {
-            "description": "Unique name of the app to create or update. To create or update a deployment slot, use the {slot} parameter.",
+            "description": "Name of the app.",
             "in": "path",
             "name": "name",
             "required": true,
             "type": "string"
           },
           "resourceGroupName": {
-            "description": "Name of the resource group to which the resource belongs.",
+            "description": "The name of the resource group. The name is case insensitive.",
             "in": "path",
             "maxLength": 90,
             "minLength": 1,
             "name": "resourceGroupName",
-            "pattern": "^[-\\w\\._\\(\\)]+[^\\.]$",
             "required": true,
             "type": "string",
             "x-ms-parameter-location": "method"
@@ -35943,12 +37545,12 @@
             }
           },
           "subscriptionId": {
-            "description": "Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000).",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
             "name": "subscriptionId",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "client"
+            "type": "string"
           }
         },
         "type": "object"
@@ -35956,334 +37558,26 @@
       "output_schema": {
         "allOf": [
           {
-            "$ref": "#/definitions/Resource"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
           }
         ],
         "description": "A web app, a mobile app backend, or an API app.",
         "properties": {
           "extendedLocation": {
-            "$ref": "#/definitions/ExtendedLocation"
+            "$ref": "#/definitions/ExtendedLocation",
+            "description": "Extended Location."
           },
           "identity": {
-            "$ref": "#/definitions/ManagedServiceIdentity"
+            "$ref": "#/definitions/ManagedServiceIdentity",
+            "description": "Managed service identity."
+          },
+          "kind": {
+            "description": "Kind of resource. If the resource is an app, you can refer to https://github.com/Azure/app-service-linux-docs/blob/master/Things_You_Should_Know/kind_property.md#app-service-resource-kind-reference for details supported values for kind.",
+            "type": "string"
           },
           "properties": {
+            "$ref": "#/definitions/SiteProperties",
             "description": "Site resource specific properties",
-            "properties": {
-              "availabilityState": {
-                "description": "Management information availability state for the app.",
-                "enum": [
-                  "Normal",
-                  "Limited",
-                  "DisasterRecoveryMode"
-                ],
-                "readOnly": true,
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "SiteAvailabilityState"
-                }
-              },
-              "clientAffinityEnabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to enable client affinity; \u003ccode\u003efalse\u003c/code\u003e to stop sending session affinity cookies, which route client requests in the same session to the same instance. Default is \u003ccode\u003etrue\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "clientCertEnabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to enable client certificate authentication (TLS mutual authentication); otherwise, \u003ccode\u003efalse\u003c/code\u003e. Default is \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "clientCertExclusionPaths": {
-                "description": "client certificate authentication comma-separated exclusion paths",
-                "type": "string"
-              },
-              "clientCertMode": {
-                "description": "This composes with ClientCertEnabled setting.\n- ClientCertEnabled: false means ClientCert is ignored.\n- ClientCertEnabled: true and ClientCertMode: Required means ClientCert is required.\n- ClientCertEnabled: true and ClientCertMode: Optional means ClientCert is optional or accepted.",
-                "enum": [
-                  "Required",
-                  "Optional",
-                  "OptionalInteractiveUser"
-                ],
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "ClientCertMode"
-                }
-              },
-              "cloningInfo": {
-                "$ref": "#/definitions/CloningInfo",
-                "description": "If specified during app creation, the app is cloned from a source app.",
-                "x-ms-mutability": [
-                  "create"
-                ]
-              },
-              "containerSize": {
-                "description": "Size of the function container.",
-                "format": "int32",
-                "type": "integer"
-              },
-              "customDomainVerificationId": {
-                "description": "Unique identifier that verifies the custom domains assigned to the app. Customer will add this id to a txt record for verification.",
-                "type": "string"
-              },
-              "dailyMemoryTimeQuota": {
-                "description": "Maximum allowed daily memory-time quota (applicable on dynamic apps only).",
-                "format": "int32",
-                "type": "integer"
-              },
-              "daprConfig": {
-                "$ref": "#/definitions/DaprConfig",
-                "description": "Dapr configuration of the app."
-              },
-              "defaultHostName": {
-                "description": "Default hostname of the app. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "dnsConfiguration": {
-                "$ref": "#/definitions/SiteDnsConfig",
-                "description": "Property to configure various DNS related settings for a site."
-              },
-              "enabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if the app is enabled; otherwise, \u003ccode\u003efalse\u003c/code\u003e. Setting this value to false disables the app (takes the app offline).",
-                "type": "boolean"
-              },
-              "enabledHostNames": {
-                "description": "Enabled hostnames for the app.Hostnames need to be assigned (see HostNames) AND enabled. Otherwise,\nthe app is not served on those hostnames.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "endToEndEncryptionEnabled": {
-                "description": "Whether to use end to end encryption between the FrontEnd and the Worker",
-                "type": "boolean"
-              },
-              "functionAppConfig": {
-                "$ref": "#/definitions/FunctionAppConfig",
-                "description": "Configuration specific of the Azure Function app."
-              },
-              "hostNameSslStates": {
-                "description": "Hostname SSL states are used to manage the SSL bindings for app's hostnames.",
-                "items": {
-                  "$ref": "#/definitions/HostNameSslState"
-                },
-                "type": "array",
-                "x-ms-identifiers": [
-                  "name"
-                ]
-              },
-              "hostNames": {
-                "description": "Hostnames associated with the app.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "hostNamesDisabled": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to disable the public hostnames of the app; otherwise, \u003ccode\u003efalse\u003c/code\u003e.\n If \u003ccode\u003etrue\u003c/code\u003e, the app is only accessible via API management process.",
-                "type": "boolean"
-              },
-              "hostingEnvironmentProfile": {
-                "$ref": "#/definitions/HostingEnvironmentProfile",
-                "description": "App Service Environment to use for the app.",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "httpsOnly": {
-                "description": "HttpsOnly: configures a web site to accept only https requests. Issues redirect for\nhttp requests",
-                "type": "boolean"
-              },
-              "hyperV": {
-                "default": false,
-                "description": "Hyper-V sandbox.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "inProgressOperationId": {
-                "description": "Specifies an operation id if this site has a pending operation.",
-                "example": "00000000-0000-0000-0000-000000000000",
-                "format": "uuid",
-                "readOnly": true,
-                "type": "string"
-              },
-              "isDefaultContainer": {
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if the app is a default container; otherwise, \u003ccode\u003efalse\u003c/code\u003e.",
-                "readOnly": true,
-                "type": "boolean"
-              },
-              "isXenon": {
-                "default": false,
-                "description": "Obsolete: Hyper-V sandbox.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "keyVaultReferenceIdentity": {
-                "description": "Identity to use for Key Vault Reference authentication.",
-                "type": "string"
-              },
-              "lastModifiedTimeUtc": {
-                "description": "Last time the app was modified, in UTC. Read-only.",
-                "format": "date-time",
-                "readOnly": true,
-                "type": "string"
-              },
-              "managedEnvironmentId": {
-                "description": "Azure Resource Manager ID of the customer's selected Managed Environment on which to host this app. This must be of the form /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.App/managedEnvironments/{managedEnvironmentName}",
-                "type": "string"
-              },
-              "maxNumberOfWorkers": {
-                "description": "Maximum number of workers.\nThis only applies to Functions container.",
-                "format": "int32",
-                "readOnly": true,
-                "type": "integer"
-              },
-              "outboundIpAddresses": {
-                "description": "List of IP addresses that the app uses for outbound connections (e.g. database access). Includes VIPs from tenants that site can be hosted with current settings. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "possibleOutboundIpAddresses": {
-                "description": "List of IP addresses that the app uses for outbound connections (e.g. database access). Includes VIPs from all tenants except dataComponent. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "publicNetworkAccess": {
-                "description": "Property to allow or block all public traffic. Allowed Values: 'Enabled', 'Disabled' or an empty string.",
-                "type": "string"
-              },
-              "redundancyMode": {
-                "description": "Site redundancy mode",
-                "enum": [
-                  "None",
-                  "Manual",
-                  "Failover",
-                  "ActiveActive",
-                  "GeoRedundant"
-                ],
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "RedundancyMode"
-                }
-              },
-              "repositorySiteName": {
-                "description": "Name of the repository site.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "reserved": {
-                "default": false,
-                "description": "\u003ccode\u003etrue\u003c/code\u003e if reserved; otherwise, \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean",
-                "x-ms-mutability": [
-                  "create",
-                  "read"
-                ]
-              },
-              "resourceConfig": {
-                "$ref": "#/definitions/ResourceConfig",
-                "description": "Function app resource requirements."
-              },
-              "resourceGroup": {
-                "description": "Name of the resource group the app belongs to. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "scmSiteAlsoStopped": {
-                "default": false,
-                "description": "\u003ccode\u003etrue\u003c/code\u003e to stop SCM (KUDU) site when the app is stopped; otherwise, \u003ccode\u003efalse\u003c/code\u003e. The default is \u003ccode\u003efalse\u003c/code\u003e.",
-                "type": "boolean"
-              },
-              "serverFarmId": {
-                "description": "Resource ID of the associated App Service plan, formatted as: \"/subscriptions/{subscriptionID}/resourceGroups/{groupName}/providers/Microsoft.Web/serverfarms/{appServicePlanName}\".",
-                "type": "string"
-              },
-              "siteConfig": {
-                "$ref": "#/definitions/SiteConfig",
-                "description": "Configuration of the app."
-              },
-              "slotSwapStatus": {
-                "$ref": "#/definitions/SlotSwapStatus",
-                "description": "Status of the last deployment slot swap operation.",
-                "readOnly": true
-              },
-              "state": {
-                "description": "Current state of the app.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "storageAccountRequired": {
-                "description": "Checks if Customer provided storage account is required",
-                "type": "boolean"
-              },
-              "suspendedTill": {
-                "description": "App suspended till in case memory-time quota is exceeded.",
-                "format": "date-time",
-                "readOnly": true,
-                "type": "string"
-              },
-              "targetSwapSlot": {
-                "description": "Specifies which deployment slot this app will swap into. Read-only.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "trafficManagerHostNames": {
-                "description": "Azure Traffic Manager hostnames associated with the app. Read-only.",
-                "items": {
-                  "type": "string"
-                },
-                "readOnly": true,
-                "type": "array"
-              },
-              "usageState": {
-                "description": "State indicating whether the app has exceeded its quota usage. Read-only.",
-                "enum": [
-                  "Normal",
-                  "Exceeded"
-                ],
-                "readOnly": true,
-                "type": "string",
-                "x-ms-enum": {
-                  "modelAsString": false,
-                  "name": "UsageState"
-                }
-              },
-              "virtualNetworkSubnetId": {
-                "description": "Azure Resource Manager ID of the Virtual network and subnet to be joined by Regional VNET Integration.\nThis must be of the form /subscriptions/{subscriptionName}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}",
-                "type": "string"
-              },
-              "vnetBackupRestoreEnabled": {
-                "description": "To enable Backup and Restore operations over virtual network",
-                "type": "boolean"
-              },
-              "vnetContentShareEnabled": {
-                "description": "To enable accessing content over virtual network",
-                "type": "boolean"
-              },
-              "vnetImagePullEnabled": {
-                "description": "To enable pulling image over Virtual Network",
-                "type": "boolean"
-              },
-              "vnetRouteAllEnabled": {
-                "description": "Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied.",
-                "type": "boolean"
-              },
-              "workloadProfileName": {
-                "description": "Workload profile name for function app to execute on.",
-                "type": "string"
-              }
-            },
-            "type": "object",
             "x-ms-client-flatten": true
           }
         },
@@ -36291,7 +37585,7 @@
       },
       "call": {
         "product": "Microsoft.Web",
-        "version": "2023-12-01",
+        "version": "2025-05-01",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "PATCH",
@@ -36300,7 +37594,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/web/resource-manager/Microsoft.Web/AppService/stable/2023-12-01/WebApps.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/web/resource-manager/Microsoft.Web/AppService/stable/2025-05-01/openapi.json"
     },
     {
       "id": "Azure.ResourceManagementClient.ResourceGroups_Delete",
@@ -40344,6 +41638,27 @@
       }
     },
     {
+      "native_type": "Microsoft.Web/certificates",
+      "class": "security.certificate",
+      "display_name": "App Service certificate",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "certificates",
+        "read_operations": [
+          "Azure.Microsoft.Web.Certificates_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.Certificates_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.Certificates_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Web/serverfarms",
       "class": "compute.service_plan",
       "display_name": "App Service plan",
@@ -40382,6 +41697,159 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Web.WebApps_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/certificates",
+      "class": "security.certificate",
+      "display_name": "App certificate",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "certificates",
+        "read_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/functions",
+      "class": "compute.function",
+      "display_name": "Azure function",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "functions",
+        "read_operations": [
+          "Azure.Microsoft.Web.WebApps_GetFunction"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.WebApps_DeleteFunction"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_ListFunctions"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/hostNameBindings",
+      "class": "network.domain_binding",
+      "display_name": "App hostname binding",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "hostNameBindings",
+        "read_operations": [
+          "Azure.Microsoft.Web.WebApps_GetHostNameBinding"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.WebApps_DeleteHostNameBinding"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_ListHostNameBindings"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots",
+      "class": "compute.service_slot",
+      "display_name": "App Service deployment slot",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "slots",
+        "read_operations": [
+          "Azure.Microsoft.Web.WebApps_GetSlot"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.WebApps_DeleteSlot"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_ListSlots"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/certificates",
+      "class": "security.certificate",
+      "display_name": "Deployment slot certificate",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "certificates",
+        "read_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_GetSlot"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_DeleteSlot"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.SiteCertificates_ListSlot"
+        ],
+        "response_types": [
+          "Microsoft.Web/sites/certificates"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/functions",
+      "class": "compute.function",
+      "display_name": "Deployment slot function",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "functions",
+        "read_operations": [
+          "Azure.Microsoft.Web.WebApps_GetInstanceFunctionSlot"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.WebApps_DeleteInstanceFunctionSlot"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_ListInstanceFunctionsSlot"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Web/sites/slots/hostNameBindings",
+      "class": "network.domain_binding",
+      "display_name": "Deployment slot hostname binding",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "hostNameBindings",
+        "read_operations": [
+          "Azure.Microsoft.Web.WebApps_GetHostNameBindingSlot"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Web.WebApps_DeleteHostNameBindingSlot"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Web.WebApps_ListHostNameBindingsSlot"
+        ],
+        "response_types": [
+          "Microsoft.Web/sites/hostNameBindings"
         ]
       }
     }

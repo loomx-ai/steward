@@ -2,27 +2,32 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.Web/sites
-  class: compute.service
+  nativeType: Microsoft.Web/sites/slots
+  class: compute.service_slot
 presentation:
   displayNames:
-    en-US: App Service or Function App
-    zh-CN: App Service 或 Function App
+    en-US: App Service deployment slot
+    zh-CN: App Service 部署槽
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
   kind: region
 discovery:
   source: product-api
-  detail:
-    operation: Azure.Microsoft.Web.WebApps_Get
-    itemsPath: $
-    identityPath: id
   list:
-    operation: Azure.Microsoft.Web.WebApps_List
+    operation: Azure.Microsoft.Web.WebApps_ListSlots
     parameters:
       subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      name: parent.normalized.arm_parameters.name
     itemsPath: value
     identityPath: id
+  detail:
+    operation: Azure.Microsoft.Web.WebApps_GetSlot
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Web/sites
 fields:
   name:
     path: name
@@ -36,9 +41,6 @@ fields:
   resourceGroup:
     path: resource_group
     type: string
-  zoneId:
-    path: zone_id
-    type: string
   tags:
     path: tags
     type: object
@@ -46,12 +48,15 @@ extensions:
   hook: azure.resource
 relationships:
 - type: uses
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+- type: uses
   targetType: Microsoft.Web/serverfarms
   targetIdPath: refs_microsoft_web_serverfarms
-- type: member_of
+- type: uses
   targetType: Microsoft.Network/virtualNetworks
   targetIdPath: refs_microsoft_network_virtualnetworks
-- type: member_of
+- type: uses
   targetType: Microsoft.Network/virtualNetworks/subnets
   targetIdPath: refs_microsoft_network_virtualnetworks_subnets
 - type: uses
@@ -68,13 +73,13 @@ relationships:
   targetIdPath: refs_microsoft_web_sites_slots_certificates
 actions:
   delete:
-    operation: Azure.Microsoft.Web.WebApps_Delete
-    parameters:
-      deleteEmptyServerFarm: false
+    operation: Azure.Microsoft.Web.WebApps_DeleteSlot
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.Web.WebApps_Get
+      operation: Azure.Microsoft.Web.WebApps_GetSlot
       itemsPath: $
       identityPath: id
+    parameters:
+      deleteEmptyServerFarm: false

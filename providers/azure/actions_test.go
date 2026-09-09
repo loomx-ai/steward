@@ -173,6 +173,8 @@ func TestPreflightDistinguishesMissingTargetFromMissingRelatedGroup(t *testing.T
 
 func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 	value := actionAsset("Microsoft.Web/sites", "web")
+	raw := nativeResource(appSiteType, "web", "eastus", map[string]any{})
+	raw["kind"] = "app"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if req.Method == "DELETE" {
 			if req.URL.Query().Get("deleteEmptyServerFarm") != "false" {
@@ -181,18 +183,19 @@ func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 			return jsonResponse(200, map[string]any{}, nil), nil
 		}
 		if strings.EqualFold(req.URL.Path, value.Identity.NativeID) {
-			return jsonResponse(200, nativeResource("Microsoft.Web/sites", "web", "eastus", map[string]any{}), nil), nil
+			return jsonResponse(200, raw, nil), nil
 		}
-		if strings.HasSuffix(req.URL.Path, "/locks") {
+		if strings.HasSuffix(req.URL.Path, "/locks") || strings.HasSuffix(req.URL.Path, "/slots") || strings.HasSuffix(req.URL.Path, "/certificates") || strings.HasSuffix(req.URL.Path, "/hostNameBindings") {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
 		return jsonResponse(200, map[string]any{"id": req.URL.Path}, nil), nil
 	})
+	value = dnsAsset(t, r, raw)
 	driver, err := r.ResolveAction(context.Background(), "connection", value)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := driver.Execute(context.Background(), contracts.ActionRequest{Action: "delete"}); err != nil {
+	if _, err := driver.Execute(context.Background(), contracts.ActionRequest{Asset: value, Action: "delete"}); err != nil {
 		t.Fatal(err)
 	}
 }

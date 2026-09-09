@@ -69,7 +69,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		}
 		parameters[key] = resolved
 	}
-	deletion, err := catalog.BindREST(operation, parameters)
+	deletion, err := bindAzureREST(operation, parameters)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +126,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.wafPreflight(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.appServicePreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.grafanaParentPreflight(ctx, request.Asset); err != nil {
@@ -308,6 +311,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 	if isWAFType(a.kind.NativeType) && operation != "" {
 		data["waf_operation_binding"] = a.operationBinding(operation)
 	}
+	if isAppServiceType(a.kind.NativeType) && operation != "" {
+		data["app_service_operation_binding"] = a.operationBinding(operation)
+	}
 	return contracts.ActionResult{ProviderOperationID: operation, ProviderRequestID: res.requestID, Data: data, RetryAfter: retryAfter(res.header)}, nil
 }
 func operationError(response response) error {
@@ -362,6 +368,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if isWAFType(a.kind.NativeType) && text(result.Data["waf_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("WAF polling receipt does not match its resource")
+		}
+		if isAppServiceType(a.kind.NativeType) && text(result.Data["app_service_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("App Service polling receipt does not match its resource")
 		}
 		res, err := a.client.requestAt(ctx, "GET", result.ProviderOperationID, nil, nil, a.validateOperationURL)
 		if err != nil && !isNotFound(err) {
@@ -518,7 +527,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing":
+	case "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
 		return true
 	default:
 		return false
