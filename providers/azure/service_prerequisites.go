@@ -70,6 +70,9 @@ var servicePrerequisiteRules = map[string][]string{
 }
 
 func servicePrerequisiteKind(parent, child string) bool {
+	if isCosmosType(parent) {
+		return cosmosPrerequisiteKind(parent, child)
+	}
 	if strings.EqualFold(parent, scaleSetType) && strings.EqualFold(child, vmType) {
 		return true // serviceChildRelation separately requires Flexible mode.
 	}
@@ -82,7 +85,7 @@ func servicePrerequisiteKind(parent, child string) bool {
 }
 
 func hasServicePrerequisites(kind string) bool {
-	return kind == scaleSetType || servicePrerequisiteRules[kind] != nil
+	return (isCosmosType(kind) && len(cosmosCascadeKinds(kind)) != 0) || kind == scaleSetType || servicePrerequisiteRules[kind] != nil
 }
 
 // Keep the entire sanitized native configuration, excluding only the parent's
@@ -142,7 +145,7 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 		if !known || kind.ReadOnly {
 			return serviceDenied("invalid_service_prerequisite")
 		}
-		endpoint, err := a.client.resourceURL(kind, id)
+		endpoint, err := a.client.plannedResourceURL(prerequisite.Asset)
 		if err != nil {
 			return err
 		}

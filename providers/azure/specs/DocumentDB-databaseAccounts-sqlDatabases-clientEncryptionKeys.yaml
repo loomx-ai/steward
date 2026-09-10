@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DocumentDB/databaseAccounts/sqlDatabases/clientEncryptionKeys
+  class: security.encryption_key
+presentation:
+  displayNames:
+    en-US: Cosmos DB client encryption key
+    zh-CN: Cosmos DB 客户端加密密钥
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.DocumentDB.SqlResources_ListClientEncryptionKeys
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+      databaseName: parent.normalized.arm_parameters.databaseName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DocumentDB.SqlResources_GetClientEncryptionKey
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.DocumentDB/databaseAccounts/sqlDatabases
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DocumentDB/databaseAccounts/sqlDatabases
+  targetIdPath: refs_microsoft_documentdb_databaseaccounts_sqldatabases

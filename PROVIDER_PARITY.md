@@ -1222,3 +1222,55 @@ background evidence only, not acceptance evidence for this work.
   connection endpoint effects, external perimeter/RAI services, agent data-plane
   cleanup and remaining provider/application acceptance are still open. See
   [the Cognitive Services evidence](providers/azure/fixtures/cognitive/README.md).
+
+### Azure Cosmos DB progress (acceptance remains open)
+
+- Thirty-four rules select 111 operations from stable 2026-03-15, covering the
+  five account APIs, JavaScript resources, client encryption keys, API roles,
+  services/notebooks/private connections, managed Cassandra and Fleet resources.
+  Native kind/capability checks select applicable lists. Account/cluster metadata
+  is global; managed Cassandra data centers use their actual deployment region.
+  Regional network scans retain global parents and explicit subnet/VNet links.
+- Native requests retain case-sensitive data-resource names and explicit response
+  aliases. Cross-page case collisions fail the scan. Credential-keyed selectors,
+  ancestor/configuration/throughput bindings and operation receipts survive
+  serialization/restart. Changed selectors are rejected before polling or absent
+  readback. The existing bounded cursor fails closed for oversized continuations.
+- Independently deletable children precede their parents; built-in roles and
+  client encryption keys require reviewed controller cleanup and independent final
+  absence. Role assignments, MongoDB inheritance/resident principals and Fleet
+  associations are explicit shared prerequisites. Fleet unlinking preserves
+  accounts and checks target protection, inherited locks, managed groups and a
+  final re-read. Search links now have a tested native Cosmos account target API.
+- Dedicated throughput reads bind RU/s/autoscale settings and distinguish verified
+  no-offer 404s from incomplete reads. Pending offers, backup migration, unknown
+  API markers and transitioning resources block affected cleanup. Two complete
+  child reads reconcile account endpoint indexes and private configuration.
+  Data-write clocks are excluded; large JSON integers retain precision. Script
+  bodies, wrapped keys and Cassandra secrets/configuration stay out of inventory
+  and logs while private changes still invalidate review.
+- Tests retain 117 unchanged official examples and 81 independent native schema
+  checks. Two trigger examples expose their original out-of-enum placeholders;
+  only separate test copies are corrected. Seventeen immutable Azure CLI files
+  supply 386 responses and 24 native asynchronous DELETE replay cases, all at the
+  selected 2026-03-15 API. Supporting collections and final GET 404s are explicitly
+  synthetic. The [Cosmos evidence](providers/azure/fixtures/cosmos/README.md)
+  documents these boundaries, signed polling, retention, concurrent change,
+  partial/denied responses, protected targets and incomplete final readback.
+- A new regression caught case-sensitive management-lock matching; the common
+  matcher now normalizes every supplied ARM ID. Additional regressions caught
+  partial DELETE acceptance and missing selector validation before resumed polls.
+  All are fixed and covered through actual action paths.
+- Azure now has 227 rules, 211 native DELETE bindings and 706 operations from
+  84 root plus 42 reference documents. A fresh two-document Cosmos snapshot
+  matches, preserving all earlier 193 type entries and 125 documents' content.
+  Two generations are byte-identical, SHA-256
+  `aa8858e46809840c952fe3a9635e170b14ce390733f36f9b217584b40a3712a0`.
+  Two independent CLI extractions reproduce SHA-256
+  `8dbf274d5a27051e936a6bbd7ed1186da211cbd3e899adf0e2e6b9ce047d5cf8`.
+  Full Go tests, Azure/catalog/contracts/plan/cleanup race checks, vet, three
+  offline importer suites and bilingual documentation checks pass.
+- Microsoft's Cosmos emulator and reviewed Floci-AZ 0.12.0 data handlers do not
+  establish independent ARM verification. No live Azure mutation is claimed.
+  Separate MongoDB vCore/PostgreSQL, backup/restore inventory, data-plane parity,
+  remaining mapped services and full provider/application acceptance stay open.

@@ -98,6 +98,9 @@ var serviceCascadeRules = map[string][]string{
 }
 
 func HasServiceCascade(nativeType string) bool {
+	if isCosmosType(nativeType) {
+		return len(cosmosCascadeKinds(nativeType)) != 0
+	}
 	for kind := range serviceCascadeRules {
 		if strings.EqualFold(kind, nativeType) {
 			return true
@@ -107,6 +110,9 @@ func HasServiceCascade(nativeType string) bool {
 }
 
 func serviceChildKinds(nativeType string) []string {
+	if isCosmosType(nativeType) {
+		return cosmosCascadeKinds(nativeType)
+	}
 	for kind, children := range serviceCascadeRules {
 		if strings.EqualFold(kind, nativeType) {
 			return children
@@ -135,7 +141,15 @@ type serviceChild struct {
 // every child and re-read the parent; an unreadable or changing set is not empty.
 func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identity, raw map[string]any, childTypes []string) ([]serviceChild, error) {
 	parentKind, _ := findType(parent.NativeType)
-	_, params, err := c.resourceOperation(parentKind, parent.NativeID, "GET")
+	wireParent := parent.NativeID
+	if isCosmosType(parent.NativeType) {
+		wireParent = responseID(parent.NativeType, text(raw["id"]))
+		id, kind, err := parseID(wireParent)
+		if err != nil || !strings.EqualFold(id, parent.NativeID) || !strings.EqualFold(kind, parent.NativeType) {
+			return nil, fmt.Errorf("Cosmos DB parent identity mismatch")
+		}
+	}
+	_, params, err := c.resourceOperation(parentKind, wireParent, "GET")
 	if err != nil {
 		return nil, err
 	}
@@ -167,12 +181,16 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 		kind, _ := findType(childType)
 		for _, value := range records {
 			record := object(value)
-			id, parsedType, err := parseID(responseID(childType, text(record["id"])))
+			wireID := responseID(childType, text(record["id"]))
+			id, parsedType, err := parseID(wireID)
 			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || !validResponseType(childType, text(record["type"])) {
 				return nil, fmt.Errorf("invalid or duplicate Azure cascade child identity")
 			}
 			seen[id] = true
-			endpoint, err := c.resourceURL(kind, id)
+			if isCosmosType(childType) && !cosmosSameWireID(cosmosParentID(wireID), wireParent) {
+				return nil, fmt.Errorf("Cosmos DB child parent name mismatch")
+			}
+			endpoint, err := c.resourceURL(kind, wireID)
 			if err != nil {
 				return nil, err
 			}
@@ -183,15 +201,28 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			if !validResourceResponse(live, id, childType) {
 				return nil, fmt.Errorf("Azure cascade child read identity mismatch")
 			}
+			if isCosmosType(childType) {
+				if err := cosmosListedIncarnation(childType, record, live.data); err != nil {
+					return nil, err
+				}
+			}
 			// Lists can omit generation fields; compare every field they do expose.
 			if err := serviceListedIncarnation(record, live.data); err != nil {
 				return nil, err
 			}
+			liveID := responseID(childType, text(live.data["id"]))
 			live.data["id"] = id
+			if isCosmosType(childType) {
+				if !cosmosSameWireID(liveID, wireID) {
+					return nil, fmt.Errorf("Cosmos DB child name changed")
+				}
+				live.data["id"] = wireID
+				live.data["type"] = childType
+			}
 			children = append(children, serviceChild{kind: childType, id: id, data: live.data})
 		}
 	}
-	if err := c.verifyProductParent(ctx, productTarget{ParentID: parentID, ParentType: parentKind.NativeType, Generation: productGeneration(raw)}); err != nil {
+	if err := c.verifyProductParent(ctx, productTarget{ParentID: parentID, ParentWireID: wireParent, ParentType: parentKind.NativeType, Generation: productGeneration(raw)}); err != nil {
 		return nil, err
 	}
 	sort.Slice(children, func(i, j int) bool { return children[i].id < children[j].id })
@@ -216,6 +247,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if isCosmosType(planned.Identity.NativeType) {
+		if err := cosmosIncarnation(planned, live); err != nil {
+			return err
+		}
+		return serviceCreationIdentity(planned, live)
+	}
 	if err := cognitiveIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -326,8 +363,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
-		kind, _ := findType(parent.Identity.NativeType)
-		endpoint, err := s.client.resourceURL(kind, parent.Identity.NativeID)
+		endpoint, err := s.client.plannedResourceURL(parent)
 		if err != nil {
 			return result, err
 		}
@@ -405,7 +441,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) {
+			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -599,8 +635,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		if visited[id] {
 			continue
 		}
-		kind, _ := findType(impact.Asset.Identity.NativeType)
-		endpoint, err := a.client.resourceURL(kind, id)
+		endpoint, err := a.client.plannedResourceURL(impact.Asset)
 		if err != nil {
 			return err
 		}
@@ -639,7 +674,7 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 	for _, id := range ids {
 		impact := impacts[id]
 		kind, _ := findType(impact.Asset.Identity.NativeType)
-		endpoint, err := a.client.resourceURL(kind, id)
+		endpoint, err := a.client.plannedResourceURL(impact.Asset)
 		if err != nil {
 			return contracts.ReadbackResult{}, err
 		}
@@ -661,7 +696,7 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (isCognitiveType(parent) && isCognitiveType(child) && reason == "azure_cognitive_managed_configuration") || (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
+	return cosmosIntrinsicChild(parent, child, reason) || (isCognitiveType(parent) && isCognitiveType(child) && reason == "azure_cognitive_managed_configuration") || (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
 		(parent == redisLinkType && child == redisLinkType && reason == "azure_redis_secondary_link") ||
 		(recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
 		((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
@@ -683,6 +718,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isCosmosType(parent.NativeType):
+		native = true // The Cosmos walk validates both complete native reads.
+		children, err = c.cosmosChildren(ctx, parent, raw)
 	case isCognitiveType(parent.NativeType):
 		children, err = c.cognitiveChildren(ctx, parent, raw)
 	case parent.NativeType == searchType:
@@ -728,6 +766,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if isCosmosType(parent.NativeType) && cosmosIntrinsicChild(parent.NativeType, children[i].kind, cosmosProtection(children[i].kind, children[i].data)) {
+			children[i].direct = false
+		}
 		if isCognitiveType(parent.NativeType) && cognitiveProtection(children[i].kind, children[i].data) == "azure_cognitive_managed_configuration" {
 			children[i].direct = false
 		}
@@ -754,6 +795,12 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if isCosmosType(parent.Identity.NativeType) {
+		if cosmosSharedPrerequisite(parent, child) {
+			return true
+		}
+		return slices.Contains(cosmosOwnedKinds(parent.Identity.NativeType), cosmosKind(child.Identity.NativeType)) && cosmosSameWireID(text(parent.Normalized["_cosmos_wire_id"]), cosmosParentID(text(child.Normalized["_cosmos_wire_id"])))
+	}
 	if cognitiveSharedPrerequisite(parent, child) {
 		return true
 	}

@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DocumentDB/databaseAccounts/gremlinDatabases/graphs
+  class: data.graph
+presentation:
+  displayNames:
+    en-US: Cosmos DB Gremlin graph
+    zh-CN: Cosmos DB Gremlin 图
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.DocumentDB.GremlinResources_ListGremlinGraphs
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+      databaseName: parent.normalized.arm_parameters.databaseName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinGraph
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.DocumentDB/databaseAccounts/gremlinDatabases
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DocumentDB/databaseAccounts/gremlinDatabases
+  targetIdPath: refs_microsoft_documentdb_databaseaccounts_gremlindatabases
+actions:
+  delete:
+    operation: Azure.Microsoft.DocumentDB.GremlinResources_DeleteGremlinGraph
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinGraph
+      itemsPath: $
+      identityPath: id

@@ -122,7 +122,7 @@ an independently implemented emulator.
 
 External perimeter associations, subscription-level RAI policies/safety providers,
 legacy-kind applicability, managed connection private-endpoint effects, and
-unmodeled external target APIs (including Cosmos DB and Key Vault) still need
+unmodeled external target APIs (including Key Vault) still need
 additional lifecycle/coverage evidence. Cross-subscription targets fail the
 selected credential boundary. External storage, search services and shared
 plans are not deleted merely because they are referenced. No live Azure

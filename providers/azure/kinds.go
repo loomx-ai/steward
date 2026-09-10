@@ -164,6 +164,17 @@ func referenceKey(nativeType string) string {
 }
 
 func validResponseIDType(nativeType, alias string) bool {
+	// The native Cosmos DB examples rename both the parent container and the
+	// final collection. These exact aliases do not change any resource name.
+	for kind, responseKind := range map[string]string{
+		cosmosStoredProcedureType: cosmosSQLDatabaseType + "/sqlContainers/sqlStoredProcedures",
+		cosmosTriggerType:         cosmosSQLDatabaseType + "/sqlContainers/sqlTriggers",
+		cosmosFunctionType:        cosmosSQLDatabaseType + "/sqlContainers/sqlUserDefinedFunctions",
+	} {
+		if strings.EqualFold(nativeType, kind) && strings.EqualFold(alias, responseKind) {
+			return true
+		}
+	}
 	parts, aliases := strings.Split(nativeType, "/"), strings.Split(alias, "/")
 	return len(parts) >= 3 && len(parts) == len(aliases) && aliases[len(aliases)-1] != "" &&
 		strings.EqualFold(strings.Join(parts[:len(parts)-1], "/"), strings.Join(aliases[:len(aliases)-1], "/")) &&

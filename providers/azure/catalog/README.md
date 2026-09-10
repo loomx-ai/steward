@@ -35,12 +35,14 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 193 current resource rules discover through native product List operations.
+All 227 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
 inherited locks, ownership and network references. Child location falls back to
-the parent only when the native response omits it.
+the parent only when the native response omits it. Cosmos DB keeps global
+controllers and managed Cassandra deployment regions separate from native
+resource-group location metadata.
 
 Product pagination binds the connection, subscription, selected scope and kind,
 bundle revision and ordered parent set. Changed parents, returned incarnation
@@ -338,3 +340,13 @@ cleanup handles shared dependencies and validates target protection for managed
 private endpoints. [Cognitive Services evidence](../fixtures/cognitive/README.md)
 records the original schemas, 31 CLI responses, version bridges and unresolved
 legacy-kind, data-plane and managed-network lifecycle scope.
+
+
+Cosmos DB adds 34 native rules and 111 operations from stable 2026-03-15,
+including the five account APIs, roles, managed Cassandra and Fleet associations.
+Native requests retain case-sensitive names while scoped digests bind selectors,
+ancestors, throughput, private configuration and resumed polling. Parent cleanup
+reviews direct prerequisites and controller impacts; shared role/Fleet references
+remain explicit, and Fleet unlinking protects retained accounts. See the
+[Cosmos evidence](../fixtures/cosmos/README.md) for 117 original examples, 386
+CLI responses, exact-version replay, schema defects and emulator limitations.

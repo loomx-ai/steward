@@ -51,15 +51,34 @@ func validResourceResponse(res response, nativeID, nativeType string) bool {
 }
 
 // Some official responses use a different final collection name from their
-// request path. Only catalog-selected ID aliases may change that last segment;
-// every ancestor and the name stay bound to the request. Type aliases alone
-// never rewrite IDs. A single trailing slash is accepted in native responses.
+// request path. Only catalog-selected ID aliases may change a collection name;
+// resource names stay bound to the request. Cosmos has three explicit nested
+// collection aliases; other providers may only alias the final collection.
+// Type aliases alone never rewrite IDs. A single trailing slash is accepted in native responses.
 func responseID(nativeType, id string) string {
 	parsed, kind, err := parseID(strings.TrimSuffix(id, "/"))
 	if err != nil {
 		return id
 	}
 	if definition, known := findType(nativeType); known {
+		if isCosmosType(nativeType) {
+			wire := strings.TrimSuffix(id, "/")
+			for _, alias := range definition.ResponseIDTypes {
+				if strings.EqualFold(kind, alias) {
+					// The Cosmos examples use aliases for both a container and
+					// its nested collection. Preserve every resource name.
+					parts, kinds := strings.Split(wire, "/"), strings.Split(definition.NativeType, "/")
+					if len(parts) != 7+2*(len(kinds)-1) {
+						return id
+					}
+					for i, collection := range kinds[1:] {
+						parts[7+2*i] = collection
+					}
+					return strings.Join(parts, "/")
+				}
+			}
+			return wire
+		}
 		for _, alias := range definition.ResponseIDTypes {
 			if strings.EqualFold(kind, alias) {
 				parts := strings.Split(parsed, "/")

@@ -23,8 +23,14 @@ type productCursor struct {
 	Target      int      `json:"target"`
 	Next        string   `json:"next,omitempty"`
 	Seen        []string `json:"seen,omitempty"`
+	// ponytail: cross-page duplicate hashes share the 128 KiB cursor bound;
+	// use server-side scan state if larger collections need continuation.
+	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	CosmosAncestors             map[string]any `json:"cosmos_ancestors,omitempty"`
+	CosmosThroughput            string         `json:"cosmos_throughput,omitempty"`
+	ParentWireID                string         `json:"parent_wire_id,omitempty"`
 	CognitiveAncestors          map[string]any `json:"cognitive_ancestors,omitempty"`
 	CognitiveNativeLocation     string         `json:"cognitive_native_location,omitempty"`
 	RedisRootConfiguration      string         `json:"redis_root_configuration,omitempty"`
@@ -135,11 +141,22 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	seen := map[string]bool{}
 	for _, value := range values {
 		raw := object(value)
-		id, parsedType, err := parseID(responseID(kind.NativeType, text(raw["id"])))
+		wireID := responseID(kind.NativeType, text(raw["id"]))
+		id, parsedType, err := parseID(wireID)
 		if err != nil || !strings.EqualFold(parsedType, kind.NativeType) || !validResponseType(kind.NativeType, text(raw["type"])) || seen[id] {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 		}
 		seen[id] = true
+		if isCosmosType(kind.NativeType) {
+			hash := fmt.Sprintf("%x", sha256.Sum256([]byte(id)))
+			if slices.Contains(cursor.Resources, hash) {
+				return contracts.InventoryBatch{}, fmt.Errorf("Cosmos DB list returned a duplicate or case-only resource identity")
+			}
+			cursor.Resources = append(cursor.Resources, hash)
+			if target.ParentID != "" && !cosmosSameWireID(cosmosParentID(wireID), target.ParentWireID) {
+				return contracts.InventoryBatch{}, fmt.Errorf("Cosmos DB child changed its parent name")
+			}
+		}
 		if kind.NativeType == dataCollectionAssociationType {
 			if err := dataCollectionTargetMembership(raw, target); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -147,7 +164,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		} else if target.ParentID != "" && !strings.EqualFold(id, u.Path+"/"+last(id)) {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product child belongs to another parent")
 		}
-		readURL, err := c.resourceURL(kind, id)
+		readURL, err := c.resourceURL(kind, wireID)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
 		}
@@ -164,6 +181,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if isCosmosType(kind.NativeType) {
+			if err := cosmosListedIncarnation(kind.NativeType, raw, data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
+		if isCosmosType(kind.NativeType) && !cosmosSameWireID(responseID(kind.NativeType, text(data["id"])), wireID) {
+			return contracts.InventoryBatch{}, fmt.Errorf("Cosmos DB detail changed its resource name")
+		}
 		cognitiveLocation := cognitiveNativeLocation(data)
 		if kind.NativeType == dataCollectionAssociationType {
 			if err := dataCollectionTargetMembership(data, target); err != nil {
@@ -195,11 +220,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			}
 		}
 		data["id"] = id
+		if isCosmosType(kind.NativeType) {
+			data["id"] = wireID
+		}
 		data["type"] = kind.NativeType
 		if text(data["name"]) == "" {
 			data["name"] = last(id)
 		}
-		if text(data["location"]) == "" {
+		if text(data["location"]) == "" && !isCosmosType(kind.NativeType) {
 			if text(raw["location"]) != "" {
 				data["location"] = raw["location"]
 			} else if target.Location != "" {
@@ -241,6 +269,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		cursor.Target++
 		cursor.Next = ""
 		cursor.Seen = nil
+		cursor.Resources = nil
 	}
 	if cursor.Target < len(targets) {
 		payload, _ := json.Marshal(cursor)
@@ -289,6 +318,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isCosmosType(kind) {
+		values = append(values, cosmosConfiguration(kind, raw), cosmosCreation(raw))
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCognitiveType(kind) {
 		values = append(values, cognitiveConfiguration(kind, raw))
 	}
@@ -305,6 +337,9 @@ func productGeneration(raw map[string]any) string {
 // Native creation fields survive ordinary configuration and attachment edits.
 // Keep this identity check separate from the stricter service generation check.
 func creationGeneration(raw map[string]any) string {
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isCosmosType(kind) {
+		return cosmosCreation(raw)
+	}
 	values := map[string]any{}
 	if value := object(raw["systemData"])["createdAt"]; value != nil {
 		values["systemData.createdAt"] = value
@@ -335,7 +370,15 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 		return nil
 	}
 	kind, _ := findType(target.ParentType)
-	endpoint, err := c.resourceURL(kind, target.ParentID)
+	parentID := target.ParentID
+	if isCosmosType(target.ParentType) {
+		id, typ, err := parseID(target.ParentWireID)
+		if err != nil || !strings.EqualFold(id, target.ParentID) || !strings.EqualFold(typ, target.ParentType) {
+			return fmt.Errorf("Cosmos DB parent is missing its native identity")
+		}
+		parentID = target.ParentWireID
+	}
+	endpoint, err := c.resourceURL(kind, parentID)
 	if err != nil {
 		return err
 	}
@@ -345,6 +388,12 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
+	}
+	if isCosmosType(target.ParentType) && !cosmosSameWireID(responseID(target.ParentType, text(current.data["id"])), parentID) {
+		return fmt.Errorf("Cosmos DB parent changed its resource name")
+	}
+	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
+		return err
 	}
 	if target.CognitiveAncestors != nil {
 		if target.CognitiveNativeLocation != cognitiveNativeLocation(current.data) {
@@ -428,6 +477,15 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 	api := definition.Discovery.List
 	targets := []productTarget{}
 	for _, parent := range parents {
+		if parent.NativeType == cosmosType && isCosmosType(definition.Metadata.NativeType) {
+			applies, err := cosmosChildApplies(definition.Metadata.NativeType, parent.Raw)
+			if err != nil {
+				return nil, err
+			}
+			if !applies {
+				continue
+			}
+		}
 		if definition.Metadata.NativeType == redisLinkType {
 			premium, err := redisPremium(parent.Raw)
 			if err != nil {
@@ -487,6 +545,11 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if isCosmosType(parent.NativeType) {
+				target.ParentWireID = text(parent.Normalized["_cosmos_wire_id"])
+				target.CosmosAncestors = object(parent.Normalized["_cosmos_ancestors"])
+				target.CosmosThroughput = text(parent.Normalized["_cosmos_throughput_binding"])
+			}
 			if isCognitiveType(parent.NativeType) {
 				target.CognitiveAncestors = object(parent.Normalized["_cognitive_ancestors"])
 				target.CognitiveNativeLocation = text(parent.Normalized["_cognitive_native_location"])

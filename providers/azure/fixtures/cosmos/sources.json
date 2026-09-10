@@ -1,0 +1,821 @@
+[
+  {
+    "file": "CosmosDBManagedCassandraClusterDelete.json",
+    "operation": "CassandraClusters_Delete",
+    "label": "CosmosDBManagedCassandraClusterDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraClusterDelete.json",
+    "source_sha256": "40c8d5f4ab4de512a1f70abe84b54365082c5961138d8ace7c13f92d30a62a57"
+  },
+  {
+    "file": "CosmosDBManagedCassandraClusterGet.json",
+    "operation": "CassandraClusters_Get",
+    "label": "CosmosDBManagedCassandraClusterGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraClusterGet.json",
+    "source_sha256": "eca457079ffd42fe2af81cd182f95dfefbaed740f95fd6de32efb4e9ad6b9a9c"
+  },
+  {
+    "file": "CosmosDBManagedCassandraClusterListBySubscription.json",
+    "operation": "CassandraClusters_ListBySubscription",
+    "label": "CosmosDBManagedCassandraClusterListBySubscription",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraClusterListBySubscription.json",
+    "source_sha256": "fcadf919d5d1495bab10af2116a8661f1066e945755ba3d30ec94b1777a65ea1"
+  },
+  {
+    "file": "CosmosDBManagedCassandraStatus.json",
+    "operation": "CassandraClusters_Status",
+    "label": "CosmosDBManagedCassandraStatus",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraStatus.json",
+    "source_sha256": "1eaefe8893dfd29d7fd17d059a0980d4b85a910f60114b1cedd282386789b689"
+  },
+  {
+    "file": "CosmosDBManagedCassandraDataCenterDelete.json",
+    "operation": "CassandraDataCenters_Delete",
+    "label": "CosmosDBManagedCassandraDataCenterDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraDataCenterDelete.json",
+    "source_sha256": "c730caa31671b959bf700551b21b4fdcabff4eba9a6f67fdd6dba956acc79d6b"
+  },
+  {
+    "file": "CosmosDBManagedCassandraDataCenterGet.json",
+    "operation": "CassandraDataCenters_Get",
+    "label": "CosmosDBManagedCassandraDataCenterGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraDataCenterGet.json",
+    "source_sha256": "fb172a1e2d2223e87ea556d53cb1b9b677ae5c81b54b03d2d620b64a84c77410"
+  },
+  {
+    "file": "CosmosDBManagedCassandraDataCenterList.json",
+    "operation": "CassandraDataCenters_List",
+    "label": "CosmosDBManagedCassandraDataCenterList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBManagedCassandraDataCenterList.json",
+    "source_sha256": "9096db45c2e2d6e10d2afc1d3fe6d93cd9af95e3c3848233463c391074cb857a"
+  },
+  {
+    "file": "CosmosDBCassandraKeyspaceDelete.json",
+    "operation": "CassandraResources_DeleteCassandraKeyspace",
+    "label": "CosmosDBCassandraKeyspaceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraKeyspaceDelete.json",
+    "source_sha256": "7df63c5cb62d26886be62bb5f9aa200fa5094b6bcd933ca11f0fca171b4f9ecb"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleAssignmentDelete.json",
+    "operation": "CassandraResources_DeleteCassandraRoleAssignment",
+    "label": "CosmosDBCassandraRoleAssignmentDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleAssignmentDelete.json",
+    "source_sha256": "e401c9931260023200d0dcb6cc6f01b6442b00ad11c1f5da4542f5b6c3020860"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleDefinitionDelete.json",
+    "operation": "CassandraResources_DeleteCassandraRoleDefinition",
+    "label": "CosmosDBCassandraRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleDefinitionDelete.json",
+    "source_sha256": "0ae5e8670a047c27bbfffabdbe61a0616c0d4968bdfe8da6528d03dcdc1477df"
+  },
+  {
+    "file": "CosmosDBCassandraTableDelete.json",
+    "operation": "CassandraResources_DeleteCassandraTable",
+    "label": "CosmosDBCassandraTableDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraTableDelete.json",
+    "source_sha256": "8f490752da8b8bfa584b4828c3fd27899eb11e8c9c875aeff786f0b0cf52e036"
+  },
+  {
+    "file": "CosmosDBCassandraKeyspaceGet.json",
+    "operation": "CassandraResources_GetCassandraKeyspace",
+    "label": "CosmosDBCassandraKeyspaceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraKeyspaceGet.json",
+    "source_sha256": "6ab77f409e58651c4fda7d913d28eaafbe3e4be3bf2d6ccbc7012ed0fa98a87e"
+  },
+  {
+    "file": "CosmosDBCassandraKeyspaceThroughputGet.json",
+    "operation": "CassandraResources_GetCassandraKeyspaceThroughput",
+    "label": "CosmosDBCassandraKeyspaceThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraKeyspaceThroughputGet.json",
+    "source_sha256": "640d576520f907b5d242be0798879af8224db82f3e8c1efd7a893b75caf78be3"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleAssignmentGet.json",
+    "operation": "CassandraResources_GetCassandraRoleAssignment",
+    "label": "CosmosDBCassandraRoleAssignmentGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleAssignmentGet.json",
+    "source_sha256": "d6e6d3d900083d7c7d73c10afe2f18c2d2cbb753afb52e6489dbfb82e8f9d891"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleDefinitionGet.json",
+    "operation": "CassandraResources_GetCassandraRoleDefinition",
+    "label": "CosmosDBCassandraRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleDefinitionGet.json",
+    "source_sha256": "b6f98770f666dcfab319c3256ed20d56a452b026fc50670c07dea9c237190a4a"
+  },
+  {
+    "file": "CosmosDBCassandraTableGet.json",
+    "operation": "CassandraResources_GetCassandraTable",
+    "label": "CosmosDBCassandraTableGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraTableGet.json",
+    "source_sha256": "66d9559c4aa308eb19145ae95b1e049707b247559df18440da4b7870b440e35d"
+  },
+  {
+    "file": "CosmosDBCassandraTableThroughputGet.json",
+    "operation": "CassandraResources_GetCassandraTableThroughput",
+    "label": "CosmosDBCassandraTableThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraTableThroughputGet.json",
+    "source_sha256": "35927ae06f9920b89d9fb718fd36596dbe059fa9d97380cdd3159b0b631a8ce6"
+  },
+  {
+    "file": "CosmosDBCassandraKeyspaceList.json",
+    "operation": "CassandraResources_ListCassandraKeyspaces",
+    "label": "CosmosDBCassandraKeyspaceList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraKeyspaceList.json",
+    "source_sha256": "9c9e7f2a21edef297b18a54d2aa5a6ed46ba76ff85507f4f47f47bdc7f24d00b"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleAssignmentList.json",
+    "operation": "CassandraResources_ListCassandraRoleAssignments",
+    "label": "CosmosDBCassandraRoleAssignmentList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleAssignmentList.json",
+    "source_sha256": "68314ed31e864d3527bb29b65eb2ce8de1d0900bb0d43e509fe65de1fccbb228"
+  },
+  {
+    "file": "cassandrarbac-CosmosDBCassandraRoleDefinitionList.json",
+    "operation": "CassandraResources_ListCassandraRoleDefinitions",
+    "label": "CosmosDBCassandraRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/cassandrarbac/CosmosDBCassandraRoleDefinitionList.json",
+    "source_sha256": "ca7c44b95f399715d37d62602e38633cd3e5462c0452dc75547235ccbb74dace"
+  },
+  {
+    "file": "CosmosDBCassandraTableList.json",
+    "operation": "CassandraResources_ListCassandraTables",
+    "label": "CosmosDBCassandraTableList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBCassandraTableList.json",
+    "source_sha256": "0809386cfc8b5280b3693cba92846dcc72d1c414bd9496d76122baa4f3be4498"
+  },
+  {
+    "file": "CosmosDBDatabaseAccountDelete.json",
+    "operation": "DatabaseAccounts_Delete",
+    "label": "CosmosDBDatabaseAccountDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBDatabaseAccountDelete.json",
+    "source_sha256": "30a030dc488dfe3a347a9afd6e03131f6bd01f703ac4a2725d91f6445ec6d1b4"
+  },
+  {
+    "file": "CosmosDBDatabaseAccountGet.json",
+    "operation": "DatabaseAccounts_Get",
+    "label": "CosmosDBDatabaseAccountGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBDatabaseAccountGet.json",
+    "source_sha256": "8bca3063ab0890e0d487c7e6cb8b7de063f12a7850ca0382d4e3db1a874333b5"
+  },
+  {
+    "file": "CosmosDBDatabaseAccountList.json",
+    "operation": "DatabaseAccounts_List",
+    "label": "CosmosDBDatabaseAccountList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBDatabaseAccountList.json",
+    "source_sha256": "b013267d8213129b6a31e8d53d3b195495d04e7c6076e800e969168b829f7820"
+  },
+  {
+    "file": "fleet-CosmosDBFleetDelete.json",
+    "operation": "Fleet_Delete",
+    "label": "CosmosDB Fleet Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetDelete.json",
+    "source_sha256": "976fd700432fbf080b90502bdbf90f71e2779485b008c0faf788049dbf3c0b6f"
+  },
+  {
+    "file": "fleet-CosmosDBFleetGet.json",
+    "operation": "Fleet_Get",
+    "label": "CosmosDB Fleet Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetGet.json",
+    "source_sha256": "40100bd1bf588e54d2d44790e020d3f99f9075093e0f6e6bfbfef2d9bb368a50"
+  },
+  {
+    "file": "fleet-CosmosDBFleetList.json",
+    "operation": "Fleet_List",
+    "label": "CosmosDB Fleet List by subscription",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetList.json",
+    "source_sha256": "1e504713bc9ce869c3e12932be570fcb79d762a4b38d35f4e9ba5e1e8a4f271f"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceAccountDelete.json",
+    "operation": "FleetspaceAccount_Delete",
+    "label": "CosmosDB FleetspaceAccount Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceAccountDelete.json",
+    "source_sha256": "c7e6215583ecd0463a43633330221688c32c74673fcadccf5dc015c56cdfe319"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceAccountGet.json",
+    "operation": "FleetspaceAccount_Get",
+    "label": "CosmosDB FleetspaceAccount Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceAccountGet.json",
+    "source_sha256": "2f4c774e0f1555dce9450cc7cda4fab45ca899dde9fc481f617fd2489827db5b"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceAccountList.json",
+    "operation": "FleetspaceAccount_List",
+    "label": "CosmosDB FleetspaceAccount List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceAccountList.json",
+    "source_sha256": "1010b6c3cfd2ea009d5c6f2c1d0fb9ab5101c46443fc8ff2820ddfe4a6c6a29e"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceDelete.json",
+    "operation": "Fleetspace_Delete",
+    "label": "CosmosDB Fleetspace Delete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceDelete.json",
+    "source_sha256": "81e507758626f3e1d8cdc244d28e9a7f9a1ecac3415ba0383c5c454d46f2a434"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceGet.json",
+    "operation": "Fleetspace_Get",
+    "label": "CosmosDB Fleetspace Get",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceGet.json",
+    "source_sha256": "697caaabbf13ee384a1e99fcab4704129b2ace2fa01cf842888941380027a83f"
+  },
+  {
+    "file": "fleet-CosmosDBFleetspaceList.json",
+    "operation": "Fleetspace_List",
+    "label": "CosmosDB Fleetspace List",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/fleet/CosmosDBFleetspaceList.json",
+    "source_sha256": "16b536afcf7c9177d24e7bf82c28500b66e572fb09a9def672a6b3c60ab2dcd0"
+  },
+  {
+    "file": "CosmosDBGremlinDatabaseDelete.json",
+    "operation": "GremlinResources_DeleteGremlinDatabase",
+    "label": "CosmosDBGremlinDatabaseDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinDatabaseDelete.json",
+    "source_sha256": "743e23df9e4d4b09b266e74bb7e2915ebc5bda0520523819fd3ad727960c9c65"
+  },
+  {
+    "file": "CosmosDBGremlinGraphDelete.json",
+    "operation": "GremlinResources_DeleteGremlinGraph",
+    "label": "CosmosDBGremlinGraphDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinGraphDelete.json",
+    "source_sha256": "10f447e6757d650400f05cfaca9fab15c35b09f8af1c447120ad23d4f352e207"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleAssignmentDelete.json",
+    "operation": "GremlinResources_DeleteGremlinRoleAssignment",
+    "label": "CosmosDBGremlinRoleAssignmentDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleAssignmentDelete.json",
+    "source_sha256": "4077949a4f60d9f3f39c77ee830113d5b782e661e08d6f6800d2f289dfc8150c"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleDefinitionDelete.json",
+    "operation": "GremlinResources_DeleteGremlinRoleDefinition",
+    "label": "CosmosDBGremlinRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleDefinitionDelete.json",
+    "source_sha256": "d62f14cb2395561f59b4acdfe1487c9d953d31eaf56a1fdea18b0c65bfa7d3c4"
+  },
+  {
+    "file": "CosmosDBGremlinDatabaseGet.json",
+    "operation": "GremlinResources_GetGremlinDatabase",
+    "label": "CosmosDBGremlinDatabaseGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinDatabaseGet.json",
+    "source_sha256": "f200227a7d35714f7864d012814f3b222e43d568f5f25b863a6a74ae8a2a44eb"
+  },
+  {
+    "file": "CosmosDBGremlinDatabaseThroughputGet.json",
+    "operation": "GremlinResources_GetGremlinDatabaseThroughput",
+    "label": "CosmosDBGremlinDatabaseThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinDatabaseThroughputGet.json",
+    "source_sha256": "2c0731ec9532ecb31cafcc25dee12a603ba618e82270ad17953299a71cb0b93d"
+  },
+  {
+    "file": "CosmosDBGremlinGraphGet.json",
+    "operation": "GremlinResources_GetGremlinGraph",
+    "label": "CosmosDBGremlinGraphGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinGraphGet.json",
+    "source_sha256": "91a1caf61f15e03ea22cba20476cc5cff27c72dee335b1ed0ef131495ff93429"
+  },
+  {
+    "file": "CosmosDBGremlinGraphThroughputGet.json",
+    "operation": "GremlinResources_GetGremlinGraphThroughput",
+    "label": "CosmosDBGremlinGraphThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinGraphThroughputGet.json",
+    "source_sha256": "82626fbec3b27a9f39cbf160aadd14d9ce45004ad49ca56ccaa2c3e3861e9c39"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleAssignmentGet.json",
+    "operation": "GremlinResources_GetGremlinRoleAssignment",
+    "label": "CosmosDBGremlinRoleAssignmentGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleAssignmentGet.json",
+    "source_sha256": "88afac5ea17fceb09089659387ff1e6aa845ec8585ab033ec9e82e88d31ffb43"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleDefinitionGet.json",
+    "operation": "GremlinResources_GetGremlinRoleDefinition",
+    "label": "CosmosDBGremlinRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleDefinitionGet.json",
+    "source_sha256": "ac17b341f315e73e611a51e0618461fd2fc51c2a8353684598169f3c6c71ac34"
+  },
+  {
+    "file": "CosmosDBGremlinDatabaseList.json",
+    "operation": "GremlinResources_ListGremlinDatabases",
+    "label": "CosmosDBGremlinDatabaseList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinDatabaseList.json",
+    "source_sha256": "6c820d06c71081bdf8191504a33ec1972a8e0ba11a253c14df74c2e831b1ec75"
+  },
+  {
+    "file": "CosmosDBGremlinGraphList.json",
+    "operation": "GremlinResources_ListGremlinGraphs",
+    "label": "CosmosDBGremlinGraphList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGremlinGraphList.json",
+    "source_sha256": "fc621f9462ece6865ab8ae5534c797f19b899c935804a03106206d7aaddca44a"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleAssignmentList.json",
+    "operation": "GremlinResources_ListGremlinRoleAssignments",
+    "label": "CosmosDBGremlinRoleAssignmentList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleAssignmentList.json",
+    "source_sha256": "e091fa5ed23e55e55c89981259dfff97f59854c97b4f4949b23187b8086f7d33"
+  },
+  {
+    "file": "gremlinrbac-CosmosDBGremlinRoleDefinitionList.json",
+    "operation": "GremlinResources_ListGremlinRoleDefinitions",
+    "label": "CosmosDBGremlinRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/gremlinrbac/CosmosDBGremlinRoleDefinitionList.json",
+    "source_sha256": "2a10993099aa37be90afaef523a9c3bce013f712f960a23d6821a861c8ce1dee"
+  },
+  {
+    "file": "CosmosDBMongoDBCollectionDelete.json",
+    "operation": "MongoDBResources_DeleteMongoDBCollection",
+    "label": "CosmosDBMongoDBCollectionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBCollectionDelete.json",
+    "source_sha256": "59d3a2a07bc8c4b3548f224f575e2dc34dbd341ac9d525d8554162d7a59f2fad"
+  },
+  {
+    "file": "CosmosDBMongoDBDatabaseDelete.json",
+    "operation": "MongoDBResources_DeleteMongoDBDatabase",
+    "label": "CosmosDBMongoDBDatabaseDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBDatabaseDelete.json",
+    "source_sha256": "4528afe522dc356d3a29afdb38b99a87e86a72f1c394c93ea368a75ed314a59b"
+  },
+  {
+    "file": "CosmosDBMongoDBRoleDefinitionDelete.json",
+    "operation": "MongoDBResources_DeleteMongoRoleDefinition",
+    "label": "CosmosDBMongoDBRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBRoleDefinitionDelete.json",
+    "source_sha256": "8e26c5d1249f51968f0a52adc396c28ad06ab17d9f615bed1d504edeca909c18"
+  },
+  {
+    "file": "CosmosDBMongoDBUserDefinitionDelete.json",
+    "operation": "MongoDBResources_DeleteMongoUserDefinition",
+    "label": "CosmosDBMongoDBUserDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBUserDefinitionDelete.json",
+    "source_sha256": "4a7ff093b284396ea4798bb7e86e0e6e8624789b504b541e7cf11abd0383ff1b"
+  },
+  {
+    "file": "CosmosDBMongoDBCollectionGet.json",
+    "operation": "MongoDBResources_GetMongoDBCollection",
+    "label": "CosmosDBMongoDBCollectionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBCollectionGet.json",
+    "source_sha256": "c1cdee4697dd85b427ec34959344ecd25db8788dab9be9a243c576ffbea756df"
+  },
+  {
+    "file": "CosmosDBMongoDBCollectionThroughputGet.json",
+    "operation": "MongoDBResources_GetMongoDBCollectionThroughput",
+    "label": "CosmosDBMongoDBCollectionThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBCollectionThroughputGet.json",
+    "source_sha256": "22511def2f07a91823b47d3d326e2ef1906a5d5497c78b4ac8c2d102532ae6b9"
+  },
+  {
+    "file": "CosmosDBMongoDBDatabaseGet.json",
+    "operation": "MongoDBResources_GetMongoDBDatabase",
+    "label": "CosmosDBMongoDBDatabaseGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBDatabaseGet.json",
+    "source_sha256": "5efba68738d29698c883f95ef845d0a54b7c408c4f019471fec2d197235f49a9"
+  },
+  {
+    "file": "CosmosDBMongoDBDatabaseThroughputGet.json",
+    "operation": "MongoDBResources_GetMongoDBDatabaseThroughput",
+    "label": "CosmosDBMongoDBDatabaseThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBDatabaseThroughputGet.json",
+    "source_sha256": "ffdaa2af47ff95c14b6c30d2b626f100843cec46bc61c32b04ad681c580c4af7"
+  },
+  {
+    "file": "CosmosDBMongoDBRoleDefinitionGet.json",
+    "operation": "MongoDBResources_GetMongoRoleDefinition",
+    "label": "CosmosDBMongoRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBRoleDefinitionGet.json",
+    "source_sha256": "6e8a262a257ee86ce33e2d76b82af460ad2c568114070f17b5e103f5aa02f5d0"
+  },
+  {
+    "file": "CosmosDBMongoDBUserDefinitionGet.json",
+    "operation": "MongoDBResources_GetMongoUserDefinition",
+    "label": "CosmosDBMongoDBUserDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBUserDefinitionGet.json",
+    "source_sha256": "e2962c0b1a6b009c9512058dcc1c4eb24e14890dd57ff524369b96540f8384aa"
+  },
+  {
+    "file": "CosmosDBMongoDBCollectionList.json",
+    "operation": "MongoDBResources_ListMongoDBCollections",
+    "label": "CosmosDBMongoDBCollectionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBCollectionList.json",
+    "source_sha256": "efe84142603b04edda09d98588aeb1a914814c6804fec667636a8acf7839f557"
+  },
+  {
+    "file": "CosmosDBMongoDBDatabaseList.json",
+    "operation": "MongoDBResources_ListMongoDBDatabases",
+    "label": "CosmosDBMongoDBDatabaseList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBDatabaseList.json",
+    "source_sha256": "67aa5772912ce9658f3f3e4d28fe278d9a1ffb07b09fbc86dcb51d610d9ebf10"
+  },
+  {
+    "file": "CosmosDBMongoDBRoleDefinitionList.json",
+    "operation": "MongoDBResources_ListMongoRoleDefinitions",
+    "label": "CosmosDBMongoDBRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBRoleDefinitionList.json",
+    "source_sha256": "1fcb0e400fd1ee30362f05e2bdfdb2d1675c5741bb91dc1f5eb17fe410372562"
+  },
+  {
+    "file": "CosmosDBMongoDBUserDefinitionList.json",
+    "operation": "MongoDBResources_ListMongoUserDefinitions",
+    "label": "CosmosDBMongoDBUserDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMongoDBUserDefinitionList.json",
+    "source_sha256": "21516c7751f3220e802f6151d5c26c5efc3d4b25fbe2b972d8b7e02c6409068e"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleAssignmentDelete.json",
+    "operation": "MongoMIResources_DeleteMongoMIRoleAssignment",
+    "label": "CosmosDBMongoMIRoleAssignmentDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleAssignmentDelete.json",
+    "source_sha256": "24b279df229e4ba22a1a03bff9eb16d7ffe2286f739d7110a4482653b8d8dc27"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleDefinitionDelete.json",
+    "operation": "MongoMIResources_DeleteMongoMIRoleDefinition",
+    "label": "CosmosDBMongoMIRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleDefinitionDelete.json",
+    "source_sha256": "61f60e0e49d58f6237117c7c2cd862a4aa223a2348dbb12b0a7247e45afa0414"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleAssignmentGet.json",
+    "operation": "MongoMIResources_GetMongoMIRoleAssignment",
+    "label": "CosmosDBMongoMIRoleAssignmentGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleAssignmentGet.json",
+    "source_sha256": "d337d6e3c791d6e25749d34282ba0081441d0ef2cc1aee83577ba068db1db746"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleDefinitionGet.json",
+    "operation": "MongoMIResources_GetMongoMIRoleDefinition",
+    "label": "CosmosDBMongoMIRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleDefinitionGet.json",
+    "source_sha256": "1f8bccf6474244adafa3ffba96ef5f789d0d64e9dea8a9692f00312245068ce8"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleAssignmentList.json",
+    "operation": "MongoMIResources_ListMongoMIRoleAssignments",
+    "label": "CosmosDBMongoMIRoleAssignmentList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleAssignmentList.json",
+    "source_sha256": "703576263b49fa53c5d1483796c0d99179a3a9305f24786fdb141628aecef8fd"
+  },
+  {
+    "file": "mongoMIrbac-CosmosDBMongoMIRoleDefinitionList.json",
+    "operation": "MongoMIResources_ListMongoMIRoleDefinitions",
+    "label": "CosmosDBMongoMIRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/mongoMIrbac/CosmosDBMongoMIRoleDefinitionList.json",
+    "source_sha256": "73fb84f44db88e62e508f99b05f4e83e35a5b8cbfab6138ce1e386b62a24181b"
+  },
+  {
+    "file": "CosmosDBNotebookWorkspaceDelete.json",
+    "operation": "NotebookWorkspaces_Delete",
+    "label": "CosmosDBNotebookWorkspaceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBNotebookWorkspaceDelete.json",
+    "source_sha256": "1941195c7943fa826ee317de70b190cdbad09fdffec36168b94f51a02b01faa1"
+  },
+  {
+    "file": "CosmosDBNotebookWorkspaceGet.json",
+    "operation": "NotebookWorkspaces_Get",
+    "label": "CosmosDBNotebookWorkspaceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBNotebookWorkspaceGet.json",
+    "source_sha256": "0e6c6ff3cbc9eaa1d9601ce778a91aff4bd0a42cc1c89d031aafecd8c754d949"
+  },
+  {
+    "file": "CosmosDBNotebookWorkspaceList.json",
+    "operation": "NotebookWorkspaces_ListByDatabaseAccount",
+    "label": "CosmosDBNotebookWorkspaceList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBNotebookWorkspaceList.json",
+    "source_sha256": "4d5074961b9e9b0bf36c254079e322c09f4a086c2e03453ef3f5da6331d0cebf"
+  },
+  {
+    "file": "CosmosDBPrivateEndpointConnectionDelete.json",
+    "operation": "PrivateEndpointConnections_Delete",
+    "label": "Deletes a private endpoint connection with a given name.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBPrivateEndpointConnectionDelete.json",
+    "source_sha256": "a8f909746471799e4da58ceae382102a345f61765cb413964265c2fbddc648d9"
+  },
+  {
+    "file": "CosmosDBPrivateEndpointConnectionGet.json",
+    "operation": "PrivateEndpointConnections_Get",
+    "label": "Gets private endpoint connection.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBPrivateEndpointConnectionGet.json",
+    "source_sha256": "f1018703b6b3c16492dc645c7392c083fbc36a2b43563daf3984fe801151549a"
+  },
+  {
+    "file": "CosmosDBPrivateEndpointConnectionListGet.json",
+    "operation": "PrivateEndpointConnections_ListByDatabaseAccount",
+    "label": "Gets private endpoint connection.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBPrivateEndpointConnectionListGet.json",
+    "source_sha256": "b44a8896efbc392051d632107a58cede447e3a06aaf7bc5770818b8208b86183"
+  },
+  {
+    "file": "CosmosDBDataTransferServiceDelete.json",
+    "operation": "Service_Delete",
+    "label": "DataTransferServiceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBDataTransferServiceDelete.json",
+    "source_sha256": "f3c0612b0c8443cb36f170f21fb08cc7b74b0c8c74440c051d70e09cb8fa558c"
+  },
+  {
+    "file": "CosmosDBGraphAPIComputeServiceDelete.json",
+    "operation": "Service_Delete",
+    "label": "GraphAPIComputeServiceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGraphAPIComputeServiceDelete.json",
+    "source_sha256": "edb8510e9f79fbd444dde88eb43f7a4a80f5139bcc072d70a9bd70887c80786b"
+  },
+  {
+    "file": "CosmosDBMaterializedViewsBuilderServiceDelete.json",
+    "operation": "Service_Delete",
+    "label": "MaterializedViewsBuilderServiceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMaterializedViewsBuilderServiceDelete.json",
+    "source_sha256": "b861dd8202bd90b6736f0a54eae64c7ca76a2ee402b6ac709d064e366843dab6"
+  },
+  {
+    "file": "services-sqldedicatedgateway-CosmosDBSqlDedicatedGatewayServiceDelete.json",
+    "operation": "Service_Delete",
+    "label": "SqlDedicatedGatewayServiceDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/services/sqldedicatedgateway/CosmosDBSqlDedicatedGatewayServiceDelete.json",
+    "source_sha256": "8ecbf5af63caafde0765cbee1551b12c1107d747813be7ad42c71fdaa3c0616d"
+  },
+  {
+    "file": "CosmosDBDataTransferServiceGet.json",
+    "operation": "Service_Get",
+    "label": "DataTransferServiceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBDataTransferServiceGet.json",
+    "source_sha256": "eb81f3809b2f15272c273d9bfb0360f3e377bcdad990fca32a9877b0c62b2a70"
+  },
+  {
+    "file": "CosmosDBGraphAPIComputeServiceGet.json",
+    "operation": "Service_Get",
+    "label": "GraphAPIComputeServiceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBGraphAPIComputeServiceGet.json",
+    "source_sha256": "11c188e7891e7cad4ea5a0016a292ea2c9ea514aeb21d5b68f5995b73a7ddc7a"
+  },
+  {
+    "file": "CosmosDBMaterializedViewsBuilderServiceGet.json",
+    "operation": "Service_Get",
+    "label": "MaterializedViewsBuilderServiceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBMaterializedViewsBuilderServiceGet.json",
+    "source_sha256": "9ae1570684c2194ce8c15a7de0d8fe7df770118a90edecfe27805455250d1c92"
+  },
+  {
+    "file": "services-sqldedicatedgateway-CosmosDBSqlDedicatedGatewayServiceGet.json",
+    "operation": "Service_Get",
+    "label": "SqlDedicatedGatewayServiceGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/services/sqldedicatedgateway/CosmosDBSqlDedicatedGatewayServiceGet.json",
+    "source_sha256": "7581860259809731ca814298aee8f7ed6f3faf4377199715b66191eaa5318340"
+  },
+  {
+    "file": "CosmosDBServicesList.json",
+    "operation": "Service_List",
+    "label": "CosmosDBServicesList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBServicesList.json",
+    "source_sha256": "b4d6a93264920620d01851259818605c95c7f51d87ccfda3c718696f5c0e13af"
+  },
+  {
+    "file": "CosmosDBSqlContainerDelete.json",
+    "operation": "SqlResources_DeleteSqlContainer",
+    "label": "CosmosDBSqlContainerDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlContainerDelete.json",
+    "source_sha256": "491419bda9bdad4a9a12169839d1a7e99c0ac4ce453db7cc457a4deff0a840fd"
+  },
+  {
+    "file": "CosmosDBSqlDatabaseDelete.json",
+    "operation": "SqlResources_DeleteSqlDatabase",
+    "label": "CosmosDBSqlDatabaseDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlDatabaseDelete.json",
+    "source_sha256": "a2651a52ad3ff5766638b8d795b99c95242a51ee06ab09181063df23c7ce8bab"
+  },
+  {
+    "file": "CosmosDBSqlRoleAssignmentDelete.json",
+    "operation": "SqlResources_DeleteSqlRoleAssignment",
+    "label": "CosmosDBSqlRoleAssignmentDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleAssignmentDelete.json",
+    "source_sha256": "4d8729459d65ba81f65528a04a98b8c7137688d443e8f3106a0d5fad03666e95"
+  },
+  {
+    "file": "CosmosDBSqlRoleDefinitionDelete.json",
+    "operation": "SqlResources_DeleteSqlRoleDefinition",
+    "label": "CosmosDBSqlRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleDefinitionDelete.json",
+    "source_sha256": "a213af141e95804a3de3cca2f99de93427a76c27dfd9cbc2c6c200d998b18e24"
+  },
+  {
+    "file": "CosmosDBSqlStoredProcedureDelete.json",
+    "operation": "SqlResources_DeleteSqlStoredProcedure",
+    "label": "CosmosDBSqlStoredProcedureDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlStoredProcedureDelete.json",
+    "source_sha256": "f5413b9b75e0c4ffb61ec5389f6f86abb098981d2454b9334321f0d6b56417de"
+  },
+  {
+    "file": "CosmosDBSqlTriggerDelete.json",
+    "operation": "SqlResources_DeleteSqlTrigger",
+    "label": "CosmosDBSqlTriggerDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlTriggerDelete.json",
+    "source_sha256": "8ff5c4a4afa0ce37257b8d8212ee39d959e11d25aa53d1e2e4141075ae854a69"
+  },
+  {
+    "file": "CosmosDBSqlUserDefinedFunctionDelete.json",
+    "operation": "SqlResources_DeleteSqlUserDefinedFunction",
+    "label": "CosmosDBSqlUserDefinedFunctionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlUserDefinedFunctionDelete.json",
+    "source_sha256": "fc78122d493a015a1a9722619b95af3256532fb6099a9aa2c58f160784078402"
+  },
+  {
+    "file": "CosmosDBSqlClientEncryptionKeyGet.json",
+    "operation": "SqlResources_GetClientEncryptionKey",
+    "label": "CosmosDBClientEncryptionKeyGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlClientEncryptionKeyGet.json",
+    "source_sha256": "367d15144f43aded514eae3bdb28d8c7a4d9e3c1a06f73b7973df435bd8a9cca"
+  },
+  {
+    "file": "CosmosDBSqlContainerGet.json",
+    "operation": "SqlResources_GetSqlContainer",
+    "label": "CosmosDBSqlContainerGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlContainerGet.json",
+    "source_sha256": "75c381f3326900a4a85960c6ad43b1695d89a7c7ed097d2e3b9d527b0191e7df"
+  },
+  {
+    "file": "CosmosDBSqlContainerThroughputGet.json",
+    "operation": "SqlResources_GetSqlContainerThroughput",
+    "label": "CosmosDBSqlContainerThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlContainerThroughputGet.json",
+    "source_sha256": "851c2eb1dbc36b3dc02d6218778c4df71caf8474dfc37bde865be0ff87ce09f0"
+  },
+  {
+    "file": "CosmosDBSqlDatabaseGet.json",
+    "operation": "SqlResources_GetSqlDatabase",
+    "label": "CosmosDBSqlDatabaseGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlDatabaseGet.json",
+    "source_sha256": "1cb77735f7859ca5640a5f86659932d1a106beeea8730022fa1487c613147ba7"
+  },
+  {
+    "file": "CosmosDBSqlDatabaseThroughputGet.json",
+    "operation": "SqlResources_GetSqlDatabaseThroughput",
+    "label": "CosmosDBSqlDatabaseThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlDatabaseThroughputGet.json",
+    "source_sha256": "34aa1627df09fb5029b9da18408684d359f26afd7dd7782b6d58b5a2b5feee20"
+  },
+  {
+    "file": "CosmosDBSqlRoleAssignmentGet.json",
+    "operation": "SqlResources_GetSqlRoleAssignment",
+    "label": "CosmosDBSqlRoleAssignmentGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleAssignmentGet.json",
+    "source_sha256": "c0a4d5af5a337a86dbee495eb3cef16b32ab7a9241f6c22db0e686f146fe9492"
+  },
+  {
+    "file": "CosmosDBSqlRoleDefinitionGet.json",
+    "operation": "SqlResources_GetSqlRoleDefinition",
+    "label": "CosmosDBSqlRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleDefinitionGet.json",
+    "source_sha256": "9e57feedaee195dfd6d0da700855bdde7cda8eaad7e6112023ba5a2f7046cbb5"
+  },
+  {
+    "file": "CosmosDBSqlStoredProcedureGet.json",
+    "operation": "SqlResources_GetSqlStoredProcedure",
+    "label": "CosmosDBSqlStoredProcedureGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlStoredProcedureGet.json",
+    "source_sha256": "17dbbcba77dfa4fb2c502a5cd4e31a1f73f248d435f27f799969f7b71e37e3ea"
+  },
+  {
+    "file": "CosmosDBSqlTriggerGet.json",
+    "operation": "SqlResources_GetSqlTrigger",
+    "label": "CosmosDBSqlTriggerGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlTriggerGet.json",
+    "source_sha256": "ed4ff5afedc43b6829303fc97f9b1cf3a8f53accbc8cf05919548f863e044c6d"
+  },
+  {
+    "file": "CosmosDBSqlUserDefinedFunctionGet.json",
+    "operation": "SqlResources_GetSqlUserDefinedFunction",
+    "label": "CosmosDBSqlUserDefinedFunctionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlUserDefinedFunctionGet.json",
+    "source_sha256": "b0d50f56b27834bdd7068069570b2cab2000a79dde35b3955e1de3a66080078e"
+  },
+  {
+    "file": "CosmosDBSqlClientEncryptionKeysList.json",
+    "operation": "SqlResources_ListClientEncryptionKeys",
+    "label": "CosmosDBClientEncryptionKeysList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlClientEncryptionKeysList.json",
+    "source_sha256": "d32ab0fedbacef5d709b3bff9e2a27b21a3b7c85ceecf421f8454080ca038859"
+  },
+  {
+    "file": "CosmosDBSqlContainerList.json",
+    "operation": "SqlResources_ListSqlContainers",
+    "label": "CosmosDBSqlContainerList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlContainerList.json",
+    "source_sha256": "752011249e19857786ecbe282db6e2da7e64915181aa12f7633f84c1e1c2f302"
+  },
+  {
+    "file": "CosmosDBSqlDatabaseList.json",
+    "operation": "SqlResources_ListSqlDatabases",
+    "label": "CosmosDBSqlDatabaseList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlDatabaseList.json",
+    "source_sha256": "a4db01334608a8feb0877640f36fa686925cd21176ff5607669521ef7697251e"
+  },
+  {
+    "file": "CosmosDBSqlRoleAssignmentList.json",
+    "operation": "SqlResources_ListSqlRoleAssignments",
+    "label": "CosmosDBSqlRoleAssignmentList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleAssignmentList.json",
+    "source_sha256": "88e5a2ca170abcecfe8d0607a6dc3af3375b1bcdd65b4159ccbf6fd03e80d1ed"
+  },
+  {
+    "file": "CosmosDBSqlRoleDefinitionList.json",
+    "operation": "SqlResources_ListSqlRoleDefinitions",
+    "label": "CosmosDBSqlRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlRoleDefinitionList.json",
+    "source_sha256": "bcf8ea2bb25a2bd65f02f992c2b94dd85288e65f6e46ac347e3b4d1b2b8eac5b"
+  },
+  {
+    "file": "CosmosDBSqlStoredProcedureList.json",
+    "operation": "SqlResources_ListSqlStoredProcedures",
+    "label": "CosmosDBSqlStoredProcedureList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlStoredProcedureList.json",
+    "source_sha256": "8aa138a4d5b1b7c94f5d84b3c8444546f8b5b7b1d507db1a3722b845a3c1530d"
+  },
+  {
+    "file": "CosmosDBSqlTriggerList.json",
+    "operation": "SqlResources_ListSqlTriggers",
+    "label": "CosmosDBSqlTriggerList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlTriggerList.json",
+    "source_sha256": "579c5e90f7e1c2bd2d67cec58704f950b52d42844337f1cceaf0a37ff70b535f"
+  },
+  {
+    "file": "CosmosDBSqlUserDefinedFunctionList.json",
+    "operation": "SqlResources_ListSqlUserDefinedFunctions",
+    "label": "CosmosDBSqlUserDefinedFunctionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBSqlUserDefinedFunctionList.json",
+    "source_sha256": "135dc7828964d2bff0637c011a2f0e2a77037431acf3a0ab5ed5d6f45f7636e7"
+  },
+  {
+    "file": "CosmosDBTableDelete.json",
+    "operation": "TableResources_DeleteTable",
+    "label": "CosmosDBTableDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBTableDelete.json",
+    "source_sha256": "d428764f0cf4df8891d4433310767b6ee1ce9e5fc71fbf36fbd8017b0c31870d"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleAssignmentDelete.json",
+    "operation": "TableResources_DeleteTableRoleAssignment",
+    "label": "CosmosDBTableRoleAssignmentDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleAssignmentDelete.json",
+    "source_sha256": "8a2f64289d4187367ba2239086279f0802283ccbb1680c18ed4717af393c8cde"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleDefinitionDelete.json",
+    "operation": "TableResources_DeleteTableRoleDefinition",
+    "label": "CosmosDBTableRoleDefinitionDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleDefinitionDelete.json",
+    "source_sha256": "cebd5a920ea5c2c76391a5c44074b04a4680b86bf168d999085e1d874119eefa"
+  },
+  {
+    "file": "CosmosDBTableGet.json",
+    "operation": "TableResources_GetTable",
+    "label": "CosmosDBTableGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBTableGet.json",
+    "source_sha256": "cb234fa67c8c3ad5c63918f53ed75287514d4a79829fbb625faa56fc54421d01"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleAssignmentGet.json",
+    "operation": "TableResources_GetTableRoleAssignment",
+    "label": "CosmosDBTableRoleAssignmentGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleAssignmentGet.json",
+    "source_sha256": "1281efc984027522708343517b95d4c17b497d5e95c625a119dbdb3c185399b4"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleDefinitionGet.json",
+    "operation": "TableResources_GetTableRoleDefinition",
+    "label": "CosmosDBTableRoleDefinitionGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleDefinitionGet.json",
+    "source_sha256": "9252b356a2f313e51b9dda6896d4d5c2393413321937c450e81f9a1857a2adaf"
+  },
+  {
+    "file": "CosmosDBTableThroughputGet.json",
+    "operation": "TableResources_GetTableThroughput",
+    "label": "CosmosDBTableThroughputGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBTableThroughputGet.json",
+    "source_sha256": "10cf60b578e1340814879ba60769dcbccfefc83f1da4a4095022f492b3e248d9"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleAssignmentList.json",
+    "operation": "TableResources_ListTableRoleAssignments",
+    "label": "CosmosDBTableRoleAssignmentList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleAssignmentList.json",
+    "source_sha256": "9443a09ccea0c669919868480a7a3c1ea4889ac3d15d9b7452ca8333fba1c334"
+  },
+  {
+    "file": "tablerbac-CosmosDBTableRoleDefinitionList.json",
+    "operation": "TableResources_ListTableRoleDefinitions",
+    "label": "CosmosDBTableRoleDefinitionList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/tablerbac/CosmosDBTableRoleDefinitionList.json",
+    "source_sha256": "fa9921161c9a2a0d0f5206ed253d6fa420727111b7a2828809d6809debff447c"
+  },
+  {
+    "file": "CosmosDBTableList.json",
+    "operation": "TableResources_ListTables",
+    "label": "CosmosDBTableList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/examples/CosmosDBTableList.json",
+    "source_sha256": "498986e1a21ebf2c0ddaabcf20ba699c162a52e234fe6870d7f04895012840c6"
+  }
+]

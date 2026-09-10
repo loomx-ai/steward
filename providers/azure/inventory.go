@@ -131,7 +131,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			raw = detail.data
 			raw["id"] = responseID(kind.NativeType, text(raw["id"]))
 			raw["type"] = kind.NativeType
-			if text(raw["location"]) == "" {
+			if text(raw["location"]) == "" && !isCosmosType(kind.NativeType) {
 				raw["location"] = resourceRegion(object(value))
 			}
 		}
@@ -153,6 +153,9 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	return batch, nil
 }
 func resourceRegion(raw map[string]any) string {
+	if kind := cosmosKind(text(raw["type"])); kind != "" {
+		return cosmosRegion(kind, raw)
+	}
 	if strings.EqualFold(text(raw["type"]), groupType) {
 		return "global"
 	}
@@ -172,7 +175,7 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 	var values []any
 	verifiedChildren := map[string]bool{}
 	if HasServiceCascade(kind.NativeType) {
-		endpoint, err := c.resourceURL(kind, id)
+		endpoint, err := c.resourceURL(kind, responseID(kind.NativeType, text(raw["id"])))
 		if err != nil {
 			return nil, err
 		}
@@ -225,7 +228,7 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 			return nil, fmt.Errorf("unexpected Azure child resource type")
 		}
 		child["type"] = known.NativeType
-		if text(child["location"]) == "" {
+		if text(child["location"]) == "" && !isCosmosType(known.NativeType) {
 			child["location"] = resourceRegion(raw)
 		}
 		result = append(result, child)
@@ -279,6 +282,14 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if isCosmosType(nativeType) {
+		wire := responseID(nativeType, text(raw["id"]))
+		normalized["_cosmos_wire_id"] = wire
+		normalized["_cosmos_wire_binding"] = c.cosmosWireBinding(nativeType, wire)
+	}
+	if err := c.cosmosInventory(ctx, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.cognitiveInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -360,7 +371,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_parent_configuration"] = serviceParentConfiguration(nativeType, raw)
 	}
 	if known {
-		_, parameters, err := c.resourceOperation(kind, id, "GET")
+		_, parameters, err := c.resourceOperation(kind, responseID(nativeType, text(raw["id"])), "GET")
 		if err != nil {
 			return contracts.InventoryItem{}, err
 		}
@@ -382,6 +393,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
 	reason := protectionReason(kind, raw)
+	if reason == "" && isCosmosType(nativeType) {
+		reason = cosmosThroughputProtection(object(normalized["_cosmos_throughput"]))
+	}
 	if replicationReason, creation, err := c.messagingReplicationContext(ctx, nativeType, id); err != nil {
 		return contracts.InventoryItem{}, err
 	} else {
@@ -410,6 +424,15 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if isCosmosType(nativeType) {
+		for _, value := range stringValues(normalized["_cosmos_references"]) {
+			if id, typ, err := parseID(value); err == nil {
+				if mapping, ok := findType(typ); ok {
+					addReference(refs, mapping.NativeType, id)
+				}
+			}
+		}
+	}
 	if isCognitiveType(nativeType) {
 		for _, value := range stringValues(normalized["_cognitive_references"]) {
 			if ref, refKind, err := parseID(value); err == nil {
@@ -563,6 +586,11 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	if isGrafanaType(nativeType) {
 		fields["privatelinkresourceid"], fields["datasourceresourceid"], fields["azuremonitorworkspaceresourceid"] = true, true, true
 	}
+	if isCosmosType(nativeType) {
+		for _, key := range []string{"virtualnetworkrules", "delegatedmanagementsubnetid", "delegatedsubnetid", "privatelinkresourceid", "networkaclbypassresourceids"} {
+			fields[key] = true
+		}
+	}
 	if isCognitiveType(nativeType) {
 		for _, key := range []string{"resourceid", "subnetarmid", "customersubnet", "serviceresourceid", "accountid", "commitmentplanid"} {
 			fields[key] = true
@@ -669,6 +697,7 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 }
 
 func locked(id string, locks []any) bool {
+	id = strings.ToLower(id)
 	for _, value := range locks {
 		lock := object(value)
 		level := strings.ToLower(text(object(lock["properties"])["level"]))
@@ -695,6 +724,26 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
+			if key == "properties" && (strings.HasPrefix(strings.ToLower(text(typed["type"])), "microsoft.documentdb/") || strings.Contains(strings.ToLower(text(typed["id"])), "/providers/microsoft.documentdb/")) {
+				properties := map[string]any{}
+				for name, item := range object(value) {
+					if name == "initialCassandraAdminPassword" || name == "base64EncodedCassandraYamlFragment" {
+						continue
+					}
+					if name == "resource" {
+						resource := map[string]any{}
+						for field, entry := range object(item) {
+							if field != "body" && field != "wrappedDataEncryptionKey" {
+								resource[field] = entry
+							}
+						}
+						item = resource
+					}
+					properties[name] = item
+				}
+				result[key] = safeResource(properties)
+				continue
+			}
 			if typed["matchVariable"] != nil && (key == "matchValue" || key == "matchValues") {
 				continue
 			}

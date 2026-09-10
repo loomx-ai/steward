@@ -56,3 +56,8 @@ injected lifecycle/readback cases are explicitly documented.
 examples and 31 Microsoft CLI responses. Their native schemas, account/project
 dependencies, managed-network cleanup, soft deletion and remaining connection
 network gaps have documented checks and provenance.
+
+[Cosmos DB](cosmos/README.md) retains 117 original Swagger examples and 386
+Microsoft CLI responses. Its evidence distinguishes upstream trigger schema
+defects, case-sensitive requests, signed operation replay, synthetic final
+absence and the available emulators' data-plane boundary.

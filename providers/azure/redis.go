@@ -313,7 +313,7 @@ func redisSharedPrerequisite(parent, child asset.Asset) bool {
 }
 
 func (a *action) resourceOperationResponse(endpoint string, res response) error {
-	if !isRedisType(a.kind.NativeType) && !isSearchType(a.kind.NativeType) && !isCognitiveType(a.kind.NativeType) {
+	if !isRedisType(a.kind.NativeType) && !isSearchType(a.kind.NativeType) && !isCognitiveType(a.kind.NativeType) && !isCosmosType(a.kind.NativeType) {
 		return nil
 	}
 	if res.status != 200 && res.status != 202 && res.status != 204 {
@@ -321,6 +321,12 @@ func (a *action) resourceOperationResponse(endpoint string, res response) error 
 	}
 	u, _ := url.Parse(endpoint)
 	for field, expected := range map[string]string{"id": u.Path, "name": last(u.Path), "resourceId": a.id} {
+		if isCosmosType(a.kind.NativeType) && field == "resourceId" {
+			if value, present := res.data[field]; present && !cosmosSameWireID(responseID(a.kind.NativeType, text(value)), a.wireID) {
+				return fmt.Errorf("Cosmos DB polling response belongs to another resource")
+			}
+			continue
+		}
 		if value, present := res.data[field]; present && !strings.EqualFold(text(value), expected) {
 			return fmt.Errorf("Azure polling response belongs to another resource or operation")
 		}

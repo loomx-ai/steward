@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"maps"
+	"net/url"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
@@ -78,6 +79,12 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	operationID := operationLocation(result.header)
 	if operationID != "" {
 		validate := c.validateURL
+		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.DocumentDB.") {
+			u, _ := url.Parse(request.URL)
+			validate = func(endpoint string) error {
+				return validateCosmosOperationURL(c.subscription, u.Path, operation.Call.Version, endpoint)
+			}
+		}
 		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.Dashboard.") && grafanaGlobalOperation(operationID) {
 			validate = func(endpoint string) error { return validateGrafanaGlobalOperation(endpoint, "") }
 		}
@@ -109,6 +116,12 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		ids = kind.DeleteOperations
 	}
 	parts := strings.Split(id, "/")
+	if isCosmosType(kind.NativeType) {
+		if nativeID != strings.TrimSpace(nativeID) {
+			return catalog.Operation{}, nil, fmt.Errorf("invalid Cosmos DB resource ID")
+		}
+		parts = strings.Split(nativeID, "/")
+	}
 	for _, operationID := range ids {
 		operation, ok := metadata.catalog.Operation(operationID)
 		if !ok || operation.Call == nil || operation.Call.Method != method {

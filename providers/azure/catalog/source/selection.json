@@ -1009,6 +1009,122 @@
         "RaiTopics_Get",
         "RaiTopics_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json",
+      "operations": [
+        "CassandraClusters_Delete",
+        "CassandraClusters_Get",
+        "CassandraClusters_ListBySubscription",
+        "CassandraClusters_Status",
+        "CassandraDataCenters_Delete",
+        "CassandraDataCenters_Get",
+        "CassandraDataCenters_List",
+        "CassandraResources_DeleteCassandraKeyspace",
+        "CassandraResources_DeleteCassandraRoleAssignment",
+        "CassandraResources_DeleteCassandraRoleDefinition",
+        "CassandraResources_DeleteCassandraTable",
+        "CassandraResources_GetCassandraKeyspace",
+        "CassandraResources_GetCassandraKeyspaceThroughput",
+        "CassandraResources_GetCassandraRoleAssignment",
+        "CassandraResources_GetCassandraRoleDefinition",
+        "CassandraResources_GetCassandraTable",
+        "CassandraResources_GetCassandraTableThroughput",
+        "CassandraResources_ListCassandraKeyspaces",
+        "CassandraResources_ListCassandraRoleAssignments",
+        "CassandraResources_ListCassandraRoleDefinitions",
+        "CassandraResources_ListCassandraTables",
+        "DatabaseAccounts_Delete",
+        "DatabaseAccounts_Get",
+        "DatabaseAccounts_List",
+        "Fleet_Delete",
+        "Fleet_Get",
+        "Fleet_List",
+        "FleetspaceAccount_Delete",
+        "FleetspaceAccount_Get",
+        "FleetspaceAccount_List",
+        "Fleetspace_Delete",
+        "Fleetspace_Get",
+        "Fleetspace_List",
+        "GremlinResources_DeleteGremlinDatabase",
+        "GremlinResources_DeleteGremlinGraph",
+        "GremlinResources_DeleteGremlinRoleAssignment",
+        "GremlinResources_DeleteGremlinRoleDefinition",
+        "GremlinResources_GetGremlinDatabase",
+        "GremlinResources_GetGremlinDatabaseThroughput",
+        "GremlinResources_GetGremlinGraph",
+        "GremlinResources_GetGremlinGraphThroughput",
+        "GremlinResources_GetGremlinRoleAssignment",
+        "GremlinResources_GetGremlinRoleDefinition",
+        "GremlinResources_ListGremlinDatabases",
+        "GremlinResources_ListGremlinGraphs",
+        "GremlinResources_ListGremlinRoleAssignments",
+        "GremlinResources_ListGremlinRoleDefinitions",
+        "MongoDBResources_DeleteMongoDBCollection",
+        "MongoDBResources_DeleteMongoDBDatabase",
+        "MongoDBResources_DeleteMongoRoleDefinition",
+        "MongoDBResources_DeleteMongoUserDefinition",
+        "MongoDBResources_GetMongoDBCollection",
+        "MongoDBResources_GetMongoDBCollectionThroughput",
+        "MongoDBResources_GetMongoDBDatabase",
+        "MongoDBResources_GetMongoDBDatabaseThroughput",
+        "MongoDBResources_GetMongoRoleDefinition",
+        "MongoDBResources_GetMongoUserDefinition",
+        "MongoDBResources_ListMongoDBCollections",
+        "MongoDBResources_ListMongoDBDatabases",
+        "MongoDBResources_ListMongoRoleDefinitions",
+        "MongoDBResources_ListMongoUserDefinitions",
+        "MongoMIResources_DeleteMongoMIRoleAssignment",
+        "MongoMIResources_DeleteMongoMIRoleDefinition",
+        "MongoMIResources_GetMongoMIRoleAssignment",
+        "MongoMIResources_GetMongoMIRoleDefinition",
+        "MongoMIResources_ListMongoMIRoleAssignments",
+        "MongoMIResources_ListMongoMIRoleDefinitions",
+        "NotebookWorkspaces_Delete",
+        "NotebookWorkspaces_Get",
+        "NotebookWorkspaces_ListByDatabaseAccount",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_ListByDatabaseAccount",
+        "Service_Delete",
+        "Service_Get",
+        "Service_List",
+        "SqlResources_DeleteSqlContainer",
+        "SqlResources_DeleteSqlDatabase",
+        "SqlResources_DeleteSqlRoleAssignment",
+        "SqlResources_DeleteSqlRoleDefinition",
+        "SqlResources_DeleteSqlStoredProcedure",
+        "SqlResources_DeleteSqlTrigger",
+        "SqlResources_DeleteSqlUserDefinedFunction",
+        "SqlResources_GetClientEncryptionKey",
+        "SqlResources_GetSqlContainer",
+        "SqlResources_GetSqlContainerThroughput",
+        "SqlResources_GetSqlDatabase",
+        "SqlResources_GetSqlDatabaseThroughput",
+        "SqlResources_GetSqlRoleAssignment",
+        "SqlResources_GetSqlRoleDefinition",
+        "SqlResources_GetSqlStoredProcedure",
+        "SqlResources_GetSqlTrigger",
+        "SqlResources_GetSqlUserDefinedFunction",
+        "SqlResources_ListClientEncryptionKeys",
+        "SqlResources_ListSqlContainers",
+        "SqlResources_ListSqlDatabases",
+        "SqlResources_ListSqlRoleAssignments",
+        "SqlResources_ListSqlRoleDefinitions",
+        "SqlResources_ListSqlStoredProcedures",
+        "SqlResources_ListSqlTriggers",
+        "SqlResources_ListSqlUserDefinedFunctions",
+        "TableResources_DeleteTable",
+        "TableResources_DeleteTableRoleAssignment",
+        "TableResources_DeleteTableRoleDefinition",
+        "TableResources_GetTable",
+        "TableResources_GetTableRoleAssignment",
+        "TableResources_GetTableRoleDefinition",
+        "TableResources_GetTableThroughput",
+        "TableResources_ListTableRoleAssignments",
+        "TableResources_ListTableRoleDefinitions",
+        "TableResources_ListTables"
+      ]
     }
   ],
   "resource_types": [
@@ -4636,6 +4752,666 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.CognitiveServices.CommitmentPlans_DeleteAssociation"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/cassandraClusters",
+      "display_name": "Managed Cassandra cluster",
+      "class": "data.cassandra_cluster",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "cassandraClusters",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraClusters_Get",
+        "Azure.Microsoft.DocumentDB.CassandraClusters_Status"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraClusters_ListBySubscription"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraClusters_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/cassandraClusters/dataCenters",
+      "display_name": "Managed Cassandra data center",
+      "class": "data.data_center",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "dataCenters",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraDataCenters_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraDataCenters_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraDataCenters_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts",
+      "display_name": "Cosmos DB account",
+      "class": "data.database_account",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "databaseAccounts",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.DatabaseAccounts_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.DatabaseAccounts_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.DatabaseAccounts_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/cassandraKeyspaces",
+      "display_name": "Cosmos DB Cassandra keyspace",
+      "class": "data.keyspace",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "cassandraKeyspaces",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraKeyspace",
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraKeyspaceThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_ListCassandraKeyspaces"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_DeleteCassandraKeyspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/cassandraKeyspaces/tables",
+      "display_name": "Cosmos DB Cassandra table",
+      "class": "data.table",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "tables",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraTable",
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraTableThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_ListCassandraTables"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_DeleteCassandraTable"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/cassandraKeyspaces/cassandraTables"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/cassandraKeyspaces/cassandraTables"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/cassandraRoleAssignments",
+      "display_name": "Cosmos DB cassandra role assignment",
+      "class": "security.role_assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "cassandraRoleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraRoleAssignment"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_ListCassandraRoleAssignments"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_DeleteCassandraRoleAssignment"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/cassandraRoleDefinitions",
+      "display_name": "Cosmos DB cassandra role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "cassandraRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_GetCassandraRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_ListCassandraRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.CassandraResources_DeleteCassandraRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/gremlinDatabases",
+      "display_name": "Cosmos DB Gremlin database",
+      "class": "data.database",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "gremlinDatabases",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinDatabase",
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinDatabaseThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_ListGremlinDatabases"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_DeleteGremlinDatabase"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/gremlinDatabases/graphs",
+      "display_name": "Cosmos DB Gremlin graph",
+      "class": "data.graph",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "graphs",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinGraph",
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinGraphThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_ListGremlinGraphs"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_DeleteGremlinGraph"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/gremlinRoleAssignments",
+      "display_name": "Cosmos DB gremlin role assignment",
+      "class": "security.role_assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "gremlinRoleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinRoleAssignment"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_ListGremlinRoleAssignments"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_DeleteGremlinRoleAssignment"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/gremlinRoleDefinitions",
+      "display_name": "Cosmos DB gremlin role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "gremlinRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_GetGremlinRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_ListGremlinRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.GremlinResources_DeleteGremlinRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongoMIRoleAssignments",
+      "display_name": "Cosmos DB mongoMI role assignment",
+      "class": "security.role_assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "mongoMIRoleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_GetMongoMIRoleAssignment"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_ListMongoMIRoleAssignments"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_DeleteMongoMIRoleAssignment"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongoMIRoleDefinitions",
+      "display_name": "Cosmos DB mongoMI role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "mongoMIRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_GetMongoMIRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_ListMongoMIRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoMIResources_DeleteMongoMIRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongodbDatabases",
+      "display_name": "Cosmos DB MongoDB database",
+      "class": "data.database",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "mongodbDatabases",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoDBDatabase",
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoDBDatabaseThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_ListMongoDBDatabases"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_DeleteMongoDBDatabase"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/collections",
+      "display_name": "Cosmos DB MongoDB collection",
+      "class": "data.collection",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "collections",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoDBCollection",
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoDBCollectionThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_ListMongoDBCollections"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_DeleteMongoDBCollection"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/mongodbCollections"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/mongodbDatabases/mongodbCollections"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongodbRoleDefinitions",
+      "display_name": "Cosmos DB mongodb role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "mongodbRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_ListMongoRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_DeleteMongoRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/mongodbUserDefinitions",
+      "display_name": "Cosmos DB MongoDB user",
+      "class": "security.database_user",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "mongodbUserDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_GetMongoUserDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_ListMongoUserDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoDBResources_DeleteMongoUserDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/notebookWorkspaces",
+      "display_name": "Cosmos DB notebook workspace",
+      "class": "data.notebook_workspace",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "notebookWorkspaces",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.NotebookWorkspaces_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.NotebookWorkspaces_ListByDatabaseAccount"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.NotebookWorkspaces_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/privateEndpointConnections",
+      "display_name": "Cosmos DB private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/services",
+      "display_name": "Cosmos DB service",
+      "class": "data.database_service",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "services",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.Service_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.Service_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.Service_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
+      "display_name": "Cosmos DB NoSQL database",
+      "class": "data.database",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "sqlDatabases",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlDatabase",
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlDatabaseThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlDatabases"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlDatabase"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/clientEncryptionKeys",
+      "display_name": "Cosmos DB client encryption key",
+      "class": "security.encryption_key",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "clientEncryptionKeys",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetClientEncryptionKey"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListClientEncryptionKeys"
+      ],
+      "delete_operations": [],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/clientEncryptionKey"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
+      "display_name": "Cosmos DB NoSQL container",
+      "class": "data.container",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "containers",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlContainer",
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlContainerThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlContainers"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlContainer"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/storedProcedures",
+      "display_name": "Cosmos DB stored procedure",
+      "class": "data.stored_procedure",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "storedProcedures",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlStoredProcedure"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlStoredProcedures"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlStoredProcedure"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlStoredProcedures"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlStoredProcedures"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/triggers",
+      "display_name": "Cosmos DB trigger",
+      "class": "data.trigger",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "triggers",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlTrigger"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlTriggers"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlTrigger"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlTriggers"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlTriggers"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/userDefinedFunctions",
+      "display_name": "Cosmos DB user-defined function",
+      "class": "data.function",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "userDefinedFunctions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlUserDefinedFunction"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlUserDefinedFunctions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlUserDefinedFunction"
+      ],
+      "response_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlUserDefinedFunctions"
+      ],
+      "response_id_types": [
+        "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/sqlContainers/sqlUserDefinedFunctions"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments",
+      "display_name": "Cosmos DB sql role assignment",
+      "class": "security.role_assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "sqlRoleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlRoleAssignment"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlRoleAssignments"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlRoleAssignment"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions",
+      "display_name": "Cosmos DB sql role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "sqlRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_GetSqlRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_ListSqlRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.SqlResources_DeleteSqlRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/tableRoleAssignments",
+      "display_name": "Cosmos DB table role assignment",
+      "class": "security.role_assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "tableRoleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_GetTableRoleAssignment"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_ListTableRoleAssignments"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_DeleteTableRoleAssignment"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/tableRoleDefinitions",
+      "display_name": "Cosmos DB table role definition",
+      "class": "security.role_definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "tableRoleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_GetTableRoleDefinition"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_ListTableRoleDefinitions"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_DeleteTableRoleDefinition"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/databaseAccounts/tables",
+      "display_name": "Cosmos DB Table table",
+      "class": "data.table",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "tables",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_GetTable",
+        "Azure.Microsoft.DocumentDB.TableResources_GetTableThroughput"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_ListTables"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.TableResources_DeleteTable"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/fleets",
+      "display_name": "Cosmos DB fleet",
+      "class": "data.database_fleet",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "fleets",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.Fleet_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.Fleet_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.Fleet_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/fleets/fleetspaces",
+      "display_name": "Cosmos DB fleetspace",
+      "class": "data.fleetspace",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "fleetspaces",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.Fleetspace_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.Fleetspace_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.Fleetspace_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/fleets/fleetspaces/fleetspaceAccounts",
+      "display_name": "Cosmos DB fleetspace account association",
+      "class": "data.fleetspace_account",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "fleetspaceAccounts",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.FleetspaceAccount_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.FleetspaceAccount_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.FleetspaceAccount_Delete"
       ]
     }
   ]

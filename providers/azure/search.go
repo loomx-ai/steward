@@ -65,6 +65,9 @@ func (c *client) linkedResource(ctx context.Context, value string) (map[string]a
 	if err != nil || !known {
 		return nil, serviceDenied("linked_target_api_unavailable")
 	}
+	if isCosmosType(kind) {
+		return c.cosmosResource(ctx, value)
+	}
 	endpoint, err := c.resourceURL(mapping, id)
 	if err != nil {
 		return nil, err
@@ -98,6 +101,9 @@ func searchTargetRegion(link, target map[string]any) error {
 	return nil
 }
 func searchTargetSnapshot(raw map[string]any) map[string]any {
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isCosmosType(kind) {
+		return cosmosSnapshot(kind, raw)
+	}
 	// Target connection metadata changes as individually reviewed links depart.
 	// Keep the target's identity, other configuration, ownership and protection.
 	snapshot := searchSnapshot(searchType, raw)

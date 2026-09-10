@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DocumentDB/fleets
+  class: data.database_fleet
+presentation:
+  displayNames:
+    en-US: Cosmos DB fleet
+    zh-CN: Cosmos DB 舰队
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.DocumentDB.Fleet_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DocumentDB.Fleet_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.DocumentDB.Fleet_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DocumentDB.Fleet_Get
+      itemsPath: $
+      identityPath: id

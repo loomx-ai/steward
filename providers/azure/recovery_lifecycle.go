@@ -65,6 +65,22 @@ func (s *serviceCascades) contributeRecoveryPrerequisite(ctx context.Context, pa
 // Preserve the reviewed peer view after BreakPairing clears partnerNamespace.
 // The peer may disappear during preparation or remain until primary DELETE.
 func (c *client) plannedServiceChildren(ctx context.Context, parent asset.Asset, raw map[string]any) ([]serviceChild, error) {
+	if isCosmosType(parent.Identity.NativeType) {
+		wire, err := c.plannedResourceID(parent)
+		if err != nil {
+			return nil, err
+		}
+		if err := c.cosmosAncestors(ctx, wire, object(parent.Normalized["_cosmos_ancestors"]), false); err != nil {
+			return nil, err
+		}
+		settings, err := c.cosmosThroughput(ctx, parent.Identity.NativeType, wire, raw)
+		if err != nil {
+			return nil, err
+		}
+		if text(parent.Normalized["_cosmos_throughput_binding"]) != c.privateConfiguration(settings) {
+			return nil, serviceDenied("cosmos_throughput_changed")
+		}
+	}
 	children, err := c.serviceChildren(ctx, parent.Identity, raw)
 	if err != nil || !recoveryType(parent.Identity.NativeType) || !strings.EqualFold(text(parent.Normalized["role"]), "Primary") {
 		return children, err

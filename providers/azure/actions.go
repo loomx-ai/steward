@@ -17,6 +17,7 @@ type action struct {
 	client       *client
 	kind         resourceType
 	id, endpoint string
+	wireID       string
 	location     string
 	deletion     catalog.RESTRequest
 }
@@ -30,12 +31,16 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	endpoint, err := c.resourceURL(kind, value.Identity.NativeID)
+	wireID, err := c.plannedResourceID(value)
+	if err != nil {
+		return nil, err
+	}
+	endpoint, err := c.resourceURL(kind, wireID)
 	if err != nil {
 		return nil, err
 	}
 	nativeID, _, _ := parseID(value.Identity.NativeID)
-	operation, parameters, err := c.resourceOperation(kind, value.Identity.NativeID, "DELETE")
+	operation, parameters, err := c.resourceOperation(kind, wireID, "DELETE")
 	if err != nil {
 		return nil, err
 	}
@@ -73,11 +78,14 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	return &action{client: c, kind: kind, id: nativeID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location)}, nil
+	return &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location)}, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
@@ -101,7 +109,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err != nil {
 		return contracts.PreflightResult{}, err
 	}
-	if !validResourceResponse(res, a.id, a.kind.NativeType) {
+	if !validResourceResponse(res, a.id, a.kind.NativeType) || (isCosmosType(a.kind.NativeType) && !cosmosSameWireID(responseID(a.kind.NativeType, text(res.data["id"])), a.wireID)) {
 		return contracts.PreflightResult{}, fmt.Errorf("Azure preflight identity mismatch")
 	}
 	if err := serviceCreationIdentity(request.Asset, res.data); err != nil {
@@ -126,6 +134,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.wafPreflight(request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.cosmosPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.cognitivePreflight(ctx, request.Asset, res.data); err != nil {
@@ -311,6 +322,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 		}
 	}
 	data := map[string]any{"polling": polling}
+	if isCosmosType(a.kind.NativeType) && operation != "" {
+		data["cosmos_operation_binding"] = a.cosmosOperationBinding(operation)
+	}
 	if isCognitiveType(a.kind.NativeType) && operation != "" {
 		data["cognitive_operation_binding"] = a.operationBinding(operation)
 	}
@@ -346,6 +360,9 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	phase := text(result.Data["phase"])
 	if phase == "prepare_attachments" {
 		return a.waitAttachmentPreparation(ctx, request, result)
@@ -377,6 +394,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
+		}
+		if isCosmosType(a.kind.NativeType) && text(result.Data["cosmos_operation_binding"]) != a.cosmosOperationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("Cosmos DB polling receipt does not match its resource")
 		}
 		if isGrafanaType(a.kind.NativeType) && text(result.Data["grafana_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("Grafana polling receipt does not match its resource")
@@ -430,6 +450,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if isCosmosType(a.kind.NativeType) {
+		return validateCosmosOperationURL(a.client.subscription, a.wireID, a.kind.Version, endpoint)
+	}
 	if isGrafanaType(a.kind.NativeType) && grafanaGlobalOperation(endpoint) {
 		return validateGrafanaGlobalOperation(endpoint, a.location)
 	}
@@ -467,6 +490,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	res, err := a.client.request(ctx, "GET", a.endpoint)
 	if isNotFound(err) {
 		if a.kind.NativeType == serviceBusMigrationType {
@@ -485,7 +511,7 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	if !validResourceResponse(res, a.id, a.kind.NativeType) {
+	if !validResourceResponse(res, a.id, a.kind.NativeType) || (isCosmosType(a.kind.NativeType) && !cosmosSameWireID(responseID(a.kind.NativeType, text(res.data["id"])), a.wireID)) {
 		return contracts.ReadbackResult{}, fmt.Errorf("Azure readback identity mismatch")
 	}
 	return contracts.ReadbackResult{Exists: true, State: text(object(res.data["properties"])["provisioningState"])}, nil
@@ -500,6 +526,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
+	}
+	if reason := cosmosProtection(kind.NativeType, raw); reason != "" {
+		return reason
 	}
 	if reason := cognitiveProtection(kind.NativeType, raw); reason != "" {
 		return reason
@@ -575,7 +604,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
+	case "azure_cosmos_builtin_role", "azure_cosmos_managed_encryption_key", "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
 		return true
 	default:
 		return false
