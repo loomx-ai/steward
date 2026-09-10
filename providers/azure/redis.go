@@ -313,7 +313,7 @@ func redisSharedPrerequisite(parent, child asset.Asset) bool {
 }
 
 func (a *action) resourceOperationResponse(endpoint string, res response) error {
-	if !isRedisType(a.kind.NativeType) && !isSearchType(a.kind.NativeType) && !isCognitiveType(a.kind.NativeType) && !isCosmosType(a.kind.NativeType) && !isMongoClusterType(a.kind.NativeType) && !isKustoType(a.kind.NativeType) && !isStreamAnalyticsType(a.kind.NativeType) {
+	if !isRedisType(a.kind.NativeType) && !isSearchType(a.kind.NativeType) && !isCognitiveType(a.kind.NativeType) && !isCosmosType(a.kind.NativeType) && !isMongoClusterType(a.kind.NativeType) && !isKustoType(a.kind.NativeType) && !isStreamAnalyticsType(a.kind.NativeType) && monitorPrivateLinkKind(a.kind.NativeType) == "" {
 		return nil
 	}
 	if res.status != 200 && res.status != 202 && res.status != 204 {

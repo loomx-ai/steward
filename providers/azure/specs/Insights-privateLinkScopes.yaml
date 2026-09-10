@@ -2,26 +2,26 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.OperationalInsights/workspaces
-  class: observability.workspace
+  nativeType: Microsoft.Insights/privateLinkScopes
+  class: observability.private_link_scope
 presentation:
   displayNames:
-    en-US: Log Analytics workspace
-    zh-CN: Log Analytics 工作区
+    en-US: Azure Monitor private link scope
+    zh-CN: Azure Monitor 专用链接范围
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
-  kind: region
+  kind: global
 discovery:
   source: product-api
-  detail:
-    operation: Azure.Microsoft.OperationalInsights.Workspaces_Get
-    itemsPath: $
-    identityPath: id
   list:
-    operation: Azure.Microsoft.OperationalInsights.Workspaces_List
+    operation: Azure.Microsoft.Insights.PrivateLinkScopes_List
     parameters:
       subscriptionId: scope.subscription
     itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.PrivateLinkScopes_Get
+    itemsPath: $
     identityPath: id
 fields:
   name:
@@ -42,18 +42,21 @@ fields:
   tags:
     path: tags
     type: object
-  privateLinkScopedResources:
-    path: privateLinkScopedResources
+  accessModeSettings:
+    path: accessModeSettings
+    type: object
+  privateLinkCapabilities:
+    path: privateLinkCapabilities
     type: array
 extensions:
   hook: azure.resource
 actions:
   delete:
-    operation: Azure.Microsoft.OperationalInsights.Workspaces_Delete
+    operation: Azure.Microsoft.Insights.PrivateLinkScopes_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.OperationalInsights.Workspaces_Get
+      operation: Azure.Microsoft.Insights.PrivateLinkScopes_Get
       itemsPath: $
       identityPath: id

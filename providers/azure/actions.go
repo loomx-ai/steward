@@ -19,6 +19,8 @@ type action struct {
 	id, endpoint string
 	wireID       string
 	location     string
+	connectionID asset.ConnectionID
+	partition    string
 	deletion     catalog.RESTRequest
 }
 
@@ -29,6 +31,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	}
 	if isAPIMType(kind.NativeType) && value.Identity.ConnectionID != id {
 		return nil, serviceDenied("apim_action_connection_changed")
+	}
+	if (monitorPrivateLinkKind(kind.NativeType) != "" || monitorPrivateLinkTarget(kind.NativeType)) && value.Identity.ConnectionID != id {
+		return nil, serviceDenied("monitor_private_link_action_connection_changed")
 	}
 	c, err := r.resolve(ctx, id)
 	if err != nil {
@@ -87,11 +92,14 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	return &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location)}, nil
+	return &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location), connectionID: id, partition: value.Identity.Partition}, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.apimRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -112,6 +120,11 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	}
 	res, err := a.client.readResource(ctx, a.endpoint)
 	if isNotFound(err) {
+		if monitorPrivateLinkTarget(a.kind.NativeType) {
+			if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
+				return contracts.PreflightResult{}, err
+			}
+		}
 		if a.kind.NativeType == serviceBusMigrationType {
 			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
 				return contracts.PreflightResult{}, err
@@ -185,6 +198,12 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.appServicePreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.monitorPrivateLinkReferencesAbsent(ctx, request, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.monitorPrivateLinkPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.grafanaParentPreflight(ctx, request.Asset); err != nil {
@@ -304,6 +323,9 @@ func (a *action) Execute(ctx context.Context, request contracts.ActionRequest) (
 		return contracts.ActionResult{}, &contracts.ProviderCallError{Provider: execution.ProviderError{Category: execution.ErrorProtected, Code: check.Reason, Message: contracts.SafeProviderValidationMessage}}
 	}
 	if check.Absent {
+		if monitorPrivateLinkKind(a.kind.NativeType) != "" {
+			return a.operationResult(response{})
+		}
 		return contracts.ActionResult{}, nil
 	}
 	if check.Evidence["aks_cluster_absent"] == true || check.Evidence["service_parent_absent"] == true {
@@ -365,7 +387,13 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 			return contracts.ActionResult{}, err
 		}
 	}
+	if monitorPrivateLinkKind(a.kind.NativeType) != "" {
+		polling = "status"
+	}
 	data := map[string]any{"polling": polling}
+	if monitorPrivateLinkKind(a.kind.NativeType) != "" {
+		data["monitor_private_link_operation_binding"] = a.monitorPrivateLinkOperationBinding(operation)
+	}
 	if isStreamAnalyticsType(a.kind.NativeType) && operation != "" {
 		data["stream_analytics_operation_binding"] = a.operationBinding(operation)
 	}
@@ -413,6 +441,9 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	if err := a.apimRequestIdentity(request.Asset); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -453,6 +484,9 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 }
 
 func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.monitorPrivateLinkPollReceipt(result); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	if isAPIMType(a.kind.NativeType) {
 		return a.apimPoll(ctx, result)
 	}
@@ -535,6 +569,13 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if monitorPrivateLinkKind(a.kind.NativeType) != "" {
+		normalized, err := monitorPrivateLinkOperationURL(a.client.subscription, a.id, endpoint)
+		if err == nil && normalized != endpoint {
+			return serviceDenied("monitor_private_link_poll_url_not_canonical")
+		}
+		return err
+	}
 	if isAPIMType(a.kind.NativeType) {
 		return validateAPIMOperationURL(a.client.subscription, a.id, a.location, a.kind.Version, endpoint)
 	}
@@ -587,6 +628,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.monitorPrivateLinkRequestIdentity(request.Asset); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	if err := a.apimRequestIdentity(request.Asset); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -604,6 +648,11 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	}
 	res, err := a.client.readResource(ctx, a.endpoint)
 	if isNotFound(err) {
+		if monitorPrivateLinkTarget(a.kind.NativeType) {
+			if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
+				return contracts.ReadbackResult{}, err
+			}
+		}
 		if a.kind.NativeType == serviceBusMigrationType {
 			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
 				return contracts.ReadbackResult{}, err

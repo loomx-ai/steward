@@ -8723,6 +8723,60 @@
       "list_operations": [
         "Azure.Microsoft.ApiManagement.ApiGatewayConfigConnection_ListByGateway"
       ]
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes",
+      "class": "observability.private_link_scope",
+      "display_name": "Azure Monitor private link scope",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "privateLinkScopes",
+      "read_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopes_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopes_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopes_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes/scopedResources",
+      "class": "observability.resource_association",
+      "display_name": "Azure Monitor scoped resource",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "scopedResources",
+      "read_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopedResources_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopedResources_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.PrivateLinkScopedResources_ListByPrivateLinkScope"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Azure Monitor private endpoint connection",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Insights.PrivateEndpointConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.PrivateEndpointConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.PrivateEndpointConnections_ListByPrivateLinkScope"
+      ]
     }
   ]
 }

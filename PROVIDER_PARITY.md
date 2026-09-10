@@ -1683,3 +1683,45 @@ background evidence only, not acceptance evidence for this work.
   remain in progress. These additions do not increase the 358 resource
   rules or reduce the 30 mapped Azure kinds still lacking specifications.
   See [Application Insights evidence](providers/azure/fixtures/applicationinsights/README.md).
+
+### Azure Monitor Private Link Scope lifecycle
+
+- Added three global native resource rules: private link scopes, scoped-resource
+  associations and private endpoint connections. Each binds the pinned
+  `2021-09-01` GET/LIST/DELETE operations. Scope cleanup reviews two complete
+  native child inventories and executes the two child kinds before the scope.
+  Capability descriptions are separately read and frozen with their scope;
+  they do not acquire invented deletion rules. Linked monitored resources and
+  consumer network endpoints remain independent.
+- Configuration checks bind access modes, exclusions, native creation fields,
+  parent identity and private content. Relative asynchronous locations are
+  resolved to their native operation-status path. Persisted receipts use a
+  credential-keyed binding to the connection, partition, subscription, resource
+  and status protocol. Failed/canceled operations, substituted receipts and
+  mismatched response IDs fail; final resource and prerequisite GET absence
+  remains necessary after successful or expired operation polling.
+- Workspaces and DCEs acquire shared incoming-association prerequisites through
+  two complete subscription scope/association indexes and native target reverse
+  references. Missing inventory, permissions, contradictory indexes and stale
+  backlinks block deletion. Foreign-subscription links remain unresolved; the
+  selected connection never crosses its subscription boundary. A Monitor
+  workspace's managed DCE receives the same external association review, without
+  transferring ownership of the association or its scope to the workspace.
+- Native examples and composed lifecycle tests verify plan ordering, retention,
+  restart, drift, malformed/changing indexes, missing assets, credential
+  substitution, shared-target cleanup and the managed-workspace case. The
+  published connection-list duplicate ID/name defect is retained and rejected.
+  The pinned CLI AMPLS test is skipped upstream and has no recording in that
+  tree; it is not passing evidence. No AMPLS emulator or real-cloud lifecycle
+  verification is claimed. Native DELETE lacks an atomic configuration condition.
+- Azure now has 361 rules and 335 cleanup bindings (334 native DELETEs and one
+  native POST). The catalog retains 1,188 operations from 154 root and 49
+  reference documents; its SHA-256 is
+  `74efc909d8a440f44a3065fc29c4bf06bf4a61622c729a09e166f434f268d970`.
+  Full Go tests and vet passed, followed by scoped checks for the final identity
+  guard and spec fields. Monitor/private-link/data-collection race tests and
+  shared asset/graph/planning/execution/governance race checks passed. Five native
+  catalog refresh tests and bilingual documentation checks passed.
+- Application Insights resource adapters, legacy-child identities and managed
+  workspace impacts remain in progress. Thirty mapped Azure kinds still lack
+  specifications; the eight provider acceptance criteria remain open.

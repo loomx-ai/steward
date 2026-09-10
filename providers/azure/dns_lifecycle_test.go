@@ -125,7 +125,10 @@ type dnsScenario struct {
 }
 
 func newDNSScenario() *dnsScenario {
-	return &dnsScenario{records: map[string]map[string]any{}, lists: map[string][]any{}, gone: map[string]bool{}, version: map[string]string{}, status: map[string]int{}}
+	// Existing network/monitor scenarios have no AMPLS scopes unless explicitly
+	// added. Target deletion now verifies this independent native collection.
+	index := "/subscriptions/" + testSubscription + "/providers/microsoft.insights/privatelinkscopes"
+	return &dnsScenario{records: map[string]map[string]any{}, lists: map[string][]any{index: {}}, gone: map[string]bool{}, version: map[string]string{index: monitorPrivateLinkVersion}, status: map[string]int{}}
 }
 func (s *dnsScenario) add(raw map[string]any, version string) {
 	id := strings.ToLower(text(raw["id"]))

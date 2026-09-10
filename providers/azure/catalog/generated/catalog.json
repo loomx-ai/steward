@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "7386b114091a44756f8bc3a94b2f8f8f4aeb4733a6171acc4b5549308e96e039",
+    "checksum": "3d0c4fef5fa038b5b579a3b6e2ec93a28c4a4082afa1fc82c7968d5b71c5252b",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "820d6dbcff54be72cfdef95f0232176cc9765f3933c152974f95b91e4054f395",
+  "content_checksum": "74efc909d8a440f44a3065fc29c4bf06bf4a61622c729a09e166f434f268d970",
   "operations": [
     {
       "id": "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete",
@@ -110766,6 +110766,66 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes",
+      "class": "observability.private_link_scope",
+      "display_name": "Azure Monitor private link scope",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "privateLinkScopes",
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Azure Monitor private endpoint connection",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_ListByPrivateLinkScope"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/privateLinkScopes/scopedResources",
+      "class": "observability.resource_association",
+      "display_name": "Azure Monitor scoped resource",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "scopedResources",
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_ListByPrivateLinkScope"
         ]
       }
     },

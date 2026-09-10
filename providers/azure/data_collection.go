@@ -68,6 +68,9 @@ func dataCollectionAssociationMembership(raw map[string]any, parentID string) er
 func dataCollectionConfiguration(kind string, raw map[string]any) string {
 	safe := safePayload(raw)
 	delete(object(safe["properties"]), "provisioningState")
+	if strings.EqualFold(kind, dataCollectionEndpointType) {
+		delete(object(safe["properties"]), "privateLinkScopedResources")
+	}
 	if strings.EqualFold(kind, dataCollectionAssociationType) {
 		delete(safe, "location") // ProxyResource inherits the collection target's region.
 	}

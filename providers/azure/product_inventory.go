@@ -220,6 +220,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if err := monitorPrivateLinkListed(kind.NativeType, raw, data); err != nil {
+			return contracts.InventoryBatch{}, err
+		}
 		if isAPIMType(kind.NativeType) {
 			if err := apimListedIncarnation(kind.NativeType, raw, data); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -365,6 +368,9 @@ func productGeneration(raw map[string]any) string {
 	}
 	if len(extra) != 0 {
 		values = append(values, extra)
+	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && monitorPrivateLinkKind(kind) != "" {
+		values = append(values, monitorPrivateLinkConfiguration(kind, raw))
 	}
 	if kind := grafanaKind(raw); kind != "" {
 		values = append(values, grafanaConfiguration(kind, raw))

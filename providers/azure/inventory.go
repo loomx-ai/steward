@@ -392,6 +392,15 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 			normalized["monitoredResourceId"] = parent
 		}
 	}
+	if monitorPrivateLinkTarget(nativeType) {
+		if _, _, err := monitorPrivateLinkReverse(nativeType, raw); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+		normalized["_monitor_private_link_target_configuration"] = c.privateConfiguration(monitorPrivateLinkTargetSnapshot(raw))
+	}
+	if err := c.monitorPrivateLinkInventory(ctx, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if isGrafanaType(nativeType) {
 		normalized["_grafana_configuration"] = grafanaConfiguration(nativeType, raw)
 		if nativeType != grafanaType {
@@ -659,6 +668,9 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 	}
 	if nativeType == eventHubNamespaceType {
 		fields["clusterarmid"] = true
+	}
+	if nativeType == monitorScopedResourceType {
+		fields["linkedresourceid"] = true
 	}
 	if isGrafanaType(nativeType) {
 		fields["privatelinkresourceid"], fields["datasourceresourceid"], fields["azuremonitorworkspaceresourceid"] = true, true, true

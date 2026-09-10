@@ -107,6 +107,13 @@ func (c *client) monitorWorkspaceResources(ctx context.Context, parent asset.Ass
 		if err != nil {
 			return nil, nil, err
 		}
+		if strings.EqualFold(kind, dataCollectionEndpointType) {
+			incoming, err := c.monitorPrivateLinkIncoming(ctx, asset.Identity{NativeID: id, NativeType: kind})
+			if err != nil {
+				return nil, nil, err
+			}
+			children = append(children, incoming...)
+		}
 		for _, child := range children {
 			if inResourceGroup(child.id, group) {
 				continue
@@ -178,7 +185,7 @@ func (c *client) contributeMonitorWorkspace(ctx context.Context, parent asset.As
 }
 
 func monitorWorkspaceAssociation(parent, child asset.Asset) bool {
-	if !strings.EqualFold(parent.Identity.NativeType, monitorWorkspaceType) || !strings.EqualFold(child.Identity.NativeType, dataCollectionAssociationType) {
+	if !strings.EqualFold(parent.Identity.NativeType, monitorWorkspaceType) || (!strings.EqualFold(child.Identity.NativeType, dataCollectionAssociationType) && !strings.EqualFold(child.Identity.NativeType, monitorScopedResourceType)) {
 		return false
 	}
 	parts := strings.Split(parent.Identity.NativeID, "/")
@@ -186,6 +193,10 @@ func monitorWorkspaceAssociation(parent, child asset.Asset) bool {
 		return false
 	}
 	group, err := controllerResourceGroup(parts[2], monitorWorkspaceType, parent.Normalized)
+	if child.Identity.NativeType == monitorScopedResourceType {
+		target, targetErr := monitorPrivateLinkReference(map[string]any{"properties": child.Normalized})
+		return err == nil && targetErr == nil && !inResourceGroup(child.Identity.NativeID, group) && inResourceGroup(target, group)
+	}
 	return err == nil && !inResourceGroup(child.Identity.NativeID, group) && slices.ContainsFunc(dataCollectionReferences(map[string]any{"properties": child.Normalized}), func(id string) bool { return inResourceGroup(id, group) })
 }
 

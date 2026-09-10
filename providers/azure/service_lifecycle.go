@@ -65,7 +65,8 @@ var serviceCascadeRules = map[string][]string{
 	dataCollectionRuleType:     {dataCollectionAssociationType},
 	dataCollectionEndpointType: {dataCollectionAssociationType},
 	// These are direct prerequisites; only their own APIs remove each child.
-	grafanaType: {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
+	monitorPrivateLinkType: {monitorScopedResourceType, monitorPrivateConnectionType},
+	grafanaType:            {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
 	// The dedicated cluster's native namespace list contains external ARM IDs.
 	// Delete each namespace through its own reviewed lifecycle first.
 	eventHubClusterType: {eventHubNamespaceType},
@@ -242,6 +243,9 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 					return nil, err
 				}
 			}
+			if err := monitorPrivateLinkListed(childType, record, live.data); err != nil {
+				return nil, err
+			}
 			// Lists can omit generation fields; compare every field they do expose.
 			if err := serviceListedIncarnation(record, live.data); err != nil {
 				return nil, err
@@ -369,6 +373,9 @@ func serviceIncarnation(planned asset.Asset, live map[string]any) error {
 	if err := dataCollectionIncarnation(planned, live); err != nil {
 		return err
 	}
+	if err := monitorPrivateLinkIncarnation(planned, live); err != nil {
+		return err
+	}
 	if err := grafanaIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -408,6 +415,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		return result, err
 	}
 	if err := s.contributeAPIMReferences(ctx, assets, &result); err != nil {
+		return result, err
+	}
+	if err := s.contributeMonitorPrivateLinkReferences(ctx, assets, &result); err != nil {
 		return result, err
 	}
 	if err := s.contributeWAFReferences(ctx, assets, &result); err != nil {
@@ -866,6 +876,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 		children = append(children, links...)
 	case isDataCollectionType(parent.NativeType):
 		children, err = c.dataCollectionAssociations(ctx, parent)
+	case strings.EqualFold(parent.NativeType, monitorPrivateLinkType):
+		children, err = c.monitorPrivateLinkChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, grafanaType):
 		children, err = c.grafanaChildren(ctx, parent, raw)
 	case strings.EqualFold(parent.NativeType, eventHubClusterType):
@@ -953,6 +965,9 @@ func serviceChildRelation(parent, child asset.Asset) bool {
 	}
 	if parent.Identity.NativeType == redisLinkType {
 		return false
+	}
+	if monitorPrivateLinkPrerequisite(parent, child) {
+		return true
 	}
 	if monitorWorkspaceAssociation(parent, child) {
 		return true

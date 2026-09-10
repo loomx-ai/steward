@@ -59,9 +59,10 @@ var servicePrerequisiteRules = map[string][]string{
 	afdRuleSetType:             {afdRouteType},
 	afdSecretType:              {afdDomainType},
 	cdnOriginType:              {cdnOriginGroupType},
-	monitorWorkspaceType:       {dataCollectionAssociationType},
+	monitorWorkspaceType:       {dataCollectionAssociationType, monitorScopedResourceType},
 	dataCollectionRuleType:     {dataCollectionAssociationType},
-	dataCollectionEndpointType: {dataCollectionAssociationType},
+	dataCollectionEndpointType: {dataCollectionAssociationType, monitorScopedResourceType},
+	monitorPrivateLinkType:     {monitorScopedResourceType, monitorPrivateConnectionType},
 	// Native child DELETEs are available in the pinned Grafana REST API.
 	grafanaType:             {grafanaPrivateEndpointType, grafanaConnectionType, grafanaIntegrationType},
 	eventHubClusterType:     {eventHubNamespaceType},
@@ -74,6 +75,9 @@ var servicePrerequisiteRules = map[string][]string{
 }
 
 func servicePrerequisiteKind(parent, child string) bool {
+	if monitorPrivateLinkTarget(parent) && strings.EqualFold(child, monitorScopedResourceType) {
+		return true
+	}
 	if isAPIMType(parent) && slices.Contains(apimIncomingKinds(parent), child) {
 		return true
 	}
@@ -109,13 +113,15 @@ func serviceParentConfiguration(kind string, raw map[string]any) string {
 		delete(object(safe["systemData"]), field)
 	}
 	fields := map[string][]string{
-		grafanaType:             {"privateEndpointConnections"},
-		serviceBusNamespaceType: {"updatedAt"},
-		eventHubNamespaceType:   {"updatedAt"},
-		hostGroupType:           {"hosts"},
-		capacityGroupType:       {"capacityReservations"},
-		vpnGatewayType:          {"connections", "natRules"},
-		expressGatewayType:      {"expressRouteConnections"},
+		dataCollectionEndpointType: {"privateLinkScopedResources"},
+		monitorPrivateLinkType:     {"privateEndpointConnections"},
+		grafanaType:                {"privateEndpointConnections"},
+		serviceBusNamespaceType:    {"updatedAt"},
+		eventHubNamespaceType:      {"updatedAt"},
+		hostGroupType:              {"hosts"},
+		capacityGroupType:          {"capacityReservations"},
+		vpnGatewayType:             {"connections", "natRules"},
+		expressGatewayType:         {"expressRouteConnections"},
 	}
 	for _, field := range fields[kind] {
 		delete(object(safe["properties"]), field)

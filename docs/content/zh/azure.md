@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 358 类资源，其中 332 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 361 类资源，其中 335 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -62,6 +62,7 @@ Steward 识别 358 类资源，其中 332 类具有原生清理操作（包括 B
 | 托管 Grafana | 工作区、托管专用终结点、专用终结点连接、集成配置 | 先删除经过审查的子资源，再删除工作区；各资源也支持独立原生操作 |
 | Monitor 工作区 | 工作区及默认摄取托管资源组 | 审查组内全部资源，先解绑外部关联，再验证组和已知资源均已消失 |
 | Monitor 数据采集 | 规则、终结点及被监控资源上的关联 | 先删除经过审查的关联，再删除规则或终结点；共享关联只执行一次 |
+| Monitor 专用链接 | 全局专用链接范围、范围资源关联与专用终结点连接 | 先删除已审查的子资源，再删除范围；关联的工作区和数据收集终结点需先解绑 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
@@ -123,3 +124,7 @@ Front Door 批量模式的规则显示在规则集内，并随整个规则集保
 删除 WAF 策略也会删除其内嵌规则。引用该策略的 CDN 终结点或 Front Door 安全关联必须先经审查并删除；保留引用方会阻止策略删除。经典 Front Door 前端或路由引用仍需在 Steward 外解除。清点需要策略与引用方的读取权限，清理还需要各自的删除及操作状态查询权限。执行前重新核对策略配置、锁和全部剩余关联；成功响应后仍须确认资源最终不存在。参见 [Front Door 策略删除契约](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01)。
 
 App Service 清理会审查部署槽、函数、应用证书和主机名绑定。保留子资源会阻止应用或部署槽删除；默认主机名随所属应用或部署槽清理，服务计划保持独立。独立删除证书需要读取所有应用及部署槽的 TLS 状态和主机名绑定；任何匹配的证书 ID 或指纹都会阻止删除。请先移除相关绑定并重新扫描。通过部署包运行的函数可能不支持单个删除，Steward 会保留 Azure 返回的错误。清点和清理需要子资源的原生读取、列举权限，以及所选操作的删除权限。参见[应用删除契约](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01)与[部署包行为](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)。
+
+Azure Monitor 专用链接范围（AMPLS）清理会审查两类原生子资源清单和专用链接能力描述。范围资源关联与专用终结点连接都有独立删除步骤；保留其中任何一个都会阻止范围删除。关联的 Log Analytics 工作区、Application Insights 组件和使用方网络终结点保持独立。配置核对覆盖访问模式及连接级例外。原生 DELETE 接口没有条件删除头，读取与删除之间仍存在并发修改窗口。
+
+删除 Log Analytics 工作区或 DCE 前，Steward 会核对订阅内完整的 AMPLS 清单、关联的原生列表与详情，以及目标资源的反向引用。因此需要读取这些范围的权限，包括所选资源组之外的范围。缺失盘点、读取失败及跨订阅反向引用都会阻止删除；跨订阅关联需在所属订阅中解除后重新扫描。Monitor 工作区托管组中的 DCE 也执行相同检查。相对操作地址经校验后绑定到所选连接和资源，并持久化保存；异步成功后仍须确认资源及前置关联均已不存在。验证使用固定版本的官方样例和组合协议测试，尚未进行 AMPLS 独立模拟器或真实云验证。Application Insights 组件清理仍在实现中。参阅[AMPLS 关联要求](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls)。

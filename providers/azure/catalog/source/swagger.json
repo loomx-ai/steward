@@ -177314,6 +177314,66 @@
         "region",
         "global"
       ]
+    },
+    {
+      "class": "observability.private_link_scope",
+      "displayName": "Azure Monitor private link scope",
+      "nativeType": "Microsoft.Insights/privateLinkScopes",
+      "rest": {
+        "collection": "privateLinkScopes",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopes_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "observability.resource_association",
+      "displayName": "Azure Monitor scoped resource",
+      "nativeType": "Microsoft.Insights/privateLinkScopes/scopedResources",
+      "rest": {
+        "collection": "scopedResources",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_ListByPrivateLinkScope"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateLinkScopedResources_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "network.private_endpoint_connection",
+      "displayName": "Azure Monitor private endpoint connection",
+      "nativeType": "Microsoft.Insights/privateLinkScopes/privateEndpointConnections",
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_ListByPrivateLinkScope"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.PrivateEndpointConnections_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
     }
   ]
 }

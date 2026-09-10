@@ -4,9 +4,10 @@ This evidence is pinned to Azure REST API specifications commit
 `e45039baa985c442877529906e705982a6e0099d`. The current foundation adds 63
 catalog operations from 16 root documents and six transitive reference
 documents. Native response transport, content redaction and operation-location
-checks are implemented. Resource inventory adapters, cleanup bindings and
-lifecycle tests remain in progress; this directory does not establish completed
-Application Insights support.
+checks are implemented. Monitor Private Link Scope inventory and lifecycle
+bindings are implemented as described below. Application Insights resource
+inventory and cleanup remain in progress; this directory does not establish
+completed Application Insights support.
 
 ## Native schemas and examples
 
@@ -91,8 +92,59 @@ Monitor deletion locations are resolved only to the native operation-status
 path in the initiating subscription/resource group, with the selected version.
 Missing, duplicated, conflicting or foreign locations fail validation. Resolved
 locations use status polling, and operation responses must carry a status with
-matching IDs/names when present. Resource-bound persistence and full cleanup
-readback remain part of the pending lifecycle implementation.
+matching IDs/names when present. Executable Monitor actions additionally bind
+persisted receipts to the selected connection, partition, credentials, resource
+and polling protocol, and check any returned `resourceId` against that resource.
+
+## Monitor private-link lifecycle
+
+Three global resource kinds bind their original native GET/LIST/DELETE APIs:
+`privateLinkScopes`, `privateLinkScopes/scopedResources` and
+`privateLinkScopes/privateEndpointConnections`. Scope cleanup requires separate
+child DELETEs. Two complete child inventories, native detail reads and any
+embedded private-endpoint-connection list must agree. Capability descriptions
+are read through both native APIs and reviewed with their scope; they have no
+independent delete rule. Parent access modes, exclusions, creation fields and
+child configuration are checked before actions. Private configuration uses a
+credential-keyed digest. The native DELETE contracts have no conditional header.
+
+Scoped-resource deletion retains its linked resource, and connection deletion
+retains the network private endpoint. Workspaces and data collection endpoints
+instead acquire explicit incoming-association prerequisites. The implementation
+reconciles two complete subscription scope/association indexes and the target's
+native reverse references. Omitted optional reverse arrays do not hide local
+links; malformed, contradictory or stale indexes block cleanup. Foreign
+subscription references remain unresolved and block target deletion without
+issuing requests outside the selected subscription. A Monitor workspace's
+managed DCE receives the same external-association review. Removing associations
+does not transfer their scope's ownership to the monitored target.
+
+The native source spells component reverse fields `PrivateLinkScopedResources`,
+`ResourceId` and `ScopeId`, and uses camel case for workspaces/DCEs. `scopeId` is
+an immutable identifier, not an ARM parent path. Component cleanup is still
+pending its own resource adapters. The ordering requirement is documented in
+[Microsoft's AMPLS configuration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls).
+
+`TestMonitorPrivateLinkNativeLifecycle` composes the three unchanged official
+detail examples under one subscription and scope. Its asynchronous transitions,
+lists and final absence responses are explicit test state, not CLI recordings.
+Other lifecycle tests cover access/configuration/creation changes, capabilities,
+retention, locks, malformed or changing indexes, missing assets, cross-subscription
+links, restart, credential/connection receipt substitution, failed/canceled
+operations, delayed absence and expired operation polling. Shared-target tests
+cover separate workspace/DCE cleanup and the managed Monitor workspace workflow.
+The published `PrivateEndpointConnectionList.json` contains two equal IDs with
+different names; ordinary duplicate/identity checks reject that example as an
+authoritative inventory. Its original bytes are retained, not corrected.
+
+No native AMPLS recording was found in the pinned Azure CLI tree
+`dc50d475a00ded4a1a1980d4a10a9fbd9a750a81`. Its
+[private-link test](https://github.com/Azure/azure-cli/blob/dc50d475a00ded4a1a1980d4a10a9fbd9a750a81/src/azure-cli/azure/cli/command_modules/monitor/tests/latest/test_monitor_private_link_scope.py)
+is explicitly skipped after a component-association failure. The downloaded
+test source SHA-256 is
+`c442341b7010423232db856f4b0f4b85140315093eaeb6488d5a7100f43036d6`.
+That skipped scenario is not passing evidence. No independent AMPLS emulator
+or real-cloud lifecycle verification is claimed.
 
 ## Official CLI recordings
 
