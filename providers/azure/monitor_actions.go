@@ -114,6 +114,13 @@ func (a *monitorAction) current(ctx context.Context) (response, error) {
 	if monitorResourceRegion(a.kind, current.data) != a.location || a.client.privateConfiguration(monitorResourceSnapshot(a.kind, current.data)) != a.configuration {
 		return current, serviceDenied("monitor_resource_configuration_changed")
 	}
+	refs, err := a.client.monitorReferences(ctx, a.kind, a.id, current.data)
+	if err != nil {
+		return current, err
+	}
+	if a.client.monitorReferencesBinding(a.id, a.kind, a.configuration, a.group, monitorReferenceProjection(refs)) != a.references {
+		return current, serviceDenied("monitor_receiver_resolution_changed")
+	}
 	return current, nil
 }
 

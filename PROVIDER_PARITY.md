@@ -2248,3 +2248,40 @@ background evidence only, not acceptance evidence for this work.
   existing non-Monitor target drivers and managed-group composition still need
   integration. Remaining service coverage, bilingual capability/permission
   documentation and all eight provider acceptance criteria remain open.
+
+### Azure Monitor receiver identity resolution
+
+- Event Hub receivers now resolve namespace names through two complete native
+  subscription indexes reconciled with Get. Child references use the verified
+  namespace's resource group. ITSM receivers support the published compound
+  workspace selector and an unqualified customer GUID, matched to native
+  workspace identity and region. Missing or foreign destinations retain typed
+  unresolved selectors; they do not borrow the local subscription or invent
+  ARM resource groups.
+- Function and non-global Runbook child references supplement their explicit
+  parent references. Global Runbook display names remain unexpanded until the
+  native webhook mapping is implemented. Lookup outcomes participate in signed
+  source references, inventory cursors, graph verification and action preflight,
+  so namespace moves, workspace recreation and newly appearing destinations
+  invalidate stale evidence even without a source configuration change.
+- Four additional unchanged official examples and three existing document
+  checksums retain provenance. Four original response bodies pass offline schema
+  validation; the Workspace Get example's incorrect array is a required, named
+  discrepancy and is rejected by the runtime. The Action Group Create example
+  supplies receiver evidence only; no additional write operation is exposed.
+  Protocol scenarios explicitly compose identities from the original examples.
+- Tests cover native pages and Get reconciliation, ambiguous or missing targets,
+  foreign scope/tenant, invalid native selector shapes, failed/incomplete reads,
+  cancellation and resolution drift. The registered Action Group scan-worker
+  scenario now persists real receiver references, rebuilds the graph and
+  independently deletes/reloads the referring resource while retaining targets.
+- Full Go tests passed (Azure 164.254s; GCP cached), repository-wide vet passed,
+  and all Monitor race tests passed (47.748s). After the Action Group spec and
+  worker integration updates, all Monitor tests passed (5.673s); the final
+  scan-worker race run passed (18.970s). No new independent emulator or live-cloud
+  verification was performed. Bilingual Azure capability/permission docs now
+  describe the ten registered kinds and receiver-read requirements.
+- Counts remain 1,224 operations, 383 types/specs and 357 cleanup bindings.
+  Existing non-Monitor destination guards, unresolved targets after destination
+  absence, managed-group composition, global Runbook webhook mapping, remaining
+  provider families and all eight acceptance criteria remain open.

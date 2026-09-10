@@ -207,10 +207,10 @@ func TestMonitorExplicitReceiverAndIdentityReferences(t *testing.T) {
 	props["automationRunbookReceivers"] = []any{map[string]any{"automationAccountId": account, "runbookName": "notify", "webhookResourceId": account + "/webhooks/notify", "isGlobalRunbook": false}}
 	raw["identity"] = map[string]any{"type": "UserAssigned", "userAssignedIdentities": map[string]any{identity: map[string]any{}}}
 	refs, err := monitorResourceReferences(monitorActionGroupType, id, raw)
-	if err != nil || len(refs) != 4 {
+	if err != nil || len(refs) != 6 {
 		t.Fatal("explicit receivers missing", refs, err)
 	}
-	for _, want := range []string{account, function, workflow, account + "/webhooks/notify"} {
+	for _, want := range []string{account, function, workflow, account + "/webhooks/notify", account + "/runbooks/notify", function + "/functions/notify"} {
 		canonical, typ, _ := parseID(want)
 		if mapping, ok := findType(typ); ok {
 			typ = mapping.NativeType
@@ -259,7 +259,7 @@ func TestMonitorExplicitReceiverAndIdentityReferences(t *testing.T) {
 			if (err != nil) != wantError {
 				t.Fatal("native reference boundary differs", mode, err)
 			}
-			if mode == "opaque-scopes" && len(refs) != 4 {
+			if mode == "opaque-scopes" && len(refs) != 6 {
 				t.Fatal("undeclared action-group scopes or identity became dependencies", refs)
 			}
 		})

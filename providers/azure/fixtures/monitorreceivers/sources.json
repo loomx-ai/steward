@@ -1,0 +1,42 @@
+[
+  {
+    "file": "eventhub-namespace-list.json",
+    "operation": "Namespaces_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.EventHub/namespaces",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/examples/NameSpaces/EHNameSpaceList.json",
+    "source_sha256": "2cd19df9afb29d67db99f226abc4bc6bfa58287215f6be17b43d27797e21eb89",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/eventhub/resource-manager/Microsoft.EventHub/Eventhub/stable/2024-01-01/namespaces.json",
+    "source_document_sha256": "7e4d24bed13514d74d3af909737c07b5b5e3437b87a8f4c08c21169ea47503b6"
+  },
+  {
+    "file": "workspaces-list.json",
+    "operation": "Workspaces_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.OperationalInsights/workspaces",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/examples/WorkspacesSubscriptionList.json",
+    "source_sha256": "98ecbe2f4194be627b1c4fb9ef86891db279223f789412c96c1c5841547241d5",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json",
+    "source_document_sha256": "74f14bf33e5e150b047c69626dcb5a713ac1de3bba170013b1d66d6a5587e138"
+  },
+  {
+    "file": "workspace-get.json",
+    "operation": "Workspaces_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/examples/WorkspacesGet.json",
+    "source_sha256": "bfd62878905468926f33f1c7181ed45517fb6fb84c86c9e8bd898f9eccd14cb4",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/operationalinsights/resource-manager/Microsoft.OperationalInsights/OperationalInsights/stable/2022-10-01/Workspaces.json",
+    "source_document_sha256": "74f14bf33e5e150b047c69626dcb5a713ac1de3bba170013b1d66d6a5587e138"
+  },
+  {
+    "file": "actiongroup-create.json",
+    "operation": "ActionGroups_CreateOrUpdate",
+    "method": "PUT",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups/{actionGroupName}",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/examples/createOrUpdateActionGroup.json",
+    "source_sha256": "52ecc6743009c3c0dfebaeed743bd993cf7cbd0d3c3eb4796c44be9b6ef5c9ce",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json",
+    "source_document_sha256": "56e94b8d366f0c426b8ee76cd702173de8c17fc9080c9fda6f7f1211d85f918b"
+  }
+]

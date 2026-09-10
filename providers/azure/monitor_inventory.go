@@ -161,7 +161,7 @@ func (r *Runtime) monitorInventoryItem(ctx context.Context, c *client, raw map[s
 		}
 		normalized["arm_parameters"] = params
 	}
-	refs, err := monitorResourceReferences(kind, id, current.data)
+	refs, err := c.monitorReferences(ctx, kind, id, current.data)
 	if err != nil {
 		return contracts.InventoryItem{}, err
 	}
@@ -232,7 +232,7 @@ func (r *Runtime) monitorInventorySnapshot(ctx context.Context, c *client, reque
 		if scope != c.root() && item.Normalized[monitorGroupProof] != c.privateConfiguration(object(groupBindings[scope])) {
 			return nil, nil, "", serviceDenied("monitor_resource_group_changed")
 		}
-		bindings[id] = map[string]any{"configuration": item.Normalized[monitorConfigurationProof], "group": item.Normalized[monitorGroupProof], "protection": item.Normalized["cleanup_protection_reason"], "location": item.Location}
+		bindings[id] = map[string]any{"configuration": item.Normalized[monitorConfigurationProof], "group": item.Normalized[monitorGroupProof], "references": item.Normalized[monitorReferencesProof], "protection": item.Normalized["cleanup_protection_reason"], "location": item.Location}
 		if productScopeMatches(request, item) {
 			items = append(items, item)
 		}

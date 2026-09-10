@@ -138,8 +138,10 @@ recreated configuration, altered receipts, changed protection/ownership and
 late private drift. Explicit source deletion precedes shared destination
 deletion without automatically selecting or deleting a receiver.
 
-Event Hub receiver namespace/name lookup, ITSM workspace-GUID resolution,
-Function/runbook child references, managed-group composition and integration
-with the existing non-Monitor target drivers remain open. The sources do not
-provide a receiver resource group that could safely be invented. These are
-protocol and application integration tests, not emulator or live-cloud runs.
+Event Hub namespace/name and ITSM workspace selectors now resolve through
+complete native indexes; Function and non-global Runbook child references are
+also recorded. The [receiver evidence](../monitorreceivers/README.md) retains
+the additional native examples, source discrepancies and verification. Global
+Runbook webhook mapping, managed-group composition and integration with existing
+non-Monitor target drivers remain open. These are protocol and application
+integration tests, not emulator or live-cloud runs.

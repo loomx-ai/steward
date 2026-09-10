@@ -132,6 +132,33 @@ func monitorResourceReferences(kind, self string, raw map[string]any) (map[strin
 				}
 			}
 		}
+		for _, receiver := range []struct{ collection, parent, child, name, kind string }{
+			{"azureFunctionReceivers", "functionAppResourceId", "functions", "functionName", appFunctionType},
+			{"automationRunbookReceivers", "automationAccountId", "runbooks", "runbookName", "Microsoft.Automation/automationAccounts/runbooks"},
+		} {
+			for _, value := range array(props[receiver.collection]) {
+				row := object(value)
+				if err := monitorRuleFields(row, receiver.name, "isGlobalRunbook"); err != nil {
+					return nil, err
+				}
+				name, ok := row[receiver.name].(string)
+				if !ok || !monitorReceiverName(name) {
+					return nil, serviceDenied("invalid_monitor_receiver_child_name")
+				}
+				if receiver.child == "runbooks" {
+					global, ok := row["isGlobalRunbook"].(bool)
+					if !ok {
+						return nil, serviceDenied("invalid_monitor_runbook_receiver")
+					}
+					if global {
+						continue // Global action names need the webhook's native runbook mapping.
+					}
+				}
+				if err := add(text(row[receiver.parent])+"/"+receiver.child+"/"+name, receiver.kind); err != nil {
+					return nil, err
+				}
+			}
+		}
 	}
 	return refs, nil
 }
@@ -159,8 +186,11 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 	if c.privateConfiguration(insightsWorkspaceResourceSnapshot(group)) != text(parent.Normalized[monitorGroupProof]) {
 		return contribution, serviceDenied("monitor_graph_resource_group_changed")
 	}
-	refs, err := monitorResourceReferences(kind, id, current.data)
+	refs, err := c.monitorReferences(ctx, kind, id, current.data)
 	if err != nil {
+		return contribution, err
+	}
+	if err := c.monitorReferencesUnchanged(parent, refs); err != nil {
 		return contribution, err
 	}
 	contribution, err = c.contributeNativeReferences(parent, assets, refs, "azure:monitor-reference")

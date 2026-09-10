@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 373 类资源，其中 347 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 383 类资源，其中 357 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -65,6 +65,8 @@ Steward 识别 373 类资源，其中 347 类具有原生清理操作（包括 B
 | Monitor 专用链接 | 全局专用链接范围、范围资源关联与专用终结点连接 | 先删除已审查的子资源，再删除范围；关联的工作区和数据收集终结点需先解绑 |
 | Application Insights | 组件、分析项、持续导出、收藏、工作项配置、API Key 和 Profiler 存储关联 | 先独立删除子资源并解除 AMPLS 关联，再审查当前托管工作区资源组的删除影响 |
 | Azure Monitor 工作簿 | 共享工作簿、私有工作簿及工作簿模板 | 独立清理并核对完整内容和历史版本，引用的存储和身份保持独立 |
+| Azure Monitor 告警 | 指标、活动日志、计划查询、智能检测、Prometheus 和处理规则；动作组与 Web 测试 | 独立清理；引用规则须经审查并先于共享 Monitor 目标删除 |
+| 预算 | 订阅及资源组范围的 Consumption、Cost Management 预算 | 独立清理，通知动作组保持独立 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
@@ -72,6 +74,10 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Monitor 告警、动作组、Web 测试与预算支持原生盘点和独立删除。扫描全局规则及预算时须包含全局范围。保留告警规则或预算会阻止其引用的动作组清理；同时选择两者时，会先删除引用方。清理需要可能引用目标的规则的原生列举、读取权限；动作组检查还会遍历订阅和各资源组下的两类预算 API。仅为选定的清理资源授予原生删除权限。私密查询、接收器及通知内容不会进入盘点和日志；配置或权限变化后需重新成功扫描并生成计划。
+
+解析 Event Hub 接收器需要订阅范围的 Event Hubs 命名空间列举、读取权限；ITSM 接收器同样需要 Log Analytics 工作区列举、读取权限。跨订阅或缺失的目标保留为未解析引用。Function 和非全局 Runbook 的子资源引用会与父资源分别记录。现有非 Monitor 接收目标及托管资源组的清理集成仍未完成，全局 Runbook 动作名称还需要原生 Webhook 映射。参阅微软的[动作组接收器契约](https://learn.microsoft.com/en-us/rest/api/monitor/action-groups/get?view=rest-monitor-2023-01-01)。
 
 API Management 清理会审查所选服务或工作区的 API 定义、策略、内容与配置。共享订阅、API 修订和引用方资源通过独立步骤先行删除。删除 API、产品、组、标签或通知关联仅解除该关联；被引用成员保持独立，除非另行选中。内置组、管理员用户、主订阅、邮件模板及固定门户、通知、租户配置需通过所属控制资源清理。保留必要资源会阻止控制资源删除；门户版本正在发布或配置发生变化时也会阻止清理。
 
@@ -141,4 +147,4 @@ Application Insights 盘点覆盖组件、共享及个人分析项、持续导�
 
 组件扫描还会读取完整资源组索引，以及当前托管工作区的组成员和 AMPLS 关联。因此需要资源组、资源列表、成员产品详情和 AMPLS 读取权限，包括组件资源组以外的托管组。归属须由组件的工作区引用与资源组 `managedBy` 共同确认，不能仅凭名称推断；共享工作区和切换后留下的旧托管组会分别记录。读取失败或索引不一致会使扫描失败，跨订阅引用不会授权跨订阅读取。组件删除包含已审查的当前托管组及已知后代。只有组件和资源组消失，且每个已知成员的原生 GET 均确认不存在，才会完成。锁或 Azure 策略可能留下资源组；Steward 会继续等待，不会独立删除托管工作区。切换后留下的旧组和共享工作区会保留；若组内嵌套控制资源还有未建模的外部托管组，则阻止清理。参阅[托管工作区行为](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces)。
 
-组件盘点还会读取当前计费功能、每日上限、定价计划、配额状态及旧版主动检测设置，需要授予这些组件接口的读取权限。删除前会重新核对可编辑设置，包括私密通知收件人；设置变化后需要重新扫描和生成计划。配额等只读运行数据的变化不会使计划失效，私密收件人不会进入盘点和日志。这些设置随组件清理，没有独立删除操作。迁移后的智能检测告警规则及其操作组仍需单独支持，参阅[迁移说明](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration)。
+组件盘点还会读取当前计费功能、每日上限、定价计划、配额状态及旧版主动检测设置，需要授予这些组件接口的读取权限。删除前会重新核对可编辑设置，包括私密通知收件人；设置变化后需要重新扫描和生成计划。配额等只读运行数据的变化不会使计划失效，私密收件人不会进入盘点和日志。这些设置随组件清理，没有独立删除操作。迁移后的智能检测告警规则及其动作组独立盘点和删除，参阅[迁移说明](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration)。

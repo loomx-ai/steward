@@ -43,7 +43,7 @@ func (c *client) monitorRecordedReferences(value asset.Asset) (map[string]any, e
 		seen := map[string]bool{}
 		for _, id := range ids {
 			canonical, typ, err := parseID(id)
-			if err != nil || id != canonical || !strings.EqualFold(kind, typ) || seen[id] {
+			if seen[id] || err == nil && (id != canonical || !strings.EqualFold(kind, typ)) || err != nil && !monitorReceiverSelector(kind, id) {
 				return nil, serviceDenied("invalid_monitor_recorded_reference_identity")
 			}
 			seen[id] = true
@@ -64,7 +64,7 @@ func monitorIncomingKinds(target string) []string {
 	if strings.EqualFold(target, applicationInsightsType) {
 		kinds = append(kinds, insightsWebTestType)
 	}
-	for _, kind := range []string{"Microsoft.Web/sites", "Microsoft.Logic/workflows", "Microsoft.Automation/automationAccounts", "Microsoft.Automation/automationAccounts/webhooks", "Microsoft.OperationalInsights/workspaces"} {
+	for _, kind := range []string{appSiteType, appFunctionType, "Microsoft.Logic/workflows", "Microsoft.Automation/automationAccounts", "Microsoft.Automation/automationAccounts/webhooks", "Microsoft.Automation/automationAccounts/runbooks", insightsWorkspaceType, eventHubNamespaceType, eventHubType} {
 		if strings.EqualFold(target, kind) {
 			kinds = append(kinds, monitorActionGroupType)
 			break
@@ -98,7 +98,7 @@ func (c *client) monitorIncoming(ctx context.Context, target asset.Identity) (in
 			if err != nil || scope != c.root() && groups[scope] == nil {
 				return nil, serviceDenied("monitor_incoming_group_missing")
 			}
-			refs, err := monitorResourceReferences(kind, id, values[id])
+			refs, err := c.monitorReferences(ctx, kind, id, values[id])
 			if err != nil {
 				return nil, err
 			}

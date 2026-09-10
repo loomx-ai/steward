@@ -23,6 +23,11 @@ func TestMonitorNativeScanWorkerAndExecution(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			ctx := t.Context()
 			f := newMonitorInventoryFixture(t, kind)
+			if kind == monitorActionGroupType {
+				// Exercise the native Event Hub/ITSM indexes through real scan
+				// creation, persistence, graph rebuilding and action recovery.
+				f = newMonitorReceiverFixture(t).monitorInventoryFixture
+			}
 			r := f.runtime
 			repository, err := sqlite.Open(filepath.Join(t.TempDir(), "monitor.db"), "../../migrations")
 			if err != nil {
@@ -109,6 +114,16 @@ func TestMonitorNativeScanWorkerAndExecution(t *testing.T) {
 				t.Fatal("registered monitor worker lost native identities", kind, len(values), expected)
 			}
 			first := values[0]
+			if kind == monitorActionGroupType {
+				for _, value := range values {
+					if len(object(value.Normalized["_monitor_references"])) != 0 {
+						first = value
+					}
+				}
+				if len(object(first.Normalized["_monitor_references"])) != 3 {
+					t.Fatal("receiver dependencies did not survive scan persistence")
+				}
+			}
 			before := first.Normalized[monitorConfigurationProof]
 			props := object(f.objects[first.Identity.NativeID]["properties"])
 			switch kind {
@@ -135,7 +150,7 @@ func TestMonitorNativeScanWorkerAndExecution(t *testing.T) {
 				t.Fatal("monitor worker failed to refresh frozen action evidence", first.Identity.NativeID)
 			}
 			wire, _ := json.Marshal(values)
-			if strings.Contains(string(wire), "PRIVATE_UPDATED_MONITOR") || strings.Contains(string(wire), "contactEmails") || strings.Contains(string(wire), "CredentialPassword") {
+			if strings.Contains(string(wire), "PRIVATE_UPDATED_MONITOR") || strings.Contains(string(wire), "contactEmails") || strings.Contains(string(wire), "CredentialPassword") || strings.Contains(string(wire), "ticketConfiguration") {
 				t.Fatal("private monitor configuration entered persisted assets")
 			}
 			lifecycle, err := r.ServiceLifecycle(ctx, connection.ID)

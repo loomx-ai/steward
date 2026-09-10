@@ -51,12 +51,27 @@ fields:
   automationWebhookIds:
     path: refs_microsoft_automation_automationaccounts_webhooks
     type: array
+  automationRunbookIds:
+    path: refs_microsoft_automation_automationaccounts_runbooks
+    type: array
 extensions:
   hook: azure.resource
 relationships:
 - type: uses
   targetType: Microsoft.Web/sites
   targetIdPath: refs_microsoft_web_sites
+- type: uses
+  targetType: Microsoft.Web/sites/functions
+  targetIdPath: refs_microsoft_web_sites_functions
+- type: uses
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces
+- type: uses
+  targetType: Microsoft.EventHub/namespaces/eventhubs
+  targetIdPath: refs_microsoft_eventhub_namespaces_eventhubs
+- type: uses
+  targetType: Microsoft.OperationalInsights/workspaces
+  targetIdPath: refs_microsoft_operationalinsights_workspaces
 actions:
   delete:
     operation: Azure.Microsoft.Insights.ActionGroups_Delete
