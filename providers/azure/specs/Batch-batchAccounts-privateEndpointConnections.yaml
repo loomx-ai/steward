@@ -1,0 +1,74 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Batch/batchAccounts/privateEndpointConnections
+  class: network.private_endpoint_connection
+presentation:
+  displayNames:
+    en-US: Batch private endpoint connection
+    zh-CN: 批处理专用终结点连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Batch.PrivateEndpointConnection_ListByBatchAccount
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Batch.PrivateEndpointConnection_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Batch/batchAccounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts
+  targetIdPath: refs_microsoft_batch_batchaccounts
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.Network/privateEndpoints
+  targetIdPath: refs_microsoft_network_privateendpoints
+actions:
+  delete:
+    operation: Azure.Microsoft.Batch.PrivateEndpointConnection_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Batch.PrivateEndpointConnection_Get
+      itemsPath: $
+      identityPath: id

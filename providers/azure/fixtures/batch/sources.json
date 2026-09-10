@@ -1,0 +1,488 @@
+[
+  {
+    "file": "ApplicationDelete.json",
+    "operation": "Application_Delete",
+    "plane": "arm",
+    "label": "ApplicationDelete",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationDelete.json",
+    "source_sha256": "68c8c2e28bd7bb56f851626fff93a45917f4c4a0f8c07ce05c66d6c47f5e981a"
+  },
+  {
+    "file": "ApplicationGet.json",
+    "operation": "Application_Get",
+    "plane": "arm",
+    "label": "ApplicationGet",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationGet.json",
+    "source_sha256": "6136da57323a66206d62478669c0db4ee2e5fa4d9722212ec0fcbe6bfd0c146a"
+  },
+  {
+    "file": "ApplicationList.json",
+    "operation": "Application_List",
+    "plane": "arm",
+    "label": "ApplicationList",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationList.json",
+    "source_sha256": "468ef53f17c44f60bdf4370913356f3ce1b5aa319d5a72bd1bbe87908e2a7db7"
+  },
+  {
+    "file": "ApplicationPackageDelete.json",
+    "operation": "ApplicationPackage_Delete",
+    "plane": "arm",
+    "label": "ApplicationPackageDelete",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationPackageDelete.json",
+    "source_sha256": "2457d62eec66eea3555838abe303d8172872e0608c94babaceb6de7f667ba420"
+  },
+  {
+    "file": "ApplicationPackageGet.json",
+    "operation": "ApplicationPackage_Get",
+    "plane": "arm",
+    "label": "ApplicationPackageGet",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationPackageGet.json",
+    "source_sha256": "e0d7bc67cb2ae904e5ba201356642d71885ec4b1bd59c8359a4c607c3993b04b"
+  },
+  {
+    "file": "ApplicationPackageList.json",
+    "operation": "ApplicationPackage_List",
+    "plane": "arm",
+    "label": "ApplicationPackageList",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/ApplicationPackageList.json",
+    "source_sha256": "87c989dd02df64c96c6a8a768d010b9c60ee63a8ee009b296603cef746004ca7"
+  },
+  {
+    "file": "BatchAccountDelete.json",
+    "operation": "BatchAccount_Delete",
+    "plane": "arm",
+    "label": "BatchAccountDelete",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/BatchAccountDelete.json",
+    "source_sha256": "fbbf6ecda88eeb92acc3810d48e38f7f70038ad2c7081e5fa7e8e0bf68dbf126"
+  },
+  {
+    "file": "BatchAccountGet.json",
+    "operation": "BatchAccount_Get",
+    "plane": "arm",
+    "label": "BatchAccountGet",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/BatchAccountGet.json",
+    "source_sha256": "26a42c948dcf98fbfcc698caf8612fbc57b8999d5bae1a9dff75e97a9436eb03"
+  },
+  {
+    "file": "BatchAccountList.json",
+    "operation": "BatchAccount_List",
+    "plane": "arm",
+    "label": "BatchAccountList",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/BatchAccountList.json",
+    "source_sha256": "420dd1de34003963bfb4f650ef6dda515344930d6e5c725e3bce8ad9fc79e00d"
+  },
+  {
+    "file": "BatchAccountListByResourceGroup.json",
+    "operation": "BatchAccount_ListByResourceGroup",
+    "plane": "arm",
+    "label": "BatchAccountListByResourceGroup",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/BatchAccountListByResourceGroup.json",
+    "source_sha256": "ec765c5e451ab8b77ac9042bacd2b003b26d4ccd11783e32d96d4daf9a40fdd1"
+  },
+  {
+    "file": "JobSchedules_DeleteJobSchedule.json",
+    "operation": "JobSchedules_DeleteJobSchedule",
+    "plane": "data",
+    "label": "JobSchedule delete",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/JobSchedules_DeleteJobSchedule.json",
+    "source_sha256": "cb4a5c87374221543c58db7e63d4c1574c2f12b7c641ab2a595f52362e07dd17"
+  },
+  {
+    "file": "JobSchedules_DisableJobSchedule.json",
+    "operation": "JobSchedules_DisableJobSchedule",
+    "plane": "data",
+    "label": "JobSchedule disable",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/JobSchedules_DisableJobSchedule.json",
+    "source_sha256": "7e8d0e84e37e2ad30c0b0f0aedd7534523c4cdf2e6541fb6ec48db0b4e3983ec"
+  },
+  {
+    "file": "JobSchedules_GetJobSchedule.json",
+    "operation": "JobSchedules_GetJobSchedule",
+    "plane": "data",
+    "label": "JobSchedule get",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/JobSchedules_GetJobSchedule.json",
+    "source_sha256": "1ff2863247034e83de25bc1b37fdbb8b9a8f30ba220a1cb3411ea3074811f6cd"
+  },
+  {
+    "file": "JobSchedules_ListJobSchedules.json",
+    "operation": "JobSchedules_ListJobSchedules",
+    "plane": "data",
+    "label": "JobSchedule list",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/JobSchedules_ListJobSchedules.json",
+    "source_sha256": "5a778bb44d13534e05c4ce59b887af0a7348c7eb25a43fc7cbd8f5fae4ee65a8"
+  },
+  {
+    "file": "Jobs_DeleteJob.json",
+    "operation": "Jobs_DeleteJob",
+    "plane": "data",
+    "label": "Delete Job",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Jobs_DeleteJob.json",
+    "source_sha256": "d2001a7bd57d9e13cd25700ac206f9607e3bd75ed4f898595e076fe7f135363e"
+  },
+  {
+    "file": "Jobs_GetJob.json",
+    "operation": "Jobs_GetJob",
+    "plane": "data",
+    "label": "Job get",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Jobs_GetJob.json",
+    "source_sha256": "4d20273b22333b67f6c0411eaa0e142840b63f5e1f641c10bb21ffd2ea53aa18"
+  },
+  {
+    "file": "Jobs_ListJobs.json",
+    "operation": "Jobs_ListJobs",
+    "plane": "data",
+    "label": "Job list",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Jobs_ListJobs.json",
+    "source_sha256": "87073fbb02eab347758d1c7b110b3e39139c801c5395d2b85d8afeded003a0a4"
+  },
+  {
+    "file": "Jobs_ListJobsFromSchedule.json",
+    "operation": "Jobs_ListJobsFromSchedule",
+    "plane": "data",
+    "label": "List Job Under Job Schedule",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Jobs_ListJobsFromSchedule.json",
+    "source_sha256": "40cfe498601fd43a75a3e748f7b2014709ce9ea5d8e4c0cdbaa79f2d6cfa3666"
+  },
+  {
+    "file": "Nodes_GetNode.json",
+    "operation": "Nodes_GetNode",
+    "plane": "data",
+    "label": "Node get",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Nodes_GetNode.json",
+    "source_sha256": "247b8d7c3b85f7d09abac7251f53b581cc17da898319026b6e8cc93a2266f961"
+  },
+  {
+    "file": "Nodes_GetNodeFileProperties.json",
+    "operation": "Nodes_GetNodeFileProperties",
+    "plane": "data",
+    "label": "File get properties from node",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Nodes_GetNodeFileProperties.json",
+    "source_sha256": "59a0566a2db64d8f4c62e92993365fc1325e1dfa3831b0619899ad01b9909e3a"
+  },
+  {
+    "file": "Nodes_Get_DualStackNetworking.json",
+    "operation": "Nodes_GetNode",
+    "plane": "data",
+    "label": "Node enable scheduling",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Nodes_Get_DualStackNetworking.json",
+    "source_sha256": "32da12c94ad5a982a657bd965a1892e9654288d9004ac069b956a2e7c5567563"
+  },
+  {
+    "file": "Nodes_ListNodes.json",
+    "operation": "Nodes_ListNodes",
+    "plane": "data",
+    "label": "Node list",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Nodes_ListNodes.json",
+    "source_sha256": "b43fc3026d9e3fb6d0c9b6cc1d3d93d171016225a32422289a9873a2a7f06458"
+  },
+  {
+    "file": "NspConfigurationGet.json",
+    "operation": "NetworkSecurityPerimeter_GetConfiguration",
+    "plane": "arm",
+    "label": "GetNspConfiguration",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/NspConfigurationGet.json",
+    "source_sha256": "6863def6b8724389b486e1c69014fc42ddf19faaaa354837b940cbca64fb4ab3"
+  },
+  {
+    "file": "NspConfigurationsList.json",
+    "operation": "NetworkSecurityPerimeter_ListConfigurations",
+    "plane": "arm",
+    "label": "ListNspConfigurations",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/NspConfigurationsList.json",
+    "source_sha256": "2f3950aee980e32a23265e13cf2f0592c45d7ef059fdab94c47020a0437d8edd"
+  },
+  {
+    "file": "PoolDelete.json",
+    "operation": "Pool_Delete",
+    "plane": "arm",
+    "label": "DeletePool",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolDelete.json",
+    "source_sha256": "97b8498c12a7b30d4882cb049b6bde47e8537bcba4bb6db4caff87fe21678782"
+  },
+  {
+    "file": "PoolGet.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet.json",
+    "source_sha256": "1ec0da407765d7c10e8703d8115fdcc2fba4ce2e9d7a5993807f9117677f5d9c"
+  },
+  {
+    "file": "PoolGet_AcceleratedNetworking.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - AcceleratedNetworking",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_AcceleratedNetworking.json",
+    "source_sha256": "ea269bf1ec85201889bc9a5cea6eac51b9d52a4b7e8f11c1cc5b9bbec01a92fd"
+  },
+  {
+    "file": "PoolGet_SecurityProfile.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - SecurityProfile",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_SecurityProfile.json",
+    "source_sha256": "5a6b818d4edc6feae3a557c013e219497c355d674af9d804f036aa014db08e8c"
+  },
+  {
+    "file": "PoolGet_UpgradePolicy.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - UpgradePolicy",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_UpgradePolicy.json",
+    "source_sha256": "b1d3c6ada8ee4694dbc46eb1f8f0d625284e568567eab0545e813ba422c4919f"
+  },
+  {
+    "file": "PoolGet_VirtualMachineConfiguration_Extensions.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - VirtualMachineConfiguration Extensions",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_VirtualMachineConfiguration_Extensions.json",
+    "source_sha256": "86587f38a671c9061de131494cef0b0a7c1beea0bfee6d7455f51e6731192d7a"
+  },
+  {
+    "file": "PoolGet_VirtualMachineConfiguration_MangedOSDisk.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - VirtualMachineConfiguration OSDisk",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_VirtualMachineConfiguration_MangedOSDisk.json",
+    "source_sha256": "58bb63937c8cc7dad161c024e8b5db97193909014e1c85c26900bfc2e396e3e7"
+  },
+  {
+    "file": "PoolGet_VirtualMachineConfiguration_ServiceArtifactReference.json",
+    "operation": "Pool_Get",
+    "plane": "arm",
+    "label": "GetPool - VirtualMachineConfiguration ServiceArtifactReference",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolGet_VirtualMachineConfiguration_ServiceArtifactReference.json",
+    "source_sha256": "8229a791eeaace2df1957062f47cc28f9dd71524b13d3d44536f02b8b057b648"
+  },
+  {
+    "file": "PoolList.json",
+    "operation": "Pool_ListByBatchAccount",
+    "plane": "arm",
+    "label": "ListPool",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolList.json",
+    "source_sha256": "c4248a7fd996e138fbdbc7c5f2f501b4b646aa509145f33fc01d6995438792c8"
+  },
+  {
+    "file": "PoolListWithFilter.json",
+    "operation": "Pool_ListByBatchAccount",
+    "plane": "arm",
+    "label": "ListPoolWithFilter",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PoolListWithFilter.json",
+    "source_sha256": "0ec747ec6b18f8f972d671745bea11219c018aebb6d5b7388210c2621866a80f"
+  },
+  {
+    "file": "Pools_GetPool_AcceleratedNetworking.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Get a pool with AcceleratedNetworking",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_AcceleratedNetworking.json",
+    "source_sha256": "d6f83becdccb67e64a5ead2e8256a0fa409d0735f706e5d409d6b62620577632"
+  },
+  {
+    "file": "Pools_GetPool_Basic.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Pool get",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_Basic.json",
+    "source_sha256": "b6669ef8b4543175f9cb7577f8debb5194f00cee2a27e453778e28285ae84739"
+  },
+  {
+    "file": "Pools_GetPool_ConfidentialDiskEncryptionSet.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Pool get with confidential disk encryption set for user subscription accounts",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_ConfidentialDiskEncryptionSet.json",
+    "source_sha256": "132bcbd5435a8648af2bb046469d350122a54d5381dd52c5c2f5630325d02cb6"
+  },
+  {
+    "file": "Pools_GetPool_CustomerManagedKey.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Pool get with customer managed key",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_CustomerManagedKey.json",
+    "source_sha256": "4c156c93d582d9af61abf8a3c21d17ba6842320808a8f641cd656fb3f59cfa37"
+  },
+  {
+    "file": "Pools_GetPool_DiskEncryptionSet.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Pool get with disk encryption set for user subscription accounts",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_DiskEncryptionSet.json",
+    "source_sha256": "95bed68fd4a5fd89fb584e0248609e867666eb4cf6d4db9de1e91cdbe2c05d64"
+  },
+  {
+    "file": "Pools_GetPool_SecurityProfile.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Get a VirtualMachineConfiguration pool with SecurityProfile",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_SecurityProfile.json",
+    "source_sha256": "7094fa2b6cdfbac20b035a992ea05e6a643cd7328cf4c0a45230d7f238d6c39d"
+  },
+  {
+    "file": "Pools_GetPool_VirtualMachineConfigurationWithExtensions.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Get a VirtualMachineConfiguration pool with extensions",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_VirtualMachineConfigurationWithExtensions.json",
+    "source_sha256": "44c06d9db56020b212d4db5f2bbb9ad686162e0c7906be9769131a2a6fdc0dd9"
+  },
+  {
+    "file": "Pools_GetPool_VirtualMachineConfigurationWithOSDisk.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Add a VirtualMachineConfiguration pool with OS disk",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_VirtualMachineConfigurationWithOSDisk.json",
+    "source_sha256": "3ce0920ed2bd0665f9f8f18d8ff7fac586d4f59f0b31022533547f3d22af46b2"
+  },
+  {
+    "file": "Pools_GetPool_VirtualMachineConfigurationWithServiceArtifactReference.json",
+    "operation": "Pools_GetPool",
+    "plane": "data",
+    "label": "Get a VirtualMachineConfiguration pool with ServiceArtifactReference",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_GetPool_VirtualMachineConfigurationWithServiceArtifactReference.json",
+    "source_sha256": "8cf51736a1e981e54f5cfaf5c3564e8aed34242acddb7d244018e4f99d408c8a"
+  },
+  {
+    "file": "Pools_ListPools_Basic.json",
+    "operation": "Pools_ListPools",
+    "plane": "data",
+    "label": "Pool list",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_ListPools_Basic.json",
+    "source_sha256": "bda398551c478dff99e31a9fdadf88d338b7ac317ad7380eb7a33adaa828f722"
+  },
+  {
+    "file": "Pools_RemoveNodes.json",
+    "operation": "Pools_RemoveNodes",
+    "plane": "data",
+    "label": "Pool remove nodes",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Pools_RemoveNodes.json",
+    "source_sha256": "83c59cfa2f01157bb959b4437b652b0c04855b73cf45860340fd8f8a9f5878f9"
+  },
+  {
+    "file": "PrivateBatchAccountGet.json",
+    "operation": "BatchAccount_Get",
+    "plane": "arm",
+    "label": "PrivateBatchAccountGet",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PrivateBatchAccountGet.json",
+    "source_sha256": "45023a03a32f90970853f63b3db6c1b83070a4ad02bda01d900fa10b5dce0dc7"
+  },
+  {
+    "file": "PrivateEndpointConnectionDelete.json",
+    "operation": "PrivateEndpointConnection_Delete",
+    "plane": "arm",
+    "label": "PrivateEndpointConnectionDelete",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PrivateEndpointConnectionDelete.json",
+    "source_sha256": "d31937d570aa0e89131cd272cfa4c28e4bc1970652e3d1022233f94770dd6b25"
+  },
+  {
+    "file": "PrivateEndpointConnectionGet.json",
+    "operation": "PrivateEndpointConnection_Get",
+    "plane": "arm",
+    "label": "GetPrivateEndpointConnection",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PrivateEndpointConnectionGet.json",
+    "source_sha256": "1823e266c624f393ba78f919b237c394ee0eab14d9c81429510bd4ce0ebb9fad"
+  },
+  {
+    "file": "PrivateEndpointConnectionsList.json",
+    "operation": "PrivateEndpointConnection_ListByBatchAccount",
+    "plane": "arm",
+    "label": "ListPrivateEndpointConnections",
+    "source_document": "openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/examples/PrivateEndpointConnectionsList.json",
+    "source_sha256": "b1db621cd8e108c2c5f36902e3ce7944379eb98adc6c66b916d4300f94b2a7f6"
+  },
+  {
+    "file": "Tasks_DeleteTask.json",
+    "operation": "Tasks_DeleteTask",
+    "plane": "data",
+    "label": "Task delete",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Tasks_DeleteTask.json",
+    "source_sha256": "faf3973d11b3d0424601772bad1ced364e5c36ce0db8e34f7adf1b414b1275ae"
+  },
+  {
+    "file": "Tasks_GetTask.json",
+    "operation": "Tasks_GetTask",
+    "plane": "data",
+    "label": "Task get",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Tasks_GetTask.json",
+    "source_sha256": "cc34c74bb75f24985b706b7c56c8ba2113cfb8e276ffb09c0fd6b956f196464e"
+  },
+  {
+    "file": "Tasks_ListSubTasks.json",
+    "operation": "Tasks_ListSubTasks",
+    "plane": "data",
+    "label": "Task list subtasks",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Tasks_ListSubTasks.json",
+    "source_sha256": "7a8bedfe9f7d35f73bee368c5d42e633dbe3ec707d00b0c55e04b806688d63bf"
+  },
+  {
+    "file": "Tasks_ListTasks.json",
+    "operation": "Tasks_ListTasks",
+    "plane": "data",
+    "label": "Task list",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Tasks_ListTasks.json",
+    "source_sha256": "c64d73fe553d341ffb40b3870d7690f89da18c1314bbac8d6f9012702248c225"
+  },
+  {
+    "file": "Tasks_TerminateTask.json",
+    "operation": "Tasks_TerminateTask",
+    "plane": "data",
+    "label": "Task terminate",
+    "source_document": "BatchService.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/examples/Tasks_TerminateTask.json",
+    "source_sha256": "54ab4cb854cea78ac38b374ac747977a2b4823d448769a0bca5cd6a6e8a5c2c1"
+  }
+]

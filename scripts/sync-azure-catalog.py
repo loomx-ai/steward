@@ -100,7 +100,7 @@ def snapshot(selection):
         document = fetch(uri)
         selected = set(entry["operations"])
         found = set()
-        snapshot = {key: copy.deepcopy(document[key]) for key in ("swagger", "info", "host", "basePath", "schemes") if key in document}
+        snapshot = {key: copy.deepcopy(document[key]) for key in ("swagger", "info", "host", "basePath", "schemes", "x-ms-parameterized-host") if key in document}
         for paths_key in ("paths", "x-ms-paths"):
             paths = {}
             for path, item in document.get(paths_key, {}).items():

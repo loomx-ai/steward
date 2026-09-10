@@ -28,6 +28,7 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	BatchPrivateConfiguration           string         `json:"batch_private_configuration,omitempty"`
 	StreamAnalyticsPrivateConfiguration string         `json:"stream_analytics_private_configuration,omitempty"`
 	KustoAncestors                      map[string]any `json:"kusto_ancestors,omitempty"`
 	KustoPrivateConfiguration           string         `json:"kusto_private_configuration,omitempty"`
@@ -132,6 +133,18 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	var provenance response
 	if nativeType == streamAnalyticsTransformationType {
 		values, next, provenance, err = c.streamAnalyticsTransformationPage(ctx, endpoint, target.ParentID)
+	} else if nativeType == batchPoolType {
+		// Batch data-plane auto pools must agree with the complete ARM index.
+		// Return that checked collection as one client shard.
+		var account batchAccountContext
+		account, err = c.batchAccount(ctx, target.ParentID)
+		if err == nil {
+			var pools []serviceChild
+			pools, provenance.requestID, err = c.batchPools(ctx, account)
+			for _, pool := range pools {
+				values = append(values, pool.data)
+			}
+		}
 	} else {
 		values, next, provenance, err = c.listPageResult(ctx, endpoint, u.Path)
 	}
@@ -196,6 +209,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if isBatchType(kind.NativeType) {
+			if !nativeConfigurationContains(batchSnapshot(kind.NativeType, raw), batchSnapshot(kind.NativeType, data)) {
+				return contracts.InventoryBatch{}, serviceDenied("batch_listed_configuration_changed")
+			}
+		}
 		if isStreamAnalyticsType(kind.NativeType) {
 			if err := streamAnalyticsListedIncarnation(kind.NativeType, raw, data); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -309,6 +327,9 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 }
 
 func productGeneration(raw map[string]any) string {
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isBatchType(kind) {
+		return batchConfiguration(batchKind(kind), raw)
+	}
 	properties := object(raw["properties"])
 	values := []any{object(raw["systemData"])["createdAt"], properties["resourceGuid"], properties["resourceUid"], properties["uniqueId"], properties["vmId"], properties["creationTime"], properties["timeCreated"], properties["creationDate"], properties["databaseId"]}
 	// Not every ARM provider exposes a creation identifier. Keep its etag as a
@@ -425,6 +446,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 		return err
 	}
 	if target.StreamAnalyticsPrivateConfiguration != "" && target.StreamAnalyticsPrivateConfiguration != c.privateConfiguration(streamAnalyticsSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
+	}
+	if target.BatchPrivateConfiguration != "" && target.BatchPrivateConfiguration != c.privateConfiguration(batchSnapshot(target.ParentType, current.data)) {
 		return errProductParentGenerationChanged
 	}
 	if target.KustoPrivateConfiguration != "" && target.KustoPrivateConfiguration != c.privateConfiguration(kustoSnapshot(target.ParentType, current.data)) {
@@ -595,6 +619,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			}
 			if isStreamAnalyticsType(parent.NativeType) {
 				target.StreamAnalyticsPrivateConfiguration = text(parent.Normalized["_stream_analytics_private_configuration"])
+			}
+			if isBatchType(parent.NativeType) {
+				target.BatchPrivateConfiguration = text(parent.Normalized["_batch_private_configuration"])
 			}
 			if isKustoType(parent.NativeType) {
 				target.KustoAncestors = object(parent.Normalized["_kusto_ancestors"])

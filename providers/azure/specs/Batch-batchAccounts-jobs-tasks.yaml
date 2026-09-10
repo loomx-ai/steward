@@ -1,0 +1,99 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Batch/batchAccounts/jobs/tasks
+  class: compute.batch_task
+presentation:
+  displayNames:
+    en-US: Batch task
+    zh-CN: 批处理任务
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Batch.DataPlane.Tasks_ListTasks
+    parameters:
+      endpoint: parent.normalized._batch_endpoint
+      jobId: parent.normalized._batch_parameters.jobId
+    itemsPath: value
+    identityPath: url
+  detail:
+    operation: Azure.Microsoft.Batch.DataPlane.Tasks_GetTask
+    itemsPath: $
+    identityPath: url
+  parent:
+    source: product-api
+    nativeType: Microsoft.Batch/batchAccounts/jobs
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  poolInfo:
+    path: poolInfo
+    type: object
+  jobSchedule:
+    path: jobSchedule
+    type: object
+  dependsOn:
+    path: dependsOn
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts/blobServices/containers
+  targetIdPath: refs_microsoft_storage_storageaccounts_blobservices_containers
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts/fileServices/shares
+  targetIdPath: refs_microsoft_storage_storageaccounts_fileservices_shares
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/pools/nodes
+  targetIdPath: refs_microsoft_batch_batchaccounts_pools_nodes
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/jobs/tasks
+  targetIdPath: refs_microsoft_batch_batchaccounts_jobs_tasks
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/jobs
+  targetIdPath: refs_microsoft_batch_batchaccounts_jobs
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/pools
+  targetIdPath: refs_microsoft_batch_batchaccounts_pools
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/applications
+  targetIdPath: refs_microsoft_batch_batchaccounts_applications
+- type: uses
+  targetType: Microsoft.Batch/batchAccounts/applications/versions
+  targetIdPath: refs_microsoft_batch_batchaccounts_applications_versions
+actions:
+  delete:
+    operation: Azure.Microsoft.Batch.DataPlane.Tasks_DeleteTask
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Batch.DataPlane.Tasks_GetTask
+      itemsPath: $
+      identityPath: url

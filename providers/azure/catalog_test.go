@@ -52,9 +52,9 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			}
 		}
 		for _, relation := range compiled.Definition.Relationships {
-			// Native firewall inheritance and nested Traffic Manager endpoints
-			// reference another resource of the same kind.
-			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType {
+			// Native inheritance, replication, and Batch task dependencies can
+			// reference another resource of the same kind through explicit IDs.
+			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}
@@ -93,12 +93,16 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				}
 				nativeID = strings.ReplaceAll(nativeID, match[0], value)
 			}
+			wantPath := nativeID
+			if isBatchDataType(kind.NativeType) {
+				nativeID = "https://account.eastus2.batch.azure.com" + nativeID
+			}
 			endpoint, err := c.resourceURL(kind, nativeID)
 			if err != nil {
 				t.Fatalf("binding %s: %v", nativeID, err)
 			}
 			u, _ := url.Parse(endpoint)
-			if !strings.EqualFold(u.Path, nativeID) || u.Query().Get("api-version") != operation.Call.Version {
+			if !strings.EqualFold(u.Path, wantPath) || u.Query().Get("api-version") != operation.Call.Version {
 				t.Fatalf("wrong request %s", endpoint)
 			}
 			if !kind.ReadOnly {
@@ -107,7 +111,11 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 					t.Fatal(err)
 				}
 				request, err := catalog.BindREST(deletion, parameters)
-				if err != nil || request.Method != "DELETE" {
+				wantMethod := "DELETE"
+				if kind.NativeType == batchNodeType {
+					wantMethod = "POST"
+				}
+				if err != nil || request.Method != wantMethod {
 					t.Fatalf("delete = %+v, %v", request, err)
 				}
 			}

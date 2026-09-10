@@ -291,6 +291,20 @@ func solveOnce(input Input) (Result, error) {
 	}
 
 	impactItems := stableImpacts(impactByKey)
+	// An explicitly selected direct fallback can have a parent that was added
+	// later by a higher controller's direct-child walk. Preserve that reviewed
+	// prerequisite for the executor as well as ordering the two native deletes.
+	for _, binding := range bindings {
+		child, childExists := stepAssets[binding.ManagedAssetID]
+		parent, parentExists := stepAssets[binding.ControllerAssetID]
+		if !directFallbacks[binding.ManagedAssetID] || !childExists || !parentExists || child.Action != "delete" || parent.Action != "delete" {
+			continue
+		}
+		directChildren[child.AssetID] = parent.AssetID
+		child.Evidence["lifecycle_controller"] = parent.AssetID
+		child.Evidence["cleanup_policy"] = graph.CleanupDirect
+		stepAssets[child.AssetID] = child
+	}
 	for _, impact := range impactItems {
 		if !requiresManagedAbsenceVerification(impact) {
 			continue

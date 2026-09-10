@@ -31,7 +31,7 @@ var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]
 var storageNamePattern = regexp.MustCompile(`^[a-z0-9]{3,24}$`)
 
 type client struct {
-	http, storageHTTP                 *http.Client
+	http, storageHTTP, batchHTTP      *http.Client
 	subscription, tenant, application string
 	fingerprint                       [32]byte
 }
@@ -130,11 +130,11 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// identity, executable credential, or user-selected token endpoint is allowed.
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
-		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default")}, nil
+		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default")}, nil
 }
 
 // Cache the token, while binding every refresh to the active request context.
-// ARM and Storage use separate transports so tokens never cross audiences.
+// ARM, Storage and Batch use separate transports so tokens never cross audiences.
 type tokenTransport struct {
 	base   http.RoundTripper
 	config clientcredentials.Config
@@ -199,12 +199,16 @@ func (c *client) requestBody(ctx context.Context, method, endpoint string, body 
 // Native operation polling and the fixed Resource Graph discovery query supply
 // their own validators. Ordinary inventory and mutations stay subscription-bound.
 func (c *client) requestAt(ctx context.Context, method, endpoint string, body []byte, headers map[string]string, validate func(string) error) (out response, failure error) {
+	return c.requestUsing(ctx, method, endpoint, body, headers, validate, c.http, false)
+}
+
+func (c *client) requestUsing(ctx context.Context, method, endpoint string, body []byte, headers map[string]string, validate func(string) error, transport *http.Client, allowEmptyResult bool) (out response, failure error) {
 	if err := validate(endpoint); err != nil {
 		return response{}, err
 	}
 	u, _ := url.Parse(endpoint)
 	query := u.Query()
-	if strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") || strings.Contains(strings.ToLower(u.Path), "/asyncoperations/") || strings.Contains(strings.ToLower(u.Path), "/operationsstatus/") || strings.Contains(strings.ToLower(u.Path), "/operationresults/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusterazureasyncoperation/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusteroperationresults/") {
+	if strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") || strings.Contains(strings.ToLower(u.Path), "/asyncoperations/") || strings.Contains(strings.ToLower(u.Path), "/operationsstatus/") || strings.Contains(strings.ToLower(u.Path), "/operationresults/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusterazureasyncoperation/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusteroperationresults/") || strings.Contains(strings.ToLower(u.Path), "/accountoperationresults/") || strings.Contains(strings.ToLower(u.Path), "/pooloperationresults/") {
 		// ProviderHub may return signed polling URLs. Keep them privately for
 		// resume, and exclude their signing material from API logs.
 		query = url.Values{"api-version": query["api-version"]}
@@ -235,7 +239,7 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 	for name, value := range headers {
 		req.Header.Set(name, value)
 	}
-	res, err := c.http.Do(req)
+	res, err := transport.Do(req)
 	if err != nil {
 		return response{}, transportError(ctx, err)
 	}
@@ -261,7 +265,11 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 	}
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": out.requestID, "status_code": out.status})
-		return out, apiError(res.StatusCode, text(object(out.data["error"])["code"]), res.Header)
+		code := text(object(out.data["error"])["code"])
+		if strings.HasSuffix(u.Host, ".batch.azure.com") {
+			code = text(out.data["code"])
+		}
+		return out, apiError(res.StatusCode, code, res.Header)
 	}
 	if out.data == nil || len(bytes.TrimSpace(payload)) == 0 {
 		// LRO Location polling may finish with 204, and an accepted operation
@@ -273,7 +281,8 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 			emptyKustoResult = validateKustoOperationURL(c.subscription, "", kind.Version, u.String()) == nil
 		}
 		emptyStreamAnalyticsResult := len(bytes.TrimSpace(payload)) == 0 && res.StatusCode == http.StatusOK && validateStreamAnalyticsOperationURL(c.subscription, "", "2020-03-01", u.String()) == nil
-		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent && !emptyKustoResult && !emptyStreamAnalyticsResult {
+		explicitEmptyResult := allowEmptyResult && len(bytes.TrimSpace(payload)) == 0 && res.StatusCode == http.StatusOK
+		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent && !emptyKustoResult && !emptyStreamAnalyticsResult && !explicitEmptyResult {
 			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 		out.data = map[string]any{}
@@ -367,6 +376,11 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		return nil, "", response{}, err
 	}
 	u, _ := url.Parse(endpoint)
+	if strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.batch/") {
+		if err := batchListQuery(endpoint, false); err != nil {
+			return nil, "", response{}, err
+		}
+	}
 	if err := streamAnalyticsListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
@@ -400,6 +414,11 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		nu, _ := url.Parse(next)
+		if strings.Contains(strings.ToLower(nu.Path), "/providers/microsoft.batch/") {
+			if err := batchListQuery(next, false); err != nil {
+				return nil, "", response{}, err
+			}
+		}
 		if err := streamAnalyticsListQuery(nu); err != nil {
 			return nil, "", response{}, err
 		}

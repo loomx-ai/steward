@@ -1243,6 +1243,53 @@
         "PrivateEndpoints_Get",
         "PrivateEndpoints_ListByCluster"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/resource-manager/Microsoft.Batch/Batch/stable/2025-06-01/openapi.json",
+      "operations": [
+        "ApplicationPackage_Delete",
+        "ApplicationPackage_Get",
+        "ApplicationPackage_List",
+        "Application_Delete",
+        "Application_Get",
+        "Application_List",
+        "BatchAccount_Delete",
+        "BatchAccount_Get",
+        "BatchAccount_List",
+        "BatchAccount_ListByResourceGroup",
+        "NetworkSecurityPerimeter_GetConfiguration",
+        "NetworkSecurityPerimeter_ListConfigurations",
+        "Pool_Delete",
+        "Pool_Get",
+        "Pool_ListByBatchAccount",
+        "PrivateEndpointConnection_Delete",
+        "PrivateEndpointConnection_Get",
+        "PrivateEndpointConnection_ListByBatchAccount"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/batch/data-plane/Batch/stable/2025-06-01/BatchService.json",
+      "operations": [
+        "JobSchedules_DeleteJobSchedule",
+        "JobSchedules_DisableJobSchedule",
+        "JobSchedules_GetJobSchedule",
+        "JobSchedules_ListJobSchedules",
+        "Jobs_DeleteJob",
+        "Jobs_GetJob",
+        "Jobs_ListJobs",
+        "Jobs_ListJobsFromSchedule",
+        "Nodes_GetNode",
+        "Nodes_GetNodeFileProperties",
+        "Nodes_ListNodes",
+        "Pools_GetPool",
+        "Pools_ListPools",
+        "Pools_RemoveNodes",
+        "Tasks_DeleteTask",
+        "Tasks_GetTask",
+        "Tasks_ListSubTasks",
+        "Tasks_ListTasks",
+        "Tasks_TerminateTask"
+      ]
     }
   ],
   "resource_types": [
@@ -5928,6 +5975,194 @@
       ],
       "list_operations": [
         "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_ListByCluster"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts",
+      "class": "compute.batch_account",
+      "display_name": "Batch account",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "batchAccounts",
+      "read_operations": [
+        "Azure.Microsoft.Batch.BatchAccount_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.BatchAccount_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.BatchAccount_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/pools",
+      "class": "compute.batch_pool",
+      "display_name": "Batch pool",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "pools",
+      "read_operations": [
+        "Azure.Microsoft.Batch.Pool_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.Pool_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.Pool_ListByBatchAccount"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/applications",
+      "class": "compute.batch_application",
+      "display_name": "Batch application",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "applications",
+      "read_operations": [
+        "Azure.Microsoft.Batch.Application_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.Application_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.Application_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/applications/versions",
+      "class": "compute.batch_application_package",
+      "display_name": "Batch application package",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "versions",
+      "read_operations": [
+        "Azure.Microsoft.Batch.ApplicationPackage_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.ApplicationPackage_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.ApplicationPackage_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Batch private endpoint connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Batch.PrivateEndpointConnection_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.PrivateEndpointConnection_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.PrivateEndpointConnection_ListByBatchAccount"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/networkSecurityPerimeterConfigurations",
+      "class": "network.security_perimeter_configuration",
+      "display_name": "Batch network security perimeter configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkSecurityPerimeterConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.Batch.NetworkSecurityPerimeter_GetConfiguration"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.Batch.NetworkSecurityPerimeter_ListConfigurations"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/jobSchedules",
+      "class": "compute.batch_job_schedule",
+      "display_name": "Batch job schedule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "jobSchedules",
+      "read_operations": [
+        "Azure.Microsoft.Batch.DataPlane.JobSchedules_GetJobSchedule"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.DataPlane.JobSchedules_DeleteJobSchedule"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.DataPlane.JobSchedules_ListJobSchedules"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/jobs",
+      "class": "compute.batch_job",
+      "display_name": "Batch job",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "jobs",
+      "read_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Jobs_GetJob"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Jobs_DeleteJob"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Jobs_ListJobs"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/jobs/tasks",
+      "class": "compute.batch_task",
+      "display_name": "Batch task",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tasks",
+      "read_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Tasks_GetTask"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Tasks_DeleteTask"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Tasks_ListTasks"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Batch/batchAccounts/pools/nodes",
+      "class": "compute.batch_node",
+      "display_name": "Batch compute node",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "nodes",
+      "read_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Nodes_GetNode"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Pools_RemoveNodes"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Batch.DataPlane.Nodes_ListNodes"
       ]
     }
   ]

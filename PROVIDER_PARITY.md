@@ -1483,3 +1483,88 @@ background evidence only, not acceptance evidence for this work.
   Query processing, data-plane cleanup, restore, unmodeled connector targets and
   full GCP/Azure application acceptance remain open. Native DELETE contracts
   have no conditional ETag protection, so final read/delete races remain.
+
+### Azure Batch progress (acceptance remains open)
+
+- Added ten 2025-06-01 rules and 37 native operations for accounts, pools,
+  nodes, applications/packages, private endpoint connections, network perimeter
+  configuration views, jobs, schedules and tasks. Data resources retain real
+  Batch URL identities. Current ARM account authority precedes Batch requests
+  and the distinct Batch OAuth audience; arbitrary supplied hosts cannot receive
+  credentials. Perimeter views have no invented DELETE operation.
+- Complete ARM/data pool indexes, native schedule-job membership, two full
+  hierarchy walks and parent rereads establish ownership. Actual auto-pool
+  settings determine job/schedule lifetime. Account cleanup independently
+  removes reviewed pools, applications, connections, jobs and schedules;
+  packages precede applications. Task/node cascades and shared consumer choices
+  preserve explicit selection, retention and independent final absence.
+- Task/job deletion uses current ETags. Node removal conditions the current
+  pool, selects one reviewed node and requeues running tasks. Historical task
+  placement remains a graph reference without forcing task deletion. Task
+  dependencies include real integer-ID range members, including leading-zero
+  aliases, without expanding a potentially enormous int32 range. Changed or
+  malformed dependencies and required retained consumers block cleanup.
+- Multi-instance task cleanup terminates tasks, verifies complete subtask sets
+  and persists primary/subtask directories with keyed node bindings. Restarted
+  waits check actual directories after task absence. A primary-task 404,
+  recreated node, forged receipt, partial response or denied HEAD cannot hide
+  remaining working directories. Native deletion response statuses are checked
+  per operation, rather than treating every successful HTTP status as equivalent.
+- User-subscription nodes use the documented Uniform VMSS VM resource ID and
+  existing Compute/Network child verification. Their complete VM/disk/extension/
+  NIC/IP-configuration/public-IP trees are reviewed and bound to the node.
+  Native deletion policy, exclusive ownership, backlinks, region, configuration,
+  management locks and protections are checked again immediately before removal.
+  A missing current VM cannot prove orphan-disk ownership. Shared/detached disks,
+  duplicate node ownership, unknown allocation modes and incomplete trees fail.
+- Node, pool and account completion independently verifies every physical
+  resource; node/VM absence cannot conceal a remaining disk. The containing
+  scale set remains independent and requires explicit node selection before its
+  own deletion. Native pool/scale-set capacity decrements are accepted only for
+  reviewed, independently absent nodes with all physical resources absent.
+  Other settings and unexpected capacity changes remain bound to the plan.
+- Fixed the shared planner's direct-fallback case: when an explicit child step
+  precedes a parent added through ancestor cleanup, its controller metadata and
+  frozen prerequisite now survive execution/restart. The child keeps its own
+  reviewed cascade impacts. Core planning and existing cleanup-worker tests
+  verify this path without adding a new executor contract.
+- Documented ARM IDs, task placement and managed identity references reach
+  inventory and the application graph. Storage/Key Vault URLs resolve through
+  complete native subscription lists and matching detail reads, including other
+  resource groups, storage DNS-zone/secondary/custom domains, file shares and
+  the Blob root container. Missing external names/typed URLs remain unresolved;
+  no same-group ARM IDs are guessed. SAS queries, mount keys and opaque user
+  configuration do not become graph credentials or reference authorities. An
+  uncovered `accountKey` redaction gap was fixed in the shared Azure sanitizer.
+- Fifty-four unchanged native examples and full source hashes use REST API
+  commit `e45039baa985c442877529906e705982a6e0099d`. Forty-two response examples
+  are schema checked; original fractional-duration, optional-password and native
+  identity inconsistencies are retained and documented separately from adapted
+  scenario copies. Two fresh source snapshots reproduce the selected fragment.
+- Seventy-five responses from eight pinned official CLI recordings retain
+  their native bodies and provenance. Replays cover account deletion with
+  rotating signed Location headers, package/application deletion, task reads/
+  termination/deletion, node removal, auto-pool ownership and private endpoint
+  discovery. API-version bridging, supporting indexes, default-version clearing
+  and final GET 404s are explicitly identified as composed behavior. The private
+  endpoint recording contains no deletion, so none is claimed. See the
+  [Batch evidence](providers/azure/fixtures/batch/README.md).
+- Azure now has 258 rules, 239 native DELETE bindings plus one native POST
+  cleanup binding, and 816 operations from 95 root plus 46 reference documents.
+  The deterministic catalog SHA-256 is
+  `7ec3594760366c52d0266766c17e39166ebcc5d9eb68c994f9fd035a5ea66252`;
+  the reproducible CLI extraction SHA-256 is
+  `e96fff896dabc1bb5cc05e86bf56c258293808d88fcc46af727cd210c9fc6759`.
+- Full Go tests, full Azure/plan/cleanup/governance/catalog/spec race tests,
+  `go vet`, five offline catalog-sync tests and bilingual documentation checks
+  passed. A final numeric-parser correction accepts large integral float64
+  values restored from JSON without exponent-format rejection; subsequent full
+  Go tests, Batch race tests and vet also passed. Native catalog and recording
+  hashes remain unchanged.
+- Reviewed Floci-AZ source has no Azure Batch service; Azurite implements
+  Storage, not Batch account/job/pool APIs. This evidence is native-schema,
+  in-process protocol, application graph and restart testing, not an independent
+  Batch emulator or a live Azure deployment. Thirty-one mapped Azure kinds
+  still lack specifications, and all eight provider acceptance items remain
+  open. ARM deletion's final read/delete race, unsupported external services
+  and full GCP/Azure application verification remain broader unfinished work.

@@ -31,6 +31,12 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
+	if isBatchType(kind.NativeType) {
+		if value.Identity.ConnectionID != id {
+			return nil, serviceDenied("batch_action_connection_changed")
+		}
+		return newBatchAction(c, value, kind)
+	}
 	wireID, err := c.plannedResourceID(value)
 	if err != nil {
 		return nil, err
@@ -598,6 +604,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}
+	if kind.NativeType == batchPerimeterType {
+		return "azure_batch_managed_configuration"
+	}
 	if reason := streamAnalyticsProtection(kind.NativeType); reason != "" {
 		return reason
 	}
@@ -679,6 +688,8 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
+	case "azure_batch_managed_configuration":
+		return true
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
 	case "azure_stream_analytics_transformation", "azure_kusto_following_database", "azure_kusto_active_image", "azure_cosmos_builtin_role", "azure_cosmos_managed_encryption_key", "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":

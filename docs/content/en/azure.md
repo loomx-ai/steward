@@ -15,6 +15,8 @@ Each Azure connection accesses one subscription using a Microsoft Entra service 
 
 Blob container cleanup also requires data-plane read access, such as **Storage Blob Data Reader**, and network access to the account's public Blob endpoint. Steward requests separate ARM and Storage access tokens. It does not use ambient Azure CLI credentials, managed identities, or storage account keys.
 
+Batch jobs, schedules, tasks and nodes use the account's Batch endpoint and a separate Batch access token. Grant appropriate Batch data permissions, such as **Azure Batch Data Contributor** for cleanup, in addition to the ARM permissions for the selected account resources. URL-based storage and key references require subscription-wide Storage/Key Vault list access and reads of matching resources. User-subscription nodes also require Compute/Network reads for their VM, disks and network resources. See [Batch authentication](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth) and [Batch roles](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control).
+
 Credentials are encrypted using the deployment's credential-encryption key. Use **Replace credential** when rotating a secret; the subscription, tenant, and application must remain the same. See Microsoft's [service principal authentication guide](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow).
 
 ## First inventory
@@ -28,12 +30,13 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 248 resource types; 231 have native deletion actions, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 258 resource types; 240 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
 | Compute | VMs and extensions, managed disks, snapshots, managed images, availability sets, dedicated hosts and capacity reservations | Supported, with attachment and ownership protections; host/reservation groups require their members to be deleted first |
 | VM scale sets | Uniform and Flexible sets, instances and extensions | Reviewed cascades for Uniform members; prerequisite VM deletion for Flexible sets |
+| Azure Batch | Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views | Reviewed prerequisites and cascades; exact-node removal requeues running tasks; perimeter views require account cleanup |
 | Virtual networks | VNets, subnets, NICs, network security groups, route tables, public IPs, public IP prefixes, NAT gateways | Supported |
 | Load balancing | Load balancers and Application Gateways | Supported |
 | Storage | Storage accounts and Blob containers | Empty resources only |
@@ -65,6 +68,12 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
 ## Cleanup protections
+
+Azure Batch cleanup reviews the complete account hierarchy. Pools, applications, private endpoint connections, jobs and schedules have ordered deletion steps; package versions precede their application. Native job/schedule cleanup includes reviewed tasks, and native pool cleanup includes reviewed nodes. Auto pools follow the job or schedule only when the actual lifetime settings and membership establish that ownership. Shared pools, packages and task dependencies require an explicit cleanup choice for their consumers.
+
+Standalone node removal uses the current pool ETag and requeues running tasks; historical task placement does not require deleting retained task records. User-subscription nodes review the documented Uniform VMSS instance, disks, extensions and network resources. Missing VM identity, shared/detached disks, retained or protected children and configuration drift block cleanup. The containing scale set remains independent. Multi-instance task cleanup terminates tasks, waits for all subtasks, and verifies their working directories after deletion; removing the primary task record alone is insufficient. Native Batch deletion ignores task data-retention periods. External storage, key vaults and identities remain independent references. File contents, storage keys and vault secret/key contents are never fetched to resolve those references. See [task deletion](https://learn.microsoft.com/en-us/rest/api/batchservice/tasks/delete-task?view=rest-batchservice-2025-06-01), [node removal](https://learn.microsoft.com/en-us/rest/api/batchservice/pools/remove-nodes?view=rest-batchservice-2025-06-01) and [application packages](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages).
+
+Batch verification includes native schemas, composed HTTP scenarios, official CLI response replays, application graph checks and restart tests. It is not an independent Batch emulator or a live Azure deployment test.
 
 - **Cosmos DB:** Deleting accounts, databases, containers or tables removes their contained data. Plans review required children, role dependencies and Fleet associations first. Retaining a built-in role or client encryption key requires retaining its account or database. Fleet deletion unlinks accounts without deleting them; protected or locked accounts block unlinking. Throughput, backup migration, configuration and child membership are checked before deletion. Read permissions must cover the applicable API collections, throughput settings, ancestors and incoming Fleet associations across the subscription. Accounts appear globally; managed Cassandra data centers use their deployment region. No restore or purge is offered. See the [resource model](https://learn.microsoft.com/en-us/azure/cosmos-db/resource-model) and [MongoDB roles](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/role-based-access-control).
 

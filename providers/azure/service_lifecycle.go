@@ -212,6 +212,9 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 					return nil, err
 				}
 			}
+			if isBatchType(childType) && !nativeConfigurationContains(batchSnapshot(childType, record), batchSnapshot(childType, live.data)) {
+				return nil, serviceDenied("batch_listed_configuration_changed")
+			}
 			if isCosmosType(childType) {
 				if err := cosmosListedIncarnation(childType, record, live.data); err != nil {
 					return nil, err
@@ -360,6 +363,10 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	if err := s.contributeBatch(ctx, assets, &result); err != nil {
+		return result, err
+	}
+	batchOwners := batchManagedNodes(assets, result)
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
 	}
@@ -376,6 +383,12 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	})
 	dnsOwners := map[string]asset.AssetID{}
 	for _, parent := range parents {
+		if batchOwners[parent.ID].ID != "" {
+			continue // Batch already contributed this VM's complete native tree.
+		}
+		if isBatchType(parent.Identity.NativeType) {
+			continue // Native data-plane identities have their own ownership walk.
+		}
 		if isWAFType(parent.Identity.NativeType) {
 			continue // Already contributed through the native reverse indexes.
 		}
@@ -453,6 +466,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if target == nil {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				continue
+			}
+			if node := batchOwners[target.ID]; node.ID != "" {
+				if parent.Identity.NativeType != scaleSetType || child.kind != scaleSetVMType {
+					return result, serviceDenied("ambiguous_batch_vm_controller")
+				}
+				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource}
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: node.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 				continue
 			}
 			if aksMembers[managedGroupKey(target.Identity, child.id)] {
@@ -580,7 +601,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	if err := a.servicePrerequisitesAbsent(ctx, request); err != nil {
 		return err
 	}
-	if len(request.PrerequisiteDeletions) > 0 && serviceParentConfigurationMatches(planned, live) {
+	if len(request.PrerequisiteDeletions) > 0 && (serviceParentConfigurationMatches(planned, live) || batchScaleSetConfigurationMatches(request, live)) {
 		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
 	}
 	if a.kind.NativeType == vmType {

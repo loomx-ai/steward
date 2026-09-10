@@ -23,6 +23,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
 	}
+	if request.ResourceKind != nil && isBatchDataType(request.ResourceKind.NativeType) {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = productInventorySource
+		return r.listBatchData(ctx, c, request)
+	}
 	if request.Source == productInventorySource {
 		return r.listProduct(ctx, c, request, nil)
 	}
@@ -290,6 +297,13 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.cosmosInventory(ctx, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
+	if err := c.batchInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
+	if location := text(normalized["_batch_location"]); location != "" {
+		region = location
+		scope = contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}
+	}
 	if err := c.streamAnalyticsInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -444,6 +458,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if isBatchType(nativeType) {
+		batchAddReferences(normalized, refs)
+	}
 	if isStreamAnalyticsType(nativeType) {
 		for _, value := range stringValues(normalized["_stream_analytics_references"]) {
 			if ref, refKind, err := parseID(value); err == nil {
@@ -545,6 +562,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	}
 	actionable := known && !kind.ReadOnly
 	state := text(object(raw["properties"])["provisioningState"])
+	if isBatchType(nativeType) {
+		state = batchState(nativeType, raw)
+	}
 	if state == "" {
 		state = text(object(raw["properties"])["status"])
 	}
@@ -791,6 +811,9 @@ func locked(id string, locks []any) bool {
 func safeResource(value any) any {
 	switch typed := value.(type) {
 	case map[string]any:
+		if batchRaw(typed) {
+			typed = object(batchSafeValue(typed))
+		}
 		result := map[string]any{}
 		for key, value := range typed {
 			if key == "properties" && (strings.HasPrefix(strings.ToLower(text(typed["type"])), "microsoft.streamanalytics/") || strings.Contains(strings.ToLower(text(typed["id"])), "/providers/microsoft.streamanalytics/")) {
@@ -834,7 +857,7 @@ func safeResource(value any) any {
 			}
 			switch strings.ToLower(strings.ReplaceAll(key, "_", "")) {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
-				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
+				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey", "accountkey",
 				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
 				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody", "pfxblob", "files", "config", "testdata", "secretsfilehref", "customdomainverificationid", "appcommandline", "migrationtoken", "qnaazuresearchendpointkey", "scriptcontent", "scripturlsastoken", "requirementsfilecontent":
 				continue

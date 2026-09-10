@@ -65,6 +65,19 @@ class AzureRefreshTests(unittest.TestCase):
             self.assertEqual(actual["dependency"], expected["dependency"])
             self.assertEqual(actual["source_sha256"], hashlib.sha256(fetch(actual["source_uri"])).hexdigest())
 
+    def test_batch_parameterized_host_is_retained(self):
+        uri = "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/batch/data-plane/Batch/stable/2025-06-01/BatchService.json"
+        host = {"hostTemplate": "{endpoint}", "useSchemePrefix": False,
+                "parameters": [{"name": "endpoint", "in": "path", "required": True,
+                                "type": "string", "x-ms-skip-url-encoding": True}]}
+        document = {"swagger": "2.0", "info": {"title": "Azure Batch", "version": "2025-06-01"},
+                    "x-ms-parameterized-host": host,
+                    "paths": {"/jobs": {"get": {"operationId": "Jobs_ListJobs", "responses": {"200": {}}}}}}
+        with patch.object(catalog, "fetch_source", return_value=json.dumps(document).encode()):
+            result = catalog.snapshot({"documents": [{"source_uri": uri, "operations": ["Jobs_ListJobs"]}], "resource_types": []})
+        self.assertEqual(result["documents"][0]["document"]["x-ms-parameterized-host"], host)
+        self.assertNotIn("host", result["documents"][0]["document"])
+
     def test_retry_is_bounded_and_only_transient(self):
         uri = "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/example.json"
         for failure, attempts in [(ConnectionResetError("reset"), 4), (urllib.error.HTTPError(uri, 429, "throttle", {}, None), 4), (urllib.error.HTTPError(uri, 404, "missing", {}, None), 1)]:

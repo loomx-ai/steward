@@ -20,7 +20,7 @@ type RESTRequest struct {
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
 	call := operation.Call
-	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest") {
+	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest") {
 		return RESTRequest{}, fmt.Errorf("operation %q is not a REST operation", operation.ID)
 	}
 	domain := "googleapis.com"
@@ -28,6 +28,13 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		domain = "management.azure.com"
 	}
 	origin, err := trustedRESTOrigin(call.Endpoint, domain)
+	if call.Style == "azure-batch-rest" {
+		endpoint, _ := parameters["endpoint"].(string)
+		origin, err = trustedRESTOrigin(endpoint, "batch.azure.com")
+		if call.Endpoint != "{endpoint}" || !slices.Equal(call.EndpointParameters, []string{"endpoint"}) || !azureBatchOrigin.MatchString(origin) {
+			return RESTRequest{}, fmt.Errorf("invalid Azure Batch endpoint")
+		}
+	}
 	if err != nil || !strings.HasPrefix(call.Path, "/") || strings.ContainsAny(call.Path, "?#") {
 		return RESTRequest{}, fmt.Errorf("invalid REST operation endpoint or path")
 	}
@@ -39,7 +46,7 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		}
 		values[key] = value
 	}
-	if call.Style == "azure-rest" {
+	if call.Style == "azure-rest" || call.Style == "azure-batch-rest" {
 		if version, ok := values["api-version"]; ok && version != call.Version {
 			return RESTRequest{}, fmt.Errorf("Azure API version differs from catalog")
 		}
@@ -53,6 +60,18 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		value, ok := values[name].(string)
 		if !ok || value == "" {
 			return RESTRequest{}, fmt.Errorf("path parameter %q is required", name)
+		}
+		if call.Style == "azure-batch-rest" && call.Method == "HEAD" && call.Path == "/pools/{poolId}/nodes/{nodeId}/files/{filePath}" && name == "filePath" {
+			// The native file parameter is a complete Windows or Linux path.
+			// Encode it as one parameter; never allow directory traversal.
+			value = strings.ReplaceAll(value, "\\", "/")
+			for _, part := range strings.Split(strings.TrimPrefix(value, "/"), "/") {
+				if part == "" || part == "." || part == ".." || strings.ContainsAny(part, "%\x00\r\n") {
+					return RESTRequest{}, fmt.Errorf("invalid Batch file path")
+				}
+			}
+			path = strings.ReplaceAll(path, match[0], url.PathEscape(value))
+			continue
 		}
 		parts := []string{value}
 		if slices.Contains(call.RawPathParameters, name) {
@@ -179,3 +198,7 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 	}
 	return result, nil
 }
+
+// The runtime additionally binds this public-cloud endpoint to the Batch
+// account returned by ARM for the explicitly selected subscription.
+var azureBatchOrigin = regexp.MustCompile(`^https://[a-z0-9]{3,24}\.[a-z0-9-]+\.batch\.azure\.com$`)

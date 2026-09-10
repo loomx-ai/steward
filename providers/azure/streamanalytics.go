@@ -92,39 +92,39 @@ func streamAnalyticsIncarnation(planned asset.Asset, live map[string]any) error 
 // A list may omit properties present in GET. Every field it does provide must
 // still match, including credentials and embedded code omitted from public data.
 func streamAnalyticsListedIncarnation(kind string, listed, live map[string]any) error {
-	var contains func(any, any) bool
-	contains = func(expected, actual any) bool {
-		switch expected := expected.(type) {
-		case map[string]any:
-			current, ok := actual.(map[string]any)
-			if !ok {
-				return false
-			}
-			for key, value := range expected {
-				if !contains(value, current[key]) {
-					return false
-				}
-			}
-			return true
-		case []any:
-			current, ok := actual.([]any)
-			if !ok || len(expected) != len(current) {
-				return false
-			}
-			for i, value := range expected {
-				if !contains(value, current[i]) {
-					return false
-				}
-			}
-			return true
-		default:
-			return reflect.DeepEqual(expected, actual)
-		}
-	}
-	if !contains(streamAnalyticsSnapshot(kind, listed), streamAnalyticsSnapshot(kind, live)) {
+	if !nativeConfigurationContains(streamAnalyticsSnapshot(kind, listed), streamAnalyticsSnapshot(kind, live)) {
 		return serviceDenied("stream_analytics_listed_configuration_changed")
 	}
 	return nil
+}
+
+func nativeConfigurationContains(expected, actual any) bool {
+	switch expected := expected.(type) {
+	case map[string]any:
+		current, ok := actual.(map[string]any)
+		if !ok {
+			return false
+		}
+		for key, value := range expected {
+			if !nativeConfigurationContains(value, current[key]) {
+				return false
+			}
+		}
+		return true
+	case []any:
+		current, ok := actual.([]any)
+		if !ok || len(expected) != len(current) {
+			return false
+		}
+		for i, value := range expected {
+			if !nativeConfigurationContains(value, current[i]) {
+				return false
+			}
+		}
+		return true
+	default:
+		return reflect.DeepEqual(expected, actual)
+	}
 }
 
 func streamAnalyticsListQuery(u *url.URL) error {

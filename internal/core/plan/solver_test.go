@@ -1,6 +1,8 @@
 package plan_test
 
 import (
+	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -103,6 +105,33 @@ func TestNestedDirectFallbackRespectsEveryOwnerAndSelectedController(t *testing.
 	result, err = plan.Solve(input)
 	if err != nil || len(result.Blockers) == 0 || len(result.Steps) != 0 {
 		t.Fatalf("ancestor direct-cleanup restriction bypassed: %+v %v", result, err)
+	}
+}
+
+func TestDirectFallbackCarriesPrerequisiteWhenParentIsAddedByAncestor(t *testing.T) {
+	pool := binding("account", "pool", graph.OwnershipExclusive, graph.CleanupDirect, 1)
+	node := binding("pool", "node", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	node.DirectCleanupAllowed = true
+	vm := binding("node", "vm", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+	input := plan.Input{Assets: []asset.Asset{actionable("account"), actionable("pool"), actionable("node"), actionable("vm")}, ResolvedAssetIDs: []asset.AssetID{"account", "node"}, LifecycleBindings: []graph.LifecycleBinding{pool, node, vm}}
+	result, err := plan.Solve(input)
+	if err != nil || len(result.Blockers) != 0 {
+		t.Fatal(err, result.Blockers)
+	}
+	parent, child := stepForAsset(result.Steps, "pool"), stepForAsset(result.Steps, "node")
+	if parent.Action != "delete" || child.Action != "delete" || !slices.Contains(parent.DependsOn, child.ID) || fmt.Sprint(child.Evidence["lifecycle_controller"]) != "pool" || fmt.Sprint(child.Evidence["cleanup_policy"]) != string(graph.CleanupDirect) {
+		t.Fatal("independently selected child lost its reviewed prerequisite", parent, child)
+	}
+	for _, impact := range result.ImpactItems {
+		if impact.AssetID == "node" || impact.AssetID == "vm" && impact.DelegatedTo != child.ID {
+			t.Fatal("direct child or its descendant was delegated twice", impact)
+		}
+	}
+	input.ResolvedAssetIDs = []asset.AssetID{"node"}
+	result, err = plan.Solve(input)
+	child = stepForAsset(result.Steps, "node")
+	if err != nil || len(result.Blockers) != 0 || child.Evidence["lifecycle_controller"] != nil || stepForAsset(result.Steps, "pool").ID != "" {
+		t.Fatal("unselected parent became a cleanup prerequisite", result, err)
 	}
 }
 

@@ -127,13 +127,14 @@ func loadProviderData() (providerMetadata, error) {
 		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {
 			for _, id := range ids {
 				operation, ok := result.catalog.Operation(id)
-				if !ok || operation.Call == nil || operation.Call.Style != "azure-rest" {
+				if !ok || operation.Call == nil || (operation.Call.Style != "azure-rest" && operation.Call.Style != "azure-batch-rest") {
 					return result, fmt.Errorf("Azure resource %q references an unknown operation %q", kind.NativeType, id)
 				}
 				if (slices.Contains(kind.ReadOperations, id) || slices.Contains(kind.ListOperations, id)) && operation.Call.Method != "GET" {
 					return result, fmt.Errorf("Azure read binding %q is not a GET", id)
 				}
-				if slices.Contains(kind.DeleteOperations, id) && (operation.Call.Method != "DELETE" || !operation.Destructive) {
+				batchNodeRemoval := kind.NativeType == "Microsoft.Batch/batchAccounts/pools/nodes" && operation.ID == "Azure.Microsoft.Batch.DataPlane.Pools_RemoveNodes" && operation.Call.Method == "POST"
+				if slices.Contains(kind.DeleteOperations, id) && ((operation.Call.Method != "DELETE" && !batchNodeRemoval) || !operation.Destructive) {
 					return result, fmt.Errorf("Azure delete binding %q is not destructive", id)
 				}
 			}

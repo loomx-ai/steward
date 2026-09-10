@@ -149,10 +149,15 @@ func discoveryPagination(method discoveryMethod, output map[string]any) *Paginat
 }
 
 type azureSwagger struct {
-	Swagger  string `json:"swagger"`
-	Host     string `json:"host"`
-	BasePath string `json:"basePath"`
-	Info     struct {
+	Swagger           string `json:"swagger"`
+	Host              string `json:"host"`
+	BasePath          string `json:"basePath"`
+	ParameterizedHost *struct {
+		Template        string           `json:"hostTemplate"`
+		UseSchemePrefix bool             `json:"useSchemePrefix"`
+		Parameters      []map[string]any `json:"parameters"`
+	} `json:"x-ms-parameterized-host"`
+	Info struct {
 		Title   string `json:"title"`
 		Version string `json:"version"`
 	} `json:"info"`
@@ -198,8 +203,15 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 		if err := json.Unmarshal(upstream.Document, &document); err != nil {
 			return Catalog{}, fmt.Errorf("decode Azure OpenAPI document: %w", err)
 		}
-		if document.Swagger != "2.0" || document.Info.Version == "" || document.Host != "management.azure.com" {
-			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a versioned ARM API")
+		batch := document.Host == "" && document.Info.Title == "Azure Batch" && document.ParameterizedHost != nil
+		if batch {
+			host := document.ParameterizedHost
+			if host.Template != "{endpoint}" || host.UseSchemePrefix || len(host.Parameters) != 1 || host.Parameters[0]["name"] != "endpoint" || host.Parameters[0]["in"] != "path" || host.Parameters[0]["type"] != "string" || host.Parameters[0]["required"] != true || host.Parameters[0]["x-ms-skip-url-encoding"] != true || document.BasePath != "" {
+				return Catalog{}, fmt.Errorf("unsupported Azure Batch parameterized host")
+			}
+		}
+		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
+			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a versioned ARM or Batch API")
 		}
 		titles[upstream.SourceURI] = document.Info.Title
 		paths := map[string]json.RawMessage{}
@@ -235,6 +247,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 					return Catalog{}, fmt.Errorf("Azure API method has no operationId")
 				}
 				service := azureService(path, document.Info.Title)
+				if batch {
+					service = "Microsoft.Batch.DataPlane"
+				}
 				properties := map[string]any{}
 				rawParameters := []string{}
 				for _, parameter := range append(common, operation.Parameters...) {
@@ -257,6 +272,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 					}
 				}
 				properties["api-version"] = map[string]any{"type": "string", "in": "query", "enum": []string{document.Info.Version}}
+				if batch {
+					properties["endpoint"] = document.ParameterizedHost.Parameters[0]
+				}
 				var output map[string]any
 				for _, status := range []string{"200", "201", "202", "204"} {
 					if response, exists := operation.Responses[status]; exists {
@@ -279,7 +297,11 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				fullPath := strings.TrimRight(document.BasePath, "/") + path
 				call := &OperationCall{Product: service, Version: document.Info.Version, Style: "azure-rest", Protocol: "HTTPS", Method: strings.ToUpper(method), Path: fullPath, Endpoint: "https://management.azure.com", ParameterPosition: "query", BodyType: "json"}
 				call.RawPathParameters = rawParameters
-				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: isDestructiveOperation(operation.ID, method), InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})
+				if batch {
+					call.Style, call.Endpoint, call.EndpointParameters = "azure-batch-rest", "{endpoint}", []string{"endpoint"}
+				}
+				destructive := isDestructiveOperation(operation.ID, method) || (batch && operation.ID == "Pools_RemoveNodes" && method == "post" && path == "/pools/{poolId}/removenodes")
+				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: destructive, InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})
 			}
 		}
 	}

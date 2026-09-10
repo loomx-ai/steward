@@ -15,6 +15,8 @@ navTitle: "Microsoft Azure"
 
 清理 Blob 容器还需要数据平面读取权限，例如 **Storage Blob Data Reader**，并能通过网络访问账户的公有 Blob 端点。Steward 分别申请 ARM 和 Storage 访问令牌，不会使用机器已有的 Azure CLI 凭据、托管身份或存储账户密钥。
 
+Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访问令牌。除了所选账户资源的 ARM 权限，还需要相应的 Batch 数据权限；清理可使用 **Azure Batch Data Contributor** 角色。存储及密钥 URL 引用需要订阅级 Storage/Key Vault 列表权限与匹配资源的读取权限。用户订阅模式的节点还需要读取其 VM、磁盘和网络资源的 Compute/Network 权限。参见 [Batch 身份验证](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth)与 [Batch 角色](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control)。
+
 凭证使用部署的凭证加密密钥加密保存。轮换密钥时使用**替换凭证**；订阅、租户和应用必须保持一致。参阅微软的[服务主体认证说明](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow)。
 
 ## 第一次盘点
@@ -28,12 +30,13 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 248 类资源，其中 231 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 258 类资源，其中 240 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
 | Compute | VM 与扩展、托管磁盘、快照、托管镜像、可用性集、专用宿主机、容量预留 | 支持，受挂载与归属保护限制；宿主机组和容量预留组先删除成员 |
 | VM Scale Set | Uniform、Flexible 伸缩集及实例、扩展 | Uniform 成员纳入级联影响；Flexible VM 作为前置删除步骤 |
+| Azure Batch | 账户、池、节点、作业、计划、任务、应用、包版本、专用终结点连接及网络边界视图 | 已审查的前置删除与级联清理；精确移除节点并将运行任务重新排队；边界视图随账户清理 |
 | 虚拟网络 | VNet、子网、网卡、网络安全组、路由表、公网 IP、公网 IP 前缀、NAT Gateway | 支持 |
 | 负载均衡 | Load Balancer、Application Gateway | 支持 |
 | Storage | 存储账户、Blob 容器 | 仅空资源 |
@@ -65,6 +68,12 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Azure Batch 清理会审查完整账户层级。池、应用、专用终结点连接、作业及计划按依赖顺序删除；包版本先于所属应用删除。作业或计划的原生删除包含已审查的任务，池的原生删除包含已审查的节点。自动池只有在实际生命周期设置与成员索引共同证明归属时才随作业或计划清理。共享池、包及任务依赖要求明确选择相应使用者的清理范围。
+
+单独移除节点使用池的最新 ETag，并将运行任务重新排队；任务的历史运行位置不会强制删除待保留的任务记录。用户订阅模式会审查原生指向的 Uniform VMSS 实例及其磁盘、扩展和网络资源。VM 身份缺失、磁盘共享或分离、子资源保留或受保护，以及配置变化都会阻止清理。所属伸缩集保持独立。多实例任务清理先终止任务并等待全部子任务，再在删除后检查其工作目录；仅主任务记录消失不足以完成清理。Batch 的原生删除会忽略任务数据保留期。外部存储、Key Vault 和身份保持独立引用；解析引用时不会读取文件内容、存储密钥或保管库内的密钥及机密内容。参见[任务删除](https://learn.microsoft.com/en-us/rest/api/batchservice/tasks/delete-task?view=rest-batchservice-2025-06-01)、[节点移除](https://learn.microsoft.com/en-us/rest/api/batchservice/pools/remove-nodes?view=rest-batchservice-2025-06-01)与[应用包](https://learn.microsoft.com/en-us/azure/batch/batch-application-packages)。
+
+Batch 验证包括原生 Schema、组合 HTTP 场景、官方 CLI 响应回放、应用关系图及重启恢复测试，不代表独立 Batch 模拟器或真实 Azure 部署验证。
 
 - **Cosmos DB**：删除账号、数据库、容器或表会删除其中的数据。计划先审查必要子资源、角色依赖和 Fleet 关联。保留内置角色或客户端加密密钥，需要保留其账号或数据库。删除 Fleet 会解除账号关联，账号本身保留；账号的保护设置或管理锁会阻止解绑。删除前检查吞吐量、备份迁移、配置与子资源成员关系。读取权限须覆盖适用 API 的子集合、吞吐量配置、祖先资源和订阅内引用该账号的 Fleet 关联。账号显示在全局清单，托管 Cassandra 数据中心使用实际部署地域。不提供恢复或永久清除操作。参见[资源模型](https://learn.microsoft.com/en-us/azure/cosmos-db/resource-model)及 [MongoDB 角色](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/role-based-access-control)。
 

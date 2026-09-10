@@ -45,6 +45,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
+	if operation.Call.Style == "azure-batch-rest" {
+		return c.invokeBatch(ctx, operation, invocation)
+	}
 	parameters := map[string]any{}
 	for name, value := range invocation.Parameters {
 		parameters[name] = value
@@ -123,6 +126,9 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if isBatchDataType(kind.NativeType) {
+		return batchDataOperation(kind, nativeID, method)
+	}
 	id, nativeType, err := parseID(nativeID)
 	if err != nil || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(nativeType, kind.NativeType) {
 		return catalog.Operation{}, nil, fmt.Errorf("Azure resource identity does not match its subscription and type")
