@@ -439,6 +439,16 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if isWAFType(parent.Identity.NativeType) {
 			continue // Already contributed through the native reverse indexes.
 		}
+		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == applicationInsightsType {
+			contribution, err := s.client.contributeInsightsChildren(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
 		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)] {
 			continue
 		}

@@ -247,10 +247,38 @@ substitution. Group ownership and Log Analytics responses are composed native
 protocol data; they are not recordings or independent emulator evidence.
 
 This captures native group membership, not yet every member's product-specific
-descendants. Component cleanup still requires those lifecycle contributions,
-native child prerequisites and final group/workspace absence checks; components
-remain read-only. No component-delete or managed-group cascade is claimed by
+descendants. Component cleanup still requires managed-descendant lifecycle
+contributions and final group/workspace absence checks; components remain
+read-only. Native child bindings are described below. No component-delete or managed-group cascade is claimed by
 these inventory tests. See the [native managed-workspace rules](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces).
+
+## Component child lifecycle integration
+
+The Azure lifecycle contributor now reconciles all seven registered component
+child kinds through two complete native LIST/GET passes. Each child has an
+exclusive binding with an independent DELETE policy; the component does not
+stand in for child deletion or absence. Missing assets become unresolved
+references. Persisted children omitted by an index require an exact native GET
+404 before their binding can disappear. Case-distinct legacy selectors stay
+distinct, and child/parent private configuration and location must match the
+persisted inventory. Protected children cannot gain direct cleanup permission.
+
+The application projection/SQLite/graph/action tests now use these actual
+bindings when planning independent leaves and shared storage dependencies.
+`TestApplicationInsightsComponentNativeChildPlan` combines ten case-distinct
+legacy children and the three published ARM child examples. It tests the real
+solver's 13 separate prerequisite steps, individual selection and retention
+blocking. Its root is made actionable only in the test to check ordering: the
+production component rule is still read-only and has no deletion driver.
+`TestApplicationInsightsComponentChildGraphBoundaries` covers omitted live
+children, known absence, missing/duplicate/foreign assets, private/membership
+changes, incomplete lists and changed component identity. These are composed
+protocol tests, not a component-delete recording or live-cloud verification.
+
+Current managed groups and their descendants still need lifecycle bindings and
+controller absence checks. Annotation history, additional component configuration
+and independent workbook/web-test lifecycles remain outside this completed child
+binding step; none are inferred empty from these seven native collections.
 
 ## Monitor private-link lifecycle
 

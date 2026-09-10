@@ -1852,3 +1852,33 @@ background evidence only, not acceptance evidence for this work.
   controller deletion and final managed-group/workspace absence still need
   lifecycle integration. Components remain read-only. The 29 missing mapped
   Azure roots and all eight provider acceptance criteria remain unfinished.
+
+### Azure Application Insights native child lifecycle bindings
+
+- The service lifecycle contributor now reconciles the seven registered child
+  kinds twice through their native LIST/GET adapters. It binds exact opaque
+  selectors, parent/child private configuration and location. Each matching
+  asset gets an exclusive, independent-delete binding; no controller-delete or
+  delegated-absence guarantee is invented. Missing assets remain unresolved.
+- Persisted children omitted by the native index require their own GET 404
+  before the binding can disappear. Permission failures, incomplete lists,
+  changed membership/private configuration, ambiguous identities and changed
+  parents fail the contribution. Native protection remains effective for
+  independent child actions. Shared storage relationships retain their existing
+  explicit-selection ordering.
+- Existing SQLite projection, graph rebuild and registered-action tests now
+  plan against these real lifecycle bindings. A combined native-shape test
+  preserves ten case-distinct legacy children and three original ARM child
+  examples. The real solver produces 13 separate prerequisites before a test-only
+  actionable component, preserves individual selection and blocks retention.
+  The production component remains read-only; this is not an enabled component
+  deletion or evidence of managed-group absence.
+- Full Go tests and vet passed (Azure 149.477s; GCP cached). Application Insights
+  and AMPLS race checks passed (17.676s); supplemental native group-protection
+  checks exercise the registered leaf driver. Documentation validation passed
+  for 40 bilingual chapters and 10 original screenshots. These are composed
+  protocol tests; no additional emulator or real-cloud run was performed.
+- Counts remain 369 rules, 342 cleanup bindings and 1,188 catalog operations.
+  Managed-group descendant bindings, component deletion/residual checks,
+  annotation coverage and remaining service families still require work. The
+  29 missing mapped Azure roots and all eight acceptance criteria remain open.

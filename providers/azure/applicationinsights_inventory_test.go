@@ -91,6 +91,12 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 		if path == root+"/providers/microsoft.insights/privatelinkscopes" {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
+		if path == f.parentID+"/apikeys" && req.Method == "GET" && req.URL.Query().Get("api-version") == insightsLegacyVersion {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
+		if path == f.parentID+"/linkedstorageaccounts/serviceprofiler" && req.Method == "GET" && req.URL.Query().Get("api-version") == insightsStorageVersion {
+			return jsonResponse(404, map[string]any{}, nil), nil
+		}
 		for _, kind := range insightsInventoryTestKinds[1:] {
 			row := insightsLegacyKind(kind)
 			if path != f.parentID+"/"+strings.ToLower(row.collection) {
@@ -438,7 +444,7 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 		t.Fatal(err)
 	}
 	result, err := governance.NewService(repository, repository).RebuildGraph(ctx, scope.ID, connection.ID, "insights-native", r.bundle, []governance.Contributor{lifecycle, NewResourceAttachments()})
-	if err != nil || len(result.Unresolved) != 0 || len(result.Relationships) != childCount+len(retained) || parent.ID == "" {
+	if err != nil || len(result.Unresolved) != 0 || len(result.Relationships) != 2*childCount+len(retained) || len(result.Bindings) != childCount || parent.ID == "" {
 		t.Fatal("native parent relationships lost", result, err)
 	}
 	for _, value := range values {
@@ -449,7 +455,7 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 					selected = append(selected, ref.SourceAssetID)
 				}
 			}
-			planned, err := plan.Solve(plan.Input{Assets: values, Relationships: result.Relationships, ResolvedAssetIDs: selected})
+			planned, err := plan.Solve(plan.Input{Assets: values, Relationships: result.Relationships, LifecycleBindings: result.Bindings, ResolvedAssetIDs: selected})
 			if err != nil || len(selected) < 2 || len(planned.Blockers) != 0 || len(planned.Steps) != len(selected) || planned.Steps[len(planned.Steps)-1].AssetID != value.ID {
 				t.Fatal("shared target deletion order was lost", planned, err)
 			}
@@ -469,7 +475,7 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 		}) {
 			t.Fatal("native child did not reach its own graph edge", value.Identity.NativeID)
 		}
-		input := plan.Input{Assets: values, Relationships: result.Relationships, ResolvedAssetIDs: []asset.AssetID{value.ID}}
+		input := plan.Input{Assets: values, Relationships: result.Relationships, LifecycleBindings: result.Bindings, ResolvedAssetIDs: []asset.AssetID{value.ID}}
 		planned, err := plan.Solve(input)
 		if err != nil || len(planned.Blockers) != 0 || len(planned.Steps) != 1 || planned.Steps[0].AssetID != value.ID {
 			t.Fatal("leaf selection affected its sibling or parent", planned, err)
