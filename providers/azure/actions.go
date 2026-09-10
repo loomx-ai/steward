@@ -24,7 +24,7 @@ type action struct {
 	deletion     catalog.RESTRequest
 }
 
-func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (contracts.ActionDriver, error) {
+func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, value asset.Asset) (resolved contracts.ActionDriver, err error) {
 	kind, ok := findType(value.Identity.NativeType)
 	if !ok || kind.ReadOnly || value.Identity.Provider != asset.ProviderAzure {
 		return nil, fmt.Errorf("Azure resource has no action driver")
@@ -39,6 +39,15 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
+	defer func() {
+		if err == nil && monitorARMTarget(value) && monitorResourceKind(value.Identity.NativeType) == "" {
+			if value.Identity.ConnectionID != id {
+				resolved, err = nil, serviceDenied("monitor_target_action_connection_changed")
+				return
+			}
+			resolved = &monitorTargetAction{client: c, inner: resolved, planned: value}
+		}
+	}()
 	if monitorResourceKind(kind.NativeType) != "" {
 		return newMonitorAction(c, id, value)
 	}

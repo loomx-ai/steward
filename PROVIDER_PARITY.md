@@ -2316,3 +2316,45 @@ background evidence only, not acceptance evidence for this work.
   or receiver matching after destination absence. Counts remain 1,224 operations,
   383 types/specs and 357 cleanup bindings; all eight acceptance criteria remain
   open. No new independent emulator or live-cloud verification was performed.
+
+### Azure Monitor guards for all native ARM destinations
+
+- Graph contribution now batches two complete native Monitor observations for
+  all ARM destinations. Source LISTs reconcile full private GETs; Event Hubs and
+  workspace indexes are reused within one observation and then checked again.
+  Unindexed sources become required, explicitly selected dependencies. Missing
+  source groups never grant ownership or erase a surviving reference.
+- Every registered non-Monitor ARM action now shares incoming-reference checks
+  for its root and reviewed deleting impacts before mutation, polling and final
+  readback. Existing native drivers retain their ownership, protection,
+  prerequisite, retention and polling behavior. Ordered Monitor prerequisites
+  authenticate the original source reference and require native absence; the
+  complete reviewed request is bound to a recovery receipt, preserved through
+  replacement wait results. Pre-upgrade pending receipts require a new scan and
+  plan; they cannot bypass the added authentication.
+- Missing Event Hub destinations remain matched to frozen namespace/hub identity.
+  ITSM destinations use the scanned, authenticated workspace customer GUID after
+  native workspace absence and JSON recovery. Foreign selectors cannot acquire a
+  local target. Workspace inventory now records the additional identity proof,
+  requiring existing workspaces to be rescanned.
+- Already verified Monitor members and destinations inside the same managed group
+  may share a provider-declared controller cascade. The solver still requires
+  both assets to be deleted by that exact selected action and applies normal
+  retention and protection. Outside-group references and forged impacts block
+  mutation; surviving Monitor members keep native controller readback pending.
+- Tests exercise batching across ten targets, real graph/plan ordering, native
+  disk and Monitor actions, JSON request/receipt recovery, retained references,
+  late sources, source-group absence, dependency 403/404, altered proofs and
+  foreign identities. Managed-group composition verifies internal references,
+  external blockers and residual absence with actual native drivers. Existing
+  Batch, Stream Analytics, Grafana and retention recovery tests cover shared
+  guards with their distinct operation protocols.
+- Full Go tests passed (Azure 170.904s; GCP cached), the Monitor/native recovery
+  race run passed (63.626s), and repository-wide vet passed. These are composed
+  native protocol tests; no new independent emulator or real-cloud verification
+  was performed. Bilingual Azure docs describe added dependency-read permissions,
+  workspace rescans and pending-receipt upgrade constraints.
+- Native discovery of omitted group members, references directly to managed
+  controllers, global Runbook webhook mapping, remaining provider families and
+  all eight acceptance criteria remain open. Counts are unchanged at 1,224
+  operations, 383 types/specs and 357 cleanup bindings.

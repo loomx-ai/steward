@@ -208,6 +208,12 @@ func (c *client) monitorReceiverIndex(ctx context.Context, kind string) (values 
 }
 
 func (c *client) monitorReferences(ctx context.Context, kind, id string, raw map[string]any) (refs map[string][]string, err error) {
+	return c.monitorReferencesWithIndexes(ctx, kind, id, raw, map[string]map[string]map[string]any{})
+}
+
+// The caller owns this cache for one complete native observation only. A batch
+// incoming-reference walk rechecks every used index before returning.
+func (c *client) monitorReferencesWithIndexes(ctx context.Context, kind, id string, raw map[string]any, indexes map[string]map[string]map[string]any) (refs map[string][]string, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	refs, err = monitorResourceReferences(kind, id, raw)
 	if err != nil || kind != monitorActionGroupType {
@@ -230,7 +236,6 @@ func (c *client) monitorReferences(ctx context.Context, kind, id string, raw map
 			}
 		}
 	}
-	indexes := map[string]map[string]map[string]any{}
 	index := func(kind string) (map[string]map[string]any, error) {
 		if rows, ok := indexes[kind]; ok {
 			return rows, nil

@@ -569,7 +569,7 @@ func TestGrafanaSignedOperationAuthorityFailuresAndLogging(t *testing.T) {
 	s, r, assets := grafanaScenario(t)
 	value := assets[1]
 	driver, _ := r.ResolveAction(context.Background(), "connection", value)
-	a := driver.(*action)
+	a := monitorTargetInner(driver).(*action)
 	endpoint := armOrigin + "/providers/Microsoft.Dashboard/locations/eastus2/operationStatuses/11111111-1111-1111-1111-111111111111*" + strings.Repeat("A", 64) + "?api-version=2025-08-01&t=fixture-t&c=fixture-c&s=fixture-s&h=fixture-h"
 	if err := a.validateOperationURL(endpoint); err != nil {
 		t.Fatal(err)
@@ -577,6 +577,7 @@ func TestGrafanaSignedOperationAuthorityFailuresAndLogging(t *testing.T) {
 	u, _ := url.Parse(endpoint)
 	responseBody := map[string]any{"id": u.Path, "name": last(u.Path), "resourceId": value.Identity.NativeID, "status": "Succeeded"}
 	operation := contracts.ActionResult{ProviderOperationID: endpoint, Data: map[string]any{"polling": "status", "grafana_operation_binding": a.operationBinding(endpoint)}}
+	operation = monitorTargetTestReceipt(driver, contracts.ActionRequest{Asset: value, Action: "delete"}, operation)
 	for _, mode := range []string{"foreign-host", "foreign-provider", "foreign-region", "encoded-path", "traversal", "missing-signature", "duplicate-query", "unknown-query", "corrupt-receipt", "changed-target", "response-target", "response-id", "response-name", "missing-response-target", "partial", "failed", "canceled", "denied", "expired-live", "expired-absent"} {
 		t.Run(mode, func(t *testing.T) {
 			payload, _ := json.Marshal(operation)

@@ -286,7 +286,9 @@ func TestMessagingReadbackRejectsFailedOrForeignAliasedRead(t *testing.T) {
 				s.records[target.Identity.NativeID]["id"] = strings.Replace(text(s.records[target.Identity.NativeID]["id"]), "/messages/", "/other/", 1)
 			}
 			driver, _ := r.ResolveAction(context.Background(), "connection", target)
-			wait, err := driver.Wait(context.Background(), contracts.ActionRequest{Asset: target, Action: "delete"}, contracts.ActionResult{})
+			request := contracts.ActionRequest{Asset: target, Action: "delete"}
+			result := monitorTargetTestReceipt(driver, request, contracts.ActionResult{})
+			wait, err := driver.Wait(context.Background(), request, result)
 			if wait.Done || (mode == "live" && err != nil) || (mode != "live" && err == nil) {
 				t.Fatalf("readback=%+v %v", wait, err)
 			}

@@ -266,7 +266,7 @@ func TestContainerInstanceManagedGroupChecksPrivateConfiguration(t *testing.T) {
 			if mode == "credential-change" {
 				// A credential rotation invalidates the prior keyed digest and
 				// requires a rescan; no secret is exposed to explain the mismatch.
-				driver.(*action).client.fingerprint[0] ^= 1
+				monitorTargetInner(driver).(*action).client.fingerprint[0] ^= 1
 			}
 			check, err := driver.Preflight(context.Background(), request)
 			if mode == "unchanged" {

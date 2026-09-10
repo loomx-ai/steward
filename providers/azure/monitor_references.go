@@ -201,6 +201,20 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 	// explicit selection before deleting a shared destination; never acquire
 	// ownership or automatically select it through the reverse relationship.
 	for _, reference := range contribution.Relationships {
+		controllers := map[string]any{}
+		for _, target := range assets {
+			if target.ID != reference.TargetAssetID {
+				continue
+			}
+			for _, controller := range assets {
+				if controller.Identity.Provider != parent.Identity.Provider || controller.Identity.ConnectionID != parent.Identity.ConnectionID || controller.Identity.Partition != parent.Identity.Partition {
+					continue
+				}
+				if group, ok := c.monitorControllerGroup(controller); ok && inResourceGroup(parent.Identity.NativeID, group) && inResourceGroup(target.Identity.NativeID, group) {
+					controllers[string(controller.ID)] = true
+				}
+			}
+		}
 		contribution.Relationships = append(contribution.Relationships, graph.Relationship{
 			SourceAssetID: reference.TargetAssetID, TargetAssetID: parent.ID,
 			Type: graph.RelationshipDependsOn, Source: "azure:monitor-required-cleanup", Confidence: 1,
@@ -209,7 +223,11 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 				graph.RelationshipEvidenceAutomaticSelection: false,
 				graph.RelationshipEvidenceAuthority:          graph.AuthorityAuthoritative,
 				graph.RelationshipEvidenceDeletionOrder:      graph.DeletionOrderTargetBeforeSource,
-				"resource_type":                              kind, "instance_id": id,
+				// This declares sufficient native deletion semantics only. The
+				// solver still requires independently verified ownership of both
+				// members by the same selected controller and applies retention.
+				graph.RelationshipEvidenceDeletionCascadeControllers: controllers,
+				"resource_type": kind, "instance_id": id,
 			},
 		})
 	}

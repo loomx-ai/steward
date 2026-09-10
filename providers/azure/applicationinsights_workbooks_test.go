@@ -104,6 +104,9 @@ func newWorkbookFixture(t *testing.T, kind string) *workbookFixture {
 				return res, nil
 			}
 		}
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		if req.URL.Host != "management.azure.com" {
 			t.Fatal("foreign workbook endpoint", req.URL)
 		}

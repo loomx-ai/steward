@@ -16,7 +16,7 @@ import (
 )
 
 func actionAsset(kind, name string) asset.Asset {
-	return asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: kind, NativeID: resourceID(kind, name)}, Location: "eastus"}
+	return asset.Asset{ID: asset.AssetID(name), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: kind, NativeID: strings.ToLower(resourceID(kind, name))}, Location: "eastus"}
 }
 
 func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
@@ -27,6 +27,9 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 			operation := apiURL("/subscriptions/"+testSubscription+"/providers/Microsoft.Compute/locations/eastus/operations/delete-123", "2024-07-01")
 			reads, polls, deletes := 0, 0, 0
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
 				path := strings.ToLower(req.URL.Path)
 				if strings.EqualFold(req.URL.String(), operation) {
 					polls++
@@ -112,6 +115,9 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 			raw := nativeResource(test.kind, test.name, "eastus", test.properties)
 			raw["managedBy"] = test.managedBy
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
 				if req.Method == "DELETE" {
 					t.Fatal("protected resource deletion reached API")
 				}
@@ -133,11 +139,12 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			check, err := driver.Preflight(context.Background(), contracts.ActionRequest{Action: "delete"})
+			request := contracts.ActionRequest{Asset: value, Action: "delete"}
+			check, err := driver.Preflight(context.Background(), request)
 			if err != nil || check.Allowed || check.Reason != test.reason {
 				t.Fatalf("preflight=%+v %v", check, err)
 			}
-			_, err = driver.Execute(context.Background(), contracts.ActionRequest{Action: "delete"})
+			_, err = driver.Execute(context.Background(), request)
 			var call *contracts.ProviderCallError
 			if !errors.As(err, &call) || call.Provider.Category != execution.ErrorProtected {
 				t.Fatalf("execute=%v", err)
@@ -150,6 +157,9 @@ func TestPreflightDistinguishesMissingTargetFromMissingRelatedGroup(t *testing.T
 	for _, targetGone := range []bool{true, false} {
 		value := actionAsset(diskType, "disk")
 		r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+			if response, handled := emptyMonitorIndexResponse(t, req); handled {
+				return response, nil
+			}
 			if strings.EqualFold(req.URL.Path, value.Identity.NativeID) && !targetGone {
 				return jsonResponse(200, nativeResource(diskType, "disk", "eastus", nil), nil), nil
 			}
@@ -176,6 +186,9 @@ func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 	raw := nativeResource(appSiteType, "web", "eastus", map[string]any{})
 	raw["kind"] = "app"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		if req.Method == "DELETE" {
 			if req.URL.Query().Get("deleteEmptyServerFarm") != "false" {
 				t.Error("delete omitted plan retention")
@@ -203,6 +216,9 @@ func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 func TestPersistedOperationRejectsForeignOwnership(t *testing.T) {
 	value := actionAsset(vmType, "vm")
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		t.Error("foreign operation reached API")
 		return nil, fmt.Errorf("unexpected")
 	})

@@ -96,7 +96,7 @@ func (a *monitorAction) dependenciesAbsent(ctx context.Context, request contract
 	if err := a.prerequisitesAbsent(ctx, request); err != nil {
 		return err
 	}
-	incoming, err := a.client.monitorIncoming(ctx, request.Asset.Identity)
+	incoming, err := a.client.monitorIncoming(ctx, request.Asset)
 	if err != nil {
 		return err
 	}

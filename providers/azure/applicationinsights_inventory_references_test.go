@@ -195,7 +195,7 @@ func TestApplicationInsightsInventoryReferencesReachSharedTargets(t *testing.T) 
 	f := newInsightsInventoryFixture(t)
 	r := f.runtime
 	storage := nativeResource(storageType, "exportstore", "westus", map[string]any{})
-	workspace := nativeResource("Microsoft.OperationalInsights/workspaces", "sharedlogs", "westus2", map[string]any{})
+	workspace := nativeResource("Microsoft.OperationalInsights/workspaces", "sharedlogs", "westus2", map[string]any{"customerId": "00000000-1111-2222-3333-444444444444"})
 	storageID, _, _ := parseID(text(storage["id"]))
 	workspaceID, _, _ := parseID(text(workspace["id"]))
 	container := map[string]any{"id": storageID + "/blobServices/default/containers/telemetry", "type": containerType, "name": "telemetry", "location": "westus", "properties": map[string]any{}}

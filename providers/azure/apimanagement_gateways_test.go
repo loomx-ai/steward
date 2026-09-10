@@ -373,7 +373,7 @@ func TestAPIMGatewayPollingURLsStayBoundToExactResource(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		a := driver.(*action)
+		a := monitorTargetInner(driver).(*action)
 		native := "https://management.azure.com" + value.Identity.NativeID + "?api-version=" + apimVersion
 		if value.Identity.NativeType == apimGatewayType {
 			native = "https://management.azure.com" + strings.Replace(value.Identity.NativeID, "/gateways/", "/gateway/", 1) + "/operationResults/operation-1?api-version=" + apimVersion

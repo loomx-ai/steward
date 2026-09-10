@@ -135,7 +135,7 @@ func TestMonitorReceiverNativeResolutionAndProjection(t *testing.T) {
 				t.Fatal("receiver acquired automatic cleanup", rel)
 			}
 		}
-		incoming, err := c.monitorIncoming(t.Context(), target.Identity)
+		incoming, err := c.monitorIncoming(t.Context(), target)
 		if err != nil || len(incoming) != 1 || incoming[0].id != parent.Identity.NativeID {
 			t.Fatal("native receiver incoming index missing", incoming, err)
 		}

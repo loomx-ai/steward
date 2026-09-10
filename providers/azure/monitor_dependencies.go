@@ -73,77 +73,194 @@ func monitorIncomingKinds(target string) []string {
 	return kinds
 }
 
-// Incoming dependencies must come from native collections even when no saved
-// asset or graph edge exists. Each List is reconciled with full private GETs.
-func (c *client) monitorIncoming(ctx context.Context, target asset.Identity) (incoming []serviceChild, err error) {
+type monitorIncomingSource struct {
+	resource   serviceChild
+	references map[string][]string
+	group      map[string]any
+}
+
+// Read each native source family once for the whole set of targets, including
+// unindexed sources. Every collection reconciles List with full private GETs.
+// Receiver indexes are reused only within this observation and rechecked before
+// returning, so the walk cannot preserve a cached absence across graph passes.
+func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset.Asset) (incoming map[string][]monitorIncomingSource, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	groups, err := c.insightsGroups(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for _, id := range slices.Sorted(maps.Keys(groups)) {
-		group, err := c.insightsGroup(ctx, id, groups[id])
-		if err != nil {
-			return nil, err
+	incoming = map[string][]monitorIncomingSource{}
+	kinds := map[string]bool{}
+	for _, target := range targets {
+		id, kind, err := parseID(target.Identity.NativeID)
+		if monitorBudgetPath(target.Identity.NativeID) {
+			id, _, kind, err = monitorResourceID(target.Identity.NativeID)
 		}
-		groups[id] = group
+		if err != nil || id != target.Identity.NativeID || !strings.EqualFold(kind, target.Identity.NativeType) || target.Identity.Provider != asset.ProviderAzure || !strings.HasPrefix(id, c.root()+"/") {
+			return nil, serviceDenied("invalid_monitor_incoming_target")
+		}
+		if _, seen := incoming[id]; seen {
+			return nil, serviceDenied("ambiguous_monitor_incoming_target")
+		}
+		incoming[id] = nil
+		for _, kind := range monitorIncomingKinds(target.Identity.NativeType) {
+			kinds[kind] = true
+		}
 	}
-	for _, kind := range monitorIncomingKinds(target.NativeType) {
+	if len(kinds) == 0 {
+		return incoming, nil
+	}
+	var groups map[string]map[string]any
+	loadGroups := func() error {
+		if groups == nil {
+			var err error
+			groups, err = c.insightsGroups(ctx)
+			return err
+		}
+		return nil
+	}
+	checkedGroups := map[string]bool{}
+	indexes := map[string]map[string]map[string]any{}
+	for _, kind := range slices.Sorted(maps.Keys(kinds)) {
+		if budget, _ := monitorBudgetKind(kind); budget != "" {
+			if err := loadGroups(); err != nil {
+				return nil, err
+			}
+		}
 		values, _, err := c.monitorResourceIndex(ctx, kind, groups)
 		if err != nil {
 			return nil, err
 		}
 		for _, id := range slices.Sorted(maps.Keys(values)) {
 			_, scope, _, err := monitorResourceID(id)
-			if err != nil || scope != c.root() && groups[scope] == nil {
+			if err != nil {
 				return nil, serviceDenied("monitor_incoming_group_missing")
 			}
-			refs, err := c.monitorReferences(ctx, kind, id, values[id])
+			refs, err := c.monitorReferencesWithIndexes(ctx, kind, id, values[id], indexes)
 			if err != nil {
 				return nil, err
 			}
-			for typ, ids := range refs {
-				if strings.EqualFold(typ, target.NativeType) && slices.Contains(ids, target.NativeID) {
-					incoming = append(incoming, serviceChild{id: id, kind: kind, data: values[id]})
+			for _, target := range targets {
+				linked := false
+				for typ, ids := range refs {
+					for _, reference := range ids {
+						matches, err := c.monitorReferenceMatches(target, typ, reference)
+						if err != nil {
+							return nil, err
+						}
+						linked = linked || matches
+					}
+				}
+				if linked {
+					if scope != c.root() {
+						if err := loadGroups(); err != nil {
+							return nil, err
+						}
+						if groups[scope] != nil && !checkedGroups[scope] {
+							group, err := c.insightsGroup(ctx, scope, groups[scope])
+							if err != nil && !isNotFound(err) {
+								return nil, err
+							}
+							// A native source can outlive its group during deletion.
+							// Keep its references as blockers; group absence alone
+							// cannot grant ownership to a newly indexed source.
+							groups[scope], checkedGroups[scope] = group, true
+						}
+					}
+					group := groups[scope]
+					if scope == c.root() {
+						group = map[string]any{}
+					}
+					incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: values[id]}, references: refs, group: group})
 				}
 			}
+		}
+	}
+	for _, kind := range slices.Sorted(maps.Keys(indexes)) {
+		current, err := c.monitorReceiverIndex(ctx, kind)
+		if err != nil {
+			return nil, err
+		}
+		if c.privateConfiguration(map[string]any{"index": current}) != c.privateConfiguration(map[string]any{"index": indexes[kind]}) {
+			return nil, serviceDenied("monitor_incoming_receiver_index_changed")
 		}
 	}
 	return incoming, nil
 }
 
-func (c *client) contributeMonitorIncoming(ctx context.Context, target asset.Asset, assets []asset.Asset) (contribution governance.Contribution, err error) {
+func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Asset) (map[string][]monitorIncomingSource, error) {
+	snapshot := func(incoming map[string][]monitorIncomingSource) string {
+		values := map[string]any{}
+		for target, sources := range incoming {
+			rows := map[string]any{}
+			for _, source := range sources {
+				var group map[string]any
+				if source.group != nil {
+					group = insightsWorkspaceResourceSnapshot(source.group)
+				}
+				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": monitorResourceSnapshot(source.resource.kind, source.resource.data), "group": group, "references": source.references}
+			}
+			values[target] = rows
+		}
+		return c.privateConfiguration(values)
+	}
+	first, err := c.monitorIncomingObservation(ctx, targets)
+	if err != nil {
+		return nil, err
+	}
+	second, err := c.monitorIncomingObservation(ctx, targets)
+	if err != nil {
+		return nil, err
+	}
+	if snapshot(first) != snapshot(second) {
+		return nil, serviceDenied("monitor_incoming_references_changed")
+	}
+	return second, nil
+}
+
+func (c *client) monitorIncoming(ctx context.Context, target asset.Asset) ([]serviceChild, error) {
+	incoming, err := c.monitorIncomingTargets(ctx, []asset.Asset{target})
+	if err != nil {
+		return nil, err
+	}
+	var values []serviceChild
+	for _, source := range incoming[target.Identity.NativeID] {
+		values = append(values, source.resource)
+	}
+	return values, nil
+}
+
+func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets []asset.Asset) (contribution governance.Contribution, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	incoming, err := c.monitorIncoming(ctx, target.Identity)
+	incoming, err := c.monitorIncomingTargets(ctx, targets)
 	if err != nil {
 		return contribution, err
 	}
-	for _, source := range incoming {
-		var indexed *asset.Asset
-		for i := range assets {
-			candidate := &assets[i]
-			if candidate.Identity.Provider != target.Identity.Provider || candidate.Identity.ConnectionID != target.Identity.ConnectionID || candidate.Identity.Partition != target.Identity.Partition || candidate.Identity.NativeID != source.id || candidate.Identity.NativeType != source.kind {
+	for _, target := range targets {
+		for _, entry := range incoming[target.Identity.NativeID] {
+			source := entry.resource
+			var indexed *asset.Asset
+			for i := range assets {
+				candidate := &assets[i]
+				if candidate.Identity.Provider != target.Identity.Provider || candidate.Identity.ConnectionID != target.Identity.ConnectionID || candidate.Identity.Partition != target.Identity.Partition || candidate.Identity.NativeID != source.id || candidate.Identity.NativeType != source.kind {
+					continue
+				}
+				if indexed != nil || candidate.ID == "" || candidate.ID == target.ID {
+					return contribution, serviceDenied("ambiguous_monitor_incoming_asset")
+				}
+				indexed = candidate
+			}
+			if indexed == nil {
+				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
+					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
+				}})
 				continue
 			}
-			if indexed != nil || candidate.ID == "" || candidate.ID == target.ID {
-				return contribution, serviceDenied("ambiguous_monitor_incoming_asset")
+			if err := c.monitorReferencesUnchanged(*indexed, entry.references); err != nil {
+				return contribution, err
 			}
-			indexed = candidate
+			if entry.group == nil || text(indexed.Normalized[monitorConfigurationProof]) != c.privateConfiguration(monitorResourceSnapshot(source.kind, source.data)) || text(indexed.Normalized[monitorGroupProof]) != c.privateConfiguration(insightsWorkspaceResourceSnapshot(entry.group)) {
+				return contribution, serviceDenied("monitor_incoming_configuration_changed")
+			}
+			// Indexed sources contribute their own verified forward/reverse edges
+			// in the same native graph pass. Do not duplicate their relationships.
 		}
-		if indexed == nil {
-			contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
-				graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
-			}})
-			continue
-		}
-		if _, err := c.monitorRecordedReferences(*indexed); err != nil {
-			return contribution, err
-		}
-		if text(indexed.Normalized[monitorConfigurationProof]) != c.privateConfiguration(monitorResourceSnapshot(source.kind, source.data)) {
-			return contribution, serviceDenied("monitor_incoming_configuration_changed")
-		}
-		// Indexed sources contribute their own verified forward/reverse edges
-		// in the same native graph pass. Do not duplicate their relationships.
 	}
 	return contribution, nil
 }

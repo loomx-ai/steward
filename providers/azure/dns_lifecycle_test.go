@@ -40,6 +40,9 @@ func TestDNSRecordNativeWireAndConditionalDeletion(t *testing.T) {
 				raw := map[string]any{"id": id, "name": name, "etag": "record-etag", "properties": map[string]any{"metadata": map[string]any{"owner": "dns-team"}, "fqdn": name + ".example.com.", "ttl": 60}}
 				deleted := false
 				r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+					if response, handled := emptyMonitorIndexResponse(t, req); handled {
+						return response, nil
+					}
 					path := strings.ToLower(req.URL.Path)
 					if req.Method == "DELETE" {
 						if recordType == "SOA" || !strings.EqualFold(path, id) || req.Header.Get("If-Match") != "record-etag" {
@@ -128,7 +131,15 @@ func newDNSScenario() *dnsScenario {
 	// Existing network/monitor scenarios have no AMPLS scopes unless explicitly
 	// added. Target deletion now verifies this independent native collection.
 	index := "/subscriptions/" + testSubscription + "/providers/microsoft.insights/privatelinkscopes"
-	return &dnsScenario{records: map[string]map[string]any{}, lists: map[string][]any{index: {}}, gone: map[string]bool{}, version: map[string]string{index: monitorPrivateLinkVersion}, status: map[string]int{}}
+	s := &dnsScenario{records: map[string]map[string]any{}, lists: map[string][]any{index: {}}, gone: map[string]bool{}, version: map[string]string{index: monitorPrivateLinkVersion}, status: map[string]int{}}
+	// These composed network scenarios have no alert sources unless a case
+	// explicitly adds one to the native collection. Error/status overrides still
+	// take precedence over every collection response.
+	for _, kind := range monitorInventoryKinds() {
+		path := "/subscriptions/" + testSubscription + "/providers/" + strings.ToLower(kind)
+		s.lists[path], s.version[path] = []any{}, monitorResourceVersion(kind)
+	}
+	return s
 }
 func (s *dnsScenario) add(raw map[string]any, version string) {
 	id := strings.ToLower(text(raw["id"]))
@@ -194,6 +205,25 @@ func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 			return jsonResponse(200, map[string]any{"value": records}, nil), nil
 		}
 		root := "/subscriptions/" + testSubscription
+		if id == root+"/resourcegroups" {
+			groups := map[string]map[string]any{}
+			for path := range s.records {
+				parts := strings.Split(path, "/")
+				if len(parts) < 5 || parts[3] != "resourcegroups" {
+					continue
+				}
+				group := strings.Join(parts[:5], "/")
+				groups[group] = s.records[group]
+				if groups[group] == nil {
+					groups[group] = map[string]any{"id": group}
+				}
+			}
+			rows := []any{}
+			for _, group := range groups {
+				rows = append(rows, group)
+			}
+			return jsonResponse(200, map[string]any{"value": rows}, nil), nil
+		}
 		if id == root+"/providers/microsoft.authorization/locks" {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}

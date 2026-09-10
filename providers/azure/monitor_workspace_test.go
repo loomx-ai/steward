@@ -494,7 +494,7 @@ func TestMonitorWorkspaceNativeDeleteHeadersAndPolling(t *testing.T) {
 			native := object(object(object(monitorWorkspaceFixture(t, "AzureMonitorWorkspacesDelete")["responses"])["202"])["headers"])
 			headers := http.Header{}
 			for name, value := range native {
-				if driver.(*action).validateOperationURL(text(value)) == nil {
+				if monitorTargetInner(driver).(*action).validateOperationURL(text(value)) == nil {
 					t.Fatal("upstream deletion example's foreign subscription accepted")
 				}
 				endpoint := strings.ReplaceAll(strings.ReplaceAll(text(value), "00000000-0000-0000-0000-000000000000", testSubscription), "/resourceGroups/myResourceGroup/", "/resourceGroups/test/")

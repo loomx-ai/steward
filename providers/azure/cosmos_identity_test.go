@@ -67,6 +67,9 @@ func TestCosmosReadbackUsesBoundNativeName(t *testing.T) {
 	wire := "/subscriptions/" + testSubscription + "/resourceGroups/Test/providers/Microsoft.DocumentDB/databaseAccounts/account-one/sqlDatabases/Sales/containers/Orders"
 	reads := 0
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		if req.Method != "GET" || !cosmosSameWireID(req.URL.Path, wire) {
 			t.Fatalf("readback used another resource: %s %s", req.Method, req.URL)
 		}

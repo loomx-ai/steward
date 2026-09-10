@@ -186,7 +186,7 @@ func TestMonitorPrivateLinkOperationStatesAndCredentialBinding(t *testing.T) {
 			s, r, values := monitorPrivateLinkScenario(t)
 			target := values[1]
 			driver, _ := r.ResolveAction(context.Background(), "connection", target)
-			a := driver.(*action)
+			a := monitorTargetInner(driver).(*action)
 			operation := "/subscriptions/" + testSubscription + "/resourceGroups/test/providers/Microsoft.Insights/privateLinkScopeOperationStatuses/11111111-2222-4333-8444-555555555555"
 			body := map[string]any{"status": "Succeeded", "id": operation, "resourceId": target.Identity.NativeID}
 			status := 200

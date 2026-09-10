@@ -35,6 +35,9 @@ func newWatcherScenario() *watcherScenario {
 func (s *watcherScenario) runtime(t *testing.T) *Runtime {
 	t.Helper()
 	return protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		path := strings.ToLower(req.URL.Path)
 		root := "/subscriptions/" + testSubscription
 		parent := strings.ToLower(text(s.parent["id"]))

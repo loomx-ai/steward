@@ -404,6 +404,17 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	var monitorTargets []asset.Asset
+	for _, value := range assets {
+		if monitorARMTarget(value) && strings.HasPrefix(strings.ToLower(value.Identity.NativeID), s.client.root()+"/") {
+			monitorTargets = append(monitorTargets, value)
+		}
+	}
+	incoming, err := s.client.contributeMonitorIncoming(ctx, monitorTargets, assets)
+	if err != nil {
+		return result, err
+	}
+	result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
 	if err := s.contributeBatch(ctx, assets, &result); err != nil {
 		return result, err
 	}
@@ -442,13 +453,6 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				}
 				result.Relationships = append(result.Relationships, contribution.Relationships...)
 				result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
-				if registered {
-					incoming, err := s.client.contributeMonitorIncoming(ctx, parent, assets)
-					if err != nil {
-						return result, err
-					}
-					result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
-				}
 				continue
 			}
 		}

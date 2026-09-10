@@ -436,6 +436,17 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 			return contracts.InventoryItem{}, err
 		}
 		normalized["_monitor_private_link_target_configuration"] = c.privateConfiguration(monitorPrivateLinkTargetSnapshot(raw))
+		if nativeType == insightsWorkspaceType {
+			if err := monitorRuleFields(object(raw["properties"]), "customerId"); err != nil {
+				return contracts.InventoryItem{}, err
+			}
+			customer := strings.ToLower(text(object(raw["properties"])["customerId"]))
+			if !uuidPattern.MatchString(customer) {
+				return contracts.InventoryItem{}, serviceDenied("monitor_receiver_workspace_identity_missing")
+			}
+			normalized["customerId"] = customer
+			normalized[monitorReceiverTargetProof] = c.monitorReceiverTargetBinding(id, nativeType, region, customer, text(normalized["_monitor_private_link_target_configuration"]))
+		}
 	}
 	if err := c.monitorPrivateLinkInventory(ctx, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)

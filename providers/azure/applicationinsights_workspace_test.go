@@ -37,7 +37,7 @@ func newInsightsWorkspaceFixture(t *testing.T) *insightsWorkspaceFixture {
 	f.managedID = "/subscriptions/" + testSubscription + "/resourcegroups/managed-telemetry"
 	f.workspaceID = f.managedID + "/providers/microsoft.operationalinsights/workspaces/logs"
 	f.managed = map[string]any{"id": f.managedID, "name": "managed-telemetry", "location": "southcentralus", "managedBy": f.parentID, "properties": map[string]any{"provisioningState": "Succeeded"}}
-	f.workspace = map[string]any{"id": f.workspaceID, "type": insightsWorkspaceType, "name": "logs", "location": "southcentralus", "properties": map[string]any{"customerId": "workspace-incarnation", "retentionInDays": float64(30), "provisioningState": "Succeeded"}}
+	f.workspace = map[string]any{"id": f.workspaceID, "type": insightsWorkspaceType, "name": "logs", "location": "southcentralus", "properties": map[string]any{"customerId": "00000000-1111-2222-3333-444444444444", "retentionInDays": float64(30), "provisioningState": "Succeeded"}}
 	object(f.parent["properties"])["WorkspaceResourceId"] = f.workspaceID
 	f.groups = map[string]map[string]any{f.groupID: f.group, f.managedID: f.managed}
 	f.members = map[string]map[string]any{f.workspaceID: f.workspace}

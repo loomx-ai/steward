@@ -33,7 +33,7 @@ func monitorManagedScenario(t *testing.T, f *monitorInventoryFixture) (*aksScena
 	aksTransport := r.transport
 	r.transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
 		path := strings.ToLower(req.URL.Path)
-		if path == "/subscriptions/"+testSubscription+"/resourcegroups" || strings.Contains(path, "/providers/microsoft.eventhub/") || strings.Contains(path, "/providers/microsoft.operationalinsights/") {
+		if path == "/subscriptions/"+testSubscription+"/resourcegroups" || path != group && f.groups[path] != nil || strings.Contains(path, "/providers/microsoft.eventhub/") || strings.Contains(path, "/providers/microsoft.operationalinsights/") {
 			return f.runtime.transport.RoundTrip(req)
 		}
 		if _, _, _, err := monitorResourceID(path); err == nil {

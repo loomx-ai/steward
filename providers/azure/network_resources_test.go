@@ -99,6 +99,9 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			deleted, listed := false, false
 			deletes := 0
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
 				path := strings.ToLower(req.URL.Path)
 				if strings.EqualFold(path, id) {
 					if req.URL.Query().Get("api-version") != tc.version {
@@ -141,7 +144,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			if err != nil || !batch.Complete || !listed || len(batch.Items) != 1 || batch.Items[0].NativeID != strings.ToLower(id) || batch.Items[0].NativeType != tc.kind || batch.Items[0].Location != tc.location || batch.RequestID != "native-list-request" {
 				t.Fatalf("native inventory=%+v error=%v", batch, err)
 			}
-			value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: tc.kind, NativeID: id}, Location: tc.location, Normalized: batch.Items[0].Normalized}
+			value := asset.Asset{ID: "native-target", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: tc.kind, NativeID: batch.Items[0].NativeID}, Location: tc.location, Normalized: batch.Items[0].Normalized}
 			driver, err := r.ResolveAction(context.Background(), "connection", value)
 			if err != nil {
 				t.Fatal(err)
@@ -200,6 +203,9 @@ func TestNativePreflightRejectsPartialOrForeignResourceIdentity(t *testing.T) {
 		t.Run(mode, func(t *testing.T) {
 			value := actionAsset("Microsoft.Network/azureFirewalls", "firewall")
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
+				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
 				if req.Method != "GET" {
 					t.Fatalf("invalid native identity reached a write: %s", req.URL)
 				}

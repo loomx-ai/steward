@@ -249,7 +249,7 @@ func TestStreamAnalyticsPrivateEndpointNativeEnvelopeDoesNotSkipReadback(t *test
 				target = cdnAsset(t, assets, streamAnalyticsClusterType)
 			}
 			driver, _ := r.ResolveAction(context.Background(), "connection", target)
-			a := driver.(*action)
+			a := monitorTargetInner(driver).(*action)
 			row := streamAnalyticsRecordings(t, "test_private_endpoint_crud")[85]
 			u, _ := url.Parse(row.URI)
 			u.Path = target.Identity.NativeID + "/OperationResults/" + last(u.Path)
@@ -275,6 +275,7 @@ func TestStreamAnalyticsPrivateEndpointNativeEnvelopeDoesNotSkipReadback(t *test
 				return nil, false
 			}
 			request := contracts.ActionRequest{Action: "delete", Asset: target}
+			result = monitorTargetTestReceipt(driver, request, result)
 			if waited, err := driver.Wait(context.Background(), request, result); waited.Done || mode == "error" && err == nil || mode != "error" && err != nil {
 				t.Fatal("live resource accepted", waited, err)
 			}

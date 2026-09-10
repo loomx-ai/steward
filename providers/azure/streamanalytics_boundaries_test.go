@@ -294,7 +294,7 @@ func TestStreamAnalyticsRotatingPollBoundaries(t *testing.T) {
 			s, r, assets := streamAnalyticsScenario(t, false)
 			target := cdnAsset(t, assets, streamAnalyticsEndpointType)
 			driver, _ := r.ResolveAction(context.Background(), "connection", target)
-			a := driver.(*action)
+			a := monitorTargetInner(driver).(*action)
 			native := streamAnalyticsRecordings(t, "test_private_endpoint_crud")[69]
 			u, _ := url.Parse(native.URI)
 			u.Path = target.Identity.NativeID + "/OperationResults/" + last(u.Path)
@@ -490,13 +490,14 @@ func TestStreamAnalyticsOperationIdentityStateAndReadback(t *testing.T) {
 			s, r, assets := streamAnalyticsScenario(t, false)
 			target := cdnAsset(t, assets, streamAnalyticsEndpointType)
 			driver, _ := r.ResolveAction(context.Background(), "connection", target)
-			a := driver.(*action)
+			a := monitorTargetInner(driver).(*action)
 			row := streamAnalyticsRecordings(t, "test_private_endpoint_crud")[85]
 			u, _ := url.Parse(row.URI)
 			u.Path = target.Identity.NativeID + "/OperationResults/" + last(u.Path)
 			endpoint := u.String()
 			result := contracts.ActionResult{ProviderOperationID: endpoint, Data: map[string]any{"polling": "location", "stream_analytics_operation_binding": a.operationBinding(endpoint)}}
 			request := contracts.ActionRequest{Action: "delete", Asset: target}
+			result = monitorTargetTestReceipt(driver, request, result)
 			status := 200
 			body := map[string]any{"status": "Succeeded", "id": u.Path, "name": last(u.Path), "resourceId": target.Identity.NativeID}
 			switch mode {

@@ -126,13 +126,17 @@ func batchPollingScenario(t *testing.T, kind string) (*batchScenario, *Runtime, 
 	if kind == batchAccountType {
 		path = "/subscriptions/" + testSubscription + "/providers/Microsoft.Batch/locations/japaneast/accountOperationResults/sampleacct-30a022cb-a64f-4fd5-9289-8b38b342e9de"
 	}
-	return s, r, request, driver.(*batchAction), apiURL(path, batchVersion)
+	return s, r, request, monitorTargetInner(driver).(*batchAction), apiURL(path, batchVersion)
 }
 
 func TestBatchARMLocationPollingResumesSignedRotation(t *testing.T) {
 	for _, kind := range []string{batchAccountType, batchPECType} {
 		t.Run(kind, func(t *testing.T) {
-			s, r, request, driver, endpoint := batchPollingScenario(t, kind)
+			s, r, request, _, endpoint := batchPollingScenario(t, kind)
+			driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
+			if err != nil {
+				t.Fatal(err)
+			}
 			initial := endpoint + "&t=one&c=one&s=one&h=one"
 			next := endpoint + "&t=two&c=two&s=two&h=two"
 			polls := 0
