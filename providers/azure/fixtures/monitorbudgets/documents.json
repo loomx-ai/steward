@@ -1,0 +1,22 @@
+[
+  {
+    "dependency": true,
+    "source_sha256": "8f69ddbcdd8f3df61a156a129e70db08b3a03f2ec710de07f30273ec27492de3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v3/types.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v5/types.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "2a56b9d02c1ad5182151d8e1d459aebae1a4328516dacac7f53094a6d36fdfa3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "05eaa0ac2aa86797da88703051b86ae2f232d2448e5b24ad86c41dc0e2bcad37",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json"
+  }
+]

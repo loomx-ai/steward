@@ -1,0 +1,182 @@
+[
+  {
+    "file": "consumption-2024-08-01/Budget.json",
+    "method": "GET",
+    "operation": "Budgets_Get",
+    "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json",
+    "source_sha256": "486be8c7e0b6c601b9f9a9e657cba5322d1eaa99e6bfe01f6e3adfe56dd383e5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/examples/Budget.json"
+  },
+  {
+    "file": "consumption-2024-08-01/BudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.Consumption/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json",
+    "source_sha256": "33e48f25a98f512e4297cd8f6dad1427d6f0291786c390f3fe3f8dd7ee04650e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/examples/BudgetsList.json"
+  },
+  {
+    "file": "consumption-2024-08-01/DeleteBudget.json",
+    "method": "DELETE",
+    "operation": "Budgets_Delete",
+    "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json",
+    "source_sha256": "57dc1c7ea8e3e43bb2924990ee46461a6df612494fa10f9f9e644d6273377767",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/examples/DeleteBudget.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/Delete/DeleteBudget.json",
+    "method": "DELETE",
+    "operation": "Budgets_Delete",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "cdbd3394299d4fcd610ce9eebcf2204e0aff15ac1f201b8cb5acadb88b634cae",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/Delete/DeleteBudget.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/Get/Cost/Get-Cost-Budget.json",
+    "method": "GET",
+    "operation": "Budgets_Get",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "de683660dc0a49801f1f1fb0457ea51c83df044921331cb655d2803223fdc789",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/Get/Cost/Get-Cost-Budget.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/Get/ReservationUtilization/Get-ReservationUtilization-AlertRule.json",
+    "method": "GET",
+    "operation": "Budgets_Get",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "0297cdf7fd3f059e61e6ff2dd43ff797c0a3cd12b3c07ed6bec38d7f80ab2c1a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/Get/ReservationUtilization/Get-ReservationUtilization-AlertRule.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/EA/BillingAccountBudgetsList-EA-CategoryTypeFilter.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "5a9db51c7173477c2703618f0b7d493fc5f8456c8ef72a5913fce0af8d45e763",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/EA/BillingAccountBudgetsList-EA-CategoryTypeFilter.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/EA/BillingAccountBudgetsList-EA.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "7b5914b6679136751c8f799c3e3773c49a0d4d0ab62cba8c69648b22ca737ef8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/EA/BillingAccountBudgetsList-EA.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/EA/DepartmentBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "1e313ff35e5a0d0d1d8a4c9e531fcbebc206c9e60f6f75fb0d7252ddb7257e83",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/EA/DepartmentBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/EA/EnrollmentAccountBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "087b31567c9010989bfb05cb09dd82d75e6aabd07b9a463c4b0e3ff8d8541716",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/EA/EnrollmentAccountBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/BillingAccountBudgetsList-MCA-CategoryTypeFilter.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "4f9d9ffaf79c594353fbf58003b6896793ac13f9d934df974a65c819b574fab5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/BillingAccountBudgetsList-MCA-CategoryTypeFilter.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/BillingAccountBudgetsList-MCA.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "e2a7c553b6554673424a30635ec309eadf34ce55cac5d08544f0a5f23ff1d949",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/BillingAccountBudgetsList-MCA.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/BillingProfileBudgetsList-CategoryTypeFilter.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "1cfe78bd1ddcd096d7a85d0d399e68d9815cf7fe6e6a027d4b63d54352242bb5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/BillingProfileBudgetsList-CategoryTypeFilter.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/BillingProfileBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "6dfdec2cf23ca1947c7009aaa7f1a10a80497bc24e073331c5448d1c798fb46c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/BillingProfileBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/CustomerBudgetsList-CategoryTypeFilter.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "7427b2b81cf936ec3b3abc1a25fdddcb58f1ccf4e7fa7f4efb6a681138a8bc9b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/CustomerBudgetsList-CategoryTypeFilter.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/CustomerBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "0d96b0e7fa4614ebd83a6189ffb8fa1208d15e2fc171c2634cf86b50a89b354b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/CustomerBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/MCA/InvoiceSectionBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "24101db6761b50254703ddc71d2a6b06c7c6bb6dab30506b02e914c5f628762c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/MCA/InvoiceSectionBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/RBAC/ManagementGroupBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "4a9af83bdb5b71a606ce4ebfa3b7af1d25a3b7bc756d72e82bfe6df9a93a93e8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/RBAC/ManagementGroupBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/RBAC/ResourceGroupBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "4a669ba0404aa30bfe815358708fa1f9cf79ed3e0c9a45f7e6ac9c8bf3d1d04d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/RBAC/ResourceGroupBudgetsList.json"
+  },
+  {
+    "file": "cost-management-2025-03-01/Budgets/List/RBAC/SubscriptionBudgetsList.json",
+    "method": "GET",
+    "operation": "Budgets_List",
+    "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+    "source_sha256": "cbd25437a966d5023135609a9ff3250f8ddf4feb5fce5536124913a834fccc19",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/examples/Budgets/List/RBAC/SubscriptionBudgetsList.json"
+  }
+]

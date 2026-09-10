@@ -14,6 +14,9 @@ responses. These verify wire protocol behavior, error handling, and application
 normalization. They are not evidence of an independent ARM emulator or a live
 Azure account.
 
+[Budget notifications](monitorbudgets/README.md) retain 20 original Consumption
+and Cost Management examples, including subscription and billing boundaries.
+
 [Monitor alerts](monitoralerts/README.md) retain 36 original examples for seven
 alert and notification families. Thirty native operations, 44 responses,
 explicit upstream schema discrepancies and endpoint-aware privacy are checked

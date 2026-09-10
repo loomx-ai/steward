@@ -2022,6 +2022,22 @@
         "AlertProcessingRules_ListByResourceGroup",
         "AlertProcessingRules_ListBySubscription"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json",
+      "operations": [
+        "Budgets_Delete",
+        "Budgets_Get",
+        "Budgets_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json",
+      "operations": [
+        "Budgets_Delete",
+        "Budgets_Get",
+        "Budgets_List"
+      ]
     }
   ],
   "resource_types": [

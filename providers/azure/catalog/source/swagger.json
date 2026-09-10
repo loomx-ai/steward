@@ -12659,7 +12659,7 @@
       "document": {
         "host": "management.azure.com",
         "info": {
-          "description": "Use these REST APIs for performing operations on Product entity associated with your Azure API Management deployment. The Product entity represents a product in API Management. Products include one or more APIs and their associated terms of use. Once a product is published, developers can subscribe to the product and begin to use the product’s APIs.",
+          "description": "Use these REST APIs for performing operations on Product entity associated with your Azure API Management deployment. The Product entity represents a product in API Management. Products include one or more APIs and their associated terms of use. Once a product is published, developers can subscribe to the product and begin to use the product\u2019s APIs.",
           "title": "ApiManagementClient",
           "version": "2024-05-01"
         },
@@ -14334,7 +14334,7 @@
       "document": {
         "host": "management.azure.com",
         "info": {
-          "description": "Use these REST APIs for performing operations on Subscription entity associated with your Azure API Management deployment. The Subscription entity represents the association between a user and a product in API Management. Products contain one or more APIs, and once a product is published, developers can subscribe to the product and begin to use the product’s APIs.",
+          "description": "Use these REST APIs for performing operations on Subscription entity associated with your Azure API Management deployment. The Subscription entity represents the association between a user and a product in API Management. Products contain one or more APIs, and once a product is published, developers can subscribe to the product and begin to use the product\u2019s APIs.",
           "title": "ApiManagementClient",
           "version": "2024-05-01"
         },
@@ -25592,7 +25592,7 @@
             "description": "Product Entity Base Parameters",
             "properties": {
               "approvalRequired": {
-                "description": "whether subscription approval is required. If false, new subscriptions will be approved automatically enabling developers to call the product’s APIs immediately after subscribing. If true, administrators must manually approve the subscription before the developer can any of the product’s APIs. Can be present only if subscriptionRequired property is present and has a value of false.",
+                "description": "whether subscription approval is required. If false, new subscriptions will be approved automatically enabling developers to call the product\u2019s APIs immediately after subscribing. If true, administrators must manually approve the subscription before the developer can any of the product\u2019s APIs. Can be present only if subscriptionRequired property is present and has a value of false.",
                 "type": "boolean"
               },
               "description": {
@@ -26247,7 +26247,7 @@
                 "type": "string"
               },
               "state": {
-                "description": "Subscription state. Possible states are * active – the subscription is active, * suspended – the subscription is blocked, and the subscriber cannot call any APIs of the product, * submitted – the subscription request has been made by the developer, but has not yet been approved or rejected, * rejected – the subscription request has been denied by an administrator, * cancelled – the subscription has been cancelled by the developer or administrator, * expired – the subscription reached its expiration date and was deactivated.",
+                "description": "Subscription state. Possible states are * active \u2013 the subscription is active, * suspended \u2013 the subscription is blocked, and the subscriber cannot call any APIs of the product, * submitted \u2013 the subscription request has been made by the developer, but has not yet been approved or rejected, * rejected \u2013 the subscription request has been denied by an administrator, * cancelled \u2013 the subscription has been cancelled by the developer or administrator, * expired \u2013 the subscription reached its expiration date and was deactivated.",
                 "enum": [
                   "suspended",
                   "active",
@@ -48243,7 +48243,7 @@
                 "title": "The Public IPAddress configuration for Compute Nodes in the Batch Pool."
               },
               "subnetId": {
-                "description": "The virtual network must be in the same region and subscription as the Azure Batch account. The specified subnet should have enough free IP addresses to accommodate the number of nodes in the pool. If the subnet doesn't have enough free IP addresses, the pool will partially allocate compute nodes and a resize error will occur. The 'MicrosoftAzureBatch' service principal must have the 'Classic Virtual Machine Contributor' Role-Based Access Control (RBAC) role for the specified VNet. The specified subnet must allow communication from the Azure Batch service to be able to schedule tasks on the compute nodes. This can be verified by checking if the specified VNet has any associated Network Security Groups (NSG). If communication to the compute nodes in the specified subnet is denied by an NSG, then the Batch service will set the state of the compute nodes to unusable. If the specified VNet has any associated Network Security Groups (NSG), then a few reserved system ports must be enabled for inbound communication，including ports 29876 and 29877. Also enable outbound connections to Azure Storage on port 443. For more details see: https://learn.microsoft.com/azure/batch/batch-api-basics#virtual-network-vnet-and-firewall-configuration",
+                "description": "The virtual network must be in the same region and subscription as the Azure Batch account. The specified subnet should have enough free IP addresses to accommodate the number of nodes in the pool. If the subnet doesn't have enough free IP addresses, the pool will partially allocate compute nodes and a resize error will occur. The 'MicrosoftAzureBatch' service principal must have the 'Classic Virtual Machine Contributor' Role-Based Access Control (RBAC) role for the specified VNet. The specified subnet must allow communication from the Azure Batch service to be able to schedule tasks on the compute nodes. This can be verified by checking if the specified VNet has any associated Network Security Groups (NSG). If communication to the compute nodes in the specified subnet is denied by an NSG, then the Batch service will set the state of the compute nodes to unusable. If the specified VNet has any associated Network Security Groups (NSG), then a few reserved system ports must be enabled for inbound communication\uff0cincluding ports 29876 and 29877. Also enable outbound connections to Azure Storage on port 443. For more details see: https://learn.microsoft.com/azure/batch/batch-api-basics#virtual-network-vnet-and-firewall-configuration",
                 "externalDocs": {
                   "description": "Create an Azure Batch pool in a virtual network",
                   "url": "https://learn.microsoft.com/azure/batch/batch-virtual-networks"
@@ -51871,7 +51871,7 @@
                 }
               },
               "order": {
-                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,………}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
+                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,\u2026\u2026\u2026}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
                 "format": "int32",
                 "type": "integer"
               },
@@ -53774,7 +53774,7 @@
                 "type": "string"
               },
               "order": {
-                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,………}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
+                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,\u2026\u2026\u2026}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
                 "format": "int32",
                 "type": "integer"
               }
@@ -55803,7 +55803,7 @@
                 }
               },
               "order": {
-                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,………}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
+                "description": "The order in which the rules are applied for the endpoint. Possible values {0,1,2,3,\u2026\u2026\u2026}. A rule with a lesser order will be applied before a rule with a greater order. Rule with order 0 is a special rule. It does not require any condition and actions listed in it will always be applied.",
                 "format": "int32",
                 "type": "integer"
               },
@@ -69907,6 +69907,684 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "Budget": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A budget resource.",
+            "properties": {
+              "eTag": {
+                "description": "eTag of the resource. To handle concurrent update scenario, this field will be used to determine whether the user is updating the latest version or not.",
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/BudgetProperties",
+                "description": "The properties of the budget.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "BudgetComparisonExpression": {
+            "description": "The comparison expression to be used in the budgets.",
+            "properties": {
+              "name": {
+                "description": "The name of the column to use in comparison.",
+                "type": "string"
+              },
+              "operator": {
+                "$ref": "#/definitions/BudgetOperatorType",
+                "description": "The operator to use for comparison."
+              },
+              "values": {
+                "description": "Array of values to use for comparison",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 0,
+                "type": "array"
+              }
+            },
+            "required": [
+              "name",
+              "operator",
+              "values"
+            ],
+            "type": "object"
+          },
+          "BudgetFilter": {
+            "description": "May be used to filter budgets by resource group, resource, or meter.",
+            "properties": {
+              "and": {
+                "description": "The logical \"AND\" expression. Must have at least 2 items.",
+                "items": {
+                  "$ref": "#/definitions/BudgetFilterProperties"
+                },
+                "minItems": 0,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "dimensions": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a dimension"
+              },
+              "tags": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a tag"
+              }
+            },
+            "type": "object"
+          },
+          "BudgetFilterProperties": {
+            "description": "The Dimensions or Tags to filter a budget by.",
+            "properties": {
+              "dimensions": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a dimension"
+              },
+              "tags": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a tag"
+              }
+            },
+            "type": "object"
+          },
+          "BudgetOperatorType": {
+            "description": "The operator to use for comparison.",
+            "enum": [
+              "In"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "BudgetOperatorType",
+              "values": [
+                {
+                  "name": "In",
+                  "value": "In"
+                }
+              ]
+            }
+          },
+          "BudgetProperties": {
+            "description": "The properties of the budget.",
+            "properties": {
+              "amount": {
+                "description": "The total amount of cost to track with the budget",
+                "format": "decimal",
+                "type": "number"
+              },
+              "category": {
+                "$ref": "#/definitions/CategoryType",
+                "description": "The category of the budget, whether the budget tracks cost or usage."
+              },
+              "currentSpend": {
+                "$ref": "#/definitions/CurrentSpend",
+                "description": "The current amount of cost which is being tracked for a budget.",
+                "readOnly": true
+              },
+              "filter": {
+                "$ref": "#/definitions/BudgetFilter",
+                "description": "May be used to filter budgets by user-specified dimensions and/or tags."
+              },
+              "forecastSpend": {
+                "$ref": "#/definitions/ForecastSpend",
+                "description": "The forecasted cost which is being tracked for a budget.",
+                "readOnly": true
+              },
+              "notifications": {
+                "additionalProperties": {
+                  "$ref": "#/definitions/Notification"
+                },
+                "description": "Dictionary of notifications associated with the budget. Budget can have up to five notifications.",
+                "type": "object"
+              },
+              "timeGrain": {
+                "$ref": "#/definitions/TimeGrainType",
+                "description": "The time covered by a budget. Tracking of the amount will be reset based on the time grain. BillingMonth, BillingQuarter, and BillingAnnual are only supported by WD customers"
+              },
+              "timePeriod": {
+                "$ref": "#/definitions/BudgetTimePeriod",
+                "description": "Has start and end date of the budget. The start date must be first of the month and should be less than the end date. Budget start date must be on or after June 1, 2017. Future start date should not be more than twelve months. Past start date should  be selected within the timegrain period. There are no restrictions on the end date."
+              }
+            },
+            "required": [
+              "category",
+              "amount",
+              "timeGrain",
+              "timePeriod"
+            ],
+            "type": "object"
+          },
+          "BudgetTimePeriod": {
+            "description": "The start and end date for a budget.",
+            "properties": {
+              "endDate": {
+                "description": "The end date for the budget. If not provided, we default this to 10 years from the start date.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "startDate": {
+                "description": "The start date for the budget.",
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "required": [
+              "startDate"
+            ],
+            "type": "object"
+          },
+          "BudgetsListResult": {
+            "description": "Result of listing budgets. It contains a list of available budgets in the scope provided.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of budgets.",
+                "items": {
+                  "$ref": "#/definitions/Budget"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "CategoryType": {
+            "description": "The category of the budget, whether the budget tracks cost or usage.",
+            "enum": [
+              "Cost"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CategoryType",
+              "values": [
+                {
+                  "name": "Cost",
+                  "value": "Cost"
+                }
+              ]
+            }
+          },
+          "CultureCode": {
+            "description": "Language in which the recipient will receive the notification",
+            "enum": [
+              "en-us",
+              "ja-jp",
+              "zh-cn",
+              "de-de",
+              "es-es",
+              "fr-fr",
+              "it-it",
+              "ko-kr",
+              "pt-br",
+              "ru-ru",
+              "zh-tw",
+              "cs-cz",
+              "pl-pl",
+              "tr-tr",
+              "da-dk",
+              "en-gb",
+              "hu-hu",
+              "nb-no",
+              "nl-nl",
+              "pt-pt",
+              "sv-se"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CultureCode",
+              "values": [
+                {
+                  "name": "en-us",
+                  "value": "en-us"
+                },
+                {
+                  "name": "ja-jp",
+                  "value": "ja-jp"
+                },
+                {
+                  "name": "zh-cn",
+                  "value": "zh-cn"
+                },
+                {
+                  "name": "de-de",
+                  "value": "de-de"
+                },
+                {
+                  "name": "es-es",
+                  "value": "es-es"
+                },
+                {
+                  "name": "fr-fr",
+                  "value": "fr-fr"
+                },
+                {
+                  "name": "it-it",
+                  "value": "it-it"
+                },
+                {
+                  "name": "ko-kr",
+                  "value": "ko-kr"
+                },
+                {
+                  "name": "pt-br",
+                  "value": "pt-br"
+                },
+                {
+                  "name": "ru-ru",
+                  "value": "ru-ru"
+                },
+                {
+                  "name": "zh-tw",
+                  "value": "zh-tw"
+                },
+                {
+                  "name": "cs-cz",
+                  "value": "cs-cz"
+                },
+                {
+                  "name": "pl-pl",
+                  "value": "pl-pl"
+                },
+                {
+                  "name": "tr-tr",
+                  "value": "tr-tr"
+                },
+                {
+                  "name": "da-dk",
+                  "value": "da-dk"
+                },
+                {
+                  "name": "en-gb",
+                  "value": "en-gb"
+                },
+                {
+                  "name": "hu-hu",
+                  "value": "hu-hu"
+                },
+                {
+                  "name": "nb-no",
+                  "value": "nb-no"
+                },
+                {
+                  "name": "nl-nl",
+                  "value": "nl-nl"
+                },
+                {
+                  "name": "pt-pt",
+                  "value": "pt-pt"
+                },
+                {
+                  "name": "sv-se",
+                  "value": "sv-se"
+                }
+              ]
+            }
+          },
+          "CurrentSpend": {
+            "description": "The current amount of cost which is being tracked for a budget.",
+            "properties": {
+              "amount": {
+                "description": "The total amount of cost which is being tracked by the budget.",
+                "format": "decimal",
+                "readOnly": true,
+                "type": "number"
+              },
+              "unit": {
+                "description": "The unit of measure for the budget amount.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ForecastSpend": {
+            "description": "The forecasted cost which is being tracked for a budget.",
+            "properties": {
+              "amount": {
+                "description": "The forecasted cost for the total time period which is being tracked by the budget. This value is only provided if the budget contains a forecast alert type.",
+                "format": "decimal",
+                "readOnly": true,
+                "type": "number"
+              },
+              "unit": {
+                "description": "The unit of measure for the budget amount.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Notification": {
+            "description": "The notification associated with a budget.",
+            "properties": {
+              "contactEmails": {
+                "description": "Email addresses to send the budget notification to when the threshold is exceeded. Must have at least one contact email or contact group specified at the Subscription or Resource Group scopes. All other scopes must have at least one contact email specified.",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "minItems": 0,
+                "type": "array"
+              },
+              "contactGroups": {
+                "description": "Action groups to send the budget notification to when the threshold is exceeded. Must be provided as a fully qualified Azure resource id. Only supported at Subscription or Resource Group scopes.",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "minItems": 0,
+                "type": "array"
+              },
+              "contactRoles": {
+                "description": "Contact roles to send the budget notification to when the threshold is exceeded.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "enabled": {
+                "description": "The notification is enabled or not.",
+                "type": "boolean"
+              },
+              "locale": {
+                "$ref": "#/definitions/CultureCode",
+                "description": "Language in which the recipient will receive the notification"
+              },
+              "operator": {
+                "$ref": "#/definitions/OperatorType",
+                "description": "The comparison operator."
+              },
+              "threshold": {
+                "description": "Threshold value associated with a notification. Notification is sent when the cost exceeded the threshold. It is always percent and has to be between 0 and 1000.",
+                "format": "decimal",
+                "type": "number"
+              },
+              "thresholdType": {
+                "default": "Actual",
+                "description": "The type of threshold",
+                "enum": [
+                  "Actual",
+                  "Forecasted"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ThresholdType",
+                  "values": [
+                    {
+                      "description": "Actual costs budget alerts notify when the actual accrued cost exceeds the allocated budget .",
+                      "name": "Actual",
+                      "value": "Actual"
+                    },
+                    {
+                      "description": "Forecasted costs budget alerts provide advanced notification that your spending trends are likely to exceed your allocated budget, as it relies on forecasted cost predictions.",
+                      "name": "Forecasted",
+                      "value": "Forecasted"
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "enabled",
+              "operator",
+              "threshold",
+              "contactEmails"
+            ],
+            "type": "object"
+          },
+          "OperatorType": {
+            "description": "The comparison operator.",
+            "enum": [
+              "EqualTo",
+              "GreaterThan",
+              "GreaterThanOrEqualTo"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "OperatorType",
+              "values": [
+                {
+                  "description": "Alert will be triggered if the evaluated cost is the same as threshold value. Note: It\u2019s not recommended to use this OperatorType as there\u2019s low chance of cost being exactly the same as threshold value, leading to missing of your alert. This OperatorType will be deprecated in future.",
+                  "name": "EqualTo",
+                  "value": "EqualTo"
+                },
+                {
+                  "description": "Alert will be triggered if the evaluated cost is greater than the threshold value. Note: This is the recommended OperatorType while configuring Budget Alert.",
+                  "name": "GreaterThan",
+                  "value": "GreaterThan"
+                },
+                {
+                  "description": "Alert will be triggered if the evaluated cost is greater than or equal to the threshold value.",
+                  "name": "GreaterThanOrEqualTo",
+                  "value": "GreaterThanOrEqualTo"
+                }
+              ]
+            }
+          },
+          "TimeGrainType": {
+            "description": "The time covered by a budget. Tracking of the amount will be reset based on the time grain. BillingMonth, BillingQuarter, and BillingAnnual are only supported by WD customers",
+            "enum": [
+              "Monthly",
+              "Quarterly",
+              "Annually",
+              "BillingMonth",
+              "BillingQuarter",
+              "BillingAnnual"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "TimeGrainType",
+              "values": [
+                {
+                  "name": "Monthly",
+                  "value": "Monthly"
+                },
+                {
+                  "name": "Quarterly",
+                  "value": "Quarterly"
+                },
+                {
+                  "name": "Annually",
+                  "value": "Annually"
+                },
+                {
+                  "name": "BillingMonth",
+                  "value": "BillingMonth"
+                },
+                {
+                  "name": "BillingQuarter",
+                  "value": "BillingQuarter"
+                },
+                {
+                  "name": "BillingAnnual",
+                  "value": "BillingAnnual"
+                }
+              ]
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Consumption management client provides access to consumption resources for Azure Enterprise Subscriptions.",
+          "title": "ConsumptionManagementClient",
+          "version": "2024-08-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/{scope}/providers/Microsoft.Consumption/budgets": {
+            "get": {
+              "description": "Lists all budgets for the defined scope.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/consumption/"
+              },
+              "operationId": "Budgets_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The request has succeeded.",
+                  "schema": {
+                    "$ref": "#/definitions/BudgetsListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "BudgetsList": {
+                  "$ref": "./examples/BudgetsList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}": {
+            "delete": {
+              "description": "The operation to delete a budget.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/consumption/"
+              },
+              "operationId": "Budgets_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "Budget Name.",
+                  "in": "path",
+                  "name": "budgetName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "DeleteBudget": {
+                  "$ref": "./examples/DeleteBudget.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets the budget for the scope by budget name.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/consumption/"
+              },
+              "operationId": "Budgets_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "Budget Name.",
+                  "in": "path",
+                  "name": "budgetName",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/Budget"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "Budget": {
+                  "$ref": "./examples/Budget.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "2a56b9d02c1ad5182151d8e1d459aebae1a4328516dacac7f53094a6d36fdfa3",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
           "AzureFileVolume": {
             "description": "The properties of the Azure File volume. Azure File shares are mounted as volumes.",
             "properties": {
@@ -73582,7 +74260,7 @@
                 "type": "integer"
               },
               "maxStalenessPrefix": {
-                "description": "When used with the Bounded Staleness consistency level, this value represents the number of stale requests tolerated. Accepted range for this value is 1 – 2,147,483,647. Required when defaultConsistencyPolicy is set to 'BoundedStaleness'.",
+                "description": "When used with the Bounded Staleness consistency level, this value represents the number of stale requests tolerated. Accepted range for this value is 1 \u2013 2,147,483,647. Required when defaultConsistencyPolicy is set to 'BoundedStaleness'.",
                 "format": "int64",
                 "maximum": 2147483647,
                 "minimum": 1,
@@ -75201,7 +75879,7 @@
             "description": "IpAddressOrRange object",
             "properties": {
               "ipAddressOrRange": {
-                "description": "A single IPv4 address or a single IPv4 address range in CIDR format. Provided IPs must be well-formatted and cannot be contained in one of the following ranges: 10.0.0.0/8, 100.64.0.0/10, 172.16.0.0/12, 192.168.0.0/16, since these are not enforceable by the IP address filter. Example of valid inputs: “23.40.210.245” or “23.40.210.0/8”.",
+                "description": "A single IPv4 address or a single IPv4 address range in CIDR format. Provided IPs must be well-formatted and cannot be contained in one of the following ranges: 10.0.0.0/8, 100.64.0.0/10, 172.16.0.0/12, 192.168.0.0/16, since these are not enforceable by the IP address filter. Example of valid inputs: \u201c23.40.210.245\u201d or \u201c23.40.210.0/8\u201d.",
                 "type": "string"
               }
             },
@@ -84827,6 +85505,832 @@
       },
       "source_sha256": "8e2ae27e14553e04b3152de7aec4cf5e4b8cb551242a94d17fca69b82b74ae9b",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "Azure.Core.eTag": {
+            "description": "The ETag (or entity tag) HTTP response header is an identifier for a specific version of a resource.\nIt lets caches be more efficient and save bandwidth, as a web server does not need to resend a full response if the content was not changed.\n\nIt is a string of ASCII characters placed between double quotes, like \"675af34563dc-tr34\".",
+            "type": "string"
+          },
+          "Budget": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A budget resource.",
+            "properties": {
+              "eTag": {
+                "$ref": "#/definitions/Azure.Core.eTag",
+                "description": "eTag of the resource. To handle concurrent update scenario, this field will be used to determine whether the user is updating the latest version or not."
+              },
+              "properties": {
+                "$ref": "#/definitions/BudgetProperties",
+                "description": "The properties of the budget.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "BudgetComparisonExpression": {
+            "description": "The comparison expression to be used in the budgets.",
+            "properties": {
+              "name": {
+                "description": "The name of the column to use in comparison.",
+                "type": "string"
+              },
+              "operator": {
+                "$ref": "#/definitions/BudgetOperatorType",
+                "description": "The operator to use for comparison."
+              },
+              "values": {
+                "description": "Array of values to use for comparison",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 0,
+                "type": "array"
+              }
+            },
+            "required": [
+              "name",
+              "operator",
+              "values"
+            ],
+            "type": "object"
+          },
+          "BudgetFilter": {
+            "description": "May be used to filter budgets by user-specified dimensions and/or tags.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+            "properties": {
+              "and": {
+                "description": "The logical \"AND\" expression. Must have at least 2 items.\n\nSupported for CategoryType(s): Cost.",
+                "items": {
+                  "$ref": "#/definitions/BudgetFilterProperties"
+                },
+                "minItems": 0,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "dimensions": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a dimension.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported dimension names for **CategoryType: ReservationUtilization**\n- ReservationId\n- ReservedResourceType"
+              },
+              "tags": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a tag.\n\nSupported for CategoryType(s): Cost."
+              }
+            },
+            "type": "object"
+          },
+          "BudgetFilterProperties": {
+            "description": "The Dimensions or Tags to filter a budget by.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+            "properties": {
+              "dimensions": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a dimension.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported dimension names for **CategoryType: ReservationUtilization**\n- ReservationId\n- ReservedResourceType"
+              },
+              "tags": {
+                "$ref": "#/definitions/BudgetComparisonExpression",
+                "description": "Has comparison expression for a tag.\n\nSupported for CategoryType(s): Cost."
+              }
+            },
+            "type": "object"
+          },
+          "BudgetNotificationOperatorType": {
+            "description": "The comparison operator.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported operators for **CategoryType: Cost**\n- GreaterThan\n- GreaterThanOrEqualTo\n\nSupported operators for **CategoryType: ReservationUtilization**\n- LessThan",
+            "enum": [
+              "EqualTo",
+              "GreaterThan",
+              "GreaterThanOrEqualTo",
+              "LessThan"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "BudgetNotificationOperatorType",
+              "values": [
+                {
+                  "description": "Notification will be triggered if the evaluated cost is the same as threshold value. Note: It\u2019s not recommended to use this OperatorType as there\u2019s low chance of cost being exactly the same as threshold value, leading to missing of your alert. This OperatorType will be deprecated in future.\n\nSupported for CategoryType(s): Cost.",
+                  "name": "EqualTo",
+                  "value": "EqualTo"
+                },
+                {
+                  "description": "Notification will be triggered if the evaluated cost is greater than the threshold value. Note: This is the recommended OperatorType while configuring Budget Alert.\n\nSupported for CategoryType(s): Cost.",
+                  "name": "GreaterThan",
+                  "value": "GreaterThan"
+                },
+                {
+                  "description": "Notification will be triggered if the evaluated cost is greater than or equal to the threshold value.\n\nSupported for CategoryType(s): Cost.",
+                  "name": "GreaterThanOrEqualTo",
+                  "value": "GreaterThanOrEqualTo"
+                },
+                {
+                  "description": "Notification will be triggered if any Reservations in the scope of the Reservation Utilization Alert Rule have a utilization less than the threshold percentage.\n\nSupported for CategoryType(s): ReservationUtilization.",
+                  "name": "LessThan",
+                  "value": "LessThan"
+                }
+              ]
+            }
+          },
+          "BudgetOperatorType": {
+            "description": "The operator to use for comparison.",
+            "enum": [
+              "In"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "BudgetOperatorType",
+              "values": [
+                {
+                  "name": "In",
+                  "value": "In"
+                }
+              ]
+            }
+          },
+          "BudgetProperties": {
+            "description": "The properties of the budget.",
+            "properties": {
+              "amount": {
+                "description": "The total amount of cost to track with the budget.\n\nSupported for CategoryType(s): Cost.\n\nRequired for CategoryType(s): Cost.",
+                "format": "float",
+                "type": "number"
+              },
+              "category": {
+                "$ref": "#/definitions/CategoryType",
+                "description": "The category of the budget.\n- 'Cost' defines a Budget.\n- 'ReservationUtilization' defines a Reservation Utilization Alert Rule."
+              },
+              "currentSpend": {
+                "$ref": "#/definitions/CurrentSpend",
+                "description": "The current amount of cost which is being tracked for a budget.\n\nSupported for CategoryType(s): Cost.",
+                "readOnly": true
+              },
+              "filter": {
+                "$ref": "#/definitions/BudgetFilter",
+                "description": "May be used to filter budgets by user-specified dimensions and/or tags.\n\nSupported for CategoryType(s): Cost, ReservationUtilization."
+              },
+              "forecastSpend": {
+                "$ref": "#/definitions/ForecastSpend",
+                "description": "The forecasted cost which is being tracked for a budget.\n\nSupported for CategoryType(s): Cost.",
+                "readOnly": true
+              },
+              "notifications": {
+                "additionalProperties": {
+                  "$ref": "#/definitions/Notification"
+                },
+                "description": "Dictionary of notifications associated with the budget.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\n- Constraints for **CategoryType: Cost** - Budget can have up to 5 notifications with thresholdType: Actual and 5 notifications with thresholdType: Forecasted.\n- Constraints for **CategoryType: ReservationUtilization** - Only one notification allowed. thresholdType is not applicable.",
+                "type": "object"
+              },
+              "timeGrain": {
+                "$ref": "#/definitions/TimeGrainType",
+                "description": "The time covered by a budget. Tracking of the amount will be reset based on the time grain.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported timeGrainTypes for **CategoryType: Cost**\n\n- Monthly\n- Quarterly\n- Annually\n- BillingMonth*\n- BillingQuarter*\n- BillingAnnual*\n\n*only supported for Web Direct customers.\n\nSupported timeGrainTypes for **CategoryType: ReservationUtilization**\n- Last7Days\n- Last30Days\n\nRequired for CategoryType(s): Cost, ReservationUtilization."
+              },
+              "timePeriod": {
+                "$ref": "#/definitions/BudgetTimePeriod",
+                "description": "The time period that defines the active period of the budget. The budget will evaluate data on or after the startDate and will expire on the endDate.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nRequired for CategoryType(s): Cost, ReservationUtilization."
+              }
+            },
+            "required": [
+              "category",
+              "timeGrain",
+              "timePeriod"
+            ],
+            "type": "object"
+          },
+          "BudgetTimePeriod": {
+            "description": "The time period that defines the active period of the budget. The budget will evaluate data on or after the startDate and will expire on the endDate.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nRequired for CategoryType(s): Cost, ReservationUtilization.",
+            "properties": {
+              "endDate": {
+                "description": "The end date for the budget.\n\n- Constraints for **CategoryType: Cost** - No constraints. If not provided, we default this to 10 years from the start date.\n\n- Constraints for **CategoryType: ReservationUtilization** - End date cannot be more than 3 years after the start date.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "startDate": {
+                "description": "The start date for the budget.\n\n- Constraints for **CategoryType: Cost** - Must be first of the month and should be less than the end date. Budget start date must be on or after June 1, 2017. Future start date should not be more than twelve months. Past start date should  be selected within the timegrain period.\n\n- Constraints for **CategoryType: ReservationUtilization** - Must be on or after the current date and less than the end date.",
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "required": [
+              "startDate"
+            ],
+            "type": "object"
+          },
+          "BudgetsListResult": {
+            "description": "Result of listing budgets. It contains a list of available budgets in the scope provided.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.\\r\\nIt's null for now, added for future use.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of budgets.",
+                "items": {
+                  "$ref": "#/definitions/Budget"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "CategoryType": {
+            "description": "The category of the budget.\n- 'Cost' defines a Budget.\n- 'ReservationUtilization' defines a Reservation Utilization Alert Rule.",
+            "enum": [
+              "Cost",
+              "ReservationUtilization"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CategoryType",
+              "values": [
+                {
+                  "description": "A Budget that evaluates monetary cost of Azure resources against an amount, and alerts based on a configured notification threshold.",
+                  "name": "Cost",
+                  "value": "Cost"
+                },
+                {
+                  "description": "An Alert Rule that evaluates the utilization percentage of Azure Reservations, and alerts based on a configured notification threshold.",
+                  "name": "ReservationUtilization",
+                  "value": "ReservationUtilization"
+                }
+              ]
+            }
+          },
+          "CultureCode": {
+            "description": "Language in which the recipient will receive the notification,\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+            "enum": [
+              "en-us",
+              "ja-jp",
+              "zh-cn",
+              "de-de",
+              "es-es",
+              "fr-fr",
+              "it-it",
+              "ko-kr",
+              "pt-br",
+              "ru-ru",
+              "zh-tw",
+              "cs-cz",
+              "pl-pl",
+              "tr-tr",
+              "da-dk",
+              "en-gb",
+              "hu-hu",
+              "nb-no",
+              "nl-nl",
+              "pt-pt",
+              "sv-se"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CultureCode",
+              "values": [
+                {
+                  "name": "en-us",
+                  "value": "en-us"
+                },
+                {
+                  "name": "ja-jp",
+                  "value": "ja-jp"
+                },
+                {
+                  "name": "zh-cn",
+                  "value": "zh-cn"
+                },
+                {
+                  "name": "de-de",
+                  "value": "de-de"
+                },
+                {
+                  "name": "es-es",
+                  "value": "es-es"
+                },
+                {
+                  "name": "fr-fr",
+                  "value": "fr-fr"
+                },
+                {
+                  "name": "it-it",
+                  "value": "it-it"
+                },
+                {
+                  "name": "ko-kr",
+                  "value": "ko-kr"
+                },
+                {
+                  "name": "pt-br",
+                  "value": "pt-br"
+                },
+                {
+                  "name": "ru-ru",
+                  "value": "ru-ru"
+                },
+                {
+                  "name": "zh-tw",
+                  "value": "zh-tw"
+                },
+                {
+                  "name": "cs-cz",
+                  "value": "cs-cz"
+                },
+                {
+                  "name": "pl-pl",
+                  "value": "pl-pl"
+                },
+                {
+                  "name": "tr-tr",
+                  "value": "tr-tr"
+                },
+                {
+                  "name": "da-dk",
+                  "value": "da-dk"
+                },
+                {
+                  "name": "en-gb",
+                  "value": "en-gb"
+                },
+                {
+                  "name": "hu-hu",
+                  "value": "hu-hu"
+                },
+                {
+                  "name": "nb-no",
+                  "value": "nb-no"
+                },
+                {
+                  "name": "nl-nl",
+                  "value": "nl-nl"
+                },
+                {
+                  "name": "pt-pt",
+                  "value": "pt-pt"
+                },
+                {
+                  "name": "sv-se",
+                  "value": "sv-se"
+                }
+              ]
+            }
+          },
+          "CurrentSpend": {
+            "description": "The current amount of cost which is being tracked for a budget.\n\nSupported for CategoryType(s): Cost.",
+            "properties": {
+              "amount": {
+                "description": "The total amount of cost which is being tracked by the budget.",
+                "format": "float",
+                "readOnly": true,
+                "type": "number"
+              },
+              "unit": {
+                "description": "The unit of measure for the budget amount.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorDetails": {
+            "description": "The details of the error.",
+            "properties": {
+              "code": {
+                "description": "Error code.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "message": {
+                "description": "Error message indicating why the operation failed.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorResponse": {
+            "description": "Error response indicates that the service is not able to process the incoming request. The reason is provided in the error message. \\n\\nSome Error responses: \\n\\n * 429 TooManyRequests - Request is throttled. Retry after waiting for the time specified in the \\\"x-ms-ratelimit-microsoft.consumption-retry-after\\\" header. \\n\\n * 503 ServiceUnavailable - Service is temporarily unavailable. Retry after waiting for the time specified in the \\\"Retry-After\\\" header.",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/ErrorDetails",
+                "description": "The details of the error."
+              }
+            },
+            "type": "object"
+          },
+          "ForecastSpend": {
+            "description": "The forecasted cost which is being tracked for a budget.\n\nSupported for CategoryType(s): Cost.",
+            "properties": {
+              "amount": {
+                "description": "The forecasted cost for the total time period which is being tracked by the budget. This value is only provided if the budget contains a forecast alert type.",
+                "format": "float",
+                "readOnly": true,
+                "type": "number"
+              },
+              "unit": {
+                "description": "The unit of measure for the budget amount.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Frequency": {
+            "description": "Frequency of a notification. Represents how long the notification will be silent after triggering an alert for a threshold breach. If not specified, the frequency will be set by default based on the timeGrain (Weekly when timeGrain: Last7Days, Monthly when timeGrain: Last30Days).\n\nSupported for CategoryType(s): ReservationUtilization.",
+            "enum": [
+              "Daily",
+              "Weekly",
+              "Monthly"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Frequency",
+              "values": [
+                {
+                  "description": "After the threshold breaches and an Alert is fired, no further alerts will be sent until the next calendar day.",
+                  "name": "Daily",
+                  "value": "Daily"
+                },
+                {
+                  "description": "After the threshold breaches and an Alert is fired, no further alerts will be sent for 7 calendar days.",
+                  "name": "Weekly",
+                  "value": "Weekly"
+                },
+                {
+                  "description": "After the threshold breaches and an Alert is fired, no further alerts will be sent for 30 calendar days.",
+                  "name": "Monthly",
+                  "value": "Monthly"
+                }
+              ]
+            }
+          },
+          "Notification": {
+            "description": "The notification associated with a budget.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+            "properties": {
+              "contactEmails": {
+                "description": "Email addresses to send the notification to when the threshold is breached. Must have at least one contact email or contact group specified at the Subscription or Resource Group scopes. All other scopes must have at least one contact email specified.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "minItems": 0,
+                "type": "array"
+              },
+              "contactGroups": {
+                "description": "Subscription or Resource Group scopes only. Action groups to send the notification to when the threshold is exceeded. Must be provided as a fully qualified Azure resource id.\n\nSupported for CategoryType(s): Cost.",
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 50,
+                "minItems": 0,
+                "type": "array"
+              },
+              "contactRoles": {
+                "description": "Subscription or Resource Group scopes only. Contact roles to send the notification to when the threshold is breached.\n\nSupported for CategoryType(s): Cost.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "enabled": {
+                "description": "The notification is enabled or not.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.",
+                "type": "boolean"
+              },
+              "frequency": {
+                "$ref": "#/definitions/Frequency",
+                "description": "Frequency of a notification. Represents how long the notification will be silent after triggering an alert for a threshold breach. If not specified, the frequency will be set by default based on the timeGrain (Weekly when timeGrain: Last7Days, Monthly when timeGrain: Last30Days).\n\nSupported for CategoryType(s): ReservationUtilization."
+              },
+              "locale": {
+                "$ref": "#/definitions/CultureCode",
+                "description": "Language in which the recipient will receive the notification,\n\nSupported for CategoryType(s): Cost, ReservationUtilization."
+              },
+              "operator": {
+                "$ref": "#/definitions/BudgetNotificationOperatorType",
+                "description": "The comparison operator.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported operators for **CategoryType: Cost**\n- GreaterThan\n- GreaterThanOrEqualTo\n\nSupported operators for **CategoryType: ReservationUtilization**\n- LessThan"
+              },
+              "threshold": {
+                "description": "Threshold value associated with a notification. It is always percent with a maximum of 2 decimal places.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\n**CategoryType: Cost** - Must be between 0 and 1000. Notification is sent when the cost exceeded the threshold.\n\n**CategoryType: ReservationUtilization** - Must be between 0 and 100. Notification is sent when a reservation has a utilization percentage below the threshold.",
+                "format": "float",
+                "type": "number"
+              },
+              "thresholdType": {
+                "default": "Actual",
+                "description": "The type of threshold.\n\nSupported for CategoryType(s): Cost.",
+                "enum": [
+                  "Actual",
+                  "Forecasted"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ThresholdType",
+                  "values": [
+                    {
+                      "description": "Actual costs budget alerts notify when the actual accrued cost exceeds the allocated budget.",
+                      "name": "Actual",
+                      "value": "Actual"
+                    },
+                    {
+                      "description": "Forecasted costs budget alerts provide advanced notification that your spending trends are likely to exceed your allocated budget, as it relies on forecasted cost predictions.",
+                      "name": "Forecasted",
+                      "value": "Forecasted"
+                    }
+                  ]
+                }
+              }
+            },
+            "required": [
+              "enabled",
+              "operator",
+              "threshold",
+              "contactEmails"
+            ],
+            "type": "object"
+          },
+          "TimeGrainType": {
+            "description": "The time covered by a budget. Tracking of the amount will be reset based on the time grain.\n\nSupported for CategoryType(s): Cost, ReservationUtilization.\n\nSupported timeGrainTypes for **CategoryType: Cost**\n\n- Monthly\n- Quarterly\n- Annually\n- BillingMonth*\n- BillingQuarter*\n- BillingAnnual*\n\n*only supported for Web Direct customers.\n\nSupported timeGrainTypes for **CategoryType: ReservationUtilization**\n- Last7Days\n- Last30Days\n\nRequired for CategoryType(s): Cost, ReservationUtilization.",
+            "enum": [
+              "Monthly",
+              "Quarterly",
+              "Annually",
+              "BillingMonth",
+              "BillingQuarter",
+              "BillingAnnual",
+              "Last7Days",
+              "Last30Days"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "TimeGrainType",
+              "values": [
+                {
+                  "description": "The budget will track costs in the current calendar month against the amount.\n\nSupported for CategoryType: Cost only.",
+                  "name": "Monthly",
+                  "value": "Monthly"
+                },
+                {
+                  "description": "The budget will track costs in the current calendar quarter against the amount.\n\nSupported for CategoryType: Cost only.",
+                  "name": "Quarterly",
+                  "value": "Quarterly"
+                },
+                {
+                  "description": "The budget will track costs in the current calendar year against the amount.\n\nSupported for CategoryType: Cost only.",
+                  "name": "Annually",
+                  "value": "Annually"
+                },
+                {
+                  "description": "The budget will track costs in the current billing month against the amount.\n\nSupported for CategoryType: Cost and Web Direct customers only.",
+                  "name": "BillingMonth",
+                  "value": "BillingMonth"
+                },
+                {
+                  "description": "The budget will track costs in the current billing quarter against the amount.\n\nSupported for CategoryType: Cost and Web Direct customers only.",
+                  "name": "BillingQuarter",
+                  "value": "BillingQuarter"
+                },
+                {
+                  "description": "The budget will track costs in the current billing year against the amount.\n\nSupported for CategoryType: Cost and Web Direct customers only.",
+                  "name": "BillingAnnual",
+                  "value": "BillingAnnual"
+                },
+                {
+                  "description": "The Reservation Utilization Alert Rule will evaluate reservations based on their 7-Day utilization percentage.\n\nSupported for CategoryType: ReservationUtilization only.",
+                  "name": "Last7Days",
+                  "value": "Last7Days"
+                },
+                {
+                  "description": "The Reservation Utilization Alert Rule will evaluate reservations based on their 30-Day utilization percentage.\n\nSupported for CategoryType: ReservationUtilization only.",
+                  "name": "Last30Days",
+                  "value": "Last30Days"
+                }
+              ]
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "CostManagement management client provides access to CostManagement resources for Azure Enterprise Subscriptions.",
+          "title": "CostManagementClient",
+          "version": "2025-03-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/{scope}/providers/Microsoft.CostManagement/budgets": {
+            "get": {
+              "description": "Lists all budgets for the defined scope.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/CostManagement/"
+              },
+              "operationId": "Budgets_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "OData filter option. May be used to filter budgets by properties/category. The filter supports 'eq' only.",
+                  "in": "query",
+                  "name": "$filter",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/BudgetsListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "BillingAccountBudgetsList-EA": {
+                  "$ref": "./examples/Budgets/List/EA/BillingAccountBudgetsList-EA.json"
+                },
+                "BillingAccountBudgetsList-EA-CategoryTypeFilter": {
+                  "$ref": "./examples/Budgets/List/EA/BillingAccountBudgetsList-EA-CategoryTypeFilter.json"
+                },
+                "BillingAccountBudgetsList-MCA": {
+                  "$ref": "./examples/Budgets/List/MCA/BillingAccountBudgetsList-MCA.json"
+                },
+                "BillingAccountBudgetsList-MCA-CategoryTypeFilter": {
+                  "$ref": "./examples/Budgets/List/MCA/BillingAccountBudgetsList-MCA-CategoryTypeFilter.json"
+                },
+                "BillingProfileBudgetsList-MCA": {
+                  "$ref": "./examples/Budgets/List/MCA/BillingProfileBudgetsList.json"
+                },
+                "BillingProfileBudgetsList-MCA-CategoryTypeFilter": {
+                  "$ref": "./examples/Budgets/List/MCA/BillingProfileBudgetsList-CategoryTypeFilter.json"
+                },
+                "CustomerBudgetsList-MCA-CSP": {
+                  "$ref": "./examples/Budgets/List/MCA/CustomerBudgetsList.json"
+                },
+                "CustomerBudgetsList-MCA-CSP-CategoryTypeFilter": {
+                  "$ref": "./examples/Budgets/List/MCA/CustomerBudgetsList-CategoryTypeFilter.json"
+                },
+                "DepartmentBudgetsList-EA": {
+                  "$ref": "./examples/Budgets/List/EA/DepartmentBudgetsList.json"
+                },
+                "EnrollmentAccountBudgetsList-EA": {
+                  "$ref": "./examples/Budgets/List/EA/EnrollmentAccountBudgetsList.json"
+                },
+                "InvoiceSectionBudgetsList-MCA": {
+                  "$ref": "./examples/Budgets/List/MCA/InvoiceSectionBudgetsList.json"
+                },
+                "ManagementGroupBudgetsList": {
+                  "$ref": "./examples/Budgets/List/RBAC/ManagementGroupBudgetsList.json"
+                },
+                "ResourceGroupBudgetsList": {
+                  "$ref": "./examples/Budgets/List/RBAC/ResourceGroupBudgetsList.json"
+                },
+                "SubscriptionBudgetsList": {
+                  "$ref": "./examples/Budgets/List/RBAC/SubscriptionBudgetsList.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}": {
+            "delete": {
+              "description": "The operation to delete a budget.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/CostManagement/"
+              },
+              "operationId": "Budgets_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "Budget Name.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "budgetName",
+                  "pattern": "^[a-zA-Z0-9_-]+$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "DeleteBudget": {
+                  "$ref": "./examples/Budgets/Delete/DeleteBudget.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets the budget for the scope by budget name.",
+              "externalDocs": {
+                "url": "https://docs.microsoft.com/en-us/rest/api/CostManagement/"
+              },
+              "operationId": "Budgets_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "scope",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "Budget Name.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "budgetName",
+                  "pattern": "^[a-zA-Z0-9_-]+$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/Budget"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Budgets"
+              ],
+              "x-ms-examples": {
+                "Get-Cost-Budget": {
+                  "$ref": "./examples/Budgets/Get/Cost/Get-Cost-Budget.json"
+                },
+                "Get-ReservationUtilization-AlertRule": {
+                  "$ref": "./examples/Budgets/Get/ReservationUtilization/Get-ReservationUtilization-AlertRule.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "05eaa0ac2aa86797da88703051b86ae2f232d2448e5b24ad86c41dc0e2bcad37",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json"
     },
     {
       "dependency": false,
@@ -104867,7 +106371,7 @@
             "type": "object"
           },
           "FunctionBinding": {
-            "description": "The physical binding of the function. For example, in the Azure Machine Learning web service’s case, this describes the endpoint.",
+            "description": "The physical binding of the function. For example, in the Azure Machine Learning web service\u2019s case, this describes the endpoint.",
             "discriminator": "type",
             "properties": {
               "type": {
@@ -105525,7 +107029,7 @@
             "description": "The properties that are associated with a Event Hub input containing stream data.",
             "properties": {
               "consumerGroupName": {
-                "description": "The name of an Event Hub Consumer Group that should be used to read events from the Event Hub. Specifying distinct consumer group names for multiple inputs allows each of those inputs to receive the same events from the Event Hub. If not specified, the input uses the Event Hub’s default consumer group.",
+                "description": "The name of an Event Hub Consumer Group that should be used to read events from the Event Hub. Specifying distinct consumer group names for multiple inputs allows each of those inputs to receive the same events from the Event Hub. If not specified, the input uses the Event Hub\u2019s default consumer group.",
                 "type": "string"
               }
             },
@@ -105716,7 +107220,7 @@
             "description": "The properties that are associated with a IoT Hub input containing stream data.",
             "properties": {
               "consumerGroupName": {
-                "description": "The name of an IoT Hub Consumer Group that should be used to read events from the IoT Hub. If not specified, the input uses the Iot Hub’s default consumer group.",
+                "description": "The name of an IoT Hub Consumer Group that should be used to read events from the IoT Hub. If not specified, the input uses the Iot Hub\u2019s default consumer group.",
                 "type": "string"
               },
               "endpoint": {
@@ -119390,7 +120894,7 @@
             "description": "Specifies the billing related details of a Azure Spot VM or VMSS. Minimum api-version: 2019-03-01.",
             "properties": {
               "maxPrice": {
-                "description": "Specifies the maximum price you are willing to pay for a Azure Spot VM/VMSS. This price is in US Dollars. <br><br> This price will be compared with the current Azure Spot price for the VM size. Also, the prices are compared at the time of create/update of Azure Spot VM/VMSS and the operation will only succeed if  the maxPrice is greater than the current Azure Spot price. <br><br> The maxPrice will also be used for evicting a Azure Spot VM/VMSS if the current Azure Spot price goes beyond the maxPrice after creation of VM/VMSS. <br><br> Possible values are: <br><br> - Any decimal value greater than zero. Example: 0.01538 <br><br> -1 – indicates default price to be up-to on-demand. <br><br> You can set the maxPrice to -1 to indicate that the Azure Spot VM/VMSS should not be evicted for price reasons. Also, the default max price is -1 if it is not provided by you. <br><br>Minimum api-version: 2019-03-01.",
+                "description": "Specifies the maximum price you are willing to pay for a Azure Spot VM/VMSS. This price is in US Dollars. <br><br> This price will be compared with the current Azure Spot price for the VM size. Also, the prices are compared at the time of create/update of Azure Spot VM/VMSS and the operation will only succeed if  the maxPrice is greater than the current Azure Spot price. <br><br> The maxPrice will also be used for evicting a Azure Spot VM/VMSS if the current Azure Spot price goes beyond the maxPrice after creation of VM/VMSS. <br><br> Possible values are: <br><br> - Any decimal value greater than zero. Example: 0.01538 <br><br> -1 \u2013 indicates default price to be up-to on-demand. <br><br> You can set the maxPrice to -1 to indicate that the Azure Spot VM/VMSS should not be evicted for price reasons. Also, the default max price is -1 if it is not provided by you. <br><br>Minimum api-version: 2019-03-01.",
                 "format": "double",
                 "type": "number"
               }
@@ -123060,7 +124564,7 @@
                 "description": "Specifies the operating system settings used while creating the virtual machine. Some of the settings cannot be changed once VM is provisioned."
               },
               "platformFaultDomain": {
-                "description": "Specifies the scale set logical fault domain into which the Virtual Machine will be created. By default, the Virtual Machine will by automatically assigned to a fault domain that best maintains balance across available fault domains. This is applicable only if the 'virtualMachineScaleSet' property of this Virtual Machine is set. The Virtual Machine Scale Set that is referenced, must have 'platformFaultDomainCount' greater than 1. This property cannot be updated once the Virtual Machine is created. Fault domain assignment can be viewed in the Virtual Machine Instance View. Minimum api‐version: 2020‐12‐01.",
+                "description": "Specifies the scale set logical fault domain into which the Virtual Machine will be created. By default, the Virtual Machine will by automatically assigned to a fault domain that best maintains balance across available fault domains. This is applicable only if the 'virtualMachineScaleSet' property of this Virtual Machine is set. The Virtual Machine Scale Set that is referenced, must have 'platformFaultDomainCount' greater than 1. This property cannot be updated once the Virtual Machine is created. Fault domain assignment can be viewed in the Virtual Machine Instance View. Minimum api\u2010version: 2020\u201012\u201001.",
                 "format": "int32",
                 "type": "integer"
               },
@@ -123105,7 +124609,7 @@
               },
               "virtualMachineScaleSet": {
                 "$ref": "../../common-types/v1/common.json#/definitions/SubResource",
-                "description": "Specifies information about the virtual machine scale set that the virtual machine should be assigned to. Virtual machines specified in the same virtual machine scale set are allocated to different nodes to maximize availability. Currently, a VM can only be added to virtual machine scale set at creation time. An existing VM cannot be added to a virtual machine scale set. This property cannot exist along with a non-null properties.availabilitySet reference. Minimum api‐version: 2019‐03‐01."
+                "description": "Specifies information about the virtual machine scale set that the virtual machine should be assigned to. Virtual machines specified in the same virtual machine scale set are allocated to different nodes to maximize availability. Currently, a VM can only be added to virtual machine scale set at creation time. An existing VM cannot be added to a virtual machine scale set. This property cannot exist along with a non-null properties.availabilitySet reference. Minimum api\u2010version: 2019\u201003\u201001."
               },
               "vmId": {
                 "description": "Specifies the VM unique ID which is a 128-bits identifier that is encoded and stored in all Azure IaaS VMs SMBIOS and can be read using platform BIOS commands.",
@@ -128592,7 +130096,7 @@
                 "type": "array"
               },
               "containerLogMaxFiles": {
-                "description": "The maximum number of container log files that can be present for a container. The number must be ≥ 2.",
+                "description": "The maximum number of container log files that can be present for a container. The number must be \u2265 2.",
                 "format": "int32",
                 "minimum": 2,
                 "type": "integer"
@@ -167720,7 +169224,7 @@
                 ]
               },
               "sourceResourceId": {
-                "description": "The resource identifier of the source associated with the create operation of this database.\r\n\r\nThis property is only supported for DataWarehouse edition and allows to restore across subscriptions.\r\n\r\nWhen sourceResourceId is specified, sourceDatabaseId, recoverableDatabaseId, restorableDroppedDatabaseId and sourceDatabaseDeletionDate must not be specified and CreateMode must be PointInTimeRestore, Restore or Recover.\r\n\r\nWhen createMode is PointInTimeRestore, sourceResourceId must be the resource ID of the existing database or existing sql pool, and restorePointInTime must be specified.\r\n\r\nWhen createMode is Restore, sourceResourceId must be the resource ID of restorable dropped database or restorable dropped sql pool.\r\n\r\nWhen createMode is Recover, sourceResourceId must be the resource ID of recoverable database or recoverable sql pool.\r\n\r\nWhen source subscription belongs to a different tenant than target subscription, “x-ms-authorization-auxiliary” header must contain authentication token for the source tenant. For more details about “x-ms-authorization-auxiliary” header see https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/authenticate-multi-tenant ",
+                "description": "The resource identifier of the source associated with the create operation of this database.\r\n\r\nThis property is only supported for DataWarehouse edition and allows to restore across subscriptions.\r\n\r\nWhen sourceResourceId is specified, sourceDatabaseId, recoverableDatabaseId, restorableDroppedDatabaseId and sourceDatabaseDeletionDate must not be specified and CreateMode must be PointInTimeRestore, Restore or Recover.\r\n\r\nWhen createMode is PointInTimeRestore, sourceResourceId must be the resource ID of the existing database or existing sql pool, and restorePointInTime must be specified.\r\n\r\nWhen createMode is Restore, sourceResourceId must be the resource ID of restorable dropped database or restorable dropped sql pool.\r\n\r\nWhen createMode is Recover, sourceResourceId must be the resource ID of recoverable database or recoverable sql pool.\r\n\r\nWhen source subscription belongs to a different tenant than target subscription, \u201cx-ms-authorization-auxiliary\u201d header must contain authentication token for the source tenant. For more details about \u201cx-ms-authorization-auxiliary\u201d header see https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/authenticate-multi-tenant ",
                 "format": "arm-id",
                 "type": "string",
                 "x-ms-mutability": [
@@ -168471,7 +169975,7 @@
                   }
                 },
                 "default": {
-                  "description": "*** Error Responses: ***\n\n * 400 ManagedInstanceStoppingOrStopped - Conflicting operation submitted while instance is in stopping/stopped state\n\n * 400 ManagedInstanceStarting - Conflicting operation submitted while instance is in starting state\n\n * 400 InvalidDatabaseCreateOrUpdateRequest - The request body for the create or update database operation is invalid.\n\n * 400 InvalidResourceId - Invalid resource identifier.\n\n * 400 InvalidSourceDatabaseId - Invalid source database identifier.\n\n * 400 MismatchingResourceGroupNameWithUrl - The provided resource group name did not match the name in the Url.\n\n * 400 MismatchingServerNameWithUrl - The provided server name did not match the name in the Url.\n\n * 400 MismatchingSubscriptionWithUrl - The provided subscription did not match the subscription in the Url.\n\n * 400 MissingCollation - Collation is required.\n\n * 400 MissingMaxSizeBytes - MaxSizeBytes is required.\n\n * 400 MissingSkuName - Sku name is required.\n\n * 400 MissingSourceDatabaseId - Missing source database identifier.\n\n * 400 InvalidLicenseType - The specified license type is invalid.\n\n * 400 InvalidSkuName - Invalid SKU name.\n\n * 400 MismatchedSkuNameAndCapacity - Mismatch between SKU name and capacity.\n\n * 400 MismatchedSkuNameAndTier - Mismatch between SKU name and tier.\n\n * 400 MismatchedSkuNameAndFamily - Mismatch between SKU name and family.\n\n * 400 LedgerNotAllowedWithSpecifiedCreateMode - IsLedgerOn is not allowed with the specified create mode.\n\n * 400 LedgerNotAllowedOnSampleDatabase - Database creation is not allowed with IsLedgerOn for a sample database.\n\n * 400 FreeLimitDatabaseNotAllowedInNonDefaultCreate - Free limit database creation is not allowed in non default create mode.\n\n * 400 AvailabilityZoneNotSupported - Requested availability zones for databases and elastic pools is not valid.\n\n * 400 MethodNotAllowedOnSpecifiedCreateMode - Http Patch or Merge not allowed on the specified create mode\n\n * 400 DatabaseNameDoesNotMatchSourceDatabaseId - The database name specified doesn’t match the database name in sourceDatabaseId.\n\n * 400 ElasticPoolNotSupportedForExternalBackupRestore - Elastic pool is not supported for external backup restore\n\n * 400 InvalidRecoverableDatabaseId - Invalid recoverable database identifier.\n\n * 400 InvalidRecoveryServicesRecoveryPointId - Invalid recovery services recovery point identifier.\n\n * 400 InvalidRestorableDroppedDatabaseDeletionDate - The restorable dropped database deletion date given is invalid\n\n * 400 InvalidRestorableDroppedDatabaseId - Invalid restorable dropped database identifier\n\n * 400 MissingRecoverableDatabaseId - Missing recoverable database identifier.\n\n * 400 MissingRecoveryServicesRecoveryPointId - Missing recovery services recovery point Id.\n\n * 400 MissingRestorableDroppedDatabaseId - Missing restorableDroppedDatabaseId\n\n * 400 MissingRestorePointInTime - Missing restore point in time\n\n * 400 MissingSourceDatabaseDeletionDate - Missing source database deletion date\n\n * 400 MissingStorageContainerSasToken - Missing storage container SAS token\n\n * 400 MissingStorageContainerUri - Missing storage container URI\n\n * 400 RestorableDroppedDatabaseIdGivenForRestoreWithSourceDatabaseId - Cannot specify restorableDroppedDatabaseId when sourceDatabaseId is already given in restore create mode\n\n * 400 MultipleIdentitiesOnDatabase - Only one user assigned managed identity is supported at the Database Level.\n\n * 400 MultipleIdentityDelegationsOnDatabase - Only one identity delegation is supported at the Database Level.\n\n * 400 MissingPrimaryDelegatedIdentityClientId - In order to use delegated identities please provide a primary delegated identity client id.\n\n * 400 LongTermRetentionMigrationRequestNotSupported - Subscription is not allowed LTR backup Migration feature.\n\n * 400 LongTermRetentionMigrationCrossClusterRequestNotSupported - Source and target subscriptions are not allowed to communicate for LTR backup copy feature.\n\n * 400 LongTermRetentionMigrationParameterMissing - Required parameter missing for the operation.\n\n * 400 LongTermRetentionMigrationSameServerNotSupported - LTR Copy feature is not supported to copy LTR backups within same server.\n\n * 400 LongTermRetentionMigrationTargetServerNotFound - Target server does not exists or is not ready for LTR backup copy operation.\n\n * 400 LongTermRetentionMigrationTargetDatabaseNotFound - Target Database does not exists on the server.\n\n * 400 LongTermRetentionMigrationStorageTypeNotSupported - Specified Backup Storage Redundancy is not supported in target region.\n\n * 400 LongTermRetentionMigrationStorageMismatch - Active backup redundancy of database does not match backup redundancy requested by customer.\n\n * 400 LtrOperationFailedBackupImmutable - Deleting Long Term Retention backup failed because the backup is immutable.\n\n * 400 LongTermRetentionMigrationDatabaseTypeNotSupported - LTR migration is only supported for managed instance and Azure SQL DB LTR backups.\n\n * 400 LongTermRetentionMigrationBackupStorageRedundancyNotAllowed - Changing backup storage redundancy is not allowed for LTR Copy operations.\n\n * 400 LtrRestoreFailedArchiveStorageTier - Restoring archived long-term retention backup is not supported. Restore can be performed only on rehydrated or regular long-term retention backups.\n\n * 400 LtrArchiveStorageTierNotEnabled - Archiving long-term retention backups is not enabled.\n\n * 400 LtrArchiveWrongParameters - ChangeLongTermRetentionBackupAccessTier is not supported for the desired (backupStorageAccessTier, operationMode) combination. Only (Archive, Move) and (Hot, Copy) are allowed.\n\n * 400 LTRArchiveRedundancyChangeFailed - Updating the backup storage redundancy type to zone-redundant storage is not supported when a long-term retention policy with the 'archive' backup storage access tier is set\n\n * 400 LongTermRetentionMigrationSubscriptionNotFound - The subscription could not be found.\n\n * 400 ElasticPoolOverStorageUsage - Attempting to write data to a database when the storage limit of the elastic pool has been reached.\n\n * 400 TokenTooLong - The provided token is too long.\n\n * 400 SourceDatabaseEncryptionProtectorKeyUriRequiredForPerDatabaseCMKCopyOrReplication - Geo secondary database missing AKV of geo primary database\n\n * 400 PerDatabaseCMKAKVKeyMaterialMissingOnGeoSecondary - All databases in geo replication must contain the same key material as the encryption protector of the source database. Please add the key '{0}' with the same key material to the target database '{1}'.\n\n * 400 PerDatabaseCMKAKVKeyUriMissingOnGeoSecondary - When the automatic rotation of database level TDE Protector is enabled, both source and target databases must be connected to the same key vault. Please add key '{0}' (from the same key vault that is connected to source database) to the target database '{1}'.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutCurrentKeysWithDatabaseName - While attempting to replicate a database configured with database level encryption protector, the current keys being used by the primary database must be passed to the secondary database '{0}'\n\n * 400 CannotMoveOrDropJobAccountDatabase - Cannot drop database associated with job account.\n\n * 400 JobAgentDatabaseEditionUnsupported - The specified database's service level objective is not supported for use as a job agent database.\n\n * 400 ServerNotFound - The requested server was not found.\n\n * 400 InvalidMaxSizeTierCombination - The specified tier does not support the specified database max size.\n\n * 400 InvalidTier - The user specified an invalid tier.\n\n * 400 CannotUseReservedDatabaseName - Cannot use reserved database name in this operation.\n\n * 400 InvalidServerName - Invalid server name specified.\n\n * 400 ProvisioningDisabled - Displays error message from resources operation authorizer as is, without changes\n\n * 400 CannotUpdateIsLedgerDatabase - The ledger property of an existing database cannot be updated.\n\n * 400 InvalidCollation - Collation is not recognized by the server.\n\n * 400 UnableToResolveRemoteServer - The remote partner server name could not be resolved due to an invalid server name or DNS connectivity issues.\n\n * 400 RemoteDatabaseCopyPermission - User does not have sufficient permission to create a database copy on the specified server.\n\n * 400 SourceDatabaseNotFound - The source database does not exist.\n\n * 400 ChangeUnsupportedOnEntity - User attempted an unsupported create/update/delete operation on a given entity.\n\n * 400 UpdateNotAllowedInCurrentReplicationState - The operation is disallowed on the database in its current replication state.\n\n * 400 GeoReplicaLimitReached - The per-replica replication limit was reached.\n\n * 400 ReplicationSourceAndTargetMustHaveSameName - The replication source and target databases must have the same name.\n\n * 400 ReplicationSourceAndTargetMustBeInDifferentServers - The replication source and target databases must be in different logical servers.\n\n * 400 SourceServerNotFound - The server part of a source database id provided in a CreateDatabaseAsCopy API call doesn't map to an existing server.\n\n * 400 InvalidDatabaseCreateMode - Invalid request to create a database.\n\n * 400 TierChangeUnsupportedDueToMemoryOptimizedObject - The database cannot update its sku because it has memory-optimized objects.\n\n * 400 PartnerDBNotCompatibleForSGXEnclave - Attempt to set GeoDR link or update SLO for enclave enabled database is only supported when both database are running on DC-series hardware.\n\n * 400 InvalidAddSecondaryPermission - User does not have sufficient permission to add secondary on the specified server.\n\n * 400 UnsupportedServiceName - The specified name is an invalid name because it contains one or more unsupported unicode characters.\n\n * 400 CurrentDatabaseLogSizeExceedsMaxSize - User attempted to change the database to a sku with lower max log size than the current usage.\n\n * 400 TierChangeUnsupportedDueToCDCEnabledDatabase - The database cannot update its sku because it is enabled for CDC.\n\n * 400 IsLedgerDatabaseIsNotSupportedOnResourceType - Changing the ledger property is not supported for this resource type.\n\n * 400 InvalidSku - The user specified an invalid sku.\n\n * 400 InvalidTierSkuCombination - The specified tier does not support the specified sku.\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 400 OfferDisabledOnSubscription - Subscription offer type is restricted from provisioning the requested resource.\n\n * 400 InvalidTargetSubregion - The target server of a non-readable secondary is not in a DR paired Azure region.\n\n * 400 CurrentDatabaseSizeExceedsMaxSize - User attempted to reduce the max size for a database to a size smaller than the current usage.\n\n * 400 AzureKeyVaultKeyDisabled - The operation could not be completed on the server because the Azure Key Vault key is disabled.\n\n * 400 AzureKeyVaultInvalidExpirationDate - The operation could not be completed because the Azure Key Vault key expiration date is invalid.\n\n * 400 PartnerServerNotCompatible - The user is attempting to copy a database from a SAWA V1 server to a Sterling server or vice versa.\n\n * 400 IncorrectReplicationLinkState - The operation expects the database to be in an expected state on the replication link.\n\n * 400 SecurityAzureKeyVaultUrlNullOrEmpty - The operation could not be completed because the Azure Key Vault Uri is null or empty.\n\n * 400 UnableToCreateGeoChain - User attempted to create secondary database (chaining) even though automatic upload of ledger digests has been configured\n\n * 400 TargetElasticPoolDoesNotExist - The elastic pool does not exist on a server.\n\n * 400 AzureKeyVaultNoServerIdentity - The server identity is not correctly configured.\n\n * 400 ElasticPoolSkuCombinationInvalid - Elastic pool and sku can be specified together only if sku is specified as 'ElasticPool'.\n\n * 400 AzureKeyVaultInvalidUri - An invalid response from Azure Key Vault. Please use a valid Azure Key Vault URI.\n\n * 400 ElasticPoolTierCombinationInvalid - The database tier is different than the elastic pool service tier.\n\n * 400 AzureKeyVaultMissingPermissions - The server is missing required permissions on the Azure Key Vault. \n\n * 400 ElasticPoolNameRequired - User tried to create or update database to elastic pool service objective without specifying the name of the elastic pool.\n\n * 400 InvalidReadScaleEdition - User attempted to enable read scale on a database type that does not support it.\n\n * 400 InvalidReadScaleUnits - User attempted to provide a read scale value that is not supported.\n\n * 400 SecurityAzureKeyVaultInvalidKeyName - The operation could not be completed because of an invalid Server Key name.\n\n * 400 GeoSecondaryMaxSizeUpdateFailed - The geo-secondary database is of a SLO that does not support the requested maxsize value or the geo-secondary is in an unsupported region or an update operation is already in progress on the geo-secondary database.\n\n * 400 AdalGenericError - The operation could not be completed because an Azure Active Directory error was encountered.\n\n * 400 ElasticPoolInconsistentDtuGuaranteeSettings - Attempting to provide DTU min for databases in the elastic pool that exceeds requested DTUs of the elastic pool.\n\n * 400 AdalServicePrincipalNotFound - The operation could not be completed because an Azure Active Directory library Service Principal not found error was encountered.\n\n * 400 AzureKeyVaultMalformedVaultUri - The provided Key Vault uri is not valid.\n\n * 400 ElasticPoolDatabaseCountOverLimit - Attempting to create or add database to elastic pool when the database count limit of the elastic pool has been reached.\n\n * 400 RequestedDatabaseSizeRequiresShrink - User attempted to ALTER DATABASE MODIFY MAXSIZE to modify the MAXSIZE for a database to a smaller size then the current size.\n\n * 400 CannotChangeToOrFromDataWarehouseTier - User attempted to change the sku of a database from DataWarehouse tier to non DataWarehouse tiers or vice versa.\n\n * 400 CurrentDatabaseSizeExceedsDbMaxSize - User attempted to reduce the max size for a database to a size smaller than the current usage.\n\n * 400 ElasticPoolDecreaseStorageLimitBelowUsage - Attempting to decrease the storage limit of the elastic pool below its storage usage.\n\n * 400 CannotUseTrailingWhitespacesInDatabaseName - The database name validation failed.\n\n * 400 UpdateNotAllowedOnPausedDatabase - User attempted to perform an update on a paused database.\n\n * 400 SecurityAdalPrincipalCertExpiredError - The operation could not be completed because the Azure Key Vault principal certificate has expired.\n\n * 400 DatabaseNameInUse - Database already exists. Choose a different database name.\n\n * 400 SameKeyMaterialNotFoundOnRemoteServer - Secondary server does not have the key material of the primary server's encryption protector.\n\n * 400 RegionDoesNotSupportVersion - A user attempted to create a server of a specified version in a location where that server version isn't supported.\n\n * 400 SecurityInvalidAzureKeyVaultRecoveryLevel - The provided Key Vault uri is not valid.\n\n * 400 KeyMaterialNotFoundOnRemoteServer - Remote server does not have access to key material used as a TDE protector.\n\n * 400 AzureKeyVaultRsaKeyNotSupported - The provided key vault uses unsupported RSA Key Size or Key Type. The supported RSA key size is 2048 or 3072 and Key Type is RSA or RSA-HSM.\n\n * 400 SourceDatabaseEditionCouldNotBeUpgraded - The source database cannot have higher edition than the target database.\n\n * 400 TargetDatabaseEditionCouldNotBeDowngraded - The target database cannot have lower edition than the source database.\n\n * 400 UpdateNotAllowedIfGeoDrOperationInProgress - The operation is disallowed because copy or failover operation for database '{0}' on server '{1}' is currently in progress.\n\n * 400 SecurityAzureKeyVaultGeoChainError - Creating secondary of secondary (a process known as chaining) is not supported when enabling Transparent Data Encryption using Azure Key Vault (BYOK).\n\n * 400 ElasticPoolOverFileSpace - Insufficient file space in the elastic pool.\n\n * 400 InvalidLicenseType - User tried to create or update a database or elastic pool with unsupported license type.\n\n * 400 UnsupportedCapacity - User tried to create or update database with capacity which is not supported.\n\n * 400 RestoreToFreeEditionNotSupported - Restore and GeoRestore target cannot be free database.\n\n * 400 RestoreNotSupportedForFreeEdition - Restore and GeoRestore are not supported for free database.\n\n * 400 InvalidDroppedDatabase - Source database dropped does not exist on server within the supported recovery period.\n\n * 400 InvalidLiveDatabase - Source database does not exist on server within the supported recovery period. If restoring a dropped database, please specify its deletion date.\n\n * 400 InvalidVldbRecoverySlo - The Hyperscale edition recovery requires both source and target databases to use Hyperscale service level objective.\n\n * 400 CannotUpdateToFreeDatabase - Updating a database to the free sku is not supported.\n\n * 400 InvalidVldbRestoreSlo - The Hyperscale edition Point-In-Time restore requires both source and target databases to use Hyperscale service level objective.\n\n * 400 CannotSpecifyPoolOrSlo - Specifying an elastic pool and/or changing the service level objective or edition is not supported for edition.\n\n * 400 InvalidBackupStorageAccountType - User passed zrs/lrs during create/update of a database but it failed either because the customer is not whitelisted or because zrs is not available in the specified region.\n\n * 400 DatabaseInvalidSkuPropertyCombination - The properties of the requested sku are inconsistent. Please check that a valid combination is specified. See https://docs.microsoft.com/en-us/rest/api/sql/capabilities/listbylocation#serviceobjectivecapability for more details.\n\n * 400 DatabaseNamedReplicaPerDatabaseLimitExceeded - User tried create a named replica that would exceed the allowed number per primary database\n\n * 400 UnsupportedBackupStorageRedundancyForEdition - The requested backup storage redundancy is not supported for edition\n\n * 400 DatabaseIsCurrentlyPinned - Microsoft has pinned your database SQL Server engine version. To ensure your database does not hit production issues, any future scale operations on your database will be blocked until it has been un-pinned. Please contact Microsoft support for assistance with scaling.\n\n * 400 RestoreTargetEditionSizeInsufficient - User attempted to restore a database to an edition that is a smaller size than the current allocated size of the source.\n\n * 400 DatabaseCreationBlockedForNonActivatedCMKServer - SQL Pool creations are blocked for CMK enabled workspaces until the workspace is activated. First, enable purge protection and grant the workspace Managed Identity the required permissions (Get, Wrap Key, Unwrap Key) on the Azure Key Vault of the workspace key.  Next, activate your workspace after you have granted access.\n\n * 400 InvalidIdentityId - One or more identity id(s) provided are not valid ARM resource id(s). Please input valid id(s) and try again.\n\n * 400 UmiMissingAkvPermissions - PrimaryUserAssignedIdentityId provided by user does not have access to KeyId provided\n\n * 400 InvalidNumberOfIdentities - Only one user assigned managed identity is supported at the Database Level.\n\n * 400 NoRestorePointAvailable - The source database has not yet accomplished its first backup in order to support restore operations. Please retry the restore request later.\n\n * 400 DatabaseNamedReplicaChainingNotAllowed - User tried to create a named replica of a named replica which is not allowed.\n\n * 400 DatabaseNamedReplicaInvalidOperation - User attempted an unsupported operation on a named replica.\n\n * 400 DatabaseNamedReplicaInvalidSourceDatabase - User attempted to create a named replica in a different subscription or region than the source database.\n\n * 400 DatabaseNamedReplicaSourceDatabaseNotZoneRedundant - Zone Redundancy cannot be enabled on this Named Replica since the primary Hyperscale Database is not zone redundant.\n\n * 400 CannotAssignIdentityToMaster - Cannot assign an identity to a system database. Database identity cannot be assigned to 'master', 'model', 'tempdb', 'msdb', or 'resource' databases.\n\n * 400 PerDatabaseCMKDWNotSupported - Database-level CMK in preview is not supported for Datawarehouse edition.\n\n * 400 MissingThumbprintCrm - The restore operation of a CRM database failed because a required TDE certificate was missing. Please retry the restore operation to an existing elastic pool.\n\n * 400 ElasticPoolOverStorage - Attempting to write data to a database when the storage limit of the elastic pool has been reached.\n\n * 400 RestoreTargetEditionSizeInsufficientV2 - User attempted to restore a database to an edition that is a smaller size than the allocated size of the restored database.\n\n * 400 ResourcePoolStorageLimitHitDuringRestore - The restored database can't be restored into the resource pool due to the remaining storage capacity in the pool.\n\n * 400 PerDatabaseCMKRestoreNotSupported - Database restore is not supported when Database-level CMK is configured in preview.\n\n * 400 PerDatabaseCMKHSNotSupported - Database-level CMK in preview is not supported for Hyperscale edition.\n\n * 400 PerDatabaseCMKGeoReplicationNotSupported - Geo Replication and Database Copy is not supported when Database-level CMK is configured in preview.\n\n * 400 InvalidStandbyGeoEdition - User attempted to create a DTU based standby geo.\n\n * 400 ElasticPoolInconsistentVcoreGuaranteeSettings - The number of databases and VCore min per database cannot exceed requested VCores of the elastic pool.\n\n * 400 GeoRestoreBackupStorageTypeNotSupported - Database recovery requests are invalid when issued against a database that is not configured to use geo-redundant backup storage.\n\n * 400 RestoreHyperscaleToNonHyperscale - Restoring a Hyperscale database backup to a non-Hyperscale service tier or vice versa is not supported.\n\n * 400 SubscriptionDoesNotHaveAccessToServer - The subscription does not have access to the specified server(s)\n\n * 400 RecoveryPointDoesNotExist - The specified recovery point either does not exist or is not valid.\n\n * 400 LtrBackupNotFound - The specified long term retention backup does not exist.\n\n * 400 InvalidPointInTime - The specified point in time is not valid for the database.\n\n * 400 GeoRestoreCannotResolveTargetCluster - Cannot resolve target cluster for server\n\n * 400 CannotSpecifyEditionOrSloWhenRestoringToPool - Specifying the target service level objective or edition is not supported when restoring to an elastic pool.\n\n * 400 RestoreNotSupportedForGeoDrSecondary - Point-in-time restore and database recovery operations are not supported on databases that are currently configured as geo-secondaries.\n\n * 400 DatabaseNamedReplicaBackupRetentionConfigurationNotSupported - User attempted configuring backup retention policy on a Named Replica.\n\n * 400 GeoRedundantBackupsNotPermittedForSubscription - Geo-redundant backup storage is blocked for all databases under subscription '{0}' by preview feature 'Azure SQL Database Block Geo-redundant Backup Storage'. Please select a different backup storage redundancy.\n\n * 400 RestoreHyperscaleToNonHyperscaleElasticPool - Restoring a Hyperscale database to an elastic pool which is not Hyperscale or restoring a database which is not Hyperscale to a Hyperscale elastic pool is not supported.\n\n * 400 RestoreIneligibleDatabaseName - The specified target database name, '{0}', is reserved and cannot be used in a restore operation.\n\n * 400 RestoreNotSupportedForSystemDb - Restore and database recovery are not supported for system databases.\n\n * 400 RestoreIneligibleDroppedDatabaseShortLifespan - The source database, '{0}', dropped on '{1}', has not existed long enough to support restores.\n\n * 400 RestoreIneligibleLiveDatabaseShortLifespan - The source database, '{0}', has not yet accomplished its first backup in order to support restore operations. Please wait until at least the indicated earliest restore date '{1}' and resubmit the request.\n\n * 400 RestoreCrossServerDisabled - For point-in-time restores, the target logical server must be the same as the source logical server. Consider restoring to the source database's server, or using database copy or database recovery.\n\n * 400 RestoreSameServerRecoveryDisabled - Same-server recovery is currently not supported. Consider using point-in-time restore or recovering to a different server.\n\n * 400 RestoreNotSupportedFromLtrBackupToEdition - Restore from long-term retention backup to '{0}' edition not supported.\n\n * 400 RestoreNotSupportedFromExternalBackupToEdition - Restore from external backup to '{0}' edition not supported.\n\n * 400 UpdateToServerlessIfLtrIsNotDisabled - Enabling auto-pause for a serverless database is not supported if long-term backup retention is enabled.\n\n * 400 DuplicateRestoreOperation - A restore request with the same target database name '{0}' on server '{1}' already exists.\n\n * 400 ExternalBackupUriMalformed - The external backup storage container URI is malformed.\n\n * 400 ExternalBackupUriHostNotAllowed - The host name for the external backup storage container URI is not allowed.\n\n * 400 ExternalBackupUriInvalidSchemeOrPort - The external backup storage container URI uses an invalid scheme or port. Please use https and port 443.\n\n * 400 ExternalBackupVldbUnsupported - Hyperscale does not support external backup restore requests.\n\n * 400 CannotMoveOrDropSyncMetadataDatabase - Cannot drop database used as sync metadata database.\n\n * 400 InvalidPitrPriorToVldbMigration - For database '{0}', specified point-in-time '{1}' is prior to the Hyperscale migration time of '{2}'. Please specify a target edition or service level objective which is not Hyperscale when restoring to a point earlier than the Hyperscale migration.\n\n * 400 MissingKeyVaultUriForRestore - Azure Key Vault key URI '{0}' is required to successfully restore the database '{1}' under server '{2}'.\n\n * 400 BlockRestoreOnVldbGeoSecondary - Restore of Hyperscale database where source database is geo-secondary is not allowed.\n\n * 400 BackupSetNotFound - No backups were found to restore the database. Please contact support to restore the database.\n\n * 400 IncorrectAccessToAzureKeyVault - Target server does not have access to all AKV Uris created during the backup time.\n\n * 400 RestoreFailureSqlInstanceUnhealthy - Unable to connect to the instance in order to perform restore operation.\n\n * 400 BackupSetBroken - Backup set is broken.\n\n * 400 TimeoutDuringRestore - A timeout was encountered while trying to connect to the restore target.\n\n * 400 BrokenRestorePlanGapInLogBackups - The restore plan is broken because firstLsn of current log backup is not equal to lastLsn of prev log backup.\n\n * 400 FullBackupMissingChecksum - Provided full backup is missing checksum.\n\n * 400 RequiredBackupIsNotLastRestored - Migration cannot be completed because provided backup file name is not the name of the last backup file that is restored.\n\n * 400 IncompatiblePhysicalLayoutNonOnlineDataFilesExist - Database backup contains incompatible physical layout. Non-online data files exist.\n\n * 400 IncompatiblePhysicalLayoutWrongNumberOfLogFiles - Database backup contains incompatible physical layout. Multiple log files are not supported.\n\n * 400 BackupSetNotFoundRecentPit - No backups were found to restore the database to the specified point in time. Please retry the operation. If the problem persists, contact support to restore the database.\n\n * 400 InvalidPublicMaintenanceConfiguration - User tried to specify public maintenance configuration which cannot be converted to internal id (malformed or wrong region).\n\n * 400 MaintenanceWindowNotSupportedForNamedReplica - User tried to create or update named replica with non-default maintenance window which is not supported.\n\n * 400 InvalidStandbyGeoReadScale - User attempted to enable read scale on a standby geo database that does not support it.\n\n * 400 PerDatabaseCMKKeyRotationAttemptedWhileOldThumbprintInUse - Key Rotation for the TDE Protector at the database level is blocked when active transactions are holding up the log encrypted with old keys. Please refer to aka.ms/azuresqldbkeyrotation for possible strategies to workaround this issue.\n\n * 400 PerDBCMKNotSupportedWithLTR - Database-level CMK is not supported when Long-term Backup Retention is enabled on the database.\n\n * 400 VBSEnclaveNotSupportedForDW - The preferredEnclaveType is not supported for dedicated SQL Pools.\n\n * 400 VBSEnclaveNotSupportedForDCSeriesSLO - Configuring the 'VBS' preferredEnclaveType for databases using the DC-series hardware configuration is not supported. DC-series databases are pre-configured with Intel SGX enclaves. Virtualization based security (VBS) enclaves are not supported.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutDatabaseLevelEncryptionProtector - Database-level encryption protector must be set on the target database while attempting to copy or replicate a database encrypted with a database level key.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutCurrentKeys - While attempting to replicate a database configured with database level encryption protector, the current keys being used by the primary must be passed to the secondary database.\n\n * 400 PerDatabaseCMKGeoPrimaryIsNotConfiguredWithDatabaseLevelEncryptionProtector - The geo-primary database must be configured with a database level encryption protector before setting a database level encryption protector on the geo-secondary.\n\n * 400 ElasticJobsNotSupportedOnAutoPauseEnabledDatabase - Auto-pause enabled serverless database is not supported as an Elastic Jobs database because job agent would prevent that database from pausing. You can either disable auto-pause on this serverless database or delete the job agent that is using this database. See here for more details: https://docs.microsoft.com/azure/azure-sql/database/serverless-tier-overview#auto-pausing\n\n * 400 VBSEnclaveNotSupportedForGeoReplicationWithDefaultEnclave - Configuring geo-replication is not supported for databases using different values of the preferredEnclaveType property. The primary '{0}' database on the '{1}' server uses the '{2}' preferredEnclaveType, whereas the specified preferredEnclaveType for the secondary '{3}' database on the '{4}' server is '{5}'.\n\n * 400 VBSEnclaveNotSupportedForPlannedFailoverBetweenDatabasesWithDifferentPreferredEnclaveTypes - Planned failover between primary and secondary database with different preferredEnclaveType is not supported for Virtualization-based security (VBS) enclaves.\n\n * 400 PerDatabaseCMKGeoPrimaryIsConfiguredWithDatabaseLevelEncryptionProtector - The geo-primary database must not be configured with a database level encryption protector when failing over to a geo-secondary without a database level encryption protector.\n\n * 400 CreateDatabaseAttemptedWithRotationInProgress - The create database operation can not be performed at this time due to ongoing Transparent Data Encryption (TDE) key rotation on the server. Please try the operation again later.\n\n * 400 VBSEnclaveResourcePoolInvalidCombination - Adding a database with '{0}' preferredEnclaveType to an elastic pool '{1}' with '{2}' preferredEnclaveType is not supported. \nBefore adding the database to the elastic pool, ensure that the preferredEnclaveType is the same for both the database and the elastic pool. More information can be found on https://aka.ms/AlwaysEncryptedEnableSecureEnclaves\n\n * 400 MissingAsymmetricKeyOnTargetServer - Target server does not have access to an asymmetric key.\n\n * 400 MismatchingSubscriptionWithUrl - The provided subscription did not match the subscription in the Url.\n\n * 400 MultipleDroppedDatabasesWithTheSameName - Found multiple dropped databases with the same name on server.\n\n * 400 AzureKeyVaultClientError - The Azure Key Vault client encountered an error.\n\n * 400 AzureKeyVaultClientInfoError - An error occurred while obtaining information for the Azure Key Vault client.\n\n * 400 AzureKeyVaultKeyThumbprintIsDifferent - The operation could not be completed because the Azure Key Vault Key material is different than the current encryption protector key.\n\n * 400 UnsupportedBackupStorageRedundancy - Specified Backup Storage Redundancy is not supported in target region.\n\n * 400 LTRSterlingToVldbMigrationNotSupported - Cannot change service objective for database  to Hyperscale as long-term retention is not yet supported on Hyperscale. Please disable long-term retention on the database and retry.\n\n * 400 HyperscaleReverseMigrationNotSupported - Reverse migration of a Hyperscale database to Sterling hit an unsupported scenario.\n\n * 400 UpdateSloOperationIdDoesNotExist -   The action failed because no active update-slo operation detected for server: {0}, database: {1};. Please retry the operation by specifying valid parameters.\n\n * 400 ManualCutoverUnsupported - Invalid use of manual-cutover option. Please check current and requested service objective and retry the operation by specifying valid parameters.\n\n * 400 VBSEnclaveResourcePoolInvalidCombination - Adding a database with '{0}' preferredEnclaveType to an elastic pool '{1}' with '{2}' preferredEnclaveType is not supported. \nBefore adding the database to the elastic pool, ensure that the preferredEnclaveType is the same for both the database and the elastic pool. More information can be found on https://aka.ms/AlwaysEncryptedEnableSecureEnclaves\n\n * 400 VBSEnclaveNotSupportedForDW - The preferredEnclaveType is not supported for dedicated SQL Pools.\n\n * 400 VBSEnclaveNotSupportedForDCSeriesSLO - Configuring the 'VBS' preferredEnclaveType for databases using the DC-series hardware configuration is not supported. DC-series databases are pre-configured with Intel SGX enclaves. Virtualization based security (VBS) enclaves are not supported.\n\n * 400 VBSEnclaveNotSupportedForGeoReplicationWithDefaultEnclave - Configuring geo-replication is not supported for databases using different values of the preferredEnclaveType property. The primary '{0}' database on the '{1}' server uses the '{2}' preferredEnclaveType, whereas the specified preferredEnclaveType for the secondary '{3}' database on the '{4}' server is '{5}'.\n\n * 400 VBSEnclaveNotSupportedForPlannedFailoverBetweenDatabasesWithDifferentPreferredEnclaveTypes - Planned failover between primary and secondary database with different preferredEnclaveType is not supported for Virtualization-based security (VBS) enclaves.\n\n * 404 OperationIdNotFound - The operation with Id does not exist.\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 LongTermRetentionMigrationBackupNotFound - LTR backup specified does not exists.\n\n * 404 SubscriptionNotFound - The requested subscription was not found.\n\n * 404 ServerNotInSubscription - Specified server does not exist on the specified subscription.\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 DatabaseDoesNotExist - User has specified a database name that does not exist on this server instance.\n\n * 404 CannotFindObject - Cannot find the object because it does not exist or you do not have permissions\n\n * 405 UnsupportedReplicationOperation - An unsupported replication operation was initiated on the database.\n\n * 409 CannotCancelOperation - The management operation is in a state that cannot be cancelled.\n\n * 409 OperationCancelled - The operation has been cancelled by user.\n\n * 409 OperationInterrupted - The operation on the resource could not be completed because it was interrupted by another operation on the same resource.\n\n * 409 LongTermRetentionMigrationRequestConflict - A conflict operation on this LTR backup is still in progress.\n\n * 409 LongTermRetentionMigrationBackupConflict - Another LTR backup with same backup time for target database exists.\n\n * 409 ServerDisabled - Server is disabled.\n\n * 409 ConflictingDatabaseOperation - There is already some operation on the database and the current operation should wait till it is done.\n\n * 409 RemoteDatabaseExists - The destination database name already exists on the destination server.\n\n * 409 InvalidOperationForDatabaseNotInReplicationRelationship - A replication operation was performed on a database that is not in a replication relationship.\n\n * 409 InvalidOperationForDatabaseInReplicationRelationship - A replication seeding operation was performed on a database that is already in a replication relationship.\n\n * 409 FreeDbAlreadyExists - Only one free database can exist for a subscription per region.\n\n * 409 DuplicateGeoDrRelation - The databases are already in a replication relation. This is a duplicate request.\n\n * 409 ConflictingServerOperation - An operation is currently in progress for the server.\n\n * 409 SubscriptionDisabled - Subscription is disabled.\n\n * 409 ConflictingSystemOperationInProgress - A system maintenance operation is in progress on the database and further operations need to wait until it is completed.\n\n * 409 SkuAssignmentInProgress - The current assignment request cannot be processed because a previous request has not completed.\n\n * 409 CurrentMemoryUsageExceedsSkuQuota - User attempted an sku update operation that cannot be completed due to the higher resource consumption.\n\n * 409 ServerKeyNameAlreadyExists - The server key already exists on the server.\n\n * 409 ServerKeyUriAlreadyExists - The server key URI already exists on the server.\n\n * 409 ServerKeyDoesNotExists - The server key does not exist.\n\n * 409 UpdateSloInProgress - User tried to initiate an incompatible operation while a SLO update was in progress.\n\n * 409 ServerDtuQuotaExceeded - Could not perform the operation because server would exceed the allowed Database Throughput Unit quota.\n\n * 409 UpdateSloFailedDatabaseTooBusy - Update SLO operation could not complete because database was too busy.\n\n * 409 UnableToAlterDatabaseInReplication - User altered edition on a database in a replication relationship.\n\n * 409 AzureKeyVaultKeyNameNotFound - The operation could not be completed because the Azure Key Vault Key name does not exist.\n\n * 409 AzureKeyVaultKeyInUse - The key is currently being used by the server.\n\n * 409 ElasticPoolBusy - A management operation was attempted on an elastic pool which is busy.\n\n * 409 SimultaneousSkuChangeNotAllowed - Service objective change operations cannot run on both databases of a replication relationship at the same time.\n\n * 409 TargetElasticPoolBeingUpdated - The update of elastic pool cannot be started because there is copy operation in progress for one of the databases in this elastic pool\n\n * 409 DatabaseCopyLimitPerReplicaReached - User reached the limit of concurrent database copies.\n\n * 409 ConflictRequestToUpdateBackupRedundancy - A conflict request to change backup storage redundancy is still in progress.\n\n * 409 DatabaseElasticPoolMaintenanceConflict - User tried to create or update a database with a specified maintenance configuration that conflicted with that of the elastic pool of the database.\n\n * 409 SubscriptionVcoreQuotaExceeded - Could not perform the operation because subscription would exceed the allowed vCore quota.\n\n * 429 SubscriptionTooManyCreateUpdateRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyCreateUpdateRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 500 OperationTimedOut - The operation timed out and automatically rolled back. Please retry the operation.\n\n * 500 LongTermRetentionMigrationRequestFailedToStartOnTarget - Failed to start LTR backup copy request in target region.\n\n * 500 LongTermRetentionMigrationRequestCopyFailed - Copy operation failed for LTR backup blobs.\n\n * 500 LongTermRetentionMigrationRestoreVerExceeded - Restore verification failed after max attempts were reached.\n\n * 500 LongTermRetentionMigrationRestoreVerFailed - Restore verification failed.\n\n * 500 ActivateOrDeactivateWorkflowThrottling - Activation or deactivation workflow failed because there are too many concurrent workflows\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 503 AzureKeyVaultConnectionFailed - The operation could not be completed on the server because attempts to connect to Azure Key Vault have failed\n\n * 503 AzureKeyVaultGenericConnectionError - The operation could not be completed because an error was encountered when attempting to retrieve Key Vault information .\n\n * 503 DatabaseUnavailable - The operation failed because the database is unavailable.\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 504 RequestTimeout - Service request exceeded the allowed timeout.",
+                  "description": "*** Error Responses: ***\n\n * 400 ManagedInstanceStoppingOrStopped - Conflicting operation submitted while instance is in stopping/stopped state\n\n * 400 ManagedInstanceStarting - Conflicting operation submitted while instance is in starting state\n\n * 400 InvalidDatabaseCreateOrUpdateRequest - The request body for the create or update database operation is invalid.\n\n * 400 InvalidResourceId - Invalid resource identifier.\n\n * 400 InvalidSourceDatabaseId - Invalid source database identifier.\n\n * 400 MismatchingResourceGroupNameWithUrl - The provided resource group name did not match the name in the Url.\n\n * 400 MismatchingServerNameWithUrl - The provided server name did not match the name in the Url.\n\n * 400 MismatchingSubscriptionWithUrl - The provided subscription did not match the subscription in the Url.\n\n * 400 MissingCollation - Collation is required.\n\n * 400 MissingMaxSizeBytes - MaxSizeBytes is required.\n\n * 400 MissingSkuName - Sku name is required.\n\n * 400 MissingSourceDatabaseId - Missing source database identifier.\n\n * 400 InvalidLicenseType - The specified license type is invalid.\n\n * 400 InvalidSkuName - Invalid SKU name.\n\n * 400 MismatchedSkuNameAndCapacity - Mismatch between SKU name and capacity.\n\n * 400 MismatchedSkuNameAndTier - Mismatch between SKU name and tier.\n\n * 400 MismatchedSkuNameAndFamily - Mismatch between SKU name and family.\n\n * 400 LedgerNotAllowedWithSpecifiedCreateMode - IsLedgerOn is not allowed with the specified create mode.\n\n * 400 LedgerNotAllowedOnSampleDatabase - Database creation is not allowed with IsLedgerOn for a sample database.\n\n * 400 FreeLimitDatabaseNotAllowedInNonDefaultCreate - Free limit database creation is not allowed in non default create mode.\n\n * 400 AvailabilityZoneNotSupported - Requested availability zones for databases and elastic pools is not valid.\n\n * 400 MethodNotAllowedOnSpecifiedCreateMode - Http Patch or Merge not allowed on the specified create mode\n\n * 400 DatabaseNameDoesNotMatchSourceDatabaseId - The database name specified doesn\u2019t match the database name in sourceDatabaseId.\n\n * 400 ElasticPoolNotSupportedForExternalBackupRestore - Elastic pool is not supported for external backup restore\n\n * 400 InvalidRecoverableDatabaseId - Invalid recoverable database identifier.\n\n * 400 InvalidRecoveryServicesRecoveryPointId - Invalid recovery services recovery point identifier.\n\n * 400 InvalidRestorableDroppedDatabaseDeletionDate - The restorable dropped database deletion date given is invalid\n\n * 400 InvalidRestorableDroppedDatabaseId - Invalid restorable dropped database identifier\n\n * 400 MissingRecoverableDatabaseId - Missing recoverable database identifier.\n\n * 400 MissingRecoveryServicesRecoveryPointId - Missing recovery services recovery point Id.\n\n * 400 MissingRestorableDroppedDatabaseId - Missing restorableDroppedDatabaseId\n\n * 400 MissingRestorePointInTime - Missing restore point in time\n\n * 400 MissingSourceDatabaseDeletionDate - Missing source database deletion date\n\n * 400 MissingStorageContainerSasToken - Missing storage container SAS token\n\n * 400 MissingStorageContainerUri - Missing storage container URI\n\n * 400 RestorableDroppedDatabaseIdGivenForRestoreWithSourceDatabaseId - Cannot specify restorableDroppedDatabaseId when sourceDatabaseId is already given in restore create mode\n\n * 400 MultipleIdentitiesOnDatabase - Only one user assigned managed identity is supported at the Database Level.\n\n * 400 MultipleIdentityDelegationsOnDatabase - Only one identity delegation is supported at the Database Level.\n\n * 400 MissingPrimaryDelegatedIdentityClientId - In order to use delegated identities please provide a primary delegated identity client id.\n\n * 400 LongTermRetentionMigrationRequestNotSupported - Subscription is not allowed LTR backup Migration feature.\n\n * 400 LongTermRetentionMigrationCrossClusterRequestNotSupported - Source and target subscriptions are not allowed to communicate for LTR backup copy feature.\n\n * 400 LongTermRetentionMigrationParameterMissing - Required parameter missing for the operation.\n\n * 400 LongTermRetentionMigrationSameServerNotSupported - LTR Copy feature is not supported to copy LTR backups within same server.\n\n * 400 LongTermRetentionMigrationTargetServerNotFound - Target server does not exists or is not ready for LTR backup copy operation.\n\n * 400 LongTermRetentionMigrationTargetDatabaseNotFound - Target Database does not exists on the server.\n\n * 400 LongTermRetentionMigrationStorageTypeNotSupported - Specified Backup Storage Redundancy is not supported in target region.\n\n * 400 LongTermRetentionMigrationStorageMismatch - Active backup redundancy of database does not match backup redundancy requested by customer.\n\n * 400 LtrOperationFailedBackupImmutable - Deleting Long Term Retention backup failed because the backup is immutable.\n\n * 400 LongTermRetentionMigrationDatabaseTypeNotSupported - LTR migration is only supported for managed instance and Azure SQL DB LTR backups.\n\n * 400 LongTermRetentionMigrationBackupStorageRedundancyNotAllowed - Changing backup storage redundancy is not allowed for LTR Copy operations.\n\n * 400 LtrRestoreFailedArchiveStorageTier - Restoring archived long-term retention backup is not supported. Restore can be performed only on rehydrated or regular long-term retention backups.\n\n * 400 LtrArchiveStorageTierNotEnabled - Archiving long-term retention backups is not enabled.\n\n * 400 LtrArchiveWrongParameters - ChangeLongTermRetentionBackupAccessTier is not supported for the desired (backupStorageAccessTier, operationMode) combination. Only (Archive, Move) and (Hot, Copy) are allowed.\n\n * 400 LTRArchiveRedundancyChangeFailed - Updating the backup storage redundancy type to zone-redundant storage is not supported when a long-term retention policy with the 'archive' backup storage access tier is set\n\n * 400 LongTermRetentionMigrationSubscriptionNotFound - The subscription could not be found.\n\n * 400 ElasticPoolOverStorageUsage - Attempting to write data to a database when the storage limit of the elastic pool has been reached.\n\n * 400 TokenTooLong - The provided token is too long.\n\n * 400 SourceDatabaseEncryptionProtectorKeyUriRequiredForPerDatabaseCMKCopyOrReplication - Geo secondary database missing AKV of geo primary database\n\n * 400 PerDatabaseCMKAKVKeyMaterialMissingOnGeoSecondary - All databases in geo replication must contain the same key material as the encryption protector of the source database. Please add the key '{0}' with the same key material to the target database '{1}'.\n\n * 400 PerDatabaseCMKAKVKeyUriMissingOnGeoSecondary - When the automatic rotation of database level TDE Protector is enabled, both source and target databases must be connected to the same key vault. Please add key '{0}' (from the same key vault that is connected to source database) to the target database '{1}'.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutCurrentKeysWithDatabaseName - While attempting to replicate a database configured with database level encryption protector, the current keys being used by the primary database must be passed to the secondary database '{0}'\n\n * 400 CannotMoveOrDropJobAccountDatabase - Cannot drop database associated with job account.\n\n * 400 JobAgentDatabaseEditionUnsupported - The specified database's service level objective is not supported for use as a job agent database.\n\n * 400 ServerNotFound - The requested server was not found.\n\n * 400 InvalidMaxSizeTierCombination - The specified tier does not support the specified database max size.\n\n * 400 InvalidTier - The user specified an invalid tier.\n\n * 400 CannotUseReservedDatabaseName - Cannot use reserved database name in this operation.\n\n * 400 InvalidServerName - Invalid server name specified.\n\n * 400 ProvisioningDisabled - Displays error message from resources operation authorizer as is, without changes\n\n * 400 CannotUpdateIsLedgerDatabase - The ledger property of an existing database cannot be updated.\n\n * 400 InvalidCollation - Collation is not recognized by the server.\n\n * 400 UnableToResolveRemoteServer - The remote partner server name could not be resolved due to an invalid server name or DNS connectivity issues.\n\n * 400 RemoteDatabaseCopyPermission - User does not have sufficient permission to create a database copy on the specified server.\n\n * 400 SourceDatabaseNotFound - The source database does not exist.\n\n * 400 ChangeUnsupportedOnEntity - User attempted an unsupported create/update/delete operation on a given entity.\n\n * 400 UpdateNotAllowedInCurrentReplicationState - The operation is disallowed on the database in its current replication state.\n\n * 400 GeoReplicaLimitReached - The per-replica replication limit was reached.\n\n * 400 ReplicationSourceAndTargetMustHaveSameName - The replication source and target databases must have the same name.\n\n * 400 ReplicationSourceAndTargetMustBeInDifferentServers - The replication source and target databases must be in different logical servers.\n\n * 400 SourceServerNotFound - The server part of a source database id provided in a CreateDatabaseAsCopy API call doesn't map to an existing server.\n\n * 400 InvalidDatabaseCreateMode - Invalid request to create a database.\n\n * 400 TierChangeUnsupportedDueToMemoryOptimizedObject - The database cannot update its sku because it has memory-optimized objects.\n\n * 400 PartnerDBNotCompatibleForSGXEnclave - Attempt to set GeoDR link or update SLO for enclave enabled database is only supported when both database are running on DC-series hardware.\n\n * 400 InvalidAddSecondaryPermission - User does not have sufficient permission to add secondary on the specified server.\n\n * 400 UnsupportedServiceName - The specified name is an invalid name because it contains one or more unsupported unicode characters.\n\n * 400 CurrentDatabaseLogSizeExceedsMaxSize - User attempted to change the database to a sku with lower max log size than the current usage.\n\n * 400 TierChangeUnsupportedDueToCDCEnabledDatabase - The database cannot update its sku because it is enabled for CDC.\n\n * 400 IsLedgerDatabaseIsNotSupportedOnResourceType - Changing the ledger property is not supported for this resource type.\n\n * 400 InvalidSku - The user specified an invalid sku.\n\n * 400 InvalidTierSkuCombination - The specified tier does not support the specified sku.\n\n * 400 FeatureDisabledOnSelectedEdition - User attempted to use a feature which is disabled on current database edition.\n\n * 400 OfferDisabledOnSubscription - Subscription offer type is restricted from provisioning the requested resource.\n\n * 400 InvalidTargetSubregion - The target server of a non-readable secondary is not in a DR paired Azure region.\n\n * 400 CurrentDatabaseSizeExceedsMaxSize - User attempted to reduce the max size for a database to a size smaller than the current usage.\n\n * 400 AzureKeyVaultKeyDisabled - The operation could not be completed on the server because the Azure Key Vault key is disabled.\n\n * 400 AzureKeyVaultInvalidExpirationDate - The operation could not be completed because the Azure Key Vault key expiration date is invalid.\n\n * 400 PartnerServerNotCompatible - The user is attempting to copy a database from a SAWA V1 server to a Sterling server or vice versa.\n\n * 400 IncorrectReplicationLinkState - The operation expects the database to be in an expected state on the replication link.\n\n * 400 SecurityAzureKeyVaultUrlNullOrEmpty - The operation could not be completed because the Azure Key Vault Uri is null or empty.\n\n * 400 UnableToCreateGeoChain - User attempted to create secondary database (chaining) even though automatic upload of ledger digests has been configured\n\n * 400 TargetElasticPoolDoesNotExist - The elastic pool does not exist on a server.\n\n * 400 AzureKeyVaultNoServerIdentity - The server identity is not correctly configured.\n\n * 400 ElasticPoolSkuCombinationInvalid - Elastic pool and sku can be specified together only if sku is specified as 'ElasticPool'.\n\n * 400 AzureKeyVaultInvalidUri - An invalid response from Azure Key Vault. Please use a valid Azure Key Vault URI.\n\n * 400 ElasticPoolTierCombinationInvalid - The database tier is different than the elastic pool service tier.\n\n * 400 AzureKeyVaultMissingPermissions - The server is missing required permissions on the Azure Key Vault. \n\n * 400 ElasticPoolNameRequired - User tried to create or update database to elastic pool service objective without specifying the name of the elastic pool.\n\n * 400 InvalidReadScaleEdition - User attempted to enable read scale on a database type that does not support it.\n\n * 400 InvalidReadScaleUnits - User attempted to provide a read scale value that is not supported.\n\n * 400 SecurityAzureKeyVaultInvalidKeyName - The operation could not be completed because of an invalid Server Key name.\n\n * 400 GeoSecondaryMaxSizeUpdateFailed - The geo-secondary database is of a SLO that does not support the requested maxsize value or the geo-secondary is in an unsupported region or an update operation is already in progress on the geo-secondary database.\n\n * 400 AdalGenericError - The operation could not be completed because an Azure Active Directory error was encountered.\n\n * 400 ElasticPoolInconsistentDtuGuaranteeSettings - Attempting to provide DTU min for databases in the elastic pool that exceeds requested DTUs of the elastic pool.\n\n * 400 AdalServicePrincipalNotFound - The operation could not be completed because an Azure Active Directory library Service Principal not found error was encountered.\n\n * 400 AzureKeyVaultMalformedVaultUri - The provided Key Vault uri is not valid.\n\n * 400 ElasticPoolDatabaseCountOverLimit - Attempting to create or add database to elastic pool when the database count limit of the elastic pool has been reached.\n\n * 400 RequestedDatabaseSizeRequiresShrink - User attempted to ALTER DATABASE MODIFY MAXSIZE to modify the MAXSIZE for a database to a smaller size then the current size.\n\n * 400 CannotChangeToOrFromDataWarehouseTier - User attempted to change the sku of a database from DataWarehouse tier to non DataWarehouse tiers or vice versa.\n\n * 400 CurrentDatabaseSizeExceedsDbMaxSize - User attempted to reduce the max size for a database to a size smaller than the current usage.\n\n * 400 ElasticPoolDecreaseStorageLimitBelowUsage - Attempting to decrease the storage limit of the elastic pool below its storage usage.\n\n * 400 CannotUseTrailingWhitespacesInDatabaseName - The database name validation failed.\n\n * 400 UpdateNotAllowedOnPausedDatabase - User attempted to perform an update on a paused database.\n\n * 400 SecurityAdalPrincipalCertExpiredError - The operation could not be completed because the Azure Key Vault principal certificate has expired.\n\n * 400 DatabaseNameInUse - Database already exists. Choose a different database name.\n\n * 400 SameKeyMaterialNotFoundOnRemoteServer - Secondary server does not have the key material of the primary server's encryption protector.\n\n * 400 RegionDoesNotSupportVersion - A user attempted to create a server of a specified version in a location where that server version isn't supported.\n\n * 400 SecurityInvalidAzureKeyVaultRecoveryLevel - The provided Key Vault uri is not valid.\n\n * 400 KeyMaterialNotFoundOnRemoteServer - Remote server does not have access to key material used as a TDE protector.\n\n * 400 AzureKeyVaultRsaKeyNotSupported - The provided key vault uses unsupported RSA Key Size or Key Type. The supported RSA key size is 2048 or 3072 and Key Type is RSA or RSA-HSM.\n\n * 400 SourceDatabaseEditionCouldNotBeUpgraded - The source database cannot have higher edition than the target database.\n\n * 400 TargetDatabaseEditionCouldNotBeDowngraded - The target database cannot have lower edition than the source database.\n\n * 400 UpdateNotAllowedIfGeoDrOperationInProgress - The operation is disallowed because copy or failover operation for database '{0}' on server '{1}' is currently in progress.\n\n * 400 SecurityAzureKeyVaultGeoChainError - Creating secondary of secondary (a process known as chaining) is not supported when enabling Transparent Data Encryption using Azure Key Vault (BYOK).\n\n * 400 ElasticPoolOverFileSpace - Insufficient file space in the elastic pool.\n\n * 400 InvalidLicenseType - User tried to create or update a database or elastic pool with unsupported license type.\n\n * 400 UnsupportedCapacity - User tried to create or update database with capacity which is not supported.\n\n * 400 RestoreToFreeEditionNotSupported - Restore and GeoRestore target cannot be free database.\n\n * 400 RestoreNotSupportedForFreeEdition - Restore and GeoRestore are not supported for free database.\n\n * 400 InvalidDroppedDatabase - Source database dropped does not exist on server within the supported recovery period.\n\n * 400 InvalidLiveDatabase - Source database does not exist on server within the supported recovery period. If restoring a dropped database, please specify its deletion date.\n\n * 400 InvalidVldbRecoverySlo - The Hyperscale edition recovery requires both source and target databases to use Hyperscale service level objective.\n\n * 400 CannotUpdateToFreeDatabase - Updating a database to the free sku is not supported.\n\n * 400 InvalidVldbRestoreSlo - The Hyperscale edition Point-In-Time restore requires both source and target databases to use Hyperscale service level objective.\n\n * 400 CannotSpecifyPoolOrSlo - Specifying an elastic pool and/or changing the service level objective or edition is not supported for edition.\n\n * 400 InvalidBackupStorageAccountType - User passed zrs/lrs during create/update of a database but it failed either because the customer is not whitelisted or because zrs is not available in the specified region.\n\n * 400 DatabaseInvalidSkuPropertyCombination - The properties of the requested sku are inconsistent. Please check that a valid combination is specified. See https://docs.microsoft.com/en-us/rest/api/sql/capabilities/listbylocation#serviceobjectivecapability for more details.\n\n * 400 DatabaseNamedReplicaPerDatabaseLimitExceeded - User tried create a named replica that would exceed the allowed number per primary database\n\n * 400 UnsupportedBackupStorageRedundancyForEdition - The requested backup storage redundancy is not supported for edition\n\n * 400 DatabaseIsCurrentlyPinned - Microsoft has pinned your database SQL Server engine version. To ensure your database does not hit production issues, any future scale operations on your database will be blocked until it has been un-pinned. Please contact Microsoft support for assistance with scaling.\n\n * 400 RestoreTargetEditionSizeInsufficient - User attempted to restore a database to an edition that is a smaller size than the current allocated size of the source.\n\n * 400 DatabaseCreationBlockedForNonActivatedCMKServer - SQL Pool creations are blocked for CMK enabled workspaces until the workspace is activated. First, enable purge protection and grant the workspace Managed Identity the required permissions (Get, Wrap Key, Unwrap Key) on the Azure Key Vault of the workspace key.  Next, activate your workspace after you have granted access.\n\n * 400 InvalidIdentityId - One or more identity id(s) provided are not valid ARM resource id(s). Please input valid id(s) and try again.\n\n * 400 UmiMissingAkvPermissions - PrimaryUserAssignedIdentityId provided by user does not have access to KeyId provided\n\n * 400 InvalidNumberOfIdentities - Only one user assigned managed identity is supported at the Database Level.\n\n * 400 NoRestorePointAvailable - The source database has not yet accomplished its first backup in order to support restore operations. Please retry the restore request later.\n\n * 400 DatabaseNamedReplicaChainingNotAllowed - User tried to create a named replica of a named replica which is not allowed.\n\n * 400 DatabaseNamedReplicaInvalidOperation - User attempted an unsupported operation on a named replica.\n\n * 400 DatabaseNamedReplicaInvalidSourceDatabase - User attempted to create a named replica in a different subscription or region than the source database.\n\n * 400 DatabaseNamedReplicaSourceDatabaseNotZoneRedundant - Zone Redundancy cannot be enabled on this Named Replica since the primary Hyperscale Database is not zone redundant.\n\n * 400 CannotAssignIdentityToMaster - Cannot assign an identity to a system database. Database identity cannot be assigned to 'master', 'model', 'tempdb', 'msdb', or 'resource' databases.\n\n * 400 PerDatabaseCMKDWNotSupported - Database-level CMK in preview is not supported for Datawarehouse edition.\n\n * 400 MissingThumbprintCrm - The restore operation of a CRM database failed because a required TDE certificate was missing. Please retry the restore operation to an existing elastic pool.\n\n * 400 ElasticPoolOverStorage - Attempting to write data to a database when the storage limit of the elastic pool has been reached.\n\n * 400 RestoreTargetEditionSizeInsufficientV2 - User attempted to restore a database to an edition that is a smaller size than the allocated size of the restored database.\n\n * 400 ResourcePoolStorageLimitHitDuringRestore - The restored database can't be restored into the resource pool due to the remaining storage capacity in the pool.\n\n * 400 PerDatabaseCMKRestoreNotSupported - Database restore is not supported when Database-level CMK is configured in preview.\n\n * 400 PerDatabaseCMKHSNotSupported - Database-level CMK in preview is not supported for Hyperscale edition.\n\n * 400 PerDatabaseCMKGeoReplicationNotSupported - Geo Replication and Database Copy is not supported when Database-level CMK is configured in preview.\n\n * 400 InvalidStandbyGeoEdition - User attempted to create a DTU based standby geo.\n\n * 400 ElasticPoolInconsistentVcoreGuaranteeSettings - The number of databases and VCore min per database cannot exceed requested VCores of the elastic pool.\n\n * 400 GeoRestoreBackupStorageTypeNotSupported - Database recovery requests are invalid when issued against a database that is not configured to use geo-redundant backup storage.\n\n * 400 RestoreHyperscaleToNonHyperscale - Restoring a Hyperscale database backup to a non-Hyperscale service tier or vice versa is not supported.\n\n * 400 SubscriptionDoesNotHaveAccessToServer - The subscription does not have access to the specified server(s)\n\n * 400 RecoveryPointDoesNotExist - The specified recovery point either does not exist or is not valid.\n\n * 400 LtrBackupNotFound - The specified long term retention backup does not exist.\n\n * 400 InvalidPointInTime - The specified point in time is not valid for the database.\n\n * 400 GeoRestoreCannotResolveTargetCluster - Cannot resolve target cluster for server\n\n * 400 CannotSpecifyEditionOrSloWhenRestoringToPool - Specifying the target service level objective or edition is not supported when restoring to an elastic pool.\n\n * 400 RestoreNotSupportedForGeoDrSecondary - Point-in-time restore and database recovery operations are not supported on databases that are currently configured as geo-secondaries.\n\n * 400 DatabaseNamedReplicaBackupRetentionConfigurationNotSupported - User attempted configuring backup retention policy on a Named Replica.\n\n * 400 GeoRedundantBackupsNotPermittedForSubscription - Geo-redundant backup storage is blocked for all databases under subscription '{0}' by preview feature 'Azure SQL Database Block Geo-redundant Backup Storage'. Please select a different backup storage redundancy.\n\n * 400 RestoreHyperscaleToNonHyperscaleElasticPool - Restoring a Hyperscale database to an elastic pool which is not Hyperscale or restoring a database which is not Hyperscale to a Hyperscale elastic pool is not supported.\n\n * 400 RestoreIneligibleDatabaseName - The specified target database name, '{0}', is reserved and cannot be used in a restore operation.\n\n * 400 RestoreNotSupportedForSystemDb - Restore and database recovery are not supported for system databases.\n\n * 400 RestoreIneligibleDroppedDatabaseShortLifespan - The source database, '{0}', dropped on '{1}', has not existed long enough to support restores.\n\n * 400 RestoreIneligibleLiveDatabaseShortLifespan - The source database, '{0}', has not yet accomplished its first backup in order to support restore operations. Please wait until at least the indicated earliest restore date '{1}' and resubmit the request.\n\n * 400 RestoreCrossServerDisabled - For point-in-time restores, the target logical server must be the same as the source logical server. Consider restoring to the source database's server, or using database copy or database recovery.\n\n * 400 RestoreSameServerRecoveryDisabled - Same-server recovery is currently not supported. Consider using point-in-time restore or recovering to a different server.\n\n * 400 RestoreNotSupportedFromLtrBackupToEdition - Restore from long-term retention backup to '{0}' edition not supported.\n\n * 400 RestoreNotSupportedFromExternalBackupToEdition - Restore from external backup to '{0}' edition not supported.\n\n * 400 UpdateToServerlessIfLtrIsNotDisabled - Enabling auto-pause for a serverless database is not supported if long-term backup retention is enabled.\n\n * 400 DuplicateRestoreOperation - A restore request with the same target database name '{0}' on server '{1}' already exists.\n\n * 400 ExternalBackupUriMalformed - The external backup storage container URI is malformed.\n\n * 400 ExternalBackupUriHostNotAllowed - The host name for the external backup storage container URI is not allowed.\n\n * 400 ExternalBackupUriInvalidSchemeOrPort - The external backup storage container URI uses an invalid scheme or port. Please use https and port 443.\n\n * 400 ExternalBackupVldbUnsupported - Hyperscale does not support external backup restore requests.\n\n * 400 CannotMoveOrDropSyncMetadataDatabase - Cannot drop database used as sync metadata database.\n\n * 400 InvalidPitrPriorToVldbMigration - For database '{0}', specified point-in-time '{1}' is prior to the Hyperscale migration time of '{2}'. Please specify a target edition or service level objective which is not Hyperscale when restoring to a point earlier than the Hyperscale migration.\n\n * 400 MissingKeyVaultUriForRestore - Azure Key Vault key URI '{0}' is required to successfully restore the database '{1}' under server '{2}'.\n\n * 400 BlockRestoreOnVldbGeoSecondary - Restore of Hyperscale database where source database is geo-secondary is not allowed.\n\n * 400 BackupSetNotFound - No backups were found to restore the database. Please contact support to restore the database.\n\n * 400 IncorrectAccessToAzureKeyVault - Target server does not have access to all AKV Uris created during the backup time.\n\n * 400 RestoreFailureSqlInstanceUnhealthy - Unable to connect to the instance in order to perform restore operation.\n\n * 400 BackupSetBroken - Backup set is broken.\n\n * 400 TimeoutDuringRestore - A timeout was encountered while trying to connect to the restore target.\n\n * 400 BrokenRestorePlanGapInLogBackups - The restore plan is broken because firstLsn of current log backup is not equal to lastLsn of prev log backup.\n\n * 400 FullBackupMissingChecksum - Provided full backup is missing checksum.\n\n * 400 RequiredBackupIsNotLastRestored - Migration cannot be completed because provided backup file name is not the name of the last backup file that is restored.\n\n * 400 IncompatiblePhysicalLayoutNonOnlineDataFilesExist - Database backup contains incompatible physical layout. Non-online data files exist.\n\n * 400 IncompatiblePhysicalLayoutWrongNumberOfLogFiles - Database backup contains incompatible physical layout. Multiple log files are not supported.\n\n * 400 BackupSetNotFoundRecentPit - No backups were found to restore the database to the specified point in time. Please retry the operation. If the problem persists, contact support to restore the database.\n\n * 400 InvalidPublicMaintenanceConfiguration - User tried to specify public maintenance configuration which cannot be converted to internal id (malformed or wrong region).\n\n * 400 MaintenanceWindowNotSupportedForNamedReplica - User tried to create or update named replica with non-default maintenance window which is not supported.\n\n * 400 InvalidStandbyGeoReadScale - User attempted to enable read scale on a standby geo database that does not support it.\n\n * 400 PerDatabaseCMKKeyRotationAttemptedWhileOldThumbprintInUse - Key Rotation for the TDE Protector at the database level is blocked when active transactions are holding up the log encrypted with old keys. Please refer to aka.ms/azuresqldbkeyrotation for possible strategies to workaround this issue.\n\n * 400 PerDBCMKNotSupportedWithLTR - Database-level CMK is not supported when Long-term Backup Retention is enabled on the database.\n\n * 400 VBSEnclaveNotSupportedForDW - The preferredEnclaveType is not supported for dedicated SQL Pools.\n\n * 400 VBSEnclaveNotSupportedForDCSeriesSLO - Configuring the 'VBS' preferredEnclaveType for databases using the DC-series hardware configuration is not supported. DC-series databases are pre-configured with Intel SGX enclaves. Virtualization based security (VBS) enclaves are not supported.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutDatabaseLevelEncryptionProtector - Database-level encryption protector must be set on the target database while attempting to copy or replicate a database encrypted with a database level key.\n\n * 400 PerDatabaseCMKCopyOrReplicationAttemptedWithoutCurrentKeys - While attempting to replicate a database configured with database level encryption protector, the current keys being used by the primary must be passed to the secondary database.\n\n * 400 PerDatabaseCMKGeoPrimaryIsNotConfiguredWithDatabaseLevelEncryptionProtector - The geo-primary database must be configured with a database level encryption protector before setting a database level encryption protector on the geo-secondary.\n\n * 400 ElasticJobsNotSupportedOnAutoPauseEnabledDatabase - Auto-pause enabled serverless database is not supported as an Elastic Jobs database because job agent would prevent that database from pausing. You can either disable auto-pause on this serverless database or delete the job agent that is using this database. See here for more details: https://docs.microsoft.com/azure/azure-sql/database/serverless-tier-overview#auto-pausing\n\n * 400 VBSEnclaveNotSupportedForGeoReplicationWithDefaultEnclave - Configuring geo-replication is not supported for databases using different values of the preferredEnclaveType property. The primary '{0}' database on the '{1}' server uses the '{2}' preferredEnclaveType, whereas the specified preferredEnclaveType for the secondary '{3}' database on the '{4}' server is '{5}'.\n\n * 400 VBSEnclaveNotSupportedForPlannedFailoverBetweenDatabasesWithDifferentPreferredEnclaveTypes - Planned failover between primary and secondary database with different preferredEnclaveType is not supported for Virtualization-based security (VBS) enclaves.\n\n * 400 PerDatabaseCMKGeoPrimaryIsConfiguredWithDatabaseLevelEncryptionProtector - The geo-primary database must not be configured with a database level encryption protector when failing over to a geo-secondary without a database level encryption protector.\n\n * 400 CreateDatabaseAttemptedWithRotationInProgress - The create database operation can not be performed at this time due to ongoing Transparent Data Encryption (TDE) key rotation on the server. Please try the operation again later.\n\n * 400 VBSEnclaveResourcePoolInvalidCombination - Adding a database with '{0}' preferredEnclaveType to an elastic pool '{1}' with '{2}' preferredEnclaveType is not supported. \nBefore adding the database to the elastic pool, ensure that the preferredEnclaveType is the same for both the database and the elastic pool. More information can be found on https://aka.ms/AlwaysEncryptedEnableSecureEnclaves\n\n * 400 MissingAsymmetricKeyOnTargetServer - Target server does not have access to an asymmetric key.\n\n * 400 MismatchingSubscriptionWithUrl - The provided subscription did not match the subscription in the Url.\n\n * 400 MultipleDroppedDatabasesWithTheSameName - Found multiple dropped databases with the same name on server.\n\n * 400 AzureKeyVaultClientError - The Azure Key Vault client encountered an error.\n\n * 400 AzureKeyVaultClientInfoError - An error occurred while obtaining information for the Azure Key Vault client.\n\n * 400 AzureKeyVaultKeyThumbprintIsDifferent - The operation could not be completed because the Azure Key Vault Key material is different than the current encryption protector key.\n\n * 400 UnsupportedBackupStorageRedundancy - Specified Backup Storage Redundancy is not supported in target region.\n\n * 400 LTRSterlingToVldbMigrationNotSupported - Cannot change service objective for database  to Hyperscale as long-term retention is not yet supported on Hyperscale. Please disable long-term retention on the database and retry.\n\n * 400 HyperscaleReverseMigrationNotSupported - Reverse migration of a Hyperscale database to Sterling hit an unsupported scenario.\n\n * 400 UpdateSloOperationIdDoesNotExist -   The action failed because no active update-slo operation detected for server: {0}, database: {1};. Please retry the operation by specifying valid parameters.\n\n * 400 ManualCutoverUnsupported - Invalid use of manual-cutover option. Please check current and requested service objective and retry the operation by specifying valid parameters.\n\n * 400 VBSEnclaveResourcePoolInvalidCombination - Adding a database with '{0}' preferredEnclaveType to an elastic pool '{1}' with '{2}' preferredEnclaveType is not supported. \nBefore adding the database to the elastic pool, ensure that the preferredEnclaveType is the same for both the database and the elastic pool. More information can be found on https://aka.ms/AlwaysEncryptedEnableSecureEnclaves\n\n * 400 VBSEnclaveNotSupportedForDW - The preferredEnclaveType is not supported for dedicated SQL Pools.\n\n * 400 VBSEnclaveNotSupportedForDCSeriesSLO - Configuring the 'VBS' preferredEnclaveType for databases using the DC-series hardware configuration is not supported. DC-series databases are pre-configured with Intel SGX enclaves. Virtualization based security (VBS) enclaves are not supported.\n\n * 400 VBSEnclaveNotSupportedForGeoReplicationWithDefaultEnclave - Configuring geo-replication is not supported for databases using different values of the preferredEnclaveType property. The primary '{0}' database on the '{1}' server uses the '{2}' preferredEnclaveType, whereas the specified preferredEnclaveType for the secondary '{3}' database on the '{4}' server is '{5}'.\n\n * 400 VBSEnclaveNotSupportedForPlannedFailoverBetweenDatabasesWithDifferentPreferredEnclaveTypes - Planned failover between primary and secondary database with different preferredEnclaveType is not supported for Virtualization-based security (VBS) enclaves.\n\n * 404 OperationIdNotFound - The operation with Id does not exist.\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 SubscriptionDoesNotHaveServer - The requested server was not found\n\n * 404 LongTermRetentionMigrationBackupNotFound - LTR backup specified does not exists.\n\n * 404 SubscriptionNotFound - The requested subscription was not found.\n\n * 404 ServerNotInSubscription - Specified server does not exist on the specified subscription.\n\n * 404 ServerNotInSubscriptionResourceGroup - Specified server does not exist in the specified resource group and subscription.\n\n * 404 DatabaseDoesNotExist - User has specified a database name that does not exist on this server instance.\n\n * 404 CannotFindObject - Cannot find the object because it does not exist or you do not have permissions\n\n * 405 UnsupportedReplicationOperation - An unsupported replication operation was initiated on the database.\n\n * 409 CannotCancelOperation - The management operation is in a state that cannot be cancelled.\n\n * 409 OperationCancelled - The operation has been cancelled by user.\n\n * 409 OperationInterrupted - The operation on the resource could not be completed because it was interrupted by another operation on the same resource.\n\n * 409 LongTermRetentionMigrationRequestConflict - A conflict operation on this LTR backup is still in progress.\n\n * 409 LongTermRetentionMigrationBackupConflict - Another LTR backup with same backup time for target database exists.\n\n * 409 ServerDisabled - Server is disabled.\n\n * 409 ConflictingDatabaseOperation - There is already some operation on the database and the current operation should wait till it is done.\n\n * 409 RemoteDatabaseExists - The destination database name already exists on the destination server.\n\n * 409 InvalidOperationForDatabaseNotInReplicationRelationship - A replication operation was performed on a database that is not in a replication relationship.\n\n * 409 InvalidOperationForDatabaseInReplicationRelationship - A replication seeding operation was performed on a database that is already in a replication relationship.\n\n * 409 FreeDbAlreadyExists - Only one free database can exist for a subscription per region.\n\n * 409 DuplicateGeoDrRelation - The databases are already in a replication relation. This is a duplicate request.\n\n * 409 ConflictingServerOperation - An operation is currently in progress for the server.\n\n * 409 SubscriptionDisabled - Subscription is disabled.\n\n * 409 ConflictingSystemOperationInProgress - A system maintenance operation is in progress on the database and further operations need to wait until it is completed.\n\n * 409 SkuAssignmentInProgress - The current assignment request cannot be processed because a previous request has not completed.\n\n * 409 CurrentMemoryUsageExceedsSkuQuota - User attempted an sku update operation that cannot be completed due to the higher resource consumption.\n\n * 409 ServerKeyNameAlreadyExists - The server key already exists on the server.\n\n * 409 ServerKeyUriAlreadyExists - The server key URI already exists on the server.\n\n * 409 ServerKeyDoesNotExists - The server key does not exist.\n\n * 409 UpdateSloInProgress - User tried to initiate an incompatible operation while a SLO update was in progress.\n\n * 409 ServerDtuQuotaExceeded - Could not perform the operation because server would exceed the allowed Database Throughput Unit quota.\n\n * 409 UpdateSloFailedDatabaseTooBusy - Update SLO operation could not complete because database was too busy.\n\n * 409 UnableToAlterDatabaseInReplication - User altered edition on a database in a replication relationship.\n\n * 409 AzureKeyVaultKeyNameNotFound - The operation could not be completed because the Azure Key Vault Key name does not exist.\n\n * 409 AzureKeyVaultKeyInUse - The key is currently being used by the server.\n\n * 409 ElasticPoolBusy - A management operation was attempted on an elastic pool which is busy.\n\n * 409 SimultaneousSkuChangeNotAllowed - Service objective change operations cannot run on both databases of a replication relationship at the same time.\n\n * 409 TargetElasticPoolBeingUpdated - The update of elastic pool cannot be started because there is copy operation in progress for one of the databases in this elastic pool\n\n * 409 DatabaseCopyLimitPerReplicaReached - User reached the limit of concurrent database copies.\n\n * 409 ConflictRequestToUpdateBackupRedundancy - A conflict request to change backup storage redundancy is still in progress.\n\n * 409 DatabaseElasticPoolMaintenanceConflict - User tried to create or update a database with a specified maintenance configuration that conflicted with that of the elastic pool of the database.\n\n * 409 SubscriptionVcoreQuotaExceeded - Could not perform the operation because subscription would exceed the allowed vCore quota.\n\n * 429 SubscriptionTooManyCreateUpdateRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyCreateUpdateRequests - Requests beyond max requests that can be processed by available resources.\n\n * 429 SubscriptionTooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 500 OperationTimedOut - The operation timed out and automatically rolled back. Please retry the operation.\n\n * 500 LongTermRetentionMigrationRequestFailedToStartOnTarget - Failed to start LTR backup copy request in target region.\n\n * 500 LongTermRetentionMigrationRequestCopyFailed - Copy operation failed for LTR backup blobs.\n\n * 500 LongTermRetentionMigrationRestoreVerExceeded - Restore verification failed after max attempts were reached.\n\n * 500 LongTermRetentionMigrationRestoreVerFailed - Restore verification failed.\n\n * 500 ActivateOrDeactivateWorkflowThrottling - Activation or deactivation workflow failed because there are too many concurrent workflows\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 503 AzureKeyVaultConnectionFailed - The operation could not be completed on the server because attempts to connect to Azure Key Vault have failed\n\n * 503 AzureKeyVaultGenericConnectionError - The operation could not be completed because an error was encountered when attempting to retrieve Key Vault information .\n\n * 503 DatabaseUnavailable - The operation failed because the database is unavailable.\n\n * 503 TooManyRequests - Requests beyond max requests that can be processed by available resources.\n\n * 504 RequestTimeout - Service request exceeded the allowed timeout.",
                   "schema": {
                     "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
                   }

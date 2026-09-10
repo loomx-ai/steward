@@ -2105,3 +2105,34 @@ background evidence only, not acceptance evidence for this work.
   documented in their native `notifications.contactGroups` contracts. Graph,
   inventory and independent cleanup integration remain open with the full
   provider acceptance criteria.
+
+### Azure budget notification API and privacy foundation
+
+- Consumption (`2024-08-01`) and Cost Management (`2025-03-01`) budget Get,
+  List and Delete operations now retain 20 unchanged official examples from
+  the existing immutable Microsoft specification commit. Two root documents
+  and two common-type dependencies are hash-bound; all previous 211 source
+  documents remain semantically unchanged. Both APIs declare Action Group
+  references at subscription and resource-group scopes.
+- Eighteen original response bodies pass offline schema validation. Seven
+  subscription/group requests replay their native responses, including two
+  empty synchronous HTTP 200 Deletes. Thirteen billing/management-group
+  requests bind to the catalog but fail the connection's subscription boundary
+  before transport. Each example's undeclared scope selectors are explicitly
+  enumerated and removed only after proving the original request cannot bind.
+  Response scope discrepancies and composed-runtime requirements are documented.
+- Notification dictionaries and arbitrary budget dimension/tag filters remain
+  private in resource projections, Invoke results and logs, including lists
+  without row identities. Native private reads remain unchanged. Tests check
+  public observations, mixed-case fields and unrelated resource families.
+- Full Go tests and vet passed (Azure 161.086s; GCP cached). Native source,
+  reader and privacy tests passed (3.959s); corresponding race checks passed
+  (6.908s). Five offline catalog refresh checks passed. Repeated generation
+  produced SHA-256
+  `0782b35808b1299b2b7624435ab1134ee0b9c1e89382fc73eeffb6d03d5be46b`.
+  No new independent emulator or real-cloud test was run.
+- Catalog operations increase to 1,224 across 163 root and 50 dependency
+  documents. Executable rules and cleanup bindings remain 373 and 347.
+  Budget inventory/reference reconciliation and independent cleanup, Monitor
+  integration, remaining service coverage and all eight acceptance criteria
+  remain open.

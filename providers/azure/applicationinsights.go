@@ -114,6 +114,9 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 		if monitorAlertPath(u.Path) {
 			value = object(monitorAlertSafeValue(value))
 		}
+		if monitorBudgetPath(u.Path) {
+			value = object(monitorBudgetSafeValue(value))
+		}
 	}
 	return safePayload(value)
 }

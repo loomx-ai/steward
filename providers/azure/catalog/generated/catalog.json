@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "dd5e04a2641859a9b8df9ca6a67395781e9c0119c41778794f44e205be5a4706",
+    "checksum": "db8474835cd8da762ce528c770dbe84dea0fc21df3f22f7b0405e84d77b019c7",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d96f31e2c0f558440f8fbeac6c64a14b9ba517c4578a4eef92d7be147a356b29",
+  "content_checksum": "7dd02d7f649cdbf658236b76a8dcd0da0f7d79ed6d46731ead12583d801cb490",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -55351,6 +55351,192 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/compute/resource-manager/Microsoft.Compute/Compute/stable/2024-07-01/virtualMachine.json"
     },
     {
+      "id": "Azure.Microsoft.Consumption.Budgets_Delete",
+      "name": "Budgets_Delete",
+      "service": "Microsoft.Consumption",
+      "method": "DELETE",
+      "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "budgetName": {
+            "description": "Budget Name.",
+            "in": "path",
+            "name": "budgetName",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Consumption",
+        "version": "2024-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Consumption.Budgets_Get",
+      "name": "Budgets_Get",
+      "service": "Microsoft.Consumption",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "budgetName": {
+            "description": "Budget Name.",
+            "in": "path",
+            "name": "budgetName",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A budget resource.",
+        "properties": {
+          "eTag": {
+            "description": "eTag of the resource. To handle concurrent update scenario, this field will be used to determine whether the user is updating the latest version or not.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/BudgetProperties",
+            "description": "The properties of the budget.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Consumption",
+        "version": "2024-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Consumption/budgets/{budgetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Consumption.Budgets_List",
+      "name": "Budgets_List",
+      "service": "Microsoft.Consumption",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Consumption/budgets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-08-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of listing budgets. It contains a list of available budgets in the scope provided.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of budgets.",
+            "items": {
+              "$ref": "#/definitions/Budget"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Consumption",
+        "version": "2024-08-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Consumption/budgets",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/consumption/resource-manager/Microsoft.Consumption/Consumption/stable/2024-08-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.ContainerInstance.ContainerGroups_Delete",
       "name": "ContainerGroups_Delete",
       "service": "Microsoft.ContainerInstance",
@@ -56370,6 +56556,204 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/containerservice/resource-manager/Microsoft.ContainerService/aks/stable/2024-02-01/managedClusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.CostManagement.Budgets_Delete",
+      "name": "Budgets_Delete",
+      "service": "Microsoft.CostManagement",
+      "method": "DELETE",
+      "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "budgetName": {
+            "description": "Budget Name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "budgetName",
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.CostManagement",
+        "version": "2025-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.CostManagement.Budgets_Get",
+      "name": "Budgets_Get",
+      "service": "Microsoft.CostManagement",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "budgetName": {
+            "description": "Budget Name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "budgetName",
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A budget resource.",
+        "properties": {
+          "eTag": {
+            "$ref": "#/definitions/Azure.Core.eTag",
+            "description": "eTag of the resource. To handle concurrent update scenario, this field will be used to determine whether the user is updating the latest version or not."
+          },
+          "properties": {
+            "$ref": "#/definitions/BudgetProperties",
+            "description": "The properties of the budget.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.CostManagement",
+        "version": "2025-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.CostManagement/budgets/{budgetName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.CostManagement.Budgets_List",
+      "name": "Budgets_List",
+      "service": "Microsoft.CostManagement",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "OData filter option. May be used to filter budgets by properties/category. The filter supports 'eq' only.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2025-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Result of listing budgets. It contains a list of available budgets in the scope provided.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.\\r\\nIt's null for now, added for future use.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of budgets.",
+            "items": {
+              "$ref": "#/definitions/Budget"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.CostManagement",
+        "version": "2025-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.CostManagement/budgets",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cost-management/resource-manager/Microsoft.CostManagement/CostManagement/stable/2025-03-01/openapi.json"
     },
     {
       "id": "Azure.Microsoft.DBforMySQL.Servers_Delete",

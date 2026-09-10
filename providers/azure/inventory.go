@@ -887,6 +887,9 @@ func safeResource(value any) any {
 		if monitorAlertPath(text(typed["id"])) || monitorAlertPath("/providers/"+text(typed["type"])) {
 			typed = object(monitorAlertSafeValue(typed))
 		}
+		if monitorBudgetPath(text(typed["id"])) || monitorBudgetPath("/providers/"+text(typed["type"])) {
+			typed = object(monitorBudgetSafeValue(typed))
+		}
 		if apimRaw(typed) {
 			typed = apimSafeRaw(typed)
 		}
