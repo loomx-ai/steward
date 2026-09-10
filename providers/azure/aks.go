@@ -260,10 +260,10 @@ func (c *client) contributeManagedGroup(ctx context.Context, controller asset.As
 	if err != nil {
 		return governance.Contribution{}, err
 	}
-	return c.bindManagedGroup(controller, group, source, response.requestID, resources, assets)
+	return c.bindManagedGroup(ctx, controller, group, source, response.requestID, resources, assets)
 }
 
-func (c *client) bindManagedGroup(controller asset.Asset, group, source, requestID string, resources []map[string]any, assets []asset.Asset) (governance.Contribution, error) {
+func (c *client) bindManagedGroup(ctx context.Context, controller asset.Asset, group, source, requestID string, resources []map[string]any, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
 	members := map[string]string{}
 	liveByID := map[string]map[string]any{}
@@ -283,6 +283,9 @@ func (c *client) bindManagedGroup(controller asset.Asset, group, source, request
 		}
 		if live := liveByID[id]; live != nil {
 			if err := c.servicePrivateIncarnation(value, live); err != nil {
+				return result, err
+			}
+			if err := c.monitorManagedIncarnation(ctx, value, live, liveByID[group]); err != nil {
 				return result, err
 			}
 			if err := serviceIncarnation(value, live); err != nil {
@@ -415,6 +418,12 @@ func (a *action) managedGroupResourcesPreflight(ctx context.Context, request con
 		return "", err
 	}
 	visited, externalGroups := map[string]bool{}, map[string]bool{}
+	var groupResource map[string]any
+	for _, resource := range resources {
+		if strings.EqualFold(text(resource["id"]), group) {
+			groupResource = resource
+		}
+	}
 	for _, resource := range resources {
 		id, kind, _ := parseID(text(resource["id"]))
 		impact, found := impacts[id]
@@ -423,6 +432,9 @@ func (a *action) managedGroupResourcesPreflight(ctx context.Context, request con
 		}
 		visited[id] = true
 		if err := a.client.servicePrivateIncarnation(impact.Asset, resource); err != nil {
+			return "", err
+		}
+		if err := a.client.monitorManagedIncarnation(ctx, impact.Asset, resource, groupResource); err != nil {
 			return "", err
 		}
 		if err := a.client.workbookManagedIncarnation(ctx, impact.Asset); err != nil {
@@ -599,6 +611,9 @@ func (a *action) managedGroupResourcesReadback(ctx context.Context, request cont
 			return contracts.ReadbackResult{}, fmt.Errorf("AKS child readback identity mismatch")
 		}
 		if err := a.client.workbookManagedIncarnation(ctx, impacts[id].Asset); err != nil {
+			return contracts.ReadbackResult{}, err
+		}
+		if err := a.client.monitorManagedIncarnation(ctx, impacts[id].Asset, live.data, nil); err != nil {
 			return contracts.ReadbackResult{}, err
 		}
 		if a.kind.NativeType == applicationInsightsType {

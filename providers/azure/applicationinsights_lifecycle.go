@@ -189,7 +189,7 @@ func (c *client) contributeInsightsWorkspace(ctx context.Context, parent asset.A
 	nativeGroup := maps.Clone(snapshot.group)
 	nativeGroup["type"] = groupType
 	resources := append([]map[string]any{nativeGroup}, snapshot.resources...)
-	result, err = c.bindManagedGroup(parent, group, "azure:application-insights-managed-workspace", "", resources, assets)
+	result, err = c.bindManagedGroup(ctx, parent, group, "azure:application-insights-managed-workspace", "", resources, assets)
 	if err != nil {
 		return result, err
 	}

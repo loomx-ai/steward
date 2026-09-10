@@ -2285,3 +2285,34 @@ background evidence only, not acceptance evidence for this work.
   Existing non-Monitor destination guards, unresolved targets after destination
   absence, managed-group composition, global Runbook webhook mapping, remaining
   provider families and all eight acceptance criteria remain open.
+
+### Azure Monitor configuration checks in managed groups
+
+- The shared managed-resource configuration check now authenticates Monitor
+  resource configuration and recorded reference proofs. Native group graph
+  binding and deletion preflight additionally repeat the exact product GET,
+  compare the original resource-group proof and recompute receiver resolution.
+  The same private configuration and receiver checks apply to surviving known
+  members after native controller and group absence. A generic ARM response
+  cannot substitute for a complete Monitor/budget read contract.
+- Composed AKS scenarios retain the native example properties for all ten
+  registered Monitor/budget kinds. They cover graph/preflight configuration
+  changes, group changes, altered reference proofs, native 202/LRO/aliased/error
+  responses, disappearance during repeated reads, and delayed residual absence
+  after JSON recovery. A private receiver change cannot reach controller DELETE.
+  Namespace relocation independently invalidates unchanged Action Group content
+  during graph, preflight and residual readback.
+- The actual SQLite-backed Application Insights inventory, graph and plan path
+  also includes a managed Action Group. Only the component receives a DELETE;
+  the recovered action waits for the group's known Monitor member to disappear.
+  The existing managed-workbook history path remains covered by regression tests.
+- Full Go tests passed (Azure 166.481s; GCP cached). The managed Monitor, AKS and
+  managed-workbook race run passed (20.804s); repository-wide vet and diff checks
+  passed. The new focused native scenarios passed (3.781s), and the actual
+  Application Insights/SQLite integration passed separately (3.800s).
+- This closes a configuration-validation gap for already discovered members.
+  It does not yet complete native enumeration of omitted group Monitor/budget
+  members, external incoming-reference checks, non-Monitor target-driver guards,
+  or receiver matching after destination absence. Counts remain 1,224 operations,
+  383 types/specs and 357 cleanup bindings; all eight acceptance criteria remain
+  open. No new independent emulator or live-cloud verification was performed.
