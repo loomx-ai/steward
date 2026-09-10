@@ -143,6 +143,15 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 			return nil, err
 		}
 	}
+	monitors, err := c.monitorManagedGroupMembers(ctx, group, seen)
+	if err != nil {
+		return nil, err
+	}
+	for _, raw := range monitors {
+		if err := visit(raw); err != nil {
+			return nil, err
+		}
+	}
 	current, err := c.request(ctx, "GET", apiURL(group, resourcesVersion))
 	if err != nil {
 		return nil, err

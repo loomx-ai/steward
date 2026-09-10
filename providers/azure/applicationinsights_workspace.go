@@ -245,6 +245,15 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 			return nil, err
 		}
 	}
+	monitors, err := c.monitorManagedGroupMembers(ctx, group, resources)
+	if err != nil {
+		return nil, err
+	}
+	for _, raw := range monitors {
+		if err := visit(raw, true); err != nil {
+			return nil, err
+		}
+	}
 	if resources[workspace] == nil {
 		return nil, serviceDenied("insights_managed_workspace_missing_from_group")
 	}

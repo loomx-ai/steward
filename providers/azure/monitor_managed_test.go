@@ -229,8 +229,8 @@ func TestMonitorManagedReceiverResolution(t *testing.T) {
 }
 
 func TestMonitorApplicationInsightsManagedGroup(t *testing.T) {
-	for _, kind := range []string{monitorActionGroupType, insightsWebTestType} {
-		for _, mode := range []string{"delayed", "private-change"} {
+	for _, kind := range []string{monitorActionGroupType, insightsWebTestType, monitorCostBudgetType} {
+		for _, mode := range []string{"delayed", "private-change", "omitted"} {
 			t.Run(last(kind)+"/"+mode, func(t *testing.T) {
 				f := newInsightsComponentFixture(t)
 				clear(f.children)
@@ -240,12 +240,21 @@ func TestMonitorApplicationInsightsManagedGroup(t *testing.T) {
 				if kind == insightsWebTestType {
 					raw["tags"] = map[string]any{"hidden-link:" + f.parentID: "Resource"}
 				}
+				if kind == monitorCostBudgetType {
+					m.groupOnly = true
+					for _, notification := range object(object(raw["properties"])["notifications"]) {
+						object(notification)["contactGroups"] = []any{}
+					}
+				}
 				id := f.managedID + "/providers/" + strings.ToLower(m.kind) + "/" + last(oldID)
 				raw["id"], raw["name"] = id, last(id)
 				clear(m.objects)
 				m.objects[id] = raw
 				m.groups = f.groups
 				f.members[id] = raw
+				if mode == "omitted" {
+					delete(f.members, id)
+				}
 				f.response = func(req *http.Request) (*http.Response, bool) {
 					path := strings.ToLower(req.URL.Path)
 					if path == "/subscriptions/"+testSubscription+"/resources" {

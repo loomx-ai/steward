@@ -142,9 +142,8 @@ Event Hub namespace/name and ITSM workspace selectors now resolve through
 complete native indexes; Function and non-global Runbook child references are
 also recorded. The [receiver evidence](../monitorreceivers/README.md) retains
 the additional native examples, source discrepancies and verification. Global
-Runbook webhook mapping and native discovery of omitted managed-group members
-remain open. These are protocol and application integration tests, not emulator
-or live-cloud runs.
+Runbook webhook mapping remains open. These are protocol and application
+integration tests, not emulator or live-cloud runs.
 
 Incoming checks now cover all registered ARM action families, including reviewed
 deleting impacts and unindexed sources. Two batched native observations reject
@@ -160,3 +159,11 @@ outside-group blockers and individual residual GETs after JSON recovery. A
 provider cascade declaration does not supply ownership, bypass protection or
 retention, or automatically select an owning controller. Core plan tests check
 those boundaries independently of the Azure fixtures.
+
+Managed-group discovery now supplements the generic ARM group walk with two
+complete native Monitor/budget observations. Group-only budgets are explicitly
+included. Tests for all ten kinds cover omitted indexed/unindexed members,
+late additions, failed native collections, changing membership and disagreement
+with already-read generic members. SQLite-backed component scenarios discover
+an omitted Action Group, Web Test and group-only Cost Management budget, preserve
+their individual review and wait for native member absence after recovery.

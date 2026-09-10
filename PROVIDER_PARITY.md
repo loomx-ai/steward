@@ -2386,3 +2386,42 @@ background evidence only, not acceptance evidence for this work.
   group-member discovery, global Runbook webhook mapping, remaining service
   families and all eight acceptance criteria remain open at this checkpoint.
   No independent emulator or real-cloud verification was performed.
+
+### Native Monitor discovery inside managed resource groups
+
+- AKS/Monitor workspace group walks and Application Insights managed-workspace
+  discovery now supplement generic ARM resources with all ten native Monitor and
+  budget collections. Two full observations reconcile LIST with private GETs,
+  include group-only budgets, compare membership/configuration and verify any
+  members already read through the generic walk. Native identities restrict the
+  supplemental members to the exact local resource group.
+- Omitted indexed members can follow their verified group controller; unindexed
+  members become unresolved ownership requirements that must be scanned before
+  planning. A member appearing after review blocks controller DELETE. Failed
+  native collections and changed observations cannot authorize empty membership.
+  Newly discovered members use existing private configuration, receiver,
+  retention/protection and individual residual GET checks after group absence.
+- All ten kinds are tested with generic-list omissions, unindexed/late members,
+  403/404 collections, changes between native passes and disagreement with the
+  generic walk. Group-only budget indexes are explicit. Actual SQLite component
+  inventory/graph/plans include an omitted Action Group, component-linked Web Test
+  and group-only Cost Management budget; native controller deletion and recovered
+  member absence remain separately verified.
+- Initial regression failures identified missing resource-group budget responses
+  in the shared DNS test fixture. The fixture now uses the existing exact native
+  collection responder after explicit resource/list/error overrides. Production
+  still rejects failed dependency reads; no 404-as-empty exception was added.
+- The final full Go run passed (Azure 171.116s; GCP cached), and repository-wide
+  vet passed. Native membership/managed configuration tests passed (2.567s),
+  additional SQLite/group discrepancy scenarios passed (4.897s), and the affected
+  AKS/Monitor workspace/container/Stream Analytics regressions passed (7.740s).
+  Required-deletion/managed Monitor race checks passed (Azure 18.296s), the shared
+  cascade regression race run passed (126.073s), and the final managed-controller
+  regression race run passed (24.414s).
+- Bilingual permission/capability docs and retained evidence READMEs now describe
+  native supplemental discovery and individual absence checks. Existing native
+  documents, catalog operations and registered specifications are unchanged:
+  1,224 operations, 383 types/specs and 357 cleanup bindings. No independent
+  emulator or real-cloud verification was performed. The parity matrix still
+  names 29 unmapped Azure types; global Runbook mapping, remaining lifecycle/
+  service integration and all eight overall acceptance criteria remain open.

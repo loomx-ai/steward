@@ -204,6 +204,9 @@ func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 			}
 			return jsonResponse(200, map[string]any{"value": records}, nil), nil
 		}
+		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
 		root := "/subscriptions/" + testSubscription
 		if id == root+"/resourcegroups" {
 			groups := map[string]map[string]any{}
