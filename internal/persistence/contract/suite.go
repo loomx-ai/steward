@@ -107,6 +107,31 @@ func Run(t *testing.T, factory Factory) {
 			}
 		}
 	})
+	t.Run("Azure opaque URL identity", func(t *testing.T) {
+		repositories := factory(t)
+		ctx := context.Background()
+		now := time.Date(2026, 9, 10, 0, 0, 0, 0, time.UTC)
+		connection := asset.CloudConnection{ID: "azure-url-connection", Name: "Azure URL identity", Provider: asset.ProviderAzure, Partition: "azure", Status: asset.ConnectionActive, CreatedAt: now, UpdatedAt: now}
+		if err := repositories.Connections().PutConnection(ctx, connection); err != nil {
+			t.Fatal(err)
+		}
+		parent := "https://management.azure.com/subscriptions/11111111-2222-4333-8444-555555555555/resourcegroups/test/providers/microsoft.insights/components/component"
+		var values []asset.Asset
+		for i, selector := range []string{"OpaqueID", "opaqueid"} {
+			identity := asset.Identity{Provider: asset.ProviderAzure, Partition: "azure", ConnectionID: connection.ID, NativeType: "Microsoft.Insights/components/analyticsItems", NativeID: parent + "/analyticsitems/item?id=" + selector}
+			value := asset.Asset{ID: asset.AssetID(fmt.Sprintf("azure-url-asset-%d", i)), Identity: identity, ResourceKindID: "azure:Microsoft.Insights/components/analyticsItems", Name: selector, FirstSeenAt: now, LastSeenAt: now}
+			if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
+				t.Fatal(err)
+			}
+			values = append(values, value)
+		}
+		for _, value := range values {
+			stored, err := repositories.Inventory().GetAssetByIdentity(ctx, value.Identity)
+			if err != nil || stored.ID != value.ID || stored.Identity.NativeID != value.Identity.NativeID {
+				t.Fatalf("distinct Azure URL resource was overwritten: %#v, %v", stored, err)
+			}
+		}
+	})
 	t.Run("connection regions", func(t *testing.T) {
 		repositories := factory(t)
 		ctx := context.Background()

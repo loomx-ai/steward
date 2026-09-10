@@ -1725,3 +1725,30 @@ background evidence only, not acceptance evidence for this work.
 - Application Insights resource adapters, legacy-child identities and managed
   workspace impacts remain in progress. Thirty mapped Azure kinds still lack
   specifications; the eight provider acceptance criteria remain open.
+
+### Azure Application Insights legacy adapter progress
+
+- Implemented native URL identities for analytics items, user analytics items,
+  continuous exports, favorites, work-item configurations and annotations.
+  Opaque query/path selectors retain case; only the ARM parent and fixed URL
+  segments are canonicalized. Existing Batch IDs retain their prior keys.
+- Native LIST/GET reconciliation includes private content, component rechecks,
+  all 18 favorite scope/source combinations and explicitly bounded annotation
+  windows. Unexpected continuation and incomplete or changing collections fail
+  closed. A 90-day annotation index is not an all-history inventory.
+- Direct leaf drivers bind the selected connection, partition, native identity,
+  parent and private configuration; enforce group/lock protection; validate
+  synchronous responses; and verify exact child absence with resumable receipts.
+  Published examples, original CLI GETs and composed tests using the native
+  DELETE bodies cover these protocols. The export recording's intermediate
+  destination update remains visible and is not treated as a volatile field.
+- Full Go tests and vet passed (Azure 149.230s, GCP 167.969s). Scoped Azure race
+  checks passed, followed by race checks for the final recorded-body tests;
+  shared identity, graph, planning, execution, inventory, SQLite persistence
+  and catalog race checks passed. The optional PostgreSQL and independent
+  emulator checks were not exercised in this adapter run.
+- Resource registration, inventory-to-graph integration, component cleanup and
+  managed-workspace effects remain in progress. These adapters do not yet add
+  resource rules: the total remains 361 rules, 335 cleanup bindings and 30
+  mapped Azure kinds lacking specifications. All eight acceptance criteria
+  remain open.

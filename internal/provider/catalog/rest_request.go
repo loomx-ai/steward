@@ -61,6 +61,19 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		if !ok || value == "" {
 			return RESTRequest{}, fmt.Errorf("path parameter %q is required", name)
 		}
+		if call.Style == "azure-rest" && call.Version == "2015-05-01" && name == "exportId" &&
+			call.Path == "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}" &&
+			((call.Method == "GET" && operation.ID == "Azure.Microsoft.Insights.ExportConfigurations_Get") || (call.Method == "DELETE" && operation.ID == "Azure.Microsoft.Insights.ExportConfigurations_Delete")) {
+			// Native continuous-export IDs are opaque, case-sensitive base64
+			// values. A slash belongs to this one parameter, not the ARM path.
+			for _, part := range strings.Split(value, "/") {
+				if part == "." || part == ".." || strings.ContainsAny(part, "\\%\x00\r\n") {
+					return RESTRequest{}, fmt.Errorf("invalid export identifier")
+				}
+			}
+			path = strings.ReplaceAll(path, match[0], url.PathEscape(value))
+			continue
+		}
 		if call.Style == "azure-batch-rest" && call.Method == "HEAD" && call.Path == "/pools/{poolId}/nodes/{nodeId}/files/{filePath}" && name == "filePath" {
 			// The native file parameter is a complete Windows or Linux path.
 			// Encode it as one parameter; never allow directory traversal.

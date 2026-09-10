@@ -96,6 +96,48 @@ matching IDs/names when present. Executable Monitor actions additionally bind
 persisted receipts to the selected connection, partition, credentials, resource
 and polling protocol, and check any returned `resourceId` against that resource.
 
+## Legacy Application Insights adapters in progress
+
+The in-progress legacy Application Insights adapters now retain opaque IDs in
+their actual native GET/DELETE URLs. Only ARM parent paths and fixed endpoint
+segments are canonicalized; query selectors and child path IDs remain case
+sensitive. The shared Azure identity key preserves these URL values. Existing
+Batch adapters continue to emit their canonical lowercase IDs. Core identity,
+SQLite persistence and Batch regression checks cover this distinction.
+
+`TestApplicationInsightsLegacy*` exercises six legacy native scopes, published
+GET bodies, four recorded favorite/export GETs, and the two recorded native
+DELETE bodies. The delete-body tests compose native responses with local parent
+reads and final absence; they are not full Steward lifecycle recordings. The
+export scenario updates its destination between its final item GET and LIST,
+so its last native LIST object supplies the current configuration. Keeping the
+earlier GET would correctly reject that configuration change.
+The export binder's encoded-slash exception is limited to the
+two pinned export operations; other operation names, paths, methods and versions
+cannot use it. GET responses must identify the exact opaque selector. Annotation
+GET must contain exactly one matching object; an empty array is not converted
+to a 404.
+
+Legacy collection reconciliation reads each native item and rechecks its
+component. Analytics lists request full content without a scope/type filter.
+Favorite lists enumerate both favorite scopes and all eight named source types,
+plus the native default `other` category: omitting `sourceType` alone does not
+return all categories. A test compares these filters with the pinned catalog
+enums. Annotation scans require an explicit window within the previous 90 days.
+The selected legacy lists do not declare a continuation protocol; unexpected
+continuation, missing lists, duplicate IDs, configuration changes and changed
+parents fail the scan. This does not establish an unbounded annotation history.
+
+The direct legacy action driver binds connection, partition, native identity,
+parent and private configuration. It checks resource-group ownership, protection
+and locks, repeats the native reads before DELETE, validates each synchronous
+response, and confirms resource absence after restart using a private receipt.
+Parent absence never replaces the exact child GET. Native DELETE has no atomic
+configuration condition, so the final read/delete concurrency window remains.
+Inventory registration, component cleanup, managed-workspace impacts and graph
+integration for these adapters remain in progress; these tests do not add
+executable resource rules or establish completed Application Insights support.
+
 ## Monitor private-link lifecycle
 
 Three global resource kinds bind their original native GET/LIST/DELETE APIs:

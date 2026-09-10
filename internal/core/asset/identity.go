@@ -49,7 +49,12 @@ func (i Identity) Key() string {
 	// GCP and Azure IDs include their full project/subscription resource path.
 	if i.Provider == ProviderAzure {
 		parts[3] = strings.ToLower(parts[3])
-		parts[4] = strings.ToLower(parts[4])
+		// ARM paths are case insensitive. Native URL identities can carry opaque
+		// case-sensitive path/query IDs; their adapter canonicalizes the endpoint
+		// and any case-insensitive segments before constructing the identity.
+		if strings.HasPrefix(parts[4], "/") {
+			parts[4] = strings.ToLower(parts[4])
+		}
 	}
 	if scopeKey := strings.TrimSpace(i.ScopeKey); scopeKey != "" && i.Provider != ProviderGCP && i.Provider != ProviderAzure {
 		parts = append(parts, scopeKey)

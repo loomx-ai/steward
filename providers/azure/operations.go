@@ -126,6 +126,9 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if insightsLegacyKind(kind.NativeType).kind != "" {
+		return c.insightsLegacyOperation(kind, nativeID, method)
+	}
 	if isBatchDataType(kind.NativeType) {
 		return batchDataOperation(kind, nativeID, method)
 	}
