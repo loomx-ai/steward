@@ -134,9 +134,53 @@ and locks, repeats the native reads before DELETE, validates each synchronous
 response, and confirms resource absence after restart using a private receipt.
 Parent absence never replaces the exact child GET. Native DELETE has no atomic
 configuration condition, so the final read/delete concurrency window remains.
-Inventory registration, component cleanup, managed-workspace impacts and graph
-integration for these adapters remain in progress; these tests do not add
-executable resource rules or establish completed Application Insights support.
+The five unbounded legacy collections are now registered with the inventory
+and graph integration below. Component cleanup, managed-workspace impacts and
+all-history annotation discovery remain in progress; this does not establish
+completed Application Insights support.
+
+## Native inventory and graph integration
+
+Components have a native, read-only inventory rule while their complete cleanup
+lifecycle is being implemented. Analytics items, user analytics items, exports,
+favorites and work-item configurations have executable native leaf rules.
+Annotations remain unregistered: a bounded 90-day query cannot safely close
+older persisted assets as absent after an authoritative scan.
+
+The dedicated inventory path reads the complete subscription component index,
+native component GETs and legacy collections twice. It reconciles IDs, private
+configuration, region, resource-group ownership/protection and management locks.
+Component pagination accepts native continuation tokens, but rejects filtered,
+duplicate, partial, cyclic or asynchronous collections. Client cursors bind
+both snapshots to the connection, scope, kind, network selection and bundle;
+membership or private configuration changes invalidate an old cursor. Export
+operational timestamps remain outside configuration fingerprints. Flat child
+payloads retain their original identifier fields rather than acquiring fake
+ARM `id`/`type` fields; opaque content is omitted from stored diagnostics.
+
+`TestApplicationInsightsInventoryProjectionGraphAndAction` passes actual
+provider batches through the application projection service and SQLite,
+finishes authoritative shards, rebuilds the graph with the Azure contributors,
+plans individual leaves, resolves registered drivers, executes their native
+deletes and resumes readback with new driver instances. Ten case-distinct
+children retain separate assets, edges and deletes. These are composed tests,
+not an independent emulator or cloud run.
+
+Exports reference the destination storage account and blob container using
+their full native ARM identity. Bare account names resolve through a complete
+subscription index plus GET; foreign or missing accounts remain unresolved
+graph references without cross-subscription reads. The component references
+its shared Log Analytics workspace. Selecting leaves retains those targets;
+explicitly selecting exports and storage orders the exports first. AMPLS
+association rules now resolve component targets as well. These relationships
+do not grant ownership of shared targets or invent mandatory native cascades.
+
+The four retained CLI export response objects contain a separate inconsistency:
+their `DestinationAccountId` subscription was sanitized to zero while
+`DestinationStorageSubscriptionId` retains another UUID. The original bytes
+remain unchanged. Native transport and leaf protocol tests can use those
+bodies, but the new storage-reference test rejects their contradictory
+destination subscriptions as evidence for a graph edge.
 
 ## Monitor private-link lifecycle
 

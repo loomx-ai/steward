@@ -177374,6 +177374,124 @@
       "scopeKinds": [
         "global"
       ]
+    },
+    {
+      "class": "observability.monitoring_environment",
+      "displayName": "Application Insights component",
+      "nativeType": "Microsoft.Insights/components",
+      "rest": {
+        "collection": "components",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.Insights.Components_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.Components_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.monitoring_configuration",
+      "displayName": "Application Insights analytics item",
+      "nativeType": "Microsoft.Insights/components/analyticsItems",
+      "rest": {
+        "collection": "analyticsItems",
+        "delete_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_Delete"
+        ],
+        "list_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_List"
+        ],
+        "read_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.monitoring_configuration",
+      "displayName": "Application Insights user analytics item",
+      "nativeType": "Microsoft.Insights/components/myanalyticsItems",
+      "rest": {
+        "collection": "myanalyticsItems",
+        "delete_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_Delete"
+        ],
+        "list_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_List"
+        ],
+        "read_operations": [
+          "Azure.microsoft.insights.AnalyticsItems_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.integration",
+      "displayName": "Application Insights continuous export",
+      "nativeType": "Microsoft.Insights/components/exportconfiguration",
+      "rest": {
+        "collection": "exportconfiguration",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.ExportConfigurations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.ExportConfigurations_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.ExportConfigurations_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.visualization",
+      "displayName": "Application Insights favorite",
+      "nativeType": "Microsoft.Insights/components/favorites",
+      "rest": {
+        "collection": "favorites",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Favorites_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.Favorites_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.Favorites_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "observability.integration",
+      "displayName": "Application Insights work item configuration",
+      "nativeType": "Microsoft.Insights/components/workItemConfigs",
+      "rest": {
+        "collection": "workItemConfigs",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.WorkItemConfigurations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.WorkItemConfigurations_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.WorkItemConfigurations_GetItem"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
     }
   ]
 }

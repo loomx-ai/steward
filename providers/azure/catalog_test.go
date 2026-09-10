@@ -98,6 +98,14 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			if isBatchDataType(kind.NativeType) {
 				nativeID = "https://account.eastus2.batch.azure.com" + nativeID
 			}
+			if row := insightsLegacyKind(kind.NativeType); row.kind != "" {
+				nativeID, err = insightsLegacyURL(resourceID(applicationInsightsType, "stewardtest"), row.kind, "OpaqueID")
+				if err != nil {
+					t.Fatal(err)
+				}
+				u, _ := url.Parse(nativeID)
+				wantPath = u.Path
+			}
 			endpoint, err := c.resourceURL(kind, nativeID)
 			if err != nil {
 				t.Fatalf("binding %s: %v", nativeID, err)
@@ -105,6 +113,11 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			u, _ := url.Parse(endpoint)
 			if !strings.EqualFold(u.Path, wantPath) || u.Query().Get("api-version") != operation.Call.Version {
 				t.Fatalf("wrong request %s", endpoint)
+			}
+			if insightsLegacyKind(kind.NativeType).kind != "" {
+				if err := c.insightsLegacyEndpoint(endpoint, nativeID); err != nil {
+					t.Fatal("opaque native selector changed", err)
+				}
 			}
 			if !kind.ReadOnly {
 				deletion, parameters, err := c.resourceOperation(kind, nativeID, "DELETE")

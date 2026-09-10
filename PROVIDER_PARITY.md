@@ -1752,3 +1752,40 @@ background evidence only, not acceptance evidence for this work.
   resource rules: the total remains 361 rules, 335 cleanup bindings and 30
   mapped Azure kinds lacking specifications. All eight acceptance criteria
   remain open.
+
+### Azure Application Insights inventory and graph integration
+
+- Registered component inventory and five native legacy leaf kinds. Components
+  remain read-only while their native children and managed-workspace cleanup
+  are implemented; this is an unfinished lifecycle, not completed support.
+  Annotations remain unregistered because the bounded native index cannot
+  prove older persisted records absent.
+- Dedicated inventory preserves opaque URL selectors and original flat payload
+  fields, reconciles two complete native snapshots, inherits component/group/
+  lock protection, and binds cursors to connection, scope, kind, network and
+  private configuration. Filtered, partial, duplicate, cyclic or asynchronous
+  component pages and configuration/membership drift fail the scan.
+- Actual provider batches pass through application projection and SQLite,
+  authoritative shard completion, graph rebuilding with Azure contributors,
+  native leaf planning, registered action resolution, deletion and resumed
+  readback. Ten case-distinct children retain separate assets and graph edges.
+  Shared storage/account/container references and component workspace links
+  preserve target retention and explicit-selection deletion ordering. AMPLS
+  associations now resolve their component graph targets.
+- Bare export destination names resolve through native subscription LIST/GET;
+  missing or foreign names remain unresolved. The original CLI export bodies
+  contain contradictory destination-subscription fields after upstream
+  sanitization. A dedicated test rejects them as storage-relationship evidence
+  without modifying the recorded response bodies.
+- Full Go tests and vet passed (Azure 149.877s; GCP cached), followed by final
+  native-inventory/spec checks and scoped Azure race tests (13.944s). Shared
+  inventory, governance, cleanup, asset, graph, plan and SQLite race checks
+  passed; five native catalog refresh tests passed. These composed tests do
+  not claim a new independent emulator or cloud run.
+- Azure now has 367 rules and 340 cleanup bindings (339 native DELETEs and one
+  native POST). The catalog retains 1,188 operations, 154 root documents and
+  49 reference documents; its content SHA-256 is
+  `aaa42c2456b6892fac38427fc1301affc5c9ec769ce6f763f6c20ecf380d0b04`.
+  Rechecking the parity matrix finds 29 mapped Azure kinds without specs;
+  the five new child rules are additional native coverage, not five more
+  completed matrix roots. All eight acceptance criteria remain open.

@@ -1,0 +1,64 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/components/exportconfiguration
+  class: observability.integration
+presentation:
+  displayNames:
+    en-US: Application Insights continuous export
+    zh-CN: Application Insights 连续导出
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Insights.ExportConfigurations_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      resourceName: parent.normalized.arm_parameters.resourceName
+    itemsPath: value
+    identityPath: ExportId
+  detail:
+    operation: Azure.Microsoft.Insights.ExportConfigurations_Get
+    itemsPath: $
+    identityPath: ExportId
+  parent:
+    source: product-api
+    nativeType: Microsoft.Insights/components
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Insights/components
+  targetIdPath: refs_microsoft_insights_components
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts/blobServices/containers
+  targetIdPath: refs_microsoft_storage_storageaccounts_blobservices_containers
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.ExportConfigurations_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.ExportConfigurations_Get
+      itemsPath: $
+      identityPath: ExportId

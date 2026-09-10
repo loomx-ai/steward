@@ -62,6 +62,9 @@ relationships:
 - type: depends_on
   targetType: Microsoft.Insights/dataCollectionEndpoints
   targetIdPath: refs_microsoft_insights_datacollectionendpoints
+- type: depends_on
+  targetType: Microsoft.Insights/components
+  targetIdPath: refs_microsoft_insights_components
 actions:
   delete:
     operation: Azure.Microsoft.Insights.PrivateLinkScopedResources_Delete
