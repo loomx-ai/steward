@@ -14,6 +14,9 @@ func insightsInventorySource(kind string) string {
 	if strings.EqualFold(kind, insightsAnnotationType) {
 		return insightsAnnotationSource
 	}
+	if insightsWorkbookKind(kind) == insightsWorkbookType || insightsWorkbookKind(kind) == insightsMyWorkbookType {
+		return insightsWorkbookSource
+	}
 	return productInventorySource
 }
 

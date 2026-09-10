@@ -13,12 +13,16 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
 	}
 	annotation := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, insightsAnnotationType)
 	if request.Source == insightsAnnotationSource && !annotation || annotation && request.Source == productInventorySource {
 		return contracts.InventoryBatch{}, serviceDenied("invalid_insights_annotation_inventory_source")
+	}
+	workbook := request.ResourceKind != nil && insightsWorkbookKind(request.ResourceKind.NativeType) != ""
+	if request.Source == insightsWorkbookSource && (!workbook || insightsInventorySource(request.ResourceKind.NativeType) != request.Source) {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_insights_workbook_source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
 	if err != nil {
@@ -26,6 +30,15 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if workbook {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		if request.Source == "" {
+			request.Source = insightsInventorySource(request.ResourceKind.NativeType)
+		}
+		return r.listInsightsWorkbooks(ctx, c, request)
 	}
 	if request.ResourceKind != nil && (strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) || insightsLegacyKind(request.ResourceKind.NativeType).kind != "" || insightsARMChildKind(request.ResourceKind.NativeType) != "") {
 		if request.Source == inventorySource {
@@ -300,6 +313,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.workbookInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.apimInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -623,6 +639,9 @@ func addReference(refs map[string][]string, target, id string) {
 	refs[target] = append(refs[target], id)
 }
 func references(nativeType, self string, raw map[string]any) map[string][]string {
+	if insightsWorkbookKind(nativeType) != "" {
+		return workbookReferences(nativeType, self, raw)
+	}
 	result := map[string][]string{}
 	add := func(value string) {
 		id, target, err := parseID(value)

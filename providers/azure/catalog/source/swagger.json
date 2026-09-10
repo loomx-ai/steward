@@ -177554,6 +177554,71 @@
       "scopeKinds": [
         "region"
       ]
+    },
+    {
+      "nativeType": "Microsoft.Insights/workbooks",
+      "class": "observability.workbook",
+      "displayName": "Workbook",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workbooks",
+        "read_operations": [
+          "Azure.Microsoft.Insights.Workbooks_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Workbooks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.Workbooks_ListBySubscription",
+          "Azure.Microsoft.Insights.Workbooks_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Insights/myWorkbooks",
+      "class": "observability.workbook",
+      "displayName": "Private workbook",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "myWorkbooks",
+        "read_operations": [
+          "Azure.Microsoft.Insights.MyWorkbooks_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.MyWorkbooks_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.MyWorkbooks_ListBySubscription",
+          "Azure.Microsoft.Insights.MyWorkbooks_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Insights/workbooktemplates",
+      "class": "observability.workbook_template",
+      "displayName": "Workbook template",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "workbooktemplates",
+        "read_operations": [
+          "Azure.Microsoft.Insights.WorkbookTemplates_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.WorkbookTemplates_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.WorkbookTemplates_ListByResourceGroup"
+        ],
+        "response_types": [
+          "microsoft.insights/workbooktemplate"
+        ]
+      }
     }
   ]
 }

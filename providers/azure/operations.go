@@ -222,6 +222,9 @@ func (c *client) resourceURL(kind resourceType, nativeID string) (string, error)
 	if err != nil {
 		return "", err
 	}
+	if kind.NativeType == insightsWorkbookType {
+		parameters["canFetchContent"] = true
+	}
 	request, err := bindAzureREST(operation, parameters)
 	return request.URL, err
 }

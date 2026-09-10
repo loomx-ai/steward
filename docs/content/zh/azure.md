@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 370 类资源，其中 344 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 373 类资源，其中 347 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -64,6 +64,7 @@ Steward 识别 370 类资源，其中 344 类具有原生清理操作（包括 B
 | Monitor 数据采集 | 规则、终结点及被监控资源上的关联 | 先删除经过审查的关联，再删除规则或终结点；共享关联只执行一次 |
 | Monitor 专用链接 | 全局专用链接范围、范围资源关联与专用终结点连接 | 先删除已审查的子资源，再删除范围；关联的工作区和数据收集终结点需先解绑 |
 | Application Insights | 组件、分析项、持续导出、收藏、工作项配置、API Key 和 Profiler 存储关联 | 先独立删除子资源并解除 AMPLS 关联，再审查当前托管工作区资源组的删除影响 |
+| Azure Monitor 工作簿 | 共享工作簿、私有工作簿及工作簿模板 | 独立清理并核对完整内容和历史版本，引用的存储和身份保持独立 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
 
 Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难恢复别名的授权视图、Uniform 伸缩集网络资源和 VPN 连接链路没有独立原生删除操作。默认命名空间授权规则 `RootManageSharedAccessKey` 也必须随命名空间删除。这些资源会纳入所属控制资源的删除影响；保留这类内置子资源会阻止删除所属控制资源。资源组、Key Vault 和 Container Apps 环境的清理仍未实现。
@@ -131,6 +132,10 @@ Azure Monitor 专用链接范围（AMPLS）清理会审查两类原生子资源�
 删除 Application Insights 组件、Log Analytics 工作区或 DCE 前，Steward 会核对订阅内完整的 AMPLS 清单、关联的原生列表与详情，以及目标资源的反向引用。因此需要读取这些范围的权限，包括所选资源组之外的范围。缺失盘点、读取失败及跨订阅反向引用都会阻止删除；跨订阅关联需在所属订阅中解除后重新扫描。Monitor 工作区托管组中的 DCE 也执行相同检查。相对操作地址经校验后绑定到所选连接和资源，并持久化保存；异步成功后仍须确认资源及前置关联均已不存在。验证使用固定版本的官方样例和组合协议测试，尚未进行 AMPLS 独立模拟器或真实云验证。参阅[AMPLS 关联要求](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls)。
 
 Application Insights 盘点覆盖组件、共享及个人分析项、持续导出、收藏、工作项配置、API Key、Profiler 关联存储及注释。八类子资源支持独立清理，并核对组件、资源组、锁及最终原生 GET 不存在状态；共享存储保持独立。组件删除会先移除已审查的子资源及 AMPLS 关联，包括指向当前托管工作区的关联。
+
+共享工作簿、私有工作簿和工作簿模板支持独立盘点与清理。工作簿发现会读取四个官方类别，以及从 ARM 或已保存 ID 中发现的自定义类别；类别清单遗漏不会把已保存工作簿标记为不存在。模板使用完整资源组枚举。扫描需要订阅资源及资源组列表、锁和原生工作簿 LIST/GET 权限，共享工作簿还需要历史版本 LIST/GET 权限。完整内容与历史版本保持私密，删除前会重新核对；内容变更后需重新扫描和生成计划。私有工作簿 API 不可用等原生错误会使扫描失败。
+
+工作簿删除仅确认活动资源不存在，不代表永久擦除。Azure 通常会保留已删除工作簿约 90 天。自带存储（BYOS）工作簿没有服务托管的历史版本或回收站恢复能力，能否恢复可能取决于存储的软删除配置。引用的来源资源、存储账户或容器及托管身份是独立依赖，不会被工作簿清理自动选中。若原生证据确认工作簿属于托管资源组，则可委托给控制资源一同清理，仍核对内容和历史版本，并单独确认最终 GET 不存在。清理需要所选资源的原生 DELETE 权限；接口不提供条件删除头，读取与删除之间仍有并发修改窗口。参阅[工作簿管理](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-manage)和 [BYOS 行为](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-bring-your-own-storage)。
 
 注释发现使用 Azure 滚动 90 天限制内的固定窗口，每次扫描还会按 ID 重读已保存的注释，包括窗口之外的记录。窗口查询遗漏不会把旧记录标记为不存在。组件清理将近期和已保存注释列为独立前置步骤；保留注释会阻止删除。读取失败或含义不明确的 GET 数组会阻止清理，空数组不会被视为不存在的证明。Steward 无法枚举原生窗口之外从未发现的历史记录，组件删除可能一并移除这些历史记录。盘点和清理需要注释 LIST/GET 权限，选中的注释还需要 DELETE 权限。参阅[原生注释接口](https://learn.microsoft.com/en-us/python/api/azure-mgmt-applicationinsights/azure.mgmt.applicationinsights.v2015_05_01.operations.annotationsoperations?view=azure-python)。
 

@@ -433,6 +433,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if batchOwners[parent.ID].ID != "" {
 			continue // Batch already contributed this VM's complete native tree.
 		}
+		if parent.Identity.Provider == asset.ProviderAzure && insightsWorkbookKind(parent.Identity.NativeType) != "" {
+			contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
+		}
 		if isBatchType(parent.Identity.NativeType) {
 			continue // Native data-plane identities have their own ownership walk.
 		}

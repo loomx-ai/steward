@@ -2000,3 +2000,51 @@ background evidence only, not acceptance evidence for this work.
   `c7b24b855a54caef290cfa9da661c355009ec1b68e702ea586c398cb177cd11c`.
   Independent web tests/workbooks, migrated alerts, remaining service families,
   the 29 missing mapped Azure roots and all eight acceptance criteria remain open.
+
+### Azure Monitor workbooks and templates
+
+- Three executable native rules now cover shared workbooks, private workbooks
+  and workbook templates. Category-filtered workbook discovery reads the four
+  documented categories plus categories found through ARM and saved IDs. Its
+  dedicated non-authoritative source reconciles existing IDs without closing
+  unobserved custom-category assets. Templates enumerate every native resource
+  group because Azure has no subscription template LIST.
+- Inventory requests full content and binds current configuration and all
+  native shared-workbook revisions. Revision summaries and GETs keep the root
+  identity and opaque revision selector; they have no invented child DELETE.
+  Revision read failure/404 cannot establish root absence. Native array lists,
+  singular template type aliases and recorded null workbook types are supported
+  without allowing mismatched IDs or incomplete content to authorize deletion.
+- Independent synchronous DELETE accepts only the native empty 200/204 contract.
+  Persisted receipts bind the connection, partition, resource, configuration,
+  group and protocol. A live or replaced resource, malformed response or changed
+  receipt cannot complete deletion. Group ownership, tags and locks are checked
+  again. Managed-group cleanup also rechecks each contained workbook's full
+  private history and requires its final native GET absence after root deletion.
+- Shared source/storage/identity references are declared in resource rules and
+  reconciled through native lifecycle contributions. Explicit selections are
+  ordered without transferring ownership. Opaque authored content is private
+  and does not invent links; URL credentials/query/fragment data are sanitized
+  without altering the private configuration used for drift checks.
+- Tests cover native and client paging, custom categories, stale authority,
+  historical drift/failure, protection, ambiguous responses, receipt restoration,
+  shared dependency ordering and managed-component deletion with live residuals.
+  Real scan creation and workers, SQLite projection, graph rebuilding, planning
+  and serialized actions verify the complete independent cleanup path. Native
+  examples and selected CLI metadata are retained with explicit composed reads;
+  no new independent emulator or real-cloud verification is claimed.
+- Full Go tests and vet passed (Azure 155.053s; GCP cached). Application Insights,
+  AMPLS, AKS and Monitor workspace race checks passed (88.410s). The full focused
+  Application Insights suite passed before the final managed-history checks
+  (9.371s); final workbook/managed-history/privacy checks passed (2.088s), and
+  the full Go/race runs include those final changes. Five offline catalog tests,
+  deterministic generation, executable-spec checks and bilingual documentation
+  validation (40 chapters and 10 screenshots) passed.
+- Azure now has 373 rules, 347 cleanup bindings (346 DELETEs and one Batch node
+  removal POST) and 1,188 catalog operations. Generated catalog SHA-256:
+  `8388492db66f3c03cdc369a0c93898578f0c4ba801b88943864fae32f69e86a8`.
+  Active workbook absence is not permanent erasure: ordinary workbooks can be
+  recovered for approximately 90 days; BYOS recovery depends on storage behavior
+  and has no provider-managed revision/recycle-bin support. Independent web
+  tests, migrated alerts, remaining service families, the 29 missing mapped
+  Azure roots and all eight acceptance criteria remain open.

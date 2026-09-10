@@ -7,8 +7,8 @@ documents. Native response transport, content redaction and operation-location
 checks are implemented. Monitor Private Link Scope inventory and lifecycle
 bindings are implemented as described below. Application Insights component/child inventory and cleanup are implemented
 within the explicit scope below, including native billing/pricing and proactive
-detection configuration. Annotation history and independent workbook/web-test
-lifecycles remain unfinished.
+detection configuration, bounded annotation history and independent workbooks.
+Independent web-test and migrated-alert lifecycles remain unfinished.
 
 ## Native schemas and examples
 
@@ -518,3 +518,60 @@ an independent annotation emulator or live-cloud recording. Previously unseen
 annotations outside the native window cannot be enumerated by this source;
 component deletion can remove such history. An ambiguous empty GET array is not
 claimed to be a documented absence response.
+
+## Independent workbooks and templates
+
+Three registered rules bind shared workbooks (`2023-06-01`), private workbooks
+(`2021-03-08`) and workbook templates (`2020-11-20`) to their native operations.
+Workbook discovery enumerates all four documented categories and additional
+categories learned through the unfiltered ARM index and saved native IDs.
+The dedicated source is non-authoritative because unknown custom categories
+can remain undiscovered. Actual scan workers reconcile saved identities and
+cannot turn a stale shard's authority flag into an absence sweep. Templates
+have no subscription LIST and instead enumerate every native resource group.
+
+Shared GETs request `canFetchContent=true`. Each current workbook and every
+provider-managed revision is read independently. Revision summaries carry the
+root ARM ID plus an opaque revision selector, not independently deletable ARM
+children. Duplicate revisions, incomplete content, LIST/GET disagreements,
+permission failures and configuration drift fail inventory and preflight.
+Revision LIST/GET 404s cannot prove root absence. Private-workbook list arrays
+and template singular response types retain their native adapters. Recorded
+workbook `type: null` is accepted only with a matching full native identity;
+recorded `serializedData: null` is insufficient to authorize cleanup.
+
+Tests compose `WorkbookGet`, `WorkbookManagedGet`, `MyWorkbookGet`, template
+LIST objects, revision LIST summaries and revision GET content without changing
+the retained source files. The second workbook identity comes from the native
+LIST example. Revision GETs combine the corresponding original revision
+metadata with the original content. Original private-workbook duplicate IDs
+and mismatched names remain a failing inventory example. One CLI test retains
+the recorded null type and metadata with explicit scope substitution, rejects
+the original omitted content, then supplies the full native example content;
+that addition is composed data, not a recorded full-content read.
+
+Native and client pagination, custom categories, protected groups/tags/locks,
+late content changes, revision changes, failed reads, synchronous empty
+200/204 deletion, ambiguous responses and receipt substitution are covered.
+Real scan creation/worker execution, SQLite projection, graph rebuilding,
+planning and serialized action restoration exercise independent cleanup.
+Shared source/storage/identity references order explicitly selected resources
+without transferring ownership. Templates and opaque authored workbook bodies
+do not invent references. URL credentials/query/fragment data are sanitized
+from observations and logs while the original values remain privately bound.
+
+Managed-component tests put each workbook kind in the native managed-group
+index, validate its full content and history, and delegate it to the component.
+Private or historical changes block component deletion; component/group absence
+does not hide a surviving workbook, including after request serialization and
+driver reconstruction. Every known member still needs a native GET 404.
+
+BYOS uses the published ARM storage/identity references and skips unsupported
+provider-managed revisions. Its active root must disappear without independently
+deleting the shared storage or identity. Azure normally soft-deletes workbooks
+for approximately 90 days; BYOS has no provider recycle-bin recovery and can
+depend on storage soft deletion. Root absence is not permanent purge evidence.
+These semantics are documented in [workbook management](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-manage)
+and [bring your own storage](https://learn.microsoft.com/en-us/azure/azure-monitor/visualize/workbooks-bring-your-own-storage).
+Tests are composed native-protocol and application tests; no independent
+workbook emulator or live-cloud lifecycle verification is claimed.

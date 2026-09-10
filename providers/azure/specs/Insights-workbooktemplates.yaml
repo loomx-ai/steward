@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/workbooktemplates
+  class: observability.workbook_template
+presentation:
+  displayNames:
+    en-US: Workbook template
+    zh-CN: 工作簿模板
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Insights.WorkbookTemplates_ListByResourceGroup
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.resource_group
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.WorkbookTemplates_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Resources/resourceGroups
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  author:
+    path: author
+    type: string
+  galleries:
+    path: galleries
+    type: array
+  priority:
+    path: priority
+    type: number
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.WorkbookTemplates_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.WorkbookTemplates_Get
+      itemsPath: $
+      identityPath: id

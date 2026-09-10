@@ -85,6 +85,11 @@ func applicationInsightsSafeValue(value any) any {
 				if _, opaque := value.(string); opaque {
 					continue // Annotation JSON is an opaque string, not ARM properties.
 				}
+			case "storageuri", "sourceid":
+				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
+					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
+					value = endpoint.String()
+				}
 			}
 			result[key] = applicationInsightsSafeValue(value)
 		}

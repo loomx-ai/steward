@@ -8939,6 +8939,65 @@
         "region"
       ],
       "class": "observability.annotation"
+    },
+    {
+      "native_type": "Microsoft.Insights/workbooks",
+      "collection": "workbooks",
+      "read_operations": [
+        "Azure.Microsoft.Insights.Workbooks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.Workbooks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.Workbooks_ListBySubscription",
+        "Azure.Microsoft.Insights.Workbooks_ListByResourceGroup"
+      ],
+      "display_name": "Workbook",
+      "scope_kinds": [
+        "region"
+      ],
+      "class": "observability.workbook"
+    },
+    {
+      "native_type": "Microsoft.Insights/myWorkbooks",
+      "collection": "myWorkbooks",
+      "read_operations": [
+        "Azure.Microsoft.Insights.MyWorkbooks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.MyWorkbooks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.MyWorkbooks_ListBySubscription",
+        "Azure.Microsoft.Insights.MyWorkbooks_ListByResourceGroup"
+      ],
+      "display_name": "Private workbook",
+      "scope_kinds": [
+        "region"
+      ],
+      "class": "observability.workbook"
+    },
+    {
+      "native_type": "Microsoft.Insights/workbooktemplates",
+      "collection": "workbooktemplates",
+      "read_operations": [
+        "Azure.Microsoft.Insights.WorkbookTemplates_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.WorkbookTemplates_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.WorkbookTemplates_ListByResourceGroup"
+      ],
+      "display_name": "Workbook template",
+      "scope_kinds": [
+        "region"
+      ],
+      "class": "observability.workbook_template",
+      "response_types": [
+        "microsoft.insights/workbooktemplate"
+      ]
     }
   ]
 }

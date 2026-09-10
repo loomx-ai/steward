@@ -39,6 +39,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
+	if insightsWorkbookKind(kind.NativeType) != "" {
+		return newInsightsWorkbookAction(c, id, value)
+	}
 	if isBatchType(kind.NativeType) {
 		if value.Identity.ConnectionID != id {
 			return nil, serviceDenied("batch_action_connection_changed")

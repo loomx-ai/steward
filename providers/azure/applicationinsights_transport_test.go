@@ -197,6 +197,8 @@ func TestApplicationInsightsArrayResponseBoundaries(t *testing.T) {
 
 func TestApplicationInsightsPrivateContentAndInvoke(t *testing.T) {
 	private := map[string]any{"Id": "selected", "Name": "saved", "Content": "private-content", "ConfigProperties": "private-connector", "Properties": "private-annotation", "apiKey": "private-api-key", "InstrumentationKey": "private-instrumentation", "HockeyAppToken": "private-hockey", "serializedData": "private-workbook", "templateData": map[string]any{"ordinary": "private-template"}, "customEmails": []any{"private-email"}, "Configuration": map[string]any{"WebTest": "private-webtest"}, "Request": map[string]any{"RequestBody": "private-body"}, "ContentMatch": "private-match"}
+	private["storageUri"] = "https://reader:private-password@storage.example/workbooks?sig=private-sas#private-fragment"
+	private["sourceId"] = "https://reader:private-password@context.example/workbooks?token=private-token#private-fragment"
 	before, _ := json.Marshal(private)
 	entries := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(context.Background(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { entries = append(entries, entry) }))

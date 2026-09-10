@@ -425,6 +425,9 @@ func (a *action) managedGroupResourcesPreflight(ctx context.Context, request con
 		if err := a.client.servicePrivateIncarnation(impact.Asset, resource); err != nil {
 			return "", err
 		}
+		if err := a.client.workbookManagedIncarnation(ctx, impact.Asset); err != nil {
+			return "", err
+		}
 		if isStreamAnalyticsType(kind) {
 			if err := streamAnalyticsReady(kind, resource); err != nil {
 				return "", err
@@ -594,6 +597,9 @@ func (a *action) managedGroupResourcesReadback(ctx context.Context, request cont
 		}
 		if !validResourceResponse(live, id, kind.NativeType) {
 			return contracts.ReadbackResult{}, fmt.Errorf("AKS child readback identity mismatch")
+		}
+		if err := a.client.workbookManagedIncarnation(ctx, impacts[id].Asset); err != nil {
+			return contracts.ReadbackResult{}, err
 		}
 		if a.kind.NativeType == applicationInsightsType {
 			if !insightsARMReadValid(live, id, kind.NativeType) {
