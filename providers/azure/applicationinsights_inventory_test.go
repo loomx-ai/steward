@@ -361,7 +361,12 @@ func TestApplicationInsightsInventoryCursorAndDrift(t *testing.T) {
 }
 
 func TestApplicationInsightsInventoryProjectionGraphAndAction(t *testing.T) {
-	f := newInsightsInventoryFixture(t)
+	testInsightsInventoryPipeline(t, newInsightsInventoryFixture(t), insightsInventoryTestKinds, nil)
+}
+
+func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, kinds []string, retained []asset.Asset) {
+	t.Helper()
+	childCount := len(f.children)
 	r := f.runtime
 	ctx := t.Context()
 	repository, err := sqlite.Open(filepath.Join(t.TempDir(), "insights.db"), "../../migrations")
@@ -376,8 +381,16 @@ func TestApplicationInsightsInventoryProjectionGraphAndAction(t *testing.T) {
 	if err := repository.PutScope(ctx, scope); err != nil {
 		t.Fatal(err)
 	}
+	retainedIDs := map[asset.AssetID]bool{}
+	for _, value := range retained {
+		value.ScopeID = scope.ID
+		if err := repository.PutAsset(ctx, value); err != nil {
+			t.Fatal(err)
+		}
+		retainedIDs[value.ID] = true
+	}
 	projection := inventory.NewService(repository)
-	for _, kind := range insightsInventoryTestKinds {
+	for _, kind := range kinds {
 		request := productRequest(r, kind)
 		request.Limit = 1
 		_, shards, err := projection.CreateScan(ctx, inventory.ScanRequest{ConnectionID: connection.ID, RequestedBy: "native-integration-test", Shards: []inventory.ShardRequest{{Provider: asset.ProviderAzure, Source: productInventorySource, ScopeID: scope.ID, ResourceKindID: request.ResourceKind.ID, Authoritative: true}}})
@@ -402,8 +415,8 @@ func TestApplicationInsightsInventoryProjectionGraphAndAction(t *testing.T) {
 		}
 	}
 	values, err := repository.ListActiveAssetsByConnection(ctx, connection.ID, "")
-	if err != nil || len(values) != 11 {
-		t.Fatal("case-sensitive native identities collapsed in persistence", len(values), err)
+	if err != nil || len(values) != childCount+1+len(retained) {
+		t.Fatal("native identities changed in persistence", len(values), err)
 	}
 	var parent asset.Asset
 	for _, value := range values {
@@ -416,10 +429,23 @@ func TestApplicationInsightsInventoryProjectionGraphAndAction(t *testing.T) {
 		t.Fatal(err)
 	}
 	result, err := governance.NewService(repository, repository).RebuildGraph(ctx, scope.ID, connection.ID, "insights-native", r.bundle, []governance.Contributor{lifecycle, NewResourceAttachments()})
-	if err != nil || len(result.Unresolved) != 0 || len(result.Relationships) != 10 || parent.ID == "" {
+	if err != nil || len(result.Unresolved) != 0 || len(result.Relationships) != childCount+len(retained) || parent.ID == "" {
 		t.Fatal("native parent relationships lost", result, err)
 	}
 	for _, value := range values {
+		if retainedIDs[value.ID] {
+			selected := []asset.AssetID{value.ID}
+			for _, ref := range result.Relationships {
+				if ref.TargetAssetID == value.ID && ref.Type == graph.RelationshipUses {
+					selected = append(selected, ref.SourceAssetID)
+				}
+			}
+			planned, err := plan.Solve(plan.Input{Assets: values, Relationships: result.Relationships, ResolvedAssetIDs: selected})
+			if err != nil || len(selected) < 2 || len(planned.Blockers) != 0 || len(planned.Steps) != len(selected) || planned.Steps[len(planned.Steps)-1].AssetID != value.ID {
+				t.Fatal("shared target deletion order was lost", planned, err)
+			}
+			continue
+		}
 		if value.ID == parent.ID {
 			if value.Capabilities.Has(asset.CapabilityActionable) {
 				t.Fatal("component cleanup claimed before its lifecycle review")
@@ -460,7 +486,7 @@ func TestApplicationInsightsInventoryProjectionGraphAndAction(t *testing.T) {
 			t.Fatal("native deletion failed after driver restart", wait, err)
 		}
 	}
-	if len(f.deletes) != 10 || len(f.children) != 0 {
-		t.Fatal("native cleanup lost case-distinct leaf operations")
+	if len(f.deletes) != childCount || len(f.children) != 0 {
+		t.Fatal("native cleanup lost distinct leaf operations")
 	}
 }

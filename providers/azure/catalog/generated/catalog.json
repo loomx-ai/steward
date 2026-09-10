@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "ca949334fef8a57ab28c0be8122f016438488640d9b54c2bb5706bddf1b05d6f",
+    "checksum": "24a3656cb57f1922f2de44c09f58b199b0e667f5c0ae948bbb9d67724fed022e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "aaa42c2456b6892fac38427fc1301affc5c9ec769ce6f763f6c20ecf380d0b04",
+  "content_checksum": "498a0be604ee87b3999dfacc85f9fdf2d4c3db1b1cd16d4f292e4a1abf572849",
   "operations": [
     {
       "id": "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete",
@@ -110725,6 +110725,26 @@
       }
     },
     {
+      "native_type": "Microsoft.Insights/components/APIKeys",
+      "class": "security.credential",
+      "display_name": "Application Insights API key",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "APIKeys",
+        "read_operations": [
+          "Azure.Microsoft.Insights.APIKeys_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.APIKeys_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.APIKeys_List"
+        ]
+      }
+    },
+    {
       "native_type": "Microsoft.Insights/components/analyticsItems",
       "class": "observability.monitoring_configuration",
       "display_name": "Application Insights analytics item",
@@ -110781,6 +110801,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Insights.Favorites_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/components/linkedStorageAccounts",
+      "class": "observability.integration",
+      "display_name": "Application Insights linked storage",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "linkedStorageAccounts",
+        "read_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Get"
         ]
       }
     },

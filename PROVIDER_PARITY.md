@@ -1789,3 +1789,36 @@ background evidence only, not acceptance evidence for this work.
   Rechecking the parity matrix finds 29 mapped Azure kinds without specs;
   the five new child rules are additional native coverage, not five more
   completed matrix roots. All eight acceptance criteria remain open.
+
+### Azure Application Insights API keys and linked storage
+
+- Registered native API-key and linked-storage inventory/cleanup rules. API keys
+  keep their flat payload, full ARM identity and friendly name; permission paths
+  do not create resource or ownership edges. The fixed linked-storage singleton
+  uses its native GET and the exact `ServiceProfiler` enum. Absence requires a
+  live, unchanged component before and after that GET.
+- Both kinds reuse component/group/lock protection, private snapshot binding,
+  synchronous native delete validation and resumable final absence checks.
+  API-key DELETE validates the returned object against the reviewed key;
+  linked-storage DELETE accepts empty 200/204. Shared storage remains independent.
+  Legacy opaque URL identities and operation receipts retain their prior form.
+- Tests retain the original API-key GET/DELETE and linked-storage GET example
+  shapes, with explicitly substituted scope identifiers. Native batches pass
+  through SQLite projection, authoritative shards, Azure graph contributors,
+  planning, registered actions and resumed readback. Coverage includes private,
+  permission, creation and membership changes, missing/replaced parents,
+  protection, malformed targets, unexpected continuation, response protocols,
+  foreign-subscription boundaries and explicit shared-target deletion ordering.
+  These are composed protocol tests; the inspected independent Topaz release
+  lacks these nested APIs, and no new emulator or real-cloud run is claimed.
+- Full Go tests and vet passed (Azure 148.982s; GCP cached). Application Insights
+  and native catalog-binding race checks passed (17.065s), including the SQLite
+  graph/action scenarios; five native catalog refresh tests passed.
+- Azure now has 369 rules and 342 cleanup bindings (341 native DELETEs and one
+  native POST). The catalog retains 1,188 operations, 154 root documents and
+  49 reference documents; its content SHA-256 is
+  `498a0be604ee87b3999dfacc85f9fdf2d4c3db1b1cd16d4f292e4a1abf572849`.
+  The two child kinds do not reduce the 29 mapped Azure roots lacking specs.
+  Component cleanup, managed-workspace effects, annotation coverage and the
+  remaining service families still require work. All eight acceptance criteria
+  remain open.

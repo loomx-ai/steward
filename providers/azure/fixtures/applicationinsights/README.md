@@ -143,12 +143,13 @@ completed Application Insights support.
 
 Components have a native, read-only inventory rule while their complete cleanup
 lifecycle is being implemented. Analytics items, user analytics items, exports,
-favorites and work-item configurations have executable native leaf rules.
+favorites, work-item configurations, API keys and linked storage have executable
+native leaf rules.
 Annotations remain unregistered: a bounded 90-day query cannot safely close
 older persisted assets as absent after an authoritative scan.
 
 The dedicated inventory path reads the complete subscription component index,
-native component GETs and legacy collections twice. It reconciles IDs, private
+native component GETs and child collections twice. It reconciles IDs, private
 configuration, region, resource-group ownership/protection and management locks.
 Component pagination accepts native continuation tokens, but rejects filtered,
 duplicate, partial, cyclic or asynchronous collections. Client cursors bind
@@ -181,6 +182,42 @@ their `DestinationAccountId` subscription was sanitized to zero while
 remain unchanged. Native transport and leaf protocol tests can use those
 bodies, but the new storage-reference test rejects their contradictory
 destination subscriptions as evidence for a graph edge.
+
+## Native API keys and linked storage
+
+API keys retain their full ARM identity and flat native fields. Their friendly
+`name` is not the UUID at the end of the ID. Inventory reconciles the native
+`value` list with individual GETs; permissions and creation/configuration changes
+invalidate reviewed inventory and cursors. The permission paths in
+`linkedReadProperties` and `linkedWriteProperties` are not resource identities
+or ownership claims. Native key values and opaque configuration remain private.
+
+Linked storage uses the selected `2020-03-01-preview` GET as singleton discovery.
+The documented enum is bound as `ServiceProfiler`, even when the returned ARM
+ID is lowercase or the example's friendly name is `serviceprofile`. GET 404
+establishes an empty singleton only between successful, unchanged parent reads.
+The target must be a full storage-account ARM ID and contributes a `uses` edge;
+foreign targets are references without foreign-subscription reads. This matches
+the [native BYOS workflow](https://learn.microsoft.com/en-us/azure/azure-monitor/profiler/profiler-bring-your-own-storage),
+where removing the link and managing the storage account are separate operations.
+
+Both kinds use the same parent, resource-group and lock protection as legacy
+children. API-key DELETE requires the documented HTTP 200 object with the
+reviewed key identity/configuration. Linked-storage DELETE accepts the native
+empty HTTP 200/204 responses. Neither success response substitutes for GET
+absence; resumable receipts bind the resource, parent, connection and API version.
+Legacy receipt keys and configuration fingerprints retain their existing form.
+
+`TestApplicationInsightsARMChildProjectionGraphAndAction` runs native batches
+through SQLite projection, graph rebuilding, planning, deletion and resumed
+readback. It preserves the linked storage account and verifies explicit-selection
+deletion ordering. Other tests cover private/membership drift, inherited
+protection, partial/failed reads, unexpected continuation or asynchronous
+responses, identity substitution and malformed targets. Official API-key
+GET/DELETE bodies and linked-storage GET bodies are used with explicitly
+substituted subscription/group/component scope; source example files remain
+unchanged. These are composed protocol tests, not independent emulator or
+real-cloud verification. The inspected Topaz release lacks these child APIs.
 
 ## Monitor private-link lifecycle
 

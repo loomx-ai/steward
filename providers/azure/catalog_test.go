@@ -89,6 +89,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if strings.EqualFold(match[1], "subscriptionId") {
 					value = testSubscription
 				}
+				if kind.NativeType == insightsLinkedStorageType && match[1] == "storageType" {
+					value = "ServiceProfiler"
+				}
 				if match[1] == "resourceUri" {
 					value = strings.TrimPrefix(resourceID(vmType, "monitored"), "/")
 				}

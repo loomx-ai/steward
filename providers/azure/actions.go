@@ -45,8 +45,8 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		}
 		return newBatchAction(c, value, kind)
 	}
-	if insightsLegacyKind(kind.NativeType).kind != "" {
-		return newInsightsLegacyAction(c, id, value, kind)
+	if insightsLegacyKind(kind.NativeType).kind != "" || insightsARMChildKind(kind.NativeType) != "" {
+		return newInsightsChildAction(c, id, value, kind)
 	}
 	wireID, err := c.plannedResourceID(value)
 	if err != nil {

@@ -23,7 +23,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
 	}
-	if request.ResourceKind != nil && (strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) || insightsLegacyKind(request.ResourceKind.NativeType).kind != "") {
+	if request.ResourceKind != nil && (strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) || insightsLegacyKind(request.ResourceKind.NativeType).kind != "" || insightsARMChildKind(request.ResourceKind.NativeType) != "") {
 		if request.Source == inventorySource {
 			return contracts.InventoryBatch{Complete: true}, nil
 		}

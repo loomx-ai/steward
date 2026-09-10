@@ -80,14 +80,24 @@ func (c *client) insightsComponents(ctx context.Context) ([]serviceChild, string
 	return components, provenance, nil
 }
 
-func (r *Runtime) insightsLegacyItem(ctx context.Context, c *client, parent contracts.InventoryItem, child serviceChild) (contracts.InventoryItem, error) {
-	id, component, kind, selector, err := insightsLegacyIdentity(child.id)
-	if err != nil || id != child.id || kind != child.kind || component != parent.NativeID || !strings.HasPrefix(component, c.root()+"/") || insightsLegacyResponseIdentity(insightsLegacyKind(kind), selector, child.data) != nil {
+func (r *Runtime) insightsChildItem(ctx context.Context, c *client, parent contracts.InventoryItem, child serviceChild) (contracts.InventoryItem, error) {
+	id, component, kind, selector, err := insightsChildIdentity(child.id)
+	if err != nil || id != child.id || kind != child.kind || component != parent.NativeID || !strings.HasPrefix(component, c.root()+"/") {
 		return contracts.InventoryItem{}, serviceDenied("invalid_insights_legacy_inventory_identity")
+	}
+	if insightsARMChildKind(kind) != "" {
+		if err := insightsARMChildResponseIdentity(id, kind, child.data); err != nil {
+			return contracts.InventoryItem{}, err
+		}
+	} else if err := insightsLegacyResponseIdentity(insightsLegacyKind(kind), selector, child.data); err != nil {
+		return contracts.InventoryItem{}, err
 	}
 	safe := safePayload(object(applicationInsightsSafeValue(child.data)))
 	normalized := maps.Clone(safe)
 	name := text(child.data["Name"])
+	if insightsARMChildKind(kind) != "" {
+		name = text(child.data["name"])
+	}
 	if name == "" {
 		name = selector
 	}
@@ -96,7 +106,7 @@ func (r *Runtime) insightsLegacyItem(ctx context.Context, c *client, parent cont
 	normalized["_insights_component"] = component
 	normalized["_insights_component_configuration"] = parent.Normalized["_monitor_private_link_target_configuration"]
 	normalized["_insights_group_configuration"] = parent.Normalized["_insights_group_configuration"]
-	normalized["_insights_legacy_private_configuration"] = c.insightsLegacyConfiguration(id, kind, child.data)
+	normalized[insightsChildProofKey(kind)] = c.insightsChildConfiguration(id, kind, child.data)
 	for _, key := range []string{"cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
 		if value, exists := parent.Normalized[key]; exists {
 			normalized[key] = value
@@ -107,6 +117,10 @@ func (r *Runtime) insightsLegacyItem(ctx context.Context, c *client, parent cont
 		if err := c.insightsExportReferences(ctx, child.data, refs); err != nil {
 			return contracts.InventoryItem{}, err
 		}
+	}
+	if kind == insightsLinkedStorageType {
+		target, _, _ := parseID(text(object(child.data["properties"])["linkedStorageAccount"]))
+		addReference(refs, storageType, target)
 	}
 	var network []string
 	for typ, values := range refs {
@@ -163,7 +177,7 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 			items = append(items, parent)
 			continue
 		}
-		children, err := c.insightsLegacyChildren(ctx, component.id, request.ResourceKind.NativeType, insightsAnnotationWindow{})
+		children, err := c.insightsChildren(ctx, component.id, request.ResourceKind.NativeType)
 		if err != nil {
 			return nil, "", err
 		}
@@ -175,7 +189,7 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 			return nil, "", serviceDenied("insights_inventory_component_changed")
 		}
 		for _, child := range children {
-			item, err := r.insightsLegacyItem(ctx, c, parent, child)
+			item, err := r.insightsChildItem(ctx, c, parent, child)
 			if err != nil {
 				return nil, "", err
 			}
@@ -190,7 +204,7 @@ func insightsInventoryBindings(items []contracts.InventoryItem) map[string]any {
 	bindings := map[string]any{}
 	for _, item := range items {
 		value := map[string]any{"kind": item.NativeType, "location": item.Location, "scope": item.Scope, "references": item.NetworkReferences}
-		for _, key := range []string{"_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_group_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
+		for _, key := range []string{"_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_child_private_configuration", "_insights_group_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
 			value[key] = item.Normalized[key]
 		}
 		bindings[item.NativeID] = value

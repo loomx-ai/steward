@@ -27,7 +27,7 @@ type insightsLegacyActionFixture struct {
 	before                      func(*http.Request)
 }
 
-func newInsightsLegacyActionFixture(t *testing.T, kind string) (*insightsLegacyAction, contracts.ActionRequest, *insightsLegacyActionFixture) {
+func newInsightsLegacyActionFixture(t *testing.T, kind string) (*insightsChildAction, contracts.ActionRequest, *insightsLegacyActionFixture) {
 	t.Helper()
 	row := insightsLegacyKind(kind)
 	selector := "OpaqueID"
@@ -92,7 +92,7 @@ func newInsightsLegacyActionFixture(t *testing.T, kind string) (*insightsLegacyA
 		return jsonResponse(f.deleteStatus, body, f.deleteHeaders), nil
 	})
 	value := asset.Asset{ID: "legacy-asset", Identity: asset.Identity{Provider: asset.ProviderAzure, Partition: "azure", ConnectionID: "connection", NativeType: kind, NativeID: f.id}, Location: "eastus", Normalized: map[string]any{"_insights_component": f.parentID, "_insights_component_configuration": f.client.privateConfiguration(monitorPrivateLinkTargetSnapshot(f.parent)), "_insights_legacy_private_configuration": f.client.insightsLegacyConfiguration(f.id, kind, f.child)}}
-	a, err := newInsightsLegacyAction(f.client, "connection", value, insightsLegacyTestKind(kind))
+	a, err := newInsightsChildAction(f.client, "connection", value, insightsLegacyTestKind(kind))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,7 +120,7 @@ func TestApplicationInsightsLegacyActionLifecycle(t *testing.T) {
 			if json.Unmarshal(payload, &persisted) != nil {
 				t.Fatal("receipt did not persist")
 			}
-			restarted, err := newInsightsLegacyAction(f.client, "connection", request.Asset, insightsLegacyTestKind(kind))
+			restarted, err := newInsightsChildAction(f.client, "connection", request.Asset, insightsLegacyTestKind(kind))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -249,7 +249,7 @@ func TestApplicationInsightsLegacyActionIdentityAndReceipt(t *testing.T) {
 	if f.client.insightsLegacyConfiguration(other.Identity.NativeID, other.Identity.NativeType, f.child) == text(other.Normalized["_insights_legacy_private_configuration"]) {
 		t.Fatal("private proof was not bound to its native scope")
 	}
-	if _, err := newInsightsLegacyAction(f.client, "other", request.Asset, a.kind); err == nil {
+	if _, err := newInsightsChildAction(f.client, "other", request.Asset, a.kind); err == nil {
 		t.Fatal("resolver accepted another connection")
 	}
 }
@@ -355,7 +355,7 @@ func TestApplicationInsightsLegacyRecordedDeleteBodies(t *testing.T) {
 			request.Asset.Identity.NativeID = f.id
 			request.Asset.Normalized["_insights_legacy_private_configuration"] = f.client.insightsLegacyConfiguration(f.id, kind, f.child)
 			f.overrideBody, f.deleteBody, f.deleteStatus = true, record.Body, record.Status
-			driver, err := newInsightsLegacyAction(f.client, "connection", request.Asset, insightsLegacyTestKind(kind))
+			driver, err := newInsightsChildAction(f.client, "connection", request.Asset, insightsLegacyTestKind(kind))
 			if err != nil {
 				t.Fatal(err)
 			}

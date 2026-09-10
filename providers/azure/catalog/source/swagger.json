@@ -177492,6 +177492,46 @@
       "scopeKinds": [
         "region"
       ]
+    },
+    {
+      "nativeType": "Microsoft.Insights/components/APIKeys",
+      "class": "security.credential",
+      "displayName": "Application Insights API key",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "APIKeys",
+        "read_operations": [
+          "Azure.Microsoft.Insights.APIKeys_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.APIKeys_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.APIKeys_List"
+        ]
+      }
+    },
+    {
+      "nativeType": "Microsoft.Insights/components/linkedStorageAccounts",
+      "class": "observability.integration",
+      "displayName": "Application Insights linked storage",
+      "scopeKinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "linkedStorageAccounts",
+        "read_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Get"
+        ]
+      }
     }
   ]
 }
