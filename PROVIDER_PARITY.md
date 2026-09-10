@@ -1642,9 +1642,9 @@ background evidence only, not acceptance evidence for this work.
   Full Go tests, vet, five catalog-sync tests, bilingual documentation checks,
   APIM protocol/replay tests and the independent emulator test passed. Full
   Azure and shared planning/execution race tests also passed. The Azure race
-  suite completed in 1,140 seconds with the explicit 20-minute package timeout; CI allows 30 minutes
-  to accommodate slower runners.
-  repeated baseline plan construction is reused only within sequential test
+  suite completed in 1,140 seconds with the explicit 20-minute package timeout;
+  CI allows 30 minutes to accommodate slower runners. Repeated baseline plan
+  construction is reused only within sequential test
   tables, while every execution and native preflight still runs independently.
 - Service deletion uses Azure's ordinary 48-hour soft-delete retention. No
   purge, restore or email-template reset is offered. Thirty mapped Azure kinds
@@ -1652,3 +1652,34 @@ background evidence only, not acceptance evidence for this work.
   The service/behavior matrix, broader GCP/Azure full-application verification,
   live-cloud validation and publication remain unfinished. Native APIs without
   conditional deletion retain a final read/delete concurrency window.
+
+### Azure Application Insights native foundation (implementation in progress)
+
+- Added 63 original catalog operations from 16 pinned Application Insights and
+  Azure Monitor Private Link Scope documents. The current Azure catalog has
+  1,188 operations from 154 root and 49 reference documents; its SHA-256 is
+  `ad1beea7deb84aa3f4d5296a0cb987d59154794a95059da629ef756993312510`.
+- Retained 67 unchanged REST examples, 69 operation/example bindings and 42
+  original CLI response records. Native-schema tests check 56 response bodies,
+  handle explicit Swagger nullability and pin the 23 remaining published
+  discrepancy cases. Catalog reproducibility, all existing resource bindings
+  and the APIM operation audit pass with the additional sources. A separate
+  complete stable/preview source audit classifies 244 operations across 44
+  documents and verifies all 15 distinct native DELETE paths in the catalog.
+- Transport tests exercise 80 example/status responses, all 42 recorded CLI
+  responses, native arrays, private-workbook shape discrepancies, malformed
+  payloads and content redaction. Monitor relative deletion locations are bound
+  to their native operation-status path, subscription, group and API version;
+  missing/conflicting locations and mismatched operation responses are rejected.
+- The unmodified Topaz `v1.10.222-preview` emulator passed component GET/LIST,
+  Invoke deletion and final GET absence checks. Its unsupported API-key list,
+  nonstandard field casing and missing native creation identifiers are explicit
+  test assertions. This verifies transport, not the pending cleanup planner.
+- Full Go tests and vet passed after these transport changes. Scoped race tests
+  passed for native sources, example/recording transport, Monitor polling
+  boundaries, shared HTTP guards and the actual independent Topaz test.
+- Inventory adapters, executable resource rules, managed-workspace impacts,
+  AMPLS prerequisites, complete lifecycle replay and broader acceptance
+  remain in progress. These additions do not increase the 358 resource
+  rules or reduce the 30 mapped Azure kinds still lacking specifications.
+  See [Application Insights evidence](providers/azure/fixtures/applicationinsights/README.md).

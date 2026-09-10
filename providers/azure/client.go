@@ -221,7 +221,7 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		}
 		requestLog["body"] = value
 	}
-	execution.LogCloudAPIRequest(ctx, u.Host, method, safePayload(requestLog))
+	execution.LogCloudAPIRequest(ctx, u.Host, method, safeAPIPayload(requestLog, endpoint))
 	defer func() {
 		if failure != nil {
 			execution.LogCloudAPIFailure(ctx, u.Host, method, failure)
@@ -255,12 +255,32 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if len(bytes.TrimSpace(payload)) > 0 {
 		decoder := json.NewDecoder(bytes.NewReader(payload))
 		decoder.UseNumber()
-		if decoder.Decode(&out.data) != nil {
+		var value any
+		if decoder.Decode(&value) != nil {
 			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 		var trailing any
 		if decoder.Decode(&trailing) != io.EOF {
 			return out, apiError(res.StatusCode, "invalid_response", res.Header)
+		}
+		shape := applicationInsightsResponseShape(method, u)
+		rows, isArray := value.([]any)
+		if res.StatusCode == http.StatusOK && (shape == "array" || shape == "array-or-object" && isArray) {
+			if !isArray {
+				return out, apiError(res.StatusCode, "invalid_response", res.Header)
+			}
+			for _, row := range rows {
+				if object(row) == nil {
+					return out, apiError(res.StatusCode, "invalid_response", res.Header)
+				}
+			}
+			out.data = map[string]any{"value": rows}
+		} else {
+			var ok bool
+			out.data, ok = value.(map[string]any)
+			if value != nil && !ok {
+				return out, apiError(res.StatusCode, "invalid_response", res.Header)
+			}
 		}
 	}
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
@@ -290,7 +310,10 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if err := apimResponseETag(method, &out); err != nil {
 		return out, err
 	}
-	execution.LogCloudAPIResponse(ctx, u.Host, method, safePayload(map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}))
+	if err := monitorPrivateLinkResponse(method, u, &out); err != nil {
+		return out, err
+	}
+	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}, endpoint))
 	return out, nil
 }
 

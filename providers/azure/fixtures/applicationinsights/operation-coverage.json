@@ -1,0 +1,2286 @@
+{
+  "spec_commit": "e45039baa985c442877529906e705982a6e0099d",
+  "application_insights_tree": "e881e65b75862be16c5c59aaa2cb1ecaf8b2cc64",
+  "documents": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/componentProactiveDetection_API.json",
+      "source_sha256": "1b33b6d5cba1c0433b469eb3df68c3217017215c7d25fc67fcaca470ec2dda16"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "source_sha256": "c3e99ced503a751ae9db2ecdc5898722f793124f86c05733b6b9e5d3fa6b8933"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "source_sha256": "520c5af99f3f28d4e8d52bbb3a09769a173d855844e13c7c9d399b8519a2f76f"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbookOperations_API.json",
+      "source_sha256": "61c820b8806ba17ef8dd210448e86e9461b73906d2d3f156202e7620c68e09f9"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "source_sha256": "19a6535d10c9d61d8b108028f3a219e967d5ab86c237efc009dc9c58ef63326e"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "source_sha256": "0768cb084101704d2d2c09e592e1da878f109dafe6bc1b90e8add92248523dc7"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "source_sha256": "c7f297aab7db52bc68d14847d68290d652ab7d5c1dac91f5330ff1398e2a9269"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-10-preview/WebTestResults_API.json",
+      "source_sha256": "386f6f6dc1d0d13ee927c102a30779f25f647fe69ba28218bae65a9edb6256b2"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json",
+      "source_sha256": "1e79d6e44ec2720d2172e18db57baf948ed5aba51731131d91e4ee6b000a3b12"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-06-02-preview/livetoken_API.json",
+      "source_sha256": "42f0369add614c8f4e01e57e9ee172037bc0d5d1adb4b61fae2dae6e9638d00e"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "source_sha256": "1e7a30b690e0a995a0139fd8954c15b4da175bb453000f4892c3dd00ab537a4d"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2021-03-03-preview/diagnosticServicesToken_API.json",
+      "source_sha256": "77fed3d1acb81b50e1edfd65c3846e0d6dce17d0f85d3d1405b1f7b7424f363b"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2024-02-01-preview/deletedWorkbooks_API.json",
+      "source_sha256": "cc0f719401694d1bb6a63c4551ad4abbcd3b4818ac094a228f18898f8c2923b8"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/aiOperations_API.json",
+      "source_sha256": "48824cafc0e92366c021e206b335e34dcdba933775248c206938c63a11fdff94"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json",
+      "source_sha256": "45c0a0bc365868232ad0dd7aa55a42c3607d46154c0e90a79874b69341932063"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json",
+      "source_sha256": "8509aa0e57ee75c8de8a24fafc33e4ea8e3ee01df764aa0de0246b8e032d446d"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json",
+      "source_sha256": "8254b7b793a7f6357acffec9adf0b94114e134fe6a5cdd06455ebd6d00b68d0d"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "source_sha256": "0675ace1f26fdc8d617056caaecef690a133fc5197caafbf8ec4927c07162b33"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "source_sha256": "59e01848645ca00beb33342c0b3b5a49fbe3463fe48a53db7f582a760c25c9b6"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json",
+      "source_sha256": "30356c735622e72447b7c0bd2f1d7ec7e73895c8e4334be00761d2fdc2db4229"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "source_sha256": "987a541360ec4c1d5b7f3b1676ac89009a4b1c9367daba11e7c023cbb9319895"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "source_sha256": "1309b3e1453bb86f27d779970e5cd7bb1bf7613c10f9c5ec9f55955c30929ab7"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "source_sha256": "aaed2553bc0d5fb49fb3c9b606d504732fe50e549cb1fd7a66df6cf651010523"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "source_sha256": "3e445af82b625808ef2267e8263df4dfa7d1e791aaa2f786b02218f965f48000"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "source_sha256": "8ce1b06f6c076db85a731527e6a620fd1b9e43c5b8d7e302d97e87a76b3cd137"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTestLocations_API.json",
+      "source_sha256": "d8525d9bc8b4cd41d6e1e5c515f11bdd1bac11afbc20a7a787f33d7b624434c7"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "source_sha256": "a93aa27feb1bf1adcd493d499849b1d11ccbe350ef44f004dd97d847837fb3e2"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "source_sha256": "fcf7e98ca4dbce0344a7d01933b630387727003a7f59c89456e932f517c58576"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/componentFeaturesAndPricing_API.json",
+      "source_sha256": "09981b1ce96558ba352965cea09ee4a6fef67db2b03fe9ef6c008087f885461c"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/eaSubscriptionMigration_API.json",
+      "source_sha256": "e4254f2055cef6e5d03b61d721ac589973ad22653d5f540918dcde089d32090d"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "source_sha256": "eac16ff69a1e6f9704f1fe8b7a858d5b876764234246041b3fc73d74ddc7328d"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "source_sha256": "332133a6e8225a8f4eb76e2c7a562a089b588733b612127b83e89641a72afbff"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbookOperations_API.json",
+      "source_sha256": "130473e034e50c0be8469393b791d90752ec602ac71e8df9a75ab3c3549990ae"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "source_sha256": "08840de3d316bbfb1ae2f3f6b79f6d5c759ca1bc53ed5ba6e4b6cb09cba39b30"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "source_sha256": "959826fbaa6a6a82d524c3c27fd754743a54e7a32b888aa8dc01708224e7d796"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "source_sha256": "90df8c6b935c5453fffb4c1d28d4ff76b7745822b74ff6ce72ba0e270c31b377"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbookOperations_API.json",
+      "source_sha256": "3438fd8503a1a18f346ae8e560b75ef2584463910b4b48b1bfc17a1a858ba8b4"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "source_sha256": "6410a9d7d6d6b3601e5c6f7c3408d2ba2a6642a7a57fe4c019ca5715c2f42007"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "source_sha256": "e47bd96d710fb85a472f6b756d2c033384c16c4aef1f36cb9b976af9675dc11a"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-10-14/livetoken_API.json",
+      "source_sha256": "7cd17c002ec6d42fccad36dc1e0a18014c59b41192f479afb2fd0ff52796ca55"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "source_sha256": "03471cf5f4b29cd2b9a94ced877580d66d24130edcd3b7a8b3af2970a7a8bde9"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "source_sha256": "680279d031701e19ed1e424582cf911ee2e13c4643a73e9098ec5853c1a6a7df"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "source_sha256": "666a0dc4bd881e4d01f716882c2c76acab0b19cf1edcf275ef5061a6a4b041fd"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "source_sha256": "eaecc71f9b6e6e0e77acf01e7ec7387fcfcfcf7459a90ff2ff2a19cdd970400c"
+    }
+  ],
+  "operations": [
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/componentProactiveDetection_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "ProactiveDetectionConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/componentProactiveDetection_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "ProactiveDetectionConfigurations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/componentProactiveDetection_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "ProactiveDetectionConfigurations_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_GetPurgeStatus",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/operations/{purgeId}",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/components_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Components_Purge",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/purge",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_ListByComponent",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{componentName}/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-05-01-preview/webTests_API.json",
+      "api_version": "2018-05-01-preview",
+      "operation": "WebTests_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbookOperations_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2018-06-17-preview/workbooks_API.json",
+      "api_version": "2018-06-17-preview",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "api_version": "2019-10-17-preview",
+      "operation": "WorkbookTemplates_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooktemplates",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "api_version": "2019-10-17-preview",
+      "operation": "WorkbookTemplates_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooktemplates/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "api_version": "2019-10-17-preview",
+      "operation": "WorkbookTemplates_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooktemplates/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "api_version": "2019-10-17-preview",
+      "operation": "WorkbookTemplates_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooktemplates/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2019-10-17-preview/workbookTemplates_API.json",
+      "api_version": "2019-10-17-preview",
+      "operation": "WorkbookTemplates_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooktemplates/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_GetPurgeStatus",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/operations/{purgeId}",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-02-preview/components_API.json",
+      "api_version": "2020-02-02-preview",
+      "operation": "Components_Purge",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/purge",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-10-preview/WebTestResults_API.json",
+      "api_version": "2020-02-10-preview",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/microsoft.insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-02-10-preview/WebTestResults_API.json",
+      "api_version": "2020-02-10-preview",
+      "operation": "getTestResultFile",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/microsoft.insights/webtests/{webTestName}/getTestResultFile",
+      "handling": "test-result-artifact"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json",
+      "api_version": "2020-03-01-preview",
+      "operation": "ComponentLinkedStorageAccounts_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/linkedStorageAccounts/{storageType}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json",
+      "api_version": "2020-03-01-preview",
+      "operation": "ComponentLinkedStorageAccounts_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/linkedStorageAccounts/{storageType}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json",
+      "api_version": "2020-03-01-preview",
+      "operation": "ComponentLinkedStorageAccounts_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/linkedStorageAccounts/{storageType}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-03-01-preview/componentLinkedStorageAccounts_API.json",
+      "api_version": "2020-03-01-preview",
+      "operation": "ComponentLinkedStorageAccounts_CreateAndUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/linkedStorageAccounts/{storageType}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-06-02-preview/livetoken_API.json",
+      "api_version": "2020-06-02-preview",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/microsoft.insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-06-02-preview/livetoken_API.json",
+      "api_version": "2020-06-02-preview",
+      "operation": "LiveToken_Get",
+      "method": "POST",
+      "path": "/{resourceUri}/providers/microsoft.insights/generatelivetoken",
+      "handling": "diagnostic-token"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_ListByComponent",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{componentName}/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2020-10-05-preview/webTests_API.json",
+      "api_version": "2020-10-05-preview",
+      "operation": "WebTests_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2021-03-03-preview/diagnosticServicesToken_API.json",
+      "api_version": "2021-03-03-preview",
+      "operation": "DiagnosticServiceToken_GetReadOnly",
+      "method": "POST",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/generateDiagnosticServiceReadOnlyToken",
+      "handling": "diagnostic-token"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2021-03-03-preview/diagnosticServicesToken_API.json",
+      "api_version": "2021-03-03-preview",
+      "operation": "DiagnosticServiceToken_GetReadWrite",
+      "method": "POST",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/generateDiagnosticServiceReadWriteToken",
+      "handling": "diagnostic-token"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/preview/2024-02-01-preview/deletedWorkbooks_API.json",
+      "api_version": "2024-02-01-preview",
+      "operation": "DeletedWorkbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/deletedWorkbooks",
+      "handling": "deleted-resource-view"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/aiOperations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json",
+      "api_version": "2015-05-01",
+      "operation": "AnalyticsItems_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/{scopePath}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json",
+      "api_version": "2015-05-01",
+      "operation": "AnalyticsItems_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/{scopePath}/item",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json",
+      "api_version": "2015-05-01",
+      "operation": "AnalyticsItems_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/{scopePath}/item",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/analyticsItems_API.json",
+      "api_version": "2015-05-01",
+      "operation": "AnalyticsItems_Put",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/{scopePath}/item",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Create",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations/{annotationId}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations/{annotationId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/APIKeys/{keyId}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/APIKeys/{keyId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ApiKeys",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ApiKeys",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentCurrentBillingFeatures_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/currentbillingfeatures",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentCurrentBillingFeatures_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/currentbillingfeatures",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentFeatureCapabilities_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/featurecapabilities",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentAvailableFeatures_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/getavailablebillingfeatures",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentQuotaStatus_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/quotastatus",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_GetDefault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/DefaultWorkItemConfig",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_GetItem",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_UpdateItem",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_GetPurgeStatus",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/operations/{purgeId}",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/components_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Components_Purge",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/purge",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Favorites_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/favorites",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Favorites_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/favorites/{favoriteId}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Favorites_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/favorites/{favoriteId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Favorites_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/favorites/{favoriteId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Favorites_Add",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/favorites/{favoriteId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/myworkbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "MyWorkbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/APIKeys/{keyId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/APIKeys/{keyId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Create",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations/{annotationId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "Annotations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/Annotations/{annotationId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentAnnotations_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ApiKeys",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "APIKeys_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ApiKeys",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_GetDefault",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/DefaultWorkItemConfig",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ProactiveDetectionConfigurations_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/ProactiveDetectionConfigs/{ConfigurationId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_GetItem",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentWorkItemConfigs_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "WorkItemConfigurations_UpdateItem",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/WorkItemConfigs/{workItemConfigId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentCurrentBillingFeatures_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/currentbillingfeatures",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentCurrentBillingFeatures_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/currentbillingfeatures",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Create",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentContinuousExport_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ExportConfigurations_Update",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/exportconfiguration/{exportId}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentFeatureCapabilities_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/featurecapabilities",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentAvailableFeatures_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/getavailablebillingfeatures",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/openapi.json",
+      "api_version": "2015-05-01",
+      "operation": "ComponentQuotaStatus_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/quotastatus",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTestLocations_API.json",
+      "api_version": "2015-05-01",
+      "operation": "webTestLocations_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/syntheticmonitorlocations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_ListByComponent",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{componentName}/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/webTests_API.json",
+      "api_version": "2015-05-01",
+      "operation": "WebTests_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/workbooks_API.json",
+      "api_version": "2015-05-01",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2017-10-01",
+      "operation": "ComponentCurrentPricingPlan_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/pricingPlans/current",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/componentFeaturesAndPricing_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2017-10-01",
+      "operation": "ComponentCurrentPricingPlan_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/pricingPlans/current",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/componentFeaturesAndPricing_API.json",
+      "api_version": "2017-10-01",
+      "operation": "ComponentCurrentPricingPlan_CreateAndUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.insights/components/{resourceName}/pricingPlans/current",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/eaSubscriptionMigration_API.json",
+      "api_version": "2017-10-01",
+      "operation": "EASubscriptionListMigrationDate_Post",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/providers/microsoft.insights/listMigrationdate",
+      "handling": "subscription-billing-migration"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/eaSubscriptionMigration_API.json",
+      "api_version": "2017-10-01",
+      "operation": "EASubscriptionMigrateToNewPricingModel_Post",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/providers/microsoft.insights/migrateToNewPricingModel",
+      "handling": "subscription-billing-migration"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2017-10-01/eaSubscriptionMigration_API.json",
+      "api_version": "2017-10-01",
+      "operation": "EASubscriptionRollbackToLegacyPricingModel_Post",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/providers/microsoft.insights/rollbackToLegacyPricingModel",
+      "handling": "subscription-billing-migration"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/components",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_GetPurgeStatus",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/operations/{purgeId}",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-02-02/components_API.json",
+      "api_version": "2020-02-02",
+      "operation": "Components_Purge",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{resourceName}/purge",
+      "handling": "telemetry-purge"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/myworkbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "MyWorkbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbookOperations_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-10-20/workbooks_API.json",
+      "api_version": "2020-10-20",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "api_version": "2020-11-20",
+      "operation": "WorkbookTemplates_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooktemplates",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "api_version": "2020-11-20",
+      "operation": "WorkbookTemplates_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooktemplates/{resourceName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "api_version": "2020-11-20",
+      "operation": "WorkbookTemplates_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooktemplates/{resourceName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "api_version": "2020-11-20",
+      "operation": "WorkbookTemplates_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooktemplates/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2020-11-20/workbookTemplates_API.json",
+      "api_version": "2020-11-20",
+      "operation": "WorkbookTemplates_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooktemplates/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/myworkbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "MyWorkbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/myWorkbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbookOperations_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Operations_List",
+      "method": "GET",
+      "path": "/providers/Microsoft.Insights/operations",
+      "handling": "provider-capability"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_RevisionsList",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-03-08/workbooks_API.json",
+      "api_version": "2021-03-08",
+      "operation": "Workbooks_RevisionGet",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions/{revisionId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_RevisionsList",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-08-01/workbooks_API.json",
+      "api_version": "2021-08-01",
+      "operation": "Workbooks_RevisionGet",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions/{revisionId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2021-10-14/livetoken_API.json",
+      "api_version": "2021-10-14",
+      "operation": "LiveToken_Get",
+      "method": "POST",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/generatelivetoken",
+      "handling": "diagnostic-token"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_RevisionsList",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-04-01/workbooks_API.json",
+      "api_version": "2022-04-01",
+      "operation": "Workbooks_RevisionGet",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions/{revisionId}",
+      "handling": "alternate-version",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/webtests",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_ListByComponent",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/components/{componentName}/webtests",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2022-06-15/webTests_API.json",
+      "api_version": "2022-06-15",
+      "operation": "WebTests_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/webtests/{webTestName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_ListBySubscription",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/workbooks",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_Update",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_RevisionsList",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json",
+      "api_version": "2023-06-01",
+      "operation": "Workbooks_RevisionGet",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/workbooks/{resourceName}/revisions/{revisionId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2023-06-01/workbooks_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_List",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/privateLinkScopes",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopeOperationStatus_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopeOperationStatuses/{asyncOperationId}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_ListByResourceGroup",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_UpdateTags",
+      "method": "PATCH",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopes_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateEndpointConnections_ListByPrivateLinkScope",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateEndpointConnections",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateEndpointConnections_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateEndpointConnections_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateEndpointConnections_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "handling": "create-update"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkResources_ListByPrivateLinkScope",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateLinkResources",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkResources_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/privateLinkResources/{groupName}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopedResources_ListByPrivateLinkScope",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/scopedResources",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopedResources_Delete",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/scopedResources/{name}",
+      "handling": "selected-delete",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopedResources_Get",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/scopedResources/{name}",
+      "handling": "selected-read",
+      "selected_source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json"
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2021-09-01/privateLinkScopes_API.json",
+      "api_version": "2021-09-01",
+      "operation": "PrivateLinkScopedResources_CreateOrUpdate",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/privateLinkScopes/{scopeName}/scopedResources/{name}",
+      "handling": "create-update"
+    }
+  ]
+}

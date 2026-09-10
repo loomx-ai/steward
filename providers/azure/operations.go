@@ -115,7 +115,7 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 			return contracts.InvocationResult{}, err
 		}
 	}
-	return contracts.InvocationResult{Data: safePayload(result.data), RequestID: result.requestID, NextToken: text(result.data["nextLink"]), OperationID: operationID}, nil
+	return contracts.InvocationResult{Data: safeAPIPayload(result.data, request.URL), RequestID: result.requestID, NextToken: text(result.data["nextLink"]), OperationID: operationID}, nil
 }
 
 func azureRequestID(key string) string {

@@ -1,0 +1,159 @@
+{
+  "monitor/examples/PrivateLinkScopesList.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "monitor/examples/PrivateLinkScopesListByResourceGroup.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2015-05-01/examples/AnalyticsItemList.json HTTP 200": [
+    "/0/TimeCreated: got null, want string",
+    "/1/TimeCreated: got null, want string",
+    "/2/TimeCreated: got null, want string",
+    "/3/TimeCreated: got null, want string"
+  ],
+  "stable/2015-05-01/examples/AnnotationsGet.json HTTP 200": [
+    "/0/RelatedAnnotation: got null, want string"
+  ],
+  "stable/2015-05-01/examples/AnnotationsList.json HTTP 200": [
+    "/value/0/RelatedAnnotation: got null, want string",
+    "/value/1/RelatedAnnotation: got null, want string"
+  ],
+  "stable/2015-05-01/examples/AvailableBillingFeaturesGet.json HTTP 200": [
+    "/Result/0/Capabilities/0/MeterId: got null, want string",
+    "/Result/0/Capabilities/0/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/0/Unit: got null, want string",
+    "/Result/0/Capabilities/1/Unit: got null, want string",
+    "/Result/0/Capabilities/10/MeterId: got null, want string",
+    "/Result/0/Capabilities/10/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/10/Unit: got null, want string",
+    "/Result/0/Capabilities/11/MeterId: got null, want string",
+    "/Result/0/Capabilities/11/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/11/Unit: got null, want string",
+    "/Result/0/Capabilities/12/MeterId: got null, want string",
+    "/Result/0/Capabilities/12/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/12/Unit: got null, want string",
+    "/Result/0/Capabilities/13/Unit: got null, want string",
+    "/Result/0/Capabilities/13/Value: got null, want string",
+    "/Result/0/Capabilities/14/MeterId: got null, want string",
+    "/Result/0/Capabilities/14/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/14/Unit: got null, want string",
+    "/Result/0/Capabilities/15/MeterId: got null, want string",
+    "/Result/0/Capabilities/15/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/15/Unit: got null, want string",
+    "/Result/0/Capabilities/16/MeterId: got null, want string",
+    "/Result/0/Capabilities/16/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/16/Unit: got null, want string",
+    "/Result/0/Capabilities/17/MeterId: got null, want string",
+    "/Result/0/Capabilities/17/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/17/Unit: got null, want string",
+    "/Result/0/Capabilities/18/MeterId: got null, want string",
+    "/Result/0/Capabilities/18/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/18/Unit: got null, want string",
+    "/Result/0/Capabilities/19/MeterId: got null, want string",
+    "/Result/0/Capabilities/19/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/19/Unit: got null, want string",
+    "/Result/0/Capabilities/2/Unit: got null, want string",
+    "/Result/0/Capabilities/2/Value: got null, want string",
+    "/Result/0/Capabilities/20/MeterId: got null, want string",
+    "/Result/0/Capabilities/20/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/20/Unit: got null, want string",
+    "/Result/0/Capabilities/21/MeterId: got null, want string",
+    "/Result/0/Capabilities/21/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/21/Unit: got null, want string",
+    "/Result/0/Capabilities/22/MeterId: got null, want string",
+    "/Result/0/Capabilities/22/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/22/Unit: got null, want string",
+    "/Result/0/Capabilities/23/Unit: got null, want string",
+    "/Result/0/Capabilities/24/MeterId: got null, want string",
+    "/Result/0/Capabilities/24/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/25/MeterId: got null, want string",
+    "/Result/0/Capabilities/25/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/3/MeterId: got null, want string",
+    "/Result/0/Capabilities/3/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/4/MeterId: got null, want string",
+    "/Result/0/Capabilities/4/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/4/Unit: got null, want string",
+    "/Result/0/Capabilities/5/MeterId: got null, want string",
+    "/Result/0/Capabilities/5/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/5/Unit: got null, want string",
+    "/Result/0/Capabilities/6/MeterId: got null, want string",
+    "/Result/0/Capabilities/6/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/6/Unit: got null, want string",
+    "/Result/0/Capabilities/7/MeterId: got null, want string",
+    "/Result/0/Capabilities/7/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/7/Unit: got null, want string",
+    "/Result/0/Capabilities/8/MeterId: got null, want string",
+    "/Result/0/Capabilities/8/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/8/Unit: got null, want string",
+    "/Result/0/Capabilities/9/MeterId: got null, want string",
+    "/Result/0/Capabilities/9/MeterRateFrequency: got null, want string",
+    "/Result/0/Capabilities/9/Unit: got null, want string",
+    "/Result/0/ResouceId: got null, want string",
+    "/Result/1/Capabilities/0/Unit: got null, want string",
+    "/Result/1/Capabilities/1/Unit: got null, want string",
+    "/Result/1/Capabilities/1/Value: got null, want string",
+    "/Result/1/Capabilities/2/MeterId: got null, want string",
+    "/Result/1/Capabilities/2/MeterRateFrequency: got null, want string",
+    "/Result/1/Capabilities/3/MeterId: got null, want string",
+    "/Result/1/Capabilities/3/MeterRateFrequency: got null, want string",
+    "/Result/1/ResouceId: got null, want string",
+    "/Result/1/SupportedAddonFeatures: got null, want string"
+  ],
+  "stable/2015-05-01/examples/FavoriteGet.json HTTP 200": [
+    "/Category: got null, want string",
+    "/SourceType: got null, want string"
+  ],
+  "stable/2015-05-01/examples/FavoritesList.json HTTP 200": [
+    "/0/Category: got null, want string",
+    "/0/SourceType: got null, want string",
+    "/1/Category: got null, want string",
+    "/1/SourceType: got null, want string"
+  ],
+  "stable/2015-05-01/examples/FeatureCapabilitiesGet.json HTTP 200": [
+    "/MetadataClass: got null, want string"
+  ],
+  "stable/2015-05-01/examples/ProactiveDetectionConfigurationGet.json HTTP 200": [
+    "/lastUpdatedTime: got null, want string"
+  ],
+  "stable/2015-05-01/examples/ProactiveDetectionConfigurationsList.json HTTP 200": [
+    "/0/lastUpdatedTime: got null, want string",
+    "/1/lastUpdatedTime: got null, want string"
+  ],
+  "stable/2020-02-02/examples/ComponentsList.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2020-02-02/examples/ComponentsListByResourceGroup.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2020-11-20/examples/WorkbookTemplateGet.json HTTP 200": [
+    "/tags: got null, want object"
+  ],
+  "stable/2020-11-20/examples/WorkbookTemplatesList.json HTTP 200": [
+    "/value/0/tags: got null, want object",
+    "/value/1/tags: got null, want object"
+  ],
+  "stable/2021-03-08/examples/MyWorkbookGet.json HTTP 200": [
+    "/properties/timeModified: got null, want string"
+  ],
+  "stable/2022-06-15/examples/WebTestList.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2022-06-15/examples/WebTestListByComponent.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2022-06-15/examples/WebTestListByResourceGroup.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2023-06-01/examples/WorkbookRevisionsList.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2023-06-01/examples/WorkbooksList.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2023-06-01/examples/WorkbooksList2.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ],
+  "stable/2023-06-01/examples/WorkbooksListSub.json HTTP 200": [
+    "/nextLink: got null, want string"
+  ]
+}

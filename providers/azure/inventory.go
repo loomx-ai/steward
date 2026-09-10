@@ -839,6 +839,9 @@ func locked(id string, locks []any) bool {
 func safeResource(value any) any {
 	switch typed := value.(type) {
 	case map[string]any:
+		if applicationInsightsRaw(typed) {
+			typed = object(applicationInsightsSafeValue(typed))
+		}
 		if apimRaw(typed) {
 			typed = apimSafeRaw(typed)
 		}
