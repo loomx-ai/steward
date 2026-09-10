@@ -1,0 +1,74 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/raiToolLabels
+  class: security.tool_label
+presentation:
+  displayNames:
+    en-US: AI tool label
+    zh-CN: AI 工具标签
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.RaiToolLabels_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.RaiToolLabels_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  toolConnectionName:
+    path: toolConnectionName
+    type: string
+  accountScope:
+    path: accountScope
+    type: object
+  projectScopes:
+    path: projectScopes
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts/projects
+  targetIdPath: refs_microsoft_cognitiveservices_accounts_projects
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.RaiToolLabels_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.RaiToolLabels_Get
+      itemsPath: $
+      identityPath: id

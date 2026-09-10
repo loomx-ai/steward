@@ -74,6 +74,9 @@ relationships:
 - type: uses
   targetType: Microsoft.ContainerService/managedClusters
   targetIdPath: refs_microsoft_containerservice_managedclusters
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
 actions:
   delete:
     operation: Azure.Microsoft.Search.SharedPrivateLinkResources_Delete

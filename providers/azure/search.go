@@ -59,11 +59,11 @@ func searchIncarnation(planned asset.Asset, live map[string]any) error {
 
 // Bind the target's actual native API. An unknown or out-of-subscription
 // resource cannot borrow the Search API version or the selected credential.
-func (c *client) searchResource(ctx context.Context, value string) (map[string]any, error) {
+func (c *client) linkedResource(ctx context.Context, value string) (map[string]any, error) {
 	id, kind, err := parseID(value)
 	mapping, known := findType(kind)
 	if err != nil || !known {
-		return nil, serviceDenied("search_target_api_unavailable")
+		return nil, serviceDenied("linked_target_api_unavailable")
 	}
 	endpoint, err := c.resourceURL(mapping, id)
 	if err != nil {
@@ -74,7 +74,7 @@ func (c *client) searchResource(ctx context.Context, value string) (map[string]a
 		return nil, err
 	}
 	if !validResourceResponse(response, id, mapping.NativeType) {
-		return nil, serviceDenied("search_resource_identity_changed")
+		return nil, serviceDenied("linked_resource_identity_changed")
 	}
 	return response.data, nil
 }
@@ -111,7 +111,7 @@ func (c *client) searchInventory(ctx context.Context, id, kind string, raw, norm
 	normalized["_search_configuration"] = searchConfiguration(kind, raw)
 	normalized["_search_private_configuration"] = c.privateConfiguration(searchSnapshot(kind, raw))
 	if kind != searchType {
-		parent, err := c.searchResource(ctx, redisParentID(id))
+		parent, err := c.linkedResource(ctx, redisParentID(id))
 		if err != nil {
 			return err
 		}
@@ -123,7 +123,7 @@ func (c *client) searchInventory(ctx context.Context, id, kind string, raw, norm
 		if err != nil {
 			return err
 		}
-		target, err := c.searchResource(ctx, targetID)
+		target, err := c.linkedResource(ctx, targetID)
 		if err != nil {
 			return err
 		}
@@ -144,7 +144,7 @@ func (a *action) searchPreflight(ctx context.Context, planned asset.Asset, raw m
 		return err
 	}
 	if kind != searchType {
-		parent, err := a.client.searchResource(ctx, redisParentID(a.id))
+		parent, err := a.client.linkedResource(ctx, redisParentID(a.id))
 		if err != nil {
 			return err
 		}
@@ -168,7 +168,7 @@ func (a *action) searchPreflight(ctx context.Context, planned asset.Asset, raw m
 	if err != nil {
 		return err
 	}
-	target, err := a.client.searchResource(ctx, targetID)
+	target, err := a.client.linkedResource(ctx, targetID)
 	if err != nil {
 		return err
 	}
@@ -186,7 +186,7 @@ func (a *action) searchPreflight(ctx context.Context, planned asset.Asset, raw m
 	if err := a.client.linkedResourceProtection(ctx, targetID, target, locks); err != nil {
 		return err
 	}
-	current, err := a.client.searchResource(ctx, targetID)
+	current, err := a.client.linkedResource(ctx, targetID)
 	if err != nil {
 		return err
 	}

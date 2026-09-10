@@ -77,8 +77,8 @@ re-read. The target's own data resource is never deleted by unlinking. See
 Microsoft's [shared-link deletion contract](https://learn.microsoft.com/en-us/azure/search/troubleshoot-shared-private-link-resources).
 
 Target reads require a modeled native resource API in the selected subscription.
-Storage, SQL servers, App Service and AKS have those bindings. Cosmos DB,
-Cognitive Services and other unmodeled targets, or targets outside the selected
+Storage, SQL servers, App Service, AKS and Cognitive Services now have those
+bindings. Cosmos DB and other unmodeled targets, or targets outside the selected
 subscription, currently block link discovery/deletion rather than borrow an
 unverified API version or credential. These remaining target families are an
 explicit completeness gap, not evidence of full Search private-link coverage.

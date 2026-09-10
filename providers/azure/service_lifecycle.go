@@ -26,6 +26,19 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	cognitiveType:                  cognitiveOwnedKinds(cognitiveType),
+	cognitiveProjectType:           cognitiveOwnedKinds(cognitiveProjectType),
+	cognitiveApplicationType:       cognitiveOwnedKinds(cognitiveApplicationType),
+	cognitiveNetworkType:           cognitiveOwnedKinds(cognitiveNetworkType),
+	cognitiveBlocklistType:         cognitiveOwnedKinds(cognitiveBlocklistType),
+	cognitiveSharedPlanType:        cognitiveOwnedKinds(cognitiveSharedPlanType),
+	cognitiveHostType:              {},
+	cognitiveProjectHostType:       {},
+	cognitiveConnectionType:        {},
+	cognitiveProjectConnectionType: {},
+	cognitiveDeploymentType:        {},
+	cognitivePolicyType:            {},
+
 	searchType:          {searchConnectionType, searchLinkType, searchPerimeterType},
 	redisType:           {redisPolicyType, redisAssignmentType, redisFirewallType, redisLinkType, redisPatchType, redisConnectionType},
 	redisPolicyType:     {redisAssignmentType},
@@ -186,7 +199,7 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 }
 
 func serviceListedIncarnation(listed, live map[string]any) error {
-	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "eTag", "immutableId", "accountId"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "eTag", "immutableId", "accountId", "internalId", "dateCreated", "deploymentId", "commitmentPlanGuid", "topicId"} {
 		if expected := object(listed["properties"])[field]; expected != nil && !reflect.DeepEqual(expected, object(live["properties"])[field]) {
 			return fmt.Errorf("Azure resource incarnation changed")
 		}
@@ -203,6 +216,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := cognitiveIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isCognitiveType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := searchIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -386,7 +405,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) {
+			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -533,6 +552,12 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 				return err
 			}
 			kind, _ := findType(child.kind)
+			if child.kind == cognitiveOutboundType {
+				childAction := action{client: a.client, kind: kind, id: child.id}
+				if err := childAction.cognitiveResourcePreflight(ctx, impact.Asset, child.data, false); err != nil {
+					return err
+				}
+			}
 			groupID := strings.Join(strings.Split(child.id, "/")[:5], "/")
 			if !verifiedGroups[groupID] {
 				group, err := a.client.request(ctx, "GET", apiURL(groupID, resourcesVersion))
@@ -636,7 +661,7 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
-	return (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
+	return (isCognitiveType(parent) && isCognitiveType(child) && reason == "azure_cognitive_managed_configuration") || (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
 		(parent == redisLinkType && child == redisLinkType && reason == "azure_redis_secondary_link") ||
 		(recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
 		((parent == serviceBusNamespaceType || parent == eventHubNamespaceType) && child == parent+"/authorizationRules" && reason == "azure_messaging_default_authorization_rule") ||
@@ -658,6 +683,8 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isCognitiveType(parent.NativeType):
+		children, err = c.cognitiveChildren(ctx, parent, raw)
 	case parent.NativeType == searchType:
 		children, err = c.searchChildren(ctx, parent, raw)
 	case isRedisType(parent.NativeType):
@@ -701,6 +728,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if isCognitiveType(parent.NativeType) && cognitiveProtection(children[i].kind, children[i].data) == "azure_cognitive_managed_configuration" {
+			children[i].direct = false
+		}
 		if parent.NativeType == redisType && children[i].kind == redisPolicyType && object(children[i].data["properties"])["type"] == "BuiltIn" {
 			children[i].direct = false
 		}
@@ -724,6 +754,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if cognitiveSharedPrerequisite(parent, child) {
+		return true
+	}
 	if redisSharedPrerequisite(parent, child) || redisLinkPeerRelation(parent, child) {
 		return true
 	}

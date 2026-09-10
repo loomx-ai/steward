@@ -25,15 +25,17 @@ type productCursor struct {
 	Seen        []string `json:"seen,omitempty"`
 }
 type productTarget struct {
-	RedisRootConfiguration      string `json:"redis_root_configuration,omitempty"`
-	AppServiceRootConfiguration string `json:"app_service_root_configuration,omitempty"`
-	CDNProfileConfiguration     string `json:"cdn_profile_configuration,omitempty"`
-	MonitoredResource           string `json:"monitored_resource,omitempty"`
-	Endpoint                    string `json:"endpoint"`
-	ParentID                    string `json:"parent_id,omitempty"`
-	ParentType                  string `json:"parent_type,omitempty"`
-	Generation                  string `json:"generation,omitempty"`
-	Location                    string `json:"location,omitempty"`
+	CognitiveAncestors          map[string]any `json:"cognitive_ancestors,omitempty"`
+	CognitiveNativeLocation     string         `json:"cognitive_native_location,omitempty"`
+	RedisRootConfiguration      string         `json:"redis_root_configuration,omitempty"`
+	AppServiceRootConfiguration string         `json:"app_service_root_configuration,omitempty"`
+	CDNProfileConfiguration     string         `json:"cdn_profile_configuration,omitempty"`
+	MonitoredResource           string         `json:"monitored_resource,omitempty"`
+	Endpoint                    string         `json:"endpoint"`
+	ParentID                    string         `json:"parent_id,omitempty"`
+	ParentType                  string         `json:"parent_type,omitempty"`
+	Generation                  string         `json:"generation,omitempty"`
+	Location                    string         `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -162,6 +164,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		cognitiveLocation := cognitiveNativeLocation(data)
 		if kind.NativeType == dataCollectionAssociationType {
 			if err := dataCollectionTargetMembership(data, target); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -206,6 +209,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		item, err := r.inventoryItem(ctx, c, data, owners, locks)
 		if err != nil {
 			return contracts.InventoryBatch{}, err
+		}
+		if isCognitiveType(kind.NativeType) {
+			item.Normalized["_cognitive_native_location"] = cognitiveLocation
 		}
 		if !productScopeMatches(request, item) {
 			continue
@@ -283,6 +289,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isCognitiveType(kind) {
+		values = append(values, cognitiveConfiguration(kind, raw))
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isSearchType(kind) {
 		values = append(values, searchConfiguration(kind, raw))
 	}
@@ -300,7 +309,7 @@ func creationGeneration(raw map[string]any) string {
 	if value := object(raw["systemData"])["createdAt"]; value != nil {
 		values["systemData.createdAt"] = value
 	}
-	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "immutableId", "accountId"} {
+	for _, field := range []string{"resourceGuid", "resourceUid", "uniqueId", "vmId", "creationTime", "timeCreated", "creationDate", "databaseId", "hostId", "createdAt", "createdAtUtc", "immutableId", "accountId", "internalId", "dateCreated", "deploymentId", "commitmentPlanGuid", "topicId"} {
 		if value := object(raw["properties"])[field]; value != nil {
 			values[field] = value
 		}
@@ -336,6 +345,14 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
+	}
+	if target.CognitiveAncestors != nil {
+		if target.CognitiveNativeLocation != cognitiveNativeLocation(current.data) {
+			return errProductParentGenerationChanged
+		}
+		if err := c.cognitiveAncestors(ctx, target.ParentID, target.CognitiveAncestors, false); err != nil {
+			return err
+		}
 	}
 	if target.RedisRootConfiguration != "" {
 		root, err := c.redisResource(ctx, redisRootID(target.ParentID))
@@ -470,6 +487,10 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if isCognitiveType(parent.NativeType) {
+				target.CognitiveAncestors = object(parent.Normalized["_cognitive_ancestors"])
+				target.CognitiveNativeLocation = text(parent.Normalized["_cognitive_native_location"])
+			}
 			if parent.NativeType == redisDatabaseType {
 				target.RedisRootConfiguration = text(parent.Normalized["_redis_parent_configuration"])
 			}

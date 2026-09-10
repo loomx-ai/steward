@@ -128,6 +128,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if err := a.wafPreflight(request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
+	if err := a.cognitivePreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.searchPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -308,6 +311,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 		}
 	}
 	data := map[string]any{"polling": polling}
+	if isCognitiveType(a.kind.NativeType) && operation != "" {
+		data["cognitive_operation_binding"] = a.operationBinding(operation)
+	}
 	if isSearchType(a.kind.NativeType) && operation != "" {
 		data["search_operation_binding"] = a.operationBinding(operation)
 	}
@@ -383,6 +389,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if isAppServiceType(a.kind.NativeType) && text(result.Data["app_service_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("App Service polling receipt does not match its resource")
+		}
+		if isCognitiveType(a.kind.NativeType) && text(result.Data["cognitive_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("Cognitive Services polling receipt does not match its resource")
 		}
 		if isSearchType(a.kind.NativeType) && text(result.Data["search_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("Search polling receipt does not match its resource")
@@ -492,6 +501,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}
+	if reason := cognitiveProtection(kind.NativeType, raw); reason != "" {
+		return reason
+	}
 	if kind.NativeType == searchPerimeterType {
 		return "azure_search_managed_configuration"
 	}
@@ -563,7 +575,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
+	case "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
 		return true
 	default:
 		return false

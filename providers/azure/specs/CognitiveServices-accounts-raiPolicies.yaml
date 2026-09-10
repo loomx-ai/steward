@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/raiPolicies
+  class: security.content_policy
+presentation:
+  displayNames:
+    en-US: AI content filter policy
+    zh-CN: AI 内容过滤策略
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.RaiPolicies_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.RaiPolicies_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  type:
+    path: type
+    type: string
+  mode:
+    path: mode
+    type: string
+  basePolicyName:
+    path: basePolicyName
+    type: string
+  customBlocklists:
+    path: customBlocklists
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts/raiBlocklists
+  targetIdPath: refs_microsoft_cognitiveservices_accounts_raiblocklists
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.RaiPolicies_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.RaiPolicies_Get
+      itemsPath: $
+      identityPath: id

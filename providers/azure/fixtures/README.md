@@ -51,3 +51,8 @@ https://learn.microsoft.com/en-us/rest/api/storageservices/list-blobs
 Microsoft CLI responses, including signed asynchronous deletion and the native
 None-error placeholder. Schema inconsistencies, API-version rebinding and
 injected lifecycle/readback cases are explicitly documented.
+
+[Cognitive Services and Foundry](cognitive/README.md) retain 67 original Swagger
+examples and 31 Microsoft CLI responses. Their native schemas, account/project
+dependencies, managed-network cleanup, soft deletion and remaining connection
+network gaps have documented checks and provenance.

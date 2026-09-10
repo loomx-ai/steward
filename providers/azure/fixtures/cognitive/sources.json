@@ -1,0 +1,471 @@
+[
+  {
+    "file": "ListAccountsBySubscription.json",
+    "operation": "Accounts_List",
+    "label": "List Accounts by Subscription",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListAccountsBySubscription.json",
+    "source_sha256": "142cd9e8abf6e5879d26b545438dc1217a85ffde2d9036ea6d5650f8c27abc7a"
+  },
+  {
+    "file": "GetAccount.json",
+    "operation": "Accounts_Get",
+    "label": "Get Account",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetAccount.json",
+    "source_sha256": "685d2dc92488dfed8785bf1195278a0966640867be2eb2e7cbeaf2bb0d7d1503"
+  },
+  {
+    "file": "DeleteAccount.json",
+    "operation": "Accounts_Delete",
+    "label": "Delete Account",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteAccount.json",
+    "source_sha256": "2bb8f64b2420085a0028e3eeb1bdfd87420ceb031886bf7e83d797d4ae3dc8c9"
+  },
+  {
+    "file": "AccountCapabilityHost-list.json",
+    "operation": "AccountCapabilityHosts_List",
+    "label": "List Account CapabilityHosts.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountCapabilityHost/list.json",
+    "source_sha256": "0915f49e90ab40f1daf5f4dedf65f254530f4730af20146697470c98572bacf9"
+  },
+  {
+    "file": "AccountCapabilityHost-get.json",
+    "operation": "AccountCapabilityHosts_Get",
+    "label": "Get Account CapabilityHost.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountCapabilityHost/get.json",
+    "source_sha256": "ff17d24ab3c02f11e28e90121eb08940ab1001fc33bcdd2f570548e1243aa3cb"
+  },
+  {
+    "file": "AccountCapabilityHost-delete.json",
+    "operation": "AccountCapabilityHosts_Delete",
+    "label": "Delete Account CapabilityHost.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountCapabilityHost/delete.json",
+    "source_sha256": "d221ff4f3715feb9fe4fdaf8da5f3d2c3fe0a8ccd65be7e38678c3c1e0e84102"
+  },
+  {
+    "file": "ListCommitmentPlans.json",
+    "operation": "CommitmentPlans_List",
+    "label": "ListCommitmentPlans",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListCommitmentPlans.json",
+    "source_sha256": "9c0f68e8a91bb18c573d028bababdd4239601e6f9f1061b3b2ad34bc0e388f5f"
+  },
+  {
+    "file": "GetCommitmentPlan.json",
+    "operation": "CommitmentPlans_Get",
+    "label": "GetCommitmentPlan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetCommitmentPlan.json",
+    "source_sha256": "b365db9cb3ae0452b87b53a4e18520168b4fa4ade56315091543d305f60ee5c0"
+  },
+  {
+    "file": "DeleteCommitmentPlan.json",
+    "operation": "CommitmentPlans_Delete",
+    "label": "DeleteCommitmentPlan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteCommitmentPlan.json",
+    "source_sha256": "684b86a3be708f239237fbd0b731dbbaaaf9ece95cbdad7261524f6f7be1a988"
+  },
+  {
+    "file": "AccountConnection-list.json",
+    "operation": "AccountConnections_List",
+    "label": "ListAccountConnections",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountConnection/list.json",
+    "source_sha256": "8d6e4bb513f48c32bb88d54b2f37d058f522a45e6f8837e95d22c6776354f617"
+  },
+  {
+    "file": "AccountConnection-get.json",
+    "operation": "AccountConnections_Get",
+    "label": "GetAccountConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountConnection/get.json",
+    "source_sha256": "9150a8bae94d563644be6b38d6dcc5a6726baea1e2ff1692857b0e7e972da561"
+  },
+  {
+    "file": "AccountConnection-delete.json",
+    "operation": "AccountConnections_Delete",
+    "label": "DeleteAccountConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AccountConnection/delete.json",
+    "source_sha256": "e2afa365e1891b35e8ca2df6491c713a8afc07742524a46e49e30fc3bfe1d81c"
+  },
+  {
+    "file": "ListDefenderForAISetting.json",
+    "operation": "DefenderForAISettings_List",
+    "label": "ListDefenderForAISetting",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListDefenderForAISetting.json",
+    "source_sha256": "666a218da4326e606c1a2ff7b1c3a2b848a34d81fd15c4802bd8f64293b418a6"
+  },
+  {
+    "file": "GetDefenderForAISetting.json",
+    "operation": "DefenderForAISettings_Get",
+    "label": "GetDefenderForAISetting",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetDefenderForAISetting.json",
+    "source_sha256": "7637f300d9369d46494bd91398070e9d49394a072f8f49bfe0485e774339f175"
+  },
+  {
+    "file": "ListDeployments.json",
+    "operation": "Deployments_List",
+    "label": "ListDeployments",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListDeployments.json",
+    "source_sha256": "2116b5aafa2ec82d5d9bd9c2225c85b6e0bcf9000e96aba8eec7f55052740aa4"
+  },
+  {
+    "file": "GetDeployment.json",
+    "operation": "Deployments_Get",
+    "label": "GetDeployment",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetDeployment.json",
+    "source_sha256": "bdb928dbf0341de617afbe0e0be0703d3b7d9ab9ecbe400df20537841cb4efd5"
+  },
+  {
+    "file": "DeleteDeployment.json",
+    "operation": "Deployments_Delete",
+    "label": "DeleteDeployment",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteDeployment.json",
+    "source_sha256": "39a196cdba0d45bf372dc1aa993ce404bfb47b7d627a41bbca92aae6edf295dc"
+  },
+  {
+    "file": "ListEncryptionScopes.json",
+    "operation": "EncryptionScopes_List",
+    "label": "ListEncryptionScopes",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListEncryptionScopes.json",
+    "source_sha256": "9059f8bab049e0d7ae27ae323674a71eaf5a8e61a1d7ff687f303ba3ce37bd1d"
+  },
+  {
+    "file": "GetEncryptionScope.json",
+    "operation": "EncryptionScopes_Get",
+    "label": "GetEncryptionScope",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetEncryptionScope.json",
+    "source_sha256": "91d76e2e53d5e09d983c97ee62f9aaf7edd63e7f121d582a2383cc77bed0a67b"
+  },
+  {
+    "file": "DeleteEncryptionScope.json",
+    "operation": "EncryptionScopes_Delete",
+    "label": "DeleteEncryptionScope",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteEncryptionScope.json",
+    "source_sha256": "f10c56e44414c1c202e01ac1175822f6f8f20813c83421377ed57ffc6c0c5229"
+  },
+  {
+    "file": "ManagedNetwork-listManagedNetworkV2.json",
+    "operation": "ManagedNetworkSettings_List",
+    "label": "List ManagedNetworkSettings",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/listManagedNetworkV2.json",
+    "source_sha256": "6994aaa158a0cc64bd934f8881ec950a5843b1fc76f795118448ac1dfd3f7f52"
+  },
+  {
+    "file": "ManagedNetwork-getManagedNetworkV2.json",
+    "operation": "ManagedNetworkSettings_Get",
+    "label": "Get ManagedNetworkSettings",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/getManagedNetworkV2.json",
+    "source_sha256": "7d53f92b05548f6ae7845c679cad0484b44360fc62debbaf13fdd4d9065fcc0f"
+  },
+  {
+    "file": "ManagedNetwork-deleteManagedNetworkV2.json",
+    "operation": "ManagedNetworkSettings_Delete",
+    "label": "Delete ManagedNetworkSettings",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/deleteManagedNetworkV2.json",
+    "source_sha256": "e961d8c70576ae432ce153ce39084540d19d396366744a9852f13ee55e2364a2"
+  },
+  {
+    "file": "ManagedNetwork-listRuleV2.json",
+    "operation": "OutboundRule_List",
+    "label": "List OutboundRules",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/listRuleV2.json",
+    "source_sha256": "e597e354750a12625b177bdd477f8f776e2783e76768a131bb2b74aeafc0045d"
+  },
+  {
+    "file": "ManagedNetwork-getRuleV2.json",
+    "operation": "OutboundRule_Get",
+    "label": "Get OutboundRule",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/getRuleV2.json",
+    "source_sha256": "678eaf31846a9abf2188a4623f3214e4af5ca9479bafe79242693aa1613e0fa2"
+  },
+  {
+    "file": "ManagedNetwork-deleteRuleV2.json",
+    "operation": "OutboundRule_Delete",
+    "label": "Delete OutboundRule",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ManagedNetwork/deleteRuleV2.json",
+    "source_sha256": "1c67c46620237913b8bec8fa699b75022a2601ac52e9a28b25d232aaca9b8b26"
+  },
+  {
+    "file": "ListNetworkSecurityPerimeterConfigurations.json",
+    "operation": "NetworkSecurityPerimeterConfigurations_List",
+    "label": "ListNetworkSecurityPerimeterConfigurations",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListNetworkSecurityPerimeterConfigurations.json",
+    "source_sha256": "fee4fc085dda27b6e56923a468d93774c4131d77d96c4d47fa0afcc6d73f1982"
+  },
+  {
+    "file": "GetNetworkSecurityPerimeterConfigurations.json",
+    "operation": "NetworkSecurityPerimeterConfigurations_Get",
+    "label": "GetNetworkSecurityPerimeterConfigurations",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetNetworkSecurityPerimeterConfigurations.json",
+    "source_sha256": "5196e76e57b59475f2eadb87addb464209b49c6b0cd84126f7160b8f476f576f"
+  },
+  {
+    "file": "ListPrivateEndpointConnections.json",
+    "operation": "PrivateEndpointConnections_List",
+    "label": "GetPrivateEndpointConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListPrivateEndpointConnections.json",
+    "source_sha256": "0d4337fa885b3727ed56cfe0721d9aad943e5ecb7faaa20ce9155d09bec01390"
+  },
+  {
+    "file": "GetPrivateEndpointConnection.json",
+    "operation": "PrivateEndpointConnections_Get",
+    "label": "GetPrivateEndpointConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetPrivateEndpointConnection.json",
+    "source_sha256": "c2dbbdb349b71f2fcb99bbf36c5122c8fa27622bbc4d68ba51ffc8e4b96e743b"
+  },
+  {
+    "file": "DeletePrivateEndpointConnection.json",
+    "operation": "PrivateEndpointConnections_Delete",
+    "label": "DeletePrivateEndpointConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeletePrivateEndpointConnection.json",
+    "source_sha256": "fe9623d8d7af6d9aeb500a178e0606e76f1ae05b8a4a559435319a644a61ac72"
+  },
+  {
+    "file": "ListProjects.json",
+    "operation": "Projects_List",
+    "label": "List Project",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListProjects.json",
+    "source_sha256": "d59183a3caf99529613e5187d1fb5fd45fdbbf9dcf1e6c041a067e2ebb45b1cf"
+  },
+  {
+    "file": "GetProject.json",
+    "operation": "Projects_Get",
+    "label": "Get Project",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetProject.json",
+    "source_sha256": "e2f73fffeba50249febe02eb927ea9ddab63d189d4073f22a476febb92a6bfeb"
+  },
+  {
+    "file": "DeleteProject.json",
+    "operation": "Projects_Delete",
+    "label": "Delete Project",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteProject.json",
+    "source_sha256": "6ca20ef783a166092a0708d4e429430fba7f9d919442ed8784f680f451664f95"
+  },
+  {
+    "file": "AgentApplication-list.json",
+    "operation": "AgentApplications_List",
+    "label": "List Account Agent Applications.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentApplication/list.json",
+    "source_sha256": "3790b7cd4e4226c3acc3bb99fd2a250991c4422d3c5ce2d60104cbb94681e29c"
+  },
+  {
+    "file": "AgentApplication-get.json",
+    "operation": "AgentApplications_Get",
+    "label": "Get Account Agent Application.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentApplication/get.json",
+    "source_sha256": "aff52b519e395c0e5730769e486d73cf3aeae055a1ad23702069b83d89310a26"
+  },
+  {
+    "file": "AgentApplication-delete.json",
+    "operation": "AgentApplications_Delete",
+    "label": "Delete Account Agent Application.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentApplication/delete.json",
+    "source_sha256": "9ba6b0b42866561d22b3aaaeea0a114af6fc765c9df5a2588615e16828d60441"
+  },
+  {
+    "file": "AgentDeployment-list.json",
+    "operation": "AgentDeployments_List",
+    "label": "List Agent Deployments.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentDeployment/list.json",
+    "source_sha256": "49e91808207478ebb608d81713c8d84396bd3f9d3279e3c93da3c86393ee039f"
+  },
+  {
+    "file": "AgentDeployment-get.json",
+    "operation": "AgentDeployments_Get",
+    "label": "Get Agent Deployment.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentDeployment/get.json",
+    "source_sha256": "80aed1a5d23555fd4d475bcc357da7c5f5f40f40c865638c0418040364c50afe"
+  },
+  {
+    "file": "AgentDeployment-delete.json",
+    "operation": "AgentDeployments_Delete",
+    "label": "Delete Agent Deployment.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/AgentDeployment/delete.json",
+    "source_sha256": "4f6b07a4bd7e21c6a9b9669296f64b70d6592d03fe4c8b65e3f4c218e7bb580b"
+  },
+  {
+    "file": "ProjectCapabilityHost-list.json",
+    "operation": "ProjectCapabilityHosts_List",
+    "label": "List Project CapabilityHosts.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectCapabilityHost/list.json",
+    "source_sha256": "931919eac4ddaee2b73f6a2c58f9dab91c5d5c97e4728f205d6e5ab33579d182"
+  },
+  {
+    "file": "ProjectCapabilityHost-get.json",
+    "operation": "ProjectCapabilityHosts_Get",
+    "label": "Get Project CapabilityHost.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectCapabilityHost/get.json",
+    "source_sha256": "ac8dc28f4ea79de984bb8f3c0d8992a15676a06af56cbc2ed95e39c271734dcc"
+  },
+  {
+    "file": "ProjectCapabilityHost-delete.json",
+    "operation": "ProjectCapabilityHosts_Delete",
+    "label": "Delete Project CapabilityHost.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectCapabilityHost/delete.json",
+    "source_sha256": "6ee523855ead7a88b050dbcef98087b02e1137c2d40537c2e9cfe9355d6f5e4c"
+  },
+  {
+    "file": "ProjectConnection-list.json",
+    "operation": "ProjectConnections_List",
+    "label": "ListProjectConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectConnection/list.json",
+    "source_sha256": "296323971eab0f9ee0b1d77866261d942a4985749909943ff2cc805017dd24e5"
+  },
+  {
+    "file": "ProjectConnection-get.json",
+    "operation": "ProjectConnections_Get",
+    "label": "GetProjectConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectConnection/get.json",
+    "source_sha256": "da7f7fdf1a7911e86a26d48a85fe9a31713b373093b66bdc2bf54b51392090ac"
+  },
+  {
+    "file": "ProjectConnection-delete.json",
+    "operation": "ProjectConnections_Delete",
+    "label": "DeleteProjectConnection",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ProjectConnection/delete.json",
+    "source_sha256": "121b723f4155f882ba9d8af3dea7ba28bad3284bf0eb52d3892a091d8d0675a2"
+  },
+  {
+    "file": "ListBlocklists.json",
+    "operation": "RaiBlocklists_List",
+    "label": "ListBlocklists",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListBlocklists.json",
+    "source_sha256": "dec143c76870686e7dbd25a0ff8074271e439300df466fad6388ba90390788d9"
+  },
+  {
+    "file": "GetRaiBlocklist.json",
+    "operation": "RaiBlocklists_Get",
+    "label": "GetRaiBlocklist",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetRaiBlocklist.json",
+    "source_sha256": "73e2fdf9e274bbbe485a716d29e5aef37f0735a4166d79d66fad90c26366f6ac"
+  },
+  {
+    "file": "DeleteRaiBlocklist.json",
+    "operation": "RaiBlocklists_Delete",
+    "label": "DeleteRaiBlocklist",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteRaiBlocklist.json",
+    "source_sha256": "a26b3a116c8024099f317d933c7ddabbdeee96974cd6279f902ecf5dfec0f1b5"
+  },
+  {
+    "file": "ListBlocklistItems.json",
+    "operation": "RaiBlocklistItems_List",
+    "label": "ListBlocklistItems",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListBlocklistItems.json",
+    "source_sha256": "9cb4c537bf7563e529e448019fdf9423ea253b5b1ce6060b298290b7f80637be"
+  },
+  {
+    "file": "GetRaiBlocklistItem.json",
+    "operation": "RaiBlocklistItems_Get",
+    "label": "GetRaiBlocklistItem",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetRaiBlocklistItem.json",
+    "source_sha256": "90570c97a2e6a591548e40fad56ca87617a50440e9549e639a98a5bfc5a4a578"
+  },
+  {
+    "file": "DeleteRaiBlocklistItem.json",
+    "operation": "RaiBlocklistItems_Delete",
+    "label": "DeleteRaiBlocklistItem",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteRaiBlocklistItem.json",
+    "source_sha256": "bce6e7b0a6eec061b542be698921f2af1043d44c5e2aabb65b4bfa9e5a43b20d"
+  },
+  {
+    "file": "ListRaiPolicies.json",
+    "operation": "RaiPolicies_List",
+    "label": "ListRaiPolicies",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListRaiPolicies.json",
+    "source_sha256": "d568a96a0ed63c9923442aa7961b4278ba8a6a11adda81a9eb85bc2a83b14ee9"
+  },
+  {
+    "file": "GetRaiPolicy.json",
+    "operation": "RaiPolicies_Get",
+    "label": "GetRaiPolicy",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetRaiPolicy.json",
+    "source_sha256": "f29a5c7645ae3b542b0272655b3177092076074fa4a8878b3573a0c99267fd57"
+  },
+  {
+    "file": "DeleteRaiPolicy.json",
+    "operation": "RaiPolicies_Delete",
+    "label": "DeleteRaiPolicy",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteRaiPolicy.json",
+    "source_sha256": "4bd9502f85263be7fde244aa752d7be1cc023fc70bf27fb4179c40af406912d7"
+  },
+  {
+    "file": "ListRaiToolLabels.json",
+    "operation": "RaiToolLabels_List",
+    "label": "ListRaiToolLabels",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListRaiToolLabels.json",
+    "source_sha256": "7b4052861ecadd43f460becea154363d8341a28ed62991b85c3d436229efd336"
+  },
+  {
+    "file": "GetRaiToolLabel.json",
+    "operation": "RaiToolLabels_Get",
+    "label": "GetRaiToolLabel",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetRaiToolLabel.json",
+    "source_sha256": "a6ecfe6219bdee1244393cb985f5110293e077a70a4981e12ab82cd90c03a877"
+  },
+  {
+    "file": "DeleteRaiToolLabel.json",
+    "operation": "RaiToolLabels_Delete",
+    "label": "DeleteRaiToolLabel",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteRaiToolLabel.json",
+    "source_sha256": "6846614e6a903a4e729e8bf629a023ec5455379dccf3d6a4d359a8c578f8ed8b"
+  },
+  {
+    "file": "ListRaiTopics.json",
+    "operation": "RaiTopics_List",
+    "label": "ListRaiTopics",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListRaiTopics.json",
+    "source_sha256": "a3b2cadbc0166ed52fed176e4a7ccda318ead5da62b8597be64a6c0e6e6f46b4"
+  },
+  {
+    "file": "GetRaiTopic.json",
+    "operation": "RaiTopics_Get",
+    "label": "GetRaiTopic",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetRaiTopic.json",
+    "source_sha256": "ee2021a788613f8eedabec00e412b9171dad4bcb42a3a00d379c0f7d2e4ea5e2"
+  },
+  {
+    "file": "DeleteRaiTopic.json",
+    "operation": "RaiTopics_Delete",
+    "label": "DeleteRaiTopic",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteRaiTopic.json",
+    "source_sha256": "37acb57051393aa23a476909f73cb025059212ec0a47ada717e4c083745effa8"
+  },
+  {
+    "file": "ListSharedCommitmentPlansBySubscription.json",
+    "operation": "CommitmentPlans_ListPlansBySubscription",
+    "label": "List Accounts by Subscription",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListSharedCommitmentPlansBySubscription.json",
+    "source_sha256": "a63e5681b4051de2facad66ca51fe49e468a4a2a760fba2eadf4e04fa635ce50"
+  },
+  {
+    "file": "GetSharedCommitmentPlan.json",
+    "operation": "CommitmentPlans_GetPlan",
+    "label": "Get Commitment Plan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetSharedCommitmentPlan.json",
+    "source_sha256": "828562ae5295179c037c002b958997162e4b95f3cefd559514d7224db958169d"
+  },
+  {
+    "file": "DeleteSharedCommitmentPlan.json",
+    "operation": "CommitmentPlans_DeletePlan",
+    "label": "Delete Commitment Plan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteSharedCommitmentPlan.json",
+    "source_sha256": "1a167f06fcfd414fb617007c885465d8782f28023023992d7286ae0da7bfff34"
+  },
+  {
+    "file": "ListSharedCommitmentPlanAssociations.json",
+    "operation": "CommitmentPlans_ListAssociations",
+    "label": "ListCommitmentPlans",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/ListSharedCommitmentPlanAssociations.json",
+    "source_sha256": "87458d4b37c5eaa6ab6d4dd0a485b81d30b16321c2c53c3aa9d73e3ac5171637"
+  },
+  {
+    "file": "GetSharedCommitmentPlanAssociation.json",
+    "operation": "CommitmentPlans_GetAssociation",
+    "label": "GetCommitmentPlan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/GetSharedCommitmentPlanAssociation.json",
+    "source_sha256": "06c8c921136edad058d7547aa21f106623ac1a37cc528bafcdec4768b6210ff9"
+  },
+  {
+    "file": "DeleteSharedCommitmentPlanAssociation.json",
+    "operation": "CommitmentPlans_DeleteAssociation",
+    "label": "DeleteCommitmentPlan",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/examples/DeleteSharedCommitmentPlanAssociation.json",
+    "source_sha256": "8f7060c73bff4f2fc0734a7512958918435871354c7170f6a35a1d9b9690d6f4"
+  }
+]

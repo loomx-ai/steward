@@ -341,6 +341,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		return nil, "", response{}, err
 	}
 	u, _ := url.Parse(endpoint)
+	if err := cognitiveListQuery(u); err != nil {
+		return nil, "", response{}, err
+	}
 	if !strings.EqualFold(u.Path, collection) {
 		return nil, "", response{}, fmt.Errorf("Azure pagination changed collection")
 	}
@@ -368,6 +371,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		nu, _ := url.Parse(next)
+		if err := cognitiveListQuery(nu); err != nil {
+			return nil, "", response{}, err
+		}
 		if !strings.EqualFold(nu.Path, collection) || next == endpoint || nu.Query().Get("api-version") != u.Query().Get("api-version") {
 			return nil, "", response{}, fmt.Errorf("Azure pagination did not advance within its collection")
 		}

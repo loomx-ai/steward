@@ -1,0 +1,78 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/connections
+  class: data.connection
+presentation:
+  displayNames:
+    en-US: Foundry account connection
+    zh-CN: Foundry 账号连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.AccountConnections_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+      includeAll: true
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.AccountConnections_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  category:
+    path: category
+    type: string
+  authType:
+    path: authType
+    type: string
+  target:
+    path: target
+    type: string
+  isSharedToAll:
+    path: isSharedToAll
+    type: boolean
+  metadata:
+    path: metadata
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.AccountConnections_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.AccountConnections_Get
+      itemsPath: $
+      identityPath: id

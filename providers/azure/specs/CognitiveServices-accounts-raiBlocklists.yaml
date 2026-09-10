@@ -1,0 +1,65 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/raiBlocklists
+  class: security.content_blocklist
+presentation:
+  displayNames:
+    en-US: AI content blocklist
+    zh-CN: AI 内容阻止列表
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.RaiBlocklists_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.RaiBlocklists_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  description:
+    path: description
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.RaiBlocklists_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.RaiBlocklists_Get
+      itemsPath: $
+      identityPath: id

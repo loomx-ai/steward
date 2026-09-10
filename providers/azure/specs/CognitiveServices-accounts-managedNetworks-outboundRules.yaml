@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/managedNetworks/outboundRules
+  class: network.outbound_rule
+presentation:
+  displayNames:
+    en-US: Foundry outbound rule
+    zh-CN: Foundry 出站规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.OutboundRule_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+      managedNetworkName: parent.normalized.arm_parameters.managedNetworkName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.OutboundRule_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts/managedNetworks
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  type:
+    path: type
+    type: string
+  category:
+    path: category
+    type: string
+  status:
+    path: status
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts/managedNetworks
+  targetIdPath: refs_microsoft_cognitiveservices_accounts_managednetworks
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.Search/searchServices
+  targetIdPath: refs_microsoft_search_searchservices
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.OutboundRule_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.OutboundRule_Get
+      itemsPath: $
+      identityPath: id

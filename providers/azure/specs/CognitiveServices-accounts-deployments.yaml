@@ -1,0 +1,86 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/accounts/deployments
+  class: data.ai_deployment
+presentation:
+  displayNames:
+    en-US: AI model deployment
+    zh-CN: AI 模型部署
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.Deployments_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      accountName: parent.normalized.arm_parameters.accountName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.Deployments_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.CognitiveServices/accounts
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  sku:
+    path: sku
+    type: object
+  model:
+    path: model
+    type: object
+  raiPolicyName:
+    path: raiPolicyName
+    type: string
+  versionUpgradeOption:
+    path: versionUpgradeOption
+    type: string
+  parentDeploymentName:
+    path: parentDeploymentName
+    type: string
+  spilloverDeploymentName:
+    path: spilloverDeploymentName
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts
+  targetIdPath: refs_microsoft_cognitiveservices_accounts
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts/raiPolicies
+  targetIdPath: refs_microsoft_cognitiveservices_accounts_raipolicies
+- type: uses
+  targetType: Microsoft.CognitiveServices/accounts/deployments
+  targetIdPath: refs_microsoft_cognitiveservices_accounts_deployments
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.Deployments_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.Deployments_Get
+      itemsPath: $
+      identityPath: id

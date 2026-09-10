@@ -937,6 +937,78 @@
         "SharedPrivateLinkResources_Get",
         "SharedPrivateLinkResources_ListByService"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/cognitiveservices.json",
+      "operations": [
+        "AccountCapabilityHosts_Delete",
+        "AccountCapabilityHosts_Get",
+        "AccountCapabilityHosts_List",
+        "AccountConnections_Delete",
+        "AccountConnections_Get",
+        "AccountConnections_List",
+        "Accounts_Delete",
+        "Accounts_Get",
+        "Accounts_List",
+        "AgentApplications_Delete",
+        "AgentApplications_Get",
+        "AgentApplications_List",
+        "AgentDeployments_Delete",
+        "AgentDeployments_Get",
+        "AgentDeployments_List",
+        "CommitmentPlans_Delete",
+        "CommitmentPlans_DeleteAssociation",
+        "CommitmentPlans_DeletePlan",
+        "CommitmentPlans_Get",
+        "CommitmentPlans_GetAssociation",
+        "CommitmentPlans_GetPlan",
+        "CommitmentPlans_List",
+        "CommitmentPlans_ListAssociations",
+        "CommitmentPlans_ListPlansBySubscription",
+        "DefenderForAISettings_Get",
+        "DefenderForAISettings_List",
+        "Deployments_Delete",
+        "Deployments_Get",
+        "Deployments_List",
+        "EncryptionScopes_Delete",
+        "EncryptionScopes_Get",
+        "EncryptionScopes_List",
+        "ManagedNetworkSettings_Delete",
+        "ManagedNetworkSettings_Get",
+        "ManagedNetworkSettings_List",
+        "NetworkSecurityPerimeterConfigurations_Get",
+        "NetworkSecurityPerimeterConfigurations_List",
+        "OutboundRule_Delete",
+        "OutboundRule_Get",
+        "OutboundRule_List",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "ProjectCapabilityHosts_Delete",
+        "ProjectCapabilityHosts_Get",
+        "ProjectCapabilityHosts_List",
+        "ProjectConnections_Delete",
+        "ProjectConnections_Get",
+        "ProjectConnections_List",
+        "Projects_Delete",
+        "Projects_Get",
+        "Projects_List",
+        "RaiBlocklistItems_Delete",
+        "RaiBlocklistItems_Get",
+        "RaiBlocklistItems_List",
+        "RaiBlocklists_Delete",
+        "RaiBlocklists_Get",
+        "RaiBlocklists_List",
+        "RaiPolicies_Delete",
+        "RaiPolicies_Get",
+        "RaiPolicies_List",
+        "RaiToolLabels_Delete",
+        "RaiToolLabels_Get",
+        "RaiToolLabels_List",
+        "RaiTopics_Delete",
+        "RaiTopics_Get",
+        "RaiTopics_List"
+      ]
     }
   ],
   "resource_types": [
@@ -4132,6 +4204,439 @@
         "Azure.Microsoft.Search.NetworkSecurityPerimeterConfigurations_ListByService"
       ],
       "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts",
+      "display_name": "Foundry account",
+      "class": "data.ai_account",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accounts",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.Accounts_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.Accounts_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.Accounts_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/capabilityHosts",
+      "display_name": "Foundry account capability host",
+      "class": "data.ai_capability_host",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "capabilityHosts",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountCapabilityHosts_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountCapabilityHosts_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountCapabilityHosts_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/commitmentPlans",
+      "display_name": "AI account commitment plan",
+      "class": "billing.commitment_plan",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "commitmentPlans",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/connections",
+      "display_name": "Foundry account connection",
+      "class": "data.connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "connections",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountConnections_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.AccountConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/defenderForAISettings",
+      "display_name": "Defender for AI setting",
+      "class": "security.threat_protection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "defenderForAISettings",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.DefenderForAISettings_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.DefenderForAISettings_List"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/deployments",
+      "display_name": "AI model deployment",
+      "class": "data.ai_deployment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "deployments",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.Deployments_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.Deployments_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.Deployments_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/encryptionScopes",
+      "display_name": "AI encryption scope",
+      "class": "security.encryption_scope",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "encryptionScopes",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.EncryptionScopes_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.EncryptionScopes_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.EncryptionScopes_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/managedNetworks",
+      "display_name": "Foundry managed network",
+      "class": "network.managed_network",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "managedNetworks",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.ManagedNetworkSettings_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.ManagedNetworkSettings_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.ManagedNetworkSettings_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/managedNetworks/outboundRules",
+      "display_name": "Foundry outbound rule",
+      "class": "network.outbound_rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "outboundRules",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.OutboundRule_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.OutboundRule_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.OutboundRule_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/networkSecurityPerimeterConfigurations",
+      "display_name": "AI network perimeter configuration",
+      "class": "network.perimeter_configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "networkSecurityPerimeterConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.NetworkSecurityPerimeterConfigurations_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.NetworkSecurityPerimeterConfigurations_List"
+      ],
+      "delete_operations": []
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/privateEndpointConnections",
+      "display_name": "AI private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.PrivateEndpointConnections_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.PrivateEndpointConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/projects",
+      "display_name": "Foundry project",
+      "class": "data.ai_project",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "projects",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.Projects_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.Projects_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.Projects_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/projects/applications",
+      "display_name": "Foundry agent application",
+      "class": "data.agent_application",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "applications",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentApplications_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentApplications_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentApplications_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/projects/applications/agentDeployments",
+      "display_name": "Foundry agent deployment",
+      "class": "data.agent_deployment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "agentDeployments",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentDeployments_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentDeployments_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.AgentDeployments_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/projects/capabilityHosts",
+      "display_name": "Foundry project capability host",
+      "class": "data.ai_capability_host",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "capabilityHosts",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectCapabilityHosts_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectCapabilityHosts_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectCapabilityHosts_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/projects/connections",
+      "display_name": "Foundry project connection",
+      "class": "data.connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "connections",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectConnections_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.ProjectConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/raiBlocklists",
+      "display_name": "AI content blocklist",
+      "class": "security.content_blocklist",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "raiBlocklists",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklists_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklists_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklists_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/raiBlocklists/raiBlocklistItems",
+      "display_name": "AI content blocklist item",
+      "class": "security.content_blocklist_item",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "raiBlocklistItems",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklistItems_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklistItems_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiBlocklistItems_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/raiPolicies",
+      "display_name": "AI content filter policy",
+      "class": "security.content_policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "raiPolicies",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiPolicies_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiPolicies_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiPolicies_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/raiToolLabels",
+      "display_name": "AI tool label",
+      "class": "security.tool_label",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "raiToolLabels",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiToolLabels_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiToolLabels_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiToolLabels_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/accounts/raitopics",
+      "display_name": "AI content topic",
+      "class": "security.content_topic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "raitopics",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiTopics_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiTopics_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.RaiTopics_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/commitmentPlans",
+      "display_name": "Shared AI commitment plan",
+      "class": "billing.commitment_plan",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "commitmentPlans",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_GetPlan"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_ListPlansBySubscription"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_DeletePlan"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CognitiveServices/commitmentPlans/accountAssociations",
+      "display_name": "AI commitment plan account association",
+      "class": "billing.commitment_association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accountAssociations",
+      "read_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_GetAssociation"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_ListAssociations"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CognitiveServices.CommitmentPlans_DeleteAssociation"
+      ]
     }
   ]
 }

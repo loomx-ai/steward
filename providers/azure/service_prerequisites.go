@@ -29,6 +29,19 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	cognitiveType:                  {cognitiveHostType, cognitivePlanType, cognitiveConnectionType, cognitiveDeploymentType, cognitiveEncryptionType, cognitiveNetworkType, cognitivePECType, cognitiveProjectType, cognitiveBlocklistType, cognitivePolicyType, cognitiveToolType, cognitiveTopicType, cognitiveAssociationType},
+	cognitiveProjectType:           {cognitiveApplicationType, cognitiveProjectHostType, cognitiveProjectConnectionType, cognitiveToolType},
+	cognitiveApplicationType:       {cognitiveAgentType},
+	cognitiveNetworkType:           {cognitiveHostType, cognitiveProjectType},
+	cognitiveBlocklistType:         {cognitiveBlockitemType, cognitivePolicyType},
+	cognitiveSharedPlanType:        {cognitiveAssociationType},
+	cognitiveHostType:              {cognitiveProjectType},
+	cognitiveProjectHostType:       {cognitiveApplicationType},
+	cognitiveConnectionType:        {cognitiveHostType, cognitiveProjectHostType, cognitiveConnectionType, cognitiveProjectConnectionType},
+	cognitiveProjectConnectionType: {cognitiveProjectHostType, cognitiveConnectionType, cognitiveProjectConnectionType},
+	cognitiveDeploymentType:        {cognitiveDeploymentType},
+	cognitivePolicyType:            {cognitiveDeploymentType},
+
 	searchType:                 {searchConnectionType, searchLinkType},
 	redisType:                  {redisPolicyType, redisAssignmentType, redisFirewallType, redisLinkType, redisPatchType, redisConnectionType},
 	redisPolicyType:            {redisAssignmentType},

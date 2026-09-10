@@ -35,7 +35,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 170 current resource rules discover through native product List operations.
+All 193 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -56,8 +56,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 528 operations from
-82 root documents and 42 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 595 operations from
+83 root documents and 42 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -326,3 +326,15 @@ receipts survive restart. The [Search evidence](../fixtures/search/README.md)
 retains eleven unchanged examples, nineteen CLI responses, native schema
 discrepancies and the older child-API replay boundary. Unmodeled target families,
 cross-subscription links and external perimeter association lifecycles remain open.
+
+
+Cognitive Services / Foundry adds 23 native rules and 67 operations from the
+stable 2026-05-01 API. It includes accounts, deployments, projects, agent
+applications/deployments, connections, capability hosts, managed networks and
+rules, content filters, encryption scopes, private endpoint connections,
+Defender/perimeter views, commitment plans and account associations. Connection
+lists explicitly include datastores. Nested discovery binds every ancestor;
+cleanup handles shared dependencies and validates target protection for managed
+private endpoints. [Cognitive Services evidence](../fixtures/cognitive/README.md)
+records the original schemas, 31 CLI responses, version bridges and unresolved
+legacy-kind, data-plane and managed-network lifecycle scope.

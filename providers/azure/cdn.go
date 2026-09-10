@@ -364,6 +364,11 @@ func (c *client) cdnChildren(ctx context.Context, parent asset.Identity, raw map
 // Sensitive content in rule actions and key references is compared through a
 // credential-keyed digest. Ordinary JSON hashes only contain sanitized values.
 func (c *client) servicePrivateIncarnation(planned asset.Asset, live map[string]any) error {
+	if isCognitiveType(planned.Identity.NativeType) {
+		if expected := text(planned.Normalized["_cognitive_private_configuration"]); expected == "" || expected != c.privateConfiguration(cognitiveSnapshot(planned.Identity.NativeType, live)) {
+			return serviceDenied("cognitive_private_configuration_changed")
+		}
+	}
 	if isSearchType(planned.Identity.NativeType) {
 		if expected := text(planned.Normalized["_search_private_configuration"]); expected == "" || expected != c.privateConfiguration(searchSnapshot(planned.Identity.NativeType, live)) {
 			return serviceDenied("search_private_configuration_changed")
@@ -422,6 +427,9 @@ func cdnPrerequisite(parent, referrer asset.Asset) bool {
 // on successful and pending polls. Preserve all other errors, including a failed
 // status carrying that placeholder. This exception is specific to this API.
 func (a *action) operationError(res response) error {
+	if isCognitiveType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
+		return fmt.Errorf("incomplete Cognitive Services operation response")
+	}
 	if isSearchType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
 		return fmt.Errorf("incomplete Search operation response")
 	}

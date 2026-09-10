@@ -1177,3 +1177,48 @@ background evidence only, not acceptance evidence for this work.
   These are protocol/schema/recording results, not independent ARM emulator,
   live-cloud or full application acceptance. Remaining mapped resource families,
   data-plane parity and provider/application verification are still open.
+
+### Azure Cognitive Services / Foundry progress (acceptance remains open)
+
+- Twenty-three rules select 67 native operations from the pinned stable
+  2026-05-01 API. Accounts, projects, applications, agent deployments, capability
+  hosts, connections, model deployments, content-filter resources, managed
+  networks and shared/local commitment plans have explicit product discovery.
+  Both connection lists include datastores. Native locations, every ancestor,
+  private configuration, creation identifiers and scoped references remain
+  bound through pagination and execution. Malformed references fail closed.
+- Account cleanup requires reviewed deployment and child deletions before
+  soft deletion. Capability hosts wait for dependent projects/applications;
+  connections wait for referring hosts. Key Vault connections wait for all
+  other account/project connections. Content-policy, deployment and shared-plan
+  associations are prerequisites, not inferred exclusive ownership. Native
+  indexes reconcile against two complete collection reads, while reviewed child
+  departures can update parent indexes without permitting configuration drift.
+- Managed-network deletion reviews its outbound-rule impacts and protects
+  referenced private-endpoint targets through their actual native API, inherited
+  locks, managed-group ownership and final re-read. Every managed view and child
+  must independently become absent. A required/active connection private
+  endpoint, unknown connection network state, or unresolved dependent rule
+  lifecycle blocks the affected cleanup. External target resources remain
+  separate. The previously unknown Search Cognitive Services target now has a
+  native API binding; Cosmos DB and Key Vault target support remains unfinished.
+- Sixty-seven unchanged official examples retain source hashes; all 46 native
+  GET/LIST bodies pass independent offline schema validation. The evidence
+  documents inconsistent example request/response identities. Thirty-one
+  unchanged Microsoft CLI responses replay seven native DELETE paths; most
+  recordings use a newer preview and are explicitly version-bridged. Final
+  target GET 404s and supporting collections are labeled synthetic. Tests also
+  cover restart, asynchronous failures, secret sanitization, paging, retained
+  resources, deep-ancestor drift and incomplete final absence. No independent
+  Foundry emulator or live Azure deletion is claimed.
+- Azure now has 193 rules, 178 native DELETE bindings and 595 operations from
+  83 root plus 42 reference documents. A fresh three-document native import
+  matches, with earlier source/type entries preserved. Catalog generation is
+  byte-identical twice (SHA-256
+  `f9f06966e6e466de9a685c68213ebaeb075b6b5ac05665785bc3316d84d3373e`),
+  as are two CLI recording extractions. Full Go tests, Azure/catalog/shared
+  contract/plan/cleanup race checks, vet, three offline importer tests and
+  bilingual documentation checks pass. Legacy account-kind applicability,
+  connection endpoint effects, external perimeter/RAI services, agent data-plane
+  cleanup and remaining provider/application acceptance are still open. See
+  [the Cognitive Services evidence](providers/azure/fixtures/cognitive/README.md).

@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CognitiveServices/commitmentPlans
+  class: billing.commitment_plan
+presentation:
+  displayNames:
+    en-US: Shared AI commitment plan
+    zh-CN: 共享 AI 承诺计划
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CognitiveServices.CommitmentPlans_ListPlansBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CognitiveServices.CommitmentPlans_GetPlan
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  hostingModel:
+    path: hostingModel
+    type: string
+  planType:
+    path: planType
+    type: string
+  autoRenew:
+    path: autoRenew
+    type: boolean
+  current:
+    path: current
+    type: object
+  next:
+    path: next
+    type: object
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.CognitiveServices.CommitmentPlans_DeletePlan
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CognitiveServices.CommitmentPlans_GetPlan
+      itemsPath: $
+      identityPath: id
