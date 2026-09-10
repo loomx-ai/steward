@@ -93,13 +93,17 @@ type InventorySource struct {
 	RootScopeKinds       []asset.ScopeKind `json:"root_scope_kinds"`
 	AuthoritativeDefault bool              `json:"authoritative_default"`
 	// KindSpecific sources require a ResourceKind. Broad scans expand one
-	// authoritative shard per matching resource spec instead of invoking the
+	// shard per matching resource spec instead of invoking the
 	// source without a kind.
 	KindSpecific bool `json:"kind_specific,omitempty"`
 	// NetworkClosure means a selected VPC/vSwitch scan must include every
 	// resource kind from this source so relationships can be closed over the
 	// selected network, not only the VPC and vSwitch kinds themselves.
 	NetworkClosure bool `json:"network_closure,omitempty"`
+	// ReconcileKnownIDs asks the worker to include active native identities for
+	// this connection/kind. The provider must read them again; saved IDs are not
+	// evidence of current existence or permission to access another connection.
+	ReconcileKnownIDs bool `json:"reconcile_known_ids,omitempty"`
 }
 
 type ProviderDescriptor struct {

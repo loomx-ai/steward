@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 369 类资源，其中 343 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 370 类资源，其中 344 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -130,7 +130,9 @@ Azure Monitor 专用链接范围（AMPLS）清理会审查两类原生子资源�
 
 删除 Application Insights 组件、Log Analytics 工作区或 DCE 前，Steward 会核对订阅内完整的 AMPLS 清单、关联的原生列表与详情，以及目标资源的反向引用。因此需要读取这些范围的权限，包括所选资源组之外的范围。缺失盘点、读取失败及跨订阅反向引用都会阻止删除；跨订阅关联需在所属订阅中解除后重新扫描。Monitor 工作区托管组中的 DCE 也执行相同检查。相对操作地址经校验后绑定到所选连接和资源，并持久化保存；异步成功后仍须确认资源及前置关联均已不存在。验证使用固定版本的官方样例和组合协议测试，尚未进行 AMPLS 独立模拟器或真实云验证。参阅[AMPLS 关联要求](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls)。
 
-Application Insights 盘点覆盖组件、共享及个人分析项、持续导出、收藏、工作项配置、API Key 和 Profiler 关联存储。七类子资源支持独立清理，并核对组件、资源组、锁及最终原生 GET 不存在状态；共享存储保持独立。注释尚未注册，因为原生接口的时间窗口不能证明更早记录已经不存在。组件删除会先移除已审查的子资源及 AMPLS 关联，包括指向当前托管工作区的关联。
+Application Insights 盘点覆盖组件、共享及个人分析项、持续导出、收藏、工作项配置、API Key、Profiler 关联存储及注释。八类子资源支持独立清理，并核对组件、资源组、锁及最终原生 GET 不存在状态；共享存储保持独立。组件删除会先移除已审查的子资源及 AMPLS 关联，包括指向当前托管工作区的关联。
+
+注释发现使用 Azure 滚动 90 天限制内的固定窗口，每次扫描还会按 ID 重读已保存的注释，包括窗口之外的记录。窗口查询遗漏不会把旧记录标记为不存在。组件清理将近期和已保存注释列为独立前置步骤；保留注释会阻止删除。读取失败或含义不明确的 GET 数组会阻止清理，空数组不会被视为不存在的证明。Steward 无法枚举原生窗口之外从未发现的历史记录，组件删除可能一并移除这些历史记录。盘点和清理需要注释 LIST/GET 权限，选中的注释还需要 DELETE 权限。参阅[原生注释接口](https://learn.microsoft.com/en-us/python/api/azure-mgmt-applicationinsights/azure.mgmt.applicationinsights.v2015_05_01.operations.annotationsoperations?view=azure-python)。
 
 组件扫描还会读取完整资源组索引，以及当前托管工作区的组成员和 AMPLS 关联。因此需要资源组、资源列表、成员产品详情和 AMPLS 读取权限，包括组件资源组以外的托管组。归属须由组件的工作区引用与资源组 `managedBy` 共同确认，不能仅凭名称推断；共享工作区和切换后留下的旧托管组会分别记录。读取失败或索引不一致会使扫描失败，跨订阅引用不会授权跨订阅读取。组件删除包含已审查的当前托管组及已知后代。只有组件和资源组消失，且每个已知成员的原生 GET 均确认不存在，才会完成。锁或 Azure 策略可能留下资源组；Steward 会继续等待，不会独立删除托管工作区。切换后留下的旧组和共享工作区会保留；若组内嵌套控制资源还有未建模的外部托管组，则阻止清理。参阅[托管工作区行为](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces)。
 

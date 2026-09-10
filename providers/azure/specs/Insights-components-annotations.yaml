@@ -1,0 +1,64 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/components/annotations
+  class: observability.annotation
+presentation:
+  displayNames:
+    en-US: Application Insights annotation
+    zh-CN: Application Insights 注释
+scope:
+  kind: region
+discovery:
+  source: application-insights-annotations
+  list:
+    operation: Azure.Microsoft.Insights.Annotations_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      resourceName: parent.normalized.arm_parameters.resourceName
+    itemsPath: value
+    identityPath: Id
+  detail:
+    operation: Azure.Microsoft.Insights.Annotations_Get
+    itemsPath: $
+    identityPath: Id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Insights/components
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  eventTime:
+    path: EventTime
+    type: string
+  category:
+    path: Category
+    type: string
+  relatedAnnotation:
+    path: RelatedAnnotation
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: depends_on
+  targetType: Microsoft.Insights/components
+  targetIdPath: refs_microsoft_insights_components
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.Annotations_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.Annotations_Get
+      itemsPath: $
+      identityPath: Id

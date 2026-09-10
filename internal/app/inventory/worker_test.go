@@ -549,11 +549,79 @@ func TestScanHandlerPausesAtBatchCheckpoint(t *testing.T) {
 }
 
 type pagedInventoryAdapter struct {
+	sources  []contracts.InventorySource
 	pages    []contracts.InventoryBatch
 	requests []contracts.InventoryRequest
 	err      error
 	errors   []error
 	onList   func()
+}
+
+func (a *pagedInventoryAdapter) InventorySources() []contracts.InventorySource { return a.sources }
+
+func TestScanHandlerKnownIDsAreScopedAndFixedAcrossPages(t *testing.T) {
+	for _, reconcile := range []bool{false, true} {
+		t.Run(map[bool]string{false: "ordinary-source", true: "bounded-source"}[reconcile], func(t *testing.T) {
+			ctx, now := t.Context(), time.Now().UTC()
+			repositories := openInventoryWorkerRepositories(t)
+			seedScanWorker(t, repositories, now)
+			put := func(name string, modify func(*asset.Asset)) {
+				t.Helper()
+				value := asset.Asset{ID: asset.AssetID(name), ResourceKindID: workerKind().ID, ScopeID: "scope-worker", Identity: asset.Identity{Provider: asset.ProviderAliCloud, ConnectionID: "connection-worker", Partition: "public", NativeType: workerKind().NativeType, NativeID: name}, FirstSeenAt: now, LastSeenAt: now}
+				if modify != nil {
+					modify(&value)
+				}
+				if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
+					t.Fatal(err)
+				}
+			}
+			put("i-z", nil)
+			put("i-a", nil)
+			put("other-region", func(v *asset.Asset) { v.Location = "cn-beijing" })
+			put("other-provider", func(v *asset.Asset) { v.Identity.Provider = asset.ProviderAzure })
+			put("other-connection", func(v *asset.Asset) { v.Identity.ConnectionID = "another" })
+			put("other-partition", func(v *asset.Asset) { v.Identity.Partition = "another" })
+			put("other-type", func(v *asset.Asset) { v.Identity.NativeType = "another" })
+			put("other-kind", func(v *asset.Asset) { v.ResourceKindID = "another" })
+			put("closed", func(v *asset.Asset) { v.ClosedAt = &now })
+			put("deleted", func(v *asset.Asset) { v.DeletedAt, v.ClosedAt = &now, &now })
+			adapter := &pagedInventoryAdapter{
+				sources: []contracts.InventorySource{{Name: "resource-center", ReconcileKnownIDs: reconcile}},
+				pages:   []contracts.InventoryBatch{{NextCursor: "next"}, {Complete: true}},
+			}
+			adapter.onList = func() {
+				put("created-between-pages", nil)
+				if reconcile {
+					if want := []string{"i-a", "i-z", "other-region"}; !reflect.DeepEqual(adapter.requests[0].KnownNativeIDs, want) {
+						t.Fatalf("known IDs = %v, want %v", adapter.requests[0].KnownNativeIDs, want)
+					}
+					// A provider must not mutate the worker's next-page baseline.
+					adapter.requests[0].KnownNativeIDs[0] = "mutated-provider-copy"
+				}
+			}
+			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter}, inventory.NewService(repositories.Inventory()))
+			if err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}}); err != nil {
+				t.Fatal(err)
+			}
+			var want []string
+			if reconcile {
+				want = []string{"i-a", "i-z", "other-region"}
+			}
+			if len(adapter.requests) != 2 || !reflect.DeepEqual(adapter.requests[1].KnownNativeIDs, want) || !reconcile && adapter.requests[0].KnownNativeIDs != nil {
+				t.Fatal("known ID set changed across pages or ordinary source received IDs", adapter.requests)
+			}
+			shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+			if err != nil || shard.Authoritative == reconcile || shard.Status != asset.ShardSucceeded {
+				t.Fatal("source authority did not override stale bounded-source state", shard, err)
+			}
+			if reconcile {
+				value, err := repositories.Inventory().GetAsset(ctx, "i-a")
+				if err != nil || value.ClosedAt != nil || !value.LastSeenAt.Equal(now) {
+					t.Fatal("empty bounded scan closed/refreshed an unobserved asset", value, err)
+				}
+			}
+		})
+	}
 }
 
 type enrichingInventoryAdapter struct {

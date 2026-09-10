@@ -16,7 +16,7 @@ import (
 
 func productRequest(r *Runtime, nativeType string) contracts.InventoryRequest {
 	kind := r.resourceKind(nativeType)
-	return contracts.InventoryRequest{ConnectionID: "connection", Source: productInventorySource, ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: testSubscription}}
+	return contracts.InventoryRequest{ConnectionID: "connection", Source: insightsInventorySource(nativeType), ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: testSubscription}}
 }
 
 // These paths are native ARM collection contracts. They deliberately do not

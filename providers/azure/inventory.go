@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	annotation := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, insightsAnnotationType)
+	if request.Source == insightsAnnotationSource && !annotation || annotation && request.Source == productInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_insights_annotation_inventory_source")
 	}
 	c, err := r.resolve(ctx, request.ConnectionID)
 	if err != nil {
@@ -27,7 +31,7 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		if request.Source == inventorySource {
 			return contracts.InventoryBatch{Complete: true}, nil
 		}
-		request.Source = productInventorySource
+		request.Source = insightsInventorySource(request.ResourceKind.NativeType)
 		return r.listInsights(ctx, c, request)
 	}
 	if request.ResourceKind != nil && isBatchDataType(request.ResourceKind.NativeType) {

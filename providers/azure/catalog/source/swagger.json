@@ -177534,6 +177534,26 @@
           "Azure.Microsoft.Insights.ComponentLinkedStorageAccounts_Get"
         ]
       }
+    },
+    {
+      "class": "observability.annotation",
+      "displayName": "Application Insights annotation",
+      "nativeType": "Microsoft.Insights/components/annotations",
+      "rest": {
+        "collection": "Annotations",
+        "read_operations": [
+          "Azure.Microsoft.Insights.Annotations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Annotations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.Annotations_List"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
     }
   ]
 }

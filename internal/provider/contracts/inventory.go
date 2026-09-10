@@ -15,11 +15,15 @@ type InventoryRequest struct {
 	Source string `json:"source,omitempty"`
 	// ResourceKind is nil for a Provider-wide L0 inventory query. A deep or
 	// product-specific shard supplies a kind as an explicit server-side filter.
-	ResourceKind  *asset.ResourceKind `json:"resource_kind,omitempty"`
-	Cursor        string              `json:"cursor,omitempty"`
-	Limit         int                 `json:"limit"`
-	Options       map[string]any      `json:"options,omitempty"`
-	NetworkTarget *asset.ScanTarget   `json:"network_target,omitempty"`
+	ResourceKind *asset.ResourceKind `json:"resource_kind,omitempty"`
+	// KnownNativeIDs are supplied by the inventory worker for sources that
+	// reconcile saved resources outside a bounded native list. They contain
+	// only active identities from this connection and resource kind.
+	KnownNativeIDs []string          `json:"known_native_ids,omitempty"`
+	Cursor         string            `json:"cursor,omitempty"`
+	Limit          int               `json:"limit"`
+	Options        map[string]any    `json:"options,omitempty"`
+	NetworkTarget  *asset.ScanTarget `json:"network_target,omitempty"`
 }
 
 // InventoryScope maps one inventory result into the Provider's hierarchy.

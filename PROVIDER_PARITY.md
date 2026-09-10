@@ -1959,3 +1959,44 @@ background evidence only, not acceptance evidence for this work.
   outside the legacy configuration adapter. Annotation history, independent
   web tests/workbooks, remaining service families and all eight provider
   acceptance criteria remain unfinished; 29 mapped Azure roots are still absent.
+
+
+### Azure Application Insights annotations and historical identity refresh
+
+- Annotations now have a registered native leaf rule and a dedicated bounded,
+  non-authoritative inventory source. Native LIST keeps its value envelope,
+  individual GET keeps its original array shape, and DELETE remains synchronous.
+  Every page/snapshot uses one fixed window inside Azure's rolling 90-day limit;
+  cursors bind that window, known identities and the current private snapshot.
+  Opaque Properties stay out of inventory/logs while remaining in private checks.
+- The real scan worker supplies a sorted, fixed, cloned set of active identities
+  only for opted-in sources and the selected connection/kind/partition/provider.
+  It restores the source's non-authoritative setting, so a stale persisted shard
+  cannot close older records. Azure rereads saved IDs omitted from the window;
+  missing indexed parents need exact parent and child GET 404s. Permission errors,
+  ambiguous empty/multiple arrays, wrong identity and private drift fail scans.
+- Native child lifecycle discovery and component preflight now review recent and
+  previously saved annotations as independent prerequisites. Retention blocks
+  component deletion. Exact prerequisite reads cannot be bypassed by window
+  omission or component absence; late and surviving annotations block completion.
+  Previously unseen history outside the native window cannot be enumerated and
+  can be removed by component deletion. No all-history index is claimed.
+- Tests preserve original annotation bodies and compose matching GET arrays.
+  Their old EventTime values do not establish current native date filtering.
+  Actual scan creation/worker execution, SQLite projection, graph rebuilding,
+  planning and native DELETE/readback cover historical refresh and retention.
+  The managed-component scenario plans 15 child deletions followed by the root;
+  request serialization and driver reconstruction preserve absence checks.
+  Focused tests cover cross-connection/source isolation, stable known IDs across
+  pages, stale authority, changed windows, omitted parents, reads and races.
+- Full Go tests and vet passed (Azure 159.376s; GCP 170.235s). Inventory worker,
+  Application Insights and AMPLS race checks passed (Azure 69.956s; inventory
+  3.691s). The focused Application Insights suite passed (8.077s). Five offline
+  catalog refresh tests, deterministic generation and executable-spec checks
+  passed. Bilingual documentation validation passed for 40 chapters and 10
+  screenshots. No new independent emulator or live-cloud run was performed.
+- Azure now has 370 rules and 344 cleanup bindings (343 DELETEs and one Batch node
+  removal POST), with 1,188 catalog operations. The generated catalog SHA-256 is
+  `c7b24b855a54caef290cfa9da661c355009ec1b68e702ea586c398cb177cd11c`.
+  Independent web tests/workbooks, migrated alerts, remaining service families,
+  the 29 missing mapped Azure roots and all eight acceptance criteria remain open.

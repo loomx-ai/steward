@@ -8921,6 +8921,24 @@
         "region"
       ],
       "class": "observability.integration"
+    },
+    {
+      "native_type": "Microsoft.Insights/components/annotations",
+      "collection": "Annotations",
+      "read_operations": [
+        "Azure.Microsoft.Insights.Annotations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.Annotations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.Annotations_List"
+      ],
+      "display_name": "Application Insights annotation",
+      "scope_kinds": [
+        "region"
+      ],
+      "class": "observability.annotation"
     }
   ]
 }

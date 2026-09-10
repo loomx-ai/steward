@@ -95,6 +95,9 @@ func (r *Runtime) insightsChildItem(ctx context.Context, c *client, parent contr
 	safe := safePayload(object(applicationInsightsSafeValue(child.data)))
 	normalized := maps.Clone(safe)
 	name := text(child.data["Name"])
+	if kind == insightsAnnotationType {
+		name = text(child.data["AnnotationName"])
+	}
 	if insightsARMChildKind(kind) != "" {
 		name = text(child.data["name"])
 	}
@@ -102,7 +105,7 @@ func (r *Runtime) insightsChildItem(ctx context.Context, c *client, parent contr
 		name = selector
 	}
 	normalized["name"], normalized["subscription_id"], normalized["resource_group"] = name, c.subscription, strings.Split(component, "/")[4]
-	normalized["_inventory_source"] = productInventorySource
+	normalized["_inventory_source"] = insightsInventorySource(kind)
 	normalized["_insights_component"] = component
 	normalized["_insights_component_configuration"] = parent.Normalized["_monitor_private_link_target_configuration"]
 	normalized["_insights_group_configuration"] = parent.Normalized["_insights_group_configuration"]
@@ -134,10 +137,15 @@ func (r *Runtime) insightsChildItem(ctx context.Context, c *client, parent contr
 		Raw: safe, NativeAliases: []string{id}, NetworkReferences: network}, nil
 }
 
-func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, string, error) {
+func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest, window insightsAnnotationWindow) ([]contracts.InventoryItem, string, error) {
 	components, provenance, err := c.insightsComponents(ctx)
 	if err != nil {
 		return nil, "", err
+	}
+	if request.ResourceKind.NativeType == insightsAnnotationType {
+		if err := c.insightsAnnotationParents(ctx, components, request.KnownNativeIDs); err != nil {
+			return nil, "", err
+		}
 	}
 	indexedGroups, err := c.insightsGroups(ctx)
 	if err != nil {
@@ -189,7 +197,13 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 			items = append(items, parent)
 			continue
 		}
-		children, err := c.insightsChildren(ctx, component.id, request.ResourceKind.NativeType)
+		var children []serviceChild
+		var windowIDs map[string]bool
+		if request.ResourceKind.NativeType == insightsAnnotationType {
+			children, windowIDs, err = c.insightsAnnotationInventoryChildren(ctx, component.id, window, request.KnownNativeIDs)
+		} else {
+			children, err = c.insightsChildren(ctx, component.id, request.ResourceKind.NativeType)
+		}
 		if err != nil {
 			return nil, "", err
 		}
@@ -204,6 +218,13 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 			item, err := r.insightsChildItem(ctx, c, parent, child)
 			if err != nil {
 				return nil, "", err
+			}
+			if item.NativeType == insightsAnnotationType {
+				item.Normalized["_insights_annotation_window"] = window
+				item.Normalized["_insights_annotation_discovery"] = "known-id"
+				if windowIDs[item.NativeID] {
+					item.Normalized["_insights_annotation_discovery"] = "time-window"
+				}
 			}
 			items = append(items, item)
 		}
@@ -304,7 +325,7 @@ func (c *client) insightsExportReferences(ctx context.Context, raw map[string]an
 func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts.InventoryRequest) (batch contracts.InventoryBatch, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	definition, known := r.productDefinition(request.ResourceKind.NativeType)
-	if !known || definition.Discovery.List == nil || strings.EqualFold(request.ResourceKind.NativeType, insightsAnnotationType) {
+	if !known || definition.Discovery.List == nil {
 		return batch, serviceDenied("insights_inventory_coverage_unavailable")
 	}
 	switch request.Scope.Kind {
@@ -323,7 +344,7 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 	default:
 		return batch, serviceDenied("invalid_insights_inventory_scope")
 	}
-	cursor := productCursor{}
+	cursor := insightsInventoryCursor{}
 	if request.Cursor != "" {
 		if len(request.Cursor) > 128<<10 {
 			return batch, serviceDenied("insights_inventory_cursor_too_large")
@@ -333,14 +354,28 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 			return batch, serviceDenied("invalid_insights_inventory_cursor")
 		}
 	}
-	items, provenance, err := r.insightsInventorySnapshot(ctx, c, request)
+	annotation := request.ResourceKind.NativeType == insightsAnnotationType
+	if annotation {
+		if request.Source != insightsAnnotationSource || len(request.Options) != 0 {
+			return batch, serviceDenied("invalid_insights_annotation_inventory_source")
+		}
+		if request.Cursor == "" {
+			cursor.Window = insightsRecentAnnotationWindow()
+		}
+		if _, err := insightsLegacyListParameters(insightsLegacyKind(insightsAnnotationType), cursor.Window); err != nil {
+			return batch, err
+		}
+	} else if cursor.Window != (insightsAnnotationWindow{}) || len(request.KnownNativeIDs) != 0 {
+		return batch, serviceDenied("unexpected_insights_annotation_window")
+	}
+	items, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
 	if err != nil {
 		return batch, err
 	}
 	// As with Batch's native inventory, materialize the current collection
 	// before slicing. Two independently read snapshots catch membership and
 	// private-configuration drift; an old cursor must not skip new resources.
-	current, _, err := r.insightsInventorySnapshot(ctx, c, request)
+	current, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
 	if err != nil {
 		return batch, err
 	}
@@ -350,7 +385,7 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 	}
 	boundary := request
 	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings})
+	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings, "window": cursor.Window})
 	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
 		return batch, serviceDenied("insights_inventory_cursor_changed")
 	}

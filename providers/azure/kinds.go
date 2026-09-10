@@ -121,7 +121,7 @@ func loadProviderData() (providerMetadata, error) {
 		if actionable != (len(kind.DeleteOperations) > 0) || (actionable && !slices.Contains(kind.DeleteOperations, deletion.Operation)) {
 			return result, fmt.Errorf("Azure resource %q delete binding differs from spec", kind.NativeType)
 		}
-		if definition.Discovery.Source != productInventorySource || definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation) {
+		if definition.Discovery.Source != insightsInventorySource(kind.NativeType) || definition.Discovery.List == nil || !slices.Contains(kind.ListOperations, definition.Discovery.List.Operation) {
 			return result, fmt.Errorf("Azure resource %q list binding differs from spec", kind.NativeType)
 		}
 		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {

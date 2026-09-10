@@ -134,7 +134,7 @@ func insightsComponentPlan(t *testing.T, f *insightsComponentFixture, extraKinds
 	kinds := append([]string{applicationInsightsType, groupType, insightsWorkspaceType}, insightsComponentChildKinds()...)
 	for _, kind := range append(kinds, extraKinds...) {
 		request := productRequest(r, kind)
-		_, shards, err := projection.CreateScan(ctx, inventory.ScanRequest{ConnectionID: connection.ID, RequestedBy: "native-component-test", Shards: []inventory.ShardRequest{{Provider: asset.ProviderAzure, Source: productInventorySource, ScopeID: scope.ID, ResourceKindID: request.ResourceKind.ID, Authoritative: true}}})
+		_, shards, err := projection.CreateScan(ctx, inventory.ScanRequest{ConnectionID: connection.ID, RequestedBy: "native-component-test", Shards: []inventory.ShardRequest{{Provider: asset.ProviderAzure, Source: request.Source, ScopeID: scope.ID, ResourceKindID: request.ResourceKind.ID, Authoritative: request.Source != insightsAnnotationSource}}})
 		if err != nil {
 			t.Fatal(err)
 		}

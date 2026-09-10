@@ -30,6 +30,8 @@ type insightsInventoryFixture struct {
 	detections        map[string]map[string]any
 	children          map[string]map[string]any
 	locks             []any
+	annotationWindows []insightsAnnotationWindow
+	annotationVisible map[string]bool
 	componentLists    int
 	childLists        int
 	deletes           []string
@@ -144,6 +146,24 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 		if path == f.parentID+"/linkedstorageaccounts/serviceprofiler" && req.Method == "GET" && req.URL.Query().Get("api-version") == insightsStorageVersion {
 			return jsonResponse(404, map[string]any{}, nil), nil
 		}
+		if path == f.parentID+"/annotations" {
+			window := insightsAnnotationWindow{Start: req.URL.Query().Get("start"), End: req.URL.Query().Get("end")}
+			if req.Method != "GET" || len(req.URL.Query()) != 3 || req.URL.Query().Get("api-version") != insightsLegacyVersion {
+				t.Fatal("annotation native list query changed", req.Method, req.URL)
+			}
+			if _, err := insightsLegacyListParameters(insightsLegacyKind(insightsAnnotationType), window); err != nil {
+				t.Fatal("annotation query lost its bounded time range", err)
+			}
+			f.annotationWindows = append(f.annotationWindows, window)
+			values := []any{}
+			for _, id := range slices.Sorted(maps.Keys(f.children)) {
+				_, _, kind, _, _ := insightsLegacyIdentity(id)
+				if kind == insightsAnnotationType && (f.annotationVisible == nil || f.annotationVisible[id]) {
+					values = append(values, f.children[id])
+				}
+			}
+			return jsonResponse(200, map[string]any{"value": values}, nil), nil
+		}
 		for _, kind := range insightsInventoryTestKinds[1:] {
 			row := insightsLegacyKind(kind)
 			if path != f.parentID+"/"+strings.ToLower(row.collection) {
@@ -183,6 +203,9 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 		if req.Method == "GET" {
 			if !exists {
 				return jsonResponse(404, map[string]any{}, nil), nil
+			}
+			if kind == insightsAnnotationType {
+				return jsonResponse(200, []any{raw}, nil), nil
 			}
 			return jsonResponse(200, raw, nil), nil
 		}
@@ -282,6 +305,7 @@ func TestApplicationInsightsInventoryFailureBoundaries(t *testing.T) {
 			case "annotation":
 				kind := f.runtime.resourceKind(insightsAnnotationType)
 				request.ResourceKind = &kind
+				request.Source = productInventorySource
 			case "protected-parent":
 				f.parent["tags"] = map[string]any{"steward:protected": "true"}
 			case "protected-group":
@@ -447,7 +471,7 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 	for _, kind := range kinds {
 		request := productRequest(r, kind)
 		request.Limit = 1
-		_, shards, err := projection.CreateScan(ctx, inventory.ScanRequest{ConnectionID: connection.ID, RequestedBy: "native-integration-test", Shards: []inventory.ShardRequest{{Provider: asset.ProviderAzure, Source: productInventorySource, ScopeID: scope.ID, ResourceKindID: request.ResourceKind.ID, Authoritative: true}}})
+		_, shards, err := projection.CreateScan(ctx, inventory.ScanRequest{ConnectionID: connection.ID, RequestedBy: "native-integration-test", Shards: []inventory.ShardRequest{{Provider: asset.ProviderAzure, Source: request.Source, ScopeID: scope.ID, ResourceKindID: request.ResourceKind.ID, Authoritative: request.Source != insightsAnnotationSource}}})
 		if err != nil {
 			t.Fatal(err)
 		}

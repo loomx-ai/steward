@@ -19,8 +19,10 @@ func insightsComponentChildKinds() []string {
 
 // These seven collections have complete native indexes (or a fixed singleton
 // GET) and independent DELETEs. Annotations have a bounded time-window API and
-// are not an authoritative all-history collection here.
+// are not an authoritative all-history collection here. Recent annotations are
+// added below; saved annotations omitted by this window need individual reads.
 func (c *client) insightsComponentChildren(ctx context.Context, parent string) ([]serviceChild, error) {
+	window := insightsRecentAnnotationWindow()
 	read := func() ([]serviceChild, error) {
 		var children []serviceChild
 		for _, kind := range insightsComponentChildKinds() {
@@ -30,6 +32,11 @@ func (c *client) insightsComponentChildren(ctx context.Context, parent string) (
 			}
 			children = append(children, current...)
 		}
+		annotations, err := c.insightsLegacyChildren(ctx, parent, insightsAnnotationType, window)
+		if err != nil {
+			return nil, err
+		}
+		children = append(children, annotations...)
 		slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
 		return children, nil
 	}
@@ -93,6 +100,36 @@ func (c *client) contributeInsightsChildren(ctx context.Context, parent asset.As
 	indexed := map[string]bool{}
 	for _, child := range children {
 		indexed[child.id] = true
+	}
+	for _, value := range assets {
+		if value.Identity.Provider != parent.Identity.Provider || value.Identity.ConnectionID != parent.Identity.ConnectionID || value.Identity.Partition != parent.Identity.Partition || !slices.Contains(insightsComponentChildKinds(), value.Identity.NativeType) && value.Identity.NativeType != insightsAnnotationType {
+			continue
+		}
+		id, owner, kind, _, err := insightsChildIdentity(value.Identity.NativeID)
+		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType {
+			return result, serviceDenied("invalid_indexed_insights_child_identity")
+		}
+		if owner != parent.Identity.NativeID || indexed[id] {
+			continue
+		}
+		mapping, _ := findType(kind)
+		current, err := c.insightsChildRead(ctx, mapping, id)
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return result, err
+		}
+		if kind != insightsAnnotationType {
+			return result, serviceDenied("insights_child_missing_from_native_index")
+		}
+		// The bounded list cannot refute an older saved annotation. Its exact
+		// native GET and frozen private configuration still bind it to the plan.
+		children = append(children, serviceChild{id: id, kind: kind, data: current.data})
+		indexed[id] = true
+	}
+	slices.SortFunc(children, func(a, b serviceChild) int { return strings.Compare(a.id, b.id) })
+	for _, child := range children {
 		evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false}
 		target, err := insightsChildAsset(parent, child, assets)
 		if err != nil {
@@ -110,25 +147,6 @@ func (c *client) contributeInsightsChildren(ctx context.Context, parent asset.As
 		directAllowed := target.Normalized["cleanup_protected"] != true && target.Normalized["cleanup_controller_only"] != true
 		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: parent.ID, ManagedAssetID: target.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDirect, DirectCleanupAllowed: directAllowed, EvidenceSource: insightsLifecycleSource, Evidence: evidence, Confidence: 1})
 		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipAttachedTo, Source: insightsLifecycleSource, Evidence: evidence, Confidence: 1})
-	}
-	for _, value := range assets {
-		if value.Identity.Provider != parent.Identity.Provider || value.Identity.ConnectionID != parent.Identity.ConnectionID || value.Identity.Partition != parent.Identity.Partition || !slices.Contains(insightsComponentChildKinds(), value.Identity.NativeType) {
-			continue
-		}
-		id, owner, kind, _, err := insightsChildIdentity(value.Identity.NativeID)
-		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType {
-			return result, serviceDenied("invalid_indexed_insights_child_identity")
-		}
-		if owner != parent.Identity.NativeID || indexed[id] {
-			continue
-		}
-		mapping, _ := findType(kind)
-		if _, err := c.insightsChildRead(ctx, mapping, id); !isNotFound(err) {
-			if err != nil {
-				return result, err
-			}
-			return result, serviceDenied("insights_child_missing_from_native_index")
-		}
 	}
 	after, err := c.insightsComponent(ctx, parent.Identity.NativeID)
 	if err != nil {

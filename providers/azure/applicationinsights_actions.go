@@ -66,7 +66,7 @@ func (a *insightsComponentAction) prerequisitesAbsent(ctx context.Context, reque
 			return serviceDenied("invalid_insights_component_prerequisite")
 		}
 		seen[identity.NativeID], assets[value.ID] = true, true
-		if slices.Contains(insightsComponentChildKinds(), identity.NativeType) {
+		if slices.Contains(insightsComponentChildKinds(), identity.NativeType) || identity.NativeType == insightsAnnotationType {
 			id, parent, kind, _, err := insightsChildIdentity(identity.NativeID)
 			if err != nil || id != identity.NativeID || parent != a.id || kind != identity.NativeType || value.Location != a.location || text(value.Normalized["_insights_component"]) != a.id || text(value.Normalized["_insights_component_configuration"]) != a.configuration || text(value.Normalized[insightsChildProofKey(kind)]) == "" {
 				return serviceDenied("insights_component_child_prerequisite_changed")

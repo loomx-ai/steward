@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "3d5477f47488df5a33c2a56097eac6048516d3ee437ef2dee49bc96b70fa56ce",
+    "checksum": "1af47f537c0976c3100548b4754e55acb1e4c13e7eb75fa544bbb8fd243461f3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "92ad962e2e259c296e3d635209d3986fbfbf00b0b7f8a9dadf884ba48cf14aa2",
+  "content_checksum": "a70d86e12119e14a9454e8554309473132fe5dd6521d0f5fbd8ce2ca9d2e6cde",
   "operations": [
     {
       "id": "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete",
@@ -110764,6 +110764,26 @@
         ],
         "list_operations": [
           "Azure.microsoft.insights.AnalyticsItems_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/components/annotations",
+      "class": "observability.annotation",
+      "display_name": "Application Insights annotation",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "Annotations",
+        "read_operations": [
+          "Azure.Microsoft.Insights.Annotations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Annotations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.Annotations_List"
         ]
       }
     },

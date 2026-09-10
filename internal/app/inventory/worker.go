@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -168,15 +169,17 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	if err != nil {
 		return &run, err
 	}
-	if run.ScopeMode == asset.ScanSelectedNetworks {
-		if provider, ok := adapter.(interface {
-			InventorySources() []contracts.InventorySource
-		}); ok {
-			for _, source := range provider.InventorySources() {
-				if source.Name == shard.Source {
+	reconcileKnown := false
+	if provider, ok := adapter.(interface {
+		InventorySources() []contracts.InventorySource
+	}); ok {
+		for _, source := range provider.InventorySources() {
+			if source.Name == shard.Source {
+				reconcileKnown = source.ReconcileKnownIDs
+				if run.ScopeMode == asset.ScanSelectedNetworks || reconcileKnown {
 					shard.Authoritative = source.AuthoritativeDefault
-					break
 				}
+				break
 			}
 		}
 	}
@@ -202,6 +205,24 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			return &run, err
 		}
 	}
+	var knownIDs []string
+	if reconcileKnown {
+		if kind == nil {
+			return &run, fmt.Errorf("known-resource reconciliation requires a resource kind")
+		}
+		known, err := h.repositories.Inventory().ListActiveAssetsByConnection(ctx, connection.ID, kind.ID)
+		if err != nil {
+			return &run, err
+		}
+		for _, value := range known {
+			identity := value.Identity
+			if identity.Provider == shard.Provider && identity.ConnectionID == connection.ID && identity.Partition == connection.Partition && identity.NativeType == kind.NativeType {
+				knownIDs = append(knownIDs, identity.NativeID)
+			}
+		}
+		slices.Sort(knownIDs)
+		knownIDs = slices.Compact(knownIDs)
+	}
 	cursor := ""
 	collected := make([]contracts.InventoryItem, 0)
 	for {
@@ -217,7 +238,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		}
 		request := contracts.InventoryRequest{
 			ConnectionID: connection.ID, Scope: scope, Source: shard.Source, ResourceKind: kind,
-			Cursor: cursor, Limit: MaxBatchSize, NetworkTarget: networkTarget,
+			Cursor: cursor, Limit: MaxBatchSize, NetworkTarget: networkTarget, KnownNativeIDs: slices.Clone(knownIDs),
 		}
 		batch, err := adapter.List(ctx, request)
 		if err != nil {

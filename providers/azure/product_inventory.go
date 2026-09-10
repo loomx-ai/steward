@@ -53,7 +53,7 @@ type productTarget struct {
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
 	for _, compiled := range r.bundle.Specs {
 		if strings.EqualFold(compiled.ResourceKind.NativeType, nativeType) {
-			return compiled.Definition, compiled.Definition.Discovery.Source == productInventorySource
+			return compiled.Definition, compiled.Definition.Discovery.Source == insightsInventorySource(nativeType)
 		}
 	}
 	return spec.ResourceKindSpec{}, false

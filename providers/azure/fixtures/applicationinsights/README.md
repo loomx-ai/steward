@@ -144,10 +144,9 @@ establish complete Application Insights coverage.
 
 Components have native inventory and a deletion driver with reviewed child
 prerequisites and managed-workspace impacts. Analytics items, user analytics items, exports,
-favorites, work-item configurations, API keys and linked storage have executable
-native leaf rules.
-Annotations remain unregistered: a bounded 90-day query cannot safely close
-older persisted assets as absent after an authoritative scan.
+favorites, work-item configurations, API keys, linked storage and annotations
+have executable native leaf rules. Annotations use a separate non-authoritative
+source: a bounded 90-day query cannot close older persisted assets as absent.
 
 The dedicated inventory path reads the complete subscription component index,
 native component GETs and child collections twice. It reconciles IDs, private
@@ -254,8 +253,9 @@ membership; the separate deletion tests below establish controller behavior. See
 
 ## Component child lifecycle integration
 
-The Azure lifecycle contributor now reconciles all seven registered component
-child kinds through two complete native LIST/GET passes. Each child has an
+The Azure lifecycle contributor reconciles the seven unbounded component child
+collections through two complete native LIST/GET passes; annotations use the
+bounded discovery and saved-ID reconciliation described below. Each child has an
 exclusive binding with an independent DELETE policy; the component does not
 stand in for child deletion or absence. Missing assets become unresolved
 references. Persisted children omitted by an index require an exact native GET
@@ -274,9 +274,9 @@ children, known absence, missing/duplicate/foreign assets, private/membership
 changes, incomplete lists and changed component identity. These are composed
 protocol tests, not a component-delete recording or live-cloud verification.
 
-Annotation history and independent workbook/web-test lifecycles remain outside
-these seven collections; none are
-inferred empty from their native indexes.
+Previously unseen annotation history and independent workbook/web-test
+lifecycles remain outside these seven collections; none are inferred empty
+from their native indexes.
 
 ## Component deletion and current managed group
 
@@ -485,3 +485,36 @@ go test -race -count=1 -v ./providers/azure -run '^TestApplicationInsightsIndepe
 The test trusts that certificate only in its own HTTP client and verifies the
 `management.topaz.local.dev` server name. The host's runtime data stays in its
 working directory. Stop the host after testing.
+
+## Annotation window and saved-identity reconciliation
+
+The registered annotation rule uses the original LIST value envelope, GET
+array and synchronous DELETE protocol. The source holds one recent query window
+inside the rolling 90-day limit across all pages and both native snapshots.
+Published 2018 EventTime values are preserved in the test bodies; they do not
+prove which records a current Azure date query would return. No all-history
+index or server-side EventTime filtering guarantee is inferred from them.
+
+The real scan worker supplies a fixed set of active IDs for the connection and
+kind. It restores the source's non-authoritative setting and clones the sorted
+IDs for every page. The Azure adapter validates native identity, subscription
+and parent index membership, then individually reads saved IDs omitted from the
+window. A missing parent requires exact parent and child GET 404s. Native GET
+must return exactly one matching object, or HTTP 404 for absence; empty arrays,
+ambiguous arrays, read failures and changed private data remain failures.
+
+Actual scan creation, worker execution, SQLite projection, graph rebuilding and
+planning verify that empty window queries preserve historical assets and fresh
+GETs update their private configuration. Recent and saved annotations are
+separate component prerequisites with individual cleanup and retention checks.
+Other tests cover fixed windows/known IDs across pages, identity isolation,
+missing parents, read failures, configuration drift, late annotations and a
+surviving annotation after component deletion. The managed component scenario
+plans 15 separate child deletions followed by the component; serialized requests
+still require exact prerequisite absence after driver reconstruction.
+
+These are composed native-protocol tests using retained example payloads, not
+an independent annotation emulator or live-cloud recording. Previously unseen
+annotations outside the native window cannot be enumerated by this source;
+component deletion can remove such history. An ambiguous empty GET array is not
+claimed to be a documented absence response.
