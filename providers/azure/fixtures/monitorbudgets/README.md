@@ -56,3 +56,24 @@ untouched for subsequent dependency extraction and configuration checks.
 This evidence establishes native catalog, transport and privacy behavior.
 It is not an independent emulator or live-cloud run and does not establish
 completed budget discovery, Action Group dependency checks or cleanup.
+
+The dedicated native budget readers validate canonical subscription/group
+identities, matching Get responses and required configuration before extracting
+`notifications.*.contactGroups`. Consumption's missing leading slash is
+normalized only for that native family. List scenarios bind Get to each
+original row and split the original rows into two explicitly composed pages;
+the retained source files remain unchanged. Subscription lists keep group
+budgets, while a group list remains inside its exact group.
+
+Private comparison removes only the declared read-only `currentSpend` and
+`forecastSpend`. Changes to notification recipients, filters, amount, eTag
+or other retained authored fields still matter. Repeated references across
+notification thresholds are deduplicated, including case differences. ARM
+strings in filter values do not invent Action Group links.
+
+Reader tests cover malformed IDs/configuration, empty or partial responses,
+Get/List mismatches, permission failures, listed-resource 404s, private drift,
+ambiguous response-field casing and altered continuation scopes, methods,
+versions or query filters. A listed budget's 404 is a dependency-read failure,
+never evidence of an empty budget collection. These helpers still require
+inventory, graph and independent cleanup integration.

@@ -381,7 +381,7 @@ func TestMonitorRuleIndexBoundaries(t *testing.T) {
 					return jsonResponse(status, body, headers), nil
 				})
 				c.subscription = strings.Split(id, "/")[2]
-				if _, _, err := c.monitorRuleIndex(t.Context(), row.kind); err == nil {
+				if _, _, err := c.monitorRuleIndex(t.Context(), row.kind); err == nil || isNotFound(err) {
 					t.Fatal("unsafe monitor index accepted", pages, gets)
 				}
 			})

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/provider/catalog"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
 const (
@@ -394,7 +395,8 @@ func (c *client) monitorRuleRead(ctx context.Context, kind, id string) (response
 	return result, monitorRuleIdentity(result.data, id, kind)
 }
 
-func (c *client) monitorRuleIndex(ctx context.Context, kind string) (map[string]map[string]any, string, error) {
+func (c *client) monitorRuleIndex(ctx context.Context, kind string) (items map[string]map[string]any, requestID string, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
 	row := monitorRuleKind(kind)
 	metadata, err := providerData()
 	if err != nil {
@@ -432,6 +434,9 @@ func (c *client) monitorRuleIndex(ctx context.Context, kind string) (map[string]
 		}
 		if operationLocation(result.header) != "" || result.data["code"] != nil {
 			return nil, "", serviceDenied("invalid_monitor_rule_list_response")
+		}
+		if err := monitorRuleFields(result.data, "value", "nextLink"); err != nil {
+			return nil, "", err
 		}
 		for _, value := range items {
 			raw := object(value)

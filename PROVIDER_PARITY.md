@@ -2136,3 +2136,31 @@ background evidence only, not acceptance evidence for this work.
   Budget inventory/reference reconciliation and independent cleanup, Monitor
   integration, remaining service coverage and all eight acceptance criteria
   remain open.
+
+### Azure budget native reads and incoming-reference prerequisites
+
+- Native budget readers now support subscription and resource-group identities
+  for both retained APIs. Consumption's missing leading slash is normalized
+  within that family only. Get checks its exact requested identity and required
+  configuration. Unfiltered lists reconcile every row against Get, allow group
+  budgets in a subscription list and bind group lists to their exact group.
+  Composed paging is explicit because the retained examples have no nextLink.
+- Notification contact groups are extracted only from native dictionary slots
+  and deduplicated across thresholds. Filter text does not invent references.
+  Current and forecast spend remain read-only observations; private recipients,
+  filters, amount and other authored fields remain in configuration comparison.
+- Tests exercise original response identity differences, native reads, composed
+  paging, foreign/malformed scopes, incomplete notifications, private drift,
+  permission failures, duplicate identities and altered continuation context.
+  Both Monitor and budget indexes reject ambiguous response-field casing and
+  preserve listed-resource read errors as dependency failures rather than
+  allowing a child 404 to imply collection absence.
+- Full Go tests and vet passed for the budget readers (Azure 161.433s; GCP
+  cached). After adding the final Monitor index dependency-error wrapper,
+  the combined Monitor/budget/source/privacy tests passed (0.868s), race checks
+  passed (7.058s) and Azure vet passed. The earlier complete reader race run
+  passed (7.097s). No new emulator or live-cloud verification was performed.
+- Counts remain 1,224 catalog operations, 373 executable rules and 347 cleanup
+  bindings. These helpers still need registration, full inventory snapshots,
+  lifecycle graph contributions and independent cleanup. The remaining provider
+  families and all eight acceptance criteria remain open.
