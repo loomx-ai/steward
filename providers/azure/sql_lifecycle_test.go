@@ -27,6 +27,9 @@ func TestSQLServerReviewedDatabaseAndPoolCascade(t *testing.T) {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
 			return response, nil
 		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+			return response, nil
+		}
 		if req.Method == "DELETE" {
 			if !strings.EqualFold(req.URL.Path, id) || req.URL.Query().Get("api-version") != "2023-08-01" || req.Header.Get("x-ms-client-request-id") != azureRequestID("delete-sql") {
 				t.Fatalf("unexpected SQL write %s", req.URL)

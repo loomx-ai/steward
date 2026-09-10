@@ -117,6 +117,14 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 		if monitorBudgetPath(u.Path) {
 			value = object(monitorBudgetSafeValue(value))
 		}
+		if diagnosticSettingsPath(u.Path) {
+			cleaned := object(diagnosticSettingsSafeValue(value))
+			if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "DELETE") {
+				cleaned["method"], cleaned["path"] = value["method"], u.Path
+				cleaned["query"] = map[string]any{"api-version": u.Query().Get("api-version")}
+			}
+			value = cleaned
+		}
 	}
 	return safePayload(value)
 }

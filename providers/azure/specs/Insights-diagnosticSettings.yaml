@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/diagnosticSettings
+  class: security.audit_trail
+presentation:
+  displayNames:
+    en-US: Diagnostic setting
+    zh-CN: 诊断设置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: monitor-diagnostic-settings
+  list:
+    operation: Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.DiagnosticSettings_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  sourceId:
+    path: diagnostic_source_id
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.DiagnosticSettings_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.DiagnosticSettings_Get
+      itemsPath: $
+      identityPath: id

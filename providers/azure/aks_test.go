@@ -52,6 +52,9 @@ func (s *aksScenario) runtime(t *testing.T) *Runtime {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
 			return response, nil
 		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+			return response, nil
+		}
 		path := strings.ToLower(req.URL.Path)
 		group := strings.ToLower(text(s.group["id"]))
 		operation := "/subscriptions/" + testSubscription + "/providers/microsoft.containerservice/locations/eastus/operations/delete-cluster"

@@ -70,6 +70,9 @@ func TestCosmosReadbackUsesBoundNativeName(t *testing.T) {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
 			return response, nil
 		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+			return response, nil
+		}
 		if req.Method != "GET" || !cosmosSameWireID(req.URL.Path, wire) {
 			t.Fatalf("readback used another resource: %s %s", req.Method, req.URL)
 		}

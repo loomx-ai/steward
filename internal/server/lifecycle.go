@@ -94,7 +94,9 @@ func (r *lifecycleContributorResolver) ResolveContributors(ctx context.Context, 
 	case asset.ProviderAzure:
 		contributors := []governance.Contributor{azure.NewResourceAttachments()}
 		for _, value := range assets {
-			if value.Identity.Provider != asset.ProviderAzure || !azure.HasServiceCascade(value.Identity.NativeType) {
+			// Independent ARM resources also need native incoming-reference
+			// discovery. Ownership cascades are only one part of this contributor.
+			if value.Identity.Provider != asset.ProviderAzure {
 				continue
 			}
 			provider, ok := runtime.(serviceLifecycleRuntime)

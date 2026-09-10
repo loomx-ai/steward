@@ -43,6 +43,9 @@ func TestDNSRecordNativeWireAndConditionalDeletion(t *testing.T) {
 					if response, handled := emptyMonitorIndexResponse(t, req); handled {
 						return response, nil
 					}
+					if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+						return response, nil
+					}
 					path := strings.ToLower(req.URL.Path)
 					if req.Method == "DELETE" {
 						if recordType == "SOA" || !strings.EqualFold(path, id) || req.Header.Get("If-Match") != "record-etag" {
@@ -205,6 +208,9 @@ func (s *dnsScenario) runtime(t *testing.T) *Runtime {
 			return jsonResponse(200, map[string]any{"value": records}, nil), nil
 		}
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
 			return response, nil
 		}
 		root := "/subscriptions/" + testSubscription

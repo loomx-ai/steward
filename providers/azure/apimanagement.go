@@ -215,7 +215,7 @@ func apimRaw(raw map[string]any) bool {
 	return isAPIMType(text(raw["type"])) || strings.EqualFold(text(raw["type"]), apimGatewayAlias) || apimRootID(text(raw["id"])) != ""
 }
 func apimListQuery(u *url.URL) error {
-	if !strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.apimanagement/") {
+	if armPathProvider(u.Path) != "microsoft.apimanagement" {
 		return nil
 	}
 	query, err := url.ParseQuery(u.RawQuery)

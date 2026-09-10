@@ -1,0 +1,22 @@
+[
+  {
+    "dependency": true,
+    "source_sha256": "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v2/types.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v5/types.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "c43e2458d8df96764afa6c35f53b92aed77407609df6f6b844390052b6c81eea",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "59641d343f5bdc2ff789f99942b174f6f1c3e9e15c3279636a998acad168b220",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
+  }
+]

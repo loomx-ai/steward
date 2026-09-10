@@ -258,7 +258,11 @@ func TestMonitorApplicationInsightsManagedGroup(t *testing.T) {
 				f.response = func(req *http.Request) (*http.Response, bool) {
 					path := strings.ToLower(req.URL.Path)
 					if path == "/subscriptions/"+testSubscription+"/resources" {
-						return jsonResponse(200, map[string]any{"value": []any{raw}}, nil), true
+						rows := []any{}
+						if m.objects[id] != nil {
+							rows = append(rows, raw)
+						}
+						return jsonResponse(200, map[string]any{"value": rows}, nil), true
 					}
 					_, _, _, err := monitorResourceID(path)
 					monitor := err == nil

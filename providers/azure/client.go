@@ -175,6 +175,18 @@ func apiURL(path, version string) string {
 	return armOrigin + path + "?api-version=" + url.QueryEscape(version)
 }
 
+// Extension operations belong to the final provider segment, even when their
+// resourceUri contains an ancestor from another provider with a different API.
+func armPathProvider(path string) string {
+	path = strings.ToLower(path)
+	index := strings.LastIndex(path, "/providers/")
+	if index < 0 {
+		return ""
+	}
+	provider, _, _ := strings.Cut(path[index+len("/providers/"):], "/")
+	return provider
+}
+
 func (c *client) validateURL(endpoint string) error {
 	u, err := url.Parse(endpoint)
 	if err != nil || u.Scheme != "https" || u.Host != "management.azure.com" || u.User != nil || u.Fragment != "" ||
@@ -286,6 +298,9 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
 		execution.LogCloudAPIResponse(ctx, u.Host, method, map[string]any{"request_id": out.requestID, "status_code": out.status})
 		code := text(object(out.data["error"])["code"])
+		if diagnosticSettingsPath(u.Path) && code == "" {
+			code = text(out.data["code"])
+		}
 		if strings.HasSuffix(u.Host, ".batch.azure.com") {
 			code = text(out.data["code"])
 		}
@@ -405,7 +420,7 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 	if err := apimListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
-	if strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.batch/") {
+	if armPathProvider(u.Path) == "microsoft.batch" {
 		if err := batchListQuery(endpoint, false); err != nil {
 			return nil, "", response{}, err
 		}
@@ -447,7 +462,7 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		if err := apimListQuery(nu); err != nil {
 			return nil, "", response{}, err
 		}
-		if strings.Contains(strings.ToLower(nu.Path), "/providers/microsoft.batch/") {
+		if armPathProvider(nu.Path) == "microsoft.batch" {
 			if err := batchListQuery(next, false); err != nil {
 				return nil, "", response{}, err
 			}

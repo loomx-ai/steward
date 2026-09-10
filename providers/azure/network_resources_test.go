@@ -102,6 +102,9 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 				if response, handled := emptyMonitorIndexResponse(t, req); handled {
 					return response, nil
 				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
 				path := strings.ToLower(req.URL.Path)
 				if strings.EqualFold(path, id) {
 					if req.URL.Query().Get("api-version") != tc.version {
@@ -204,6 +207,9 @@ func TestNativePreflightRejectsPartialOrForeignResourceIdentity(t *testing.T) {
 			value := actionAsset("Microsoft.Network/azureFirewalls", "firewall")
 			r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 				if response, handled := emptyMonitorIndexResponse(t, req); handled {
+					return response, nil
+				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
 					return response, nil
 				}
 				if req.Method != "GET" {

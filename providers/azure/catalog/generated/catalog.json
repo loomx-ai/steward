@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "8d2d9e79f23eaef35fda60766a69720d7c1ce4a9fae7ae2b52abf5a3c034acf3",
+    "checksum": "78b398621de41b67f8e00f0742e06b55267b264c280e76b6172a6db7890829c2",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "0fdafa4d3832cefa61e0a29d826bd1cae8bbc4d80515e13d911b631d98d5fd0a",
+  "content_checksum": "d719ec853ab0cfeefdf07f06578415b27c78987ec03ef700217455b1129ede0e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -75143,6 +75143,316 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2024-03-11/dataCollection.json"
     },
     {
+      "id": "Azure.Microsoft.Insights.DiagnosticSettingsCategory_Get",
+      "name": "DiagnosticSettingsCategory_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The diagnostic settings category resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DiagnosticSettingsCategory",
+            "description": "The properties of a Diagnostic Settings Category.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories/{name}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DiagnosticSettingsCategory_List",
+      "name": "DiagnosticSettingsCategory_List",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of diagnostic setting category resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The collection of diagnostic settings category resources.",
+            "items": {
+              "$ref": "#/definitions/DiagnosticSettingsCategoryResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DiagnosticSettings_Delete",
+      "name": "DiagnosticSettings_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DiagnosticSettings_Get",
+      "name": "DiagnosticSettings_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The diagnostic setting resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DiagnosticSettings",
+            "description": "Properties of a Diagnostic Settings Resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.DiagnosticSettings_List",
+      "name": "DiagnosticSettings_List",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceUri": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "resourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The collection of diagnostic settings resources;.",
+            "items": {
+              "$ref": "#/definitions/DiagnosticSettingsResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "resourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.Insights.ExportConfigurations_Delete",
       "name": "ExportConfigurations_Delete",
       "service": "Microsoft.Insights",
@@ -78208,6 +78518,176 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Delete",
+      "name": "SubscriptionDiagnosticSettings_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Get",
+      "name": "SubscriptionDiagnosticSettings_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/Resource"
+          }
+        ],
+        "description": "The subscription diagnostic setting resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SubscriptionDiagnosticSettings",
+            "description": "Properties of a Subscription Diagnostic Settings Resource.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/systemData",
+            "description": "The system metadata related to this resource.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List",
+      "name": "SubscriptionDiagnosticSettings_List",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-05-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of subscription diagnostic settings resources.",
+        "properties": {
+          "value": {
+            "description": "The collection of subscription diagnostic settings resources.",
+            "items": {
+              "$ref": "#/definitions/SubscriptionDiagnosticSettingsResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2021-05-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
     },
     {
       "id": "Azure.Microsoft.Insights.WebTests_Delete",
@@ -113578,6 +114058,29 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Insights.DataCollectionRules_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Insights/diagnosticSettings",
+      "class": "security.audit_trail",
+      "display_name": "Diagnostic setting",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "diagnosticSettings",
+        "read_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_Get",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_Delete",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_List",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List"
         ]
       }
     },

@@ -92,6 +92,9 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 		if monitorBudgetPath(target.Identity.NativeID) {
 			id, _, kind, err = monitorResourceID(target.Identity.NativeID)
 		}
+		if target.Identity.NativeType == diagnosticSettingsType {
+			id, _, kind, err = diagnosticResourceID(target.Identity.NativeID)
+		}
 		if err != nil || id != target.Identity.NativeID || !strings.EqualFold(kind, target.Identity.NativeType) || target.Identity.Provider != asset.ProviderAzure || !strings.HasPrefix(id, c.root()+"/") {
 			return nil, serviceDenied("invalid_monitor_incoming_target")
 		}
@@ -184,27 +187,45 @@ func (c *client) monitorIncomingObservation(ctx context.Context, targets []asset
 	return incoming, nil
 }
 
-func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Asset) (map[string][]monitorIncomingSource, error) {
+func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Asset, known ...asset.Asset) (map[string][]monitorIncomingSource, error) {
+	observe := func() (map[string][]monitorIncomingSource, error) {
+		incoming, err := c.monitorIncomingObservation(ctx, targets)
+		if err != nil {
+			return nil, err
+		}
+		diagnostics, err := c.diagnosticIncomingObservation(ctx, targets, known)
+		if err != nil {
+			return nil, contracts.DependencyReadError(err)
+		}
+		for target, sources := range diagnostics {
+			incoming[target] = append(incoming[target], sources...)
+		}
+		return incoming, nil
+	}
 	snapshot := func(incoming map[string][]monitorIncomingSource) string {
 		values := map[string]any{}
 		for target, sources := range incoming {
 			rows := map[string]any{}
 			for _, source := range sources {
 				var group map[string]any
+				configuration := monitorResourceSnapshot(source.resource.kind, source.resource.data)
 				if source.group != nil {
 					group = insightsWorkspaceResourceSnapshot(source.group)
 				}
-				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": monitorResourceSnapshot(source.resource.kind, source.resource.data), "group": group, "references": source.references}
+				if source.resource.kind == diagnosticSettingsType {
+					configuration, group = diagnosticSnapshot(source.resource.data), source.group
+				}
+				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": configuration, "group": group, "references": source.references}
 			}
 			values[target] = rows
 		}
 		return c.privateConfiguration(values)
 	}
-	first, err := c.monitorIncomingObservation(ctx, targets)
+	first, err := observe()
 	if err != nil {
 		return nil, err
 	}
-	second, err := c.monitorIncomingObservation(ctx, targets)
+	second, err := observe()
 	if err != nil {
 		return nil, err
 	}
@@ -214,8 +235,8 @@ func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Ass
 	return second, nil
 }
 
-func (c *client) monitorIncoming(ctx context.Context, target asset.Asset) ([]serviceChild, error) {
-	incoming, err := c.monitorIncomingTargets(ctx, []asset.Asset{target})
+func (c *client) monitorIncoming(ctx context.Context, target asset.Asset, known ...asset.Asset) ([]serviceChild, error) {
+	incoming, err := c.monitorIncomingTargets(ctx, []asset.Asset{target}, known...)
 	if err != nil {
 		return nil, err
 	}
@@ -228,7 +249,7 @@ func (c *client) monitorIncoming(ctx context.Context, target asset.Asset) ([]ser
 
 func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets []asset.Asset) (contribution governance.Contribution, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	incoming, err := c.monitorIncomingTargets(ctx, targets)
+	incoming, err := c.monitorIncomingTargets(ctx, targets, assets...)
 	if err != nil {
 		return contribution, err
 	}
@@ -250,6 +271,12 @@ func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets 
 				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
 					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
 				}})
+				continue
+			}
+			if source.kind == diagnosticSettingsType {
+				if err := c.diagnosticIncomingUnchanged(*indexed, entry); err != nil {
+					return contribution, err
+				}
 				continue
 			}
 			if err := c.monitorReferencesUnchanged(*indexed, entry.references); err != nil {

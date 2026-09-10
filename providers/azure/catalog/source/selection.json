@@ -2038,6 +2038,24 @@
         "Budgets_Get",
         "Budgets_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json",
+      "operations": [
+        "DiagnosticSettingsCategory_Get",
+        "DiagnosticSettingsCategory_List",
+        "DiagnosticSettings_Delete",
+        "DiagnosticSettings_Get",
+        "DiagnosticSettings_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json",
+      "operations": [
+        "SubscriptionDiagnosticSettings_Delete",
+        "SubscriptionDiagnosticSettings_Get",
+        "SubscriptionDiagnosticSettings_List"
+      ]
     }
   ],
   "resource_types": [
@@ -9266,6 +9284,27 @@
       ],
       "list_operations": [
         "Azure.Microsoft.CostManagement.Budgets_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/diagnosticSettings",
+      "class": "security.audit_trail",
+      "display_name": "Diagnostic setting",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "diagnosticSettings",
+      "read_operations": [
+        "Azure.Microsoft.Insights.DiagnosticSettings_Get",
+        "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.DiagnosticSettings_Delete",
+        "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.DiagnosticSettings_List",
+        "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List"
       ]
     }
   ]

@@ -18,6 +18,9 @@ func monitorARMTarget(value asset.Asset) bool {
 	if monitorBudgetPath(value.Identity.NativeID) {
 		_, _, kind, err = monitorResourceID(value.Identity.NativeID)
 	}
+	if value.Identity.NativeType == diagnosticSettingsType {
+		_, _, kind, err = diagnosticResourceID(value.Identity.NativeID)
+	}
 	return err == nil && strings.EqualFold(kind, value.Identity.NativeType)
 }
 

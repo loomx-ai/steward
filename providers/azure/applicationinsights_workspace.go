@@ -178,6 +178,9 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 		if err != nil || id == group || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
 			return serviceDenied("invalid_insights_workspace_group_member")
 		}
+		if strings.EqualFold(kind, diagnosticSettingsType) {
+			return diagnosticIdentity(raw, id, diagnosticSettingsType) // Independent prerequisite, never a group-owned impact.
+		}
 		if previous := resources[id]; previous != nil {
 			if !nativeConfigurationContains(insightsWorkspaceResourceSnapshot(raw), insightsWorkspaceResourceSnapshot(previous)) {
 				return serviceDenied("insights_workspace_descendant_disagrees")

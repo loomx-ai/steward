@@ -85,6 +85,9 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
 			return response, nil
 		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+			return response, nil
+		}
 		path := strings.ToLower(req.URL.Path)
 		root := "/subscriptions/" + testSubscription
 		if path == root+"/providers/microsoft.insights/components" {

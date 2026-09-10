@@ -48,6 +48,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 			resolved = &monitorTargetAction{client: c, inner: resolved, planned: value}
 		}
 	}()
+	if kind.NativeType == diagnosticSettingsType {
+		return newDiagnosticAction(c, id, value)
+	}
 	if monitorResourceKind(kind.NativeType) != "" {
 		return newMonitorAction(c, id, value)
 	}

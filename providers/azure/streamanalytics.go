@@ -128,7 +128,7 @@ func nativeConfigurationContains(expected, actual any) bool {
 }
 
 func streamAnalyticsListQuery(u *url.URL) error {
-	if !strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.streamanalytics/") {
+	if armPathProvider(u.Path) != "microsoft.streamanalytics" {
 		return nil
 	}
 	query, err := url.ParseQuery(u.RawQuery)

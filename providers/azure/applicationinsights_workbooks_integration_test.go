@@ -298,7 +298,11 @@ func TestApplicationInsightsComponentManagedWorkbook(t *testing.T) {
 				f.response = func(req *http.Request) (*http.Response, bool) {
 					path := strings.ToLower(req.URL.Path)
 					if path == "/subscriptions/"+testSubscription+"/resources" {
-						return jsonResponse(200, map[string]any{"value": []any{raw}}, nil), true
+						rows := []any{}
+						if !gone {
+							rows = append(rows, raw)
+						}
+						return jsonResponse(200, map[string]any{"value": rows}, nil), true
 					}
 					if path == id || strings.HasPrefix(path, id+"/revisions") || path == "/subscriptions/"+testSubscription+"/providers/"+strings.ToLower(kind) || kind == insightsWorkbookTemplateType && strings.HasSuffix(path, "/providers/"+strings.ToLower(kind)) {
 						if req.Method != "GET" || req.URL.Query().Get("api-version") != insightsWorkbookVersion(kind) {

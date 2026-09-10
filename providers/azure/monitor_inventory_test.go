@@ -98,6 +98,12 @@ func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixt
 				return response, nil
 			}
 		}
+		if response, ok := emptyDiagnosticIndexResponse(t, req); ok {
+			return response, nil
+		}
+		if response, ok := emptyDiagnosticSourceIndexResponse(t, req); ok {
+			return response, nil
+		}
 		if req.URL.Host != "management.azure.com" || req.Method != "GET" && req.Method != "DELETE" {
 			t.Fatal("unexpected monitor inventory request", req.Method, req.URL)
 		}

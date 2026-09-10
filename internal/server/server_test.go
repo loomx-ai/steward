@@ -308,6 +308,10 @@ func (r *clusterContributorRuntime) ClusterLifecycle(_ context.Context, id asset
 	return emptyClusterContributor{}, nil
 }
 
+func (*clusterContributorRuntime) ServiceLifecycle(context.Context, asset.ConnectionID) (governance.Contributor, error) {
+	return emptyClusterContributor{}, nil
+}
+
 type emptyClusterContributor struct{}
 
 func (emptyClusterContributor) Contribute(context.Context, asset.ScopeID, []asset.Asset) (governance.Contribution, error) {
@@ -323,7 +327,7 @@ func TestAzureClusterContributorUsesExplicitConnectionOnlyWhenRequired(t *testin
 	}
 	cluster := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: "Microsoft.ContainerService/managedClusters", ConnectionID: connection.ID}}
 	contributors, err := resolver.ResolveContributors(context.Background(), connection, []asset.Asset{cluster, cluster})
-	if err != nil || len(contributors) != 2 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+	if err != nil || len(contributors) != 3 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
 		t.Fatalf("cluster discovery not wired exactly once: contributors=%d connections=%+v err=%v", len(contributors), runtime.connections, err)
 	}
 	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{cluster}); err == nil {
@@ -465,5 +469,27 @@ func TestAzureServiceContributorUsesExplicitConnectionOnce(t *testing.T) {
 	}
 	if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(context.Background(), connection, []asset.Asset{parent}); err == nil {
 		t.Fatal("missing service lifecycle silently accepted")
+	}
+}
+
+func TestAzureIndependentResourcesReceiveNativeReferenceDiscovery(t *testing.T) {
+	for _, kind := range []string{
+		"Microsoft.Insights/diagnosticSettings", "Microsoft.Insights/metricAlerts", "Microsoft.Insights/actionGroups",
+		"Microsoft.Consumption/budgets", "Microsoft.Insights/workbooks", "Microsoft.Insights/components",
+		"Microsoft.Storage/storageAccounts", "Microsoft.Compute/disks", "Microsoft.Example/unregistered",
+	} {
+		t.Run(kind, func(t *testing.T) {
+			runtime := &azureServiceContributorRuntime{}
+			resolver := newLifecycleContributorResolver(contributorRuntimeDirectory{runtime: runtime})
+			connection := asset.CloudConnection{ID: "azure-connection", Provider: asset.ProviderAzure}
+			value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: connection.ID, NativeType: kind}}
+			contributors, err := resolver.ResolveContributors(t.Context(), connection, []asset.Asset{value, value})
+			if err != nil || len(contributors) != 2 || !reflect.DeepEqual(runtime.connections, []asset.ConnectionID{connection.ID}) {
+				t.Fatal("independent Azure source/target lost native dependency discovery", len(contributors), runtime.connections, err)
+			}
+			if _, err := newLifecycleContributorResolver(contributorRuntimeDirectory{}).ResolveContributors(t.Context(), connection, []asset.Asset{value}); err == nil {
+				t.Fatal("missing native dependency discovery was silently accepted")
+			}
+		})
 	}
 }

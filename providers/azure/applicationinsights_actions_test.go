@@ -514,7 +514,7 @@ func insightsComponentPrivateLinks(t *testing.T, f *insightsComponentFixture) (s
 		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.insights/privatelinkscopes" {
 			return jsonResponse(200, map[string]any{"value": []any{scope}}, nil), true
 		}
-		if path == scopeID || strings.HasPrefix(path, scopeID+"/") {
+		if path == scopeID || strings.HasPrefix(path, scopeID+"/") && !strings.Contains(strings.TrimPrefix(path, scopeID), "/providers/") {
 			if req.URL.Query().Get("api-version") != monitorPrivateLinkVersion || len(req.URL.Query()) != 1 {
 				t.Fatal("AMPLS native API version changed", req.URL)
 			}

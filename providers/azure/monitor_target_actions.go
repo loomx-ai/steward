@@ -39,6 +39,11 @@ func (a *monitorTargetAction) resultForInner(request contracts.ActionRequest, re
 	}
 	result.Data = maps.Clone(result.Data)
 	delete(result.Data, monitorTargetReceipt)
+	if diagnostic, ok := a.inner.(*diagnosticAction); ok {
+		if err := diagnostic.verifyReceipt(result); err != nil {
+			return contracts.ActionResult{}, err
+		}
+	}
 	return result, nil
 }
 
@@ -49,6 +54,13 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		return filtered, nil, serviceDenied("monitor_target_action_identity_changed")
 	}
 	filtered = request
+	if diagnostic, ok := a.inner.(*diagnosticAction); ok {
+		identity := request
+		identity.PrerequisiteDeletions = nil // This wrapper authenticates the prerequisites below.
+		if err := diagnostic.identity(identity); err != nil {
+			return filtered, nil, err
+		}
+	}
 	if request.ExecutionResult != nil {
 		result, err := a.resultForInner(request, *request.ExecutionResult)
 		if err != nil {
@@ -61,6 +73,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 	controllers := map[asset.AssetID]asset.AssetID{}
 	for _, impact := range request.LifecycleImpacts {
 		member := impact.Asset
+		if member.Identity.NativeType == diagnosticSettingsType {
+			return filtered, nil, serviceDenied("diagnostic_requires_independent_deletion")
+		}
 		if member.ID == "" || seenAssets[member.ID] || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
 			return filtered, nil, serviceDenied("invalid_monitor_target_impact")
 		}
@@ -102,15 +117,23 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			return filtered, nil, serviceDenied("ambiguous_monitor_target_prerequisite")
 		}
 		seenIDs[member.Identity.NativeID], seenAssets[member.ID] = true, true
-		if monitorResourceKind(member.Identity.NativeType) == "" {
+		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType {
 			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, prerequisite)
 			continue // The native driver authenticates its own prerequisite families.
 		}
 		id, _, kind, err := monitorResourceID(member.Identity.NativeID)
+		if member.Identity.NativeType == diagnosticSettingsType {
+			id, _, kind, err = diagnosticResourceID(member.Identity.NativeID)
+		}
 		if err != nil || id != member.Identity.NativeID || kind != member.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || !prerequisite.Delete || prerequisite.ControllerID != value.ID || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
 			return filtered, nil, serviceDenied("invalid_monitor_target_prerequisite")
 		}
-		refs, err := a.client.monitorRecordedReferences(member)
+		var refs map[string]any
+		if kind == diagnosticSettingsType {
+			refs, err = a.client.diagnosticRecordedReferences(member)
+		} else {
+			refs, err = a.client.monitorRecordedReferences(member)
+		}
 		if err != nil {
 			return filtered, nil, err
 		}
@@ -129,7 +152,12 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if !linked {
 			return filtered, nil, serviceDenied("monitor_target_prerequisite_reference_changed")
 		}
-		if _, err := a.client.monitorResourceRead(ctx, kind, id); !isNotFound(err) {
+		if kind == diagnosticSettingsType {
+			_, err = a.client.diagnosticRead(ctx, text(member.Normalized[diagnosticWireSelector]), kind)
+		} else {
+			_, err = a.client.monitorResourceRead(ctx, kind, id)
+		}
+		if !isNotFound(err) {
 			if err != nil {
 				return filtered, nil, err
 			}
@@ -140,6 +168,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 }
 
 func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, source monitorIncomingSource) (bool, error) {
+	if source.resource.kind == diagnosticSettingsType {
+		return false, nil // Settings require independent deletion even in managed groups.
+	}
 	group, ok := a.client.monitorControllerGroup(request.Asset)
 	if !ok || !inResourceGroup(source.resource.id, group) {
 		return false, nil
@@ -164,7 +195,11 @@ func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, sourc
 
 func (a *monitorTargetAction) dependencies(ctx context.Context, request contracts.ActionRequest, targets []asset.Asset) (err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
-	incoming, err := a.client.monitorIncomingTargets(ctx, targets)
+	known := []asset.Asset{}
+	for _, prerequisite := range request.PrerequisiteDeletions {
+		known = append(known, prerequisite.Asset)
+	}
+	incoming, err := a.client.monitorIncomingTargets(ctx, targets, known...)
 	if err != nil {
 		return err
 	}

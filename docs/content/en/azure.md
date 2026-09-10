@@ -30,7 +30,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 383 resource types; 357 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 384 resource types; 358 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -66,6 +66,7 @@ Steward recognizes 383 resource types; 357 have native cleanup actions, includin
 | Application Insights | Components, analytics items, exports, favorites, work-item configurations, API keys and profiler storage links | Independent child prerequisites, AMPLS unlinking and reviewed current managed-workspace group deletion |
 | Azure Monitor workbooks | Shared workbooks, private workbooks and workbook templates | Independent cleanup with full-content and revision checks; referenced storage and identities remain separate |
 | Azure Monitor alerts | Metric, activity-log, scheduled-query, smart-detector, Prometheus and processing rules; action groups and web tests | Independent cleanup; reviewed referencing rules must precede a shared Monitor destination |
+| Diagnostic settings | Resource and subscription settings, including separate Blob, File, Queue and Table service scopes | Independent deletion before a referenced source, destination or ancestor; destinations remain separate resources |
 | Budgets | Consumption and Cost Management budgets at subscription and resource-group scopes | Independent cleanup; notification action groups remain separate |
 | Aggregate resources still awaiting lifecycle support | Resource groups, Key Vaults and Container Apps environments | Read-only |
 
@@ -74,6 +75,10 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
 ## Cleanup protections
+
+Diagnostic settings appear in global inventory. Discovery requires subscription resource-list access, native reads and child lists for discovered sources, resource-group and management-lock reads, and diagnostic-setting list/read access at each exact source scope. Cleanup also requires `Microsoft.Insights/diagnosticSettings/delete` for each selected setting. Source, destination and ancestor cleanup requires explicit selection of their referring settings first, including settings found inside a managed resource group. Deleting a setting stops its configured export; shared storage, Event Hubs and workspaces are separate resources. See Microsoft's [diagnostic settings guide](https://learn.microsoft.com/en-us/azure/azure-monitor/platform/diagnostic-settings).
+
+The subscription setting list does not enumerate every resource's settings. Steward supplements source discovery with native child APIs and previously saved setting IDs, so known settings can survive their source's deletion. Settings on an unknown source type appear protected until native source verification is supported. A never-seen orphan outside those sources has no supported subscription-wide index. A failed list or detail read blocks reconciliation or cleanup; source/group absence cannot prove a setting was removed. Cleanup completes only after that setting's own native GET confirms absence. The native DELETE has no conditional version parameter, so preflight checks cannot eliminate a concurrent external edit.
 
 Monitor alerts, action groups, web tests and budgets support native discovery and independent deletion. Include global scope when scanning global rules and budgets. A retained alert rule or budget blocks cleanup of its referenced Action Group; selecting both orders the referencing resource first. Cleanup requires native list/read access for possible referring rules, and Action Group checks also enumerate both budget APIs across the subscription and its resource groups. Grant native delete permission only for the resources selected for cleanup. Private queries, receivers and notification content stay out of inventory and logs; configuration or permission changes require a fresh successful scan and plan.
 

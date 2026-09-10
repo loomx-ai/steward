@@ -19,11 +19,16 @@ type InventoryRequest struct {
 	// KnownNativeIDs are supplied by the inventory worker for sources that
 	// reconcile saved resources outside a bounded native list. They contain
 	// only active identities from this connection and resource kind.
-	KnownNativeIDs []string          `json:"known_native_ids,omitempty"`
-	Cursor         string            `json:"cursor,omitempty"`
-	Limit          int               `json:"limit"`
-	Options        map[string]any    `json:"options,omitempty"`
-	NetworkTarget  *asset.ScanTarget `json:"network_target,omitempty"`
+	KnownNativeIDs []string `json:"known_native_ids,omitempty"`
+	// KnownNativeMetadata contains the saved normalized metadata for those same
+	// identities. Adapters can authenticate original native request selectors
+	// (for example, case-sensitive names) without treating old state as a current
+	// observation. The worker fixes and deep-copies this baseline across pages.
+	KnownNativeMetadata map[string]map[string]any `json:"known_native_metadata,omitempty"`
+	Cursor              string                    `json:"cursor,omitempty"`
+	Limit               int                       `json:"limit"`
+	Options             map[string]any            `json:"options,omitempty"`
+	NetworkTarget       *asset.ScanTarget         `json:"network_target,omitempty"`
 }
 
 // InventoryScope maps one inventory result into the Provider's hierarchy.

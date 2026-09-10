@@ -1,6 +1,982 @@
 {
   "documents": [
     {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "Resource": {
+            "description": "Common fields that are returned in the response for all Azure Resource Manager resources",
+            "properties": {
+              "id": {
+                "description": "Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Resource",
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "systemData": {
+            "description": "Metadata pertaining to creation and last modification of the resource.",
+            "properties": {
+              "createdAt": {
+                "description": "The timestamp of resource creation (UTC).",
+                "format": "date-time",
+                "type": "string"
+              },
+              "createdBy": {
+                "description": "The identity that created the resource.",
+                "type": "string"
+              },
+              "createdByType": {
+                "description": "The type of identity that created the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              },
+              "lastModifiedAt": {
+                "description": "The timestamp of resource last modification (UTC)",
+                "format": "date-time",
+                "type": "string"
+              },
+              "lastModifiedBy": {
+                "description": "The identity that last modified the resource.",
+                "type": "string"
+              },
+              "lastModifiedByType": {
+                "description": "The type of identity that last modified the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "description": "The API version to use for this operation.",
+            "in": "query",
+            "minLength": 1,
+            "name": "api-version",
+            "required": true,
+            "type": "string"
+          },
+          "SubscriptionIdParameter": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        }
+      },
+      "source_sha256": "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v2/types.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "ProxyResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a Azure Resource Manager proxy resource. It will not have tags and a location",
+            "title": "Proxy Resource",
+            "type": "object"
+          },
+          "Resource": {
+            "description": "Common fields that are returned in the response for all Azure Resource Manager resources",
+            "properties": {
+              "id": {
+                "description": "Fully qualified resource ID for the resource. E.g. \"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}\"",
+                "format": "arm-id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "systemData": {
+                "$ref": "#/definitions/systemData",
+                "description": "Azure Resource Manager metadata containing createdBy and modifiedBy information.",
+                "readOnly": true
+              },
+              "type": {
+                "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "title": "Resource",
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "systemData": {
+            "description": "Metadata pertaining to creation and last modification of the resource.",
+            "properties": {
+              "createdAt": {
+                "description": "The timestamp of resource creation (UTC).",
+                "format": "date-time",
+                "type": "string"
+              },
+              "createdBy": {
+                "description": "The identity that created the resource.",
+                "type": "string"
+              },
+              "createdByType": {
+                "description": "The type of identity that created the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              },
+              "lastModifiedAt": {
+                "description": "The timestamp of resource last modification (UTC)",
+                "format": "date-time",
+                "type": "string"
+              },
+              "lastModifiedBy": {
+                "description": "The identity that last modified the resource.",
+                "type": "string"
+              },
+              "lastModifiedByType": {
+                "description": "The type of identity that last modified the resource.",
+                "enum": [
+                  "User",
+                  "Application",
+                  "ManagedIdentity",
+                  "Key"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "createdByType"
+                }
+              }
+            },
+            "readOnly": true,
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "description": "The API version to use for this operation.",
+            "in": "query",
+            "minLength": 1,
+            "name": "api-version",
+            "required": true,
+            "type": "string"
+          }
+        }
+      },
+      "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v5/types.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "CategoryType": {
+            "description": "The type of the diagnostic settings category.",
+            "enum": [
+              "Metrics",
+              "Logs"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CategoryType",
+              "values": [
+                {
+                  "description": "Metrics",
+                  "name": "Metrics",
+                  "value": "Metrics"
+                },
+                {
+                  "description": "Logs",
+                  "name": "Logs",
+                  "value": "Logs"
+                }
+              ]
+            }
+          },
+          "DiagnosticSettings": {
+            "description": "The diagnostic settings.",
+            "properties": {
+              "eventHubAuthorizationRuleId": {
+                "description": "The resource Id for the event hub authorization rule.",
+                "type": "string"
+              },
+              "eventHubName": {
+                "description": "The name of the event hub. If none is specified, the default event hub will be selected.",
+                "type": "string"
+              },
+              "logAnalyticsDestinationType": {
+                "description": "A string indicating whether the export to Log Analytics should use the default destination type, i.e. AzureDiagnostics, or use a destination type constructed as follows: <normalized service identity>_<normalized category name>. Possible values are: Dedicated and null (null is default.)",
+                "type": "string"
+              },
+              "logs": {
+                "description": "The list of logs settings.",
+                "items": {
+                  "$ref": "#/definitions/DiagnosticsLogSettings"
+                },
+                "type": "array"
+              },
+              "marketplacePartnerId": {
+                "description": "The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs.",
+                "type": "string"
+              },
+              "metrics": {
+                "description": "The list of metric settings.",
+                "items": {
+                  "$ref": "#/definitions/DiagnosticsMetricSettings"
+                },
+                "type": "array"
+              },
+              "serviceBusRuleId": {
+                "description": "The service bus rule Id of the diagnostic setting. This is here to maintain backwards compatibility.",
+                "type": "string"
+              },
+              "storageAccountId": {
+                "description": "The resource ID of the storage account to which you would like to send Diagnostic Logs.",
+                "type": "string"
+              },
+              "workspaceId": {
+                "description": "The full ARM resource ID of the Log Analytics workspace to which you would like to send Diagnostic Logs. Example: /subscriptions/4b9e8510-67ab-4e9a-95a9-e2f1e570ea9c/resourceGroups/insights-integration/providers/Microsoft.OperationalInsights/workspaces/viruela2",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticSettingsCategory": {
+            "description": "The diagnostic settings Category.",
+            "properties": {
+              "categoryGroups": {
+                "description": "the collection of what category groups are supported.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "categoryType": {
+                "$ref": "#/definitions/CategoryType",
+                "description": "The type of the diagnostic settings category."
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticSettingsCategoryResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "The diagnostic settings category resource.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/DiagnosticSettingsCategory",
+                "description": "The properties of a Diagnostic Settings Category.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticSettingsCategoryResourceCollection": {
+            "description": "Represents a collection of diagnostic setting category resources.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to get the next set of results.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The collection of diagnostic settings category resources.",
+                "items": {
+                  "$ref": "#/definitions/DiagnosticSettingsCategoryResource"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticSettingsResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "The diagnostic setting resource.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/DiagnosticSettings",
+                "description": "Properties of a Diagnostic Settings Resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticSettingsResourceCollection": {
+            "description": "Represents a collection of alert rule resources.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to get the next set of results.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The collection of diagnostic settings resources;.",
+                "items": {
+                  "$ref": "#/definitions/DiagnosticSettingsResource"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticsLogSettings": {
+            "description": "Part of MultiTenantDiagnosticSettings. Specifies the settings for a particular log.",
+            "properties": {
+              "category": {
+                "description": "Name of a Diagnostic Log category for a resource type this setting is applied to. To obtain the list of Diagnostic Log categories for a resource, first perform a GET diagnostic settings operation.",
+                "type": "string"
+              },
+              "categoryGroup": {
+                "description": "Name of a Diagnostic Log category group for a resource type this setting is applied to. To obtain the list of Diagnostic Log categories for a resource, first perform a GET diagnostic settings operation.",
+                "type": "string"
+              },
+              "enabled": {
+                "description": "a value indicating whether this log is enabled.",
+                "type": "boolean"
+              },
+              "retentionPolicy": {
+                "$ref": "#/definitions/Microsoft.Common.RetentionPolicy",
+                "description": "the retention policy for this log."
+              }
+            },
+            "required": [
+              "enabled"
+            ],
+            "type": "object"
+          },
+          "DiagnosticsMetricSettings": {
+            "description": "Part of MultiTenantDiagnosticSettings. Specifies the settings for a particular metric.",
+            "properties": {
+              "category": {
+                "description": "Name of a Diagnostic Metric category for a resource type this setting is applied to. To obtain the list of Diagnostic metric categories for a resource, first perform a GET diagnostic settings operation.",
+                "type": "string"
+              },
+              "enabled": {
+                "description": "a value indicating whether this category is enabled.",
+                "type": "boolean"
+              },
+              "retentionPolicy": {
+                "$ref": "#/definitions/Microsoft.Common.RetentionPolicy",
+                "description": "the retention policy for this category."
+              },
+              "timeGrain": {
+                "description": "the timegrain of the metric in ISO8601 format.",
+                "format": "duration",
+                "type": "string"
+              }
+            },
+            "required": [
+              "enabled"
+            ],
+            "type": "object"
+          },
+          "Microsoft.Common.ErrorResponse": {
+            "description": "Describes the format of Error response.",
+            "properties": {
+              "code": {
+                "description": "Error code",
+                "type": "string"
+              },
+              "message": {
+                "description": "Error message indicating why the operation failed.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Microsoft.Common.RetentionPolicy": {
+            "description": "Specifies the retention policy for the log.",
+            "properties": {
+              "days": {
+                "description": "the number of days for the retention in days. A value of 0 will retain the events indefinitely.",
+                "format": "int32",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "enabled": {
+                "description": "a value indicating whether the retention policy is enabled.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "enabled",
+              "days"
+            ],
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Monitor Management Client",
+          "title": "MonitorManagementClient",
+          "version": "2021-05-01-preview",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "paths": {
+          "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings": {
+            "get": {
+              "description": "Gets the active diagnostic settings list for the specified resource.",
+              "operationId": "DiagnosticSettings_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DiagnosticSettingsResourceCollection"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Microsoft.Common.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Gets the diagnostic setting": {
+                  "$ref": "./examples/listDiagnosticSettings.json"
+                },
+                "Gets the diagnostic setting for category": {
+                  "$ref": "./examples/listDiagnosticSettingsCategory.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings/{name}": {
+            "delete": {
+              "description": "Deletes existing diagnostic settings for the specified resource.",
+              "operationId": "DiagnosticSettings_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The name of the diagnostic setting.",
+                  "in": "path",
+                  "name": "name",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Microsoft.Common.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Deletes the diagnostic setting": {
+                  "$ref": "./examples/deleteDiagnosticSetting.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets the active diagnostic settings for the specified resource.",
+              "operationId": "DiagnosticSettings_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The name of the diagnostic setting.",
+                  "in": "path",
+                  "name": "name",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DiagnosticSettingsResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Microsoft.Common.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Gets the diagnostic setting": {
+                  "$ref": "./examples/getDiagnosticSetting.json"
+                },
+                "Gets the diagnostic setting for category": {
+                  "$ref": "./examples/getDiagnosticSettingCategory.json"
+                }
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories": {
+            "get": {
+              "description": "Lists the diagnostic settings categories for the specified resource.",
+              "operationId": "DiagnosticSettingsCategory_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DiagnosticSettingsCategoryResourceCollection"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Microsoft.Common.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DiagnosticSettingsCategories"
+              ],
+              "x-ms-examples": {
+                "Gets the diagnostic setting": {
+                  "$ref": "./examples/listDiagnosticSettingsCategories.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/{resourceUri}/providers/Microsoft.Insights/diagnosticSettingsCategories/{name}": {
+            "get": {
+              "description": "Gets the diagnostic settings category for the specified resource.",
+              "operationId": "DiagnosticSettingsCategory_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "description": "The fully qualified Azure Resource manager identifier of the resource.",
+                  "in": "path",
+                  "name": "resourceUri",
+                  "required": true,
+                  "type": "string",
+                  "x-ms-skip-url-encoding": true
+                },
+                {
+                  "description": "The name of the diagnostic setting.",
+                  "in": "path",
+                  "name": "name",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/DiagnosticSettingsCategoryResource"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "#/definitions/Microsoft.Common.ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "DiagnosticSettingsCategories"
+              ],
+              "x-ms-examples": {
+                "Gets the diagnostic setting": {
+                  "$ref": "./examples/getDiagnosticSettingsCategory.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "c43e2458d8df96764afa6c35f53b92aed77407609df6f6b844390052b6c81eea",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/openapi.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "ErrorResponse": {
+            "description": "Describes the format of Error response.",
+            "properties": {
+              "code": {
+                "description": "Error code",
+                "type": "string"
+              },
+              "message": {
+                "description": "Error message indicating why the operation failed.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SubscriptionDiagnosticSettings": {
+            "description": "The subscription diagnostic settings.",
+            "properties": {
+              "eventHubAuthorizationRuleId": {
+                "description": "The resource Id for the event hub authorization rule.",
+                "type": "string"
+              },
+              "eventHubName": {
+                "description": "The name of the event hub. If none is specified, the default event hub will be selected.",
+                "type": "string"
+              },
+              "logs": {
+                "description": "The list of logs settings.",
+                "items": {
+                  "$ref": "#/definitions/SubscriptionLogSettings"
+                },
+                "type": "array"
+              },
+              "marketplacePartnerId": {
+                "description": "The full ARM resource ID of the Marketplace resource to which you would like to send Diagnostic Logs.",
+                "type": "string"
+              },
+              "serviceBusRuleId": {
+                "description": "The service bus rule Id of the diagnostic setting. This is here to maintain backwards compatibility.",
+                "type": "string"
+              },
+              "storageAccountId": {
+                "description": "The resource ID of the storage account to which you would like to send Diagnostic Logs.",
+                "type": "string"
+              },
+              "workspaceId": {
+                "description": "The full ARM resource ID of the Log Analytics workspace to which you would like to send Diagnostic Logs. Example: /subscriptions/4b9e8510-67ab-4e9a-95a9-e2f1e570ea9c/resourceGroups/insights-integration/providers/Microsoft.OperationalInsights/workspaces/viruela2",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SubscriptionDiagnosticSettingsResource": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/Resource"
+              }
+            ],
+            "description": "The subscription diagnostic setting resource.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/SubscriptionDiagnosticSettings",
+                "description": "Properties of a Subscription Diagnostic Settings Resource.",
+                "x-ms-client-flatten": true
+              },
+              "systemData": {
+                "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/systemData",
+                "description": "The system metadata related to this resource.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "SubscriptionDiagnosticSettingsResourceCollection": {
+            "description": "Represents a collection of subscription diagnostic settings resources.",
+            "properties": {
+              "value": {
+                "description": "The collection of subscription diagnostic settings resources.",
+                "items": {
+                  "$ref": "#/definitions/SubscriptionDiagnosticSettingsResource"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "SubscriptionLogSettings": {
+            "description": "Part of Subscription diagnostic setting. Specifies the settings for a particular log.",
+            "properties": {
+              "category": {
+                "description": "Name of a Subscription Diagnostic Log category for a resource type this setting is applied to.",
+                "type": "string"
+              },
+              "categoryGroup": {
+                "description": "Name of a Subscription Diagnostic Log category group for a resource type this setting is applied to.",
+                "type": "string"
+              },
+              "enabled": {
+                "description": "a value indicating whether this log is enabled.",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "enabled"
+            ],
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "MonitorManagementClient",
+          "version": "2021-05-01-preview",
+          "x-ms-code-generation-settings": {
+            "name": "MonitorManagementClient"
+          }
+        },
+        "parameters": {
+          "NameParameter": {
+            "description": "The name of the diagnostic setting.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings": {
+            "get": {
+              "description": "Gets the active subscription diagnostic settings list for the specified subscriptionId.",
+              "operationId": "SubscriptionDiagnosticSettings_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful request to get more information about subscription diagnostic setting",
+                  "schema": {
+                    "$ref": "#/definitions/SubscriptionDiagnosticSettingsResourceCollection"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "SubscriptionDiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Gets the subscription diagnostic setting": {
+                  "$ref": "./examples/listSubscriptionDiagnosticSettings.json"
+                },
+                "Gets the subscription diagnostic settings for category": {
+                  "$ref": "./examples/listSubscriptionDiagnosticSettingsCategory.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": null
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/diagnosticSettings/{name}": {
+            "delete": {
+              "description": "Deletes existing subscription diagnostic settings for the specified resource.",
+              "operationId": "SubscriptionDiagnosticSettings_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/NameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful request to remove a subscription diagnostic setting"
+                },
+                "204": {
+                  "description": "Successful request to remove a subscription diagnostic setting"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "SubscriptionDiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Deletes the subscription diagnostic setting": {
+                  "$ref": "./examples/deleteSubscriptionDiagnosticSetting.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets the active subscription diagnostic settings for the specified resource.",
+              "operationId": "SubscriptionDiagnosticSettings_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v2/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "#/parameters/NameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successful request to get more information about diagnostic setting.",
+                  "schema": {
+                    "$ref": "#/definitions/SubscriptionDiagnosticSettingsResource"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "SubscriptionDiagnosticSettings"
+              ],
+              "x-ms-examples": {
+                "Gets the subscription diagnostic setting": {
+                  "$ref": "./examples/getSubscriptionDiagnosticSetting.json"
+                },
+                "Gets the subscription diagnostic setting for category": {
+                  "$ref": "./examples/getSubscriptionDiagnosticSettingCategory.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "59641d343f5bdc2ff789f99942b174f6f1c3e9e15c3279636a998acad168b220",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
+    },
+    {
       "dependency": false,
       "document": {
         "definitions": {
@@ -184138,6 +185114,29 @@
         ],
         "read_operations": [
           "Azure.Microsoft.CostManagement.Budgets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "security.audit_trail",
+      "displayName": "Diagnostic setting",
+      "nativeType": "Microsoft.Insights/diagnosticSettings",
+      "rest": {
+        "collection": "diagnosticSettings",
+        "delete_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_Delete",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_List",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Insights.DiagnosticSettings_Get",
+          "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_Get"
         ]
       },
       "scopeKinds": [

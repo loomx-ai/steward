@@ -75,6 +75,9 @@ func (c *client) managedGroupResources(ctx context.Context, clusterID, group str
 		if err != nil || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
 			return fmt.Errorf("invalid AKS descendant identity")
 		}
+		if strings.EqualFold(kind, diagnosticSettingsType) {
+			return diagnosticIdentity(raw, id, diagnosticSettingsType) // Independent prerequisite, never a group-owned impact.
+		}
 		if previous := seen[id]; previous != nil {
 			return serviceListedIncarnation(raw, previous)
 		}
@@ -278,6 +281,9 @@ func (c *client) bindManagedGroup(ctx context.Context, controller asset.Asset, g
 	liveByID := map[string]map[string]any{}
 	for _, raw := range resources {
 		id, nativeType, _ := parseID(text(raw["id"]))
+		if strings.EqualFold(nativeType, diagnosticSettingsType) {
+			continue
+		}
 		members[id] = nativeType
 		liveByID[id] = raw
 	}
@@ -289,6 +295,9 @@ func (c *client) bindManagedGroup(ctx context.Context, controller asset.Asset, g
 		id, nativeType, err := parseID(value.Identity.NativeID)
 		if err != nil || !strings.EqualFold(nativeType, value.Identity.NativeType) || byID[id].ID != "" {
 			return result, fmt.Errorf("invalid or ambiguous AKS managed asset")
+		}
+		if strings.EqualFold(nativeType, diagnosticSettingsType) {
+			continue // Group membership never proves diagnostic-setting deletion.
 		}
 		if live := liveByID[id]; live != nil {
 			if err := c.servicePrivateIncarnation(value, live); err != nil {

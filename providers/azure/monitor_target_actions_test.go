@@ -21,6 +21,9 @@ import (
 // use the original Monitor responses instead, including native 403/404 errors.
 func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
 	t.Helper()
+	if response, handled := emptyDiagnosticIndexResponse(t, req); handled {
+		return response, true
+	}
 	path := strings.ToLower(req.URL.Path)
 	root := "/subscriptions/" + testSubscription
 	for kind, version := range map[string]string{
@@ -39,6 +42,33 @@ func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response,
 		return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 	}
 	return nil, false
+}
+
+func emptyDiagnosticIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
+	t.Helper()
+	path := strings.ToLower(req.URL.Path)
+	if !strings.HasPrefix(path, "/subscriptions/"+testSubscription+"/") || !strings.HasSuffix(path, "/providers/microsoft.insights/diagnosticsettings") {
+		return nil, false
+	}
+	scope := strings.TrimSuffix(path, "/providers/microsoft.insights/diagnosticsettings")
+	if _, err := diagnosticScope(scope); err != nil || req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != diagnosticSettingsVersion {
+		t.Fatal("unexpected empty native diagnostic index contract", req.Method, req.URL)
+	}
+	return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
+}
+
+// Isolated product fixtures can compose an empty broad ARM index while their
+// target-specific diagnostic indexes still run. Call after explicit overrides;
+// fixtures with actual broad ARM rows must keep their own collection response.
+func emptyDiagnosticSourceIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
+	t.Helper()
+	if !strings.EqualFold(req.URL.Path, "/subscriptions/"+testSubscription+"/resources") {
+		return nil, false
+	}
+	if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != resourcesVersion {
+		t.Fatal("unexpected empty diagnostic source index contract", req.Method, req.URL)
+	}
+	return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 }
 
 // Tests that inspect a native driver's internal poll/preparation state still

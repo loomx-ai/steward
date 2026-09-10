@@ -126,6 +126,17 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if kind.NativeType == diagnosticSettingsType {
+		id, _, typ, err := diagnosticResourceID(nativeID)
+		if err != nil || typ != kind.NativeType {
+			return catalog.Operation{}, nil, serviceDenied("invalid_diagnostic_resource_operation")
+		}
+		wire, err := diagnosticWireID(nativeID)
+		if err != nil {
+			return catalog.Operation{}, nil, err
+		}
+		return c.diagnosticOperation(diagnosticWireScope(wire), last(id), typ, method)
+	}
 	if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" {
 		return c.monitorBudgetOperation(kind, nativeID, method)
 	}

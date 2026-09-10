@@ -30,6 +30,9 @@ func TestDeleteAsyncPollingRequiresFinalAbsence(t *testing.T) {
 				if response, handled := emptyMonitorIndexResponse(t, req); handled {
 					return response, nil
 				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
 				path := strings.ToLower(req.URL.Path)
 				if strings.EqualFold(req.URL.String(), operation) {
 					polls++
@@ -118,6 +121,9 @@ func TestLiveProtectionPreventsMutation(t *testing.T) {
 				if response, handled := emptyMonitorIndexResponse(t, req); handled {
 					return response, nil
 				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+					return response, nil
+				}
 				if req.Method == "DELETE" {
 					t.Fatal("protected resource deletion reached API")
 				}
@@ -160,6 +166,9 @@ func TestPreflightDistinguishesMissingTargetFromMissingRelatedGroup(t *testing.T
 			if response, handled := emptyMonitorIndexResponse(t, req); handled {
 				return response, nil
 			}
+			if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
+				return response, nil
+			}
 			if strings.EqualFold(req.URL.Path, value.Identity.NativeID) && !targetGone {
 				return jsonResponse(200, nativeResource(diskType, "disk", "eastus", nil), nil), nil
 			}
@@ -187,6 +196,9 @@ func TestAppServiceDeletionPreservesItsPlan(t *testing.T) {
 	raw["kind"] = "app"
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
 			return response, nil
 		}
 		if req.Method == "DELETE" {
@@ -217,6 +229,9 @@ func TestPersistedOperationRejectsForeignOwnership(t *testing.T) {
 	value := actionAsset(vmType, "vm")
 	r := protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if response, handled := emptyMonitorIndexResponse(t, req); handled {
+			return response, nil
+		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, req); handled {
 			return response, nil
 		}
 		t.Error("foreign operation reached API")

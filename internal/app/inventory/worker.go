@@ -206,6 +206,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		}
 	}
 	var knownIDs []string
+	knownMetadata := map[string]map[string]any{}
 	if reconcileKnown {
 		if kind == nil {
 			return &run, fmt.Errorf("known-resource reconciliation requires a resource kind")
@@ -218,6 +219,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			identity := value.Identity
 			if identity.Provider == shard.Provider && identity.ConnectionID == connection.ID && identity.Partition == connection.Partition && identity.NativeType == kind.NativeType {
 				knownIDs = append(knownIDs, identity.NativeID)
+				knownMetadata[identity.NativeID] = value.Normalized
 			}
 		}
 		slices.Sort(knownIDs)
@@ -239,6 +241,16 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		request := contracts.InventoryRequest{
 			ConnectionID: connection.ID, Scope: scope, Source: shard.Source, ResourceKind: kind,
 			Cursor: cursor, Limit: MaxBatchSize, NetworkTarget: networkTarget, KnownNativeIDs: slices.Clone(knownIDs),
+		}
+		if len(knownMetadata) != 0 {
+			request.KnownNativeMetadata = make(map[string]map[string]any, len(knownMetadata))
+			for id, metadata := range knownMetadata {
+				copy, err := snapshotMap(metadata)
+				if err != nil {
+					return &run, err
+				}
+				request.KnownNativeMetadata[id] = copy
+			}
 		}
 		batch, err := adapter.List(ctx, request)
 		if err != nil {

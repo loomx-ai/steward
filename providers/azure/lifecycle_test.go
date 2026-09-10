@@ -243,6 +243,9 @@ func TestAzureRetentionSurvivesWorkerRestartAndPreservesNICSettings(t *testing.T
 		if response, handled := emptyMonitorIndexResponse(t, r); handled {
 			return response, nil
 		}
+		if response, handled := emptyDiagnosticSourceIndexResponse(t, r); handled {
+			return response, nil
+		}
 		if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {
 			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 		}
@@ -412,6 +415,9 @@ func TestAzureCascadePreflightRejectsMissingImpactDriftAndLiveLocks(t *testing.T
 				if response, handled := emptyMonitorIndexResponse(t, r); handled {
 					return response, nil
 				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, r); handled {
+					return response, nil
+				}
 				if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {
 					return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
 				}
@@ -458,6 +464,9 @@ func TestAzureRetainedNICWaitsForReadbackAndKeepsPublicIPWithoutMutation(t *test
 			operation := apiURL("/subscriptions/"+testSubscription+"/providers/Microsoft.Compute/locations/eastus/operations/retain", "2024-07-01")
 			runtime := protocolRuntime(t, func(r *http.Request) (*http.Response, error) {
 				if response, handled := emptyMonitorIndexResponse(t, r); handled {
+					return response, nil
+				}
+				if response, handled := emptyDiagnosticSourceIndexResponse(t, r); handled {
 					return response, nil
 				}
 				if r.Method == "GET" && strings.EqualFold(r.URL.Path, text(live["vm"]["id"])+"/extensions") {

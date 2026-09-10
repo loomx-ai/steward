@@ -67,11 +67,19 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		value := prerequisite.Asset
 		id, _, kind, err := monitorResourceID(value.Identity.NativeID)
+		if value.Identity.NativeType == diagnosticSettingsType {
+			id, _, kind, err = diagnosticResourceID(value.Identity.NativeID)
+		}
 		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || value.ID == "" || seenIDs[id] || seenAssets[value.ID] || !prerequisite.Delete || prerequisite.ControllerID != a.assetID || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.connection || value.Identity.Partition != a.partition {
 			return serviceDenied("invalid_monitor_prerequisite_identity")
 		}
 		seenIDs[id], seenAssets[value.ID] = true, true
-		refs, err := a.client.monitorRecordedReferences(value)
+		var refs map[string]any
+		if kind == diagnosticSettingsType {
+			refs, err = a.client.diagnosticRecordedReferences(value)
+		} else {
+			refs, err = a.client.monitorRecordedReferences(value)
+		}
 		if err != nil {
 			return err
 		}
@@ -82,7 +90,12 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 		if !linked {
 			return serviceDenied("monitor_prerequisite_reference_changed")
 		}
-		if _, err := a.client.monitorResourceRead(ctx, kind, id); !isNotFound(err) {
+		if kind == diagnosticSettingsType {
+			_, err = a.client.diagnosticRead(ctx, text(value.Normalized[diagnosticWireSelector]), kind)
+		} else {
+			_, err = a.client.monitorResourceRead(ctx, kind, id)
+		}
+		if !isNotFound(err) {
 			if err != nil {
 				return err
 			}
@@ -96,7 +109,11 @@ func (a *monitorAction) dependenciesAbsent(ctx context.Context, request contract
 	if err := a.prerequisitesAbsent(ctx, request); err != nil {
 		return err
 	}
-	incoming, err := a.client.monitorIncoming(ctx, request.Asset)
+	known := []asset.Asset{}
+	for _, prerequisite := range request.PrerequisiteDeletions {
+		known = append(known, prerequisite.Asset)
+	}
+	incoming, err := a.client.monitorIncoming(ctx, request.Asset, known...)
 	if err != nil {
 		return err
 	}

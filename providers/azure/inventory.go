@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	diagnostic := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, diagnosticSettingsType)
+	if request.Source == diagnosticInventorySource && !diagnostic || diagnostic && request.Source != "" && request.Source != inventorySource && request.Source != diagnosticInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_diagnostic_inventory_source")
 	}
 	annotation := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, insightsAnnotationType)
 	if request.Source == insightsAnnotationSource && !annotation || annotation && request.Source == productInventorySource {
@@ -39,6 +43,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 			request.Source = insightsInventorySource(request.ResourceKind.NativeType)
 		}
 		return r.listInsightsWorkbooks(ctx, c, request)
+	}
+	if diagnostic {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = diagnosticInventorySource
+		return r.listDiagnosticSettings(ctx, c, request)
 	}
 	if request.ResourceKind != nil && monitorResourceKind(request.ResourceKind.NativeType) != "" {
 		if request.Source == inventorySource {
@@ -912,6 +923,9 @@ func safeResource(value any) any {
 		}
 		if monitorBudgetPath(text(typed["id"])) || monitorBudgetPath("/providers/"+text(typed["type"])) {
 			typed = object(monitorBudgetSafeValue(typed))
+		}
+		if diagnosticSettingsPath(text(typed["id"])) || diagnosticSettingsPath("/providers/"+text(typed["type"])) {
+			typed = object(diagnosticSettingsSafeValue(typed))
 		}
 		if apimRaw(typed) {
 			typed = apimSafeRaw(typed)

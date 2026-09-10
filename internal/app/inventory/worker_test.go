@@ -575,7 +575,9 @@ func TestScanHandlerKnownIDsAreScopedAndFixedAcrossPages(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			put("i-z", nil)
+			put("i-z", func(v *asset.Asset) {
+				v.Normalized = map[string]any{"selector": map[string]any{"name": "CaseSensitive", "proof": "original"}}
+			})
 			put("i-a", nil)
 			put("other-region", func(v *asset.Asset) { v.Location = "cn-beijing" })
 			put("other-provider", func(v *asset.Asset) { v.Identity.Provider = asset.ProviderAzure })
@@ -597,6 +599,11 @@ func TestScanHandlerKnownIDsAreScopedAndFixedAcrossPages(t *testing.T) {
 					}
 					// A provider must not mutate the worker's next-page baseline.
 					adapter.requests[0].KnownNativeIDs[0] = "mutated-provider-copy"
+					if len(adapter.requests[0].KnownNativeMetadata) != len(wantKnownMetadata()) {
+						t.Fatal("known metadata included an unrelated resource", adapter.requests[0].KnownNativeMetadata)
+					}
+					adapter.requests[0].KnownNativeMetadata["i-z"]["selector"].(map[string]any)["name"] = "mutated-provider-copy"
+					delete(adapter.requests[0].KnownNativeMetadata, "i-a")
 				}
 			}
 			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter}, inventory.NewService(repositories.Inventory()))
@@ -610,6 +617,9 @@ func TestScanHandlerKnownIDsAreScopedAndFixedAcrossPages(t *testing.T) {
 			if len(adapter.requests) != 2 || !reflect.DeepEqual(adapter.requests[1].KnownNativeIDs, want) || !reconcile && adapter.requests[0].KnownNativeIDs != nil {
 				t.Fatal("known ID set changed across pages or ordinary source received IDs", adapter.requests)
 			}
+			if reconcile && !reflect.DeepEqual(adapter.requests[1].KnownNativeMetadata, wantKnownMetadata()) || !reconcile && (adapter.requests[0].KnownNativeMetadata != nil || adapter.requests[1].KnownNativeMetadata != nil) {
+				t.Fatal("known native selectors changed across pages or leaked to an ordinary source", adapter.requests[1].KnownNativeMetadata)
+			}
 			shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
 			if err != nil || shard.Authoritative == reconcile || shard.Status != asset.ShardSucceeded {
 				t.Fatal("source authority did not override stale bounded-source state", shard, err)
@@ -622,6 +632,10 @@ func TestScanHandlerKnownIDsAreScopedAndFixedAcrossPages(t *testing.T) {
 			}
 		})
 	}
+}
+
+func wantKnownMetadata() map[string]map[string]any {
+	return map[string]map[string]any{"i-a": {}, "i-z": {"selector": map[string]any{"name": "CaseSensitive", "proof": "original"}}, "other-region": {}}
 }
 
 type enrichingInventoryAdapter struct {

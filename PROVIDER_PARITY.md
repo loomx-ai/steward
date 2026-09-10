@@ -2425,3 +2425,62 @@ background evidence only, not acceptance evidence for this work.
   emulator or real-cloud verification was performed. The parity matrix still
   names 29 unmapped Azure types; global Runbook mapping, remaining lifecycle/
   service integration and all eight overall acceptance criteria remain open.
+
+### Diagnostic settings native registration and application recovery
+
+- Added resource/subscription diagnostic-setting GET/LIST/DELETE and resource
+  category GET/LIST from the immutable Microsoft 2021-05-01-preview sources.
+  The catalog now retains 1,232 operations, 217 source/reference documents,
+  384 resource types/specifications and 358 cleanup bindings. Twelve unchanged
+  native examples retain source digests; schema tests exercise fourteen
+  responses and explicitly preserve the documented malformed-ID/null-type
+  discrepancies instead of repairing examples to make them pass.
+- The registered global source discovers exact source scopes from the ARM
+  resource index, expands existing native child adapters and all four Storage
+  service scopes, and re-reads saved setting IDs after source/group deletion.
+  Resource LIST paging and non-pageable subscription LIST have separate
+  contracts. Two observations bind complete private configuration, source
+  incarnation, inherited protection, locks and public reference proofs; cursor
+  replay rejects changed scope, metadata, membership and configuration.
+- Every native source/destination reference and its valid ancestors require
+  independently reviewed setting deletion before the referenced resource.
+  Native incoming discovery covers unindexed and late settings. Target drivers
+  validate saved prerequisite proofs and the setting's own native absence,
+  including after restart. AKS/Monitor/Application Insights group membership
+  cannot grant diagnostic settings controller-cascade authority. A regression
+  exposed and removed prefix-based managed-group ownership re-inference after
+  native discovery had excluded an independent setting.
+- The server now supplies the Azure service/reference contributor for independent
+  ARM assets as well as controller kinds. Actual SQLite scan, graph, plan and
+  execution workers exercise registration, global shard selection, saved orphan
+  discovery, private-property changes, native DELETE, durable pending state,
+  recreated application services and final own-resource GET. Shared targets and
+  other settings survive. Source/group disappearance is never a deletion receipt.
+- Native requests preserve Cosmos source names and selected response-ID aliases.
+  A provider-authenticated selector is bound to its private configuration and
+  context before reads, writes or absence checks. The shared inventory worker
+  supplies a fixed, deep-copied normalized metadata baseline for known IDs across
+  pages. Composed selector tests are not evidence that Monitor supports logs on
+  every Cosmos child. Cross-connection/kind/partition data, changed selectors,
+  missing proofs and forged prerequisite/receipt state are rejected.
+- The final provider namespace controls extension paging API validation. Native
+  Monitor lists under API Management, Batch and Stream Analytics parents retain
+  their own API version, while each parent's native lists still reject a wrong
+  version. Source metadata accepts documented native differences such as budget
+  `eTag` spelling and private-workbook label arrays without weakening setting
+  identity or protection checks.
+- Focused diagnostic/shared-worker tests passed (inventory 0.287s, Azure 3.854s),
+  affected race tests passed (inventory 4.662s, Azure 43.539s, server 2.452s),
+  repository-wide vet and catalog-source Python tests passed. The registration
+  baseline had also passed full Go tests (Azure 186.518s) and race tests (Azure
+  38.576s, server 2.477s). The final full Go run covering native-selector changes
+  passed as well (Azure 183.249s, GCP 161.195s).
+- This closes one mapped type gap; 28 unmapped Azure types and all eight overall
+  acceptance criteria remain open. Source discovery still depends on the broad
+  ARM index plus implemented child adapters and saved IDs; it cannot enumerate
+  every never-seen orphan or replace all omitted native product-root indexes.
+  Unknown source kinds remain protected until a native incarnation reader exists.
+  Explicit own-GET absence still needs separate scan reconciliation, because
+  the custom source has no blanket absence authority. No independent Monitor
+  emulator or live Azure run is claimed. Native DELETE has no conditional version
+  guard, leaving an external-edit window after final preflight.
