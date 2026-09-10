@@ -48,21 +48,21 @@ func TestMonitorBudgetNativeGraphAndSharedPlan(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			f := newMonitorInventoryFixture(t, kind)
 			targetID := "/subscriptions/" + testSubscription + "/resourcegroups/shared/providers/microsoft.insights/actiongroups/notification"
+			firstID := slices.Sorted(maps.Keys(f.objects))[0]
+			for id := range f.objects {
+				if id != firstID {
+					delete(f.objects, id)
+				}
+			}
+			destination := monitorRuleExample(t, "actions-2023-01-01/getActionGroup.json")
+			destination["id"], destination["name"] = targetID, last(targetID)
+			f.addRelated(t, destination)
 			for _, raw := range f.objects {
 				for _, value := range object(object(raw["properties"])["notifications"]) {
 					object(value)["contactGroups"] = []any{targetID}
 				}
 			}
-			batch, err := f.runtime.List(t.Context(), f.request())
-			if err != nil || len(batch.Items) == 0 {
-				t.Fatal(err)
-			}
-			item := batch.Items[0]
-			// Exercise the native contributor and shared plan contract before
-			// registry/action enablement. The fixture supplies action capabilities;
-			// this is not evidence that the scan creator exposes these kinds yet.
-			parent := asset.Asset{ID: asset.AssetID(item.NativeID), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: kind, NativeID: item.NativeID}, Location: item.Location, Normalized: item.Normalized, Capabilities: asset.CapabilitySet{asset.CapabilityActionable}}
-			target := asset.Asset{ID: "shared-group", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: monitorActionGroupType, NativeID: targetID}, Location: "global", Capabilities: asset.CapabilitySet{asset.CapabilityActionable}}
+			parent, target := f.asset(t, firstID), f.asset(t, targetID)
 			values := []asset.Asset{parent, target}
 			contributor, err := f.runtime.ServiceLifecycle(t.Context(), "connection")
 			if err != nil {
@@ -79,7 +79,7 @@ func TestMonitorBudgetNativeGraphAndSharedPlan(t *testing.T) {
 					ref = relationship
 				}
 			}
-			if ref.SourceAssetID != parent.ID || ref.TargetAssetID != target.ID || ref.Type != graph.RelationshipUses || ref.Source != "azure:monitor-reference" {
+			if ref.SourceAssetID != parent.ID || ref.TargetAssetID != target.ID || ref.Type != graph.RelationshipUses || !slices.Contains(stringValues(ref.Evidence["evidence_sources"]), "azure:monitor-reference") {
 				t.Fatal("budget dependency direction changed", ref)
 			}
 			for _, selected := range [][]asset.AssetID{{parent.ID}, {target.ID}, {parent.ID, target.ID}} {

@@ -126,6 +126,9 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" {
+		return c.monitorBudgetOperation(kind, nativeID, method)
+	}
 	if insightsLegacyKind(kind.NativeType).kind != "" {
 		return c.insightsLegacyOperation(kind, nativeID, method)
 	}

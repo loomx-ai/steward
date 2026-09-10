@@ -1,0 +1,72 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.CostManagement/budgets
+  class: cost.budget
+presentation:
+  displayNames:
+    en-US: Cost Management budget
+    zh-CN: 成本管理预算
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.CostManagement.Budgets_List
+    parameters:
+      scope: scope.subscriptionPath
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.CostManagement.Budgets_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  category:
+    path: category
+    type: string
+  amount:
+    path: amount
+    type: number
+  timeGrain:
+    path: timeGrain
+    type: string
+  timePeriod:
+    path: timePeriod
+    type: object
+  currentSpend:
+    path: currentSpend
+    type: object
+  forecastSpend:
+    path: forecastSpend
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Insights/actionGroups
+  targetIdPath: refs_microsoft_insights_actiongroups
+actions:
+  delete:
+    operation: Azure.Microsoft.CostManagement.Budgets_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.CostManagement.Budgets_Get
+      itemsPath: $
+      identityPath: id

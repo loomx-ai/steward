@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AlertsManagement/smartDetectorAlertRules
+  class: observability.alert_rule
+presentation:
+  displayNames:
+    en-US: Smart detector alert rule
+    zh-CN: 智能检测告警规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.microsoft.alertsManagement.SmartDetectorAlertRules_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  state:
+    path: state
+    type: string
+  severity:
+    path: severity
+    type: string
+  frequency:
+    path: frequency
+    type: string
+  scope:
+    path: scope
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Insights/actionGroups
+  targetIdPath: refs_microsoft_insights_actiongroups
+actions:
+  delete:
+    operation: Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Get
+      itemsPath: $
+      identityPath: id

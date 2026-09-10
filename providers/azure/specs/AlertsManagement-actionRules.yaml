@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AlertsManagement/actionRules
+  class: observability.alert_rule
+presentation:
+  displayNames:
+    en-US: Alert processing rule
+    zh-CN: 告警处理规则
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.AlertsManagement.AlertProcessingRules_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AlertsManagement.AlertProcessingRules_GetByName
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  enabled:
+    path: enabled
+    type: boolean
+  scopes:
+    path: scopes
+    type: array
+  actions:
+    path: actions
+    type: array
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Insights/actionGroups
+  targetIdPath: refs_microsoft_insights_actiongroups
+actions:
+  delete:
+    operation: Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.AlertsManagement.AlertProcessingRules_GetByName
+      itemsPath: $
+      identityPath: id

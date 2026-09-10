@@ -98,10 +98,24 @@ dictionaries remain private while explicit action-group references survive
 projection. Native graph tests re-read source/group proofs, reject private
 changes, and keep missing/foreign destinations unresolved.
 
-The shared-plan scenarios demonstrate independent selection: a budget can
-be selected without its action group; a retained budget blocks destination
-cleanup; selecting both orders the budget first and freezes its prerequisite
-snapshot. These scenarios explicitly supply action capabilities to test the
-graph/solver contract before rule and driver registration. They do not claim
-scan-worker enablement or completed budget deletion. Incoming budget/rule
-enumeration during cleanup and independent native deletion remain open.
+Both budget APIs now have registered global-scope rules and native independent
+deletion. Registered operation tests bind Get/Delete to the complete
+subscription or resource-group path and reject foreign, nested or malformed
+scopes. The generic ARM identity parser remains unchanged.
+
+The shared-plan scenarios use real registered inventory assets: a budget can be
+selected independently; a retained budget blocks Action Group cleanup;
+selecting both orders the budget first and freezes its signed reference proof.
+Native source absence is checked after JSON recovery before the destination
+can execute. Subscription and every group budget index also protect against
+unindexed or newly created sources, even when the destination is already gone.
+
+Both APIs require the retained empty synchronous HTTP 200 Delete response.
+Unexpected bodies, asynchronous headers/statuses and HTTP 204 fail validation;
+an acknowledgement or DELETE 404 still requires final native Get absence.
+Tests cover private drift, locks/tags/ownership, invalid or transplanted
+prerequisites, receipt alteration, late references and recreated budgets.
+SQLite-backed scan-creator/worker scenarios persist updates and reconcile
+successful deletion without removing independent siblings. Failed collection
+reads preserve saved observations. These remain protocol/application tests,
+not independent emulator or real-cloud verification.

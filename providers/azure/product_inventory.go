@@ -722,6 +722,8 @@ func (c *client) bindProductList(api *spec.ProductAPISpec, location string, pare
 		switch value {
 		case "scope.subscription":
 			parameters[key] = c.subscription
+		case "scope.subscriptionPath":
+			parameters[key] = strings.TrimPrefix(c.root(), "/")
 		case "scope.location":
 			parameters[key] = location
 		case "parent.nativeId":

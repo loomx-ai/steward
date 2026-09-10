@@ -442,6 +442,13 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				}
 				result.Relationships = append(result.Relationships, contribution.Relationships...)
 				result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+				if registered {
+					incoming, err := s.client.contributeMonitorIncoming(ctx, parent, assets)
+					if err != nil {
+						return result, err
+					}
+					result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
+				}
 				continue
 			}
 		}

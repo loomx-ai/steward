@@ -86,6 +86,36 @@ func (c *client) monitorBudgetRequest(kind, scope, name, method string) (catalog
 	return bindAzureREST(op, params)
 }
 
+func (c *client) monitorBudgetOperation(mapping resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	id, scope, kind, err := monitorBudgetID(nativeID)
+	if err != nil || id != strings.ToLower(nativeID) || kind != mapping.NativeType || !strings.HasPrefix(id, c.root()+"/") || method != "GET" && method != "DELETE" {
+		return catalog.Operation{}, nil, serviceDenied("invalid_monitor_budget_operation_identity")
+	}
+	name := "Budgets_Get"
+	ids := mapping.ReadOperations
+	if method == "DELETE" {
+		name, ids = "Budgets_Delete", mapping.DeleteOperations
+	}
+	operationID := "Azure." + strings.Split(kind, "/")[0] + "." + name
+	if !slices.Contains(ids, operationID) {
+		return catalog.Operation{}, nil, serviceDenied("monitor_budget_operation_not_registered")
+	}
+	metadata, err := providerData()
+	if err != nil {
+		return catalog.Operation{}, nil, err
+	}
+	operation, ok := metadata.catalog.Operation(operationID)
+	_, version := monitorBudgetKind(kind)
+	if !ok || operation.Call == nil || operation.Call.Method != method || operation.Call.Version != version {
+		return catalog.Operation{}, nil, serviceDenied("monitor_budget_operation_changed")
+	}
+	parameters := map[string]any{"scope": strings.TrimPrefix(scope, "/"), "budgetName": last(id)}
+	if _, err := bindAzureREST(operation, parameters); err != nil {
+		return catalog.Operation{}, nil, err
+	}
+	return operation, parameters, nil
+}
+
 func monitorBudgetActionGroups(raw map[string]any) ([]string, error) {
 	props, ok := raw["properties"].(map[string]any)
 	if !ok {

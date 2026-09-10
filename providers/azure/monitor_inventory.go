@@ -14,6 +14,7 @@ import (
 
 const monitorConfigurationProof = "_monitor_resource_configuration"
 const monitorGroupProof = "_monitor_resource_group"
+const monitorReferencesProof = "_monitor_references_binding"
 
 func monitorResourceKind(kind string) string {
 	if row := monitorRuleKind(kind); row.kind != "" {
@@ -165,11 +166,15 @@ func (r *Runtime) monitorInventoryItem(ctx context.Context, c *client, raw map[s
 		return contracts.InventoryItem{}, err
 	}
 	var networkReferences []string
+	recordedReferences := map[string]any{}
 	for kind, ids := range refs {
 		slices.Sort(ids)
 		normalized[referenceKey(kind)] = ids
+		recordedReferences[kind] = ids
 		networkReferences = append(networkReferences, ids...)
 	}
+	normalized["_monitor_references"] = recordedReferences
+	normalized[monitorReferencesProof] = c.monitorReferencesBinding(id, kind, configuration, text(normalized[monitorGroupProof]), recordedReferences)
 	slices.Sort(networkReferences)
 	tags := map[string]string{}
 	for key, value := range object(safe["tags"]) {

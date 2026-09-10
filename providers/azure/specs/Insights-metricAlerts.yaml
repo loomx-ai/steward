@@ -1,0 +1,84 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Insights/metricAlerts
+  class: observability.alert_rule
+presentation:
+  displayNames:
+    en-US: Metric alert
+    zh-CN: 指标告警
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Insights.MetricAlerts_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Insights.MetricAlerts_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  enabled:
+    path: enabled
+    type: boolean
+  severity:
+    path: severity
+    type: number
+  scopes:
+    path: scopes
+    type: array
+  evaluationFrequency:
+    path: evaluationFrequency
+    type: string
+  windowSize:
+    path: windowSize
+    type: string
+  targetResourceType:
+    path: targetResourceType
+    type: string
+  targetResourceRegion:
+    path: targetResourceRegion
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Insights/actionGroups
+  targetIdPath: refs_microsoft_insights_actiongroups
+- type: uses
+  targetType: Microsoft.Insights/webtests
+  targetIdPath: refs_microsoft_insights_webtests
+- type: uses
+  targetType: Microsoft.Insights/components
+  targetIdPath: refs_microsoft_insights_components
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.MetricAlerts_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.MetricAlerts_Get
+      itemsPath: $
+      identityPath: id

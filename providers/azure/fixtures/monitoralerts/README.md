@@ -117,9 +117,29 @@ requires explicit selection of the referencing rule before destination
 cleanup; it grants no ownership or automatic selection. Workbooks reuse the
 same reference-resolution helper while keeping their original behavior.
 
-These are runtime and native-contributor protocol scenarios. Resource-rule
-registration, scan-creator/worker enablement, incoming enumeration and the
-independent deletion drivers are still being implemented. Event Hub receiver
-namespace/name lookup and ITSM workspace-GUID resolution also remain open;
-they cannot be inferred by inventing a resource group. This is not an emulator
-or live-cloud verification.
+The eight Monitor kinds are registered with native inventory and independent
+deletion drivers. SQLite-backed scenarios use the real registry, scan creator,
+worker, graph and plan, persist private configuration changes, serialize action
+requests for recovery and reconcile native absence. Regional and global kinds
+are selected through their actual scan scopes; a second resource survives
+independent cleanup.
+
+Native incoming indexes cover the six referencing rule families, both budget
+APIs for Action Groups and web tests for components. Registered Monitor targets
+check these indexes during graph contribution, preflight and readback, including
+unindexed sources and rules created after DELETE. A target 404 cannot hide a
+failed index or a retained source. Frozen source references are bound to the
+private configuration/group proof, checked after JSON recovery and required to
+name the actual destination before native source absence can satisfy a plan.
+
+Deletion follows the retained empty synchronous 200/204 contracts and verifies
+native absence. Tests reject asynchronous headers, unexpected bodies/statuses,
+recreated configuration, altered receipts, changed protection/ownership and
+late private drift. Explicit source deletion precedes shared destination
+deletion without automatically selecting or deleting a receiver.
+
+Event Hub receiver namespace/name lookup, ITSM workspace-GUID resolution,
+Function/runbook child references, managed-group composition and integration
+with the existing non-Monitor target drivers remain open. The sources do not
+provide a receiver resource group that could safely be invented. These are
+protocol and application integration tests, not emulator or live-cloud runs.

@@ -95,6 +95,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if match[1] == "resourceUri" {
 					value = strings.TrimPrefix(resourceID(vmType, "monitored"), "/")
 				}
+				if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" && match[1] == "scope" {
+					value = "subscriptions/" + testSubscription
+				}
 				nativeID = strings.ReplaceAll(nativeID, match[0], value)
 			}
 			wantPath := nativeID

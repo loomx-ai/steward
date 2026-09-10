@@ -9,6 +9,8 @@ import (
 	"slices"
 	"strings"
 	"testing"
+
+	"github.com/loomx-ai/steward/internal/provider/catalog"
 )
 
 func monitorBudgetExample(t *testing.T, file string) map[string]any {
@@ -313,6 +315,35 @@ func TestMonitorBudgetIdentityScopeBoundaries(t *testing.T) {
 	c.subscription = strings.Split(id, "/")[2]
 	if _, _, err := c.monitorRuleIndex(t.Context(), monitorActionGroupType); err == nil {
 		t.Fatal("ambiguous alert continuation ignored")
+	}
+}
+
+func TestMonitorBudgetRegisteredOperationScopes(t *testing.T) {
+	c := &client{subscription: testSubscription}
+	for _, kind := range []string{monitorConsumptionBudgetType, monitorCostBudgetType} {
+		mapping, found := findType(kind)
+		if !found {
+			t.Fatal("budget rule missing", kind)
+		}
+		for _, scope := range []string{c.root(), c.root() + "/resourcegroups/another-group"} {
+			id := scope + "/providers/" + strings.ToLower(kind) + "/reviewed-budget"
+			for _, method := range []string{"GET", "DELETE"} {
+				op, parameters, err := c.resourceOperation(mapping, id, method)
+				if err != nil || parameters["scope"] != strings.TrimPrefix(scope, "/") || parameters["budgetName"] != "reviewed-budget" {
+					t.Fatal("registered budget scope binding changed", kind, method, parameters, err)
+				}
+				bound, err := catalog.BindREST(op, parameters)
+				_, version := monitorBudgetKind(kind)
+				if err != nil || bound.Method != method || !strings.EqualFold(bound.URL, apiURL(id, version)) {
+					t.Fatal("registered budget endpoint changed", bound, err)
+				}
+				for _, bad := range []string{strings.TrimPrefix(id, "/"), strings.Replace(id, testSubscription, testTenant, 1), id + "/child", id + "?scope=other", strings.Replace(id, "/budgets/", "/actionGroups/", 1)} {
+					if _, _, err := c.resourceOperation(mapping, bad, method); err == nil {
+						t.Fatal("invalid registered budget scope accepted", bad)
+					}
+				}
+			}
+		}
 	}
 }
 

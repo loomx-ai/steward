@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"io"
 	"maps"
 	"net/http"
 	"slices"
@@ -18,10 +19,16 @@ type monitorInventoryFixture struct {
 	runtime                   *Runtime
 	kind, version, collection string
 	objects, groups           map[string]map[string]any
+	otherObjects              map[string]map[string]any
 	locks                     []any
 	calls                     map[string]int
 	override                  func(*http.Request) (*http.Response, bool)
 	groupOnly                 bool
+	deletes                   []string
+	deleteStatus              int
+	deleteBody                any
+	deleteHeader              http.Header
+	hold                      bool
 }
 
 func monitorInventoryKinds() []string {
@@ -30,10 +37,11 @@ func monitorInventoryKinds() []string {
 
 func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixture {
 	t.Helper()
-	f := &monitorInventoryFixture{kind: kind, objects: map[string]map[string]any{}, groups: map[string]map[string]any{}, locks: []any{}, calls: map[string]int{}}
+	f := &monitorInventoryFixture{kind: kind, objects: map[string]map[string]any{}, otherObjects: map[string]map[string]any{}, groups: map[string]map[string]any{}, locks: []any{}, calls: map[string]int{}, deleteStatus: 204}
 	f.collection = "/subscriptions/" + testSubscription + "/providers/" + strings.ToLower(kind)
 	var values []any
 	if budget, version := monitorBudgetKind(kind); budget != "" {
+		f.deleteStatus = 200
 		f.version = version
 		file := "consumption-2024-08-01/BudgetsList.json"
 		if kind == monitorCostBudgetType {
@@ -90,7 +98,7 @@ func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixt
 				return response, nil
 			}
 		}
-		if req.URL.Host != "management.azure.com" || req.Method != "GET" {
+		if req.URL.Host != "management.azure.com" || req.Method != "GET" && req.Method != "DELETE" {
 			t.Fatal("unexpected monitor inventory request", req.Method, req.URL)
 		}
 		if path == "/subscriptions/"+testSubscription+"/resourcegroups" {
@@ -106,39 +114,77 @@ func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixt
 		if group := f.groups[path]; group != nil {
 			return jsonResponse(200, group, nil), nil
 		}
+		if _, kind, err := parseID(path); err == nil && strings.EqualFold(kind, groupType) {
+			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceGroupNotFound"}}, nil), nil
+		}
 		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.authorization/locks" {
 			return jsonResponse(200, map[string]any{"value": f.locks}, nil), nil
 		}
-		if req.URL.Query().Get("api-version") != f.version {
-			t.Fatal("wrong monitor version", req.URL)
-		}
-		isCollection := path == f.collection
-		if budget, _ := monitorBudgetKind(kind); budget != "" {
-			for group := range f.groups {
-				isCollection = isCollection || path == group+"/providers/"+strings.ToLower(kind)
+		collectionKind := ""
+		for _, candidate := range monitorInventoryKinds() {
+			if path == "/subscriptions/"+testSubscription+"/providers/"+strings.ToLower(candidate) {
+				collectionKind = candidate
+			}
+			if budget, _ := monitorBudgetKind(candidate); budget != "" {
+				for group := range f.groups {
+					if path == group+"/providers/"+strings.ToLower(candidate) {
+						collectionKind = candidate
+					}
+				}
 			}
 		}
-		if isCollection {
+		objects := maps.Clone(f.otherObjects)
+		maps.Copy(objects, f.objects)
+		if collectionKind != "" {
+			version := monitorResourceVersion(collectionKind)
+			if req.Method != "GET" || req.URL.Query().Get("api-version") != version {
+				t.Fatal("wrong native monitor collection", req.Method, req.URL)
+			}
 			values := []any{}
-			for _, id := range slices.Sorted(maps.Keys(f.objects)) {
-				_, scope, _, _ := monitorResourceID(id)
-				if path != f.collection && path != scope+"/providers/"+strings.ToLower(kind) || f.groupOnly && path == f.collection && scope != "/subscriptions/"+testSubscription {
+			for _, id := range slices.Sorted(maps.Keys(objects)) {
+				_, scope, candidate, _ := monitorResourceID(id)
+				rootCollection := "/subscriptions/" + testSubscription + "/providers/" + strings.ToLower(collectionKind)
+				if candidate != collectionKind || path != rootCollection && path != scope+"/providers/"+strings.ToLower(collectionKind) || f.groupOnly && path == f.collection && scope != "/subscriptions/"+testSubscription {
 					continue
 				}
-				values = append(values, f.objects[id])
+				values = append(values, objects[id])
 			}
 			body := map[string]any{"value": values}
 			if len(values) > 1 {
 				if req.URL.Query().Get("$skiptoken") == "" {
 					body["value"] = values[:1]
-					body["nextLink"] = apiURL(req.URL.Path, f.version) + "&%24skiptoken=monitor-page-2"
+					body["nextLink"] = apiURL(req.URL.Path, version) + "&%24skiptoken=monitor-page-2"
 				} else {
 					body["value"] = values[1:]
 				}
 			}
 			return jsonResponse(200, body, http.Header{"X-Ms-Request-Id": []string{"monitor-native-list"}}), nil
 		}
-		if raw := f.objects[path]; raw != nil {
+		_, _, resourceKind, identityErr := monitorResourceID(path)
+		if identityErr != nil || req.URL.Query().Get("api-version") != monitorResourceVersion(resourceKind) {
+			t.Fatal("wrong native monitor resource", req.URL)
+		}
+		if raw := objects[path]; raw != nil {
+			if req.Method == "DELETE" {
+				if req.Header.Get("If-Match") != "" {
+					t.Fatal("invented monitor delete condition")
+				}
+				f.deletes = append(f.deletes, path)
+				if !f.hold {
+					delete(f.objects, path)
+					delete(f.otherObjects, path)
+				}
+				header := f.deleteHeader.Clone()
+				if header == nil {
+					header = http.Header{}
+				}
+				header.Set("X-Ms-Request-Id", "monitor-native-delete")
+				response := jsonResponse(f.deleteStatus, f.deleteBody, header)
+				if f.deleteBody == nil {
+					response.Body = io.NopCloser(strings.NewReader(""))
+				}
+				return response, nil
+			}
 			return jsonResponse(200, raw, nil), nil
 		}
 		return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
@@ -149,6 +195,45 @@ func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixt
 func (f *monitorInventoryFixture) request() contracts.InventoryRequest {
 	kind := f.runtime.resourceKind(f.kind)
 	return contracts.InventoryRequest{ConnectionID: "connection", Source: productInventorySource, ResourceKind: &kind, Scope: asset.Scope{Kind: asset.ScopeSubscription, NativeID: testSubscription}}
+}
+
+func (f *monitorInventoryFixture) addRelated(t *testing.T, raw map[string]any) string {
+	t.Helper()
+	id, scope, _, err := monitorResourceID(text(raw["id"]))
+	if err != nil || !strings.HasPrefix(id, "/subscriptions/"+testSubscription+"/") {
+		t.Fatal("invalid related monitor fixture", err)
+	}
+	f.otherObjects[id] = raw
+	if scope != "/subscriptions/"+testSubscription && f.groups[scope] == nil {
+		f.groups[scope] = map[string]any{"id": scope, "name": last(scope), "type": groupType, "location": "westus", "tags": map[string]any{}, "properties": map[string]any{"provisioningState": "Succeeded"}}
+	}
+	return id
+}
+
+func (f *monitorInventoryFixture) asset(t *testing.T, id string) asset.Asset {
+	t.Helper()
+	_, _, kind, err := monitorResourceID(id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := f.request()
+	resourceKind := f.runtime.resourceKind(kind)
+	request.ResourceKind = &resourceKind
+	batch, err := f.runtime.List(t.Context(), request)
+	if err != nil {
+		t.Fatal("monitor asset projection failed", err)
+	}
+	for _, item := range batch.Items {
+		if item.NativeID != id {
+			continue
+		}
+		if item.Actionable == nil || !*item.Actionable || !item.ResourceKind.Capabilities.Has(asset.CapabilityActionable) {
+			t.Fatal("registered monitor not actionable", kind)
+		}
+		return asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: kind, NativeID: id}, ResourceKindID: item.ResourceKind.ID, Location: item.Location, Normalized: item.Normalized, Capabilities: item.ResourceKind.Capabilities, Name: item.Name, Tags: item.Tags}
+	}
+	t.Fatal("monitor fixture asset missing", id)
+	return asset.Asset{}
 }
 
 func TestMonitorNativeInventory(t *testing.T) {

@@ -9079,6 +9079,194 @@
       "response_types": [
         "microsoft.insights/workbooktemplate"
       ]
+    },
+    {
+      "native_type": "Microsoft.Insights/metricAlerts",
+      "class": "observability.alert_rule",
+      "display_name": "Metric alert",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "metricAlerts",
+      "read_operations": [
+        "Azure.Microsoft.Insights.MetricAlerts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.MetricAlerts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.MetricAlerts_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/actionGroups",
+      "class": "observability.notification_group",
+      "display_name": "Action group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "actionGroups",
+      "read_operations": [
+        "Azure.Microsoft.Insights.ActionGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.ActionGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.ActionGroups_ListBySubscriptionId"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/activityLogAlerts",
+      "class": "observability.alert_rule",
+      "display_name": "Activity log alert",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "activityLogAlerts",
+      "read_operations": [
+        "Azure.Microsoft.Insights.ActivityLogAlerts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.ActivityLogAlerts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.ActivityLogAlerts_ListBySubscriptionId"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/scheduledQueryRules",
+      "class": "observability.alert_rule",
+      "display_name": "Scheduled query rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "scheduledQueryRules",
+      "read_operations": [
+        "Azure.Microsoft.Insights.ScheduledQueryRules_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.ScheduledQueryRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.ScheduledQueryRules_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.AlertsManagement/smartDetectorAlertRules",
+      "class": "observability.alert_rule",
+      "display_name": "Smart detector alert rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "smartDetectorAlertRules",
+      "read_operations": [
+        "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Get"
+      ],
+      "delete_operations": [
+        "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.AlertsManagement/prometheusRuleGroups",
+      "class": "observability.alert_rule",
+      "display_name": "Prometheus rule group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "prometheusRuleGroups",
+      "read_operations": [
+        "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.AlertsManagement/actionRules",
+      "class": "observability.alert_rule",
+      "display_name": "Alert processing rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "actionRules",
+      "read_operations": [
+        "Azure.Microsoft.AlertsManagement.AlertProcessingRules_GetByName"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.AlertsManagement.AlertProcessingRules_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Insights/webtests",
+      "class": "observability.availability_test",
+      "display_name": "Availability test",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "webtests",
+      "read_operations": [
+        "Azure.Microsoft.Insights.WebTests_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Insights.WebTests_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Insights.WebTests_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Consumption/budgets",
+      "class": "cost.budget",
+      "display_name": "Consumption budget",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "budgets",
+      "read_operations": [
+        "Azure.Microsoft.Consumption.Budgets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Consumption.Budgets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Consumption.Budgets_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.CostManagement/budgets",
+      "class": "cost.budget",
+      "display_name": "Cost Management budget",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "budgets",
+      "read_operations": [
+        "Azure.Microsoft.CostManagement.Budgets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.CostManagement.Budgets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.CostManagement.Budgets_List"
+      ]
     }
   ]
 }

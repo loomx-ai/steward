@@ -39,6 +39,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
+	if monitorResourceKind(kind.NativeType) != "" {
+		return newMonitorAction(c, id, value)
+	}
 	if insightsWorkbookKind(kind.NativeType) != "" {
 		return newInsightsWorkbookAction(c, id, value)
 	}
@@ -71,6 +74,8 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 			switch expression {
 			case "scope.subscription":
 				resolved = c.subscription
+			case "scope.subscriptionPath":
+				resolved = strings.TrimPrefix(c.root(), "/")
 			case "scope.location":
 				resolved = value.Location
 			case "resource.nativeId":

@@ -2213,3 +2213,38 @@ background evidence only, not acceptance evidence for this work.
   still open. Catalog/spec counts remain 1,224 operations and 373 types/rules
   with 347 cleanup rules. The 29 missing mapped Azure roots, remaining provider
   families and all eight acceptance criteria remain unfinished.
+
+### Azure Monitor/budget registration and independent cleanup
+
+- Eight Monitor kinds and both budget APIs now have explicit executable rules.
+  The catalog has 1,224 operations, 383 types/specs and 357 cleanup bindings.
+  All 213 retained native documents and the preceding 373 type bindings remain
+  semantically unchanged. Budget list/read/delete selectors use the full native
+  subscription or resource-group path; subscription budgets remain global.
+- Independent cleanup binds the private resource configuration, resource group
+  and reference proof to the reviewed asset. Preflight repeats native incoming
+  collections, full reads and protection/lock checks, then performs a final
+  private read. Native synchronous response contracts and signed recovery
+  receipts are checked before final absence readback. Referenced destinations
+  remain independently selected shared resources.
+- Monitor target graph, preflight and readback enumerate incoming alert rules,
+  plus both budget APIs for Action Groups. Unindexed or late-created sources
+  block cleanup; target absence cannot conceal failed dependency reads. Frozen
+  prerequisites authenticate their original references, identity and connection
+  after JSON recovery and require native source absence. Real graph/plan tests
+  execute a selected budget before its selected Action Group.
+- SQLite-backed tests exercise the actual registry, scan creator/worker,
+  configuration updates, graph/plan, action recovery and subsequent absence
+  reconciliation for all ten kinds. Tests preserve independent siblings,
+  retain observations on a failed scan, and keep private recipients/content out
+  of persisted public fields. These are protocol/application integration tests;
+  no new independent emulator or live-cloud verification was performed.
+- Full Go provider/spec tests passed (Azure 160.396s, GCP 158.276s, spec 2.510s).
+  The added scan-worker tests passed (5.100s); the complete Monitor race run
+  passed (43.981s), and repository-wide vet passed. Five offline source-refresh
+  tests passed. Two catalog generations produced SHA-256
+  `b5114d9d888da21c1ab51226bd16fbb69c9daf62d7d2b7756b5163bce6b46365`.
+- Event Hub and ITSM receiver resolution, Function/runbook child references,
+  existing non-Monitor target drivers and managed-group composition still need
+  integration. Remaining service coverage, bilingual capability/permission
+  documentation and all eight provider acceptance criteria remain open.
