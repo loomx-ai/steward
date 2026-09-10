@@ -40,6 +40,15 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		}
 		return r.listInsightsWorkbooks(ctx, c, request)
 	}
+	if request.ResourceKind != nil && monitorResourceKind(request.ResourceKind.NativeType) != "" {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		if request.Source == "" {
+			request.Source = productInventorySource
+		}
+		return r.listMonitorResources(ctx, c, request)
+	}
 	if request.ResourceKind != nil && (strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) || insightsLegacyKind(request.ResourceKind.NativeType).kind != "" || insightsARMChildKind(request.ResourceKind.NativeType) != "") {
 		if request.Source == inventorySource {
 			return contracts.InventoryBatch{Complete: true}, nil
@@ -267,6 +276,9 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 	return result, nil
 }
 func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]any, groupOwners map[string]string, locks []any) (contracts.InventoryItem, error) {
+	if mapping, known := findType(text(raw["type"])); known && monitorResourceKind(mapping.NativeType) != "" {
+		return r.monitorInventoryItem(ctx, c, raw, groupOwners, locks)
+	}
 	id, parsedType, err := parseID(text(raw["id"]))
 	if err != nil || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(parsedType, text(raw["type"])) {
 		return contracts.InventoryItem{}, fmt.Errorf("Azure inventory identity mismatch")
@@ -1019,7 +1031,9 @@ func (c *client) managementLocks(ctx context.Context) ([]any, error) {
 		}
 		if id[:index] != c.root() {
 			if _, _, err := parseID(id[:index]); err != nil {
-				return nil, fmt.Errorf("invalid Azure management lock scope")
+				if _, _, _, budgetErr := monitorBudgetID(id[:index]); budgetErr != nil {
+					return nil, fmt.Errorf("invalid Azure management lock scope")
+				}
 			}
 		}
 		seen[id] = true

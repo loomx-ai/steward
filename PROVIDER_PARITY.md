@@ -2164,3 +2164,52 @@ background evidence only, not acceptance evidence for this work.
   bindings. These helpers still need registration, full inventory snapshots,
   lifecycle graph contributions and independent cleanup. The remaining provider
   families and all eight acceptance criteria remain open.
+
+### Azure native Monitor/budget inventory and reference integration
+
+- The dedicated `Runtime.List` path now enumerates the eight retained Monitor
+  kinds and both budget APIs through their native unfiltered indexes. Budget
+  discovery reconciles subscription and every validated resource-group index,
+  preserving group budgets omitted by the subscription response. Subscription
+  budgets use global inventory scope without a fabricated resource group or a
+  broader generic ARM identity parser.
+- Two complete native observations bind resource configuration, all resource
+  groups and inherited locks to an opaque inventory cursor. The binding covers
+  connection, requested kind, scope and bundle revision. Private recipient or
+  query changes, missing/new resources, group changes, lock changes and failed
+  pages invalidate the scan; listed-resource/group 404s remain dependency-read
+  errors. Read-only spend changes and reordered locks do not invalidate it.
+  Resource-level locks also accept strictly validated subscription budget IDs.
+- Projection retains private configuration/group proofs and explicit native
+  references while removing notification dictionaries, receiver arrays,
+  queries, expressions and web-test content from public inventory. Reference
+  slots include action groups, full evaluation scopes, typed web-test metric
+  criteria, hidden component links, the declared assigned identities of metric
+  and scheduled rules, and explicit ARM IDs
+  in Function, Logic App and Automation receivers. Subscription evaluation
+  prefixes do not invent assets; foreign targets remain unresolved.
+- The native lifecycle contributor re-reads the resource and group proofs and
+  contributes shared usage plus required prior cleanup with automatic selection
+  disabled. A plan test exposed that a plain `uses` edge alone did not protect
+  an unselected referencing budget; the explicit reverse requirement fixes
+  that gap. A budget may be selected independently, a retained budget blocks
+  action-group cleanup, and explicit selection of both freezes the budget
+  prerequisite and orders it first without creating ownership. The shared
+  reference resolver is also reused by the existing workbook contributor.
+- Tests retain the original native property bodies with documented identity
+  composition, exercise all ten runtime inventory paths, pagination/protection
+  and concurrent-change boundaries, and rebuild/solve native budget graphs.
+  The plan fixtures explicitly supply action capabilities while registration
+  is staged; they are not scan-worker or deletion-driver acceptance evidence.
+- Full Azure/GCP tests passed after native graph integration (Azure 159.791s;
+  GCP cached), and repository-wide vet passed. After restricting scope/identity
+  reference slots to their actual schemas, the combined Monitor/workbook tests
+  passed (6.953s), the final Monitor race run passed (23.443s), and Azure vet
+  passed. The earlier combined Monitor/workbook race run passed (30.359s).
+  No new independent emulator or real-cloud verification was performed.
+- Runtime resource-rule registration, incoming indexes during cleanup,
+  Event Hub receiver namespace resolution, ITSM workspace GUID resolution,
+  independent deletion, managed-group composition and worker acceptance are
+  still open. Catalog/spec counts remain 1,224 operations and 373 types/rules
+  with 347 cleanup rules. The 29 missing mapped Azure roots, remaining provider
+  families and all eight acceptance criteria remain unfinished.

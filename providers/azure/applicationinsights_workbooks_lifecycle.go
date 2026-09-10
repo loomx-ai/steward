@@ -20,7 +20,12 @@ func (c *client) contributeWorkbookReferences(ctx context.Context, parent asset.
 	if expected := text(parent.Normalized[insightsWorkbookProof]); expected == "" || expected != c.workbookConfiguration(record) {
 		return result, serviceDenied("workbook_graph_configuration_changed")
 	}
-	for kind, ids := range workbookReferences(parent.Identity.NativeType, parent.Identity.NativeID, record.raw) {
+	return c.contributeNativeReferences(parent, assets, workbookReferences(parent.Identity.NativeType, parent.Identity.NativeID, record.raw), "azure:workbook-reference")
+}
+
+func (c *client) contributeNativeReferences(parent asset.Asset, assets []asset.Asset, references map[string][]string, source string) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	for kind, ids := range references {
 		for _, id := range ids {
 			var target *asset.Asset
 			if strings.HasPrefix(id, c.root()+"/") {
@@ -30,7 +35,7 @@ func (c *client) contributeWorkbookReferences(ctx context.Context, parent asset.
 						continue
 					}
 					if target != nil || candidate.ID == "" || candidate.ID == parent.ID {
-						return result, serviceDenied("ambiguous_workbook_reference")
+						return result, serviceDenied("ambiguous_azure_resource_reference")
 					}
 					target = candidate
 				}
@@ -40,7 +45,7 @@ func (c *client) contributeWorkbookReferences(ctx context.Context, parent asset.
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: parent.ID, Relationship: graph.RelationshipUses, Evidence: evidence})
 				continue
 			}
-			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipUses, Source: "azure:workbook-reference", Evidence: evidence, Confidence: 1})
+			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipUses, Source: source, Evidence: evidence, Confidence: 1})
 		}
 	}
 	return result, nil

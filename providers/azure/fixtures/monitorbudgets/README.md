@@ -77,3 +77,31 @@ ambiguous response-field casing and altered continuation scopes, methods,
 versions or query filters. A listed budget's 404 is a dependency-read failure,
 never evidence of an empty budget collection. These helpers still require
 inventory, graph and independent cleanup integration.
+
+The runtime inventory integration now enumerates subscription and every
+validated resource-group index for each budget API. Group budgets missing
+from the subscription List remain discoverable; duplicates across scopes
+must have identical private configuration. Two complete observations bind
+all resource/group configurations and management locks to the inventory
+cursor. Subscription budgets keep a global inventory scope and have no
+fabricated resource group. Native `scope` parameters retain the full
+subscription/group path. A narrowly validated budget-ID path also permits
+resource-level management locks on subscription budgets without extending
+the generic ARM resource parser.
+
+Composed tests cover both native Lists, group-only visibility, pagination,
+private notification changes between reads/pages, disagreement between
+subscription and group indexes, changed or missing groups, changed locks,
+404/403 responses and cursor scope/connection/kind changes. Reordered locks
+and read-only spend updates retain the same cursor binding. Notification
+dictionaries remain private while explicit action-group references survive
+projection. Native graph tests re-read source/group proofs, reject private
+changes, and keep missing/foreign destinations unresolved.
+
+The shared-plan scenarios demonstrate independent selection: a budget can
+be selected without its action group; a retained budget blocks destination
+cleanup; selecting both orders the budget first and freezes its prerequisite
+snapshot. These scenarios explicitly supply action capabilities to test the
+graph/solver contract before rule and driver registration. They do not claim
+scan-worker enablement or completed budget deletion. Incoming budget/rule
+enumeration during cleanup and independent native deletion remain open.

@@ -433,6 +433,18 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if batchOwners[parent.ID].ID != "" {
 			continue // Batch already contributed this VM's complete native tree.
 		}
+		if parent.Identity.Provider == asset.ProviderAzure && monitorResourceKind(parent.Identity.NativeType) != "" {
+			_, registered := findType(parent.Identity.NativeType)
+			if registered || parent.Normalized[monitorConfigurationProof] != nil {
+				contribution, err := s.client.contributeMonitorReferences(ctx, parent, assets)
+				if err != nil {
+					return result, err
+				}
+				result.Relationships = append(result.Relationships, contribution.Relationships...)
+				result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+				continue
+			}
+		}
 		if parent.Identity.Provider == asset.ProviderAzure && insightsWorkbookKind(parent.Identity.NativeType) != "" {
 			contribution, err := s.client.contributeWorkbookReferences(ctx, parent, assets)
 			if err != nil {

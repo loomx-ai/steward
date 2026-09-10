@@ -92,3 +92,34 @@ responses. Explicit action-group slots support both published Smart Detector
 shapes and deduplicate a shared group across Prometheus rules. Queries,
 conditions and webhook payloads do not create references from arbitrary text.
 These reader tests do not establish inventory, graph or cleanup completion.
+
+The dedicated runtime inventory entry now covers the seven alert families and
+web tests using their native indexes. The composed inventory scenarios retain
+the original Get properties, bind the example subscription to the test
+credential, and add a second independently named resource. Native paging is
+followed before projecting canonical identities, explicit references and
+private configuration proofs. Resource-group List/Get, ownership, protected
+tags and inherited locks participate in two complete observation passes.
+The cursor binds both passes' resource/group/lock configuration, connection,
+scope, requested kind and bundle revision; changing page size does not change
+the snapshot. Lock ordering is immaterial. Permission failures and listed
+resource/group 404s cannot authorize an absence sweep.
+
+Native references include the exact action-group slots, resource/group scopes,
+typed web-test metric criteria, web-test hidden component links, the declared
+assigned identities of metric/scheduled rules, and full resource IDs in
+Function, Logic App and Automation receivers. Subscription evaluation prefixes
+do not create fictional assets.
+Opaque URLs and authored conditions remain private. The lifecycle contributor
+re-reads the source and resource group before resolving shared references;
+foreign or missing targets remain unresolved. A resolved reference also
+requires explicit selection of the referencing rule before destination
+cleanup; it grants no ownership or automatic selection. Workbooks reuse the
+same reference-resolution helper while keeping their original behavior.
+
+These are runtime and native-contributor protocol scenarios. Resource-rule
+registration, scan-creator/worker enablement, incoming enumeration and the
+independent deletion drivers are still being implemented. Event Hub receiver
+namespace/name lookup and ITSM workspace-GUID resolution also remain open;
+they cannot be inferred by inventing a resource group. This is not an emulator
+or live-cloud verification.
