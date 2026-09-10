@@ -439,6 +439,7 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		}
 	}
 	if next != "" {
+		next = monitorRuleNextLink(next)
 		if err := c.validateURL(next); err != nil {
 			return nil, "", response{}, err
 		}

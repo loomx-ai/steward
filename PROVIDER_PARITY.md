@@ -2079,3 +2079,29 @@ background evidence only, not acceptance evidence for this work.
   Native inventory, alert references, shared action-group dependencies,
   independent web-test/alert cleanup, the remaining provider families and all
   eight acceptance criteria remain open.
+
+### Azure Monitor native rule reads and reference validation
+
+- Dedicated readers bind full GET and unfiltered subscription LIST operations
+  for the seven alert families and independent web tests. Lists reconcile each
+  row against complete private authored configuration from GET. Identity,
+  subscription, collection, version, paging and response completeness are
+  checked before accepting the collection. Explicit native action-group slots
+  preserve shared references and both published Smart Detector shapes.
+- Tests retain original evidence and name every composed substitution. Invalid
+  duplicated metric IDs and bare action-group placeholders fail validation;
+  optional root names and native Activity Log scope spelling are supported.
+  The shared list transport narrowly normalizes the published Alert Processing
+  default HTTPS port. Other families and nonstandard ports keep their existing
+  boundary checks. Read-only observation changes do not replace the private
+  authored configuration used for drift detection.
+- Full Go tests and vet passed (Azure 162.343s; GCP cached). Focused native,
+  privacy and transport tests passed (0.935s), and alert reader/privacy race
+  checks passed (6.054s). No new emulator or live-cloud verification was run.
+- These readers are not yet registered inventory or cleanup implementations.
+  Catalog, rule and cleanup counts remain 1,218, 373 and 347 respectively.
+  Shared Action Group incoming references must also include Consumption and
+  Cost Management budgets at subscription and resource-group scopes, as
+  documented in their native `notifications.contactGroups` contracts. Graph,
+  inventory and independent cleanup integration remain open with the full
+  provider acceptance criteria.

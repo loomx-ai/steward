@@ -55,3 +55,40 @@ inventory and diagnostics. Native private reads remain unchanged so later
 configuration checks and reference extraction can use the complete content.
 Tests also cover type-only and ID-only resource envelopes, mixed case,
 preservation of public metadata, and unrelated resource families.
+
+The native reader tests additionally exercise all seven alert families and
+the retained Application Insights `2022-06-15` web-test API. Each unfiltered
+subscription list is paged and reconciled against a full native GET. Tests
+compose matching GETs from the original list rows; they do not claim that the
+separately published Get examples describe every listed resource. Private
+authored configuration participates in comparison, while explicitly read-only
+fields such as receiver confirmation status do not.
+
+Runtime scenarios document these additional source discrepancies:
+
+- Seven metric Get examples and the ordinary metric List examples contain
+  `/providers/providers/` in their resource IDs. The strict identity parser
+  rejects those unchanged originals. Only the composed runtime scenarios
+  remove the duplicate segment. Metric and Prometheus examples also omit
+  the optional root `name`; the full resource ID supplies the local name.
+- Activity Log scopes use `subscriptions/{id}` without a leading slash.
+  This native scope spelling is accepted specifically for Activity Log rules.
+- Alert Processing Get and List examples contain bare `actiongGroup1` and
+  `actiongGroup2` placeholders. Reference validation rejects them. Composed
+  scenarios substitute full action-group IDs in the source resource group.
+- The original Alert Processing subscription continuation uses HTTPS port
+  `443` and `ctoken`. Only that family and API version normalize the default
+  port. Paging still binds the original subscription, collection and version;
+  altered hosts, ports, filters, fragments and repeated tokens fail.
+- Web-test scenarios substitute the literal `subid` and bind Get to the
+  response's resource group, which differs from its example parameters.
+  The recorded List has root `kind: ping` and `properties.Kind: standard`;
+  these native fields are validated separately. Get requires test content.
+
+Boundary tests cover malformed identities, foreign subscriptions, ambiguous
+fields, missing configuration, private changes between List/Get, duplicate
+rows, permission failures, listed-resource 404s and asynchronous/partial read
+responses. Explicit action-group slots support both published Smart Detector
+shapes and deduplicate a shared group across Prometheus rules. Queries,
+conditions and webhook payloads do not create references from arbitrary text.
+These reader tests do not establish inventory, graph or cleanup completion.
