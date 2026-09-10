@@ -103,7 +103,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		if _, err := c.insightsWorkspacePlan(value); err != nil {
 			return nil, err
 		}
-		return &insightsComponentAction{action: *driver, assetID: value.ID, configuration: text(value.Normalized["_monitor_private_link_target_configuration"]), workspaceConfiguration: text(value.Normalized["_insights_workspace_configuration"]), groupConfiguration: text(value.Normalized["_insights_group_configuration"])}, nil
+		return &insightsComponentAction{action: *driver, assetID: value.ID, configuration: text(value.Normalized["_monitor_private_link_target_configuration"]), workspaceConfiguration: text(value.Normalized["_insights_workspace_configuration"]), groupConfiguration: text(value.Normalized["_insights_group_configuration"]), settingsConfiguration: text(value.Normalized[insightsSettingsProof])}, nil
 	}
 	return driver, nil
 }

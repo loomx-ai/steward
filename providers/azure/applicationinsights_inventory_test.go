@@ -26,6 +26,8 @@ type insightsInventoryFixture struct {
 	runtime           *Runtime
 	parent, group     map[string]any
 	parentID, groupID string
+	configurations    map[string]map[string]any
+	detections        map[string]map[string]any
 	children          map[string]map[string]any
 	locks             []any
 	componentLists    int
@@ -55,6 +57,20 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 			f.children[id] = raw
 		}
 	}
+	f.configurations = map[string]map[string]any{}
+	for path, file := range map[string]string{
+		"currentbillingfeatures":      "stable/2015-05-01/examples/CurrentBillingFeaturesGet.json",
+		"pricingplans/current":        "stable/2017-10-01/examples/CurrentPricingPlanGet.json",
+		"featurecapabilities":         "stable/2015-05-01/examples/FeatureCapabilitiesGet.json",
+		"getavailablebillingfeatures": "stable/2015-05-01/examples/AvailableBillingFeaturesGet.json",
+		"quotastatus":                 "stable/2015-05-01/examples/QuotaStatusGet.json",
+	} {
+		f.configurations[path] = insightsScopedExample(t, file, f.parentID)
+	}
+	// A one-rule collection composes the original native GET body. The original
+	// LIST example has duplicate names and is tested separately without repair.
+	detection := insightsScopedExample(t, "stable/2015-05-01/examples/ProactiveDetectionConfigurationGet.json", f.parentID)
+	f.detections = map[string]map[string]any{text(detection["name"]): detection}
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
 		if f.before != nil {
 			f.before(req)
@@ -72,6 +88,37 @@ func newInsightsInventoryFixture(t *testing.T) *insightsInventoryFixture {
 				t.Fatal("wrong native component list", req.URL)
 			}
 			return jsonResponse(200, map[string]any{"value": []any{f.parent}}, http.Header{"X-Ms-Request-Id": {"insights-list"}}), nil
+		}
+		if value := f.configurations[strings.TrimPrefix(path, f.parentID+"/")]; value != nil {
+			version := insightsLegacyVersion
+			if strings.HasSuffix(path, "/pricingplans/current") {
+				version = "2017-10-01"
+			}
+			if req.Method != "GET" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != version {
+				t.Fatal("configuration native contract changed", req.Method, req.URL)
+			}
+			if strings.HasSuffix(path, "/quotastatus") {
+				value = maps.Clone(value)
+				value["AppId"] = object(f.parent["properties"])["AppId"] // Bind composed component incarnation.
+			}
+			return jsonResponse(200, value, nil), nil
+		}
+		if path == f.parentID+"/proactivedetectionconfigs" || strings.HasPrefix(path, f.parentID+"/proactivedetectionconfigs/") {
+			if req.Method != "GET" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != insightsLegacyVersion {
+				t.Fatal("detection configuration native contract changed", req.Method, req.URL)
+			}
+			if path == f.parentID+"/proactivedetectionconfigs" {
+				rows := []any{}
+				for _, name := range slices.Sorted(maps.Keys(f.detections)) {
+					rows = append(rows, f.detections[name])
+				}
+				return jsonResponse(200, rows, nil), nil
+			}
+			value := f.detections[last(req.URL.Path)]
+			if value == nil {
+				return jsonResponse(404, map[string]any{}, nil), nil
+			}
+			return jsonResponse(200, value, nil), nil
 		}
 		if path == f.parentID {
 			if req.Method != "GET" || req.URL.Query().Get("api-version") != insightsComponentVersion {

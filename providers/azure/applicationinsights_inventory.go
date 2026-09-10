@@ -183,6 +183,9 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 			if err := c.insightsWorkspaceInventory(ctx, &parent, component.data, indexedGroups); err != nil {
 				return nil, "", err
 			}
+			if err := c.insightsConfigurationInventory(ctx, &parent, component.data); err != nil {
+				return nil, "", err
+			}
 			items = append(items, parent)
 			continue
 		}
@@ -213,7 +216,7 @@ func insightsInventoryBindings(items []contracts.InventoryItem) map[string]any {
 	bindings := map[string]any{}
 	for _, item := range items {
 		value := map[string]any{"kind": item.NativeType, "location": item.Location, "scope": item.Scope, "references": item.NetworkReferences}
-		for _, key := range []string{"_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_child_private_configuration", "_insights_group_configuration", "_insights_workspace_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
+		for _, key := range []string{insightsSettingsProof, "_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_child_private_configuration", "_insights_group_configuration", "_insights_workspace_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
 			value[key] = item.Normalized[key]
 		}
 		bindings[item.NativeID] = value

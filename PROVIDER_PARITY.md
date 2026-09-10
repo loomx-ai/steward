@@ -1927,3 +1927,35 @@ background evidence only, not acceptance evidence for this work.
   other component configuration, independent web tests/workbooks and remaining
   service families are unfinished. The 29 missing mapped Azure roots and all
   eight provider acceptance criteria remain open.
+
+### Azure Application Insights component configuration
+
+- Component inventory now reads native billing features, current pricing,
+  capabilities, available features, quota and proactive detection configuration.
+  Fixed GETs bind the selected component through the generated catalog; the
+  pricing operation retains its lowercase native namespace. Proactive rules use
+  the original array LIST and an exact GET per name. Invalid/partial reads,
+  permission failures, duplicate names, wrong identities, LIST/GET disagreement
+  and component replacement fail the scan.
+- Authored billing/cap and proactive settings, including redacted email values,
+  are bound to both inventory snapshots and scan cursors. Component preflight
+  rechecks that private digest twice and persists it in the deletion receipt.
+  Read-only cap limits/reset hours, capabilities, available features, quota,
+  static rule definitions and update timestamps remain observations. Native
+  fixed configurations receive no invented independent deletion operation.
+- Tests use the retained original configuration bodies with explicit component
+  scope/AppId substitutions. Successful proactive enumeration composes the
+  original one-rule GET; the unchanged official LIST's duplicate names are
+  explicitly rejected. Tests exercise privacy, stale cursors, malformed reads,
+  authored/public/private drift, observation changes, real SQLite projection,
+  planning, native deletion and receipt verification after serialization/restart.
+  A second component's independent configuration is included in cursor tests.
+- Full Go tests and vet passed (Azure 156.651s; GCP cached). Application Insights
+  and AMPLS race checks passed (54.946s); the complete Application Insights suite
+  passed (10.215s). Bilingual documentation validation passed for 40 chapters and
+  10 original screenshots. No new emulator or live-cloud run was performed.
+- Counts remain 369 rules, 343 cleanup bindings and 1,188 catalog operations.
+  Migrated smart-detection alerts and action groups are independent resources,
+  outside the legacy configuration adapter. Annotation history, independent
+  web tests/workbooks, remaining service families and all eight provider
+  acceptance criteria remain unfinished; 29 mapped Azure roots are still absent.

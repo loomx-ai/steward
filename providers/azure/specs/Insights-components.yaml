@@ -36,6 +36,33 @@ fields:
   tags:
     path: tags
     type: object
+  applicationId:
+    path: AppId
+    type: string
+  workspaceResourceId:
+    path: WorkspaceResourceId
+    type: string
+  ingestionMode:
+    path: IngestionMode
+    type: string
+  retentionInDays:
+    path: RetentionInDays
+    type: number
+  billingFeatures:
+    path: billing_features.CurrentBillingFeatures
+    type: array
+  dailyCapGb:
+    path: billing_features.DataVolumeCap.Cap
+    type: number
+  pricingPlan:
+    path: pricing_plan.properties.planType
+    type: string
+  quotaThrottled:
+    path: quota_status.ShouldBeThrottled
+    type: boolean
+  proactiveDetection:
+    path: proactive_detection
+    type: object
 extensions:
   hook: azure.resource
 relationships:

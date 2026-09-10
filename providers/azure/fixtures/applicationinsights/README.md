@@ -6,8 +6,9 @@ catalog operations from 16 root documents and six transitive reference
 documents. Native response transport, content redaction and operation-location
 checks are implemented. Monitor Private Link Scope inventory and lifecycle
 bindings are implemented as described below. Application Insights component/child inventory and cleanup are implemented
-within the explicit scope below. Annotation history, additional configuration
-and independent workbook/web-test lifecycles remain unfinished.
+within the explicit scope below, including native billing/pricing and proactive
+detection configuration. Annotation history and independent workbook/web-test
+lifecycles remain unfinished.
 
 ## Native schemas and examples
 
@@ -273,8 +274,8 @@ children, known absence, missing/duplicate/foreign assets, private/membership
 changes, incomplete lists and changed component identity. These are composed
 protocol tests, not a component-delete recording or live-cloud verification.
 
-Annotation history, additional component configuration and independent
-workbook/web-test lifecycles remain outside these seven collections; none are
+Annotation history and independent workbook/web-test lifecycles remain outside
+these seven collections; none are
 inferred empty from their native indexes.
 
 ## Component deletion and current managed group
@@ -315,6 +316,46 @@ substitution and resource replacement during readback. These are composed
 protocol tests using unchanged published component/child/AMPLS bodies where
 available. They are not an independent managed-workspace emulator or live-cloud
 run. The earlier Topaz test covers transport only.
+
+## Component billing, quota and proactive detection
+
+Component inventory now calls the original current billing, feature capability,
+available feature and quota GETs (`2015-05-01`), current pricing plan GET
+(`2017-10-01`), and proactive configuration LIST plus each exact GET
+(`2015-05-01`). Requests bind the selected component and subscription through
+the generated catalog, including the native lowercase pricing namespace.
+Fixed reads require synchronous 200 responses. Permission failures, missing
+configuration, incomplete or asynchronous responses, duplicate/ambiguous rule
+names, a foreign pricing ID or quota AppId, and LIST/GET disagreement fail the
+scan. The component is read again after its configurations.
+
+Billing plans, authored cap settings and proactive configuration are bound to
+the two inventory snapshots and cursor with a credential-keyed private digest.
+The component driver compares this digest twice before deletion and binds it to
+its persisted receipt. Custom email addresses remain absent from inventory and
+logs but still participate in configuration checks. Read-only cap limits/reset
+hours, feature capabilities, available features, quota status and static rule
+definitions do not invalidate authored settings. Proactive `lastUpdatedTime`
+is also excluded. Normalized inventory retains the safe observations; component
+fields expose the application/workspace identity, billing plan, cap, quota and
+safe rule configuration. These fixed configurations have no independent DELETE.
+
+`TestApplicationInsightsConfigurationInventory`,
+`TestApplicationInsightsConfigurationReadFailures` and
+`TestApplicationInsightsConfigurationDeletionBindings` cover the original
+shapes, redaction, failed and inconsistent reads, public/private configuration
+changes, read-only observations, actual SQLite projection/planning, deletion and
+receipt verification after restart. The component cursor test covers settings
+changes between pages. Fixtures preserve original native bodies with explicit
+component scope substitutions; quota AppId is bound to the composed component.
+The successful proactive list is composed from the original single GET example.
+The unchanged published LIST has duplicate `name` values and is explicitly
+rejected, rather than silently repaired or keyed by `ruleDefinitions.Name`.
+These are composed protocol tests, not a new emulator or real-cloud run.
+
+Migrated smart-detection alert rules and their action groups are independent
+resources, outside this legacy configuration adapter. See Microsoft's
+[migration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration).
 
 ## Monitor private-link lifecycle
 

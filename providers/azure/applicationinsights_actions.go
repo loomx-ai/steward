@@ -18,11 +18,12 @@ type insightsComponentAction struct {
 	action
 	assetID                                                   asset.AssetID
 	configuration, workspaceConfiguration, groupConfiguration string
+	settingsConfiguration                                     string
 }
 
 func (a *insightsComponentAction) identity(request contracts.ActionRequest) (map[string]any, error) {
 	value := request.Asset
-	if request.Action != "delete" || len(request.Parameters) != 0 || value.ID != a.assetID || value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.connectionID || value.Identity.Partition != a.partition || value.Identity.NativeType != applicationInsightsType || value.Identity.NativeID != a.id || value.Location != a.location || a.configuration == "" || text(value.Normalized["_monitor_private_link_target_configuration"]) != a.configuration || a.workspaceConfiguration == "" || text(value.Normalized["_insights_workspace_configuration"]) != a.workspaceConfiguration || a.groupConfiguration == "" || text(value.Normalized["_insights_group_configuration"]) != a.groupConfiguration {
+	if request.Action != "delete" || len(request.Parameters) != 0 || value.ID != a.assetID || value.ID == "" || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.connectionID || value.Identity.Partition != a.partition || value.Identity.NativeType != applicationInsightsType || value.Identity.NativeID != a.id || value.Location != a.location || a.settingsConfiguration == "" || text(value.Normalized[insightsSettingsProof]) != a.settingsConfiguration || a.configuration == "" || text(value.Normalized["_monitor_private_link_target_configuration"]) != a.configuration || a.workspaceConfiguration == "" || text(value.Normalized["_insights_workspace_configuration"]) != a.workspaceConfiguration || a.groupConfiguration == "" || text(value.Normalized["_insights_group_configuration"]) != a.groupConfiguration {
 		return nil, serviceDenied("insights_component_action_identity_changed")
 	}
 	state, err := a.client.insightsWorkspacePlan(value)
@@ -172,6 +173,13 @@ func (a *insightsComponentAction) Preflight(ctx context.Context, request contrac
 		return check, serviceDenied("insights_component_requires_private_link_unlink")
 	}
 	for range 2 {
+		_, proof, err := a.client.insightsConfigurations(ctx, a.id, raw, false)
+		if err != nil {
+			return check, err
+		}
+		if proof != a.settingsConfiguration {
+			return check, serviceDenied("insights_settings_configuration_changed")
+		}
 		groups, err := a.client.insightsGroups(ctx)
 		if err != nil {
 			return check, err
@@ -211,7 +219,7 @@ func (a *insightsComponentAction) receipt(request contracts.ActionRequest) strin
 		}
 		return values
 	}
-	return a.client.privateConfiguration(map[string]any{"asset": a.assetID, "resource": a.id, "connection": a.connectionID, "partition": a.partition, "location": a.location, "component": a.configuration, "workspace": a.workspaceConfiguration, "group": a.groupConfiguration, "impacts": bindings(request.LifecycleImpacts), "prerequisites": bindings(request.PrerequisiteDeletions), "version": insightsComponentVersion, "protocol": "component-and-managed-group-absence"})
+	return a.client.privateConfiguration(map[string]any{"asset": a.assetID, "resource": a.id, "connection": a.connectionID, "partition": a.partition, "location": a.location, "component": a.configuration, "workspace": a.workspaceConfiguration, "group": a.groupConfiguration, "settings": a.settingsConfiguration, "impacts": bindings(request.LifecycleImpacts), "prerequisites": bindings(request.PrerequisiteDeletions), "version": insightsComponentVersion, "protocol": "component-and-managed-group-absence"})
 }
 
 func (a *insightsComponentAction) result(request contracts.ActionRequest, response response) contracts.ActionResult {

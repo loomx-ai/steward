@@ -400,7 +400,7 @@ func TestApplicationInsightsWorkspacePrivateLinkInventory(t *testing.T) {
 }
 
 func TestApplicationInsightsWorkspaceInventoryCursor(t *testing.T) {
-	for _, mode := range []string{"unchanged", "native-id-case", "unrelated-group", "private-workspace", "owned-member", "detached-group", "owner-removed"} {
+	for _, mode := range []string{"unchanged", "native-id-case", "unrelated-group", "private-workspace", "owned-member", "detached-group", "owner-removed", "component-settings"} {
 		t.Run(mode, func(t *testing.T) {
 			f := newInsightsWorkspaceFixture(t)
 			secondID := resourceID(applicationInsightsType, "zz-second")
@@ -414,6 +414,21 @@ func TestApplicationInsightsWorkspaceInventoryCursor(t *testing.T) {
 				path := strings.ToLower(req.URL.Path)
 				if path == "/subscriptions/"+testSubscription+"/providers/microsoft.insights/components" {
 					return jsonResponse(200, map[string]any{"value": []any{f.parent, second}}, nil), true
+				}
+				if path == secondID+"/proactivedetectionconfigs" {
+					return jsonResponse(200, []any{}, nil), true
+				}
+				if strings.HasPrefix(path, secondID+"/") {
+					if value := f.configurations[strings.TrimPrefix(path, secondID+"/")]; value != nil {
+						value = maps.Clone(value)
+						if strings.HasSuffix(path, "/quotastatus") {
+							value["AppId"] = object(second["properties"])["AppId"]
+						}
+						if strings.HasSuffix(path, "/pricingplans/current") {
+							value["id"] = secondID + "/pricingPlans/current"
+						}
+						return jsonResponse(200, value, nil), true
+					}
 				}
 				if path == secondID {
 					return jsonResponse(200, second, nil), true
@@ -441,6 +456,8 @@ func TestApplicationInsightsWorkspaceInventoryCursor(t *testing.T) {
 			case "detached-group":
 				id := f.managedID + "-old"
 				f.groups[id] = map[string]any{"id": id, "managedBy": f.parentID}
+			case "component-settings":
+				f.detections["slowpageloadtime"]["customEmails"] = []any{"PRIVATE_CURSOR_CHANGE"}
 			case "owner-removed":
 				delete(f.managed, "managedBy")
 			}
