@@ -42,4 +42,13 @@ relationships:
 - type: uses
   targetType: Microsoft.OperationalInsights/workspaces
   targetIdPath: refs_microsoft_operationalinsights_workspaces
-# Component deletion is pending native child and managed-workspace review.
+actions:
+  delete:
+    operation: Azure.Microsoft.Insights.Components_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Insights.Components_Get
+      itemsPath: $
+      identityPath: id

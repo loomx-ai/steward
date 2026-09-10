@@ -95,7 +95,17 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if err != nil {
 		return nil, err
 	}
-	return &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location), connectionID: id, partition: value.Identity.Partition}, nil
+	driver := &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location), connectionID: id, partition: value.Identity.Partition}
+	if kind.NativeType == applicationInsightsType {
+		if value.ID == "" || value.Identity.NativeID != nativeID || value.Identity.ConnectionID != id || value.Identity.Partition == "" || value.Location == "" || value.Location != driver.location {
+			return nil, serviceDenied("invalid_insights_component_action_identity")
+		}
+		if _, err := c.insightsWorkspacePlan(value); err != nil {
+			return nil, err
+		}
+		return &insightsComponentAction{action: *driver, assetID: value.ID, configuration: text(value.Normalized["_monitor_private_link_target_configuration"]), workspaceConfiguration: text(value.Normalized["_insights_workspace_configuration"]), groupConfiguration: text(value.Normalized["_insights_group_configuration"])}, nil
+	}
+	return driver, nil
 }
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {

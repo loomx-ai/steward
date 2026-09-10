@@ -177381,7 +177381,9 @@
       "nativeType": "Microsoft.Insights/components",
       "rest": {
         "collection": "components",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Components_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.Insights.Components_List"
         ],

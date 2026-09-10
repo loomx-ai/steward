@@ -166,7 +166,7 @@ func TestApplicationInsightsNativeInventory(t *testing.T) {
 				t.Fatal("native inventory incomplete", page, err, f.componentLists)
 			}
 			for _, item := range page.Items {
-				if item.NativeType != kind || item.Location != "eastus" || item.Scope.Kind != asset.ScopeRegion || item.Normalized["_inventory_source"] != productInventorySource || item.Actionable == nil || *item.Actionable != (kind != applicationInsightsType) {
+				if item.NativeType != kind || item.Location != "eastus" || item.Scope.Kind != asset.ScopeRegion || item.Normalized["_inventory_source"] != productInventorySource || item.Actionable == nil || !*item.Actionable {
 					t.Fatal("lost native kind, location or reviewed action boundary", item)
 				}
 				if kind != applicationInsightsType && (!strings.HasPrefix(item.NativeID, "https://management.azure.com/") || item.Normalized["_insights_legacy_private_configuration"] == "" || !slices.Contains(item.NetworkReferences, f.parentID)) {
@@ -462,11 +462,11 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 			continue
 		}
 		if value.ID == parent.ID {
-			if value.Capabilities.Has(asset.CapabilityActionable) {
-				t.Fatal("component cleanup claimed before its lifecycle review")
+			if !value.Capabilities.Has(asset.CapabilityActionable) {
+				t.Fatal("registered component capability missing")
 			}
-			if _, err := r.ResolveAction(ctx, connection.ID, value); err == nil {
-				t.Fatal("unfinished component cleanup resolved a driver")
+			if _, err := r.ResolveAction(ctx, connection.ID, value); err != nil {
+				t.Fatal("registered component cleanup failed resolution", err)
 			}
 			continue
 		}

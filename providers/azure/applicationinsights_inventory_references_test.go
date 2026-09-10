@@ -236,14 +236,6 @@ func TestApplicationInsightsInventoryReferencesReachSharedTargets(t *testing.T) 
 		if err != nil {
 			t.Fatal(err)
 		}
-		if dependency.Identity.NativeType == "Microsoft.OperationalInsights/workspaces" {
-			for _, step := range planned.Steps {
-				if step.AssetID != dependency.ID && step.Action == "delete" {
-					t.Fatal("unfinished component cleanup became a delete step")
-				}
-			}
-			continue
-		}
 		if len(planned.Blockers) != 0 || len(planned.Steps) != len(selected) {
 			t.Fatal("explicit export and storage selection failed", planned)
 		}

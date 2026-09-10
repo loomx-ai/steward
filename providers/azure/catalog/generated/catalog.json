@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "24a3656cb57f1922f2de44c09f58b199b0e667f5c0ae948bbb9d67724fed022e",
+    "checksum": "3d5477f47488df5a33c2a56097eac6048516d3ee437ef2dee49bc96b70fa56ce",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "498a0be604ee87b3999dfacc85f9fdf2d4c3db1b1cd16d4f292e4a1abf572849",
+  "content_checksum": "92ad962e2e259c296e3d635209d3986fbfbf00b0b7f8a9dadf884ba48cf14aa2",
   "operations": [
     {
       "id": "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete",
@@ -110718,6 +110718,9 @@
         "collection": "components",
         "read_operations": [
           "Azure.Microsoft.Insights.Components_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Insights.Components_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.Insights.Components_List"

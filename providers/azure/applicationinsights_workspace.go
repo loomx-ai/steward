@@ -143,95 +143,182 @@ func (c *client) insightsGroup(ctx context.Context, id string, listed map[string
 	return result.data, nil
 }
 
-// This is the native resource-group membership index, including unknown kinds.
-// Product GETs bind known resources to their current private configuration. The
-// later lifecycle walk must also expand each member's product-specific children.
-func (c *client) insightsWorkspaceMembers(ctx context.Context, group, workspace string) (map[string]any, error) {
+// Keep inventory generation separate from configuration which can legitimately
+// change when the reviewed AMPLS prerequisites are removed.
+func insightsWorkspaceLifecycleSnapshot(raw map[string]any) map[string]any {
+	_, kind, _ := parseID(text(raw["id"]))
+	if monitorPrivateLinkTarget(kind) || strings.EqualFold(kind, groupType) {
+		raw = monitorPrivateLinkTargetSnapshot(raw)
+	}
+	return insightsWorkspaceResourceSnapshot(raw)
+}
+
+func (c *client) insightsWorkspaceMemberBindings(resources []map[string]any) map[string]any {
+	members := map[string]any{}
+	for _, raw := range resources {
+		id, kind, _ := parseID(text(raw["id"]))
+		members[id] = map[string]any{"kind": kind, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(raw)), "lifecycle_configuration": c.privateConfiguration(insightsWorkspaceLifecycleSnapshot(raw))}
+	}
+	return members
+}
+
+// The unfiltered ARM group index also contains unknown kinds. Expand known
+// product trees using the same native child adapters as independent inventory,
+// then bind their full GET bodies. External resources require an existing,
+// documented deletion relationship; a reference alone never makes them owned.
+func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspace string) ([]map[string]any, error) {
 	values, err := c.insightsARMIndex(ctx, group+"/resources")
 	if err != nil {
 		return nil, err
 	}
-	members := map[string]any{}
-	for _, value := range values {
-		raw := object(value)
+	resources := map[string]map[string]any{}
+	var visit func(map[string]any, bool) error
+	visit = func(raw map[string]any, indexed bool) error {
 		id, kind, err := parseID(text(raw["id"]))
-		if err != nil || id == group || !inResourceGroup(id, group) || members[id] != nil || !validResponseType(kind, text(raw["type"])) {
-			return nil, serviceDenied("invalid_insights_workspace_group_member")
+		if err != nil || id == group || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
+			return serviceDenied("invalid_insights_workspace_group_member")
 		}
-		if rule, known := findType(kind); known {
+		if previous := resources[id]; previous != nil {
+			if !nativeConfigurationContains(insightsWorkspaceResourceSnapshot(raw), insightsWorkspaceResourceSnapshot(previous)) {
+				return serviceDenied("insights_workspace_descendant_disagrees")
+			}
+			return nil
+		}
+		rule, known := findType(kind)
+		if known {
 			endpoint, err := c.resourceURL(rule, id)
 			if err != nil {
-				return nil, err
+				return err
 			}
 			current, err := c.request(ctx, "GET", endpoint)
 			if err != nil {
-				return nil, err
+				return err
 			}
-			if !insightsARMReadValid(current, id, kind) || !nativeConfigurationContains(insightsWorkspaceResourceSnapshot(raw), insightsWorkspaceResourceSnapshot(current.data)) {
-				return nil, serviceDenied("insights_workspace_member_changed")
+			listed := insightsWorkspaceResourceSnapshot(raw)
+			if !indexed && current.data["location"] == nil {
+				delete(listed, "location") // c.children supplies inherited proxy locations.
+			}
+			if !insightsARMReadValid(current, id, kind) || !nativeConfigurationContains(listed, insightsWorkspaceResourceSnapshot(current.data)) {
+				return serviceDenied("insights_workspace_member_changed")
 			}
 			raw = current.data
 		}
-		members[id] = map[string]any{"kind": kind, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(raw))}
+		resources[id] = raw
+		if !known {
+			return nil
+		}
+		if strings.EqualFold(kind, applicationInsightsType) || strings.EqualFold(kind, aksType) || strings.EqualFold(kind, monitorWorkspaceType) {
+			return serviceDenied("insights_workspace_nested_managed_controller")
+		}
+		children, err := c.children(ctx, rule, raw)
+		if err != nil {
+			return err
+		}
+		if rule.NativeType == vnetType {
+			links, err := c.virtualNetworkDNSLinks(ctx, id)
+			if err != nil {
+				return err
+			}
+			for _, link := range links {
+				children = append(children, link.data)
+			}
+		}
+		for _, child := range children {
+			if !inResourceGroup(text(child["id"]), group) && !aksExternalRelation(aksNativeAsset(raw), aksNativeAsset(child)) {
+				return serviceDenied("insights_workspace_external_dependency_requires_unlink")
+			}
+			if err := visit(child, false); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
-	if members[workspace] == nil {
+	indexed := map[string]bool{}
+	for _, value := range values {
+		raw := object(value)
+		id, _, err := parseID(text(raw["id"]))
+		if err != nil || !inResourceGroup(id, group) || indexed[id] {
+			return nil, serviceDenied("invalid_insights_workspace_group_member")
+		}
+		indexed[id] = true
+		if err := visit(raw, true); err != nil {
+			return nil, err
+		}
+	}
+	if resources[workspace] == nil {
 		return nil, serviceDenied("insights_managed_workspace_missing_from_group")
 	}
-	return members, nil
+	result := make([]map[string]any, 0, len(resources))
+	for _, id := range slices.Sorted(maps.Keys(resources)) {
+		result = append(result, resources[id])
+	}
+	return result, nil
 }
 
-func (c *client) insightsWorkspaceInventory(ctx context.Context, parent *contracts.InventoryItem, raw map[string]any, groups map[string]map[string]any) error {
+// Native bodies stay in this transient value. Only IDs and keyed configuration
+// digests from state are projected into inventory or persisted with a plan.
+type insightsWorkspaceSnapshot struct {
+	state     map[string]any
+	group     map[string]any
+	resources []map[string]any
+	incoming  []serviceChild
+}
+
+func (c *client) readInsightsWorkspace(ctx context.Context, parent string, raw map[string]any, groups map[string]map[string]any) (*insightsWorkspaceSnapshot, error) {
 	workspace, err := insightsWorkspaceID(raw)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	state := map[string]any{"workspace": workspace, "managed_group": "", "detached_groups": map[string]any{}, "members": map[string]any{}, "incoming": map[string]any{}}
+	snapshot := &insightsWorkspaceSnapshot{state: state}
 	workspaceGroup := ""
 	if strings.HasPrefix(workspace, c.root()+"/") {
 		workspaceGroup = strings.Join(strings.Split(workspace, "/")[:5], "/")
 		if groups[workspaceGroup] == nil {
-			return serviceDenied("insights_workspace_group_missing_from_index")
+			return nil, serviceDenied("insights_workspace_group_missing_from_index")
 		}
 	}
 	for _, id := range slices.Sorted(maps.Keys(groups)) {
 		owner, _ := insightsManagedBy(groups[id])
-		if owner != parent.NativeID && id != workspaceGroup {
+		if owner != parent && id != workspaceGroup {
 			continue
 		}
 		group, err := c.insightsGroup(ctx, id, groups[id])
 		if err != nil {
-			return err
+			return nil, err
 		}
 		configuration := c.privateConfiguration(insightsWorkspaceResourceSnapshot(group))
 		if id == workspaceGroup {
 			state["workspace_group_configuration"] = configuration
+			state["workspace_group_lifecycle_configuration"] = c.privateConfiguration(insightsWorkspaceLifecycleSnapshot(group))
 		}
-		if owner != parent.NativeID {
+		if owner != parent {
 			continue // Shared workspaces are references, even with a managed name.
 		}
-		if inResourceGroup(parent.NativeID, id) {
-			return serviceDenied("insights_managed_group_contains_controller")
+		if inResourceGroup(parent, id) {
+			return nil, serviceDenied("insights_managed_group_contains_controller")
 		}
 		if id != workspaceGroup {
 			object(state["detached_groups"])[id] = configuration
 			continue // Switching workspaces does not delete the original group.
 		}
-		members, err := c.insightsWorkspaceMembers(ctx, id, workspace)
+		resources, err := c.insightsWorkspaceResources(ctx, id, workspace)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		after, err := c.insightsGroup(ctx, id, group)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if c.privateConfiguration(insightsWorkspaceResourceSnapshot(after)) != configuration {
-			return serviceDenied("insights_managed_workspace_group_changed")
+			return nil, serviceDenied("insights_managed_workspace_group_changed")
 		}
-		state["managed_group"], state["members"] = id, members
+		state["managed_group"], state["members"] = id, c.insightsWorkspaceMemberBindings(resources)
 		incoming, err := c.monitorPrivateLinkIncoming(ctx, asset.Identity{NativeID: workspace, NativeType: insightsWorkspaceType})
 		if err != nil {
-			return err
+			return nil, err
 		}
+		snapshot.group, snapshot.resources, snapshot.incoming = group, resources, incoming
 		for _, child := range incoming {
 			configuration := ""
 			if child.data != nil {
@@ -240,14 +327,72 @@ func (c *client) insightsWorkspaceInventory(ctx context.Context, parent *contrac
 			object(state["incoming"])[child.id] = configuration
 		}
 	}
-	current, err := c.insightsComponent(ctx, parent.NativeID)
+	current, err := c.insightsComponent(ctx, parent)
+	if err != nil {
+		return nil, err
+	}
+	if c.privateConfiguration(monitorPrivateLinkTargetSnapshot(current)) != c.privateConfiguration(monitorPrivateLinkTargetSnapshot(raw)) {
+		return nil, serviceDenied("insights_workspace_component_changed")
+	}
+	return snapshot, nil
+}
+
+func (c *client) insightsWorkspaceInventory(ctx context.Context, parent *contracts.InventoryItem, raw map[string]any, groups map[string]map[string]any) error {
+	if c.privateConfiguration(monitorPrivateLinkTargetSnapshot(raw)) != text(parent.Normalized["_monitor_private_link_target_configuration"]) {
+		return serviceDenied("insights_workspace_component_changed")
+	}
+	snapshot, err := c.readInsightsWorkspace(ctx, parent.NativeID, raw, groups)
 	if err != nil {
 		return err
 	}
-	if c.privateConfiguration(monitorPrivateLinkTargetSnapshot(current)) != text(parent.Normalized["_monitor_private_link_target_configuration"]) {
-		return serviceDenied("insights_workspace_component_changed")
-	}
-	parent.Normalized["_insights_workspace"] = state
-	parent.Normalized["_insights_workspace_configuration"] = c.privateConfiguration(state)
+	parent.Normalized["_insights_workspace"] = snapshot.state
+	parent.Normalized["_insights_workspace_configuration"] = c.privateConfiguration(snapshot.state)
 	return nil
+}
+
+func (c *client) insightsWorkspacePlan(parent asset.Asset) (map[string]any, error) {
+	state, ok := parent.Normalized["_insights_workspace"].(map[string]any)
+	if !ok || text(parent.Normalized["_insights_workspace_configuration"]) == "" || text(parent.Normalized["_insights_workspace_configuration"]) != c.privateConfiguration(state) {
+		return nil, serviceDenied("insights_workspace_plan_changed")
+	}
+	workspace := text(state["workspace"])
+	if workspace != "" {
+		id, kind, err := parseID(workspace)
+		if err != nil || id != workspace || !strings.EqualFold(kind, insightsWorkspaceType) {
+			return nil, serviceDenied("invalid_insights_workspace_plan")
+		}
+	}
+	group := text(state["managed_group"])
+	members, membersOK := state["members"].(map[string]any)
+	incoming, incomingOK := state["incoming"].(map[string]any)
+	if !membersOK || !incomingOK {
+		return nil, serviceDenied("incomplete_insights_workspace_plan")
+	}
+	if group == "" {
+		if len(members) != 0 || len(incoming) != 0 {
+			return nil, serviceDenied("unowned_insights_workspace_plan")
+		}
+		return state, nil
+	}
+	id, kind, err := parseID(group)
+	if err != nil || id != group || !strings.EqualFold(kind, groupType) || !strings.HasPrefix(group, c.root()+"/") || !inResourceGroup(workspace, group) || inResourceGroup(parent.Identity.NativeID, group) || members[workspace] == nil || text(state["workspace_group_configuration"]) == "" || text(state["workspace_group_lifecycle_configuration"]) == "" {
+		return nil, serviceDenied("invalid_insights_managed_group_plan")
+	}
+	for id, value := range members {
+		member := object(value)
+		canonical, kind, err := parseID(id)
+		if err != nil || canonical != id || !strings.HasPrefix(id, c.root()+"/") || text(member["kind"]) != kind || text(member["configuration"]) == "" || text(member["lifecycle_configuration"]) == "" {
+			return nil, serviceDenied("invalid_insights_workspace_member_plan")
+		}
+	}
+	return state, nil
+}
+
+func insightsWorkspaceLifecycleState(state map[string]any) map[string]any {
+	members := map[string]any{}
+	for id, value := range object(state["members"]) {
+		member := object(value)
+		members[id] = map[string]any{"kind": member["kind"], "configuration": member["lifecycle_configuration"]}
+	}
+	return map[string]any{"workspace": state["workspace"], "managed_group": state["managed_group"], "detached_groups": state["detached_groups"], "group_configuration": state["workspace_group_lifecycle_configuration"], "members": members}
 }

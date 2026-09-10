@@ -447,6 +447,13 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Bindings = append(result.Bindings, contribution.Bindings...)
 			result.Relationships = append(result.Relationships, contribution.Relationships...)
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			contribution, err = s.client.contributeInsightsWorkspace(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Bindings = append(result.Bindings, contribution.Bindings...)
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
 		if parent.Identity.Provider != asset.ProviderAzure || !HasServiceCascade(parent.Identity.NativeType) || aksMembers[managedGroupKey(parent.Identity, parent.Identity.NativeID)] {

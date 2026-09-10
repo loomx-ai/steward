@@ -2,6 +2,7 @@ package azure
 
 import (
 	"context"
+	"maps"
 	"slices"
 	"strings"
 
@@ -135,6 +136,66 @@ func (c *client) contributeInsightsChildren(ctx context.Context, parent asset.As
 	}
 	if err := c.insightsComponentIncarnation(parent, after); err != nil {
 		return result, err
+	}
+	return result, nil
+}
+
+func (c *client) contributeInsightsWorkspace(ctx context.Context, parent asset.Asset, assets []asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
+	planned, err := c.insightsWorkspacePlan(parent)
+	if err != nil {
+		return result, err
+	}
+	raw, err := c.insightsComponent(ctx, parent.Identity.NativeID)
+	if err != nil {
+		return result, err
+	}
+	if err := c.insightsComponentIncarnation(parent, raw); err != nil {
+		return result, err
+	}
+	groups, err := c.insightsGroups(ctx)
+	if err != nil {
+		return result, err
+	}
+	snapshot, err := c.readInsightsWorkspace(ctx, parent.Identity.NativeID, raw, groups)
+	if err != nil {
+		return result, err
+	}
+	if c.privateConfiguration(snapshot.state) != c.privateConfiguration(planned) {
+		return result, serviceDenied("insights_workspace_inventory_changed")
+	}
+	group := text(planned["managed_group"])
+	if group == "" {
+		return result, nil
+	}
+	nativeGroup := maps.Clone(snapshot.group)
+	nativeGroup["type"] = groupType
+	resources := append([]map[string]any{nativeGroup}, snapshot.resources...)
+	result, err = c.bindManagedGroup(parent, group, "azure:application-insights-managed-workspace", "", resources, assets)
+	if err != nil {
+		return result, err
+	}
+	for _, child := range snapshot.incoming {
+		evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
+		target, err := insightsChildAsset(parent, child, assets)
+		if err != nil {
+			return result, err
+		}
+		if target == nil || child.data == nil {
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+			continue
+		}
+		linked, err := monitorPrivateLinkReference(map[string]any{"properties": target.Normalized})
+		if err != nil || linked != text(planned["workspace"]) {
+			return result, serviceDenied("insights_workspace_association_changed")
+		}
+		if err := c.servicePrivateIncarnation(*target, child.data); err != nil {
+			return result, err
+		}
+		if err := serviceIncarnation(*target, child.data); err != nil {
+			return result, err
+		}
+		result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: insightsLifecycleSource, Evidence: evidence, Confidence: 1})
 	}
 	return result, nil
 }

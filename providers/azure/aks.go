@@ -256,11 +256,15 @@ func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets [
 }
 
 func (c *client) contributeManagedGroup(ctx context.Context, controller asset.Asset, response response, group, source string, assets []asset.Asset) (governance.Contribution, error) {
-	result := governance.Contribution{}
 	resources, err := c.managedGroupResources(ctx, controller.Identity.NativeID, group)
 	if err != nil {
-		return result, err
+		return governance.Contribution{}, err
 	}
+	return c.bindManagedGroup(controller, group, source, response.requestID, resources, assets)
+}
+
+func (c *client) bindManagedGroup(controller asset.Asset, group, source, requestID string, resources []map[string]any, assets []asset.Asset) (governance.Contribution, error) {
+	result := governance.Contribution{}
 	members := map[string]string{}
 	liveByID := map[string]map[string]any{}
 	for _, raw := range resources {
@@ -295,7 +299,7 @@ func (c *client) contributeManagedGroup(ctx context.Context, controller asset.As
 	sort.Strings(ids)
 	for _, id := range ids {
 		nativeType := members[id]
-		evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "managed_resource_group": group, "delete_by_default": true, "retention_supported": false, "request_id": response.requestID, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+		evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "managed_resource_group": group, "delete_by_default": true, "retention_supported": false, "request_id": requestID, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
 		value, found := byID[id]
 		if !found {
 			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
@@ -322,7 +326,7 @@ func managedGroupKey(identity asset.Identity, nativeID string) managedGroupMembe
 func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 	result := map[managedGroupMemberKey]bool{}
 	for _, cluster := range assets {
-		if cluster.Identity.Provider != asset.ProviderAzure || (!strings.EqualFold(cluster.Identity.NativeType, aksType) && !strings.EqualFold(cluster.Identity.NativeType, monitorWorkspaceType)) {
+		if cluster.Identity.Provider != asset.ProviderAzure || (!strings.EqualFold(cluster.Identity.NativeType, aksType) && !strings.EqualFold(cluster.Identity.NativeType, monitorWorkspaceType) && !strings.EqualFold(cluster.Identity.NativeType, applicationInsightsType)) {
 			continue
 		}
 		parts := strings.Split(cluster.Identity.NativeID, "/")
@@ -330,6 +334,13 @@ func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 			continue
 		}
 		group, err := controllerResourceGroup(parts[2], cluster.Identity.NativeType, cluster.Normalized)
+		if cluster.Identity.NativeType == applicationInsightsType {
+			var kind string
+			group, kind, err = parseID(text(object(cluster.Normalized["_insights_workspace"])["managed_group"]))
+			if !strings.EqualFold(kind, groupType) || !strings.HasPrefix(group, "/subscriptions/"+strings.ToLower(parts[2])+"/") {
+				continue
+			}
+		}
 		if err != nil {
 			continue
 		}
@@ -348,7 +359,7 @@ func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 
 func (a *action) managedGroupImpacts(request contracts.ActionRequest, group string) (map[string]contracts.ActionImpact, error) {
 	root := request.Asset
-	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) || (a.kind.NativeType != aksType && a.kind.NativeType != monitorWorkspaceType) {
+	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) || (a.kind.NativeType != aksType && a.kind.NativeType != monitorWorkspaceType && a.kind.NativeType != applicationInsightsType) {
 		return nil, serviceDenied("invalid_aks_controller")
 	}
 	impacts := map[string]contracts.ActionImpact{}
@@ -388,11 +399,18 @@ func (a *action) managedGroupPreflight(ctx context.Context, request contracts.Ac
 	if err := serviceIncarnation(request.Asset, raw); err != nil {
 		return "", err
 	}
-	impacts, err := a.managedGroupImpacts(request, group)
-	if err != nil {
+	if _, err := a.managedGroupImpacts(request, group); err != nil {
 		return "", err
 	}
 	resources, err := a.client.managedGroupResources(ctx, a.id, group)
+	if err != nil {
+		return "", err
+	}
+	return a.managedGroupResourcesPreflight(ctx, request, group, resources, locks)
+}
+
+func (a *action) managedGroupResourcesPreflight(ctx context.Context, request contracts.ActionRequest, group string, resources []map[string]any, locks []any) (string, error) {
+	impacts, err := a.managedGroupImpacts(request, group)
 	if err != nil {
 		return "", err
 	}
@@ -433,6 +451,19 @@ func (a *action) managedGroupPreflight(ctx context.Context, request contracts.Ac
 		if a.kind.NativeType == monitorWorkspaceType && isDataCollectionType(kind) && text(impact.Asset.Normalized["_data_collection_configuration"]) == dataCollectionConfiguration(kind, resource) {
 			// Reviewed external unlinks can change the collection target's ETag.
 			// Its configuration and immutable creation identity must still match.
+			impact.Asset.Normalized = cloneNormalizedWithoutGeneration(impact.Asset.Normalized)
+		}
+		if a.kind.NativeType == applicationInsightsType {
+			state := object(request.Asset.Normalized["_insights_workspace"])
+			expected := text(object(object(state["members"])[id])["lifecycle_configuration"])
+			if id == group {
+				expected = text(state["workspace_group_lifecycle_configuration"])
+			}
+			if expected == "" || expected != a.client.privateConfiguration(insightsWorkspaceLifecycleSnapshot(resource)) {
+				return "insights_workspace_member_configuration_changed", nil
+			}
+			// The frozen private configuration and creation identity still
+			// match after the reviewed AMPLS association removals.
 			impact.Asset.Normalized = cloneNormalizedWithoutGeneration(impact.Asset.Normalized)
 		}
 		if err := serviceIncarnation(impact.Asset, resource); err != nil {
@@ -516,6 +547,10 @@ func (a *action) managedGroupReadback(ctx context.Context, request contracts.Act
 	if err != nil {
 		return contracts.ReadbackResult{}, err
 	}
+	return a.managedGroupResourcesReadback(ctx, request, group)
+}
+
+func (a *action) managedGroupResourcesReadback(ctx context.Context, request contracts.ActionRequest, group string) (contracts.ReadbackResult, error) {
 	impacts, err := a.managedGroupImpacts(request, group)
 	if err != nil {
 		return contracts.ReadbackResult{}, err
@@ -527,6 +562,12 @@ func (a *action) managedGroupReadback(ctx context.Context, request contracts.Act
 		}
 		if !validResourceResponse(response, group, groupType) {
 			return contracts.ReadbackResult{}, fmt.Errorf("AKS node resource group readback identity mismatch")
+		}
+		if a.kind.NativeType == applicationInsightsType {
+			owner, err := insightsManagedBy(response.data)
+			if err != nil || owner != a.id || !insightsARMReadValid(response, group, groupType) {
+				return contracts.ReadbackResult{}, serviceDenied("insights_managed_group_readback_changed")
+			}
 		}
 		return contracts.ReadbackResult{Exists: true, State: "deleting_node_resource_group"}, nil
 	}
@@ -553,6 +594,15 @@ func (a *action) managedGroupReadback(ctx context.Context, request contracts.Act
 		}
 		if !validResourceResponse(live, id, kind.NativeType) {
 			return contracts.ReadbackResult{}, fmt.Errorf("AKS child readback identity mismatch")
+		}
+		if a.kind.NativeType == applicationInsightsType {
+			if !insightsARMReadValid(live, id, kind.NativeType) {
+				return contracts.ReadbackResult{}, serviceDenied("invalid_insights_managed_member_readback")
+			}
+			expected := text(object(object(object(request.Asset.Normalized["_insights_workspace"])["members"])[id])["lifecycle_configuration"])
+			if expected == "" || expected != a.client.privateConfiguration(insightsWorkspaceLifecycleSnapshot(live.data)) {
+				return contracts.ReadbackResult{}, serviceDenied("insights_managed_member_readback_changed")
+			}
 		}
 		return contracts.ReadbackResult{Exists: true, State: "deleting_aks_resources"}, nil
 	}

@@ -5,9 +5,9 @@ This evidence is pinned to Azure REST API specifications commit
 catalog operations from 16 root documents and six transitive reference
 documents. Native response transport, content redaction and operation-location
 checks are implemented. Monitor Private Link Scope inventory and lifecycle
-bindings are implemented as described below. Application Insights resource
-inventory and cleanup remain in progress; this directory does not establish
-completed Application Insights support.
+bindings are implemented as described below. Application Insights component/child inventory and cleanup are implemented
+within the explicit scope below. Annotation history, additional configuration
+and independent workbook/web-test lifecycles remain unfinished.
 
 ## Native schemas and examples
 
@@ -135,14 +135,14 @@ response, and confirms resource absence after restart using a private receipt.
 Parent absence never replaces the exact child GET. Native DELETE has no atomic
 configuration condition, so the final read/delete concurrency window remains.
 The five unbounded legacy collections are now registered with the inventory
-and graph integration below. Component cleanup, managed-workspace impacts and
-all-history annotation discovery remain in progress; this does not establish
-completed Application Insights support.
+and graph integration below. Component cleanup and managed-workspace impacts are integrated below.
+All-history annotation discovery remains unfinished; these adapters do not
+establish complete Application Insights coverage.
 
 ## Native inventory and graph integration
 
-Components have a native, read-only inventory rule while their complete cleanup
-lifecycle is being implemented. Analytics items, user analytics items, exports,
+Components have native inventory and a deletion driver with reviewed child
+prerequisites and managed-workspace impacts. Analytics items, user analytics items, exports,
 favorites, work-item configurations, API keys and linked storage have executable
 native leaf rules.
 Annotations remain unregistered: a bounded 90-day query cannot safely close
@@ -219,7 +219,7 @@ substituted subscription/group/component scope; source example files remain
 unchanged. These are composed protocol tests, not independent emulator or
 real-cloud verification. The inspected Topaz release lacks these child APIs.
 
-## Managed-workspace inventory in progress
+## Managed-workspace inventory
 
 Component product inventory now binds `WorkspaceResourceId` to the complete
 native resource-group index. A matching `managedBy` on the workspace's group
@@ -246,11 +246,10 @@ and AMPLS bodies use the unchanged published examples with explicit scope/link
 substitution. Group ownership and Log Analytics responses are composed native
 protocol data; they are not recordings or independent emulator evidence.
 
-This captures native group membership, not yet every member's product-specific
-descendants. Component cleanup still requires managed-descendant lifecycle
-contributions and final group/workspace absence checks; components remain
-read-only. Native child bindings are described below. No component-delete or managed-group cascade is claimed by
-these inventory tests. See the [native managed-workspace rules](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces).
+Known members now expand their registered native child trees recursively.
+Nested AKS, Monitor-workspace or Application Insights controllers whose external
+groups are not modeled here block the scan. The inventory tests establish
+membership; the separate deletion tests below establish controller behavior. See the [native managed-workspace rules](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces).
 
 ## Component child lifecycle integration
 
@@ -268,17 +267,54 @@ bindings when planning independent leaves and shared storage dependencies.
 `TestApplicationInsightsComponentNativeChildPlan` combines ten case-distinct
 legacy children and the three published ARM child examples. It tests the real
 solver's 13 separate prerequisite steps, individual selection and retention
-blocking. Its root is made actionable only in the test to check ordering: the
-production component rule is still read-only and has no deletion driver.
+blocking. The root uses its registered production action capability.
 `TestApplicationInsightsComponentChildGraphBoundaries` covers omitted live
 children, known absence, missing/duplicate/foreign assets, private/membership
 changes, incomplete lists and changed component identity. These are composed
 protocol tests, not a component-delete recording or live-cloud verification.
 
-Current managed groups and their descendants still need lifecycle bindings and
-controller absence checks. Annotation history, additional component configuration
-and independent workbook/web-test lifecycles remain outside this completed child
-binding step; none are inferred empty from these seven native collections.
+Annotation history, additional component configuration and independent
+workbook/web-test lifecycles remain outside these seven collections; none are
+inferred empty from their native indexes.
+
+## Component deletion and current managed group
+
+The registered component action uses the original `Components_Delete` API and
+its synchronous empty 200/204 contract. It performs no invented conditional
+write or LRO polling. Seven child kinds and incoming component/workspace AMPLS
+associations are independent prerequisites. The current managed group, workspace
+and registered native descendants are delegated impacts. Shared workspaces,
+detached old groups, linked storage and private-link scopes remain independent.
+
+Preflight verifies the frozen component, group ownership, complete membership,
+private configuration, protection and subscription locks before DELETE. Native
+child and workspace discovery is repeated; forward/reverse AMPLS indexes must
+be empty. Separate inventory-generation
+and semantic configuration digests allow only the expected ETag/backlink changes
+following reviewed unlink steps. Native bodies never enter group snapshot or
+receipt evidence; credential-keyed digests retain otherwise redacted changes.
+
+A successful component DELETE does not prove that Azure removed its managed
+group. Wait/readback checks the component, group and every known reviewed member;
+an absent group is the authority for unknown contained kinds. Partial, denied,
+asynchronous or identity-changing reads cannot establish absence. The final
+checks repeat to detect resources reappearing while residuals are read. A private
+receipt binds the complete reviewed request across serialization/restart. If the
+component is already absent, execution skips DELETE and still waits for residuals.
+There is no direct managed-workspace DELETE or automatic group-cleanup fallback.
+
+`TestApplicationInsightsComponentManagedDeletion` exercises native inventory,
+SQLite projection, application graph rebuilding, real planning, all 13 distinct
+child DELETEs, component DELETE and persisted receipt readback. The AMPLS variant
+adds two independent unlinks and preserves the shared scope. Native-tree tests
+include VM extensions omitted from the ARM root index, duplicate index/child
+entries, redacted configuration drift, delayed known-resource absence and an
+unknown kind discovered through broad inventory. Other tests cover shared,
+foreign and detached workspaces, locks, retention, malformed responses, receipt
+substitution and resource replacement during readback. These are composed
+protocol tests using unchanged published component/child/AMPLS bodies where
+available. They are not an independent managed-workspace emulator or live-cloud
+run. The earlier Topaz test covers transport only.
 
 ## Monitor private-link lifecycle
 
@@ -305,8 +341,8 @@ does not transfer their scope's ownership to the monitored target.
 
 The native source spells component reverse fields `PrivateLinkScopedResources`,
 `ResourceId` and `ScopeId`, and uses camel case for workspaces/DCEs. `scopeId` is
-an immutable identifier, not an ARM parent path. Component cleanup is still
-pending its own resource adapters. The ordering requirement is documented in
+an immutable identifier, not an ARM parent path. Component cleanup applies the
+same unlink requirement to its current managed workspace. The ordering requirement is documented in
 [Microsoft's AMPLS configuration guide](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls).
 
 `TestMonitorPrivateLinkNativeLifecycle` composes the three unchanged official

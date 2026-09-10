@@ -57,10 +57,9 @@ func TestApplicationInsightsComponentNativeChildPlan(t *testing.T) {
 		}
 		seen[binding.ManagedAssetID] = true
 	}
-	// The production component remains read-only until its separate workspace
-	// deletion driver is complete. Exercise the actual solver's future root
-	// ordering here without advertising that unfinished action in the catalog.
-	values[0].Capabilities = append(values[0].Capabilities, asset.CapabilityActionable)
+	if !values[0].Capabilities.Has(asset.CapabilityActionable) {
+		t.Fatal("registered component action missing")
+	}
 	input := plan.Input{Assets: values, Relationships: result.Relationships, LifecycleBindings: result.Bindings, ResolvedAssetIDs: []asset.AssetID{parent.ID}}
 	planned, err := plan.Solve(input)
 	if err != nil || len(planned.Blockers) != 0 || len(planned.Steps) != 14 || planned.Steps[len(planned.Steps)-1].AssetID != parent.ID {

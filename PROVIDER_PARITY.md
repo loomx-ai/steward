@@ -1882,3 +1882,48 @@ background evidence only, not acceptance evidence for this work.
   Managed-group descendant bindings, component deletion/residual checks,
   annotation coverage and remaining service families still require work. The
   29 missing mapped Azure roots and all eight acceptance criteria remain open.
+
+### Azure Application Insights component and managed-workspace deletion
+
+- The component now resolves a registered native deletion driver. Its seven
+  child kinds remain separate prerequisites, as do AMPLS associations targeting
+  the component or current managed workspace. Current managed groups, workspaces
+  and known recursive product descendants contribute reviewed delegated impacts.
+  Shared workspaces, detached old groups, storage targets and AMPLS scopes stay
+  independent. Nested managed controllers with unmodeled external groups block
+  inventory instead of receiving an unsupported deletion guarantee.
+- Complete native child/workspace discovery is repeated before deletion. Frozen
+  private configuration and ownership, native protection, subscription locks and
+  every reviewed prerequisite's exact absence are required. Separate lifecycle
+  and inventory-generation digests tolerate expected ETag/backlink changes after
+  reviewed AMPLS removal without ignoring other private configuration changes.
+- The original component API has synchronous empty 200/204 responses. Its driver
+  rejects invented asynchronous completion and persists a credential-bound
+  receipt containing the reviewed resource/prerequisite/impact identities. After
+  serialization and driver reconstruction, native readback still requires the
+  component, managed group and every known member to be absent. Unknown contained
+  kinds use group absence. Residual group/workspace/VM/extension resources remain
+  pending; changed identities or invalid responses fail verification. An already
+  absent component does not bypass residual checks or trigger another DELETE.
+- Actual native inventory, SQLite projection, application graph rebuilding and
+  real planning produce 13 child steps followed by component deletion. The AMPLS
+  variant adds two independent unlinks and preserves the shared scope. Further
+  tests cover native descendants omitted from the ARM root index, duplicate
+  index/child entries, broad-inventory unknown kinds, private drift, managed
+  retention, shared/foreign/detached workspaces, locks, replacement during
+  readback and receipt substitution. Original example bodies are unchanged;
+  group ownership and lifecycle transitions are composed protocol data. No new
+  independent emulator or real-cloud lifecycle run is claimed.
+- Full Go tests and vet passed (Azure 151.214s; GCP cached). Application Insights,
+  AMPLS, AKS and Monitor workspace race checks passed (55.189s); additional managed
+  retention/nested-controller race tests passed (4.110s). Five offline catalog
+  refresh tests, deterministic generation and catalog executability checks passed.
+  Bilingual documentation validation passed for 40 chapters and 10 screenshots.
+- Azure has 369 rules and 343 cleanup bindings (342 DELETEs and one Batch node
+  removal POST), with 1,188 operations from 154 root and 49 reference documents.
+  The generated catalog SHA-256 is
+  `0c72863393a6c58bfdce302f2315f393fea93937d8529ddccfb6a4d20911467a`.
+  Automatic cleanup of a group left by Azure policy/locks, annotation history,
+  other component configuration, independent web tests/workbooks and remaining
+  service families are unfinished. The 29 missing mapped Azure roots and all
+  eight provider acceptance criteria remain open.
