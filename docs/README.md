@@ -1,6 +1,6 @@
 # Steward documentation
 
-The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). This repository owns its content and screenshots. The shared `loomx-ai/docs` repository builds and publishes the documentation site independently of the company website.
+The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). This repository owns its content and screenshots. LoomX maintains the documentation site and handles its build and publication.
 
 ## Edit the guide
 
@@ -19,15 +19,7 @@ The public guide is at [loomx.ai/steward/docs](https://loomx.ai/steward/docs). T
 
 Run `node docs/check.mjs` before submitting a change. CI checks navigation, translation completeness, relative links, and screenshot integrity.
 
-To preview the full site from a sibling checkout of `loomx-ai/docs`:
-
-```sh
-cd ../docs
-npm ci
-DOCS_PREVIEW=1 DOCS_SOURCES='{"steward":"../steward"}' npm run dev
-```
-
-Open `http://127.0.0.1:4321/steward/docs/latest/en/` or replace `en` with `zh`. Local overrides are preview-only and cannot be published through the production deploy command. See the shared site's README for release and rollback procedures.
+Submit documentation changes as a pull request to this repository after running the check above. You can use GitHub's Markdown preview to review text and basic formatting; site-specific components may render differently on the published site. Full-site preview and publication are handled by the maintainers and do not require contributors to access any other repository.
 
 ## Screenshots
 
