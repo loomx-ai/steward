@@ -296,78 +296,83 @@ func TestMonitorIncomingBatchDetectsNewSourceDuringRead(t *testing.T) {
 }
 
 func TestMonitorTargetManagedGroupInternalAndExternalRules(t *testing.T) {
-	for _, mode := range []string{"internal", "external-unindexed", "external-forged-impact"} {
-		t.Run(mode, func(t *testing.T) {
-			f := newMonitorInventoryFixture(t, monitorActivityAlertType)
-			group := "/subscriptions/" + testSubscription + "/resourcegroups/custom-nodes"
-			for _, raw := range f.objects {
-				object(raw["properties"])["scopes"] = []any{group}
-				object(raw["properties"])["actions"] = map[string]any{"actionGroups": []any{}}
-			}
-			s, r, values, id := monitorManagedScenario(t, f)
-			members, err := r.ClusterLifecycle(t.Context(), "connection")
-			if err != nil {
-				t.Fatal(err)
-			}
-			membership, err := members.Contribute(t.Context(), "scope", values)
-			if err != nil {
-				t.Fatal(err)
-			}
-			services, err := r.ServiceLifecycle(t.Context(), "connection")
-			if err != nil {
-				t.Fatal(err)
-			}
-			references, err := services.Contribute(t.Context(), "scope", values)
-			if err != nil || len(references.Unresolved)+len(membership.Unresolved) != 0 {
-				t.Fatal("native internal Monitor graph failed", references, err)
-			}
-			planned, err := plan.Solve(plan.Input{Assets: values, ResolvedAssetIDs: []asset.AssetID{values[0].ID}, Relationships: append(membership.Relationships, references.Relationships...), LifecycleBindings: membership.Bindings})
-			if err != nil || len(planned.Blockers) != 0 || len(planned.Steps) != 1 {
-				t.Fatal("internal rule acquired an independent deletion", planned, err)
-			}
-			request := servicePlanRequest(planned, values, values[0])
-			request.IdempotencyKey = "delete-aks"
-			if mode != "internal" {
-				payload, _ := json.Marshal(f.objects[id])
-				var external map[string]any
-				json.Unmarshal(payload, &external)
-				external["id"] = strings.Replace(id, "/custom-nodes/", "/outside-group/", 1)
-				externalID := f.addRelated(t, external)
-				if mode == "external-forged-impact" {
-					source := f.asset(t, externalID)
-					source.Identity.Partition = values[0].Identity.Partition
-					request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{Asset: source, ControllerID: request.Asset.ID, Delete: true})
+	for _, destination := range []string{"group", "controller"} {
+		for _, mode := range []string{"internal", "external-unindexed", "external-forged-impact"} {
+			t.Run(destination+"/"+mode, func(t *testing.T) {
+				f := newMonitorInventoryFixture(t, monitorActivityAlertType)
+				group := "/subscriptions/" + testSubscription + "/resourcegroups/custom-nodes"
+				if destination == "controller" {
+					group = strings.ToLower(text(newAKSScenario().cluster["id"]))
 				}
-			}
-			driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
-			if err != nil {
-				t.Fatal(err)
-			}
-			result, err := driver.Execute(t.Context(), request)
-			if mode != "internal" {
-				if err == nil || s.deletes != 0 || len(f.deletes) != 0 {
-					t.Fatal("unindexed/outside rule acquired managed-group ownership", result, err)
+				for _, raw := range f.objects {
+					object(raw["properties"])["scopes"] = []any{group}
+					object(raw["properties"])["actions"] = map[string]any{"actionGroups": []any{}}
 				}
-				return
-			}
-			if err != nil || s.deletes != 1 || len(f.deletes) != 0 {
-				t.Fatal("reviewed internal rule prevented native group deletion", result, err)
-			}
-			s.clusterGone, s.groupGone = true, true
-			encoded, _ := json.Marshal(request)
-			json.Unmarshal(encoded, &request)
-			driver, err = r.ResolveAction(t.Context(), "connection", request.Asset)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if wait, err := driver.Wait(t.Context(), request, result); err != nil || wait.Done {
-				t.Fatal("native group absence hid its surviving internal rule", wait, err)
-			}
-			delete(f.objects, id)
-			if wait, err := driver.Wait(t.Context(), request, result); err != nil || !wait.Done {
-				t.Fatal("native internal-rule absence did not finish group recovery", wait, err)
-			}
-		})
+				s, r, values, id := monitorManagedScenario(t, f)
+				members, err := r.ClusterLifecycle(t.Context(), "connection")
+				if err != nil {
+					t.Fatal(err)
+				}
+				membership, err := members.Contribute(t.Context(), "scope", values)
+				if err != nil {
+					t.Fatal(err)
+				}
+				services, err := r.ServiceLifecycle(t.Context(), "connection")
+				if err != nil {
+					t.Fatal(err)
+				}
+				references, err := services.Contribute(t.Context(), "scope", values)
+				if err != nil || len(references.Unresolved)+len(membership.Unresolved) != 0 {
+					t.Fatal("native internal Monitor graph failed", references, err)
+				}
+				planned, err := plan.Solve(plan.Input{Assets: values, ResolvedAssetIDs: []asset.AssetID{values[0].ID}, Relationships: append(membership.Relationships, references.Relationships...), LifecycleBindings: membership.Bindings})
+				if err != nil || len(planned.Blockers) != 0 || len(planned.Steps) != 1 {
+					t.Fatal("internal rule acquired an independent deletion", planned, err)
+				}
+				request := servicePlanRequest(planned, values, values[0])
+				request.IdempotencyKey = "delete-aks"
+				if mode != "internal" {
+					payload, _ := json.Marshal(f.objects[id])
+					var external map[string]any
+					json.Unmarshal(payload, &external)
+					external["id"] = strings.Replace(id, "/custom-nodes/", "/outside-group/", 1)
+					externalID := f.addRelated(t, external)
+					if mode == "external-forged-impact" {
+						source := f.asset(t, externalID)
+						source.Identity.Partition = values[0].Identity.Partition
+						request.LifecycleImpacts = append(request.LifecycleImpacts, contracts.ActionImpact{Asset: source, ControllerID: request.Asset.ID, Delete: true})
+					}
+				}
+				driver, err := r.ResolveAction(t.Context(), "connection", request.Asset)
+				if err != nil {
+					t.Fatal(err)
+				}
+				result, err := driver.Execute(t.Context(), request)
+				if mode != "internal" {
+					if err == nil || s.deletes != 0 || len(f.deletes) != 0 {
+						t.Fatal("unindexed/outside rule acquired managed-group ownership", result, err)
+					}
+					return
+				}
+				if err != nil || s.deletes != 1 || len(f.deletes) != 0 {
+					t.Fatal("reviewed internal rule prevented native group deletion", result, err)
+				}
+				s.clusterGone, s.groupGone = true, true
+				encoded, _ := json.Marshal(request)
+				json.Unmarshal(encoded, &request)
+				driver, err = r.ResolveAction(t.Context(), "connection", request.Asset)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if wait, err := driver.Wait(t.Context(), request, result); err != nil || wait.Done {
+					t.Fatal("native group absence hid its surviving internal rule", wait, err)
+				}
+				delete(f.objects, id)
+				if wait, err := driver.Wait(t.Context(), request, result); err != nil || !wait.Done {
+					t.Fatal("native internal-rule absence did not finish group recovery", wait, err)
+				}
+			})
+		}
 	}
 }
 

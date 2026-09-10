@@ -317,3 +317,70 @@ func TestRequiredDeletionCanBeCoveredOnlyByDeclaredCommonCascade(t *testing.T) {
 		})
 	}
 }
+
+func TestRequiredDeletionControllerCoversOnlyReviewedPrerequisite(t *testing.T) {
+	for _, mode := range []string{"cascade", "undeclared", "wrong-controller", "retained", "protected", "inferred", "malformed", "unowned", "foreign", "direct", "controller-unselected"} {
+		t.Run(mode, func(t *testing.T) {
+			member := binding("controller", "rule", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			member.DirectCleanupAllowed = true
+			member.Evidence = map[string]any{graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true, graph.LifecycleEvidenceControllerDeleteGuaranteed: true}
+			relation := requiredDeletion("controller", "rule")
+			relation.Evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+			relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"controller": true}
+			input := plan.Input{Assets: []asset.Asset{prerequisiteAsset("controller"), prerequisiteAsset("rule")}, ResolvedAssetIDs: []asset.AssetID{"controller"}, LifecycleBindings: []graph.LifecycleBinding{member}, Relationships: []graph.Relationship{relation}}
+			switch mode {
+			case "undeclared":
+				delete(relation.Evidence, graph.RelationshipEvidenceDeletionCascadeControllers)
+			case "wrong-controller":
+				relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"another": true}
+			case "retained":
+				input.RequestOptions = map[asset.AssetID]map[string]any{"controller": {"retain_resources": []string{"rule"}}}
+			case "protected":
+				input.Protections = []plan.ProtectionPolicy{{AssetID: "rule", Protected: true}}
+			case "inferred":
+				input.LifecycleBindings[0].Authority = graph.AuthorityInferred
+			case "malformed":
+				relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"controller": "true"}
+			case "unowned":
+				input.LifecycleBindings = nil
+			case "foreign":
+				input.Assets[1].Identity.ConnectionID = "another"
+			case "direct":
+				input.LifecycleBindings[0].CleanupPolicy = graph.CleanupDirect
+			case "controller-unselected":
+				input.ResolvedAssetIDs = []asset.AssetID{"rule"}
+			}
+			// The declaration and ownership must retain their meaning in a stored
+			// graph as well as in memory; no inferred bool or typed-map shortcut.
+			encoded, err := json.Marshal(input)
+			if err != nil || json.Unmarshal(encoded, &input) != nil {
+				t.Fatal("invalid recovered graph", err)
+			}
+			result, err := plan.Solve(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			switch mode {
+			case "cascade":
+				if len(result.Blockers) != 0 || len(result.Steps) != 1 || result.Steps[0].AssetID != "controller" || len(result.ImpactItems) != 1 || result.ImpactItems[0].Expected != plan.ExpectedDelegatedDelete {
+					t.Fatalf("controller cascade lost its reviewed prerequisite: %+v", result)
+				}
+				if required, err := plan.RequiredDeletions(result.Steps[0]); err != nil || len(required) != 0 {
+					t.Fatal("controller cascade gained a self prerequisite", required, err)
+				}
+			case "direct":
+				if len(result.Blockers) != 0 || len(result.Steps) != 2 || result.Steps[0].AssetID != "rule" || result.Steps[1].AssetID != "controller" {
+					t.Fatalf("independent prerequisite lost its order: %+v", result)
+				}
+			case "controller-unselected":
+				if len(result.Blockers) != 0 || len(result.Steps) != 1 || result.Steps[0].AssetID != "rule" {
+					t.Fatalf("unselected controller acquired a delete: %+v", result)
+				}
+			default:
+				if len(result.Blockers) == 0 {
+					t.Fatal("declaration bypassed prerequisite selection or authority")
+				}
+			}
+		})
+	}
+}

@@ -80,8 +80,9 @@ const (
 	// alone must not expand the user's selection to delete it automatically.
 	RelationshipEvidenceAutomaticSelection = "automatic_selection"
 	// Named native controllers can remove a reference and its target together.
-	// This applies only when both are already reviewed delegated deletes of the
-	// same controller action; it never selects another controller implicitly.
+	// Both must already be reviewed deletes of the same controller action. The
+	// prerequisite must be a delegated member; its destination may be the
+	// controller itself. This never selects another controller implicitly.
 	RelationshipEvidenceDeletionCascadeControllers = "deletion_cascade_controllers"
 	RelationshipEvidenceAuthority                  = "authority"
 	DeletionOrderTargetBeforeSource                = "target_before_source"

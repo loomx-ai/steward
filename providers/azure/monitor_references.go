@@ -210,7 +210,7 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 				if controller.Identity.Provider != parent.Identity.Provider || controller.Identity.ConnectionID != parent.Identity.ConnectionID || controller.Identity.Partition != parent.Identity.Partition {
 					continue
 				}
-				if group, ok := c.monitorControllerGroup(controller); ok && inResourceGroup(parent.Identity.NativeID, group) && inResourceGroup(target.Identity.NativeID, group) {
+				if group, ok := c.monitorControllerGroup(controller); ok && inResourceGroup(parent.Identity.NativeID, group) && (target.ID == controller.ID || inResourceGroup(target.Identity.NativeID, group)) {
 					controllers[string(controller.ID)] = true
 				}
 			}
@@ -224,8 +224,9 @@ func (c *client) contributeMonitorReferences(ctx context.Context, parent asset.A
 				graph.RelationshipEvidenceAuthority:          graph.AuthorityAuthoritative,
 				graph.RelationshipEvidenceDeletionOrder:      graph.DeletionOrderTargetBeforeSource,
 				// This declares sufficient native deletion semantics only. The
-				// solver still requires independently verified ownership of both
-				// members by the same selected controller and applies retention.
+				// solver still requires verified ownership of the referencing
+				// member and deletion of its destination by the same selected
+				// controller, with ordinary protection and retention checks.
 				graph.RelationshipEvidenceDeletionCascadeControllers: controllers,
 				"resource_type": kind, "instance_id": id,
 			},

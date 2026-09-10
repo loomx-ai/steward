@@ -49,11 +49,14 @@ and cancellation. SQLite scan-worker tests persist these references, rebuild
 the graph, independently delete the Action Group and recover its native result.
 Receiver resources remain untouched.
 
-These are native-source, protocol and application integration tests, not an
-independent emulator or live-cloud run. Existing non-Monitor destination drivers
-and managed-resource-group composition still need integration with the Monitor
-dependency guards. In particular, an unresolved receiver's destination identity
-must remain protected even after its namespace/workspace disappears.
+The existing non-Monitor ARM destination drivers now share these incoming guards.
+After namespace/workspace absence, matching still uses the frozen ARM name or
+authenticated workspace customer GUID; JSON recovery and foreign-tenant/scope
+scenarios verify that absence cannot erase a reference or acquire a local target.
+Managed-group tests repeat receiver resolution for reviewed members before
+deletion and during residual readback. Complete native discovery of omitted group
+members and global Runbook webhook mapping remain open. These are native-source,
+protocol and application integration tests, not an emulator or live-cloud run.
 
 Additional reference: Microsoft's [ITSM receiver example](https://learn.microsoft.com/en-us/powershell/module/az.monitor/new-azactiongroupitsmreceiverobject?view=azps-15.5.0)
 retains the same compound workspace selector as the native specification example.

@@ -229,72 +229,77 @@ func TestMonitorManagedReceiverResolution(t *testing.T) {
 }
 
 func TestMonitorApplicationInsightsManagedGroup(t *testing.T) {
-	for _, mode := range []string{"delayed", "private-change"} {
-		t.Run(mode, func(t *testing.T) {
-			f := newInsightsComponentFixture(t)
-			clear(f.children)
-			m := newMonitorInventoryFixture(t, monitorActionGroupType)
-			oldID := slices.Sorted(maps.Keys(m.objects))[0]
-			raw := m.objects[oldID]
-			id := f.managedID + "/providers/" + strings.ToLower(m.kind) + "/" + last(oldID)
-			raw["id"], raw["name"] = id, last(id)
-			clear(m.objects)
-			m.objects[id] = raw
-			m.groups = f.groups
-			f.members[id] = raw
-			f.response = func(req *http.Request) (*http.Response, bool) {
-				path := strings.ToLower(req.URL.Path)
-				if path == "/subscriptions/"+testSubscription+"/resources" {
-					return jsonResponse(200, map[string]any{"value": []any{raw}}, nil), true
+	for _, kind := range []string{monitorActionGroupType, insightsWebTestType} {
+		for _, mode := range []string{"delayed", "private-change"} {
+			t.Run(last(kind)+"/"+mode, func(t *testing.T) {
+				f := newInsightsComponentFixture(t)
+				clear(f.children)
+				m := newMonitorInventoryFixture(t, kind)
+				oldID := slices.Sorted(maps.Keys(m.objects))[0]
+				raw := m.objects[oldID]
+				if kind == insightsWebTestType {
+					raw["tags"] = map[string]any{"hidden-link:" + f.parentID: "Resource"}
 				}
-				_, _, _, err := monitorResourceID(path)
-				monitor := err == nil
-				for _, kind := range monitorInventoryKinds() {
-					monitor = monitor || strings.HasSuffix(path, "/providers/"+strings.ToLower(kind))
-				}
-				if monitor {
-					response, err := m.runtime.transport.RoundTrip(req)
-					if err != nil {
-						t.Fatal(err)
+				id := f.managedID + "/providers/" + strings.ToLower(m.kind) + "/" + last(oldID)
+				raw["id"], raw["name"] = id, last(id)
+				clear(m.objects)
+				m.objects[id] = raw
+				m.groups = f.groups
+				f.members[id] = raw
+				f.response = func(req *http.Request) (*http.Response, bool) {
+					path := strings.ToLower(req.URL.Path)
+					if path == "/subscriptions/"+testSubscription+"/resources" {
+						return jsonResponse(200, map[string]any{"value": []any{raw}}, nil), true
 					}
-					return response, true
+					_, _, _, err := monitorResourceID(path)
+					monitor := err == nil
+					for _, kind := range monitorInventoryKinds() {
+						monitor = monitor || strings.HasSuffix(path, "/providers/"+strings.ToLower(kind))
+					}
+					if monitor {
+						response, err := m.runtime.transport.RoundTrip(req)
+						if err != nil {
+							t.Fatal(err)
+						}
+						return response, true
+					}
+					return nil, false
 				}
-				return nil, false
-			}
-			request, planned, _ := insightsComponentPlan(t, f, m.kind)
-			if len(planned.Steps) != 1 || len(request.LifecycleImpacts) != 3 || len(request.PrerequisiteDeletions) != 0 {
-				t.Fatal("Monitor lost native managed-workspace delegation", planned, request)
-			}
-			driver, err := f.runtime.ResolveAction(t.Context(), "connection", request.Asset)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if mode == "private-change" {
-				changeManagedMonitor(m.kind, raw)
-				if _, err := driver.Execute(t.Context(), request); err == nil || len(f.deletes)+len(m.deletes) != 0 {
-					t.Fatal("changed Monitor reached component deletion", err)
+				request, planned, _ := insightsComponentPlan(t, f, m.kind)
+				if len(planned.Steps) != 1 || len(request.LifecycleImpacts) != 3 || len(request.PrerequisiteDeletions) != 0 {
+					t.Fatal("Monitor lost native managed-workspace delegation", planned, request)
 				}
-				return
-			}
-			result, err := driver.Execute(t.Context(), request)
-			if err != nil || len(f.deletes) != 1 || len(m.deletes) != 0 {
-				t.Fatal("component managed-group deletion failed", result, err)
-			}
-			encoded, _ := json.Marshal(request)
-			if json.Unmarshal(encoded, &request) != nil {
-				t.Fatal("invalid recovered component request")
-			}
-			driver, err = f.runtime.ResolveAction(t.Context(), "connection", request.Asset)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if wait, err := driver.Wait(t.Context(), request, result); err != nil || wait.Done {
-				t.Fatal("component/group absence hid live Monitor member", wait, err)
-			}
-			delete(m.objects, id)
-			if wait, err := driver.Wait(t.Context(), request, result); err != nil || !wait.Done {
-				t.Fatal("managed Monitor residual absence failed", wait, err)
-			}
-		})
+				driver, err := f.runtime.ResolveAction(t.Context(), "connection", request.Asset)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if mode == "private-change" {
+					changeManagedMonitor(m.kind, raw)
+					if _, err := driver.Execute(t.Context(), request); err == nil || len(f.deletes)+len(m.deletes) != 0 {
+						t.Fatal("changed Monitor reached component deletion", err)
+					}
+					return
+				}
+				result, err := driver.Execute(t.Context(), request)
+				if err != nil || len(f.deletes) != 1 || len(m.deletes) != 0 {
+					t.Fatal("component managed-group deletion failed", result, err)
+				}
+				encoded, _ := json.Marshal(request)
+				if json.Unmarshal(encoded, &request) != nil {
+					t.Fatal("invalid recovered component request")
+				}
+				driver, err = f.runtime.ResolveAction(t.Context(), "connection", request.Asset)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if wait, err := driver.Wait(t.Context(), request, result); err != nil || wait.Done {
+					t.Fatal("component/group absence hid live Monitor member", wait, err)
+				}
+				delete(m.objects, id)
+				if wait, err := driver.Wait(t.Context(), request, result); err != nil || !wait.Done {
+					t.Fatal("managed Monitor residual absence failed", wait, err)
+				}
+			})
+		}
 	}
 }

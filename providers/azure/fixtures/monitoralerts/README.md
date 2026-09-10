@@ -142,6 +142,21 @@ Event Hub namespace/name and ITSM workspace selectors now resolve through
 complete native indexes; Function and non-global Runbook child references are
 also recorded. The [receiver evidence](../monitorreceivers/README.md) retains
 the additional native examples, source discrepancies and verification. Global
-Runbook webhook mapping, managed-group composition and integration with existing
-non-Monitor target drivers remain open. These are protocol and application
-integration tests, not emulator or live-cloud runs.
+Runbook webhook mapping and native discovery of omitted managed-group members
+remain open. These are protocol and application integration tests, not emulator
+or live-cloud runs.
+
+Incoming checks now cover all registered ARM action families, including reviewed
+deleting impacts and unindexed sources. Two batched native observations reject
+changed references without multiplying source LISTs by the number of targets.
+Original Monitor prerequisites and the complete request remain authenticated
+through native operation recovery. Tests retain the existing Batch, Stream
+Analytics, Grafana and retention operation protocols under these shared checks.
+
+Native group ownership can cover a Monitor reference to another member or to
+the selected controller itself. AKS and SQLite-backed Application Insights
+scenarios verify a single controller DELETE, private configuration changes,
+outside-group blockers and individual residual GETs after JSON recovery. A
+provider cascade declaration does not supply ownership, bypass protection or
+retention, or automatically select an owning controller. Core plan tests check
+those boundaries independently of the Azure fixtures.

@@ -149,9 +149,10 @@ func Solve(input Input) (Result, error) {
 			}
 			targetStepID := deleting[target.ID]
 			controllers, _ := relationship.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers].(map[string]any)
-			if targetStepID == sourceStepID && controllers[string(steps[sourceStepID].AssetID)] == true && steps[sourceStepID].AssetID != source.ID && steps[sourceStepID].AssetID != target.ID {
+			if targetStepID == sourceStepID && controllers[string(steps[sourceStepID].AssetID)] == true && steps[sourceStepID].AssetID != target.ID {
 				// The provider explicitly declares this native cascade sufficient.
-				// Both frozen impacts and all ordinary protections still apply.
+				// The source can be the controller itself, but its prerequisite
+				// must be a reviewed delegated impact. All protections still apply.
 				continue
 			}
 			if targetStepID == "" && !selected[target.ID] {

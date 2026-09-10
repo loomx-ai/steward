@@ -2358,3 +2358,31 @@ background evidence only, not acceptance evidence for this work.
   controllers, global Runbook webhook mapping, remaining provider families and
   all eight acceptance criteria remain open. Counts are unchanged at 1,224
   operations, 383 types/specs and 357 cleanup bindings.
+
+### Azure Monitor references to their managed controller
+
+- A provider-declared native cascade can now satisfy a prerequisite that refers
+  directly to the selected controller. The prerequisite must still be a reviewed
+  delegated member of that same action. The declaration neither grants ownership
+  nor selects a controller; direct prerequisites keep their separate order.
+- Core tests preserve this behavior after JSON graph recovery and reject missing
+  ownership, inferred authority, malformed declarations, foreign connections,
+  retained or protected members and an unselected controller. The existing
+  same-controller member-to-member case is unchanged.
+- Native AKS tests cover rules referencing the group or controller, outside-group
+  unindexed references, forged impacts and delayed member absence. SQLite-backed
+  Application Insights tests include a managed Web Test with its native hidden
+  component link; only the component receives DELETE, and recovery waits for the
+  Web Test's native absence. Private test-content changes block mutation.
+- The initial focused core/native tests passed (core 0.173s, Azure 1.465s), full
+  Go tests passed (Azure 173.388s, GCP 165.544s), and repository-wide vet passed.
+  A broad API Management/CDN race selection exhausted the default ten-minute
+  package timeout during notification-index tests without a reported data race.
+  The narrower cascade/prerequisite regression run passed (Azure 126.073s), and
+  core required-deletion plus managed Monitor race tests passed separately
+  (core 1.274s, cleanup 4.639s, Azure 18.296s). Those final race runs also included
+  the subsequent native-member discovery work under development.
+- Counts remain 1,224 operations, 383 types/specs and 357 cleanup bindings. Native
+  group-member discovery, global Runbook webhook mapping, remaining service
+  families and all eight acceptance criteria remain open at this checkpoint.
+  No independent emulator or real-cloud verification was performed.
