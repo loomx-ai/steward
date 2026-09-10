@@ -79,10 +79,16 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	operationID := operationLocation(result.header)
 	if operationID != "" {
 		validate := c.validateURL
-		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.DocumentDB.") {
-			u, _ := url.Parse(request.URL)
+		u, _ := url.Parse(request.URL)
+		_, kind, _ := parseID(u.Path)
+		if isCosmosType(kind) {
 			validate = func(endpoint string) error {
 				return validateCosmosOperationURL(c.subscription, u.Path, operation.Call.Version, endpoint)
+			}
+		}
+		if isMongoClusterType(kind) {
+			validate = func(endpoint string) error {
+				return validateMongoClusterOperationURL(c.subscription, "", operation.Call.Version, endpoint)
 			}
 		}
 		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.Dashboard.") && grafanaGlobalOperation(operationID) {

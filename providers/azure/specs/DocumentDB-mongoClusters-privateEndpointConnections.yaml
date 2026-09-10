@@ -2,32 +2,32 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.DocumentDB/databaseAccounts/privateEndpointConnections
+  nativeType: Microsoft.DocumentDB/mongoClusters/privateEndpointConnections
   class: network.private_endpoint_connection
 presentation:
   displayNames:
-    en-US: Cosmos DB private endpoint connection
-    zh-CN: Cosmos DB 专用终结点连接
+    en-US: DocumentDB private endpoint connection
+    zh-CN: DocumentDB 专用终结点连接
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
-  kind: global
+  kind: region
 discovery:
   source: product-api
   list:
-    operation: Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount
+    operation: Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByMongoCluster
     parameters:
       subscriptionId: scope.subscription
       resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
-      accountName: parent.normalized.arm_parameters.accountName
+      mongoClusterName: parent.normalized.arm_parameters.mongoClusterName
     itemsPath: value
     identityPath: id
   detail:
-    operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get
+    operation: Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Get
     itemsPath: $
     identityPath: id
   parent:
     source: product-api
-    nativeType: Microsoft.DocumentDB/databaseAccounts
+    nativeType: Microsoft.DocumentDB/mongoClusters
 fields:
   name:
     path: name
@@ -44,22 +44,25 @@ fields:
   tags:
     path: tags
     type: object
+  privateLinkServiceConnectionState:
+    path: privateLinkServiceConnectionState
+    type: object
 extensions:
   hook: azure.resource
 relationships:
 - type: uses
-  targetType: Microsoft.DocumentDB/databaseAccounts
-  targetIdPath: refs_microsoft_documentdb_databaseaccounts
+  targetType: Microsoft.DocumentDB/mongoClusters
+  targetIdPath: refs_microsoft_documentdb_mongoclusters
 - type: uses
   targetType: Microsoft.Network/privateEndpoints
   targetIdPath: refs_microsoft_network_privateendpoints
 actions:
   delete:
-    operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Delete
+    operation: Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get
+      operation: Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Get
       itemsPath: $
       identityPath: id

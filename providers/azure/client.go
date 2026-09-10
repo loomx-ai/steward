@@ -204,7 +204,7 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 	}
 	u, _ := url.Parse(endpoint)
 	query := u.Query()
-	if strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") || strings.Contains(strings.ToLower(u.Path), "/asyncoperations/") || strings.Contains(strings.ToLower(u.Path), "/operationsstatus/") || strings.Contains(strings.ToLower(u.Path), "/operationresults/") {
+	if strings.Contains(strings.ToLower(u.Path), "/operationstatuses/") || strings.Contains(strings.ToLower(u.Path), "/asyncoperations/") || strings.Contains(strings.ToLower(u.Path), "/operationsstatus/") || strings.Contains(strings.ToLower(u.Path), "/operationresults/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusterazureasyncoperation/") || strings.Contains(strings.ToLower(u.Path), "/mongoclusteroperationresults/") {
 		// ProviderHub may return signed polling URLs. Keep them privately for
 		// resume, and exclude their signing material from API logs.
 		query = url.Values{"api-version": query["api-version"]}

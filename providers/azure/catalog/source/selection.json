@@ -1125,6 +1125,25 @@
         "TableResources_ListTableRoleDefinitions",
         "TableResources_ListTables"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json",
+      "operations": [
+        "FirewallRules_Delete",
+        "FirewallRules_Get",
+        "FirewallRules_ListByMongoCluster",
+        "MongoClusters_Delete",
+        "MongoClusters_Get",
+        "MongoClusters_List",
+        "MongoClusters_ListByResourceGroup",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_ListByMongoCluster",
+        "Replicas_ListByParent",
+        "Users_Delete",
+        "Users_Get",
+        "Users_ListByMongoCluster"
+      ]
     }
   ],
   "resource_types": [
@@ -5107,13 +5126,13 @@
       ],
       "collection": "privateEndpointConnections",
       "read_operations": [
-        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Get"
+        "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get"
       ],
       "list_operations": [
         "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount"
       ],
       "delete_operations": [
-        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Delete"
+        "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Delete"
       ]
     },
     {
@@ -5412,6 +5431,83 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.DocumentDB.FleetspaceAccount_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters",
+      "display_name": "Azure DocumentDB cluster",
+      "class": "data.database_cluster",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "mongoClusters",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoClusters_Get",
+        "Azure.Microsoft.DocumentDB.Replicas_ListByParent"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.MongoClusters_List"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoClusters_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/firewallRules",
+      "display_name": "DocumentDB firewall rule",
+      "class": "network.firewall_rule",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "firewallRules",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.FirewallRules_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.FirewallRules_ListByMongoCluster"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.FirewallRules_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/privateEndpointConnections",
+      "display_name": "DocumentDB private endpoint connection",
+      "class": "network.private_endpoint_connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByMongoCluster"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/users",
+      "display_name": "DocumentDB Microsoft Entra user",
+      "class": "security.database_user",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "users",
+      "read_operations": [
+        "Azure.Microsoft.DocumentDB.Users_Get"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DocumentDB.Users_ListByMongoCluster"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DocumentDB.Users_Delete"
       ]
     }
   ]

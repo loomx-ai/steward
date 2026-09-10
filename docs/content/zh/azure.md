@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 227 类资源，其中 211 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 231 类资源，其中 215 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -40,6 +40,7 @@ Steward 识别 227 类资源，其中 211 类具有原生删除操作，执行�
 | SQL | 逻辑服务器、数据库、弹性池 | 服务器清理包含已审查的数据库与弹性池；禁止独立删除 `master` |
 | PostgreSQL / MySQL | Flexible Server | 支持 |
 | Cosmos DB | NoSQL、MongoDB、Cassandra、Gremlin、Table 账号及数据库/容器，角色、服务、笔记本与私有连接；托管 Cassandra 和 Fleet | 先删除已审查的子资源及共享依赖；客户端加密密钥和内置角色随控制资源清理；Fleet 解绑保留账号 |
+| Azure DocumentDB | MongoDB 兼容集群及副本、防火墙规则、专用终结点连接与 Microsoft Entra 用户 | 先删除已审查的副本及子资源，再删除源集群或父资源；单独删除副本会保留源集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
 | Redis | 经典缓存、访问策略/分配、防火墙规则、复制连接、维护计划和专用终结点连接；Enterprise / Managed Redis 集群、数据库、访问分配和专用终结点连接 | 先删除已审查的子资源，再删除父资源；经典复制先解除链接；健康的主动复制组检查全部成员 |
@@ -64,6 +65,8 @@ Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的
 ## 清理保护
 
 - **Cosmos DB**：删除账号、数据库、容器或表会删除其中的数据。计划先审查必要子资源、角色依赖和 Fleet 关联。保留内置角色或客户端加密密钥，需要保留其账号或数据库。删除 Fleet 会解除账号关联，账号本身保留；账号的保护设置或管理锁会阻止解绑。删除前检查吞吐量、备份迁移、配置与子资源成员关系。读取权限须覆盖适用 API 的子集合、吞吐量配置、祖先资源和订阅内引用该账号的 Fleet 关联。账号显示在全局清单，托管 Cassandra 数据中心使用实际部署地域。不提供恢复或永久清除操作。参见[资源模型](https://learn.microsoft.com/en-us/azure/cosmos-db/resource-model)及 [MongoDB 角色](https://learn.microsoft.com/en-us/azure/cosmos-db/mongodb/role-based-access-control)。
+
+- **Azure DocumentDB（原 MongoDB vCore）**：删除集群会删除其中的数据。副本是独立集群，计划先删除已审查的副本，再删除源集群；单独删除副本会保留源集群。防火墙规则、专用终结点连接与 Microsoft Entra 用户注册各有独立删除步骤。保留或保护必要资源会阻止父资源删除。删除集群用户注册不会删除 Entra 身份，也不会执行额外的数据库角色清理。读取权限须覆盖集群、完整子资源与副本清单，以及各引用副本。配置变化或正在进行的复制拓扑变更需要重新扫描或稍后重试。不提供备份恢复或永久清除操作。参见[副本删除规则](https://learn.microsoft.com/en-us/azure/documentdb/troubleshoot-replication)和[身份验证](https://learn.microsoft.com/en-us/azure/documentdb/how-to-connect-role-based-access-control)。
 
 - **Foundry / Cognitive Services**：账号清理先删除模型部署及已审查的依赖，再软删除账号，不提供永久清除。删除能力主机会使依赖的代理状态无法访问；线程、文件与遗留存储数据尚未逐项清理。连接盘点包含数据存储连接；Key Vault 连接需等待账号及项目中的其他连接全部删除。对于声明需要或已启用托管专用终结点的连接，在其影响范围建模完成前会阻止清理。保留必要子资源会阻止控制资源删除；共享承诺计划与引用的存储资源仍独立保留。托管网络清理包含其规则，并验证专用终结点目标的保护状态；部分派生规则需随网络清理。旧账号类型的接口适用范围、托管连接的专用终结点影响及外部边界关联生命周期仍未完成。参见[恢复与计费行为](https://learn.microsoft.com/en-us/azure/ai-services/recover-purge-resources)。
 - **Azure AI Search**：删除服务会删除其搜索内容。专用终结点连接与共享私有链接须先审查并删除；保留其中任一资源或边界配置视图都会阻止服务删除。共享私有链接删除还会修改目标资源的连接元数据，因此须检查目标原生读取、继承锁和保护状态。目标数据资源独立保留。Cosmos DB 账号已有原生目标检查；尚未建模的目标、跨订阅链接以及外部边界关联生命周期仍未完成。读取权限须覆盖全部子集合及各链接目标。参见[共享私有链接删除行为](https://learn.microsoft.com/en-us/azure/search/troubleshoot-shared-private-link-resources)。

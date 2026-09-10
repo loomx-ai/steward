@@ -197,3 +197,21 @@ func TestAzureDNSNativeOperationNameCollisions(t *testing.T) {
 	}
 	assertRESTDeterministic(t, "azure-openapi", asset.ProviderAzure, source)
 }
+
+func TestAzureNativeOperationTitlesWithSpaces(t *testing.T) {
+	source := bytes.ReplaceAll(restFixture(t, "azure-dns-records"), []byte(`"title": "DnsManagementClient"`), []byte(`"title": "Cosmos DB"`))
+	c, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	op := requireRESTOperation(t, c, "Azure.Microsoft.Network.Cosmos_DB.RecordSets_Get")
+	if op.Name != "RecordSets_Get" || !strings.Contains(op.Path, "/dnsZones/") {
+		t.Fatal("document-title qualification changed native operation metadata")
+	}
+	// Normalization cannot silently combine two different API documents.
+	duplicate := bytes.ReplaceAll(source, []byte(`"title": "PrivateDnsManagementClient"`), []byte(`"title": "Cosmos_DB"`))
+	if _, err := ImportOfficial("azure-openapi", asset.ProviderAzure, "fixture", duplicate); err == nil {
+		t.Fatal("normalized document-title collision was accepted")
+	}
+	assertRESTDeterministic(t, "azure-openapi", asset.ProviderAzure, source)
+}

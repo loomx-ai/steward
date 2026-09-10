@@ -29,6 +29,7 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	mongoClusterType:               append(mongoClusterOwnedKinds(), mongoClusterType),
 	cognitiveType:                  {cognitiveHostType, cognitivePlanType, cognitiveConnectionType, cognitiveDeploymentType, cognitiveEncryptionType, cognitiveNetworkType, cognitivePECType, cognitiveProjectType, cognitiveBlocklistType, cognitivePolicyType, cognitiveToolType, cognitiveTopicType, cognitiveAssociationType},
 	cognitiveProjectType:           {cognitiveApplicationType, cognitiveProjectHostType, cognitiveProjectConnectionType, cognitiveToolType},
 	cognitiveApplicationType:       {cognitiveAgentType},

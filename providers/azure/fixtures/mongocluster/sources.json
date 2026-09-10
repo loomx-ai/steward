@@ -1,0 +1,100 @@
+[
+  {
+    "file": "MongoClusters_Delete.json",
+    "operation": "MongoClusters_Delete",
+    "label": "Deletes a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_Delete.json",
+    "source_sha256": "63d038b3e769e869deacbe9c9fbced4fa06644b50de3f6c3d8800d0ee4f61f42"
+  },
+  {
+    "file": "MongoClusters_FirewallRuleDelete.json",
+    "operation": "FirewallRules_Delete",
+    "label": "Deletes a firewall rule on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_FirewallRuleDelete.json",
+    "source_sha256": "9780561cc52af269d1048e838b8ba29de05baa7082449759f2ece1007deb564e"
+  },
+  {
+    "file": "MongoClusters_FirewallRuleGet.json",
+    "operation": "FirewallRules_Get",
+    "label": "Gets a firewall rule on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_FirewallRuleGet.json",
+    "source_sha256": "57c465230bfab683882f5051bb2dc1f513af2f4c1592c3ae38b3ecc7ed8c674b"
+  },
+  {
+    "file": "MongoClusters_FirewallRuleList.json",
+    "operation": "FirewallRules_ListByMongoCluster",
+    "label": "List the firewall rules on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_FirewallRuleList.json",
+    "source_sha256": "89360836d0cb2989923fc3e64598236fe3d4dbedddc2323f1a48985b43f1d521"
+  },
+  {
+    "file": "MongoClusters_Get.json",
+    "operation": "MongoClusters_Get",
+    "label": "Gets a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_Get.json",
+    "source_sha256": "628ff8ebaf6e3730cc0580a3ca342099856e1fb1245ab43c12a8e96b1e510207"
+  },
+  {
+    "file": "MongoClusters_List.json",
+    "operation": "MongoClusters_List",
+    "label": "Lists the Mongo Cluster resources in a subscription.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_List.json",
+    "source_sha256": "7de96833f7d72b4a0c485e38506bcfd3c7ad6101f3d5a345150cf8c1ad236db3"
+  },
+  {
+    "file": "MongoClusters_ListByResourceGroup.json",
+    "operation": "MongoClusters_ListByResourceGroup",
+    "label": "Lists the Mongo Cluster resources in a resource group.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_ListByResourceGroup.json",
+    "source_sha256": "8a2a89aa7582e719d0df2f5f137d0ac3674f5546d924e281e58fb1982f356c61"
+  },
+  {
+    "file": "MongoClusters_PrivateEndpointConnectionDelete.json",
+    "operation": "PrivateEndpointConnections_Delete",
+    "label": "Delete a private endpoint connection on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_PrivateEndpointConnectionDelete.json",
+    "source_sha256": "ac4f0aa9faa482e816025de73951de815e52ac198662dbe077ce06509c2da77b"
+  },
+  {
+    "file": "MongoClusters_PrivateEndpointConnectionGet.json",
+    "operation": "PrivateEndpointConnections_Get",
+    "label": "Get a private endpoint connection on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_PrivateEndpointConnectionGet.json",
+    "source_sha256": "30276d02b481e88dc4cf0834923127466ec3b6db359308f783007f049dc2d5d4"
+  },
+  {
+    "file": "MongoClusters_PrivateEndpointConnectionList.json",
+    "operation": "PrivateEndpointConnections_ListByMongoCluster",
+    "label": "Lists the private endpoint connection resources on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_PrivateEndpointConnectionList.json",
+    "source_sha256": "df82cc030e3ba7715c29b62b40fc19a799f25b845987428d4789f751c73a323b"
+  },
+  {
+    "file": "MongoClusters_ReplicaList.json",
+    "operation": "Replicas_ListByParent",
+    "label": "List the replicas linked to a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_ReplicaList.json",
+    "source_sha256": "10cfeee599ec8cbc1201d858771629a72acac07849ba1e2e77e22f18fe7466ca"
+  },
+  {
+    "file": "MongoClusters_UserDelete.json",
+    "operation": "Users_Delete",
+    "label": "Deletes a user on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_UserDelete.json",
+    "source_sha256": "65c4c578782edb6d7578fbee719c64939d3699d04d6dd2eb53611a1d75157a35"
+  },
+  {
+    "file": "MongoClusters_UserGet.json",
+    "operation": "Users_Get",
+    "label": "Gets a user on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_UserGet.json",
+    "source_sha256": "b9e36b1cec23ceec958f2518a39b65dbcf468877f5d9e20c695ed860eee65316"
+  },
+  {
+    "file": "MongoClusters_UserList.json",
+    "operation": "Users_ListByMongoCluster",
+    "label": "List the users on a Mongo Cluster resource.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/examples/MongoClusters_UserList.json",
+    "source_sha256": "ceb3a35ed2dad44527343d070862e7b022583ab89cdacb958f833ab664c8357e"
+  }
+]

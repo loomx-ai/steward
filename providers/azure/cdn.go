@@ -372,6 +372,11 @@ func (c *client) servicePrivateIncarnation(planned asset.Asset, live map[string]
 			return serviceDenied("cosmos_private_configuration_changed")
 		}
 	}
+	if isMongoClusterType(planned.Identity.NativeType) {
+		if expected := text(planned.Normalized["_mongocluster_private_configuration"]); expected == "" || expected != c.privateConfiguration(mongoClusterSnapshot(planned.Identity.NativeType, live)) {
+			return serviceDenied("mongocluster_private_configuration_changed")
+		}
+	}
 	if isCognitiveType(planned.Identity.NativeType) {
 		if expected := text(planned.Normalized["_cognitive_private_configuration"]); expected == "" || expected != c.privateConfiguration(cognitiveSnapshot(planned.Identity.NativeType, live)) {
 			return serviceDenied("cognitive_private_configuration_changed")
@@ -435,6 +440,9 @@ func cdnPrerequisite(parent, referrer asset.Asset) bool {
 // on successful and pending polls. Preserve all other errors, including a failed
 // status carrying that placeholder. This exception is specific to this API.
 func (a *action) operationError(res response) error {
+	if isMongoClusterType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
+		return fmt.Errorf("incomplete DocumentDB operation response")
+	}
 	if isCosmosType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
 		return fmt.Errorf("incomplete Cosmos DB operation response")
 	}

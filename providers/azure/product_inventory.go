@@ -28,20 +28,21 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
-	CosmosAncestors             map[string]any `json:"cosmos_ancestors,omitempty"`
-	CosmosThroughput            string         `json:"cosmos_throughput,omitempty"`
-	ParentWireID                string         `json:"parent_wire_id,omitempty"`
-	CognitiveAncestors          map[string]any `json:"cognitive_ancestors,omitempty"`
-	CognitiveNativeLocation     string         `json:"cognitive_native_location,omitempty"`
-	RedisRootConfiguration      string         `json:"redis_root_configuration,omitempty"`
-	AppServiceRootConfiguration string         `json:"app_service_root_configuration,omitempty"`
-	CDNProfileConfiguration     string         `json:"cdn_profile_configuration,omitempty"`
-	MonitoredResource           string         `json:"monitored_resource,omitempty"`
-	Endpoint                    string         `json:"endpoint"`
-	ParentID                    string         `json:"parent_id,omitempty"`
-	ParentType                  string         `json:"parent_type,omitempty"`
-	Generation                  string         `json:"generation,omitempty"`
-	Location                    string         `json:"location,omitempty"`
+	MongoClusterPrivateConfiguration string         `json:"mongocluster_private_configuration,omitempty"`
+	CosmosAncestors                  map[string]any `json:"cosmos_ancestors,omitempty"`
+	CosmosThroughput                 string         `json:"cosmos_throughput,omitempty"`
+	ParentWireID                     string         `json:"parent_wire_id,omitempty"`
+	CognitiveAncestors               map[string]any `json:"cognitive_ancestors,omitempty"`
+	CognitiveNativeLocation          string         `json:"cognitive_native_location,omitempty"`
+	RedisRootConfiguration           string         `json:"redis_root_configuration,omitempty"`
+	AppServiceRootConfiguration      string         `json:"app_service_root_configuration,omitempty"`
+	CDNProfileConfiguration          string         `json:"cdn_profile_configuration,omitempty"`
+	MonitoredResource                string         `json:"monitored_resource,omitempty"`
+	Endpoint                         string         `json:"endpoint"`
+	ParentID                         string         `json:"parent_id,omitempty"`
+	ParentType                       string         `json:"parent_type,omitempty"`
+	Generation                       string         `json:"generation,omitempty"`
+	Location                         string         `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -147,12 +148,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned an invalid or duplicate identity")
 		}
 		seen[id] = true
+		hash := fmt.Sprintf("%x", sha256.Sum256([]byte(id)))
+		if slices.Contains(cursor.Resources, hash) {
+			return contracts.InventoryBatch{}, fmt.Errorf("Azure product list returned a duplicate resource across pages")
+		}
+		cursor.Resources = append(cursor.Resources, hash)
 		if isCosmosType(kind.NativeType) {
-			hash := fmt.Sprintf("%x", sha256.Sum256([]byte(id)))
-			if slices.Contains(cursor.Resources, hash) {
-				return contracts.InventoryBatch{}, fmt.Errorf("Cosmos DB list returned a duplicate or case-only resource identity")
-			}
-			cursor.Resources = append(cursor.Resources, hash)
 			if target.ParentID != "" && !cosmosSameWireID(cosmosParentID(wireID), target.ParentWireID) {
 				return contracts.InventoryBatch{}, fmt.Errorf("Cosmos DB child changed its parent name")
 			}
@@ -318,6 +319,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isMongoClusterType(kind) {
+		values = append(values, mongoClusterConfiguration(kind, raw))
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCosmosType(kind) {
 		values = append(values, cosmosConfiguration(kind, raw), cosmosCreation(raw))
 	}
@@ -394,6 +398,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
 		return err
+	}
+	if target.MongoClusterPrivateConfiguration != "" && target.MongoClusterPrivateConfiguration != c.privateConfiguration(mongoClusterSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
 	}
 	if target.CognitiveAncestors != nil {
 		if target.CognitiveNativeLocation != cognitiveNativeLocation(current.data) {
@@ -549,6 +556,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				target.ParentWireID = text(parent.Normalized["_cosmos_wire_id"])
 				target.CosmosAncestors = object(parent.Normalized["_cosmos_ancestors"])
 				target.CosmosThroughput = text(parent.Normalized["_cosmos_throughput_binding"])
+			}
+			if isMongoClusterType(parent.NativeType) {
+				target.MongoClusterPrivateConfiguration = text(parent.Normalized["_mongocluster_private_configuration"])
 			}
 			if isCognitiveType(parent.NativeType) {
 				target.CognitiveAncestors = object(parent.Normalized["_cognitive_ancestors"])

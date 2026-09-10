@@ -1274,3 +1274,68 @@ background evidence only, not acceptance evidence for this work.
   establish independent ARM verification. No live Azure mutation is claimed.
   Separate MongoDB vCore/PostgreSQL, backup/restore inventory, data-plane parity,
   remaining mapped services and full provider/application acceptance stay open.
+
+### Azure DocumentDB / MongoDB vCore progress (acceptance remains open)
+
+- Added four native 2026-06-01 rules: clusters, firewall rules, private endpoint
+  connections and Microsoft Entra user registrations. Fourteen selected
+  operations include subscription/resource-group cluster lists and the native
+  replica index. This management API is independent of Cosmos DB accounts.
+- Replica membership must agree between the source index and the replica's
+  current source/role. Reviewed replica deletion precedes source deletion through
+  a required dependency, without declaring exclusive ownership. Deleting a
+  replica preserves its source, including a protected source. Independent proxy
+  resources have reviewed DELETE prerequisites; restored clusters and original
+  creation parameters do not establish current replica ownership.
+- Complete native child walks, private-endpoint indexes, live detail reads and
+  repeated parent/configuration checks reject membership changes, foreign or
+  duplicate resources, partial results and unreadable dependencies. Private
+  configuration binds the resource and its parent while preserving large JSON
+  integers. Backup restore clocks and operation states are handled separately.
+  Cross-page duplicate detection now applies to all Azure product inventory,
+  retaining the existing 128 KiB bounded cursor behavior.
+- Fourteen unchanged Microsoft examples and their source hashes are retained;
+  ten GET/LIST bodies validate against the original schemas offline. The native
+  CLI's `User` principal type disagrees with Swagger's `user`; an explicit test
+  requires that discrepancy and validates only a separate in-memory correction.
+  Snapshot extraction now retains discriminator subtypes across known source
+  documents, including transitive inheritance and later-discovered dependencies.
+  A catalog-name collision with Cosmos private-endpoint GET/DELETE is resolved
+  with official document titles; original operation names and schemas remain
+  unchanged. The importer rejects normalized-title collisions deterministically.
+- Ten official CLI extension recordings at commit
+  `0349eb646d3225db5fd677114e200efdfd11e3f8` provide 483 selected response bodies.
+  Fourteen native 202 DELETE/LRO cases use the exact selected API version and
+  retain signed polling URLs through restart. Original GETs are replayed as
+  preflight state; supporting empty indexes, resource groups, locks and final
+  GET 404s are explicitly synthetic. The [DocumentDB evidence](providers/azure/fixtures/mongocluster/README.md)
+  describes the source boundary and principal-type mismatch.
+- Boundary tests cover independent/protected replicas, direct-child retention,
+  unreviewed and unreadable prerequisites, parent/private/configuration changes,
+  duplicate and invalid replica indexes, pagination changes, pending topology,
+  partial DELETE/poll/readback responses, denied reads, failed/canceled/expired
+  operations and changed operation/request identities before HTTP. Native LRO
+  success cannot complete while the resource still exists. Signed polling
+  material and database connection credentials do not enter logs or inventory.
+- Azure now has 231 rules, 215 native DELETE bindings and 720 operations from
+  85 root plus 44 reference documents. A fresh four-document snapshot matched;
+  all 126 previous source documents stayed unchanged apart from additive shared
+  definitions, and all 227 earlier types were retained. Two Cosmos operation
+  binding names acquired their required document-title qualifier.
+  Generated catalog SHA-256:
+  `58852fc6fe9a6feca7697accfbc49a22aea0f3aea376b2f6c864600ed49964de`.
+  CLI fixture SHA-256:
+  `905ce84dd7b00e5738b3933901cd86a586f009e697b8a7d0003ca3df14bfad95`.
+  Two independent extractions reproduced the CLI hash; repeated generation was
+  deterministic. Full Go tests, Azure/catalog/contracts/plan/cleanup race tests,
+  `go vet`, seven Azure/GCP snapshot-import tests, four SDK metadata tests and the
+  bilingual documentation check passed.
+- Reviewed Floci-AZ 0.12.0 source at commit
+  `f6f0292880c6eb4e7fe3d658185030665f98166e` has no matching DocumentDB management
+  routes in 331 Java files. Its MongoDB sidecar and Amazon DocumentDB emulator
+  are not Azure ARM acceptance. No live cloud mutation was performed. Databases,
+  documents, local MongoDB users, extra role/ownership cleanup, retained backups,
+  restore and purge are not separate implemented lifecycles. Native DELETE has
+  no conditional ETag parameter; concurrent final read/delete races and
+  independent end-to-end cloud acceptance remain open, alongside the rest of
+  GCP/Azure behavior parity. No provider acceptance box is closed by this batch.

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "7b4d8e97362aab0960bdb4cf06fb1d87a0e51dc1aa8d96bd7493f8fd94efeb39",
+    "checksum": "368cbd03087ddf8b94c975e96c3a955756c0d2da8028f809cb545991c629e192",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "f65234507d2c6963c3b0a478f1a10b89a8e8bcae9c6f7664777d443ae3b9d0e1",
+  "content_checksum": "60af3e6bd9924c5f90b65503940763aa9a47fe39bb837873a4c5fdb434a44ae7",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -22311,6 +22311,156 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
     },
     {
+      "id": "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.DocumentDB",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "Cosmos DB database account name.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 3,
+            "name": "accountName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-03-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-03-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "accountName": {
+            "description": "Cosmos DB database account name.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 3,
+            "name": "accountName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-03-15"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A private endpoint connection",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-03-15",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.DocumentDB.DatabaseAccounts_Delete",
       "name": "DatabaseAccounts_Delete",
       "service": "Microsoft.DocumentDB",
@@ -22554,6 +22704,246 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.FirewallRules_Delete",
+      "name": "FirewallRules_Delete",
+      "service": "Microsoft.DocumentDB",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "firewallRuleName": {
+            "description": "The name of the mongo cluster firewall rule.",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "firewallRuleName",
+            "pattern": "^[a-zA-Z0-9][-_.a-zA-Z0-9]*",
+            "required": true,
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.FirewallRules_Get",
+      "name": "FirewallRules_Get",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "firewallRuleName": {
+            "description": "The name of the mongo cluster firewall rule.",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "firewallRuleName",
+            "pattern": "^[a-zA-Z0-9][-_.a-zA-Z0-9]*",
+            "required": true,
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Represents a mongo cluster firewall rule.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/FirewallRuleProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules/{firewallRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.FirewallRules_ListByMongoCluster",
+      "name": "FirewallRules_ListByMongoCluster",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a FirewallRule list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FirewallRule items on this page",
+            "items": {
+              "$ref": "#/definitions/FirewallRule"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/firewallRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
     },
     {
       "id": "Azure.Microsoft.DocumentDB.Fleet_Delete",
@@ -24473,6 +24863,436 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.DocumentDB",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection associated with the Azure resource.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection associated with the Azure resource.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Concrete proxy resource types can be created by aliasing this type using a specific property type.",
+        "properties": {
+          "properties": {
+            "$ref": "../../../../../../common-types/resource-management/v5/privatelinks.json#/definitions/PrivateEndpointConnectionProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusters_Delete",
+      "name": "MongoClusters_Delete",
+      "service": "Microsoft.DocumentDB",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusters_Get",
+      "name": "MongoClusters_Get",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Represents a mongo cluster resource.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v5/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/MongoClusterProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusters_List",
+      "name": "MongoClusters_List",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/mongoClusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a MongoCluster list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The MongoCluster items on this page",
+            "items": {
+              "$ref": "#/definitions/MongoCluster"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/mongoClusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.MongoClusters_ListByResourceGroup",
+      "name": "MongoClusters_ListByResourceGroup",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a MongoCluster list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The MongoCluster items on this page",
+            "items": {
+              "$ref": "#/definitions/MongoCluster"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
     },
     {
       "id": "Azure.Microsoft.DocumentDB.MongoDBResources_DeleteMongoDBCollection",
@@ -26399,156 +27219,6 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
     },
     {
-      "id": "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Delete",
-      "name": "PrivateEndpointConnections_Delete",
-      "service": "Microsoft.DocumentDB",
-      "method": "DELETE",
-      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
-      "destructive": true,
-      "input_schema": {
-        "properties": {
-          "accountName": {
-            "description": "Cosmos DB database account name.",
-            "in": "path",
-            "maxLength": 50,
-            "minLength": 3,
-            "name": "accountName",
-            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
-            "required": true,
-            "type": "string"
-          },
-          "api-version": {
-            "enum": [
-              "2026-03-15"
-            ],
-            "in": "query",
-            "type": "string"
-          },
-          "privateEndpointConnectionName": {
-            "description": "The name of the private endpoint connection.",
-            "in": "path",
-            "name": "privateEndpointConnectionName",
-            "required": true,
-            "type": "string"
-          },
-          "resourceGroupName": {
-            "description": "The name of the resource group. The name is case insensitive.",
-            "in": "path",
-            "maxLength": 90,
-            "minLength": 1,
-            "name": "resourceGroupName",
-            "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
-          },
-          "subscriptionId": {
-            "description": "The ID of the target subscription. The value must be an UUID.",
-            "format": "uuid",
-            "in": "path",
-            "name": "subscriptionId",
-            "required": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "call": {
-        "product": "Microsoft.DocumentDB",
-        "version": "2026-03-15",
-        "style": "azure-rest",
-        "protocol": "HTTPS",
-        "method": "DELETE",
-        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
-        "endpoint": "https://management.azure.com",
-        "body_type": "json",
-        "parameter_position": "query"
-      },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
-    },
-    {
-      "id": "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Get",
-      "name": "PrivateEndpointConnections_Get",
-      "service": "Microsoft.DocumentDB",
-      "method": "GET",
-      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
-      "destructive": false,
-      "input_schema": {
-        "properties": {
-          "accountName": {
-            "description": "Cosmos DB database account name.",
-            "in": "path",
-            "maxLength": 50,
-            "minLength": 3,
-            "name": "accountName",
-            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
-            "required": true,
-            "type": "string"
-          },
-          "api-version": {
-            "enum": [
-              "2026-03-15"
-            ],
-            "in": "query",
-            "type": "string"
-          },
-          "privateEndpointConnectionName": {
-            "description": "The name of the private endpoint connection.",
-            "in": "path",
-            "name": "privateEndpointConnectionName",
-            "required": true,
-            "type": "string"
-          },
-          "resourceGroupName": {
-            "description": "The name of the resource group. The name is case insensitive.",
-            "in": "path",
-            "maxLength": 90,
-            "minLength": 1,
-            "name": "resourceGroupName",
-            "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
-          },
-          "subscriptionId": {
-            "description": "The ID of the target subscription. The value must be an UUID.",
-            "format": "uuid",
-            "in": "path",
-            "name": "subscriptionId",
-            "required": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "output_schema": {
-        "allOf": [
-          {
-            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
-          }
-        ],
-        "description": "A private endpoint connection",
-        "properties": {
-          "properties": {
-            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
-            "description": "Resource properties.",
-            "x-ms-client-flatten": true
-          }
-        },
-        "type": "object"
-      },
-      "call": {
-        "product": "Microsoft.DocumentDB",
-        "version": "2026-03-15",
-        "style": "azure-rest",
-        "protocol": "HTTPS",
-        "method": "GET",
-        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/privateEndpointConnections/{privateEndpointConnectionName}",
-        "endpoint": "https://management.azure.com",
-        "body_type": "json",
-        "parameter_position": "query"
-      },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
-    },
-    {
       "id": "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount",
       "name": "PrivateEndpointConnections_ListByDatabaseAccount",
       "service": "Microsoft.DocumentDB",
@@ -26627,6 +27297,176 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByMongoCluster",
+      "name": "PrivateEndpointConnections_ListByMongoCluster",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a PrivateEndpointConnectionResource list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The PrivateEndpointConnectionResource items on this page",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnectionResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.Replicas_ListByParent",
+      "name": "Replicas_ListByParent",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/replicas",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Replica list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Replica items on this page",
+            "items": {
+              "$ref": "#/definitions/Replica"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/replicas",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
     },
     {
       "id": "Azure.Microsoft.DocumentDB.Service_Delete",
@@ -29940,6 +30780,246 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cosmos-db/resource-manager/Microsoft.DocumentDB/DocumentDB/stable/2026-03-15/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.Users_Delete",
+      "name": "Users_Delete",
+      "service": "Microsoft.DocumentDB",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users/{userName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "userName": {
+            "description": "The name of the mongo cluster user.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "userName",
+            "pattern": "^[a-zA-Z0-9\\-]*",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users/{userName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.Users_Get",
+      "name": "Users_Get",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users/{userName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "userName": {
+            "description": "The name of the mongo cluster user.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "userName",
+            "pattern": "^[a-zA-Z0-9\\-]*",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Represents a Mongo cluster user.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/UserProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users/{userName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
+    },
+    {
+      "id": "Azure.Microsoft.DocumentDB.Users_ListByMongoCluster",
+      "name": "Users_ListByMongoCluster",
+      "service": "Microsoft.DocumentDB",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "mongoClusterName": {
+            "description": "The name of the mongo cluster.",
+            "in": "path",
+            "maxLength": 40,
+            "minLength": 3,
+            "name": "mongoClusterName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a User list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The User items on this page",
+            "items": {
+              "$ref": "#/definitions/User"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DocumentDB",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{mongoClusterName}/users",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
     },
     {
       "id": "Azure.Microsoft.EventHub.ApplicationGroup_Delete",
@@ -59500,10 +60580,10 @@
       "rest": {
         "collection": "privateEndpointConnections",
         "read_operations": [
-          "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Get"
+          "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get"
         ],
         "delete_operations": [
-          "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_Delete"
+          "Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount"
@@ -59834,6 +60914,91 @@
         ],
         "list_operations": [
           "Azure.Microsoft.DocumentDB.FleetspaceAccount_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters",
+      "class": "data.database_cluster",
+      "display_name": "Azure DocumentDB cluster",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "mongoClusters",
+        "read_operations": [
+          "Azure.Microsoft.DocumentDB.MongoClusters_Get",
+          "Azure.Microsoft.DocumentDB.Replicas_ListByParent"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DocumentDB.MongoClusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DocumentDB.MongoClusters_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/firewallRules",
+      "class": "network.firewall_rule",
+      "display_name": "DocumentDB firewall rule",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "firewallRules",
+        "read_operations": [
+          "Azure.Microsoft.DocumentDB.FirewallRules_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DocumentDB.FirewallRules_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DocumentDB.FirewallRules_ListByMongoCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "DocumentDB private endpoint connection",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DocumentDB.MongoClusterManagementClient.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByMongoCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DocumentDB/mongoClusters/users",
+      "class": "security.database_user",
+      "display_name": "DocumentDB Microsoft Entra user",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "users",
+        "read_operations": [
+          "Azure.Microsoft.DocumentDB.Users_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DocumentDB.Users_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DocumentDB.Users_ListByMongoCluster"
         ]
       }
     },

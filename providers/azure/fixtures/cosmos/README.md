@@ -122,8 +122,9 @@ has Cosmos data handlers but no matching DocumentDB account management routes in
 its Java source. Neither is claimed as independent verification of this ARM
 implementation. No live Azure mutation was performed.
 
-Separate MongoDB vCore/PostgreSQL offerings, backup/restore inventory and individual
-data-plane documents are not covered by these rules. Account capability differences
+Azure DocumentDB (formerly MongoDB vCore) has [separate management rules](../mongocluster/README.md).
+PostgreSQL offerings, backup/restore inventory and individual data-plane documents
+are not covered by these Cosmos rules. Account capability differences
 and external endpoint effects still need live acceptance; unreadable collections
 fail closed. Native DELETE has no conditional ETag parameter, so preflight cannot
 eliminate the final read/delete race.

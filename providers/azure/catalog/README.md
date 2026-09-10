@@ -15,7 +15,8 @@ go test ./providers/azure ./internal/provider/catalog
 ```
 
 `source/swagger.json` keeps selected official operations and the transitive
-parameter/schema objects they reference. Operation and schema objects retain
+parameter/schema objects they reference, including concrete discriminator
+subtypes and their inheritance dependencies. Operation and schema objects retain
 their original `$ref` values. Each root or dependency document records its
 source URL and the SHA-256 of the complete upstream file. The importer resolves
 root parameters and response schemas from this checked-in set; missing
@@ -35,7 +36,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 227 current resource rules discover through native product List operations.
+All 231 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -47,8 +48,9 @@ resource-group location metadata.
 Product pagination binds the connection, subscription, selected scope and kind,
 bundle revision and ordered parent set. Changed parents, returned incarnation
 fields or etags require a fresh scan. Permission failures, missing collections,
-partial HTTP responses, malformed identities, foreign pages and pagination cycles
-fail the shard. Parent readback checks changes during child discovery. These are
+partial HTTP responses, malformed identities, duplicate resources across pages,
+foreign pages and pagination cycles fail the shard. Retained page/resource hashes
+share the 128 KiB cursor bound; an oversized continuation fails the scan. Parent readback checks changes during child discovery. These are
 change detectors using the fields provided by ARM, not an atomic cloud snapshot.
 Network target selection uses the native VNet/Subnet collections directly.
 
@@ -58,8 +60,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 595 operations from
-83 root documents and 42 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 720 operations from
+85 root documents and 44 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -350,3 +352,13 @@ reviews direct prerequisites and controller impacts; shared role/Fleet reference
 remain explicit, and Fleet unlinking protects retained accounts. See the
 [Cosmos evidence](../fixtures/cosmos/README.md) for 117 original examples, 386
 CLI responses, exact-version replay, schema defects and emulator limitations.
+
+
+Azure DocumentDB (formerly MongoDB vCore) adds four independent 2026-06-01
+rules and 14 operations. Native replica indexes and current source references
+produce reviewed replica-before-source prerequisites. Firewall rules, private
+endpoint connections and Microsoft Entra registrations have their own DELETEs.
+Private configuration, parent identity, pagination and resumed signed operations
+are bound separately from moving backup clocks. [DocumentDB evidence](../fixtures/mongocluster/README.md)
+contains 14 unchanged examples, 483 official CLI responses, 14 native deletion
+replays and the limits of data-plane and independent emulator verification.

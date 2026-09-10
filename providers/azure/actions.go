@@ -83,6 +83,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -137,6 +140,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.cosmosPreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.mongoClusterPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.cognitivePreflight(ctx, request.Asset, res.data); err != nil {
@@ -322,6 +328,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 		}
 	}
 	data := map[string]any{"polling": polling}
+	if isMongoClusterType(a.kind.NativeType) && operation != "" {
+		data["mongocluster_operation_binding"] = a.operationBinding(operation)
+	}
 	if isCosmosType(a.kind.NativeType) && operation != "" {
 		data["cosmos_operation_binding"] = a.cosmosOperationBinding(operation)
 	}
@@ -360,6 +369,9 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -394,6 +406,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
+		}
+		if isMongoClusterType(a.kind.NativeType) && text(result.Data["mongocluster_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("DocumentDB polling receipt does not match its resource")
 		}
 		if isCosmosType(a.kind.NativeType) && text(result.Data["cosmos_operation_binding"]) != a.cosmosOperationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("Cosmos DB polling receipt does not match its resource")
@@ -450,6 +465,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if isMongoClusterType(a.kind.NativeType) {
+		return validateMongoClusterOperationURL(a.client.subscription, a.location, a.kind.Version, endpoint)
+	}
 	if isCosmosType(a.kind.NativeType) {
 		return validateCosmosOperationURL(a.client.subscription, a.wireID, a.kind.Version, endpoint)
 	}
@@ -490,6 +508,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
 		return contracts.ReadbackResult{}, err
 	}

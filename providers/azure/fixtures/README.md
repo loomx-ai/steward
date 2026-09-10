@@ -61,3 +61,9 @@ network gaps have documented checks and provenance.
 Microsoft CLI responses. Its evidence distinguishes upstream trigger schema
 defects, case-sensitive requests, signed operation replay, synthetic final
 absence and the available emulators' data-plane boundary.
+
+[Azure DocumentDB / MongoDB vCore](mongocluster/README.md) retains 14 original
+Swagger examples and 483 responses from 10 official CLI recordings. Fourteen
+exact-version DELETE/LRO replays complement replica-order, protection, paging,
+private-configuration and synthetic final-absence checks. Its ARM surface is
+separate from Cosmos DB accounts and from MongoDB data-protocol emulators.

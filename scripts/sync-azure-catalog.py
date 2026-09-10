@@ -52,6 +52,30 @@ def fetch_source(uri):
 
 def snapshot(selection):
     originals, snapshots, fingerprints = {}, {}, {}
+    pending, derived, polymorphic = [], {}, set()
+
+    def include_polymorphic(reference):
+        queue = [reference]
+        while queue:
+            current = queue.pop()
+            if current in polymorphic:
+                continue
+            polymorphic.add(current)
+            pending.append((current, current))
+            queue.extend(derived.get(current, []))
+
+    def index_inheritance(uri, document):
+        # Swagger discriminators point from concrete types to the base through
+        # allOf. A forward-$ref walk alone silently omits those concrete schemas.
+        for name, definition in document.get("definitions", {}).items():
+            child = uri + "#/definitions/" + name.replace("~", "~0").replace("/", "~1")
+            for base in definition.get("allOf", []):
+                if "$ref" not in base:
+                    continue
+                parent = urllib.parse.urljoin(uri, base["$ref"])
+                derived.setdefault(parent, []).append(child)
+                if parent in polymorphic:
+                    include_polymorphic(child)
 
     def download(uri):
         raw = fetch_source(uri)
@@ -63,13 +87,14 @@ def snapshot(selection):
         uris = sorted({entry["source_uri"] for entry in selection["documents"]})
         for uri, original, fingerprint in executor.map(download, uris):
             originals[uri], fingerprints[uri] = original, fingerprint
+            index_inheritance(uri, original)
 
     def fetch(uri):
         if uri not in originals:
             _, originals[uri], fingerprints[uri] = download(uri)
+            index_inheritance(uri, originals[uri])
         return originals[uri]
 
-    pending = []
     for entry in selection["documents"]:
         uri = entry["source_uri"]
         document = fetch(uri)
@@ -111,6 +136,8 @@ def snapshot(selection):
         value = original[tokens[0]][tokens[1]]
         snapshots.setdefault(uri, {}).setdefault(tokens[0], {})[tokens[1]] = value
         pending.extend((uri, ref) for ref in references(value))
+        if tokens[0] == "definitions" and value.get("discriminator"):
+            include_polymorphic(absolute)
 
     roots = {entry["source_uri"] for entry in selection["documents"]}
     documents = [{"source_uri": uri, "source_sha256": fingerprints[uri], "dependency": uri not in roots, "document": snapshot}

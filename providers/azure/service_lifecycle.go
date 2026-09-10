@@ -26,6 +26,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	mongoClusterType:               append(mongoClusterOwnedKinds(), mongoClusterType),
 	cognitiveType:                  cognitiveOwnedKinds(cognitiveType),
 	cognitiveProjectType:           cognitiveOwnedKinds(cognitiveProjectType),
 	cognitiveApplicationType:       cognitiveOwnedKinds(cognitiveApplicationType),
@@ -253,6 +254,12 @@ func serviceIncarnation(planned asset.Asset, live map[string]any) error {
 		}
 		return serviceCreationIdentity(planned, live)
 	}
+	if err := mongoClusterIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isMongoClusterType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := cognitiveIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -441,7 +448,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) {
+			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -721,6 +728,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	case isCosmosType(parent.NativeType):
 		native = true // The Cosmos walk validates both complete native reads.
 		children, err = c.cosmosChildren(ctx, parent, raw)
+	case parent.NativeType == mongoClusterType:
+		native = true
+		children, err = c.mongoClusterChildren(ctx, parent, raw)
 	case isCognitiveType(parent.NativeType):
 		children, err = c.cognitiveChildren(ctx, parent, raw)
 	case parent.NativeType == searchType:
@@ -795,6 +805,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if parent.Identity.NativeType == mongoClusterType {
+		return mongoClusterReplicaPrerequisite(parent, child) || (slices.Contains(mongoClusterOwnedKinds(), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID))
+	}
 	if isCosmosType(parent.Identity.NativeType) {
 		if cosmosSharedPrerequisite(parent, child) {
 			return true

@@ -290,6 +290,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.cosmosInventory(ctx, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
+	if err := c.mongoClusterInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.cognitiveInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -590,6 +593,14 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		for _, key := range []string{"virtualnetworkrules", "delegatedmanagementsubnetid", "delegatedsubnetid", "privatelinkresourceid", "networkaclbypassresourceids"} {
 			fields[key] = true
 		}
+	}
+	if nativeType == mongoClusterType {
+		if source, err := mongoClusterSource(raw); err == nil && source != "" {
+			add(source)
+		}
+		// The CMK access identity is current configuration, not restore history.
+		key := object(object(object(raw["properties"])["encryption"])["customerManagedKeyEncryption"])
+		add(text(object(key["keyEncryptionKeyIdentity"])["userAssignedIdentityResourceId"]))
 	}
 	if isCognitiveType(nativeType) {
 		for _, key := range []string{"resourceid", "subnetarmid", "customersubnet", "serviceresourceid", "accountid", "commitmentplanid"} {

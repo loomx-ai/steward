@@ -286,6 +286,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 	// Public and private DNS use the same native RecordSets operation IDs in
 	// distinct API documents. Qualify only collisions by the official document
 	// title; retain the native operationId in Name and all transport metadata.
+	// Official titles such as "Cosmos DB" use spaces; encode those as underscores.
 	counts := map[string]int{}
 	for _, operation := range c.Operations {
 		counts[operation.ID]++
@@ -294,7 +295,7 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 	for i := range c.Operations {
 		operation := &c.Operations[i]
 		if counts[operation.ID] > 1 {
-			title := titles[operation.SourceURI]
+			title := strings.ReplaceAll(titles[operation.SourceURI], " ", "_")
 			if !titlePattern.MatchString(title) {
 				return Catalog{}, fmt.Errorf("ambiguous Azure operation %q has no usable document title", operation.Name)
 			}

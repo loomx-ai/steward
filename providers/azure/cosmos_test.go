@@ -101,7 +101,7 @@ func cosmosScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset) {
 			continue
 		}
 		op, _ := metadata.catalog.Operation(mapping.ReadOperations[0])
-		raw := cosmosExampleResource(t, strings.TrimPrefix(op.ID, "Azure.Microsoft.DocumentDB."))
+		raw := cosmosExampleResource(t, op.Name)
 		params := map[string]string{"subscriptionId": testSubscription, "resourceGroupName": "TestGroup", "accountName": "account-" + cosmosTestAPI(mapping.NativeType), "databaseName": "SalesDB", "containerName": "Orders", "keyspaceName": "sales", "tableName": "Orders", "graphName": "GraphOne", "collectionName": "Orders", "storedProcedureName": "CreateOrder", "triggerName": "ValidateOrder", "userDefinedFunctionName": "ComputeTax", "clientEncryptionKeyName": "EncryptionKey", "clusterName": "cassandra-one", "dataCenterName": "data-center-one", "fleetName": "fleet-one", "fleetspaceName": "fleetspace-one", "fleetspaceAccountName": "account-sql", "mongoRoleDefinitionId": "SalesDB.CustomReader", "mongoUserDefinitionId": "SalesDB.testUser", "roleDefinitionId": "11111111-2222-3333-4444-555555555555", "roleAssignmentId": "22222222-2222-3333-4444-555555555555"}
 		id := pattern.ReplaceAllStringFunc(op.Call.Path, func(value string) string {
 			if p := params[value[1:len(value)-1]]; p != "" {
@@ -177,7 +177,7 @@ func cosmosScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset) {
 			if strings.HasSuffix(op.Call.Path, "/throughputSettings/default") {
 				settingsID := id + "/throughputSettings/default"
 				if throughput := object(object(raw["properties"])["options"])["throughput"]; throughput != nil {
-					settings := cosmosExampleResource(t, strings.TrimPrefix(op.ID, "Azure.Microsoft.DocumentDB."))
+					settings := cosmosExampleResource(t, op.Name)
 					settings["id"], settings["type"] = settingsID, kind+"/throughputSettings"
 					resource := object(object(settings["properties"])["resource"])
 					resource["throughput"], resource["offerReplacePending"] = throughput, "false"

@@ -2,32 +2,32 @@ schema: steward.io/resource-kind
 kind: ResourceKind
 metadata:
   provider: azure
-  nativeType: Microsoft.DocumentDB/databaseAccounts/privateEndpointConnections
-  class: network.private_endpoint_connection
+  nativeType: Microsoft.DocumentDB/mongoClusters/firewallRules
+  class: network.firewall_rule
 presentation:
   displayNames:
-    en-US: Cosmos DB private endpoint connection
-    zh-CN: Cosmos DB 专用终结点连接
+    en-US: DocumentDB firewall rule
+    zh-CN: DocumentDB 防火墙规则
   consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
 scope:
-  kind: global
+  kind: region
 discovery:
   source: product-api
   list:
-    operation: Azure.Microsoft.DocumentDB.PrivateEndpointConnections_ListByDatabaseAccount
+    operation: Azure.Microsoft.DocumentDB.FirewallRules_ListByMongoCluster
     parameters:
       subscriptionId: scope.subscription
       resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
-      accountName: parent.normalized.arm_parameters.accountName
+      mongoClusterName: parent.normalized.arm_parameters.mongoClusterName
     itemsPath: value
     identityPath: id
   detail:
-    operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get
+    operation: Azure.Microsoft.DocumentDB.FirewallRules_Get
     itemsPath: $
     identityPath: id
   parent:
     source: product-api
-    nativeType: Microsoft.DocumentDB/databaseAccounts
+    nativeType: Microsoft.DocumentDB/mongoClusters
 fields:
   name:
     path: name
@@ -44,22 +44,25 @@ fields:
   tags:
     path: tags
     type: object
+  startIpAddress:
+    path: startIpAddress
+    type: string
+  endIpAddress:
+    path: endIpAddress
+    type: string
 extensions:
   hook: azure.resource
 relationships:
 - type: uses
-  targetType: Microsoft.DocumentDB/databaseAccounts
-  targetIdPath: refs_microsoft_documentdb_databaseaccounts
-- type: uses
-  targetType: Microsoft.Network/privateEndpoints
-  targetIdPath: refs_microsoft_network_privateendpoints
+  targetType: Microsoft.DocumentDB/mongoClusters
+  targetIdPath: refs_microsoft_documentdb_mongoclusters
 actions:
   delete:
-    operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Delete
+    operation: Azure.Microsoft.DocumentDB.FirewallRules_Delete
     idempotency: readback
     waiter: azure_operation
     readback: azure_absent
     read:
-      operation: Azure.Microsoft.DocumentDB.Cosmos_DB.PrivateEndpointConnections_Get
+      operation: Azure.Microsoft.DocumentDB.FirewallRules_Get
       itemsPath: $
       identityPath: id
