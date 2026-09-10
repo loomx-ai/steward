@@ -28,23 +28,24 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
-	KustoAncestors                   map[string]any `json:"kusto_ancestors,omitempty"`
-	KustoPrivateConfiguration        string         `json:"kusto_private_configuration,omitempty"`
-	MongoClusterPrivateConfiguration string         `json:"mongocluster_private_configuration,omitempty"`
-	CosmosAncestors                  map[string]any `json:"cosmos_ancestors,omitempty"`
-	CosmosThroughput                 string         `json:"cosmos_throughput,omitempty"`
-	ParentWireID                     string         `json:"parent_wire_id,omitempty"`
-	CognitiveAncestors               map[string]any `json:"cognitive_ancestors,omitempty"`
-	CognitiveNativeLocation          string         `json:"cognitive_native_location,omitempty"`
-	RedisRootConfiguration           string         `json:"redis_root_configuration,omitempty"`
-	AppServiceRootConfiguration      string         `json:"app_service_root_configuration,omitempty"`
-	CDNProfileConfiguration          string         `json:"cdn_profile_configuration,omitempty"`
-	MonitoredResource                string         `json:"monitored_resource,omitempty"`
-	Endpoint                         string         `json:"endpoint"`
-	ParentID                         string         `json:"parent_id,omitempty"`
-	ParentType                       string         `json:"parent_type,omitempty"`
-	Generation                       string         `json:"generation,omitempty"`
-	Location                         string         `json:"location,omitempty"`
+	StreamAnalyticsPrivateConfiguration string         `json:"stream_analytics_private_configuration,omitempty"`
+	KustoAncestors                      map[string]any `json:"kusto_ancestors,omitempty"`
+	KustoPrivateConfiguration           string         `json:"kusto_private_configuration,omitempty"`
+	MongoClusterPrivateConfiguration    string         `json:"mongocluster_private_configuration,omitempty"`
+	CosmosAncestors                     map[string]any `json:"cosmos_ancestors,omitempty"`
+	CosmosThroughput                    string         `json:"cosmos_throughput,omitempty"`
+	ParentWireID                        string         `json:"parent_wire_id,omitempty"`
+	CognitiveAncestors                  map[string]any `json:"cognitive_ancestors,omitempty"`
+	CognitiveNativeLocation             string         `json:"cognitive_native_location,omitempty"`
+	RedisRootConfiguration              string         `json:"redis_root_configuration,omitempty"`
+	AppServiceRootConfiguration         string         `json:"app_service_root_configuration,omitempty"`
+	CDNProfileConfiguration             string         `json:"cdn_profile_configuration,omitempty"`
+	MonitoredResource                   string         `json:"monitored_resource,omitempty"`
+	Endpoint                            string         `json:"endpoint"`
+	ParentID                            string         `json:"parent_id,omitempty"`
+	ParentType                          string         `json:"parent_type,omitempty"`
+	Generation                          string         `json:"generation,omitempty"`
+	Location                            string         `json:"location,omitempty"`
 }
 
 func (r *Runtime) productDefinition(nativeType string) (spec.ResourceKindSpec, bool) {
@@ -126,7 +127,14 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		endpoint = cursor.Next
 	}
-	values, next, provenance, err := c.listPageResult(ctx, endpoint, u.Path)
+	var values []any
+	var next string
+	var provenance response
+	if nativeType == streamAnalyticsTransformationType {
+		values, next, provenance, err = c.streamAnalyticsTransformationPage(ctx, endpoint, target.ParentID)
+	} else {
+		values, next, provenance, err = c.listPageResult(ctx, endpoint, u.Path)
+	}
 	if err != nil {
 		return contracts.InventoryBatch{}, err
 	}
@@ -164,6 +172,10 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			if err := dataCollectionTargetMembership(raw, target); err != nil {
 				return contracts.InventoryBatch{}, err
 			}
+		} else if nativeType == streamAnalyticsTransformationType {
+			if !strings.EqualFold(redisParentID(id), target.ParentID) {
+				return contracts.InventoryBatch{}, fmt.Errorf("Stream Analytics transformation belongs to another job")
+			}
 		} else if target.ParentID != "" && !strings.EqualFold(id, u.Path+"/"+last(id)) {
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product child belongs to another parent")
 		}
@@ -184,6 +196,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if isStreamAnalyticsType(kind.NativeType) {
+			if err := streamAnalyticsListedIncarnation(kind.NativeType, raw, data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		if isCosmosType(kind.NativeType) {
 			if err := cosmosListedIncarnation(kind.NativeType, raw, data); err != nil {
 				return contracts.InventoryBatch{}, err
@@ -321,6 +338,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isStreamAnalyticsType(kind) {
+		return streamAnalyticsConfiguration(kind, raw)
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isKustoType(kind) {
 		values = append(values, kustoConfiguration(kind, raw))
 	}
@@ -403,6 +423,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
 		return err
+	}
+	if target.StreamAnalyticsPrivateConfiguration != "" && target.StreamAnalyticsPrivateConfiguration != c.privateConfiguration(streamAnalyticsSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
 	}
 	if target.KustoPrivateConfiguration != "" && target.KustoPrivateConfiguration != c.privateConfiguration(kustoSnapshot(target.ParentType, current.data)) {
 		return errProductParentGenerationChanged
@@ -570,6 +593,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				target.CosmosAncestors = object(parent.Normalized["_cosmos_ancestors"])
 				target.CosmosThroughput = text(parent.Normalized["_cosmos_throughput_binding"])
 			}
+			if isStreamAnalyticsType(parent.NativeType) {
+				target.StreamAnalyticsPrivateConfiguration = text(parent.Normalized["_stream_analytics_private_configuration"])
+			}
 			if isKustoType(parent.NativeType) {
 				target.KustoAncestors = object(parent.Normalized["_kusto_ancestors"])
 				target.KustoPrivateConfiguration = text(parent.Normalized["_kusto_private_configuration"])
@@ -626,7 +652,8 @@ func (c *client) bindProductList(api *spec.ProductAPISpec, location string, pare
 		return catalog.RESTRequest{}, err
 	}
 	operation, ok := metadata.catalog.Operation(api.Operation)
-	if !ok || operation.Call.Method != "GET" || api.ItemsPath != "value" || api.IdentityPath != "id" {
+	singleton := api.Operation == "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get" && api.ItemsPath == "properties.transformation" && api.Parameters["$expand"] == "transformation"
+	if !ok || operation.Call.Method != "GET" || (api.ItemsPath != "value" && !singleton) || api.IdentityPath != "id" {
 		return catalog.RESTRequest{}, fmt.Errorf("invalid Azure native list rule")
 	}
 	parameters := map[string]any{}

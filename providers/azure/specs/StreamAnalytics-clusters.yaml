@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.StreamAnalytics/clusters
+  class: data.stream_cluster
+presentation:
+  displayNames:
+    en-US: Stream Analytics cluster
+    zh-CN: 流分析集群
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.StreamAnalytics.Clusters_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.StreamAnalytics.Clusters_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  clusterId:
+    path: clusterId
+    type: string
+  capacityAllocated:
+    path: capacityAllocated
+    type: integer
+  capacityAssigned:
+    path: capacityAssigned
+    type: integer
+extensions:
+  hook: azure.resource
+relationships: []
+actions:
+  delete:
+    operation: Azure.Microsoft.StreamAnalytics.Clusters_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.StreamAnalytics.Clusters_Get
+      itemsPath: $
+      identityPath: id

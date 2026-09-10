@@ -1,0 +1,81 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.StreamAnalytics/streamingjobs
+  class: data.stream_job
+presentation:
+  displayNames:
+    en-US: Stream Analytics job
+    zh-CN: 流分析作业
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.StreamAnalytics.StreamingJobs_List
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.StreamAnalytics.StreamingJobs_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: jobState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  jobId:
+    path: jobId
+    type: string
+  jobType:
+    path: jobType
+    type: string
+  cluster:
+    path: cluster
+    type: object
+  compatibilityLevel:
+    path: compatibilityLevel
+    type: string
+  contentStoragePolicy:
+    path: contentStoragePolicy
+    type: string
+  jobStorageAccount:
+    path: jobStorageAccount
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.StreamAnalytics/clusters
+  targetIdPath: refs_microsoft_streamanalytics_clusters
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.StreamAnalytics.StreamingJobs_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.StreamAnalytics.StreamingJobs_Get
+      itemsPath: $
+      identityPath: id

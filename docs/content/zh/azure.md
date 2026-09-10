@@ -28,7 +28,7 @@ navTitle: "Microsoft Azure"
 
 ## 盘点与清理范围
 
-Steward 识别 241 类资源，其中 225 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 248 类资源，其中 231 类具有原生删除操作，执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -42,6 +42,7 @@ Steward 识别 241 类资源，其中 225 类具有原生删除操作，执行�
 | Cosmos DB | NoSQL、MongoDB、Cassandra、Gremlin、Table 账号及数据库/容器，角色、服务、笔记本与私有连接；托管 Cassandra 和 Fleet | 先删除已审查的子资源及共享依赖；客户端加密密钥和内置角色随控制资源清理；Fleet 解绑保留账号 |
 | Azure DocumentDB | MongoDB 兼容集群及副本、防火墙规则、专用终结点连接与 Microsoft Entra 用户 | 先删除已审查的副本及子资源，再删除源集群或父资源；单独删除副本会保留源集群 |
 | Azure Data Explorer | Kusto 集群、数据库、跟随挂接、数据连接、主体、脚本与私有连接；自定义沙箱映像 | 先删除已审查的子资源及跟随挂接；只读数据库与活动映像随控制资源清理 |
+| Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
 | Redis | 经典缓存、访问策略/分配、防火墙规则、复制连接、维护计划和专用终结点连接；Enterprise / Managed Redis 集群、数据库、访问分配和专用终结点连接 | 先删除已审查的子资源，再删除父资源；经典复制先解除链接；健康的主动复制组检查全部成员 |
@@ -71,6 +72,7 @@ Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的
 
 - **Foundry / Cognitive Services**：账号清理先删除模型部署及已审查的依赖，再软删除账号，不提供永久清除。删除能力主机会使依赖的代理状态无法访问；线程、文件与遗留存储数据尚未逐项清理。连接盘点包含数据存储连接；Key Vault 连接需等待账号及项目中的其他连接全部删除。对于声明需要或已启用托管专用终结点的连接，在其影响范围建模完成前会阻止清理。保留必要子资源会阻止控制资源删除；共享承诺计划与引用的存储资源仍独立保留。托管网络清理包含其规则，并验证专用终结点目标的保护状态；部分派生规则需随网络清理。旧账号类型的接口适用范围、托管连接的专用终结点影响及外部边界关联生命周期仍未完成。参见[恢复与计费行为](https://learn.microsoft.com/en-us/azure/ai-services/recover-purge-resources)。
 - **Azure Data Explorer（Kusto）**：计划先删除已审查的数据库资源及其他必要子资源，再删除集群。源数据库或集群仍被跟随时，须先删除跟随集群中已审查的挂接；跟随集群本身保留。挂接控制其本地只读数据库视图，保留视图会阻止解绑。活动自定义映像随集群清理。托管私有终结点须校验目标配置、管理锁与保护状态；外部数据源保持独立。读取权限须覆盖全部子集合、祖先资源、跟随索引和链接目标。删除脚本不会撤销其已经执行的命令。Azure 可能将集群软删除并保留 14 天，但恢复集群不能撤销之前单独执行的数据库删除步骤。Steward 不提供恢复或跳过软删除操作。参见[跟随行为](https://learn.microsoft.com/en-us/azure/data-explorer/follower)、[脚本说明](https://learn.microsoft.com/en-us/azure/data-explorer/database-script)与[集群删除](https://learn.microsoft.com/en-us/azure/data-explorer/delete-cluster)。
+- **Stream Analytics**：删除作业会永久移除其输入输出定义、函数和查询，外部数据存储保留。转换须通过其所属作业清理；单独删除输入、输出或函数要求作业处于 Created、Stopped 或 Failed 状态。删除集群前先清理已审查的私有终结点。关联作业保持独立：须明确选中它们一同删除，或者先在 Azure 中停止并将待保留作业移出集群，再重新扫描。Steward 不会自动停止、解绑或删除未选中的作业。读取权限须覆盖全部子集合、集群作业成员、父资源和链接目标；私有终结点须检查目标配置、管理锁和保护状态。参见[作业清理](https://learn.microsoft.com/en-us/azure/stream-analytics/stream-analytics-clean-up-your-job)与[移出集群](https://learn.microsoft.com/en-us/azure/stream-analytics/manage-jobs-cluster)。
 
 - **Azure AI Search**：删除服务会删除其搜索内容。专用终结点连接与共享私有链接须先审查并删除；保留其中任一资源或边界配置视图都会阻止服务删除。共享私有链接删除还会修改目标资源的连接元数据，因此须检查目标原生读取、继承锁和保护状态。目标数据资源独立保留。Cosmos DB 账号已有原生目标检查；尚未建模的目标、跨订阅链接以及外部边界关联生命周期仍未完成。读取权限须覆盖全部子集合及各链接目标。参见[共享私有链接删除行为](https://learn.microsoft.com/en-us/azure/search/troubleshoot-shared-private-link-resources)。
 - **Redis**：删除缓存或数据库会删除其中的数据。独立子资源必须先删除，经典内置策略随缓存清理。选择经典复制的任一缓存，会将主侧共享解链接操作及可能存在的反向视图纳入审查；保留链接视图会阻止解链接。读取权限须覆盖订阅内的经典缓存及复制对端，包括其他资源组。Enterprise 主动复制会检查全部成员；后续删除仅在离组成员均返回 404 后接受更小的复制组。新增或矛盾的成员关系、不健康的链接、配置变化、锁和受保护对端都会阻止清理。退化复制组需先单独恢复，Steward 不会强制解链接。完成时还会检查存活副本不再引用删除目标。参见[经典复制](https://learn.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-geo-replication)与[主动复制](https://learn.microsoft.com/en-us/azure/redis/how-to-active-geo-replication)。

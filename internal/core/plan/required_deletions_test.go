@@ -26,6 +26,52 @@ func requiredDeletion(source, target asset.AssetID) graph.Relationship {
 	}}
 }
 
+func TestRequiredDeletionCanPreserveIndependentSelection(t *testing.T) {
+	for _, mode := range []string{"unselected", "selected", "explicitly-retained", "protected", "malformed", "default-automatic"} {
+		t.Run(mode, func(t *testing.T) {
+			relationship := requiredDeletion("source", "target")
+			relationship.Evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+			input := plan.Input{Assets: []asset.Asset{prerequisiteAsset("source"), prerequisiteAsset("target")}, ResolvedAssetIDs: []asset.AssetID{"source"}, Relationships: []graph.Relationship{relationship}}
+			if mode != "unselected" && mode != "default-automatic" {
+				input.ResolvedAssetIDs = append(input.ResolvedAssetIDs, "target")
+			}
+			switch mode {
+			case "explicitly-retained":
+				input.RequestOptions = map[asset.AssetID]map[string]any{"source": {"retain_all_resources": true}}
+			case "protected":
+				input.Protections = []plan.ProtectionPolicy{{AssetID: "target", Protected: true}}
+			case "malformed":
+				relationship.Evidence[graph.RelationshipEvidenceAutomaticSelection] = "false"
+			case "default-automatic":
+				delete(relationship.Evidence, graph.RelationshipEvidenceAutomaticSelection)
+			}
+			// The review decision must survive stored JSON, not Go-only types.
+			payload, _ := json.Marshal(input)
+			if err := json.Unmarshal(payload, &input); err != nil {
+				t.Fatal(err)
+			}
+			result, err := plan.Solve(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			allowed := mode == "selected" || mode == "default-automatic"
+			if allowed != (len(result.Blockers) == 0) {
+				t.Fatal("independent prerequisite selection", result.Blockers)
+			}
+			if mode == "unselected" && stepForAsset(result.Steps, "target").Action != "" {
+				t.Fatal("an independent resource was selected automatically")
+			}
+			if allowed {
+				step := stepForAsset(result.Steps, "source")
+				prerequisites, err := plan.RequiredDeletions(step)
+				if err != nil || len(prerequisites) != 1 || prerequisites[0].AssetID != "target" || !slices.Contains(step.DependsOn, stepForAsset(result.Steps, "target").ID) {
+					t.Fatal("selected prerequisite lost its frozen action", prerequisites, err)
+				}
+			}
+		})
+	}
+}
+
 func TestSharedRequiredDeletionDoesNotClaimMultipleOwners(t *testing.T) {
 	owner := binding("retained-owner", "configuration", graph.OwnershipExclusive, graph.CleanupDirect, 1)
 	owner.DirectCleanupAllowed = true

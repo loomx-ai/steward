@@ -169,6 +169,9 @@ func aksNativeAsset(raw map[string]any) asset.Asset {
 }
 
 func aksExternalRelation(parent, child asset.Asset) bool {
+	if streamAnalyticsClusterPrerequisite(parent, child) {
+		return false // An associated job is not owned by the cluster's group.
+	}
 	if kustoSharedPrerequisite(parent, child) {
 		return false // Group deletion does not detach an external follower.
 	}
@@ -403,6 +406,16 @@ func (a *action) managedGroupPreflight(ctx context.Context, request contracts.Ac
 		visited[id] = true
 		if err := a.client.servicePrivateIncarnation(impact.Asset, resource); err != nil {
 			return "", err
+		}
+		if isStreamAnalyticsType(kind) {
+			if err := streamAnalyticsReady(kind, resource); err != nil {
+				return "", err
+			}
+			mapping, _ := findType(kind)
+			childAction := action{client: a.client, kind: mapping, id: id}
+			if err := childAction.streamAnalyticsTargetPreflight(ctx, impact.Asset, resource); err != nil {
+				return "", err
+			}
 		}
 		if isKustoType(kind) {
 			if err := kustoReady(kind, resource); err != nil {

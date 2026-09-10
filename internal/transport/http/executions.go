@@ -227,6 +227,9 @@ func (a *API) listExecutionActions(response http.ResponseWriter, request *http.R
 	if actions == nil {
 		actions = []execution.ActionAttempt{}
 	}
+	for i, action := range actions {
+		actions[i] = execution.PublicActionAttempt(action)
+	}
 	writeJSON(response, http.StatusOK, struct {
 		Items []execution.ActionAttempt `json:"items"`
 	}{Items: actions})

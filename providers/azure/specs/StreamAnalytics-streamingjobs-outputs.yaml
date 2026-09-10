@@ -1,0 +1,104 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.StreamAnalytics/streamingjobs/outputs
+  class: data.stream_output
+presentation:
+  displayNames:
+    en-US: Stream Analytics output
+    zh-CN: 流分析输出
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.StreamAnalytics.Outputs_ListByStreamingJob
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      jobName: parent.normalized.arm_parameters.jobName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.StreamAnalytics.Outputs_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.StreamAnalytics/streamingjobs
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.StreamAnalytics/streamingjobs
+  targetIdPath: refs_microsoft_streamanalytics_streamingjobs
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts
+  targetIdPath: refs_microsoft_storage_storageaccounts
+- type: uses
+  targetType: Microsoft.Storage/storageAccounts/blobServices/containers
+  targetIdPath: refs_microsoft_storage_storageaccounts_blobservices_containers
+- type: uses
+  targetType: Microsoft.EventHub/namespaces/eventhubs
+  targetIdPath: refs_microsoft_eventhub_namespaces_eventhubs
+- type: uses
+  targetType: Microsoft.EventHub/namespaces/eventhubs/consumergroups
+  targetIdPath: refs_microsoft_eventhub_namespaces_eventhubs_consumergroups
+- type: uses
+  targetType: Microsoft.ServiceBus/namespaces/queues
+  targetIdPath: refs_microsoft_servicebus_namespaces_queues
+- type: uses
+  targetType: Microsoft.ServiceBus/namespaces/topics
+  targetIdPath: refs_microsoft_servicebus_namespaces_topics
+- type: uses
+  targetType: Microsoft.Sql/servers/databases
+  targetIdPath: refs_microsoft_sql_servers_databases
+- type: uses
+  targetType: Microsoft.DocumentDB/databaseAccounts
+  targetIdPath: refs_microsoft_documentdb_databaseaccounts
+- type: uses
+  targetType: Microsoft.Web/sites
+  targetIdPath: refs_microsoft_web_sites
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+- type: uses
+  targetType: Microsoft.EventHub/namespaces
+  targetIdPath: refs_microsoft_eventhub_namespaces
+- type: uses
+  targetType: Microsoft.ServiceBus/namespaces
+  targetIdPath: refs_microsoft_servicebus_namespaces
+- type: uses
+  targetType: Microsoft.Sql/servers
+  targetIdPath: refs_microsoft_sql_servers
+- type: uses
+  targetType: Microsoft.Web/sites/functions
+  targetIdPath: refs_microsoft_web_sites_functions
+actions:
+  delete:
+    operation: Azure.Microsoft.StreamAnalytics.Outputs_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.StreamAnalytics.Outputs_Get
+      itemsPath: $
+      identityPath: id

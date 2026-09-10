@@ -110,6 +110,15 @@ func Solve(input Input) (Result, error) {
 				blocked(BlockLifecycleAuthority, "required cleanup lacks authoritative provider evidence")
 				continue
 			}
+			automaticSelection := true
+			if value, present := relationship.Evidence[graph.RelationshipEvidenceAutomaticSelection]; present {
+				var valid bool
+				automaticSelection, valid = value.(bool)
+				if !valid {
+					blocked(BlockLifecycleAuthority, "required cleanup has invalid selection evidence")
+					continue
+				}
+			}
 			if !present {
 				blocked(BlockAssetMissing, "required cleanup resource is missing from the planning snapshot")
 				continue
@@ -146,6 +155,10 @@ func Solve(input Input) (Result, error) {
 				continue
 			}
 			if targetStepID == "" && !selected[target.ID] {
+				if !automaticSelection {
+					blocked(BlockLifecycleAuthority, "required cleanup resource must be selected explicitly")
+					continue
+				}
 				selected[target.ID] = true
 				input.ResolvedAssetIDs = append(input.ResolvedAssetIDs, target.ID)
 				added = true

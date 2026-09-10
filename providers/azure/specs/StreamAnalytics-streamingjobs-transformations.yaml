@@ -1,0 +1,53 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.StreamAnalytics/streamingjobs/transformations
+  class: data.stream_transformation
+presentation:
+  displayNames:
+    en-US: Stream Analytics transformation
+    zh-CN: 流分析查询定义
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.StreamAnalytics.StreamingJobs_Get
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      jobName: parent.normalized.arm_parameters.jobName
+      $expand: transformation
+    itemsPath: properties.transformation
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.StreamAnalytics.Transformations_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.StreamAnalytics/streamingjobs
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.StreamAnalytics/streamingjobs
+  targetIdPath: refs_microsoft_streamanalytics_streamingjobs

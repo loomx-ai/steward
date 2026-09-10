@@ -1185,6 +1185,64 @@
         "Scripts_Get",
         "Scripts_ListByDatabase"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json",
+      "operations": [
+        "StreamingJobs_Delete",
+        "StreamingJobs_Get",
+        "StreamingJobs_List",
+        "StreamingJobs_ListByResourceGroup",
+        "StreamingJobs_Stop"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/inputs.json",
+      "operations": [
+        "Inputs_Delete",
+        "Inputs_Get",
+        "Inputs_ListByStreamingJob"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/outputs.json",
+      "operations": [
+        "Outputs_Delete",
+        "Outputs_Get",
+        "Outputs_ListByStreamingJob"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/functions.json",
+      "operations": [
+        "Functions_Delete",
+        "Functions_Get",
+        "Functions_ListByStreamingJob"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/transformations.json",
+      "operations": [
+        "Transformations_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json",
+      "operations": [
+        "Clusters_Delete",
+        "Clusters_Get",
+        "Clusters_ListByResourceGroup",
+        "Clusters_ListBySubscription",
+        "Clusters_ListStreamingJobs"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/privateEndpoints.json",
+      "operations": [
+        "PrivateEndpoints_Delete",
+        "PrivateEndpoints_Get",
+        "PrivateEndpoints_ListByCluster"
+      ]
     }
   ],
   "resource_types": [
@@ -5739,6 +5797,137 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Kusto.SandboxCustomImages_ListByCluster"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs",
+      "class": "data.stream_job",
+      "display_name": "Stream Analytics job",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "streamingjobs",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.StreamingJobs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.StreamingJobs_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+      "class": "data.stream_input",
+      "display_name": "Stream Analytics input",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "inputs",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.Inputs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.Inputs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.Inputs_ListByStreamingJob"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+      "class": "data.stream_output",
+      "display_name": "Stream Analytics output",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "outputs",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.Outputs_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.Outputs_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.Outputs_ListByStreamingJob"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/functions",
+      "class": "data.stream_function",
+      "display_name": "Stream Analytics function",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "functions",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.Functions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.Functions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.Functions_ListByStreamingJob"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/transformations",
+      "class": "data.stream_transformation",
+      "display_name": "Stream Analytics transformation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "transformations",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.Transformations_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/clusters",
+      "class": "data.stream_cluster",
+      "display_name": "Stream Analytics cluster",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.Clusters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.Clusters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.Clusters_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/clusters/privateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Stream Analytics private endpoint",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_ListByCluster"
       ]
     }
   ]

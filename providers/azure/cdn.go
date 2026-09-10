@@ -364,6 +364,11 @@ func (c *client) cdnChildren(ctx context.Context, parent asset.Identity, raw map
 // Sensitive content in rule actions and key references is compared through a
 // credential-keyed digest. Ordinary JSON hashes only contain sanitized values.
 func (c *client) servicePrivateIncarnation(planned asset.Asset, live map[string]any) error {
+	if isStreamAnalyticsType(planned.Identity.NativeType) {
+		if expected := text(planned.Normalized["_stream_analytics_private_configuration"]); expected == "" || expected != c.privateConfiguration(streamAnalyticsSnapshot(planned.Identity.NativeType, live)) {
+			return serviceDenied("stream_analytics_private_configuration_changed")
+		}
+	}
 	if isCosmosType(planned.Identity.NativeType) {
 		if _, err := c.plannedResourceID(planned); err != nil {
 			return err
@@ -445,6 +450,9 @@ func cdnPrerequisite(parent, referrer asset.Asset) bool {
 // on successful and pending polls. Preserve all other errors, including a failed
 // status carrying that placeholder. This exception is specific to this API.
 func (a *action) operationError(res response) error {
+	if isStreamAnalyticsType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
+		return fmt.Errorf("incomplete Stream Analytics operation response")
+	}
 	if isKustoType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
 		return fmt.Errorf("incomplete Kusto operation response")
 	}

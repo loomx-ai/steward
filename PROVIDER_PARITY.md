@@ -1408,3 +1408,78 @@ background evidence only, not acceptance evidence for this work.
   backup/restore, the final read/delete race and full GCP/Azure application parity
   remain open. Native DELETE does not declare conditional ETag protection, and
   no provider acceptance item is closed by this batch.
+
+### Azure Stream Analytics progress (acceptance remains open)
+
+- Added seven stable 2020-03-01 rules for jobs, inputs, outputs, functions,
+  transformations, clusters and cluster private endpoints, with 23 original
+  operations. Transformations use the actual named singleton from an expanded
+  job GET and have no invented list or DELETE. Job cleanup reviews all four
+  definition kinds as native cascade impacts, then verifies each final absence.
+- Native child lists, expanded definitions and embedded indexes must agree.
+  Two complete walks reread the parent and compare private configuration.
+  Standalone definition deletion requires a Created, Stopped or Failed job;
+  native job deletion also supports Running/Degraded. Unknown or transitional
+  states, retained/protected children and incomplete discovery block cleanup.
+- Cluster private endpoints are reviewed prerequisites. Associated jobs remain
+  independent: native POST-first/GET-next membership walks verify the job's
+  cluster backlink, region and state. The core graph's optional strict boolean
+  `automatic_selection:false` prevents a cluster from silently selecting jobs.
+  SQLite planning/execution tests preserve this constraint, explicit selections,
+  frozen prerequisites, authorization and restart behavior. Azure itself only
+  requires stopping running jobs before cluster deletion; Steward requires
+  retained jobs to be stopped and removed in Azure before rescanning. No
+  automatic stop or detach is inferred from an ambiguous PATCH contract.
+- Named external sources resolve through complete native subscription lists,
+  including other resource groups. Missing names never become guessed ARM IDs;
+  duplicate names, malformed indexes and denied reads fail. Explicit foreign IDs
+  remain references without HTTP calls. Modeled Blob/Table, Event Hub, Service
+  Bus, SQL, Cosmos and Azure Function references preserve external data resources.
+  Private endpoints bind their target's actual native API, configuration, locks,
+  protection and final reread. Managed resource groups cannot absorb external
+  associated jobs, and their cascades retain the same target checks.
+- Public configuration omits queries, scripts, connection credentials and URL
+  signing values. Private digests retain these fields and exact large JSON
+  integers. Runtime states, diagnostics, ETags and moving capacity counters do
+  not hide authored changes. Proxy location follows the real job/cluster.
+- Forty-one unchanged examples and eight full-source hashes come from pinned
+  REST API commit `e45039baa985c442877529906e705982a6e0099d`. Thirty-four response
+  schemas and twenty concrete variants are checked offline. Four native null
+  next links and one null Azure Function API key are explicit schema/example
+  discrepancies; only validation copies omit those optional nulls. A fresh
+  eight-document snapshot matches the source, preserving every one of the
+  earlier 241 types and 130 documents unchanged.
+- Eight pinned official CLI files supply 72 selected responses; five deletion
+  chains replay all native synchronous results and asynchronous polls. Input
+  preview requests are explicitly bridged to stable 2020-03-01. Earlier parent
+  states, supporting indexes/storage and final GET 404s are distinguished from
+  original responses. The function recording deletes the job, not the function;
+  no native standalone function-delete recording is claimed. See the
+  [Stream Analytics evidence](providers/azure/fixtures/streamanalytics/README.md).
+- Native Location signatures change on each 202. Each successor must retain its
+  resource/operation identity and bounded query contract before persistence in
+  `Wait.Data`; restart tests follow the original recorded URLs exactly. The
+  private-endpoint final HTTP 200/InProgress/error-null envelope only permits
+  resource readback. Cluster operation expiry also requires independent resource
+  absence. The native stop result's empty HTTP 200 is limited to the signed
+  operation URL; JSON null and empty normal GETs stay invalid. Failed/canceled,
+  partial, foreign, forged and unreadable responses cannot complete cleanup.
+- General execution acceptance logs, action audit events and HTTP action details
+  now show operation identities without signed query credentials. The journal
+  retains full original and rotated receipts for the executor. Application tests
+  restore the next polling receipt from SQLite after handler restart; HTTP tests
+  confirm that viewing details cannot alter stored receipts.
+- Azure now has 248 rules, 231 native DELETE bindings and 779 operations from
+  93 root plus 45 reference documents. Two generations reproduce SHA-256
+  `f158575f54fb038d7278117204f7b02fe75534cba2387b356faa5b367b666460`.
+  Two official CLI extractions reproduce SHA-256
+  `77741db29207efc2c4d87185731d71c35779abbbcf6e7ee056cdaece94818377`.
+  Final full Go tests, `go vet`, full Azure/plan/cleanup/catalog/contracts race
+  checks, subsequent execution/HTTP and Stream Analytics race checks, eleven
+  offline importer/SDK metadata tests and bilingual documentation checks passed.
+- Microsoft's ASA Tools local runner tests query execution, not these ARM APIs.
+  The reviewed Floci-AZ 0.12.0 source has no StreamAnalytics/streamingjobs routes
+  in 331 Java files. No independent emulator or live-cloud mutation is claimed.
+  Query processing, data-plane cleanup, restore, unmodeled connector targets and
+  full GCP/Azure application acceptance remain open. Native DELETE contracts
+  have no conditional ETag protection, so final read/delete races remain.

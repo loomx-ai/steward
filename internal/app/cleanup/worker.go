@@ -958,7 +958,7 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 			}
 			execution.LogJob(ctx, "info", fmt.Sprintf(
 				"provider action accepted: request_id=%s operation_id=%s",
-				result.ProviderRequestID, result.ProviderOperationID,
+				result.ProviderRequestID, execution.PublicOperationID(result.ProviderOperationID),
 			))
 			if h.afterProviderCall != nil {
 				if err := h.afterProviderCall(action, result); err != nil {
@@ -2764,7 +2764,7 @@ func appendActionOutcome(ctx context.Context, repositories persistence.Repositor
 	evidence := map[string]any{
 		"execution_id": action.ExecutionID, "cleanup_task_step_id": action.CleanupTaskStepID,
 		"spec_bundle_revision": action.SpecBundleRevision, "spec_hash": action.SpecHash,
-		"provider_request_id": action.ProviderRequestID, "provider_operation_id": action.ProviderOperationID,
+		"provider_request_id": action.ProviderRequestID, "provider_operation_id": execution.PublicOperationID(action.ProviderOperationID),
 	}
 	if action.ProviderError != nil {
 		evidence["provider_error"] = action.ProviderError

@@ -36,7 +36,9 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 241 current resource rules discover through native product List operations.
+All 248 current resource rules discover through native product APIs. Stream
+Analytics transformations use an explicitly expanded job GET because Azure has
+no transformation list operation; other rules use native product Lists.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
@@ -61,8 +63,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 756 operations from
-86 root documents and 44 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 779 operations from
+93 root documents and 45 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -373,3 +375,19 @@ ancestor bindings, bounded operation URLs and final native absence survive
 restart. The [Kusto evidence](../fixtures/kusto/README.md) retains 42 original
 examples, 45 CLI responses, eight DELETE/status replays, the precise API-version
 bridge, Location response compatibility and independent verification limits.
+
+
+Stream Analytics adds seven 2020-03-01 rules and 23 native operations. Jobs review
+all inputs, outputs, functions and the actual named transformation as cascade
+impacts. Cluster private endpoints are reviewed prerequisites; associated jobs
+are independent and require explicit selection or prior removal from the cluster.
+Complete native POST/GET membership walks, target/parent checks and final absence
+prevent an unselected job or external data store from being silently deleted.
+The [Stream Analytics evidence](../fixtures/streamanalytics/README.md) retains
+41 unchanged examples, 34 response-schema checks, 20 concrete variant checks and
+72 official CLI responses. Native polls rotate signed Location URLs and include
+a final private-endpoint HTTP 200/InProgress envelope; each renewed receipt is
+validated and persisted, and only a separate resource 404 can finish deletion.
+Public execution diagnostics omit signing parameters while the journal keeps
+the original receipts for resumed polling. Query-engine local tools and Floci-AZ
+do not establish independent ARM-emulator or live-cloud verification.

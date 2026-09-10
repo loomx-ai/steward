@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "40135c549e2ab9dd9f26e16cdbc59345f54abd81771cc2714eb3bb5573288512",
+    "checksum": "60c4c1535ed3ebc7ea0a8cb2ff3e0df569a26fdb35c6ddacf01840a85e5de286",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a6296ee81edd1e64fd25a5a831256007904c142ba53d2b1f3c089913959f5232",
+  "content_checksum": "47cbe44c3b4ca74ab3b1027b80939971d2780092eed34b3084639814195a0fb2",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -57413,6 +57413,1757 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/storage/resource-manager/Microsoft.Storage/stable/2023-05-01/storage.json"
     },
     {
+      "id": "Azure.Microsoft.StreamAnalytics.Clusters_Delete",
+      "name": "Clusters_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Clusters_Get",
+      "name": "Clusters_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./common/v1/definitions.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A Stream Analytics Cluster object",
+        "properties": {
+          "etag": {
+            "description": "The current entity tag for the cluster. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterProperties",
+            "description": "The properties associated with a Stream Analytics cluster.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/ClusterSku"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Clusters_ListByResourceGroup",
+      "name": "Clusters_ListByResourceGroup",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of clusters populated by a 'list' operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to fetch the next set of clusters.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of clusters.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Clusters_ListBySubscription",
+      "name": "Clusters_ListBySubscription",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of clusters populated by a 'list' operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to fetch the next set of clusters.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of clusters.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Clusters_ListStreamingJobs",
+      "name": "Clusters_ListStreamingJobs",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/listStreamingJobs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of streaming jobs. Populated by a List operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to fetch the next set of streaming jobs.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of streaming jobs.",
+            "items": {
+              "$ref": "#/definitions/ClusterJob"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/listStreamingJobs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Functions_Delete",
+      "name": "Functions_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "The name of the function.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/functions.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Functions_Get",
+      "name": "Functions_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "functionName": {
+            "description": "The name of the function.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/SubResource"
+          }
+        ],
+        "description": "A function object, containing all information associated with the named function. All functions are contained under a streaming job.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/FunctionProperties",
+            "description": "The properties that are associated with a function."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/functions.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Functions_ListByStreamingJob",
+      "name": "Functions_ListByStreamingJob",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$select": {
+            "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+            "in": "query",
+            "name": "$select",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object containing a list of functions under a streaming job.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of functions under a streaming job. Populated by a 'List' operation.",
+            "items": {
+              "$ref": "#/definitions/Function"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/functions.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Inputs_Delete",
+      "name": "Inputs_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs/{inputName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "inputName": {
+            "description": "The name of the input.",
+            "in": "path",
+            "name": "inputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs/{inputName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/inputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Inputs_Get",
+      "name": "Inputs_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs/{inputName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "inputName": {
+            "description": "The name of the input.",
+            "in": "path",
+            "name": "inputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/SubResource"
+          }
+        ],
+        "description": "An input object, containing all information associated with the named input. All inputs are contained under a streaming job.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/InputProperties",
+            "description": "The properties that are associated with an input. Required on PUT (CreateOrReplace) requests."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs/{inputName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/inputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Inputs_ListByStreamingJob",
+      "name": "Inputs_ListByStreamingJob",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$select": {
+            "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+            "in": "query",
+            "name": "$select",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object containing a list of inputs under a streaming job.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of inputs under a streaming job. Populated by a 'List' operation.",
+            "items": {
+              "$ref": "#/definitions/Input"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/inputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Outputs_Delete",
+      "name": "Outputs_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs/{outputName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "outputName": {
+            "description": "The name of the output.",
+            "in": "path",
+            "name": "outputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs/{outputName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/outputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Outputs_Get",
+      "name": "Outputs_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs/{outputName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "outputName": {
+            "description": "The name of the output.",
+            "in": "path",
+            "name": "outputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/SubResource"
+          }
+        ],
+        "description": "An output object, containing all information associated with the named output. All outputs are contained under a streaming job.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/OutputProperties",
+            "description": "The properties that are associated with an output. Required on PUT (CreateOrReplace) requests.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs/{outputName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/outputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Outputs_ListByStreamingJob",
+      "name": "Outputs_ListByStreamingJob",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$select": {
+            "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+            "in": "query",
+            "name": "$select",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object containing a list of outputs under a streaming job.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of outputs under a streaming job. Populated by a 'List' operation.",
+            "items": {
+              "$ref": "#/definitions/Output"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/outputs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Delete",
+      "name": "PrivateEndpoints_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints/{privateEndpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "privateEndpointName": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints/{privateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/privateEndpoints.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Get",
+      "name": "PrivateEndpoints_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints/{privateEndpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "privateEndpointName": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./common/v1/definitions.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Complete information about the private endpoint.",
+        "properties": {
+          "etag": {
+            "description": "Unique opaque string (generally a GUID) that represents the metadata state of the resource (private endpoint) and changes whenever the resource is updated. Required on PUT (CreateOrUpdate) requests.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointProperties",
+            "description": "The properties associated with a private endpoint.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints/{privateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/privateEndpoints.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_ListByCluster",
+      "name": "PrivateEndpoints_ListByCluster",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of private endpoints.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to fetch the next set of private endpoints.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of private endpoints.",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpoint"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/privateEndpoints.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.StreamingJobs_Delete",
+      "name": "StreamingJobs_Delete",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get",
+      "name": "StreamingJobs_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "./common/v1/definitions.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A streaming job object, containing all information associated with the named streaming job.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "Describes the system-assigned managed identity assigned to this job that can be used to authenticate with inputs and outputs."
+          },
+          "properties": {
+            "$ref": "#/definitions/StreamingJobProperties",
+            "description": "The properties that are associated with a streaming job.  Required on PUT (CreateOrReplace) requests.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.StreamingJobs_List",
+      "name": "StreamingJobs_List",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/streamingjobs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object containing a list of streaming jobs.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of streaming jobs. Populated by a 'List' operation.",
+            "items": {
+              "$ref": "#/definitions/StreamingJob"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/streamingjobs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.StreamingJobs_ListByResourceGroup",
+      "name": "StreamingJobs_ListByResourceGroup",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$expand": {
+            "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+            "in": "query",
+            "name": "$expand",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object containing a list of streaming jobs.",
+        "properties": {
+          "nextLink": {
+            "description": "The link (url) to the next page of results.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "A list of streaming jobs. Populated by a 'List' operation.",
+            "items": {
+              "$ref": "#/definitions/StreamingJob"
+            },
+            "readOnly": true,
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.StreamingJobs_Stop",
+      "name": "StreamingJobs_Stop",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/stop",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "id": "Azure.Microsoft.StreamAnalytics.Transformations_Get",
+      "name": "Transformations_Get",
+      "service": "Microsoft.StreamAnalytics",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/transformations/{transformationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "jobName": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "transformationName": {
+            "description": "The name of the transformation.",
+            "in": "path",
+            "name": "transformationName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/SubResource"
+          }
+        ],
+        "description": "A transformation object, containing all information associated with the named transformation. All transformations are contained under a streaming job.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/TransformationProperties",
+            "description": "The properties that are associated with a transformation. Required on PUT (CreateOrReplace) requests.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.StreamAnalytics",
+        "version": "2020-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/transformations/{transformationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/transformations.json"
+    },
+    {
       "id": "Azure.Microsoft.Web.AppServicePlans_Delete",
       "name": "AppServicePlans_Delete",
       "service": "Microsoft.Web",
@@ -66245,6 +67996,150 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Storage.FileShares_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/clusters",
+      "class": "data.stream_cluster",
+      "display_name": "Stream Analytics cluster",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "clusters",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/clusters/privateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Stream Analytics private endpoint",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_ListByCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs",
+      "class": "data.stream_job",
+      "display_name": "Stream Analytics job",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "streamingjobs",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/functions",
+      "class": "data.stream_function",
+      "display_name": "Stream Analytics function",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "functions",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_ListByStreamingJob"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+      "class": "data.stream_input",
+      "display_name": "Stream Analytics input",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "inputs",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_ListByStreamingJob"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+      "class": "data.stream_output",
+      "display_name": "Stream Analytics output",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "outputs",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_ListByStreamingJob"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.StreamAnalytics/streamingjobs/transformations",
+      "class": "data.stream_transformation",
+      "display_name": "Stream Analytics transformation",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "transformations",
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Transformations_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
         ]
       }
     },

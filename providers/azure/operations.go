@@ -86,6 +86,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 				return validateCosmosOperationURL(c.subscription, u.Path, operation.Call.Version, endpoint)
 			}
 		}
+		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.StreamAnalytics.") {
+			owner := u.Path
+			if strings.EqualFold(last(owner), "stop") {
+				owner = strings.TrimSuffix(owner, "/"+last(owner))
+			}
+			validate = func(endpoint string) error {
+				return validateStreamAnalyticsOperationURL(c.subscription, owner, operation.Call.Version, endpoint)
+			}
+		}
 		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.Kusto.") {
 			validate = func(endpoint string) error {
 				return validateKustoOperationURL(c.subscription, "", operation.Call.Version, endpoint)

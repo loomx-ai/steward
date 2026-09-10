@@ -272,7 +272,8 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 			kind, _ := findType(kustoType)
 			emptyKustoResult = validateKustoOperationURL(c.subscription, "", kind.Version, u.String()) == nil
 		}
-		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent && !emptyKustoResult {
+		emptyStreamAnalyticsResult := len(bytes.TrimSpace(payload)) == 0 && res.StatusCode == http.StatusOK && validateStreamAnalyticsOperationURL(c.subscription, "", "2020-03-01", u.String()) == nil
+		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent && !emptyKustoResult && !emptyStreamAnalyticsResult {
 			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 		out.data = map[string]any{}
@@ -366,6 +367,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		return nil, "", response{}, err
 	}
 	u, _ := url.Parse(endpoint)
+	if err := streamAnalyticsListQuery(u); err != nil {
+		return nil, "", response{}, err
+	}
 	if err := cognitiveListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
@@ -396,6 +400,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		nu, _ := url.Parse(next)
+		if err := streamAnalyticsListQuery(nu); err != nil {
+			return nil, "", response{}, err
+		}
 		if err := cognitiveListQuery(nu); err != nil {
 			return nil, "", response{}, err
 		}

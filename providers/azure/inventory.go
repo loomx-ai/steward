@@ -290,6 +290,13 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.cosmosInventory(ctx, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
+	if err := c.streamAnalyticsInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
+	if location := text(normalized["_stream_analytics_location"]); location != "" {
+		region = location
+		scope = contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}
+	}
 	if err := c.kustoInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -437,6 +444,15 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if isStreamAnalyticsType(nativeType) {
+		for _, value := range stringValues(normalized["_stream_analytics_references"]) {
+			if ref, refKind, err := parseID(value); err == nil {
+				if mapping, known := findType(refKind); known {
+					addReference(refs, mapping.NativeType, ref)
+				}
+			}
+		}
+	}
 	if isCosmosType(nativeType) {
 		for _, value := range stringValues(normalized["_cosmos_references"]) {
 			if id, typ, err := parseID(value); err == nil {
@@ -603,6 +619,10 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 		for _, key := range []string{"virtualnetworkrules", "delegatedmanagementsubnetid", "delegatedsubnetid", "privatelinkresourceid", "networkaclbypassresourceids"} {
 			fields[key] = true
 		}
+	}
+	if isStreamAnalyticsType(nativeType) {
+		add(streamAnalyticsParentID(self, nativeType))
+		fields["privatelinkserviceid"], fields["cluster"] = true, true
 	}
 	if isKustoType(nativeType) {
 		for _, key := range []string{"clusterresourceid", "leaderclusterresourceid", "privatelinkresourceid", "managedidentityresourceid", "cosmosdbaccountresourceid", "eventhubresourceid", "eventhubresourceidformanagedidentity", "storageaccountresourceid", "storageaccountresourceidformanagedidentity", "eventgridresourceid", "iothubresourceid", "useridentity", "enginepublicipid", "datamanagementpublicipid"} {
@@ -773,6 +793,10 @@ func safeResource(value any) any {
 	case map[string]any:
 		result := map[string]any{}
 		for key, value := range typed {
+			if key == "properties" && (strings.HasPrefix(strings.ToLower(text(typed["type"])), "microsoft.streamanalytics/") || strings.Contains(strings.ToLower(text(typed["id"])), "/providers/microsoft.streamanalytics/")) {
+				result[key] = safeResource(streamAnalyticsSafeProperties(value))
+				continue
+			}
 			if key == "properties" && (strings.HasPrefix(strings.ToLower(text(typed["type"])), "microsoft.documentdb/") || strings.Contains(strings.ToLower(text(typed["id"])), "/providers/microsoft.documentdb/")) {
 				properties := map[string]any{}
 				for name, item := range object(value) {

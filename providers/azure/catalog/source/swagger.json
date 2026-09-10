@@ -54635,6 +54635,3937 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "Cluster": {
+            "allOf": [
+              {
+                "$ref": "./common/v1/definitions.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A Stream Analytics Cluster object",
+            "properties": {
+              "etag": {
+                "description": "The current entity tag for the cluster. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/ClusterProperties",
+                "description": "The properties associated with a Stream Analytics cluster.",
+                "x-ms-client-flatten": true
+              },
+              "sku": {
+                "$ref": "#/definitions/ClusterSku"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterJob": {
+            "description": "A streaming job.",
+            "properties": {
+              "id": {
+                "description": "Resource ID of the streaming job.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "jobState": {
+                "$ref": "#/definitions/JobState"
+              },
+              "streamingUnits": {
+                "description": "The number of streaming units that are used by the streaming job.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterJobListResult": {
+            "description": "A list of streaming jobs. Populated by a List operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to fetch the next set of streaming jobs.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of streaming jobs.",
+                "items": {
+                  "$ref": "#/definitions/ClusterJob"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterListResult": {
+            "description": "A list of clusters populated by a 'list' operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to fetch the next set of clusters.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of clusters.",
+                "items": {
+                  "$ref": "#/definitions/Cluster"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterProperties": {
+            "description": "The properties associated with a Stream Analytics cluster.",
+            "properties": {
+              "capacityAllocated": {
+                "description": "Represents the number of streaming units currently being used on the cluster.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "capacityAssigned": {
+                "description": "Represents the sum of the SUs of all streaming jobs associated with the cluster. If all of the jobs were running, this would be the capacity allocated.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "clusterId": {
+                "description": "Unique identifier for the cluster.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "createdDate": {
+                "description": "The date this cluster was created.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/ClusterProvisioningState"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterProvisioningState": {
+            "description": "The status of the cluster provisioning. The three terminal states are: Succeeded, Failed and Canceled",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "InProgress"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ClusterProvisioningState",
+              "values": [
+                {
+                  "description": "The cluster provisioning succeeded.",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "The cluster provisioning failed.",
+                  "value": "Failed"
+                },
+                {
+                  "description": "The cluster provisioning was canceled.",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "The cluster provisioning was inprogress.",
+                  "value": "InProgress"
+                }
+              ]
+            }
+          },
+          "ClusterSku": {
+            "description": "The SKU of the cluster. This determines the size/capacity of the cluster. Required on PUT (CreateOrUpdate) requests.",
+            "properties": {
+              "capacity": {
+                "description": "Denotes the number of streaming units the cluster can support. Valid values for this property are multiples of 36 with a minimum value of 36 and maximum value of 216. Required on PUT (CreateOrUpdate) requests.",
+                "format": "int32",
+                "maximum": 396,
+                "minimum": 36,
+                "type": "integer"
+              },
+              "name": {
+                "description": "Specifies the SKU name of the cluster. Required on PUT (CreateOrUpdate) requests.",
+                "enum": [
+                  "Default"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ClusterSkuName",
+                  "values": [
+                    {
+                      "description": "The default SKU.",
+                      "value": "Default"
+                    }
+                  ]
+                }
+              }
+            },
+            "type": "object"
+          },
+          "JobState": {
+            "description": "The current execution state of the streaming job.",
+            "enum": [
+              "Created",
+              "Starting",
+              "Running",
+              "Stopping",
+              "Stopped",
+              "Deleting",
+              "Failed",
+              "Degraded",
+              "Restarting",
+              "Scaling"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "JobState",
+              "values": [
+                {
+                  "description": "The job is currently in the Created state.",
+                  "value": "Created"
+                },
+                {
+                  "description": "The job is currently in the Starting state.",
+                  "value": "Starting"
+                },
+                {
+                  "description": "The job is currently in the Running state.",
+                  "value": "Running"
+                },
+                {
+                  "description": "The job is currently in the Stopping state.",
+                  "value": "Stopping"
+                },
+                {
+                  "description": "The job is currently in the Stopped state.",
+                  "value": "Stopped"
+                },
+                {
+                  "description": "The job is currently in the Deleting state.",
+                  "value": "Deleting"
+                },
+                {
+                  "description": "The job is currently in the Failed state.",
+                  "value": "Failed"
+                },
+                {
+                  "description": "The job is currently in the Degraded state.",
+                  "value": "Degraded"
+                },
+                {
+                  "description": "The job is currently in the Restarting state.",
+                  "value": "Restarting"
+                },
+                {
+                  "description": "The job is currently in the Scaling state.",
+                  "value": "Scaling"
+                }
+              ]
+            }
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "ClusterNameParameter": {
+            "description": "The name of the cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/clusters": {
+            "get": {
+              "description": "Lists all of the clusters in the given subscription.",
+              "operationId": "Clusters_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the clusters under the specified subscription.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Clusters"
+              ],
+              "x-ms-examples": {
+                "List the clusters in a subscription": {
+                  "$ref": "./examples/Cluster_ListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters": {
+            "get": {
+              "description": "Lists all of the clusters in the given resource group.",
+              "operationId": "Clusters_ListByResourceGroup",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the clusters under the specified resource group.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Clusters"
+              ],
+              "x-ms-examples": {
+                "List clusters in resource group": {
+                  "$ref": "./examples/Cluster_ListByResourceGroup.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}": {
+            "delete": {
+              "description": "Deletes the specified cluster.",
+              "operationId": "Clusters_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The cluster was successfully deleted."
+                },
+                "202": {
+                  "description": "The delete request was successfully initiated."
+                },
+                "204": {
+                  "description": "The cluster does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Clusters"
+              ],
+              "x-ms-examples": {
+                "Delete a cluster": {
+                  "$ref": "./examples/Cluster_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "Gets information about the specified cluster.",
+              "operationId": "Clusters_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified cluster.",
+                  "schema": {
+                    "$ref": "#/definitions/Cluster"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Clusters"
+              ],
+              "x-ms-examples": {
+                "Get a cluster": {
+                  "$ref": "./examples/Cluster_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/listStreamingJobs": {
+            "post": {
+              "description": "Lists all of the streaming jobs in the given cluster.",
+              "operationId": "Clusters_ListStreamingJobs",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the streaming jobs in the specified cluster.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterJobListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Clusters"
+              ],
+              "x-ms-examples": {
+                "List all streaming jobs in cluster": {
+                  "$ref": "./examples/Cluster_ListStreamingJobs.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "852308bfe4e8c8f88eaf7b23fcb2ec0d9ecacbbe8bd851f4fce5d6a7032be48c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/clusters.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "AuthenticationMode": {
+            "default": "ConnectionString",
+            "description": "Authentication Mode. Valid modes are `ConnectionString`, `Msi` and 'UserToken'.",
+            "enum": [
+              "Msi",
+              "UserToken",
+              "ConnectionString"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AuthenticationMode"
+            }
+          },
+          "Error": {
+            "description": "Common error representation.",
+            "properties": {
+              "error": {
+                "description": "Error definition properties.",
+                "properties": {
+                  "code": {
+                    "description": "Error code.",
+                    "type": "string"
+                  },
+                  "details": {
+                    "description": "Error details.",
+                    "items": {
+                      "$ref": "#/definitions/ErrorDetails"
+                    },
+                    "type": "array",
+                    "x-ms-identifiers": []
+                  },
+                  "message": {
+                    "description": "Error message.",
+                    "type": "string"
+                  },
+                  "target": {
+                    "description": "Error target.",
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorDetails": {
+            "description": "Common error details representation.",
+            "properties": {
+              "code": {
+                "description": "Error code.",
+                "type": "string"
+              },
+              "message": {
+                "description": "Error message.",
+                "type": "string"
+              },
+              "target": {
+                "description": "Error target.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ProxyResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a ARM proxy resource. It will have everything other than required location and tags",
+            "type": "object"
+          },
+          "Resource": {
+            "description": "The base resource definition",
+            "properties": {
+              "id": {
+                "description": "Fully qualified resource Id for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the resource",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The type of the resource. Ex- Microsoft.Compute/virtualMachines or Microsoft.Storage/storageAccounts.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "TrackedResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for a ARM tracked top level resource",
+            "properties": {
+              "location": {
+                "description": "The geo-location where the resource lives",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "tags": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Resource tags.",
+                "type": "object",
+                "x-ms-mutability": [
+                  "read",
+                  "create",
+                  "update"
+                ]
+              }
+            },
+            "type": "object"
+          }
+        },
+        "parameters": {
+          "ApiVersionParameter": {
+            "description": "The API version to use for this operation.",
+            "in": "query",
+            "minLength": 1,
+            "name": "api-version",
+            "required": true,
+            "type": "string"
+          },
+          "ResourceGroupNameParameter": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "StreamingJobNameParameter": {
+            "description": "The name of the streaming job.",
+            "in": "path",
+            "name": "jobName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "SubscriptionIdParameter": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        }
+      },
+      "source_sha256": "45e42539d13ca5eb167613fa3203a5e143554680feae5af8c53b8c7d701ea253",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/common/v1/definitions.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AggregateFunctionProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/FunctionProperties"
+              }
+            ],
+            "description": "The properties that are associated with an aggregate function.",
+            "type": "object",
+            "x-ms-discriminator-value": "Aggregate"
+          },
+          "AzureMachineLearningWebServiceFunctionBinding": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/FunctionBinding"
+              }
+            ],
+            "description": "The binding to an Azure Machine Learning web service.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureMachineLearningWebServiceFunctionBindingProperties",
+                "description": "The binding properties associated with an Azure Machine learning web service.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.MachineLearning/WebService"
+          },
+          "AzureMachineLearningWebServiceFunctionBindingProperties": {
+            "description": "The binding properties associated with an Azure Machine learning web service.",
+            "properties": {
+              "apiKey": {
+                "description": "The API key used to authenticate with Request-Response endpoint.",
+                "type": "string"
+              },
+              "batchSize": {
+                "description": "Number between 1 and 10000 describing maximum number of rows for every Azure ML RRS execute request. Default is 1000.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "endpoint": {
+                "description": "The Request-Response execute endpoint of the Azure Machine Learning web service. Find out more here: https://docs.microsoft.com/en-us/azure/machine-learning/machine-learning-consume-web-services#request-response-service-rrs",
+                "type": "string"
+              },
+              "inputs": {
+                "$ref": "#/definitions/AzureMachineLearningWebServiceInputs",
+                "description": "The inputs for the Azure Machine Learning web service endpoint."
+              },
+              "outputs": {
+                "description": "A list of outputs from the Azure Machine Learning web service endpoint execution.",
+                "items": {
+                  "$ref": "#/definitions/AzureMachineLearningWebServiceOutputColumn"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "AzureMachineLearningWebServiceInputColumn": {
+            "description": "Describes an input column for the Azure Machine Learning web service endpoint.",
+            "properties": {
+              "dataType": {
+                "description": "The (Azure Machine Learning supported) data type of the input column. A list of valid  Azure Machine Learning data types are described at https://msdn.microsoft.com/en-us/library/azure/dn905923.aspx .",
+                "type": "string"
+              },
+              "mapTo": {
+                "description": "The zero based index of the function parameter this input maps to.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "name": {
+                "description": "The name of the input column.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AzureMachineLearningWebServiceInputs": {
+            "description": "The inputs for the Azure Machine Learning web service endpoint.",
+            "properties": {
+              "columnNames": {
+                "description": "A list of input columns for the Azure Machine Learning web service endpoint.",
+                "items": {
+                  "$ref": "#/definitions/AzureMachineLearningWebServiceInputColumn"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "name": {
+                "description": "The name of the input. This is the name provided while authoring the endpoint.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AzureMachineLearningWebServiceOutputColumn": {
+            "description": "Describes an output column for the Azure Machine Learning web service endpoint.",
+            "properties": {
+              "dataType": {
+                "description": "The (Azure Machine Learning supported) data type of the output column. A list of valid  Azure Machine Learning data types are described at https://msdn.microsoft.com/en-us/library/azure/dn905923.aspx .",
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the output column.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Function": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/SubResource"
+              }
+            ],
+            "description": "A function object, containing all information associated with the named function. All functions are contained under a streaming job.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/FunctionProperties",
+                "description": "The properties that are associated with a function."
+              }
+            },
+            "type": "object"
+          },
+          "FunctionBinding": {
+            "description": "The physical binding of the function. For example, in the Azure Machine Learning web service\u2019s case, this describes the endpoint.",
+            "discriminator": "type",
+            "properties": {
+              "type": {
+                "description": "Indicates the function binding type.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "FunctionConfiguration": {
+            "properties": {
+              "binding": {
+                "$ref": "#/definitions/FunctionBinding"
+              },
+              "inputs": {
+                "items": {
+                  "$ref": "#/definitions/FunctionInput"
+                },
+                "type": "array"
+              },
+              "output": {
+                "$ref": "#/definitions/FunctionOutput"
+              }
+            },
+            "type": "object"
+          },
+          "FunctionInput": {
+            "description": "Describes one input parameter of a function.",
+            "properties": {
+              "dataType": {
+                "description": "The (Azure Stream Analytics supported) data type of the function input parameter. A list of valid Azure Stream Analytics data types are described at https://msdn.microsoft.com/en-us/library/azure/dn835065.aspx",
+                "type": "string"
+              },
+              "isConfigurationParameter": {
+                "description": "A flag indicating if the parameter is a configuration parameter. True if this input parameter is expected to be a constant. Default is false.",
+                "type": "boolean"
+              }
+            },
+            "type": "object"
+          },
+          "FunctionListResult": {
+            "description": "Object containing a list of functions under a streaming job.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of functions under a streaming job. Populated by a 'List' operation.",
+                "items": {
+                  "$ref": "#/definitions/Function"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "FunctionOutput": {
+            "description": "Describes the output of a function.",
+            "properties": {
+              "dataType": {
+                "description": "The (Azure Stream Analytics supported) data type of the function output. A list of valid Azure Stream Analytics data types are described at https://msdn.microsoft.com/en-us/library/azure/dn835065.aspx",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FunctionProperties": {
+            "description": "The properties that are associated with a function.",
+            "discriminator": "type",
+            "properties": {
+              "etag": {
+                "description": "The current entity tag for the function. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/FunctionConfiguration",
+                "x-ms-client-flatten": true
+              },
+              "type": {
+                "description": "Indicates the type of function.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "JavaScriptFunctionBinding": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/FunctionBinding"
+              }
+            ],
+            "description": "The binding to a JavaScript function.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/JavaScriptFunctionBindingProperties",
+                "description": "The binding properties associated with a JavaScript function.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.StreamAnalytics/JavascriptUdf"
+          },
+          "JavaScriptFunctionBindingProperties": {
+            "description": "The binding properties associated with a JavaScript function.",
+            "properties": {
+              "script": {
+                "description": "The JavaScript code containing a single function definition. For example: 'function (x, y) { return x + y; }'",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ScalarFunctionProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/FunctionProperties"
+              }
+            ],
+            "description": "The properties that are associated with a scalar function.",
+            "type": "object",
+            "x-ms-discriminator-value": "Scalar"
+          },
+          "SubResource": {
+            "description": "The base sub-resource model definition.",
+            "properties": {
+              "id": {
+                "description": "Resource Id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Resource name",
+                "type": "string"
+              },
+              "type": {
+                "description": "Resource type",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "FunctionNameParameter": {
+            "description": "The name of the function.",
+            "in": "path",
+            "name": "functionName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions": {
+            "get": {
+              "description": "Lists all of the functions under the specified streaming job.",
+              "operationId": "Functions_ListByStreamingJob",
+              "parameters": [
+                {
+                  "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+                  "in": "query",
+                  "name": "$select",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the functions under the specified streaming job.",
+                  "schema": {
+                    "$ref": "#/definitions/FunctionListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Functions"
+              ],
+              "x-ms-examples": {
+                "List all functions in a streaming job": {
+                  "$ref": "./examples/Function_ListByStreamingJob.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}": {
+            "delete": {
+              "description": "Deletes a function from the streaming job.",
+              "operationId": "Functions_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/FunctionNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The function was successfully deleted."
+                },
+                "204": {
+                  "description": "The function does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Functions"
+              ],
+              "x-ms-examples": {
+                "Delete a function": {
+                  "$ref": "./examples/Function_Delete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets details about the specified function.",
+              "operationId": "Functions_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/FunctionNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified function.",
+                  "headers": {
+                    "ETag": {
+                      "description": "The current entity tag for the function. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                      "type": "string"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/Function"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Functions"
+              ],
+              "x-ms-examples": {
+                "Get a JavaScript function": {
+                  "$ref": "./examples/Function_Get_JavaScript.json"
+                },
+                "Get an Azure ML function": {
+                  "$ref": "./examples/Function_Get_AzureML.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "af51174d4c5d7ba922d6ce45cb4b3bfbce4b6de3f732bd1c6f94814225ebd086",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/functions.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AvroSerialization": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Serialization"
+              }
+            ],
+            "description": "Describes how data from an input is serialized or how data is serialized when written to an output in Avro format.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AvroSerializationProperties",
+                "description": "The properties that are associated with the Avro serialization type. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Avro"
+          },
+          "AvroSerializationProperties": {
+            "description": "The properties that are associated with the Avro serialization type.",
+            "properties": {},
+            "type": "object"
+          },
+          "AzureSqlReferenceInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ReferenceInputDataSource"
+              }
+            ],
+            "description": "Describes an Azure SQL database reference input data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureSqlReferenceInputDataSourceProperties",
+                "description": "The properties that are associated with SQL DB input containing reference data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Sql/Server/Database"
+          },
+          "AzureSqlReferenceInputDataSourceProperties": {
+            "description": "The properties that are associated with SQL DB input containing reference data. Required on PUT (CreateOrReplace) requests.",
+            "properties": {
+              "database": {
+                "description": "This element is associated with the datasource element. This is the name of the database that output will be written to.",
+                "type": "string"
+              },
+              "deltaSnapshotQuery": {
+                "description": "This element is associated with the datasource element. This query is used to fetch incremental changes from the SQL database. To use this option, we recommend using temporal tables in Azure SQL Database.",
+                "type": "string"
+              },
+              "fullSnapshotQuery": {
+                "description": "This element is associated with the datasource element. This query is used to fetch data from the sql database.",
+                "type": "string"
+              },
+              "password": {
+                "description": "This element is associated with the datasource element. This is the password that will be used to connect to the SQL Database instance.",
+                "type": "string",
+                "x-ms-secret": true
+              },
+              "refreshRate": {
+                "description": "This element is associated with the datasource element. This indicates how frequently the data will be fetched from the database. It is of DateTime format.",
+                "type": "string"
+              },
+              "refreshType": {
+                "$ref": "#/definitions/RefreshType",
+                "description": "Indicates the type of data refresh option.",
+                "type": "object"
+              },
+              "server": {
+                "description": "This element is associated with the datasource element. This is the name of the server that contains the database that will be written to.",
+                "type": "string"
+              },
+              "table": {
+                "description": "This element is associated with the datasource element. The name of the table in the Azure SQL database..",
+                "type": "string"
+              },
+              "user": {
+                "description": "This element is associated with the datasource element. This is the user name that will be used to connect to the SQL Database instance.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "BlobDataSourceProperties": {
+            "description": "The properties that are associated with a blob data source.",
+            "properties": {
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              },
+              "container": {
+                "description": "The name of a container within the associated Storage account. This container contains either the blob(s) to be read from or written to. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "dateFormat": {
+                "description": "The date format. Wherever {date} appears in pathPattern, the value of this property is used as the date format instead.",
+                "type": "string"
+              },
+              "pathPattern": {
+                "description": "The blob path pattern. Not a regular expression. It represents a pattern against which blob names will be matched to determine whether or not they should be included as input or output to the job. See https://docs.microsoft.com/en-us/rest/api/streamanalytics/stream-analytics-input or https://docs.microsoft.com/en-us/rest/api/streamanalytics/stream-analytics-output for a more detailed explanation and example.",
+                "type": "string"
+              },
+              "storageAccounts": {
+                "description": "A list of one or more Azure Storage accounts. Required on PUT (CreateOrReplace) requests.",
+                "items": {
+                  "$ref": "#/definitions/StorageAccount"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "accountName"
+                ]
+              },
+              "timeFormat": {
+                "description": "The time format. Wherever {time} appears in pathPattern, the value of this property is used as the time format instead.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "BlobReferenceInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ReferenceInputDataSource"
+              }
+            ],
+            "description": "Describes a blob input data source that contains reference data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/BlobReferenceInputDataSourceProperties",
+                "description": "The properties that are associated with a blob input containing reference data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Storage/Blob"
+          },
+          "BlobReferenceInputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/BlobDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a blob input containing reference data.",
+            "properties": {},
+            "type": "object"
+          },
+          "BlobStreamInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/StreamInputDataSource"
+              }
+            ],
+            "description": "Describes a blob input data source that contains stream data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/BlobStreamInputDataSourceProperties",
+                "description": "The properties that are associated with a blob input containing stream data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Storage/Blob"
+          },
+          "BlobStreamInputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/BlobDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a blob input containing stream data.",
+            "properties": {
+              "sourcePartitionCount": {
+                "description": "The partition count of the blob input data source. Range 1 - 1024.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "Compression": {
+            "description": "Describes how input data is compressed",
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/CompressionType",
+                "description": "Indicates the type of compression that the input uses. Required on PUT (CreateOrReplace) requests."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "CompressionType": {
+            "default": "None",
+            "description": "Indicates the type of compression that the input uses. Required on PUT (CreateOrReplace) requests.",
+            "enum": [
+              "None",
+              "GZip",
+              "Deflate"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CompressionType"
+            }
+          },
+          "CsvSerialization": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Serialization"
+              }
+            ],
+            "description": "Describes how data from an input is serialized or how data is serialized when written to an output in CSV format.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/CsvSerializationProperties",
+                "description": "The properties that are associated with the CSV serialization type. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Csv"
+          },
+          "CsvSerializationProperties": {
+            "description": "The properties that are associated with the CSV serialization type.",
+            "properties": {
+              "encoding": {
+                "$ref": "#/definitions/Encoding",
+                "description": "Specifies the encoding of the incoming data in the case of input and the encoding of outgoing data in the case of output. Required on PUT (CreateOrReplace) requests."
+              },
+              "fieldDelimiter": {
+                "description": "Specifies the delimiter that will be used to separate comma-separated value (CSV) records. See https://docs.microsoft.com/en-us/rest/api/streamanalytics/stream-analytics-input or https://docs.microsoft.com/en-us/rest/api/streamanalytics/stream-analytics-output for a list of supported values. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DiagnosticCondition": {
+            "description": "Condition applicable to the resource, or to the job overall, that warrant customer attention.",
+            "properties": {
+              "code": {
+                "description": "The opaque diagnostic code.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "message": {
+                "description": "The human-readable message describing the condition in detail. Localized in the Accept-Language of the client request.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "since": {
+                "description": "The UTC timestamp of when the condition started. Customers should be able to find a corresponding event in the ops log around this time.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Diagnostics": {
+            "description": "Describes conditions applicable to the Input, Output, or the job overall, that warrant customer attention.",
+            "properties": {
+              "conditions": {
+                "description": "A collection of zero or more conditions applicable to the resource, or to the job overall, that warrant customer attention.",
+                "items": {
+                  "$ref": "#/definitions/DiagnosticCondition"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "type": "object"
+          },
+          "Encoding": {
+            "description": "Specifies the encoding of the incoming data in the case of input and the encoding of outgoing data in the case of output.",
+            "enum": [
+              "UTF8"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Encoding"
+            }
+          },
+          "EventHubDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ServiceBusDataSourceProperties"
+              }
+            ],
+            "description": "The common properties that are associated with Event Hub data sources.",
+            "properties": {
+              "eventHubName": {
+                "description": "The name of the Event Hub. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubStreamInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/StreamInputDataSource"
+              }
+            ],
+            "description": "Describes an Event Hub input data source that contains stream data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/EventHubStreamInputDataSourceProperties",
+                "description": "The properties that are associated with an Event Hub input containing stream data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.ServiceBus/EventHub"
+          },
+          "EventHubStreamInputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/EventHubDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a Event Hub input containing stream data.",
+            "properties": {
+              "consumerGroupName": {
+                "description": "The name of an Event Hub Consumer Group that should be used to read events from the Event Hub. Specifying distinct consumer group names for multiple inputs allows each of those inputs to receive the same events from the Event Hub. If not specified, the input uses the Event Hub\u2019s default consumer group.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubV2StreamInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/StreamInputDataSource"
+              }
+            ],
+            "description": "Describes an Event Hub input data source that contains stream data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/EventHubStreamInputDataSourceProperties",
+                "description": "The properties that are associated with an Event Hub input containing stream data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.EventHub/EventHub"
+          },
+          "EventSerializationType": {
+            "description": "Indicates the type of serialization that the input or output uses. Required on PUT (CreateOrReplace) requests.",
+            "enum": [
+              "Csv",
+              "Avro",
+              "Json",
+              "Parquet"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EventSerializationType"
+            }
+          },
+          "FileReferenceInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/ReferenceInputDataSource"
+              }
+            ],
+            "description": "Describes a file input data source that contains reference data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/FileReferenceInputDataSourceProperties",
+                "description": "The properties that are associated with a file input containing reference data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "File"
+          },
+          "FileReferenceInputDataSourceProperties": {
+            "description": "The properties that are associated with a file input containing reference data.",
+            "properties": {
+              "path": {
+                "description": "The path of the file.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "GatewayMessageBusSourceProperties": {
+            "description": "The properties that are associated with a gateway message bus datasource.",
+            "properties": {
+              "topic": {
+                "description": "The name of the Service Bus topic.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "GatewayMessageBusStreamInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/StreamInputDataSource"
+              }
+            ],
+            "description": "Describes a blob input data source that contains stream data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/GatewayMessageBusStreamInputDataSourceProperties",
+                "description": "The properties that are associated with a gateway message bus input containing stream data.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "GatewayMessageBus"
+          },
+          "GatewayMessageBusStreamInputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/GatewayMessageBusSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a gateway message bus input containing stream data.",
+            "type": "object"
+          },
+          "Input": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/SubResource"
+              }
+            ],
+            "description": "An input object, containing all information associated with the named input. All inputs are contained under a streaming job.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/InputProperties",
+                "description": "The properties that are associated with an input. Required on PUT (CreateOrReplace) requests."
+              }
+            },
+            "type": "object"
+          },
+          "InputListResult": {
+            "description": "Object containing a list of inputs under a streaming job.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of inputs under a streaming job. Populated by a 'List' operation.",
+                "items": {
+                  "$ref": "#/definitions/Input"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "InputProperties": {
+            "description": "The properties that are associated with an input.",
+            "discriminator": "type",
+            "properties": {
+              "compression": {
+                "$ref": "#/definitions/Compression",
+                "description": "Describes how input data is compressed"
+              },
+              "diagnostics": {
+                "$ref": "#/definitions/Diagnostics",
+                "description": "Describes conditions applicable to the Input, Output, or the job overall, that warrant customer attention.",
+                "readOnly": true
+              },
+              "etag": {
+                "description": "The current entity tag for the input. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "partitionKey": {
+                "description": "partitionKey Describes a key in the input data which is used for partitioning the input data",
+                "type": "string"
+              },
+              "serialization": {
+                "$ref": "#/definitions/Serialization",
+                "description": "Describes how data from an input is serialized or how data is serialized when written to an output. Required on PUT (CreateOrReplace) requests."
+              },
+              "type": {
+                "description": "Indicates whether the input is a source of reference data or stream data. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "IoTHubStreamInputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/StreamInputDataSource"
+              }
+            ],
+            "description": "Describes an IoT Hub input data source that contains stream data.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/IoTHubStreamInputDataSourceProperties",
+                "description": "The properties that are associated with an IoT Hub input containing stream data. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Devices/IotHubs"
+          },
+          "IoTHubStreamInputDataSourceProperties": {
+            "description": "The properties that are associated with a IoT Hub input containing stream data.",
+            "properties": {
+              "consumerGroupName": {
+                "description": "The name of an IoT Hub Consumer Group that should be used to read events from the IoT Hub. If not specified, the input uses the Iot Hub\u2019s default consumer group.",
+                "type": "string"
+              },
+              "endpoint": {
+                "description": "The IoT Hub endpoint to connect to (ie. messages/events, messages/operationsMonitoringEvents, etc.).",
+                "type": "string"
+              },
+              "iotHubNamespace": {
+                "description": "The name or the URI of the IoT Hub. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "sharedAccessPolicyKey": {
+                "description": "The shared access policy key for the specified shared access policy. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "sharedAccessPolicyName": {
+                "description": "The shared access policy name for the IoT Hub. This policy must contain at least the Service connect permission. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "JsonOutputSerializationFormat": {
+            "description": "Specifies the format of the JSON the output will be written in. The currently supported values are 'lineSeparated' indicating the output will be formatted by having each JSON object separated by a new line and 'array' indicating the output will be formatted as an array of JSON objects.",
+            "enum": [
+              "LineSeparated",
+              "Array"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "JsonOutputSerializationFormat"
+            }
+          },
+          "JsonSerialization": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Serialization"
+              }
+            ],
+            "description": "Describes how data from an input is serialized or how data is serialized when written to an output in JSON format.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/JsonSerializationProperties",
+                "description": "The properties that are associated with the JSON serialization type. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Json"
+          },
+          "JsonSerializationProperties": {
+            "description": "The properties that are associated with the JSON serialization type.",
+            "properties": {
+              "encoding": {
+                "$ref": "#/definitions/Encoding",
+                "description": "Specifies the encoding of the incoming data in the case of input and the encoding of outgoing data in the case of output. Required on PUT (CreateOrReplace) requests."
+              },
+              "format": {
+                "$ref": "#/definitions/JsonOutputSerializationFormat",
+                "description": "This property only applies to JSON serialization of outputs only. It is not applicable to inputs. This property specifies the format of the JSON the output will be written in. The currently supported values are 'lineSeparated' indicating the output will be formatted by having each JSON object separated by a new line and 'array' indicating the output will be formatted as an array of JSON objects. Default value is 'lineSeparated' if left null."
+              }
+            },
+            "type": "object"
+          },
+          "ParquetSerialization": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Serialization"
+              }
+            ],
+            "description": "Describes how data from an input is serialized or how data is serialized when written to an output in Parquet format.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/ParquetSerializationProperties",
+                "description": "The properties that are associated with the Parquet serialization type. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Parquet"
+          },
+          "ParquetSerializationProperties": {
+            "description": "The properties that are associated with the Parquet serialization type.",
+            "properties": {},
+            "type": "object"
+          },
+          "ReferenceInputDataSource": {
+            "description": "Describes an input data source that contains reference data.",
+            "discriminator": "type",
+            "properties": {
+              "type": {
+                "description": "Indicates the type of input data source containing reference data. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "ReferenceInputProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/InputProperties"
+              }
+            ],
+            "description": "The properties that are associated with an input containing reference data.",
+            "properties": {
+              "datasource": {
+                "$ref": "#/definitions/ReferenceInputDataSource",
+                "description": "Describes an input data source that contains reference data. Required on PUT (CreateOrReplace) requests."
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Reference"
+          },
+          "RefreshType": {
+            "description": "Indicates the type of data refresh option.",
+            "enum": [
+              "Static",
+              "RefreshPeriodicallyWithFull",
+              "RefreshPeriodicallyWithDelta"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "RefreshType"
+            }
+          },
+          "Serialization": {
+            "description": "Describes how data from an input is serialized or how data is serialized when written to an output.",
+            "discriminator": "type",
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/EventSerializationType",
+                "description": "Indicates the type of serialization that the input or output uses. Required on PUT (CreateOrReplace) requests."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "ServiceBusDataSourceProperties": {
+            "description": "The common properties that are associated with Service Bus data sources (Queues, Topics, Event Hubs, etc.).",
+            "properties": {
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              },
+              "serviceBusNamespace": {
+                "description": "The namespace that is associated with the desired Event Hub, Service Bus Queue, Service Bus Topic, etc. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "sharedAccessPolicyKey": {
+                "description": "The shared access policy key for the specified shared access policy. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "sharedAccessPolicyName": {
+                "description": "The shared access policy name for the Event Hub, Service Bus Queue, Service Bus Topic, etc. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "StorageAccount": {
+            "description": "The properties that are associated with an Azure Storage account",
+            "properties": {
+              "accountKey": {
+                "description": "The account key for the Azure Storage account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "accountName": {
+                "description": "The name of the Azure Storage account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "StreamInputDataSource": {
+            "description": "Describes an input data source that contains stream data.",
+            "discriminator": "type",
+            "properties": {
+              "type": {
+                "description": "Indicates the type of input data source containing stream data. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "StreamInputProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/InputProperties"
+              }
+            ],
+            "description": "The properties that are associated with an input containing stream data.",
+            "properties": {
+              "datasource": {
+                "$ref": "#/definitions/StreamInputDataSource",
+                "description": "Describes an input data source that contains stream data. Required on PUT (CreateOrReplace) requests."
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Stream"
+          },
+          "SubResource": {
+            "description": "The base sub-resource model definition.",
+            "properties": {
+              "id": {
+                "description": "Resource Id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Resource name",
+                "type": "string"
+              },
+              "type": {
+                "description": "Resource type",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "InputNameParameter": {
+            "description": "The name of the input.",
+            "in": "path",
+            "name": "inputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs": {
+            "get": {
+              "description": "Lists all of the inputs under the specified streaming job.",
+              "operationId": "Inputs_ListByStreamingJob",
+              "parameters": [
+                {
+                  "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+                  "in": "query",
+                  "name": "$select",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the inputs under the specified streaming job.",
+                  "schema": {
+                    "$ref": "#/definitions/InputListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Inputs"
+              ],
+              "x-ms-examples": {
+                "List all inputs in a streaming job": {
+                  "$ref": "./examples/Input_ListByStreamingJob.json"
+                },
+                "List all inputs in a streaming job and include diagnostic information using the $select OData query parameter": {
+                  "$ref": "./examples/Input_ListByStreamingJob_Diagnostics.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/inputs/{inputName}": {
+            "delete": {
+              "description": "Deletes an input from the streaming job.",
+              "operationId": "Inputs_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/InputNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The input was successfully deleted."
+                },
+                "204": {
+                  "description": "The input does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Inputs"
+              ],
+              "x-ms-examples": {
+                "Delete an input": {
+                  "$ref": "./examples/Input_Delete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets details about the specified input.",
+              "operationId": "Inputs_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/InputNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified input.",
+                  "headers": {
+                    "ETag": {
+                      "description": "The current entity tag for the input. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                      "type": "string"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/Input"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Inputs"
+              ],
+              "x-ms-examples": {
+                "Get a reference blob input with CSV serialization": {
+                  "$ref": "./examples/Input_Get_Reference_Blob_CSV.json"
+                },
+                "Get a stream Event Hub input with JSON serialization": {
+                  "$ref": "./examples/Input_Get_Stream_EventHub_JSON.json"
+                },
+                "Get a stream IoT Hub input with Avro serialization": {
+                  "$ref": "./examples/Input_Get_Stream_IoTHub_Avro.json"
+                },
+                "Get a stream blob input with CSV serialization": {
+                  "$ref": "./examples/Input_Get_Stream_Blob_CSV.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "b4fb358e5fc51aa5a4d9d0e4bf0b03c03b7c8670a18e77dd8367c2045db2b310",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/inputs.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "AzureDataLakeStoreOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Azure Data Lake Store output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureDataLakeStoreOutputDataSourceProperties",
+                "description": "The properties that are associated with an Azure Data Lake Store output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.DataLake/Accounts"
+          },
+          "AzureDataLakeStoreOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OAuthBasedDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with an Azure Data Lake Store.",
+            "properties": {
+              "accountName": {
+                "description": "The name of the Azure Data Lake Store account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              },
+              "dateFormat": {
+                "description": "The date format. Wherever {date} appears in filePathPrefix, the value of this property is used as the date format instead.",
+                "type": "string"
+              },
+              "filePathPrefix": {
+                "description": "The location of the file to which the output should be written to. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The tenant id of the user used to obtain the refresh token. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "timeFormat": {
+                "description": "The time format. Wherever {time} appears in filePathPrefix, the value of this property is used as the time format instead.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AzureFunctionOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Defines the metadata of AzureFunctionOutputDataSource",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureFunctionOutputDataSourceProperties",
+                "description": "The properties that are associated with a Azure Function output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.AzureFunction"
+          },
+          "AzureFunctionOutputDataSourceProperties": {
+            "description": "The properties that are associated with an Azure Function output.",
+            "properties": {
+              "apiKey": {
+                "description": "If you want to use an Azure Function from another subscription, you can do so by providing the key to access your function.",
+                "type": "string"
+              },
+              "functionAppName": {
+                "description": "The name of your Azure Functions app.",
+                "type": "string"
+              },
+              "functionName": {
+                "description": "The name of the function in your Azure Functions app.",
+                "type": "string"
+              },
+              "maxBatchCount": {
+                "description": "A property that lets you specify the maximum number of events in each batch that's sent to Azure Functions. The default value is 100.",
+                "type": "number"
+              },
+              "maxBatchSize": {
+                "description": "A property that lets you set the maximum size for each output batch that's sent to your Azure function. The input unit is in bytes. By default, this value is 262,144 bytes (256 KB).",
+                "type": "number"
+              }
+            },
+            "type": "object"
+          },
+          "AzureSqlDatabaseDataSourceProperties": {
+            "description": "The properties that are associated with an Azure SQL database data source.",
+            "properties": {
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              },
+              "database": {
+                "description": "The name of the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "maxBatchCount": {
+                "description": "Max Batch count for write to Sql database, the default value is 10,000. Optional on PUT requests.",
+                "type": "number"
+              },
+              "maxWriterCount": {
+                "description": "Max Writer count, currently only 1(single writer) and 0(based on query partition) are available. Optional on PUT requests.",
+                "type": "number"
+              },
+              "password": {
+                "description": "The password that will be used to connect to the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "server": {
+                "description": "The name of the SQL server containing the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "table": {
+                "description": "The name of the table in the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "user": {
+                "description": "The user name that will be used to connect to the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AzureSqlDatabaseOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Azure SQL database output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureSqlDatabaseOutputDataSourceProperties",
+                "description": "The properties that are associated with an Azure SQL database output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Sql/Server/Database"
+          },
+          "AzureSqlDatabaseOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AzureSqlDatabaseDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with an Azure SQL database output.",
+            "properties": {},
+            "type": "object"
+          },
+          "AzureSynapseDataSourceProperties": {
+            "description": "The properties that are associated with an Azure SQL database data source.",
+            "properties": {
+              "database": {
+                "description": "The name of the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "password": {
+                "description": "The password that will be used to connect to the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string",
+                "x-ms-secret": true
+              },
+              "server": {
+                "description": "The name of the SQL server containing the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "table": {
+                "description": "The name of the table in the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "user": {
+                "description": "The user name that will be used to connect to the Azure SQL database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "AzureSynapseOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Azure Synapse output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureSynapseOutputDataSourceProperties",
+                "description": "The properties that are associated with an Azure Synapse output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Sql/Server/DataWarehouse"
+          },
+          "AzureSynapseOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/AzureSynapseDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with an Azure Synapse output.",
+            "properties": {},
+            "type": "object"
+          },
+          "AzureTableOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Azure Table output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/AzureTableOutputDataSourceProperties",
+                "description": "The properties that are associated with an Azure Table output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Storage/Table"
+          },
+          "AzureTableOutputDataSourceProperties": {
+            "description": "The properties that are associated with an Azure Table output.",
+            "properties": {
+              "accountKey": {
+                "description": "The account key for the Azure Storage account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string",
+                "x-ms-secret": true
+              },
+              "accountName": {
+                "description": "The name of the Azure Storage account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "batchSize": {
+                "description": "The number of rows to write to the Azure Table at a time.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "columnsToRemove": {
+                "description": "If specified, each item in the array is the name of a column to remove (if present) from output event entities.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "partitionKey": {
+                "description": "This element indicates the name of a column from the SELECT statement in the query that will be used as the partition key for the Azure Table. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "rowKey": {
+                "description": "This element indicates the name of a column from the SELECT statement in the query that will be used as the row key for the Azure Table. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "table": {
+                "description": "The name of the Azure Table. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "BlobOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a blob output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/BlobOutputDataSourceProperties",
+                "description": "The properties that are associated with a blob output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Storage/Blob"
+          },
+          "BlobOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/BlobDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a blob output.",
+            "properties": {
+              "blobPathPrefix": {
+                "description": "Blob path prefix.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "DocumentDbOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a DocumentDB output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/DocumentDbOutputDataSourceProperties",
+                "description": "The properties that are associated with a DocumentDB output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.Storage/DocumentDB"
+          },
+          "DocumentDbOutputDataSourceProperties": {
+            "description": "The properties that are associated with a DocumentDB output.",
+            "properties": {
+              "accountId": {
+                "description": "The DocumentDB account name or ID. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "accountKey": {
+                "description": "The account key for the DocumentDB account. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "collectionNamePattern": {
+                "description": "The collection name pattern for the collections to be used. The collection name format can be constructed using the optional {partition} token, where partitions start from 0. See the DocumentDB section of https://docs.microsoft.com/en-us/rest/api/streamanalytics/stream-analytics-output for more information. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "database": {
+                "description": "The name of the DocumentDB database. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "documentId": {
+                "description": "The name of the field in output events used to specify the primary key which insert or update operations are based on.",
+                "type": "string"
+              },
+              "partitionKey": {
+                "description": "The name of the field in output events used to specify the key for partitioning output across collections. If 'collectionNamePattern' contains the {partition} token, this property is required to be specified.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Event Hub output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/EventHubOutputDataSourceProperties",
+                "description": "The properties that are associated with an Event Hub output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.ServiceBus/EventHub"
+          },
+          "EventHubOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/EventHubDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with an Event Hub output.",
+            "properties": {
+              "partitionKey": {
+                "description": "The key/column that is used to determine to which partition to send event data.",
+                "type": "string"
+              },
+              "propertyColumns": {
+                "description": "The properties associated with this Event Hub output.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "EventHubV2OutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes an Event Hub output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/EventHubOutputDataSourceProperties",
+                "description": "The properties that are associated with an Event Hub output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.EventHub/EventHub"
+          },
+          "GatewayMessageBusOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a Gateway Message Bus output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/GatewayMessageBusOutputDataSourceProperties",
+                "description": "The properties that are associated with a Gateway Message Bus output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "GatewayMessageBus"
+          },
+          "GatewayMessageBusOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/GatewayMessageBusSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a Gateway Message Bus.",
+            "type": "object"
+          },
+          "OAuthBasedDataSourceProperties": {
+            "description": "The properties that are associated with data sources that use OAuth as their authentication model.",
+            "properties": {
+              "refreshToken": {
+                "description": "A refresh token that can be used to obtain a valid access token that can then be used to authenticate with the data source. A valid refresh token is currently only obtainable via the Azure Portal. It is recommended to put a dummy string value here when creating the data source and then going to the Azure Portal to authenticate the data source which will update this property with a valid refresh token. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "tokenUserDisplayName": {
+                "description": "The user display name of the user that was used to obtain the refresh token. Use this property to help remember which user was used to obtain the refresh token.",
+                "type": "string"
+              },
+              "tokenUserPrincipalName": {
+                "description": "The user principal name (UPN) of the user that was used to obtain the refresh token. Use this property to help remember which user was used to obtain the refresh token.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Output": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/SubResource"
+              }
+            ],
+            "description": "An output object, containing all information associated with the named output. All outputs are contained under a streaming job.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/OutputProperties",
+                "description": "The properties that are associated with an output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "OutputDataSource": {
+            "description": "Describes the data source that output will be written to.",
+            "discriminator": "type",
+            "properties": {
+              "type": {
+                "description": "Indicates the type of data source output will be written to. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "OutputListResult": {
+            "description": "Object containing a list of outputs under a streaming job.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of outputs under a streaming job. Populated by a 'List' operation.",
+                "items": {
+                  "$ref": "#/definitions/Output"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "OutputProperties": {
+            "description": "The properties that are associated with an output.",
+            "properties": {
+              "datasource": {
+                "$ref": "#/definitions/OutputDataSource",
+                "description": "Describes the data source that output will be written to. Required on PUT (CreateOrReplace) requests."
+              },
+              "diagnostics": {
+                "$ref": "./inputs.json#/definitions/Diagnostics",
+                "description": "Describes conditions applicable to the Input, Output, or the job overall, that warrant customer attention.",
+                "readOnly": true
+              },
+              "etag": {
+                "description": "The current entity tag for the output. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "serialization": {
+                "$ref": "./inputs.json#/definitions/Serialization",
+                "description": "Describes how data from an input is serialized or how data is serialized when written to an output. Required on PUT (CreateOrReplace) requests."
+              },
+              "sizeWindow": {
+                "description": "The size window to constrain a Stream Analytics output to.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "timeWindow": {
+                "description": "The time frame for filtering Stream Analytics job outputs.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PowerBIOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a Power BI output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/PowerBIOutputDataSourceProperties",
+                "description": "The properties that are associated with a Power BI output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "PowerBI"
+          },
+          "PowerBIOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OAuthBasedDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a Power BI output.",
+            "properties": {
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              },
+              "dataset": {
+                "description": "The name of the Power BI dataset. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "groupId": {
+                "description": "The ID of the Power BI group.",
+                "type": "string"
+              },
+              "groupName": {
+                "description": "The name of the Power BI group. Use this property to help remember which specific Power BI group id was used.",
+                "type": "string"
+              },
+              "table": {
+                "description": "The name of the Power BI table under the specified dataset. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ServiceBusQueueOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a Service Bus Queue output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/ServiceBusQueueOutputDataSourceProperties",
+                "description": "The properties that are associated with a Service Bus Queue output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.ServiceBus/Queue"
+          },
+          "ServiceBusQueueOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/ServiceBusDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a Service Bus Queue output.",
+            "properties": {
+              "propertyColumns": {
+                "description": "A string array of the names of output columns to be attached to Service Bus messages as custom properties.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "queueName": {
+                "description": "The name of the Service Bus Queue. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "systemPropertyColumns": {
+                "description": "The system properties associated with the Service Bus Queue. The following system properties are supported: ReplyToSessionId, ContentType, To, Subject, CorrelationId, TimeToLive, PartitionKey, SessionId, ScheduledEnqueueTime, MessageId, ReplyTo, Label, ScheduledEnqueueTimeUtc.",
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "ServiceBusTopicOutputDataSource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/OutputDataSource"
+              }
+            ],
+            "description": "Describes a Service Bus Topic output data source.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/ServiceBusTopicOutputDataSourceProperties",
+                "description": "The properties that are associated with a Service Bus Topic output. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object",
+            "x-ms-discriminator-value": "Microsoft.ServiceBus/Topic"
+          },
+          "ServiceBusTopicOutputDataSourceProperties": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/ServiceBusDataSourceProperties"
+              }
+            ],
+            "description": "The properties that are associated with a Service Bus Topic output.",
+            "properties": {
+              "propertyColumns": {
+                "description": "A string array of the names of output columns to be attached to Service Bus messages as custom properties.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "systemPropertyColumns": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The system properties associated with the Service Bus Topic Output. The following system properties are supported: ReplyToSessionId, ContentType, To, Subject, CorrelationId, TimeToLive, PartitionKey, SessionId, ScheduledEnqueueTime, MessageId, ReplyTo, Label, ScheduledEnqueueTimeUtc.",
+                "type": "object"
+              },
+              "topicName": {
+                "description": "The name of the Service Bus Topic. Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SubResource": {
+            "description": "The base sub-resource model definition.",
+            "properties": {
+              "id": {
+                "description": "Resource Id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Resource name",
+                "type": "string"
+              },
+              "type": {
+                "description": "Resource type",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "OutputNameParameter": {
+            "description": "The name of the output.",
+            "in": "path",
+            "name": "outputName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs": {
+            "get": {
+              "description": "Lists all of the outputs under the specified streaming job.",
+              "operationId": "Outputs_ListByStreamingJob",
+              "parameters": [
+                {
+                  "description": "The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or \"*\" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value.",
+                  "in": "query",
+                  "name": "$select",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the outputs under the specified streaming job.",
+                  "schema": {
+                    "$ref": "#/definitions/OutputListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Outputs"
+              ],
+              "x-ms-examples": {
+                "List all outputs in a streaming job": {
+                  "$ref": "./examples/Output_ListByStreamingJob.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/outputs/{outputName}": {
+            "delete": {
+              "description": "Deletes an output from the streaming job.",
+              "operationId": "Outputs_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/OutputNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The output was successfully deleted."
+                },
+                "204": {
+                  "description": "The output does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Outputs"
+              ],
+              "x-ms-examples": {
+                "Delete an output": {
+                  "$ref": "./examples/Output_Delete.json"
+                }
+              }
+            },
+            "get": {
+              "description": "Gets details about the specified output.",
+              "operationId": "Outputs_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/OutputNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified output.",
+                  "headers": {
+                    "ETag": {
+                      "description": "The current entity tag for the output. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                      "type": "string"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/Output"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Outputs"
+              ],
+              "x-ms-examples": {
+                "Get a DocumentDB output": {
+                  "$ref": "./examples/Output_Get_DocumentDB.json"
+                },
+                "Get a Power BI output": {
+                  "$ref": "./examples/Output_Get_PowerBI.json"
+                },
+                "Get a Service Bus Queue output with Avro serialization": {
+                  "$ref": "./examples/Output_Get_ServiceBusQueue_Avro.json"
+                },
+                "Get a Service Bus Topic output with CSV serialization": {
+                  "$ref": "./examples/Output_Get_ServiceBusTopic_CSV.json"
+                },
+                "Get a blob output with CSV serialization": {
+                  "$ref": "./examples/Output_Get_Blob_CSV.json"
+                },
+                "Get an Azure Data Lake Store output with JSON serialization": {
+                  "$ref": "./examples/Output_Get_AzureDataLakeStore_JSON.json"
+                },
+                "Get an Azure Data Warehouse output": {
+                  "$ref": "./examples/Output_Get_DataWarehouse.json"
+                },
+                "Get an Azure Function output": {
+                  "$ref": "./examples/Output_Get_AzureFunction.json"
+                },
+                "Get an Azure SQL database output": {
+                  "$ref": "./examples/Output_Get_AzureSQL.json"
+                },
+                "Get an Azure Table output": {
+                  "$ref": "./examples/Output_Get_AzureTable.json"
+                },
+                "Get an Event Hub output with JSON serialization": {
+                  "$ref": "./examples/Output_Get_EventHub_JSON.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "5b5119f8d62d3840286eab709beb9987fc047e97baa8edda8851705c8389b2aa",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/outputs.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "PrivateEndpoint": {
+            "allOf": [
+              {
+                "$ref": "./common/v1/definitions.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Complete information about the private endpoint.",
+            "properties": {
+              "etag": {
+                "description": "Unique opaque string (generally a GUID) that represents the metadata state of the resource (private endpoint) and changes whenever the resource is updated. Required on PUT (CreateOrUpdate) requests.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/PrivateEndpointProperties",
+                "description": "The properties associated with a private endpoint.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "PrivateEndpointListResult": {
+            "description": "A list of private endpoints.",
+            "properties": {
+              "nextLink": {
+                "description": "The URL to fetch the next set of private endpoints.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of private endpoints.",
+                "items": {
+                  "$ref": "#/definitions/PrivateEndpoint"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "PrivateEndpointProperties": {
+            "description": "The properties associated with a private endpoint.",
+            "properties": {
+              "createdDate": {
+                "description": "The date when this private endpoint was created.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "manualPrivateLinkServiceConnections": {
+                "description": "A list of connections to the remote resource. Immutable after it is set.",
+                "items": {
+                  "$ref": "#/definitions/PrivateLinkServiceConnection"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "/properties/privateLinkServiceId"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "PrivateLinkConnectionState": {
+            "description": "A collection of read-only information about the state of the connection to the private remote resource.",
+            "properties": {
+              "actionsRequired": {
+                "description": "A message indicating if changes on the service provider require any updates on the consumer.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "description": {
+                "description": "The reason for approval/rejection of the connection.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "status": {
+                "description": "Indicates whether the connection has been Approved/Rejected/Removed by the owner of the remote resource/service.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PrivateLinkServiceConnection": {
+            "description": "A grouping of information about the connection to the remote resource.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/PrivateLinkServiceConnectionProperties",
+                "description": "Bag of properties defining a privatelinkServiceConnection.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "PrivateLinkServiceConnectionProperties": {
+            "description": "Bag of properties defining a privatelinkServiceConnection.",
+            "properties": {
+              "groupIds": {
+                "description": "The ID(s) of the group(s) obtained from the remote resource that this private endpoint should connect to. Required on PUT (CreateOrUpdate) requests.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "privateLinkServiceConnectionState": {
+                "$ref": "#/definitions/PrivateLinkConnectionState",
+                "description": "A collection of read-only information about the state of the connection to the private remote resource."
+              },
+              "privateLinkServiceId": {
+                "description": "The resource id of the private link service. Required on PUT (CreateOrUpdate) requests.",
+                "type": "string"
+              },
+              "requestMessage": {
+                "description": "A message passed to the owner of the remote resource with this connection request. Restricted to 140 chars.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "PrivateEndpointNameParameter": {
+            "description": "The name of the private endpoint.",
+            "in": "path",
+            "name": "privateEndpointName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints": {
+            "get": {
+              "description": "Lists the private endpoints in the cluster.",
+              "operationId": "PrivateEndpoints_ListByCluster",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./clusters.json#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the private endpoints under the specified cluster.",
+                  "schema": {
+                    "$ref": "#/definitions/PrivateEndpointListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateEndpoints"
+              ],
+              "x-ms-examples": {
+                "Get the private endpoints in a cluster": {
+                  "$ref": "./examples/PrivateEndpoint_ListByCluster.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/clusters/{clusterName}/privateEndpoints/{privateEndpointName}": {
+            "delete": {
+              "description": "Delete the specified private endpoint.",
+              "operationId": "PrivateEndpoints_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./clusters.json#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/PrivateEndpointNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The private endpoint was successfully deleted."
+                },
+                "202": {
+                  "description": "The delete request was successfully initiated."
+                },
+                "204": {
+                  "description": "The private endpoint does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateEndpoints"
+              ],
+              "x-ms-examples": {
+                "Delete a private endpoint": {
+                  "$ref": "./examples/PrivateEndpoint_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "Gets information about the specified Private Endpoint.",
+              "operationId": "PrivateEndpoints_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./clusters.json#/parameters/ClusterNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/PrivateEndpointNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified private endpoint.",
+                  "schema": {
+                    "$ref": "#/definitions/PrivateEndpoint"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "PrivateEndpoints"
+              ],
+              "x-ms-examples": {
+                "Get a private endpoint": {
+                  "$ref": "./examples/PrivateEndpoint_Get.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "9c6d751553b01e7add13712254575fa6bc22ad4a2a340f563c22eb27be0bc0d7",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/privateEndpoints.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "ClusterInfo": {
+            "description": "The properties associated with a Stream Analytics cluster.",
+            "properties": {
+              "id": {
+                "description": "The resource id of cluster.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "CompatibilityLevel": {
+            "description": "Controls certain runtime behaviors of the streaming job.",
+            "enum": [
+              "1.0",
+              "1.2"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "CompatibilityLevel"
+            }
+          },
+          "EventsOutOfOrderPolicy": {
+            "description": "Indicates the policy to apply to events that arrive out of order in the input event stream.",
+            "enum": [
+              "Adjust",
+              "Drop"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "EventsOutOfOrderPolicy"
+            }
+          },
+          "Identity": {
+            "description": "Describes how identity is verified",
+            "properties": {
+              "principalId": {
+                "description": "The identity principal ID",
+                "readOnly": true,
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The identity tenantId",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "description": "The identity type",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "JobStorageAccount": {
+            "allOf": [
+              {
+                "$ref": "./inputs.json#/definitions/StorageAccount"
+              }
+            ],
+            "description": "The properties that are associated with an Azure Storage account with MSI",
+            "properties": {
+              "authenticationMode": {
+                "$ref": "./common/v1/definitions.json#/definitions/AuthenticationMode",
+                "description": "Authentication Mode."
+              }
+            },
+            "type": "object"
+          },
+          "OutputErrorPolicy": {
+            "description": "Indicates the policy to apply to events that arrive at the output and cannot be written to the external storage due to being malformed (missing column values, column values of wrong type or size).",
+            "enum": [
+              "Stop",
+              "Drop"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "OutputErrorPolicy"
+            }
+          },
+          "OutputStartMode": {
+            "description": "Value may be JobStartTime, CustomTime, or LastOutputEventTime to indicate whether the starting point of the output event stream should start whenever the job is started, start at a custom user time stamp specified via the outputStartTime property, or start from the last event output time.",
+            "enum": [
+              "JobStartTime",
+              "CustomTime",
+              "LastOutputEventTime"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "OutputStartMode"
+            }
+          },
+          "Sku": {
+            "description": "The properties that are associated with a SKU.",
+            "properties": {
+              "name": {
+                "description": "The name of the SKU. Required on PUT (CreateOrReplace) requests.",
+                "enum": [
+                  "Standard"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "SkuName"
+                }
+              }
+            },
+            "type": "object"
+          },
+          "StreamingJob": {
+            "allOf": [
+              {
+                "$ref": "./common/v1/definitions.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A streaming job object, containing all information associated with the named streaming job.",
+            "properties": {
+              "identity": {
+                "$ref": "#/definitions/Identity",
+                "description": "Describes the system-assigned managed identity assigned to this job that can be used to authenticate with inputs and outputs."
+              },
+              "properties": {
+                "$ref": "#/definitions/StreamingJobProperties",
+                "description": "The properties that are associated with a streaming job.  Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "StreamingJobListResult": {
+            "description": "Object containing a list of streaming jobs.",
+            "properties": {
+              "nextLink": {
+                "description": "The link (url) to the next page of results.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "value": {
+                "description": "A list of streaming jobs. Populated by a 'List' operation.",
+                "items": {
+                  "$ref": "#/definitions/StreamingJob"
+                },
+                "readOnly": true,
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "StreamingJobProperties": {
+            "description": "The properties that are associated with a streaming job.",
+            "properties": {
+              "cluster": {
+                "$ref": "#/definitions/ClusterInfo",
+                "description": "The cluster which streaming jobs will run on."
+              },
+              "compatibilityLevel": {
+                "$ref": "#/definitions/CompatibilityLevel",
+                "description": "Controls certain runtime behaviors of the streaming job."
+              },
+              "contentStoragePolicy": {
+                "description": "Valid values are JobStorageAccount and SystemAccount. If set to JobStorageAccount, this requires the user to also specify jobStorageAccount property. .",
+                "enum": [
+                  "SystemAccount",
+                  "JobStorageAccount"
+                ],
+                "readOnly": false,
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ContentStoragePolicy"
+                }
+              },
+              "createdDate": {
+                "description": "Value is an ISO-8601 formatted UTC timestamp indicating when the streaming job was created.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "dataLocale": {
+                "description": "The data locale of the stream analytics job. Value should be the name of a supported .NET Culture from the set https://msdn.microsoft.com/en-us/library/system.globalization.culturetypes(v=vs.110).aspx. Defaults to 'en-US' if none specified.",
+                "type": "string"
+              },
+              "etag": {
+                "description": "The current entity tag for the streaming job. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "eventsLateArrivalMaxDelayInSeconds": {
+                "description": "The maximum tolerable delay in seconds where events arriving late could be included.  Supported range is -1 to 1814399 (20.23:59:59 days) and -1 is used to specify wait indefinitely. If the property is absent, it is interpreted to have a value of -1.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "eventsOutOfOrderMaxDelayInSeconds": {
+                "description": "The maximum tolerable delay in seconds where out-of-order events can be adjusted to be back in order.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "eventsOutOfOrderPolicy": {
+                "$ref": "#/definitions/EventsOutOfOrderPolicy",
+                "description": "Indicates the policy to apply to events that arrive out of order in the input event stream."
+              },
+              "functions": {
+                "description": "A list of one or more functions for the streaming job. The name property for each function is required when specifying this property in a PUT request. This property cannot be modify via a PATCH operation. You must use the PATCH API available for the individual transformation.",
+                "items": {
+                  "$ref": "./functions.json#/definitions/Function"
+                },
+                "type": "array"
+              },
+              "inputs": {
+                "description": "A list of one or more inputs to the streaming job. The name property for each input is required when specifying this property in a PUT request. This property cannot be modify via a PATCH operation. You must use the PATCH API available for the individual input.",
+                "items": {
+                  "$ref": "./inputs.json#/definitions/Input"
+                },
+                "type": "array"
+              },
+              "jobId": {
+                "description": "A GUID uniquely identifying the streaming job. This GUID is generated upon creation of the streaming job.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "jobState": {
+                "description": "Describes the state of the streaming job.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "jobStorageAccount": {
+                "$ref": "#/definitions/JobStorageAccount",
+                "description": "The properties that are associated with an Azure Storage account with MSI"
+              },
+              "jobType": {
+                "description": "Describes the type of the job. Valid modes are `Cloud` and 'Edge'.",
+                "enum": [
+                  "Cloud",
+                  "Edge"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "JobType"
+                }
+              },
+              "lastOutputEventTime": {
+                "description": "Value is either an ISO-8601 formatted timestamp indicating the last output event time of the streaming job or null indicating that output has not yet been produced. In case of multiple outputs or multiple streams, this shows the latest value in that set.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "outputErrorPolicy": {
+                "$ref": "#/definitions/OutputErrorPolicy",
+                "description": "Indicates the policy to apply to events that arrive at the output and cannot be written to the external storage due to being malformed (missing column values, column values of wrong type or size)."
+              },
+              "outputStartMode": {
+                "$ref": "#/definitions/OutputStartMode",
+                "description": "This property should only be utilized when it is desired that the job be started immediately upon creation. Value may be JobStartTime, CustomTime, or LastOutputEventTime to indicate whether the starting point of the output event stream should start whenever the job is started, start at a custom user time stamp specified via the outputStartTime property, or start from the last event output time."
+              },
+              "outputStartTime": {
+                "description": "Value is either an ISO-8601 formatted time stamp that indicates the starting point of the output event stream, or null to indicate that the output event stream will start whenever the streaming job is started. This property must have a value if outputStartMode is set to CustomTime.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "outputs": {
+                "description": "A list of one or more outputs for the streaming job. The name property for each output is required when specifying this property in a PUT request. This property cannot be modify via a PATCH operation. You must use the PATCH API available for the individual output.",
+                "items": {
+                  "$ref": "./outputs.json#/definitions/Output"
+                },
+                "type": "array"
+              },
+              "provisioningState": {
+                "description": "Describes the provisioning status of the streaming job.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "sku": {
+                "$ref": "#/definitions/Sku",
+                "description": "Describes the SKU of the streaming job. Required on PUT (CreateOrReplace) requests."
+              },
+              "transformation": {
+                "$ref": "./transformations.json#/definitions/Transformation",
+                "description": "Indicates the query and the number of streaming units to use for the streaming job. The name property of the transformation is required when specifying this property in a PUT request. This property cannot be modify via a PATCH operation. You must use the PATCH API available for the individual transformation."
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.StreamAnalytics/streamingjobs": {
+            "get": {
+              "description": "Lists all of the streaming jobs in the given subscription.",
+              "operationId": "StreamingJobs_List",
+              "parameters": [
+                {
+                  "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the streaming jobs under the given subscription.",
+                  "schema": {
+                    "$ref": "#/definitions/StreamingJobListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "StreamingJobs"
+              ],
+              "x-ms-examples": {
+                "List all streaming jobs in a subscription and do not use the $expand OData query parameter": {
+                  "$ref": "./examples/StreamingJob_List_BySubscription_NoExpand.json"
+                },
+                "List all streaming jobs in a subscription and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions": {
+                  "$ref": "./examples/StreamingJob_List_BySubscription_Expand.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs": {
+            "get": {
+              "description": "Lists all of the streaming jobs in the specified resource group.",
+              "operationId": "StreamingJobs_ListByResourceGroup",
+              "parameters": [
+                {
+                  "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully listed the streaming jobs under the specified resource group.",
+                  "schema": {
+                    "$ref": "#/definitions/StreamingJobListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "StreamingJobs"
+              ],
+              "x-ms-examples": {
+                "List all streaming jobs in a resource group and do not use the $expand OData query parameter": {
+                  "$ref": "./examples/StreamingJob_List_ByResourceGroup_NoExpand.json"
+                },
+                "List all streaming jobs in a resource group and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions": {
+                  "$ref": "./examples/StreamingJob_List_ByResourceGroup_Expand.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}": {
+            "delete": {
+              "description": "Deletes a streaming job.",
+              "operationId": "StreamingJobs_Delete",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The streaming job was successfully deleted."
+                },
+                "202": {
+                  "description": "The delete request was successfully initiated."
+                },
+                "204": {
+                  "description": "The streaming job does not exist."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "StreamingJobs"
+              ],
+              "x-ms-examples": {
+                "Delete a streaming job": {
+                  "$ref": "./examples/StreamingJob_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "Gets details about the specified streaming job.",
+              "operationId": "StreamingJobs_Get",
+              "parameters": [
+                {
+                  "description": "The $expand OData query parameter. This is a comma-separated list of additional streaming job properties to include in the response, beyond the default set returned when this parameter is absent. The default set is all streaming job properties other than 'inputs', 'transformation', 'outputs', and 'functions'.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified streaming job.",
+                  "headers": {
+                    "ETag": {
+                      "description": "The current entity tag for the streaming job. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                      "type": "string"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/StreamingJob"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "StreamingJobs"
+              ],
+              "x-ms-examples": {
+                "Get a streaming job and do not use the $expand OData query parameter": {
+                  "$ref": "./examples/StreamingJob_Get_NoExpand.json"
+                },
+                "Get a streaming job and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions": {
+                  "$ref": "./examples/StreamingJob_Get_Expand.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/stop": {
+            "post": {
+              "description": "Stops a running streaming job. This will cause a running streaming job to stop processing input events and producing output.",
+              "operationId": "StreamingJobs_Stop",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "The streaming job was successfully stopped."
+                },
+                "202": {
+                  "description": "The stop streaming job request was successfully initiated."
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "StreamingJobs"
+              ],
+              "x-ms-examples": {
+                "Stop a streaming job": {
+                  "$ref": "./examples/StreamingJob_Stop.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "d46874af8d68bbf3ad3aff3e0328ceba491505b892edeba3cfce982606dd0d50",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/streamingjobs.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "SubResource": {
+            "description": "The base sub-resource model definition.",
+            "properties": {
+              "id": {
+                "description": "Resource Id",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "Resource name",
+                "type": "string"
+              },
+              "type": {
+                "description": "Resource type",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "Transformation": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/SubResource"
+              }
+            ],
+            "description": "A transformation object, containing all information associated with the named transformation. All transformations are contained under a streaming job.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/TransformationProperties",
+                "description": "The properties that are associated with a transformation. Required on PUT (CreateOrReplace) requests.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "TransformationProperties": {
+            "description": "The properties that are associated with a transformation.",
+            "properties": {
+              "etag": {
+                "description": "The current entity tag for the transformation. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "query": {
+                "description": "Specifies the query that will be run in the streaming job. You can learn more about the Stream Analytics Query Language (SAQL) here: https://msdn.microsoft.com/library/azure/dn834998 . Required on PUT (CreateOrReplace) requests.",
+                "type": "string"
+              },
+              "streamingUnits": {
+                "default": 3,
+                "description": "Specifies the number of streaming units that the streaming job uses.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "validStreamingUnits": {
+                "description": "Specifies the valid streaming units a streaming job can scale to.",
+                "items": {
+                  "description": "Specifies the number of streaming units that the streaming job can use.",
+                  "format": "int32",
+                  "type": "integer"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "title": "StreamAnalyticsManagementClient",
+          "version": "2020-03-01"
+        },
+        "parameters": {
+          "TransformationNameParameter": {
+            "description": "The name of the transformation.",
+            "in": "path",
+            "name": "transformationName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/transformations/{transformationName}": {
+            "get": {
+              "description": "Gets details about the specified transformation.",
+              "operationId": "Transformations_Get",
+              "parameters": [
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "./common/v1/definitions.json#/parameters/StreamingJobNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/TransformationNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Successfully retrieved the specified transformation.",
+                  "headers": {
+                    "ETag": {
+                      "description": "The current entity tag for the transformation. This is an opaque string. You can use it to detect whether the resource has changed between requests. You can also use it in the If-Match or If-None-Match headers for write operations for optimistic concurrency.",
+                      "type": "string"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/Transformation"
+                  }
+                },
+                "default": {
+                  "description": "Error.",
+                  "schema": {
+                    "$ref": "./common/v1/definitions.json#/definitions/Error"
+                  }
+                }
+              },
+              "tags": [
+                "Transformations"
+              ],
+              "x-ms-examples": {
+                "Get a transformation": {
+                  "$ref": "./examples/Transformation_Get.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "971ff6ad9d1b6b1fbbd330b6fd92ec6a2af5d950c6b25cb8ba628026f4c40f3c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/transformations.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
           "ApiDefinitionInfo": {
             "description": "Information about the formal API definition for the app.",
             "properties": {
@@ -126295,6 +130226,151 @@
         ],
         "read_operations": [
           "Azure.Microsoft.Kusto.SandboxCustomImages_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_job",
+      "displayName": "Stream Analytics job",
+      "nativeType": "Microsoft.StreamAnalytics/streamingjobs",
+      "rest": {
+        "collection": "streamingjobs",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_input",
+      "displayName": "Stream Analytics input",
+      "nativeType": "Microsoft.StreamAnalytics/streamingjobs/inputs",
+      "rest": {
+        "collection": "inputs",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_ListByStreamingJob"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Inputs_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_output",
+      "displayName": "Stream Analytics output",
+      "nativeType": "Microsoft.StreamAnalytics/streamingjobs/outputs",
+      "rest": {
+        "collection": "outputs",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_ListByStreamingJob"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Outputs_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_function",
+      "displayName": "Stream Analytics function",
+      "nativeType": "Microsoft.StreamAnalytics/streamingjobs/functions",
+      "rest": {
+        "collection": "functions",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_ListByStreamingJob"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Functions_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_transformation",
+      "displayName": "Stream Analytics transformation",
+      "nativeType": "Microsoft.StreamAnalytics/streamingjobs/transformations",
+      "rest": {
+        "collection": "transformations",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.StreamingJobs_Get"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Transformations_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "data.stream_cluster",
+      "displayName": "Stream Analytics cluster",
+      "nativeType": "Microsoft.StreamAnalytics/clusters",
+      "rest": {
+        "collection": "clusters",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_ListBySubscription"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.Clusters_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region",
+        "global"
+      ]
+    },
+    {
+      "class": "network.managed_private_endpoint",
+      "displayName": "Stream Analytics private endpoint",
+      "nativeType": "Microsoft.StreamAnalytics/clusters/privateEndpoints",
+      "rest": {
+        "collection": "privateEndpoints",
+        "delete_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_ListByCluster"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.StreamAnalytics.PrivateEndpoints_Get"
         ]
       },
       "scopeKinds": [

@@ -75,6 +75,10 @@ const (
 	// Required deletion is an independently executable prerequisite, not an
 	// ownership claim. Only authoritative provider evidence can expand a plan.
 	RelationshipEvidenceRequiredDeletion = "required_deletion"
+	// False preserves the separate selection of an independent dependency.
+	// Its existing deletion can satisfy the prerequisite, but this relationship
+	// alone must not expand the user's selection to delete it automatically.
+	RelationshipEvidenceAutomaticSelection = "automatic_selection"
 	// Named native controllers can remove a reference and its target together.
 	// This applies only when both are already reviewed delegated deletes of the
 	// same controller action; it never selects another controller implicitly.

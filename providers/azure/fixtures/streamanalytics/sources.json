@@ -1,0 +1,330 @@
+[
+  {
+    "file": "Cluster_Delete.json",
+    "operation": "Clusters_Delete",
+    "label": "Delete a cluster",
+    "source_document": "clusters.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Cluster_Delete.json",
+    "source_sha256": "68a4fc70ea68e40c2429949d50fc22b19e953f77a03b365255b4247818c17f0f"
+  },
+  {
+    "file": "Cluster_Get.json",
+    "operation": "Clusters_Get",
+    "label": "Get a cluster",
+    "source_document": "clusters.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Cluster_Get.json",
+    "source_sha256": "a2cb89c84a3c1f7ab25f2d8a4ec0a049e88a2cd1b045f43aad080b95eddaea33"
+  },
+  {
+    "file": "Cluster_ListByResourceGroup.json",
+    "operation": "Clusters_ListByResourceGroup",
+    "label": "List clusters in resource group",
+    "source_document": "clusters.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Cluster_ListByResourceGroup.json",
+    "source_sha256": "15d6bfe24e643dba3900f354b105ae7b609eabf98978035816a0f9c5796a7dc9"
+  },
+  {
+    "file": "Cluster_ListBySubscription.json",
+    "operation": "Clusters_ListBySubscription",
+    "label": "List the clusters in a subscription",
+    "source_document": "clusters.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Cluster_ListBySubscription.json",
+    "source_sha256": "1ffd9fe9f205d7e19cf855e3d9aee509223b38d249594009fc442ed347fcbc64"
+  },
+  {
+    "file": "Cluster_ListStreamingJobs.json",
+    "operation": "Clusters_ListStreamingJobs",
+    "label": "List all streaming jobs in cluster",
+    "source_document": "clusters.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Cluster_ListStreamingJobs.json",
+    "source_sha256": "d65a4a7f25a930e1e843d006f69dcd246284f9e03dd0f79ce0c3e622dc505d26"
+  },
+  {
+    "file": "Function_Delete.json",
+    "operation": "Functions_Delete",
+    "label": "Delete a function",
+    "source_document": "functions.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Function_Delete.json",
+    "source_sha256": "6ca454fbc6d53b0731696d6d87cec95fda63e4c75d1014777a22dfce72304d95"
+  },
+  {
+    "file": "Function_Get_AzureML.json",
+    "operation": "Functions_Get",
+    "label": "Get an Azure ML function",
+    "source_document": "functions.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Function_Get_AzureML.json",
+    "source_sha256": "61092abb4cf8545f70a2f4701ee4bf50849bdb83c53f846626b15de48df818da"
+  },
+  {
+    "file": "Function_Get_JavaScript.json",
+    "operation": "Functions_Get",
+    "label": "Get a JavaScript function",
+    "source_document": "functions.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Function_Get_JavaScript.json",
+    "source_sha256": "51439c5d0bfff9144411badd8ffefb746d65c9b09bf6e397cef2e4d3e3f1a024"
+  },
+  {
+    "file": "Function_ListByStreamingJob.json",
+    "operation": "Functions_ListByStreamingJob",
+    "label": "List all functions in a streaming job",
+    "source_document": "functions.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Function_ListByStreamingJob.json",
+    "source_sha256": "b1faf48bfc0281375dc47523ac00d824c34ff48e361a0d39ca08335f07bdc278"
+  },
+  {
+    "file": "Input_Delete.json",
+    "operation": "Inputs_Delete",
+    "label": "Delete an input",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_Delete.json",
+    "source_sha256": "5d0696caf2dc7a35bf24ac6333e35a10888b397a5c3838b2d3e387147ec6446b"
+  },
+  {
+    "file": "Input_Get_Reference_Blob_CSV.json",
+    "operation": "Inputs_Get",
+    "label": "Get a reference blob input with CSV serialization",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_Get_Reference_Blob_CSV.json",
+    "source_sha256": "9ad91ee4ce0fbf1ea0e39c6ef57b1cd97ca295082528a88f255ee8b6414bd6f7"
+  },
+  {
+    "file": "Input_Get_Stream_Blob_CSV.json",
+    "operation": "Inputs_Get",
+    "label": "Get a stream blob input with CSV serialization",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_Get_Stream_Blob_CSV.json",
+    "source_sha256": "7606095513aaa4bcc9ee7dc89da3900ffb3bc8cfcf2a9c0a472f88c8e41c22ab"
+  },
+  {
+    "file": "Input_Get_Stream_EventHub_JSON.json",
+    "operation": "Inputs_Get",
+    "label": "Get a stream Event Hub input with JSON serialization",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_Get_Stream_EventHub_JSON.json",
+    "source_sha256": "1bffa638c29eab22fe5e115a2a814b9fc9fc72cb063603d8c26a8a4216052b1f"
+  },
+  {
+    "file": "Input_Get_Stream_IoTHub_Avro.json",
+    "operation": "Inputs_Get",
+    "label": "Get a stream IoT Hub input with Avro serialization",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_Get_Stream_IoTHub_Avro.json",
+    "source_sha256": "635f9e73fd620ea961752a4ef660fb8e438ef85a41b8d8e521926c778e154080"
+  },
+  {
+    "file": "Input_ListByStreamingJob.json",
+    "operation": "Inputs_ListByStreamingJob",
+    "label": "List all inputs in a streaming job",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_ListByStreamingJob.json",
+    "source_sha256": "e16867aa17755bfeff17075cf9e5cab785cbdbff79330b10a86281a2349e4b69"
+  },
+  {
+    "file": "Input_ListByStreamingJob_Diagnostics.json",
+    "operation": "Inputs_ListByStreamingJob",
+    "label": "List all inputs in a streaming job and include diagnostic information using the $select OData query parameter",
+    "source_document": "inputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Input_ListByStreamingJob_Diagnostics.json",
+    "source_sha256": "76768c15b5c370206c917ef0b155dba4167b6ceda5f81caa010a01091d6e525c"
+  },
+  {
+    "file": "Output_Delete.json",
+    "operation": "Outputs_Delete",
+    "label": "Delete an output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Delete.json",
+    "source_sha256": "d5dcb009c2439a27f9cb42975576d8bb19bdb6370e4569c4d407f50e96e3c898"
+  },
+  {
+    "file": "Output_Get_AzureDataLakeStore_JSON.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Azure Data Lake Store output with JSON serialization",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_AzureDataLakeStore_JSON.json",
+    "source_sha256": "f4cbdfc40803c0b071d01182317e9ea37e564ab486a386dd709b926767ec8bc7"
+  },
+  {
+    "file": "Output_Get_AzureFunction.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Azure Function output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_AzureFunction.json",
+    "source_sha256": "6ede867c359fd6c41212f25d362f8487e414d293210741b9e9c06c601ae6736c"
+  },
+  {
+    "file": "Output_Get_AzureSQL.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Azure SQL database output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_AzureSQL.json",
+    "source_sha256": "bc3c1437fed0ce71f9ff1eff1276a09294fffd2155523e3cfd42dec7ef4df804"
+  },
+  {
+    "file": "Output_Get_AzureTable.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Azure Table output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_AzureTable.json",
+    "source_sha256": "7944f00ecd9b313fe46c4d06ff7a3e250938143830cb948318631b63b97195af"
+  },
+  {
+    "file": "Output_Get_Blob_CSV.json",
+    "operation": "Outputs_Get",
+    "label": "Get a blob output with CSV serialization",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_Blob_CSV.json",
+    "source_sha256": "0b14c5aa13e78c889e8751522da7732a265148e46fabbce462b5f560b3c15827"
+  },
+  {
+    "file": "Output_Get_DataWarehouse.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Azure Data Warehouse output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_DataWarehouse.json",
+    "source_sha256": "b5c8e56fa3df13062ece477644f7f26611546f6ec4f4f4e0a917b891a87d7ffe"
+  },
+  {
+    "file": "Output_Get_DocumentDB.json",
+    "operation": "Outputs_Get",
+    "label": "Get a DocumentDB output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_DocumentDB.json",
+    "source_sha256": "4f12a10a65d962cbc147fda7eb3e91301eb1b2b3b6c100197afea9ddb093ead6"
+  },
+  {
+    "file": "Output_Get_EventHub_JSON.json",
+    "operation": "Outputs_Get",
+    "label": "Get an Event Hub output with JSON serialization",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_EventHub_JSON.json",
+    "source_sha256": "aacde8cdf9b0b06e69811de4a1891fb0af22203583f443bd6050da1196f57f5f"
+  },
+  {
+    "file": "Output_Get_PowerBI.json",
+    "operation": "Outputs_Get",
+    "label": "Get a Power BI output",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_PowerBI.json",
+    "source_sha256": "938b1f13317a998595722c23a9d20c5060f2168450c9cdab75f2946323d2d9a4"
+  },
+  {
+    "file": "Output_Get_ServiceBusQueue_Avro.json",
+    "operation": "Outputs_Get",
+    "label": "Get a Service Bus Queue output with Avro serialization",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_ServiceBusQueue_Avro.json",
+    "source_sha256": "2a36f3eaaa49f3bef95d1d52c5762d82a64c4743abc43205f1fa7d88c3cc49a1"
+  },
+  {
+    "file": "Output_Get_ServiceBusTopic_CSV.json",
+    "operation": "Outputs_Get",
+    "label": "Get a Service Bus Topic output with CSV serialization",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_Get_ServiceBusTopic_CSV.json",
+    "source_sha256": "60052bbdf8566b74f23976c045759047d8941c776482ad2a54d58ccccf4aa2b5"
+  },
+  {
+    "file": "Output_ListByStreamingJob.json",
+    "operation": "Outputs_ListByStreamingJob",
+    "label": "List all outputs in a streaming job",
+    "source_document": "outputs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Output_ListByStreamingJob.json",
+    "source_sha256": "ca00e10218bbaf1f44898d1e99478b2d5d760a4ee0bbb68c4bab6935a503d694"
+  },
+  {
+    "file": "PrivateEndpoint_Delete.json",
+    "operation": "PrivateEndpoints_Delete",
+    "label": "Delete a private endpoint",
+    "source_document": "privateEndpoints.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/PrivateEndpoint_Delete.json",
+    "source_sha256": "82c42f37fb5ad6f1edcedc37685e2247407da1d2e2231991d3864992bd528465"
+  },
+  {
+    "file": "PrivateEndpoint_Get.json",
+    "operation": "PrivateEndpoints_Get",
+    "label": "Get a private endpoint",
+    "source_document": "privateEndpoints.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/PrivateEndpoint_Get.json",
+    "source_sha256": "411d3aa7b1f1095da0e245e7423ac8c94423cf44154ac5a03d69d9ce2a947079"
+  },
+  {
+    "file": "PrivateEndpoint_ListByCluster.json",
+    "operation": "PrivateEndpoints_ListByCluster",
+    "label": "Get the private endpoints in a cluster",
+    "source_document": "privateEndpoints.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/PrivateEndpoint_ListByCluster.json",
+    "source_sha256": "83afe9bc83ea67255e07ae5d714d5cdf9530bf8a6f5dc87b715a09d7c2a34fed"
+  },
+  {
+    "file": "StreamingJob_Delete.json",
+    "operation": "StreamingJobs_Delete",
+    "label": "Delete a streaming job",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_Delete.json",
+    "source_sha256": "c5cba27b17b50e810ccf6536f78a8bd500e322eda5bed638b6ff6e691cad9a8f"
+  },
+  {
+    "file": "StreamingJob_Get_Expand.json",
+    "operation": "StreamingJobs_Get",
+    "label": "Get a streaming job and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_Get_Expand.json",
+    "source_sha256": "83d7a411bdc268a1d00fe8d6ef962064b142d8e3993217ac0a88b076a6962e0d"
+  },
+  {
+    "file": "StreamingJob_Get_NoExpand.json",
+    "operation": "StreamingJobs_Get",
+    "label": "Get a streaming job and do not use the $expand OData query parameter",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_Get_NoExpand.json",
+    "source_sha256": "41c0f57d81a26b14a64db7b1f17083fdda277a79d6bd441e68e31e49aa4d5106"
+  },
+  {
+    "file": "StreamingJob_List_ByResourceGroup_Expand.json",
+    "operation": "StreamingJobs_ListByResourceGroup",
+    "label": "List all streaming jobs in a resource group and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_List_ByResourceGroup_Expand.json",
+    "source_sha256": "19f1472291fcbfa92b80ac97cfef29dcb97532c2c34e733aa8a26faa66ee2c03"
+  },
+  {
+    "file": "StreamingJob_List_ByResourceGroup_NoExpand.json",
+    "operation": "StreamingJobs_ListByResourceGroup",
+    "label": "List all streaming jobs in a resource group and do not use the $expand OData query parameter",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_List_ByResourceGroup_NoExpand.json",
+    "source_sha256": "a839f516f562abd4a34da1f975e7e61c3df376d83eae5bf4a5ad8ad41dccde25"
+  },
+  {
+    "file": "StreamingJob_List_BySubscription_Expand.json",
+    "operation": "StreamingJobs_List",
+    "label": "List all streaming jobs in a subscription and use the $expand OData query parameter to expand inputs, outputs, transformation, and functions",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_List_BySubscription_Expand.json",
+    "source_sha256": "a604a068da579779a26f0f352ced5302efdc350722b9a58478dbdb28bdc7eb75"
+  },
+  {
+    "file": "StreamingJob_List_BySubscription_NoExpand.json",
+    "operation": "StreamingJobs_List",
+    "label": "List all streaming jobs in a subscription and do not use the $expand OData query parameter",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_List_BySubscription_NoExpand.json",
+    "source_sha256": "f036f1f70b7c0b94eaac417252bab30423e7ca7e7aab45a15359e7e03dd7be28"
+  },
+  {
+    "file": "StreamingJob_Stop.json",
+    "operation": "StreamingJobs_Stop",
+    "label": "Stop a streaming job",
+    "source_document": "streamingjobs.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/StreamingJob_Stop.json",
+    "source_sha256": "db78f15504c0324057be6272027bbe105408da5544ebaba50d973144c5112f9a"
+  },
+  {
+    "file": "Transformation_Get.json",
+    "operation": "Transformations_Get",
+    "label": "Get a transformation",
+    "source_document": "transformations.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/streamanalytics/resource-manager/Microsoft.StreamAnalytics/StreamAnalytics/stable/2020-03-01/examples/Transformation_Get.json",
+    "source_sha256": "7bdaaab921857ffe1b6399e855380ddbaf45103f1125f3989bfd2fe090a7b9eb"
+  }
+]

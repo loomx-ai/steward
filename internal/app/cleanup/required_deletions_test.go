@@ -221,3 +221,101 @@ func TestRequiredDeletionWorkerRejectsIncompleteFrozenContract(t *testing.T) {
 		})
 	}
 }
+
+func TestIndependentRequiredDeletionSurvivesPlanningAndExecutionPersistence(t *testing.T) {
+	for _, selected := range []bool{false, true} {
+		t.Run(fmt.Sprint(selected), func(t *testing.T) {
+			ctx := context.Background()
+			repositories := openPlanningRepositories(t)
+			now := time.Date(2026, 9, 10, 11, 0, 0, 0, time.UTC)
+			var assets []asset.Asset
+			for _, id := range []asset.AssetID{"cluster", "job", "query"} {
+				assets = append(assets, planningAsset(id, "c-1", "ACS::ECS::Instance", string(id)+"-native", now))
+			}
+			binding := planningBinding("job-query", "job", "query", graph.OwnershipExclusive, graph.CleanupDelegate, "independent-graph", now)
+			binding.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
+			relation := graph.Relationship{ID: "cluster-requires-job", SourceAssetID: "cluster", TargetAssetID: "job", Type: graph.RelationshipDependsOn, Source: "provider:native-lifecycle", Confidence: 1, GraphRevision: "independent-graph", ObservedAt: now, Evidence: map[string]any{
+				graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource,
+			}}
+			seedPlanningGraph(t, repositories, "scope-a", "independent-graph", assets, []graph.Relationship{relation}, []graph.LifecycleBinding{binding})
+			var authorized []asset.AssetID
+			planner := cleanup.NewService(repositories, bundleResolver{asset.ProviderAliCloud: {Provider: asset.ProviderAliCloud, Revision: "bundle-a", Hash: "spec-a"}}, cleanup.WithClock(func() time.Time { return now }), cleanup.WithTaskIDGenerator(func() string { return "cln-independent" }), cleanup.WithExecutionIDGenerator(func() string { return "execution-independent" }), cleanup.WithExecutionAuthorizer(cleanup.ExecutionAuthorizerFunc(func(_ context.Context, _ string, ids []asset.AssetID) error {
+				authorized = slices.Clone(ids)
+				return nil
+			})))
+			selectors := []plan.CleanupSelector{assetSelector("cluster")}
+			if selected {
+				selectors = append(selectors, assetSelector("job"))
+			}
+			aggregate, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: selectors, CreatedBy: "operator"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			aggregate, err = repositories.CleanupTasks().GetTask(ctx, aggregate.Task.ID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			executionRequest := cleanup.CreateExecutionRequest{CleanupTaskID: "cln-independent", RequestedBy: "operator", IdempotencyKey: "independent-key", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}
+			if !selected {
+				if aggregate.Task.Status != plan.StatusDraft || len(aggregate.Task.Blockers) == 0 || cleanupTaskStepForAsset(aggregate.Steps, "job").ID != "" || len(aggregate.ImpactItems) != 0 {
+					t.Fatal("persisted graph silently selected independent job", aggregate)
+				}
+				if _, err := planner.CreateExecution(ctx, executionRequest); err == nil {
+					t.Fatal("blocked independent cleanup executed")
+				}
+				return
+			}
+			if aggregate.Task.Status != plan.StatusReady || len(aggregate.Steps) != 2 || len(aggregate.ImpactItems) != 1 {
+				t.Fatal("explicit selection lost", aggregate)
+			}
+			required, err := plan.RequiredDeletions(cleanupTaskStepForAsset(aggregate.Steps, "cluster"))
+			if err != nil || len(required) != 1 || required[0].AssetID != "job" {
+				t.Fatal("independent prerequisite lost after persistence", required, err)
+			}
+			if _, err := planner.CreateExecution(ctx, executionRequest); err != nil {
+				t.Fatal(err)
+			}
+			if !slices.Equal(authorized, []asset.AssetID{"cluster", "job", "query"}) {
+				t.Fatal("authorization missed independent selection or its query", authorized)
+			}
+			job := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+			cluster := &scriptedActionDriver{pollInterval: time.Second, readback: contracts.ReadbackResult{Exists: false}}
+			resolver := cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+				if value.ID == "job" {
+					return job, nil
+				}
+				if value.ID == "cluster" {
+					return cluster, nil
+				}
+				return nil, fmt.Errorf("unexpected independent deletion %s", value.ID)
+			})
+			handler := cleanup.NewExecutionHandler(planner, resolver)
+			clusterJob := cleanupExecutionJobForAsset(t, repositories, "cln-independent", "cluster")
+			var retry *cleanup.RetryError
+			if err := handler.Handle(ctx, clusterJob); err != nil && !errors.As(err, &retry) {
+				t.Fatal(err)
+			}
+			if cluster.executeCalls != 0 {
+				t.Fatal("cluster executed before selected job")
+			}
+			if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-independent", "job")); err != nil {
+				t.Fatal(err)
+			}
+			if err := handler.Handle(ctx, clusterJob); !errors.As(err, &retry) {
+				t.Fatal("cluster did not persist pending execution", err)
+			}
+			handler = cleanup.NewExecutionHandler(planner, resolver)
+			if err := handler.Handle(ctx, clusterJob); err != nil && !errors.As(err, &retry) {
+				t.Fatal(err)
+			}
+			if job.executeCalls != 1 || cluster.executeCalls != 1 || len(cluster.waitRequests) != 1 {
+				t.Fatal("independent cleanup was not resumable")
+			}
+			for _, request := range []contracts.ActionRequest{cluster.executeRequests[0], cluster.waitRequests[0]} {
+				if len(request.PrerequisiteDeletions) != 1 || request.PrerequisiteDeletions[0].Asset.ID != "job" || request.PrerequisiteDeletions[0].Asset.ClosedAt != nil || request.PrerequisiteDeletions[0].ControllerID != "cluster" {
+					t.Fatal("frozen independent prerequisite changed", request)
+				}
+			}
+		})
+	}
+}

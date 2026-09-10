@@ -26,6 +26,8 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	streamAnalyticsJobType:         streamAnalyticsOwnedKinds(streamAnalyticsJobType),
+	streamAnalyticsClusterType:     {streamAnalyticsEndpointType, streamAnalyticsJobType},
 	kustoType:                      kustoOwnedKinds(kustoType),
 	kustoDatabaseType:              append(kustoOwnedKinds(kustoDatabaseType), kustoAttachmentType),
 	kustoAttachmentType:            {kustoDatabaseType},
@@ -205,6 +207,11 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			if !validResourceResponse(live, id, childType) {
 				return nil, fmt.Errorf("Azure cascade child read identity mismatch")
 			}
+			if isStreamAnalyticsType(childType) {
+				if err := streamAnalyticsListedIncarnation(childType, record, live.data); err != nil {
+					return nil, err
+				}
+			}
 			if isCosmosType(childType) {
 				if err := cosmosListedIncarnation(childType, record, live.data); err != nil {
 					return nil, err
@@ -251,6 +258,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := streamAnalyticsIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isStreamAnalyticsType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := kustoIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -456,6 +469,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
+			}
+			if streamAnalyticsClusterPrerequisite(parent, *target) {
+				// Cluster deletion only requires stopped jobs at the service. It
+				// does not require deleting those independent configurations.
+				// Preserve their choice: a retained job must first be moved out
+				// of the cluster; an explicitly selected job precedes the cluster.
+				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource}
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+				continue
 			}
 			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) || kustoSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
@@ -712,6 +734,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
+	if parent == streamAnalyticsJobType && child == streamAnalyticsTransformationType && reason == "azure_stream_analytics_transformation" {
+		return true
+	}
 	if parent == kustoAttachmentType && child == kustoDatabaseType && reason == "azure_kusto_following_database" {
 		return true
 	}
@@ -740,6 +765,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	case isCosmosType(parent.NativeType):
 		native = true // The Cosmos walk validates both complete native reads.
 		children, err = c.cosmosChildren(ctx, parent, raw)
+	case isStreamAnalyticsType(parent.NativeType):
+		native = true
+		children, err = c.streamAnalyticsChildren(ctx, parent, raw)
 	case isKustoType(parent.NativeType):
 		native = true
 		children, err = c.kustoChildren(ctx, parent, raw)
@@ -829,6 +857,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if isStreamAnalyticsType(parent.Identity.NativeType) {
+		return streamAnalyticsClusterPrerequisite(parent, child) || slices.Contains(streamAnalyticsOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
+	}
 	if isKustoType(parent.Identity.NativeType) {
 		return kustoSharedPrerequisite(parent, child) || kustoControlledDatabase(parent, child) || slices.Contains(kustoOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
 	}
