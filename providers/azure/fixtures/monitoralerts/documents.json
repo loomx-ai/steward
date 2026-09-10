@@ -1,0 +1,57 @@
+[
+  {
+    "dependency": false,
+    "source_sha256": "eb6290636944b238b9d6afddd234ac618024aeae89953d82d52569d91dcb5a09",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "78d02c62c880adcf9c32bcd12182e9a6921eb1fccf0075210d2f9c5ee36da7cb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "94ce1c0385910e8a80763bb3e197d8c1c63ca5effe26edc317645ee04f78abac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "5727903ec2102686dfbda7228fd22ccad2e1f944d27d5877f6885b83d0d453de",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v1/types.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v2/types.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "8f69ddbcdd8f3df61a156a129e70db08b3a03f2ec710de07f30273ec27492de3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/common-types/resource-management/v3/types.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "56e94b8d366f0c426b8ee76cd702173de8c17fc9080c9fda6f7f1211d85f918b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "3489bddb68543376494f0911bfc114dc6243a1801eb2b5b4255133864ffbd063",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "ac07c2ad65cb58304c3c34320989f0151b0223e52ad9cdc95527c35a10a30a23",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "ed9427b7ca942059dc06814a09d7cfb7938b6c96af6460d01e02e14b4c544544",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/common-types/v2/commonMonitoringTypes.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "dbb905a1e7d83a733e3d81458dbbf582fe0712bff7a1806187945df0caea8b1f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
+  }
+]

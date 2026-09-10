@@ -2048,3 +2048,34 @@ background evidence only, not acceptance evidence for this work.
   and has no provider-managed revision/recycle-bin support. Independent web
   tests, migrated alerts, remaining service families, the 29 missing mapped
   Azure roots and all eight acceptance criteria remain open.
+
+### Azure Monitor alert API and privacy foundation
+
+- Seven native families now have retained API operations: metric alerts,
+  action groups, activity-log alerts, scheduled-query rules, smart-detector
+  alerts, Prometheus rule groups and alert-processing rules. The selected
+  stable versions are respectively 2026-01-01, 2023-01-01, 2026-01-01,
+  2026-03-01, 2021-04-01, 2023-03-01 and 2021-08-08, from the same immutable
+  Microsoft specification commit as the Application Insights evidence.
+- Thirty operations bind to 36 unchanged examples used at 37 operation/example
+  bindings. Tests replay all 44 native responses and validate 30 response
+  bodies offline; all 14 published DELETE responses are empty HTTP 200/204.
+  Four undeclared request selectors, two null-pagination schema discrepancies
+  and the Smart Detector array/object action-group mismatch are documented.
+  Native samples are not evidence of completed runtime cleanup or live Azure.
+- Endpoint-aware redaction covers identity-free list/status responses and
+  returned Invoke data. Notification receivers, private alert conditions,
+  queries, expressions, labels, dimensions, detector parameters and custom
+  payloads remain private. Tests preserve the original private transport
+  content and verify that unrelated resource families are unaffected.
+- Full Go tests and vet passed (Azure 159.702s; GCP cached). Relevant privacy
+  and native-source race tests passed (4.898s). Restoring the source refresh
+  tool's canonical document ordering passed all five offline catalog checks;
+  final native-source/catalog/privacy tests passed (1.292s). Repeated catalog
+  generation produced SHA-256
+  `9394f0fac4c714dfa5c5153308bff98b1dc9a2eaec7b49ed39e6f9dfe19d5253`.
+- This foundation raises catalog operations to 1,218 across 161 root and 50
+  reference documents. Executable rule and cleanup counts remain 373 and 347.
+  Native inventory, alert references, shared action-group dependencies,
+  independent web-test/alert cleanup, the remaining provider families and all
+  eight acceptance criteria remain open.

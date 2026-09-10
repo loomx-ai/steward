@@ -4,11 +4,545 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "022062bc0e903e4330f7c5d073dd49ee1a5144461c7f3491712da22c5492b43f",
+    "checksum": "dd5e04a2641859a9b8df9ca6a67395781e9c0119c41778794f44e205be5a4706",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "414aa151c58029914511e5de625dae9b35ce1e7f14a2bb38cff77aae5134b739",
+  "content_checksum": "d96f31e2c0f558440f8fbeac6c64a14b9ba517c4578a4eef92d7be147a356b29",
   "operations": [
+    {
+      "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
+      "name": "AlertProcessingRules_Delete",
+      "service": "Microsoft.AlertsManagement",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "alertProcessingRuleName": {
+            "description": "The name of the alert processing rule that needs to be fetched.",
+            "in": "path",
+            "name": "alertProcessingRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2021-08-08"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2021-08-08",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_GetByName",
+      "name": "AlertProcessingRules_GetByName",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "alertProcessingRuleName": {
+            "description": "The name of the alert processing rule that needs to be fetched.",
+            "in": "path",
+            "name": "alertProcessingRuleName",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2021-08-08"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Alert processing rule object containing target scopes, conditions and scheduling logic.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AlertProcessingRuleProperties",
+            "description": "Alert processing rule properties."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2021-08-08",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_ListByResourceGroup",
+      "name": "AlertProcessingRules_ListByResourceGroup",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-08-08"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of alert processing rules.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The AlertProcessingRule items on this page",
+            "items": {
+              "$ref": "#/definitions/AlertProcessingRule"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2021-08-08",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_ListBySubscription",
+      "name": "AlertProcessingRules_ListBySubscription",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/actionRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-08-08"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of alert processing rules.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The AlertProcessingRule items on this page",
+            "items": {
+              "$ref": "#/definitions/AlertProcessingRule"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2021-08-08",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/actionRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_Delete",
+      "name": "PrometheusRuleGroups_Delete",
+      "service": "Microsoft.AlertsManagement",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups/{ruleGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleGroupName": {
+            "description": "The name of the rule group.",
+            "in": "path",
+            "name": "ruleGroupName",
+            "pattern": "^[^:@/#{}%\u0026+*\u003c\u003e?]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2023-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups/{ruleGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_Get",
+      "name": "PrometheusRuleGroups_Get",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups/{ruleGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleGroupName": {
+            "description": "The name of the rule group.",
+            "in": "path",
+            "name": "ruleGroupName",
+            "pattern": "^[^:@/#{}%\u0026+*\u003c\u003e?]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The Prometheus rule group resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrometheusRuleGroupProperties",
+            "description": "The Prometheus rule group properties of the resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2023-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups/{ruleGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_ListByResourceGroup",
+      "name": "PrometheusRuleGroups_ListByResourceGroup",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "description": "the values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/PrometheusRuleGroupResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2023-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/prometheusRuleGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json"
+    },
+    {
+      "id": "Azure.Microsoft.AlertsManagement.PrometheusRuleGroups_ListBySubscription",
+      "name": "PrometheusRuleGroups_ListBySubscription",
+      "service": "Microsoft.AlertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/prometheusRuleGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "description": "the values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/PrometheusRuleGroupResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AlertsManagement",
+        "version": "2023-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/prometheusRuleGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json"
+    },
     {
       "id": "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete",
       "name": "ApiDiagnostic_Delete",
@@ -71840,6 +72374,536 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentApiKeys_API.json"
     },
     {
+      "id": "Azure.Microsoft.Insights.ActionGroups_Delete",
+      "name": "ActionGroups_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups/{actionGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "actionGroupName": {
+            "description": "The name of the action group.",
+            "in": "path",
+            "name": "actionGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2023-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2023-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups/{actionGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActionGroups_Get",
+      "name": "ActionGroups_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups/{actionGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "actionGroupName": {
+            "description": "The name of the action group.",
+            "in": "path",
+            "name": "actionGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2023-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/AzureResource"
+          }
+        ],
+        "description": "An action group resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ActionGroup",
+            "description": "The action groups properties of the resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2023-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups/{actionGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActionGroups_ListByResourceGroup",
+      "name": "ActionGroups_ListByResourceGroup",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of action groups.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of action groups.",
+            "items": {
+              "$ref": "#/definitions/ActionGroupResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2023-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/actionGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActionGroups_ListBySubscriptionId",
+      "name": "ActionGroups_ListBySubscriptionId",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/actionGroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2023-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of action groups.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of action groups.",
+            "items": {
+              "$ref": "#/definitions/ActionGroupResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2023-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/actionGroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActivityLogAlerts_Delete",
+      "name": "ActivityLogAlerts_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts/{activityLogAlertName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "activityLogAlertName": {
+            "description": "The name of the Activity Log Alert rule.",
+            "in": "path",
+            "name": "activityLogAlertName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts/{activityLogAlertName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActivityLogAlerts_Get",
+      "name": "ActivityLogAlerts_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts/{activityLogAlertName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "activityLogAlertName": {
+            "description": "The name of the Activity Log Alert rule.",
+            "in": "path",
+            "name": "activityLogAlertName",
+            "pattern": "^[-\\w\\._\\(\\)]+$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/AzureResource"
+          }
+        ],
+        "description": "An Activity Log Alert rule resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AlertRuleProperties",
+            "description": "The Activity Log Alert rule properties of the resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts/{activityLogAlertName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActivityLogAlerts_ListByResourceGroup",
+      "name": "ActivityLogAlerts_ListByResourceGroup",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of Activity Log Alert rules.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Activity Log Alert rules.",
+            "items": {
+              "$ref": "#/definitions/ActivityLogAlertResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/activityLogAlerts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ActivityLogAlerts_ListBySubscriptionId",
+      "name": "ActivityLogAlerts_ListBySubscriptionId",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/activityLogAlerts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of Activity Log Alert rules.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Activity Log Alert rules.",
+            "items": {
+              "$ref": "#/definitions/ActivityLogAlertResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/activityLogAlerts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json"
+    },
+    {
       "id": "Azure.Microsoft.Insights.Annotations_Delete",
       "name": "Annotations_Delete",
       "service": "Microsoft.Insights",
@@ -74449,6 +75513,434 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/favorites_API.json"
     },
     {
+      "id": "Azure.Microsoft.Insights.MetricAlertsStatus_List",
+      "name": "MetricAlertsStatus_List",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}/status",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "value": {
+            "description": "The values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/MetricAlertStatus"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}/status",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.MetricAlertsStatus_ListByName",
+      "name": "MetricAlertsStatus_ListByName",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}/status/{statusName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "statusName": {
+            "description": "The name of the status.",
+            "in": "path",
+            "name": "statusName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "value": {
+            "description": "The values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/MetricAlertStatus"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}/status/{statusName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.MetricAlerts_Delete",
+      "name": "MetricAlerts_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.MetricAlerts_Get",
+      "name": "MetricAlerts_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The metric alert resource.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/Microsoft.Common.Identity",
+            "description": "The identity of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/MetricAlertProperties",
+            "description": "The alert rule properties of the resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.MetricAlerts_ListByResourceGroup",
+      "name": "MetricAlerts_ListByResourceGroup",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/MetricAlertResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/metricAlerts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.MetricAlerts_ListBySubscription",
+      "name": "MetricAlerts_ListBySubscription",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/metricAlerts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of alert rule resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The values for the alert rule resources.",
+            "items": {
+              "$ref": "#/definitions/MetricAlertResource"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "id"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/metricAlerts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json"
+    },
+    {
       "id": "Azure.Microsoft.Insights.MyWorkbooks_Delete",
       "name": "MyWorkbooks_Delete",
       "service": "Microsoft.Insights",
@@ -75997,6 +77489,341 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/applicationinsights/resource-manager/Microsoft.Insights/ApplicationInsights/stable/2015-05-01/componentProactiveDetection_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ScheduledQueryRules_Delete",
+      "name": "ScheduledQueryRules_Delete",
+      "service": "Microsoft.Insights",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules/{ruleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "pattern": "^[^#\u003c\u003e%\u0026:\\?/{}*]{1,260}$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ScheduledQueryRules_Get",
+      "name": "ScheduledQueryRules_Get",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules/{ruleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "ruleName": {
+            "description": "The name of the rule.",
+            "in": "path",
+            "name": "ruleName",
+            "pattern": "^[^#\u003c\u003e%\u0026:\\?/{}*]{1,260}$",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The scheduled query rule resource.",
+        "properties": {
+          "etag": {
+            "description": "The etag field is *not* required. If it is provided in the response body, it must also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields. ",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The identity of the resource."
+          },
+          "kind": {
+            "description": "Indicates the type of scheduled query rule. The default is LogAlert.",
+            "enum": [
+              "LogAlert",
+              "SimpleLogAlert",
+              "LogToMetric"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Kind"
+            }
+          },
+          "location": {
+            "description": "The geo-location where the resource lives",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "name": {
+            "description": "The name of the resource",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ScheduledQueryRuleProperties",
+            "description": "The rule properties of the resource.",
+            "required": [
+              "enabled",
+              "criteria",
+              "scopes"
+            ],
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/systemData",
+            "description": "SystemData of ScheduledQueryRule.",
+            "readOnly": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Resource tags.",
+            "type": "object",
+            "x-ms-mutability": [
+              "read",
+              "create",
+              "update"
+            ]
+          },
+          "type": {
+            "description": "The type of the resource. E.g. \"Microsoft.Compute/virtualMachines\" or \"Microsoft.Storage/storageAccounts\"",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "properties",
+          "location"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules/{ruleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ScheduledQueryRules_ListByResourceGroup",
+      "name": "ScheduledQueryRules_ListByResourceGroup",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of scheduled query rule resources.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The values for the scheduled query rule resources.",
+            "items": {
+              "$ref": "#/definitions/ScheduledQueryRuleResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Insights/scheduledQueryRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
+    },
+    {
+      "id": "Azure.Microsoft.Insights.ScheduledQueryRules_ListBySubscription",
+      "name": "ScheduledQueryRules_ListBySubscription",
+      "service": "Microsoft.Insights",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/scheduledQueryRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a collection of scheduled query rule resources.",
+        "properties": {
+          "nextLink": {
+            "description": "Provides the link to retrieve the next set of elements.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "The values for the scheduled query rule resources.",
+            "items": {
+              "$ref": "#/definitions/ScheduledQueryRuleResource"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Insights",
+        "version": "2026-03-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Insights/scheduledQueryRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json"
     },
     {
       "id": "Azure.Microsoft.Insights.WebTests_Delete",
@@ -105235,6 +107062,282 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/network/resource-manager/Microsoft.Network/Network/stable/2024-05-01/vmssNetworkInterface.json"
+    },
+    {
+      "id": "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Delete",
+      "name": "SmartDetectorAlertRules_Delete",
+      "service": "microsoft.alertsManagement",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules/{alertRuleName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "alertRuleName": {
+            "description": "The name of the alert rule.",
+            "in": "path",
+            "name": "alertRuleName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2021-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The Azure subscription Id.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "microsoft.alertsManagement",
+        "version": "2021-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules/{alertRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json"
+    },
+    {
+      "id": "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_Get",
+      "name": "SmartDetectorAlertRules_Get",
+      "service": "microsoft.alertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules/{alertRuleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "alertRuleName": {
+            "description": "The name of the alert rule.",
+            "in": "path",
+            "name": "alertRuleName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2021-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "expandDetector": {
+            "description": "Indicates if Smart Detector should be expanded.",
+            "in": "query",
+            "name": "expandDetector",
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The Azure subscription Id.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/AzureResource"
+          }
+        ],
+        "description": "The alert rule information",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/AlertRuleProperties",
+            "description": "The properties of the alert rule.",
+            "x-ms-client-flatten": true
+          }
+        }
+      },
+      "call": {
+        "product": "microsoft.alertsManagement",
+        "version": "2021-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules/{alertRuleName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json"
+    },
+    {
+      "id": "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_List",
+      "name": "SmartDetectorAlertRules_List",
+      "service": "microsoft.alertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/microsoft.alertsManagement/smartDetectorAlertRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "expandDetector": {
+            "description": "Indicates if Smart Detector should be expanded.",
+            "in": "query",
+            "name": "expandDetector",
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The Azure subscription Id.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Smart Detector alert rules.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Smart Detector alert rules.",
+            "items": {
+              "$ref": "#/definitions/AlertRule"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "microsoft.alertsManagement",
+        "version": "2021-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/microsoft.alertsManagement/smartDetectorAlertRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json"
+    },
+    {
+      "id": "Azure.microsoft.alertsManagement.SmartDetectorAlertRules_ListByResourceGroup",
+      "name": "SmartDetectorAlertRules_ListByResourceGroup",
+      "service": "microsoft.alertsManagement",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2021-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "expandDetector": {
+            "description": "Indicates if Smart Detector should be expanded.",
+            "in": "query",
+            "name": "expandDetector",
+            "type": "boolean",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group.",
+            "in": "path",
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The Azure subscription Id.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Smart Detector alert rules.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to get the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of Smart Detector alert rules.",
+            "items": {
+              "$ref": "#/definitions/AlertRule"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "microsoft.alertsManagement",
+        "version": "2021-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/microsoft.alertsManagement/smartDetectorAlertRules",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json"
     },
     {
       "id": "Azure.microsoft.insights.AnalyticsItems_Delete",

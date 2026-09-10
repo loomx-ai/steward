@@ -1957,6 +1957,71 @@
         "PrivateLinkScopes_List",
         "PrivateLinkScopes_ListByResourceGroup"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/metricAlert.json",
+      "operations": [
+        "MetricAlertsStatus_List",
+        "MetricAlertsStatus_ListByName",
+        "MetricAlerts_Delete",
+        "MetricAlerts_Get",
+        "MetricAlerts_ListByResourceGroup",
+        "MetricAlerts_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2023-01-01/actionGroups_API.json",
+      "operations": [
+        "ActionGroups_Delete",
+        "ActionGroups_Get",
+        "ActionGroups_ListByResourceGroup",
+        "ActionGroups_ListBySubscriptionId"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-01-01/activityLogAlerts_API.json",
+      "operations": [
+        "ActivityLogAlerts_Delete",
+        "ActivityLogAlerts_Get",
+        "ActivityLogAlerts_ListByResourceGroup",
+        "ActivityLogAlerts_ListBySubscriptionId"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/monitor/resource-manager/Microsoft.Insights/Insights/stable/2026-03-01/scheduledQueryRule_API.json",
+      "operations": [
+        "ScheduledQueryRules_Delete",
+        "ScheduledQueryRules_Get",
+        "ScheduledQueryRules_ListByResourceGroup",
+        "ScheduledQueryRules_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/Legacy/stable/2021-04-01/SmartDetectorAlertRulesApi.json",
+      "operations": [
+        "SmartDetectorAlertRules_Delete",
+        "SmartDetectorAlertRules_Get",
+        "SmartDetectorAlertRules_List",
+        "SmartDetectorAlertRules_ListByResourceGroup"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/PrometheusRuleGroups/stable/2023-03-01/PrometheusRuleGroups.json",
+      "operations": [
+        "PrometheusRuleGroups_Delete",
+        "PrometheusRuleGroups_Get",
+        "PrometheusRuleGroups_ListByResourceGroup",
+        "PrometheusRuleGroups_ListBySubscription"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/alertsmanagement/resource-manager/Microsoft.AlertsManagement/AlertProcessingRules/stable/2021-08-08/AlertProcessingRules.json",
+      "operations": [
+        "AlertProcessingRules_Delete",
+        "AlertProcessingRules_GetByName",
+        "AlertProcessingRules_ListByResourceGroup",
+        "AlertProcessingRules_ListBySubscription"
+      ]
     }
   ],
   "resource_types": [

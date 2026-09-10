@@ -884,6 +884,9 @@ func safeResource(value any) any {
 		if applicationInsightsRaw(typed) {
 			typed = object(applicationInsightsSafeValue(typed))
 		}
+		if monitorAlertPath(text(typed["id"])) || monitorAlertPath("/providers/"+text(typed["type"])) {
+			typed = object(monitorAlertSafeValue(typed))
+		}
 		if apimRaw(typed) {
 			typed = apimSafeRaw(typed)
 		}

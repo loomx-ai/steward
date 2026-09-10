@@ -14,6 +14,11 @@ responses. These verify wire protocol behavior, error handling, and application
 normalization. They are not evidence of an independent ARM emulator or a live
 Azure account.
 
+[Monitor alerts](monitoralerts/README.md) retain 36 original examples for seven
+alert and notification families. Thirty native operations, 44 responses,
+explicit upstream schema discrepancies and endpoint-aware privacy are checked
+separately from resource inventory and cleanup execution.
+
 `servicebus-migration-revert-recording.json` selects request methods/URIs and
 unchanged response bodies from an immutable official Azure CLI test recording.
 It records the original file and body SHA-256 values and omits all headers. The
