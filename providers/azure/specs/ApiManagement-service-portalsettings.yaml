@@ -1,0 +1,52 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/portalsettings
+  class: configuration.portal
+presentation:
+  displayNames:
+    en-US: API Management portal settings
+    zh-CN: API 管理门户设置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.PortalSettings_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.SignInSettings_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service
+  targetIdPath: refs_microsoft_apimanagement_service

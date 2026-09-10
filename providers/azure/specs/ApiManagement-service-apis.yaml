@@ -1,0 +1,101 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/apis
+  class: network.api
+presentation:
+  displayNames:
+    en-US: API Management API
+    zh-CN: API 管理API
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.Api_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.Api_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  displayName:
+    path: displayName
+    type: string
+  apiRevision:
+    path: apiRevision
+    type: string
+  apiVersion:
+    path: apiVersion
+    type: string
+  isCurrent:
+    path: isCurrent
+    type: boolean
+  path:
+    path: path
+    type: string
+  protocols:
+    path: protocols
+    type: array
+  apiVersionSetId:
+    path: apiVersionSetId
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/backends
+  targetIdPath: refs_microsoft_apimanagement_service_backends
+- type: uses
+  targetType: Microsoft.ApiManagement/service/apis
+  targetIdPath: refs_microsoft_apimanagement_service_apis
+- type: uses
+  targetType: Microsoft.ApiManagement/service
+  targetIdPath: refs_microsoft_apimanagement_service
+- type: uses
+  targetType: Microsoft.ApiManagement/service/apiVersionSets
+  targetIdPath: refs_microsoft_apimanagement_service_apiversionsets
+- type: uses
+  targetType: Microsoft.ApiManagement/service/authorizationServers
+  targetIdPath: refs_microsoft_apimanagement_service_authorizationservers
+- type: uses
+  targetType: Microsoft.ApiManagement/service/openidConnectProviders
+  targetIdPath: refs_microsoft_apimanagement_service_openidconnectproviders
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.Api_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.Api_Get
+      itemsPath: $
+      identityPath: id
+    parameters:
+      If-Match: resource.normalized.arm_etag
+      deleteRevisions: false

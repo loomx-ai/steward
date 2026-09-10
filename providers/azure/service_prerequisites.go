@@ -74,6 +74,9 @@ var servicePrerequisiteRules = map[string][]string{
 }
 
 func servicePrerequisiteKind(parent, child string) bool {
+	if isAPIMType(parent) && slices.Contains(apimIncomingKinds(parent), child) {
+		return true
+	}
 	if isCosmosType(parent) {
 		return cosmosPrerequisiteKind(parent, child)
 	}
@@ -152,7 +155,7 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 			continue
 		}
 		id, nativeType, err := parseID(identity.NativeID)
-		if err != nil || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(nativeType, identity.NativeType) || !servicePrerequisiteKind(a.kind.NativeType, identity.NativeType) || (!serviceChildRelation(request.Asset, prerequisite.Asset) && !incomingMigrationPrerequisite(request.Asset, prerequisite.Asset) && !recoveryPrerequisite(request.Asset, prerequisite.Asset) && !cdnPrerequisite(request.Asset, prerequisite.Asset) && !wafPrerequisite(request.Asset, prerequisite.Asset) && !redisSharedPrerequisite(request.Asset, prerequisite.Asset)) {
+		if err != nil || !prerequisite.Delete || prerequisite.Asset.ID == "" || assetIDs[prerequisite.Asset.ID] || prerequisite.ControllerID != request.Asset.ID || seen[id] || identity.Provider != asset.ProviderAzure || identity.ConnectionID != request.Asset.Identity.ConnectionID || identity.Partition != request.Asset.Identity.Partition || !strings.HasPrefix(id, a.client.root()+"/") || !strings.EqualFold(nativeType, identity.NativeType) || !servicePrerequisiteKind(a.kind.NativeType, identity.NativeType) || (!serviceChildRelation(request.Asset, prerequisite.Asset) && !incomingMigrationPrerequisite(request.Asset, prerequisite.Asset) && !recoveryPrerequisite(request.Asset, prerequisite.Asset) && !cdnPrerequisite(request.Asset, prerequisite.Asset) && !apimPrerequisite(request.Asset, prerequisite.Asset) && !wafPrerequisite(request.Asset, prerequisite.Asset) && !redisSharedPrerequisite(request.Asset, prerequisite.Asset)) {
 			return serviceDenied("invalid_service_prerequisite")
 		}
 		seen[id], assetIDs[prerequisite.Asset.ID] = true, true
@@ -164,7 +167,7 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 		if err != nil {
 			return err
 		}
-		if _, err := a.client.request(ctx, "GET", endpoint); !isNotFound(err) {
+		if _, err := a.client.readResource(ctx, endpoint); !isNotFound(err) {
 			if err != nil {
 				return err
 			}

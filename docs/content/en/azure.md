@@ -30,13 +30,14 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 258 resource types; 240 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 358 resource types; 332 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
 | Compute | VMs and extensions, managed disks, snapshots, managed images, availability sets, dedicated hosts and capacity reservations | Supported, with attachment and ownership protections; host/reservation groups require their members to be deleted first |
 | VM scale sets | Uniform and Flexible sets, instances and extensions | Reviewed cascades for Uniform members; prerequisite VM deletion for Flexible sets |
 | Azure Batch | Accounts, pools, nodes, jobs, schedules, tasks, applications, package versions, private endpoint connections and network perimeter views | Reviewed prerequisites and cascades; exact-node removal requeues running tasks; perimeter views require account cleanup |
+| API Management | Services, workspaces, APIs and revisions, policies, products, subscriptions, portal content/configuration, credentials, notifications, associations, self-hosted gateway registrations and standalone workspace gateways | Reviewed cascades and ordered unlinks; fixed configurations require their controller; service deletion uses soft-delete retention |
 | Virtual networks | VNets, subnets, NICs, network security groups, route tables, public IPs, public IP prefixes, NAT gateways | Supported |
 | Load balancing | Load balancers and Application Gateways | Supported |
 | Storage | Storage accounts and Blob containers | Empty resources only |
@@ -68,6 +69,12 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
 ## Cleanup protections
+
+API Management cleanup reviews the selected service or workspace's API definitions, policies, content and configuration. Shared subscriptions, API revisions and referring resources use separate reviewed deletion steps. Removing an API/product/group/tag or notification association detaches that association; its referenced member remains unless separately selected. Built-in groups, the administrator user, the master subscription, email templates and fixed portal/notification/tenant configurations require their owning controller. Retaining a required resource blocks controller deletion. Publishing portal revisions and changing configurations block cleanup.
+
+Workspace cleanup first removes its reviewed standalone-gateway configuration connections. A shared gateway and its other workspace connections remain. Reads must cover the complete subscription gateway index, service workspace links, applicable child lists, GET/HEAD existence checks, ancestors and referenced targets, including other resource groups. Credential references also require native subscription lists and reads for matching Key Vaults and managed identities. Vault secret contents are not fetched; external policy URLs and policy expressions are never downloaded or executed. See [workspace gateways](https://learn.microsoft.com/en-us/azure/api-management/workspaces-overview).
+
+Azure retains a deleted API Management service for 48 hours. Steward offers no restore, purge or email-template reset; restoring a service does not undo earlier independent DELETE steps. Native resource and child absence are checked after asynchronous completion. Verification includes official schemas, CLI response replays and selected APIM paths in a pinned independent emulator; it does not establish a live Azure deployment test. See [soft-delete behavior](https://learn.microsoft.com/en-us/azure/api-management/soft-delete).
 
 Azure Batch cleanup reviews the complete account hierarchy. Pools, applications, private endpoint connections, jobs and schedules have ordered deletion steps; package versions precede their application. Native job/schedule cleanup includes reviewed tasks, and native pool cleanup includes reviewed nodes. Auto pools follow the job or schedule only when the actual lifetime settings and membership establish that ownership. Shared pools, packages and task dependencies require an explicit cleanup choice for their consumers.
 

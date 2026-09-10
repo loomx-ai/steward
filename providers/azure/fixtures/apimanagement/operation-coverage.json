@@ -1,0 +1,3118 @@
+{
+  "api_version": "2024-05-01",
+  "documents": [
+    {
+      "source_sha256": "644b03426837b2193b3a1482a98d6a3fd82fd9cb9579367ffa0a1fbfa894471f",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apigateway.json"
+    },
+    {
+      "source_sha256": "56982b3536f1d3b8e19fc60326c999c51c70462b6ba023a7e7ce08941e0b64c2",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimallpolicies.json"
+    },
+    {
+      "source_sha256": "9aea8fa5763f3d4f694196be96b737e28d6be0e62ff1fd6c2250860bc09bec95",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapis.json"
+    },
+    {
+      "source_sha256": "dcbcf7b5a24a13c1328efa1b30801c2ada1990db9c47a87a22d99a655c460982",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapisByTags.json"
+    },
+    {
+      "source_sha256": "830cf27c5927a5194ee86e18fe1a57c7311385656f9f37dc33e7f2ce9b825961",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapiversionsets.json"
+    },
+    {
+      "source_sha256": "808a26a73e335f3fa8710d74db4f40304a4a9b74d65af0101124bba8cfd49d7f",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationproviders.json"
+    },
+    {
+      "source_sha256": "a67520bf2d28fc447fd330b8a14c2886d2bab3707f3360efb94744daff248ebd",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationservers.json"
+    },
+    {
+      "source_sha256": "695bd084df0a66eb07f7244f35fc4f377cee54a6866d50d7b93686dc5fb8b64a",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimbackends.json"
+    },
+    {
+      "source_sha256": "8086c89940735d0b7c896c3be933c6af5534e87ada0c76243a2a90ba78d5b612",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcaches.json"
+    },
+    {
+      "source_sha256": "4c5bef70118dd781713375b3ef10803886c7504b938f9d674e827dabbfd2fe3a",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcertificates.json"
+    },
+    {
+      "source_sha256": "94fdd4661784993d3f086160322ada497d960d02c5a868eec68d5fdd64f5ebaa",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcontenttypes.json"
+    },
+    {
+      "source_sha256": "bc4d61cef40f429c1052de5e717e240b5297059f7536228ad9cf5bfcddfeacf7",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdeletedservices.json"
+    },
+    {
+      "source_sha256": "a9aa63fa1ce6e54e59e5ecd6481e3e221a04b3260b3836e5387513aa5e42495c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdeployment.json"
+    },
+    {
+      "source_sha256": "d1adae4131b2dae3aa2ef93e9b90ab934ace08f954f4856a0179c92380078545",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdiagnostics.json"
+    },
+    {
+      "source_sha256": "d111a4740ae53faa7a9370ed6b467dae3a636845946f1ccb7471b8c5502e4b70",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdocumentations.json"
+    },
+    {
+      "source_sha256": "380f55a28e2010377114d99c32b2990d4057ca99542687ad95b058b9349dcc2f",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimemailtemplates.json"
+    },
+    {
+      "source_sha256": "84b887f1318c65e1f648ed7db4d673cd2dfcc4b78d560e24b77e1e2b04fcd62c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgatewayConfigConnections.json"
+    },
+    {
+      "source_sha256": "ce9cdaa28e9ccb1c066b0c456f1477df1e086744eec9f366d2d464a90fada29d",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgateways.json"
+    },
+    {
+      "source_sha256": "addaa32fd81e4e0050596ee821480879773b97b93d9f9446feb7b8451e321371",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgroups.json"
+    },
+    {
+      "source_sha256": "59b6ee696c55959ca275f9e13155ff0159672c6854d07d917ff4b9d59b244d26",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimidentityprovider.json"
+    },
+    {
+      "source_sha256": "18344024732a4c0adeae8ade2f75a56033c999c3a887a7af13dfa492cc609c93",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimissues.json"
+    },
+    {
+      "source_sha256": "083635bf3a3f576f565a1532e4353555aa744d993d4ef16bb2302114a134f7b8",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimloggers.json"
+    },
+    {
+      "source_sha256": "cb8e9d37480d57c307753782d94d70fd140cb1cbce839c7c2216c30c3b277814",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnamedvalues.json"
+    },
+    {
+      "source_sha256": "d07aceeeee9781db45911c3949076a5de7bcb2460c42b4f790007f7a372be5d5",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnetworkstatus.json"
+    },
+    {
+      "source_sha256": "853f6da9a2f86a127bdde8b2c16b281f9c16a64ef6b81d99d5e01292dc4bc1cf",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnotifications.json"
+    },
+    {
+      "source_sha256": "fbfddfbed7b9331068910ec02d65b9151a9669556e5632e1bd6ab28f28e92877",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimopenidconnectproviders.json"
+    },
+    {
+      "source_sha256": "b828f678c729485d0f4318329f321f9142e70ddf3d1752c8debfb38a2d60d5c0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimoutbounddependency.json"
+    },
+    {
+      "source_sha256": "95408078993df30c70d53307fc1eba9e90900f9976b03ee680edebf02504f6f4",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicies.json"
+    },
+    {
+      "source_sha256": "0783a19a0b7c42e25798914540eb4115fd2f778662cf8db4beda5568df25966a",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicydescriptions.json"
+    },
+    {
+      "source_sha256": "a0a9f51be9bbc4f0d06ea4a79560173c449700f9a5cb8fb5e14ad6088a81f17c",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyfragments.json"
+    },
+    {
+      "source_sha256": "2ce1824749230760e5e933e24632c9de8b8cb4d5b574c4f4d75ec66ca030b5c8",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyrestrictions.json"
+    },
+    {
+      "source_sha256": "f8f065db90b0b8f6f9eaba294b27ab4cfcf0bb828142436c406379bb6dd5ac76",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalconfigs.json"
+    },
+    {
+      "source_sha256": "34ba27a3df099ccd6457acaa9089662c4b14de2977fbd872bba7efd611763b24",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalrevisions.json"
+    },
+    {
+      "source_sha256": "75724907d74051dd651aef846f5087d58c89fad7599daf158c1ee4f75f145518",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalsettings.json"
+    },
+    {
+      "source_sha256": "431964d463d644de44ce82b81b08b729f507f2bef2bc3dd254969a5112cbcb37",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimprivatelink.json"
+    },
+    {
+      "source_sha256": "c4d11fd1d0b59585e566b6c8a5fcefe084e19de551e676054cca8cf66a1b3ed8",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimproducts.json"
+    },
+    {
+      "source_sha256": "e7edef3b3b90f0f0082f95d904e602fcfbb781a312e427bd963039366e5c12c1",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimproductsByTags.json"
+    },
+    {
+      "source_sha256": "87b9027ce72345cc49b0ff3fdbff5a17644358ff40a9f62d554b7c521cb74e2a",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimquotas.json"
+    },
+    {
+      "source_sha256": "13825004ce9f3ae2063ff67eed4b8b5ffb433b70a5148db77a87b2c68784a22b",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimregions.json"
+    },
+    {
+      "source_sha256": "baea5c398d83dc7c93f3dc118d6474756c2f38076f70aa539d9de65d82b6a170",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimreports.json"
+    },
+    {
+      "source_sha256": "8f482ea54d579c7965de0ae08e1702e142446615cf1f79c5281091a64d58aeff",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimschema.json"
+    },
+    {
+      "source_sha256": "b3f91cc7139e566a450d84c3e4c6a082a75e4acde3cedb2d5640d044e6aefae4",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsettings.json"
+    },
+    {
+      "source_sha256": "5e54c44eba10a8bf7599d555005684a4d99066010414bdecd9c4f0026cebf0c1",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimskus.json"
+    },
+    {
+      "source_sha256": "b16662e11d8f2a3c5932cda4b5a0862d8524faf9ff92c03e7f15a8ed8e08d81b",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsubscriptions.json"
+    },
+    {
+      "source_sha256": "2a3f81250e47cd17ec8c4231d6a56c830d2dcf4e5d53e82f26b9e6aa540c1854",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtagresources.json"
+    },
+    {
+      "source_sha256": "8dbb519394d5e298b1ea29029813be52d94aa733f135fc277b9fec7bab46b236",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtags.json"
+    },
+    {
+      "source_sha256": "f50e83361a98bbac19343f83e9c630aea488fd9e0dd697429361f55e6519a50a",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtenant.json"
+    },
+    {
+      "source_sha256": "06cbaf6ff23da6dbe09cb34c911e59bc798f8683f68c80d220aebc8d6b577651",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimusers.json"
+    },
+    {
+      "source_sha256": "a9c5128419eb2c23055bdc1fd8388259fb9f70450583824f8d7805501880924d",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacebackends.json"
+    },
+    {
+      "source_sha256": "d65f3f97f8c2f70e74f2cbe9d0601c70edb420c0a35576528d1f849f51db7bbb",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacecertificates.json"
+    },
+    {
+      "source_sha256": "fa7bbd9176801643e23a564969c4242377ae463489bce2ba511771449429b17e",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacediagnostics.json"
+    },
+    {
+      "source_sha256": "344f75034ed113a67e1b44979276703da09cf9b6c618d5f23ed845a13b81214b",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacelinks.json"
+    },
+    {
+      "source_sha256": "c9d1ccc092b9a48b0e80043fd3c358933ee802a2452a018ace9c0e0684f2e4d1",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaceloggers.json"
+    },
+    {
+      "source_sha256": "3151f22597d6fca6b35559bbe088d32c56b6672db34abafe28845fdeb6056754",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaces.json"
+    },
+    {
+      "source_sha256": "ce0d9a612dd8c6e5fbff3599302449015430e90abf6ebbdade821e235b397a09",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/operationStatuses.json"
+    }
+  ],
+  "operations": [
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiGateway_List",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/gateways",
+      "source_document": "apigateway.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiGateway_ListByResourceGroup",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways",
+      "source_document": "apigateway.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiGateway_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}",
+      "source_document": "apigateway.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiGateway_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}",
+      "source_document": "apigateway.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "ApiManagementGatewaySkus_ListAvailableSkus",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}/skus",
+      "source_document": "apigateway.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "AllPolicies_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/allPolicies",
+      "source_document": "apimallpolicies.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Api_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Api_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Api_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Api_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiDiagnostic_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/diagnostics",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiDiagnostic_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiDiagnostic_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiDiagnostic_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssue_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiIssue_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssue_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiIssue_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssueAttachment_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/attachments",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiIssueAttachment_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/attachments/{attachmentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssueAttachment_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/attachments/{attachmentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiIssueAttachment_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/attachments/{attachmentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssueComment_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/comments",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiIssueComment_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/comments/{commentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiIssueComment_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/comments/{commentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiIssueComment_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/issues/{issueId}/comments/{commentId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiOperation_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiOperation_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiOperation_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiOperation_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiOperationPolicy_ListByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/policies",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiOperationPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiOperationPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiOperationPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_ListByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/tags",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Tag_DetachFromOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_GetByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Tag_GetEntityStateByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operations/{operationId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "Operation_ListByTags",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/operationsByTags",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiPolicy_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiProduct_ListByApis",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/products",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiRelease_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/releases",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiRelease_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiRelease_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiRelease_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GraphQLApiResolver_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GraphQLApiResolver_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GraphQLApiResolver_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "GraphQLApiResolver_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GraphQLApiResolverPolicy_ListByResolver",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}/policies",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GraphQLApiResolverPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GraphQLApiResolverPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "GraphQLApiResolverPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/resolvers/{resolverId}/policies/{policyId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiRevision_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/revisions",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiSchema_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/schemas",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiSchema_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiSchema_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiSchema_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiTagDescription_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tagDescriptions",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiTagDescription_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tagDescriptions/{tagDescriptionId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiTagDescription_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tagDescriptions/{tagDescriptionId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiTagDescription_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tagDescriptions/{tagDescriptionId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tags",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Tag_DetachFromApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_GetByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Tag_GetEntityStateByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/tags/{tagId}",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiWikis_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/wikis",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiWiki_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/wikis/default",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiWiki_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/wikis/default",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiWiki_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/wikis/default",
+      "source_document": "apimapis.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "Api_ListByTags",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apisByTags",
+      "source_document": "apimapisByTags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiVersionSet_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apiVersionSets",
+      "source_document": "apimapiversionsets.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiVersionSet_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apiVersionSets/{versionSetId}",
+      "source_document": "apimapiversionsets.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiVersionSet_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apiVersionSets/{versionSetId}",
+      "source_document": "apimapiversionsets.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ApiVersionSet_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apiVersionSets/{versionSetId}",
+      "source_document": "apimapiversionsets.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationProvider_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "AuthorizationProvider_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationProvider_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Authorization_ListByAuthorizationProvider",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Authorization_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations/{authorizationId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Authorization_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations/{authorizationId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationAccessPolicy_ListByAuthorization",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations/{authorizationId}/accessPolicies",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "AuthorizationAccessPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations/{authorizationId}/accessPolicies/{authorizationAccessPolicyId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationAccessPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationProviders/{authorizationProviderId}/authorizations/{authorizationId}/accessPolicies/{authorizationAccessPolicyId}",
+      "source_document": "apimauthorizationproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationServer_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationServers",
+      "source_document": "apimauthorizationservers.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "AuthorizationServer_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationServers/{authsid}",
+      "source_document": "apimauthorizationservers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "AuthorizationServer_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationServers/{authsid}",
+      "source_document": "apimauthorizationservers.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "AuthorizationServer_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/authorizationServers/{authsid}",
+      "source_document": "apimauthorizationservers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Backend_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/backends",
+      "source_document": "apimbackends.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Backend_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/backends/{backendId}",
+      "source_document": "apimbackends.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Backend_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/backends/{backendId}",
+      "source_document": "apimbackends.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Backend_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/backends/{backendId}",
+      "source_document": "apimbackends.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Cache_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/caches",
+      "source_document": "apimcaches.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Cache_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/caches/{cacheId}",
+      "source_document": "apimcaches.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Cache_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/caches/{cacheId}",
+      "source_document": "apimcaches.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Cache_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/caches/{cacheId}",
+      "source_document": "apimcaches.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Certificate_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/certificates",
+      "source_document": "apimcertificates.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Certificate_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/certificates/{certificateId}",
+      "source_document": "apimcertificates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Certificate_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/certificates/{certificateId}",
+      "source_document": "apimcertificates.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Certificate_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/certificates/{certificateId}",
+      "source_document": "apimcertificates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ContentType_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ContentType_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ContentType_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ContentItem_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}/contentItems",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ContentItem_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}/contentItems/{contentItemId}",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ContentItem_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}/contentItems/{contentItemId}",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ContentItem_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/contentTypes/{contentTypeId}/contentItems/{contentItemId}",
+      "source_document": "apimcontenttypes.json"
+    },
+    {
+      "handling": "soft-delete-retention",
+      "method": "GET",
+      "operation": "DeletedServices_ListBySubscription",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/deletedservices",
+      "source_document": "apimdeletedservices.json"
+    },
+    {
+      "handling": "soft-delete-retention",
+      "method": "DELETE",
+      "operation": "DeletedServices_Purge",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/locations/{location}/deletedservices/{serviceName}",
+      "source_document": "apimdeletedservices.json"
+    },
+    {
+      "handling": "soft-delete-retention",
+      "method": "GET",
+      "operation": "DeletedServices_GetByName",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/locations/{location}/deletedservices/{serviceName}",
+      "source_document": "apimdeletedservices.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "ApiManagementOperations_List",
+      "path": "/providers/Microsoft.ApiManagement/operations",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiManagementService_List",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiManagementService_ListByResourceGroup",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiManagementService_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiManagementService_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "ApiManagementServiceSkus_ListAvailableServiceSkus",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/skus",
+      "source_document": "apimdeployment.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Diagnostic_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/diagnostics",
+      "source_document": "apimdiagnostics.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Diagnostic_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/diagnostics/{diagnosticId}",
+      "source_document": "apimdiagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Diagnostic_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/diagnostics/{diagnosticId}",
+      "source_document": "apimdiagnostics.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Diagnostic_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/diagnostics/{diagnosticId}",
+      "source_document": "apimdiagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Documentation_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/documentations",
+      "source_document": "apimdocumentations.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Documentation_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/documentations/{documentationId}",
+      "source_document": "apimdocumentations.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Documentation_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/documentations/{documentationId}",
+      "source_document": "apimdocumentations.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Documentation_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/documentations/{documentationId}",
+      "source_document": "apimdocumentations.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "EmailTemplate_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/templates",
+      "source_document": "apimemailtemplates.json"
+    },
+    {
+      "handling": "reset-only",
+      "method": "DELETE",
+      "operation": "EmailTemplate_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/templates/{templateName}",
+      "source_document": "apimemailtemplates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "EmailTemplate_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/templates/{templateName}",
+      "source_document": "apimemailtemplates.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "EmailTemplate_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/templates/{templateName}",
+      "source_document": "apimemailtemplates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiGatewayConfigConnection_ListByGateway",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}/configConnections",
+      "source_document": "apimgatewayConfigConnections.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ApiGatewayConfigConnection_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}/configConnections/{configConnectionName}",
+      "source_document": "apimgatewayConfigConnections.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiGatewayConfigConnection_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/gateways/{gatewayName}/configConnections/{configConnectionName}",
+      "source_document": "apimgatewayConfigConnections.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Gateway_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Gateway_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Gateway_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Gateway_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GatewayApi_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/apis",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GatewayApi_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/apis/{apiId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "GatewayApi_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/apis/{apiId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GatewayCertificateAuthority_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/certificateAuthorities",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GatewayCertificateAuthority_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/certificateAuthorities/{certificateId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GatewayCertificateAuthority_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/certificateAuthorities/{certificateId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "GatewayCertificateAuthority_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/certificateAuthorities/{certificateId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GatewayHostnameConfiguration_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/hostnameConfigurations",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GatewayHostnameConfiguration_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/hostnameConfigurations/{hcId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GatewayHostnameConfiguration_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/hostnameConfigurations/{hcId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "GatewayHostnameConfiguration_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/gateways/{gatewayId}/hostnameConfigurations/{hcId}",
+      "source_document": "apimgateways.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Group_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Group_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Group_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Group_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GroupUser_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}/users",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GroupUser_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}/users/{userId}",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "GroupUser_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/groups/{groupId}/users/{userId}",
+      "source_document": "apimgroups.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "IdentityProvider_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders",
+      "source_document": "apimidentityprovider.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "IdentityProvider_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders/{identityProviderName}",
+      "source_document": "apimidentityprovider.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "IdentityProvider_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders/{identityProviderName}",
+      "source_document": "apimidentityprovider.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "IdentityProvider_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders/{identityProviderName}",
+      "source_document": "apimidentityprovider.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Issue_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/issues",
+      "source_document": "apimissues.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Issue_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/issues/{issueId}",
+      "source_document": "apimissues.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Logger_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/loggers",
+      "source_document": "apimloggers.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Logger_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/loggers/{loggerId}",
+      "source_document": "apimloggers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Logger_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/loggers/{loggerId}",
+      "source_document": "apimloggers.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Logger_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/loggers/{loggerId}",
+      "source_document": "apimloggers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "NamedValue_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/namedValues",
+      "source_document": "apimnamedvalues.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "NamedValue_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/namedValues/{namedValueId}",
+      "source_document": "apimnamedvalues.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "NamedValue_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/namedValues/{namedValueId}",
+      "source_document": "apimnamedvalues.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "NamedValue_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/namedValues/{namedValueId}",
+      "source_document": "apimnamedvalues.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "NetworkStatus_ListByLocation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/locations/{locationName}/networkstatus",
+      "source_document": "apimnetworkstatus.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "NetworkStatus_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/networkstatus",
+      "source_document": "apimnetworkstatus.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Notification_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Notification_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "NotificationRecipientEmail_ListByNotification",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientEmails",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "NotificationRecipientEmail_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientEmails/{email}",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "NotificationRecipientEmail_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientEmails/{email}",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "NotificationRecipientUser_ListByNotification",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientUsers",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "NotificationRecipientUser_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientUsers/{userId}",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "NotificationRecipientUser_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/notifications/{notificationName}/recipientUsers/{userId}",
+      "source_document": "apimnotifications.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "OpenIdConnectProvider_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/openidConnectProviders",
+      "source_document": "apimopenidconnectproviders.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "OpenIdConnectProvider_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/openidConnectProviders/{opid}",
+      "source_document": "apimopenidconnectproviders.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "OpenIdConnectProvider_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/openidConnectProviders/{opid}",
+      "source_document": "apimopenidconnectproviders.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "OpenIdConnectProvider_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/openidConnectProviders/{opid}",
+      "source_document": "apimopenidconnectproviders.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "OutboundNetworkDependenciesEndpoints_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/outboundNetworkDependenciesEndpoints",
+      "source_document": "apimoutbounddependency.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Policy_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policies",
+      "source_document": "apimpolicies.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Policy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policies/{policyId}",
+      "source_document": "apimpolicies.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Policy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policies/{policyId}",
+      "source_document": "apimpolicies.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Policy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policies/{policyId}",
+      "source_document": "apimpolicies.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "PolicyDescription_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyDescriptions",
+      "source_document": "apimpolicydescriptions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PolicyFragment_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyFragments",
+      "source_document": "apimpolicyfragments.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "PolicyFragment_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyFragments/{id}",
+      "source_document": "apimpolicyfragments.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PolicyFragment_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyFragments/{id}",
+      "source_document": "apimpolicyfragments.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "PolicyFragment_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyFragments/{id}",
+      "source_document": "apimpolicyfragments.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PolicyRestriction_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyRestrictions",
+      "source_document": "apimpolicyrestrictions.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "PolicyRestriction_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyRestrictions/{policyRestrictionId}",
+      "source_document": "apimpolicyrestrictions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PolicyRestriction_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyRestrictions/{policyRestrictionId}",
+      "source_document": "apimpolicyrestrictions.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "PolicyRestriction_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policyRestrictions/{policyRestrictionId}",
+      "source_document": "apimpolicyrestrictions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PortalConfig_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalconfigs",
+      "source_document": "apimportalconfigs.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PortalConfig_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalconfigs/{portalConfigId}",
+      "source_document": "apimportalconfigs.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "PortalConfig_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalconfigs/{portalConfigId}",
+      "source_document": "apimportalconfigs.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PortalRevision_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalRevisions",
+      "source_document": "apimportalrevisions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PortalRevision_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalRevisions/{portalRevisionId}",
+      "source_document": "apimportalrevisions.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "PortalRevision_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalRevisions/{portalRevisionId}",
+      "source_document": "apimportalrevisions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PortalSettings_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "DelegationSettings_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/delegation",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "DelegationSettings_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/delegation",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "SignInSettings_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/signin",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "SignInSettings_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/signin",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "SignUpSettings_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/signup",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "SignUpSettings_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings/signup",
+      "source_document": "apimportalsettings.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PrivateEndpointConnection_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/privateEndpointConnections",
+      "source_document": "apimprivatelink.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "PrivateEndpointConnection_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "source_document": "apimprivatelink.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "PrivateEndpointConnection_GetByName",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "source_document": "apimprivatelink.json"
+    },
+    {
+      "handling": "connection-capabilities",
+      "method": "GET",
+      "operation": "PrivateEndpointConnection_ListPrivateLinkResources",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/privateLinkResources",
+      "source_document": "apimprivatelink.json"
+    },
+    {
+      "handling": "connection-capabilities",
+      "method": "GET",
+      "operation": "PrivateEndpointConnection_GetPrivateLinkResource",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/privateLinkResources/{privateLinkSubResourceName}",
+      "source_document": "apimprivatelink.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Product_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Product_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Product_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Product_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductApiLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apiLinks",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductApiLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apiLinks/{apiLinkId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductApiLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apiLinks/{apiLinkId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductApi_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apis",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductApi_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apis/{apiId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "ProductApi_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/apis/{apiId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductGroupLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groupLinks",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductGroupLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groupLinks/{groupLinkId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductGroupLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groupLinks/{groupLinkId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductGroup_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groups",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductGroup_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groups/{groupId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "ProductGroup_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/groups/{groupId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductPolicy_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/policies",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/policies/{policyId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/policies/{policyId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ProductPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/policies/{policyId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductSubscriptions_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/subscriptions",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/tags",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Tag_DetachFromProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/tags/{tagId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_GetByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/tags/{tagId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Tag_GetEntityStateByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/tags/{tagId}",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductWikis_list",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/wikis",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "ProductWiki_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/wikis/default",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ProductWiki_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/wikis/default",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "ProductWiki_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products/{productId}/wikis/default",
+      "source_document": "apimproducts.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "Product_ListByTags",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/productsByTags",
+      "source_document": "apimproductsByTags.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "QuotaByCounterKeys_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/quotas/{quotaCounterKey}",
+      "source_document": "apimquotas.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "QuotaByPeriodKeys_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/quotas/{quotaCounterKey}/periods/{quotaPeriodKey}",
+      "source_document": "apimquotas.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Region_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/regions",
+      "source_document": "apimregions.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byApi",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByGeo",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byGeo",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byOperation",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byProduct",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByRequest",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byRequest",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListBySubscription",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/bySubscription",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByTime",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byTime",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "Reports_ListByUser",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/reports/byUser",
+      "source_document": "apimreports.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GlobalSchema_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/schemas",
+      "source_document": "apimschema.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "GlobalSchema_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/schemas/{schemaId}",
+      "source_document": "apimschema.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "GlobalSchema_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/schemas/{schemaId}",
+      "source_document": "apimschema.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "GlobalSchema_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/schemas/{schemaId}",
+      "source_document": "apimschema.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TenantSettings_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/settings",
+      "source_document": "apimsettings.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TenantSettings_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/settings/{settingsType}",
+      "source_document": "apimsettings.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "ApiManagementSkus_List",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/skus",
+      "source_document": "apimskus.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Subscription_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/subscriptions",
+      "source_document": "apimsubscriptions.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Subscription_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/subscriptions/{sid}",
+      "source_document": "apimsubscriptions.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Subscription_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/subscriptions/{sid}",
+      "source_document": "apimsubscriptions.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Subscription_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/subscriptions/{sid}",
+      "source_document": "apimsubscriptions.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "TagResource_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tagResources",
+      "source_document": "apimtagresources.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Tag_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Tag_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Tag_GetEntityState",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagApiLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/apiLinks",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "TagApiLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/apiLinks/{apiLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagApiLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/apiLinks/{apiLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagOperationLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/operationLinks",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "TagOperationLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/operationLinks/{operationLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagOperationLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/operationLinks/{operationLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagProductLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/productLinks",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "TagProductLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/productLinks/{productLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TagProductLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tags/{tagId}/productLinks/{productLinkId}",
+      "source_document": "apimtags.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TenantAccess_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant",
+      "source_document": "apimtenant.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "TenantAccess_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/{accessName}",
+      "source_document": "apimtenant.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "TenantAccess_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/{accessName}",
+      "source_document": "apimtenant.json"
+    },
+    {
+      "handling": "operational-metadata",
+      "method": "GET",
+      "operation": "TenantConfiguration_GetSyncState",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/{configurationName}/syncState",
+      "source_document": "apimtenant.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "User_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "User_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "User_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "User_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "alternate-view",
+      "method": "GET",
+      "operation": "UserGroup_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}/groups",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "identity-metadata",
+      "method": "GET",
+      "operation": "UserIdentities_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}/identities",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "UserSubscription_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}/subscriptions",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "UserSubscription_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/users/{userId}/subscriptions/{sid}",
+      "source_document": "apimusers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceBackend_ListByWorkspace",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/backends",
+      "source_document": "apimworkspacebackends.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceBackend_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/backends/{backendId}",
+      "source_document": "apimworkspacebackends.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceBackend_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/backends/{backendId}",
+      "source_document": "apimworkspacebackends.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceBackend_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/backends/{backendId}",
+      "source_document": "apimworkspacebackends.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceCertificate_ListByWorkspace",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/certificates",
+      "source_document": "apimworkspacecertificates.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceCertificate_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/certificates/{certificateId}",
+      "source_document": "apimworkspacecertificates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceCertificate_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/certificates/{certificateId}",
+      "source_document": "apimworkspacecertificates.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceCertificate_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/certificates/{certificateId}",
+      "source_document": "apimworkspacecertificates.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiDiagnostic_ListByWorkspace",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/diagnostics",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiDiagnostic_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiDiagnostic_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiDiagnostic_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceDiagnostic_ListByWorkspace",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/diagnostics",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceDiagnostic_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceDiagnostic_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceDiagnostic_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/diagnostics/{diagnosticId}",
+      "source_document": "apimworkspacediagnostics.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiManagementWorkspaceLinks_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaceLinks",
+      "source_document": "apimworkspacelinks.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "ApiManagementWorkspaceLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaceLinks/{workspaceId}",
+      "source_document": "apimworkspacelinks.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceLogger_ListByWorkspace",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/loggers",
+      "source_document": "apimworkspaceloggers.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceLogger_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/loggers/{loggerId}",
+      "source_document": "apimworkspaceloggers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceLogger_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/loggers/{loggerId}",
+      "source_document": "apimworkspaceloggers.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceLogger_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/loggers/{loggerId}",
+      "source_document": "apimworkspaceloggers.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Workspace_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "Workspace_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "Workspace_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "Workspace_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiVersionSet_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apiVersionSets",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiVersionSet_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apiVersionSets/{versionSetId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiVersionSet_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apiVersionSets/{versionSetId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiVersionSet_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apiVersionSets/{versionSetId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApi_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApi_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApi_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApi_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiOperation_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiOperation_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiOperation_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiOperation_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiOperationPolicy_ListByOperation",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}/policies",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiOperationPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiOperationPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiOperationPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/operations/{operationId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiPolicy_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/policies",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiRelease_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/releases",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiRelease_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiRelease_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiRelease_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/releases/{releaseId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiRevision_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/revisions",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiSchema_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/schemas",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceApiSchema_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceApiSchema_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceApiSchema_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/apis/{apiId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceGroup_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceGroup_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceGroup_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceGroup_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceGroupUser_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}/users",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceGroupUser_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}/users/{userId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "WorkspaceGroupUser_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/groups/{groupId}/users/{userId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNamedValue_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/namedValues",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceNamedValue_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/namedValues/{namedValueId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNamedValue_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/namedValues/{namedValueId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceNamedValue_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/namedValues/{namedValueId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNotification_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNotification_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNotificationRecipientEmail_ListByNotification",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientEmails",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceNotificationRecipientEmail_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientEmails/{email}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "WorkspaceNotificationRecipientEmail_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientEmails/{email}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceNotificationRecipientUser_ListByNotification",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientUsers",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceNotificationRecipientUser_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientUsers/{userId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "HEAD",
+      "operation": "WorkspaceNotificationRecipientUser_CheckEntityExists",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/notifications/{notificationName}/recipientUsers/{userId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspacePolicy_ListByApi",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policies",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspacePolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspacePolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspacePolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspacePolicyFragment_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policyFragments",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspacePolicyFragment_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policyFragments/{id}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspacePolicyFragment_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policyFragments/{id}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspacePolicyFragment_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/policyFragments/{id}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProduct_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceProduct_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProduct_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceProduct_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductApiLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/apiLinks",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceProductApiLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/apiLinks/{apiLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductApiLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/apiLinks/{apiLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductGroupLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/groupLinks",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceProductGroupLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/groupLinks/{groupLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductGroupLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/groupLinks/{groupLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductPolicy_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/policies",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceProductPolicy_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceProductPolicy_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceProductPolicy_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/products/{productId}/policies/{policyId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceGlobalSchema_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/schemas",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceGlobalSchema_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceGlobalSchema_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceGlobalSchema_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/schemas/{schemaId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceSubscription_List",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/subscriptions",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceSubscription_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/subscriptions/{sid}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceSubscription_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/subscriptions/{sid}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceSubscription_GetEntityTag",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/subscriptions/{sid}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTag_ListByService",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceTag_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTag_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "etag-alternative",
+      "method": "HEAD",
+      "operation": "WorkspaceTag_GetEntityState",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagApiLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/apiLinks",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceTagApiLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/apiLinks/{apiLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagApiLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/apiLinks/{apiLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagOperationLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/operationLinks",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceTagOperationLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/operationLinks/{operationLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagOperationLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/operationLinks/{operationLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagProductLink_ListByProduct",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/productLinks",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "cleanup",
+      "method": "DELETE",
+      "operation": "WorkspaceTagProductLink_Delete",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/productLinks/{productLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "WorkspaceTagProductLink_Get",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/workspaces/{workspaceId}/tags/{tagId}/productLinks/{productLinkId}",
+      "source_document": "apimworkspaces.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "OperationsResults_Get",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/locations/{location}/operationResults/{operationId}",
+      "source_document": "operationStatuses.json"
+    },
+    {
+      "handling": "catalog-read",
+      "method": "GET",
+      "operation": "OperationStatus_Get",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/locations/{location}/operationStatuses/{operationId}",
+      "source_document": "operationStatuses.json"
+    }
+  ]
+}

@@ -51,36 +51,10 @@ func (c *client) batchExternalReferences(ctx context.Context, account batchAccou
 	resolve := func(kind, host, name string) (string, string, error) {
 		values, loaded := indexes[kind]
 		if !loaded {
-			metadata, err := providerData()
+			var err error
+			values, err = c.subscriptionReferenceIndex(ctx, kind)
 			if err != nil {
 				return "", "", err
-			}
-			operation := "Azure.Microsoft.Storage.StorageAccounts_List"
-			if kind != storageType {
-				operation = "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
-			}
-			op, ok := metadata.catalog.Operation(operation)
-			if !ok {
-				return "", "", serviceDenied("batch_reference_index_missing")
-			}
-			bound, err := bindAzureREST(op, map[string]any{"subscriptionId": c.subscription})
-			if err != nil {
-				return "", "", err
-			}
-			u, _ := url.Parse(bound.URL)
-			rows, err := c.listAllURL(ctx, bound.URL, u.Path)
-			if err != nil {
-				return "", "", err
-			}
-			seen := map[string]bool{}
-			for _, row := range rows {
-				value := object(row)
-				id, typ, err := parseID(text(value["id"]))
-				if err != nil || !strings.EqualFold(typ, kind) || !validResponseType(kind, text(value["type"])) || !strings.HasPrefix(id, c.root()+"/") || seen[id] || !strings.EqualFold(text(value["name"]), last(id)) {
-					return "", "", serviceDenied("invalid_batch_reference_index")
-				}
-				seen[id] = true
-				values = append(values, value)
 			}
 			indexes[kind] = values
 		}

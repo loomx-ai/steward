@@ -193,7 +193,21 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 				}
 			}
 		}
-		if _, err := bindAzureREST(operation, parameters); err == nil {
+		// This resolves identity before the caller supplies conditional headers
+		// and action options. Validate only the path here; the final BindREST
+		// still requires every native header, query parameter and request body.
+		identityOperation := operation
+		identityOperation.InputSchema = maps.Clone(operation.InputSchema)
+		properties := map[string]any{}
+		for name, value := range object(operation.InputSchema["properties"]) {
+			property := maps.Clone(object(value))
+			if property["in"] != "path" {
+				delete(property, "required")
+			}
+			properties[name] = property
+		}
+		identityOperation.InputSchema["properties"] = properties
+		if _, err := bindAzureREST(identityOperation, parameters); err == nil {
 			return operation, parameters, nil
 		}
 	}
@@ -201,7 +215,7 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 }
 
 func (c *client) resourceURL(kind resourceType, nativeID string) (string, error) {
-	operation, parameters, err := c.resourceOperation(kind, nativeID, "GET")
+	operation, parameters, err := c.resourceOperation(kind, nativeID, resourceReadMethod(kind.NativeType))
 	if err != nil {
 		return "", err
 	}

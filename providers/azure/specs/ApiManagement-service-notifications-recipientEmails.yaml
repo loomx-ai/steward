@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/notifications/recipientEmails
+  class: notification.recipient
+presentation:
+  displayNames:
+    en-US: API Management notification email recipient
+    zh-CN: API 管理通知邮件接收者
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.NotificationRecipientEmail_ListByNotification
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+      notificationName: parent.normalized.arm_parameters.notificationName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.NotificationRecipientEmail_CheckEntityExists
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service/notifications
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/notifications
+  targetIdPath: refs_microsoft_apimanagement_service_notifications
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.NotificationRecipientEmail_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.NotificationRecipientEmail_CheckEntityExists
+      itemsPath: $
+      identityPath: id

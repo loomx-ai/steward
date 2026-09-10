@@ -27,6 +27,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if !ok || kind.ReadOnly || value.Identity.Provider != asset.ProviderAzure {
 		return nil, fmt.Errorf("Azure resource has no action driver")
 	}
+	if isAPIMType(kind.NativeType) && value.Identity.ConnectionID != id {
+		return nil, serviceDenied("apim_action_connection_changed")
+	}
 	c, err := r.resolve(ctx, id)
 	if err != nil {
 		return nil, err
@@ -89,6 +92,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.apimRequestIdentity(request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.streamAnalyticsRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -104,7 +110,7 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if request.Action != "delete" {
 		return contracts.PreflightResult{Reason: "unsupported_action"}, nil
 	}
-	res, err := a.client.request(ctx, "GET", a.endpoint)
+	res, err := a.client.readResource(ctx, a.endpoint)
 	if isNotFound(err) {
 		if a.kind.NativeType == serviceBusMigrationType {
 			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
@@ -152,6 +158,12 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.cosmosPreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.apimPreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.apimReferencesAbsent(ctx, request); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.streamAnalyticsPreflight(ctx, request.Asset, res.data); err != nil {
@@ -314,6 +326,11 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 	for name, value := range a.deletion.Headers {
 		headers[name] = value
 	}
+	if isAPIMType(a.kind.NativeType) {
+		if err := a.apimDeleteHeaders(ctx, request.Asset, headers); err != nil {
+			return contracts.ActionResult{}, err
+		}
+	}
 	if request.IdempotencyKey != "" {
 		headers["x-ms-client-request-id"] = azureRequestID(request.IdempotencyKey)
 	}
@@ -331,6 +348,9 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 }
 
 func (a *action) operationResult(res response) (contracts.ActionResult, error) {
+	if isAPIMType(a.kind.NativeType) {
+		return a.apimOperationResult(res)
+	}
 	operation := res.header.Get("Azure-AsyncOperation")
 	polling := "status"
 	if operation == "" {
@@ -393,6 +413,9 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.apimRequestIdentity(request.Asset); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	if err := a.streamAnalyticsRequestIdentity(request.Asset); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -430,6 +453,9 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 }
 
 func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if isAPIMType(a.kind.NativeType) {
+		return a.apimPoll(ctx, result)
+	}
 	if result.ProviderOperationID != "" {
 		if err := a.validateOperationURL(result.ProviderOperationID); err != nil {
 			return contracts.WaitResult{}, err
@@ -509,6 +535,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if isAPIMType(a.kind.NativeType) {
+		return validateAPIMOperationURL(a.client.subscription, a.id, a.location, a.kind.Version, endpoint)
+	}
 	if isStreamAnalyticsType(a.kind.NativeType) {
 		return validateStreamAnalyticsOperationURL(a.client.subscription, a.id, a.kind.Version, endpoint)
 	}
@@ -558,6 +587,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.apimRequestIdentity(request.Asset); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	if err := a.streamAnalyticsRequestIdentity(request.Asset); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -570,7 +602,7 @@ func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) 
 	if err := a.cosmosRequestIdentity(request.Asset); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
-	res, err := a.client.request(ctx, "GET", a.endpoint)
+	res, err := a.client.readResource(ctx, a.endpoint)
 	if isNotFound(err) {
 		if a.kind.NativeType == serviceBusMigrationType {
 			if err := a.verifyMigrationTarget(ctx, request.Asset); err != nil {
@@ -603,6 +635,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
+	}
+	if reason := apimProtection(kind.NativeType, raw); reason != "" {
+		return reason
 	}
 	if kind.NativeType == batchPerimeterType {
 		return "azure_batch_managed_configuration"
@@ -688,6 +723,8 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
+	case "azure_apim_template_reset_only", "azure_apim_builtin_group", "azure_apim_administrator", "azure_apim_builtin_subscription":
+		return true
 	case "azure_batch_managed_configuration":
 		return true
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":

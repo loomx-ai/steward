@@ -30,13 +30,14 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 258 类资源，其中 240 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 358 类资源，其中 332 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
 | Compute | VM 与扩展、托管磁盘、快照、托管镜像、可用性集、专用宿主机、容量预留 | 支持，受挂载与归属保护限制；宿主机组和容量预留组先删除成员 |
 | VM Scale Set | Uniform、Flexible 伸缩集及实例、扩展 | Uniform 成员纳入级联影响；Flexible VM 作为前置删除步骤 |
 | Azure Batch | 账户、池、节点、作业、计划、任务、应用、包版本、专用终结点连接及网络边界视图 | 已审查的前置删除与级联清理；精确移除节点并将运行任务重新排队；边界视图随账户清理 |
+| API Management | 服务、工作区、API 及修订、策略、产品、订阅、门户内容与配置、凭据、通知、关联、自托管网关注册及独立工作区网关 | 已审查的级联清理与有序解绑；固定配置需通过所属控制资源清理；服务删除遵循软删除保留期 |
 | 虚拟网络 | VNet、子网、网卡、网络安全组、路由表、公网 IP、公网 IP 前缀、NAT Gateway | 支持 |
 | 负载均衡 | Load Balancer、Application Gateway | 支持 |
 | Storage | 存储账户、Blob 容器 | 仅空资源 |
@@ -68,6 +69,12 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+API Management 清理会审查所选服务或工作区的 API 定义、策略、内容与配置。共享订阅、API 修订和引用方资源通过独立步骤先行删除。删除 API、产品、组、标签或通知关联仅解除该关联；被引用成员保持独立，除非另行选中。内置组、管理员用户、主订阅、邮件模板及固定门户、通知、租户配置需通过所属控制资源清理。保留必要资源会阻止控制资源删除；门户版本正在发布或配置发生变化时也会阻止清理。
+
+清理工作区前，先删除其已审查的独立网关配置连接；共享网关及其他工作区的连接保留。读取权限须覆盖订阅内全部网关、服务工作区链接、适用子集合、GET/HEAD 存在性检查、祖先及引用目标，包括其他资源组。凭据引用还需通过原生订阅清单和详情读取匹配 Key Vault 与托管身份。不会读取 Key Vault 秘密内容、下载外部策略 URL 或执行策略表达式。参见[工作区网关](https://learn.microsoft.com/en-us/azure/api-management/workspaces-overview)。
+
+Azure 将已删除的 API Management 服务保留 48 小时。Steward 不提供恢复、永久清除或邮件模板重置；恢复服务不能撤销先前独立执行的 DELETE 步骤。异步操作完成后仍须确认资源及子资源不存在。验证包含官方模式、CLI 响应重放及固定版本独立模拟器中的部分 APIM 路径，不代表已完成真实 Azure 部署测试。参见[软删除行为](https://learn.microsoft.com/en-us/azure/api-management/soft-delete)。
 
 Azure Batch 清理会审查完整账户层级。池、应用、专用终结点连接、作业及计划按依赖顺序删除；包版本先于所属应用删除。作业或计划的原生删除包含已审查的任务，池的原生删除包含已审查的节点。自动池只有在实际生命周期设置与成员索引共同证明归属时才随作业或计划清理。共享池、包及任务依赖要求明确选择相应使用者的清理范围。
 

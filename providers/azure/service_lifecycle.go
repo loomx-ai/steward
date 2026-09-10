@@ -104,6 +104,9 @@ var serviceCascadeRules = map[string][]string{
 }
 
 func HasServiceCascade(nativeType string) bool {
+	if isAPIMType(nativeType) {
+		return len(apimOwnedKinds(nativeType)) != 0
+	}
 	if isCosmosType(nativeType) {
 		return len(cosmosCascadeKinds(nativeType)) != 0
 	}
@@ -116,6 +119,9 @@ func HasServiceCascade(nativeType string) bool {
 }
 
 func serviceChildKinds(nativeType string) []string {
+	if isAPIMType(nativeType) {
+		return apimOwnedKinds(nativeType)
+	}
 	if isCosmosType(nativeType) {
 		return cosmosCascadeKinds(nativeType)
 	}
@@ -180,13 +186,24 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			return nil, err
 		}
 		u, _ := url.Parse(bound.URL)
-		records, err := c.listAllURL(ctx, bound.URL, u.Path)
+		var records []any
+		if childType == apimIssueType {
+			records, _, _, err = c.apimIssuePage(ctx, parentID)
+		} else {
+			records, err = c.listAllURL(ctx, bound.URL, u.Path)
+		}
 		if err != nil {
 			return nil, err
 		}
 		kind, _ := findType(childType)
 		for _, value := range records {
 			record := object(value)
+			if isAPIMAssociation(childType) {
+				record, err = apimAssociationRow(parentID, childType, record)
+				if err != nil {
+					return nil, err
+				}
+			}
 			wireID := responseID(childType, text(record["id"]))
 			id, parsedType, err := parseID(wireID)
 			if err != nil || !strings.EqualFold(parsedType, childType) || !strings.EqualFold(id, u.Path+"/"+last(id)) || seen[id] || !validResponseType(childType, text(record["type"])) {
@@ -200,12 +217,17 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			if err != nil {
 				return nil, err
 			}
-			live, err := c.request(ctx, "GET", endpoint)
+			live, err := c.readResource(ctx, endpoint)
 			if err != nil {
 				return nil, err
 			}
 			if !validResourceResponse(live, id, childType) {
 				return nil, fmt.Errorf("Azure cascade child read identity mismatch")
+			}
+			if isAPIMType(childType) {
+				if err := apimListedIncarnation(childType, record, live.data); err != nil {
+					return nil, err
+				}
 			}
 			if isStreamAnalyticsType(childType) {
 				if err := streamAnalyticsListedIncarnation(childType, record, live.data); err != nil {
@@ -236,6 +258,12 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			children = append(children, serviceChild{kind: childType, id: id, data: live.data})
 		}
 	}
+	if err := apimNotificationRecipients(raw, childTypes, children); err != nil {
+		return nil, err
+	}
+	if err := apimGatewaySourceMembership(parent.NativeType, children); err != nil {
+		return nil, err
+	}
 	if err := c.verifyProductParent(ctx, productTarget{ParentID: parentID, ParentWireID: wireParent, ParentType: parentKind.NativeType, Generation: productGeneration(raw)}); err != nil {
 		return nil, err
 	}
@@ -261,6 +289,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := apimIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isAPIMType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if err := streamAnalyticsIncarnation(planned, live); err != nil {
 		return err
 	}
@@ -373,6 +407,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeCDNReferences(ctx, assets, &result); err != nil {
 		return result, err
 	}
+	if err := s.contributeAPIMReferences(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	if err := s.contributeWAFReferences(ctx, assets, &result); err != nil {
 		return result, err
 	}
@@ -409,7 +446,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if err != nil {
 			return result, err
 		}
-		live, err := s.client.request(ctx, "GET", endpoint)
+		live, err := s.client.readResource(ctx, endpoint)
 		if err != nil {
 			return result, err
 		}
@@ -508,7 +545,10 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				continue
 			}
 			childKind, known := findType(child.kind)
-			directAllowed := target.Normalized["_kusto_active_image"] != true && known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
+			// Fixed APIM notification containers permit independent recipient
+			// removal. Their non-actionable catalog entry still prevents a
+			// DELETE of the container itself; it must not veto child unlinking.
+			directAllowed := target.Normalized["_kusto_active_image"] != true && known && (!childKind.ReadOnly || isAPIMNotification(child.kind)) && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
 			if text(target.Normalized["cleanup_protection_reason"]) == "azure_messaging_replication_requires_unpairing" {
 				directAllowed = false
 			}
@@ -646,6 +686,9 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			if err := serviceIncarnation(impact.Asset, child.data); err != nil {
 				return err
 			}
+			if err := a.client.apimVerifyTarget(ctx, impact.Asset, child.data, locks); err != nil {
+				return err
+			}
 			kind, _ := findType(child.kind)
 			if child.kind == cognitiveOutboundType {
 				childAction := action{client: a.client, kind: kind, id: child.id}
@@ -698,7 +741,7 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 		if err != nil {
 			return err
 		}
-		if _, err = a.client.request(ctx, "GET", endpoint); !isNotFound(err) {
+		if _, err = a.client.readResource(ctx, endpoint); !isNotFound(err) {
 			if err != nil {
 				return err
 			}
@@ -737,7 +780,7 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 		if err != nil {
 			return contracts.ReadbackResult{}, err
 		}
-		current, err := a.client.request(ctx, "GET", endpoint)
+		current, err := a.client.readResource(ctx, endpoint)
 		if isNotFound(err) {
 			continue
 		}
@@ -755,6 +798,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
+	if isAPIMType(parent) && isAPIMType(child) && strings.HasPrefix(reason, "azure_apim_") && controllerOnlyReason(reason) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) {
+		return true
+	}
 	if parent == streamAnalyticsJobType && child == streamAnalyticsTransformationType && reason == "azure_stream_analytics_transformation" {
 		return true
 	}
@@ -783,6 +829,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case isAPIMType(parent.NativeType):
+		native = true
+		children, err = c.apimChildren(ctx, parent, raw)
 	case isCosmosType(parent.NativeType):
 		native = true // The Cosmos walk validates both complete native reads.
 		children, err = c.cosmosChildren(ctx, parent, raw)
@@ -878,6 +927,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if isAPIMType(parent.Identity.NativeType) {
+		return slices.Contains(apimOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
+	}
 	if isStreamAnalyticsType(parent.Identity.NativeType) {
 		return streamAnalyticsClusterPrerequisite(parent, child) || slices.Contains(streamAnalyticsOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
 	}

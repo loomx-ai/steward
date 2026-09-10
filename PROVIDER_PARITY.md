@@ -1568,3 +1568,87 @@ background evidence only, not acceptance evidence for this work.
   still lack specifications, and all eight provider acceptance items remain
   open. ARM deletion's final read/delete race, unsupported external services
   and full GCP/Azure application verification remain broader unfinished work.
+
+### Azure API Management progress (acceptance remains open)
+
+- Added 100 explicit API Management rules using stable API `2024-05-01`:
+  services, workspaces, APIs/revisions/operations, policies and fragments,
+  products, subscriptions, users/groups/tags, credentials, portal content and
+  configuration, notifications, associations, gateway registrations, standalone
+  gateways and their workspace configuration connections. Ninety-two kinds
+  have independent native cleanup actions. Fixed settings and email templates
+  remain in reviewed controller impacts; template reset is not resource removal.
+- Native API and revision indexes preserve current and non-current identities,
+  relative revision IDs, complete paging and original request IDs. Native HEAD
+  existence operations handle legacy and recipient associations; tag GETs
+  normalize the referenced tag into an association identity only after checking
+  its exact parent and member. Missing or changing LIST/GET/HEAD evidence fails
+  the operation. No invented GET or DELETE replaces an unsupported native route.
+- Service/workspace cleanup reviews complete child trees and private
+  configuration snapshots. Shared subscriptions, revision families, product
+  links, policy references, certificates, loggers and authorization connections
+  have explicit dependency ordering. Native force/cascade flags remain disabled.
+  Built-in groups, the administrator, master subscription and fixed
+  configuration retain their actual controller. Retention and protection also
+  apply to independently addressable associations and notification recipients.
+- Named-value references resolve through their native display names; expression
+  identifiers preserve all current matching resources. Certificate thumbprints
+  and explicit IDs use native indexes. Key Vault URLs and managed-identity
+  client IDs resolve through subscription-wide native reads, including other
+  resource groups and regions. Missing external bindings remain unresolved;
+  vault secret contents, external policy URLs and expressions are not fetched
+  or executed. Opaque policy/credential/portal content remains in keyed digests,
+  without exposing secrets in inventory or API logs.
+- Private endpoint connection cleanup rechecks the target's identity, private
+  configuration, locks and protection. Standalone gateways preserve their real
+  group and region and the documented singular response-ID alias. Configuration
+  connections use their native body ETags for conditional deletion. Their
+  workspace/service references require prior unlinking before deleting a source,
+  while a shared gateway and other workspace connections remain independent.
+- Complete subscription gateway indexes agree with the service's read-only
+  workspace-link view. LIST/GET identities, source workspaces, gateways and
+  repeated snapshots reject missing, retargeted, duplicate or changing links.
+  Service-wide issue views resolve through native `apiId` into actual API-owned
+  issues; both indexes, detail bodies and ETags must agree. These views do not
+  create duplicate assets or non-existent deletion operations.
+- Native synchronous responses, signed asynchronous URLs, rotating polling
+  signatures, tenant/regional operation results and same-resource gateway
+  connection polling survive JSON persistence and worker restart. Regional
+  operation-result HTTP 200 has an empty body, while HTTP 202 can continue through
+  Location. Completion still requires independent resource and child absence.
+- Retained 324 unchanged REST examples with source hashes from API-spec commit
+  `e45039baa985c442877529906e705982a6e0099d`. The offline schema test checks 223
+  response bodies across 45 selected APIM documents, preserving ten published
+  schema discrepancies and separately rejecting inconsistent native identities.
+  The operation audit covers all 413 GET/HEAD/DELETE routes in 55 native
+  documents and verifies the 309 catalog-selected routes. All 94 native DELETEs
+  are accounted for: 92 cleanup bindings, email-template reset and excluded
+  retained-service purge. Operational reports, alternative views, ETag-only
+  reads, capabilities and recovery metadata are not additional cleanup kinds.
+- Replayed 67 original official CLI responses from pinned CLI commit
+  `8bead7f93f086629efb160d56c25f508156925bf`, with the older `2022-08-01` API
+  version, composed support indexes and synthetic final GET absence identified
+  explicitly. The retained extraction hash is
+  `9ed235982b164e0493dac6f756084aa998991026e60a11178d59ebd6d9b61a91`.
+  The unmodified independent `azure-apim-emulator` at
+  `a1aafcf2d9743967684d9458a3371dcc86e09ef6` verifies native revision inventory,
+  conditional subscription deletion and absence; its unsupported policy
+  collection correctly blocks named-value deletion. The ephemeral emulator was
+  stopped after verification. See [APIM evidence](providers/azure/fixtures/apimanagement/README.md).
+- Azure now has 358 rules, 331 native DELETE bindings plus one native POST
+  cleanup binding, and 1,125 operations from 138 root plus 48 reference
+  documents. The deterministic catalog SHA-256 is
+  `86801149d78454828d0fdbcbdd040499e33df1717a171d51321119e18d173a66`.
+  Full Go tests, vet, five catalog-sync tests, bilingual documentation checks,
+  APIM protocol/replay tests and the independent emulator test passed. Full
+  Azure and shared planning/execution race tests also passed. The Azure race
+  suite completed in 1,140 seconds with the explicit 20-minute package timeout; CI allows 30 minutes
+  to accommodate slower runners.
+  repeated baseline plan construction is reused only within sequential test
+  tables, while every execution and native preflight still runs independently.
+- Service deletion uses Azure's ordinary 48-hour soft-delete retention. No
+  purge, restore or email-template reset is offered. Thirty mapped Azure kinds
+  still lack specifications; all eight provider acceptance items remain open.
+  The service/behavior matrix, broader GCP/Azure full-application verification,
+  live-cloud validation and publication remain unfinished. Native APIs without
+  conditional deletion retain a final read/delete concurrency window.

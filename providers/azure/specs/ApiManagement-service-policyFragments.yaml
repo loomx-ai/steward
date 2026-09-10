@@ -1,0 +1,91 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/policyFragments
+  class: security.policy_fragment
+presentation:
+  displayNames:
+    en-US: API Management policy fragment
+    zh-CN: API 管理策略片段
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.PolicyFragment_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.PolicyFragment_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/authorizationProviders
+  targetIdPath: refs_microsoft_apimanagement_service_authorizationproviders
+- type: uses
+  targetType: Microsoft.ApiManagement/service/authorizationProviders/authorizations
+  targetIdPath: refs_microsoft_apimanagement_service_authorizationproviders_authorizations
+- type: uses
+  targetType: Microsoft.ApiManagement/service/schemas
+  targetIdPath: refs_microsoft_apimanagement_service_schemas
+- type: uses
+  targetType: Microsoft.ApiManagement/service/policyFragments
+  targetIdPath: refs_microsoft_apimanagement_service_policyfragments
+- type: uses
+  targetType: Microsoft.ApiManagement/service
+  targetIdPath: refs_microsoft_apimanagement_service
+- type: uses
+  targetType: Microsoft.ApiManagement/service/backends
+  targetIdPath: refs_microsoft_apimanagement_service_backends
+- type: uses
+  targetType: Microsoft.ApiManagement/service/namedValues
+  targetIdPath: refs_microsoft_apimanagement_service_namedvalues
+- type: uses
+  targetType: Microsoft.ApiManagement/service/certificates
+  targetIdPath: refs_microsoft_apimanagement_service_certificates
+- type: uses
+  targetType: Microsoft.ApiManagement/service/loggers
+  targetIdPath: refs_microsoft_apimanagement_service_loggers
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.PolicyFragment_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.PolicyFragment_Get
+      itemsPath: $
+      identityPath: id
+    parameters:
+      If-Match: resource.normalized.arm_etag

@@ -28,6 +28,7 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	APIMPrivateConfiguration            string         `json:"apim_private_configuration,omitempty"`
 	BatchPrivateConfiguration           string         `json:"batch_private_configuration,omitempty"`
 	StreamAnalyticsPrivateConfiguration string         `json:"stream_analytics_private_configuration,omitempty"`
 	KustoAncestors                      map[string]any `json:"kusto_ancestors,omitempty"`
@@ -131,7 +132,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	var values []any
 	var next string
 	var provenance response
-	if nativeType == streamAnalyticsTransformationType {
+	if isAPIMAPI(nativeType) {
+		values, next, provenance, err = c.apimAPIPage(ctx, target.ParentID)
+	} else if nativeType == apimIssueType {
+		values, next, provenance, err = c.apimIssuePage(ctx, target.ParentID)
+	} else if nativeType == streamAnalyticsTransformationType {
 		values, next, provenance, err = c.streamAnalyticsTransformationPage(ctx, endpoint, target.ParentID)
 	} else if nativeType == batchPoolType {
 		// Batch data-plane auto pools must agree with the complete ARM index.
@@ -165,6 +170,12 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 	seen := map[string]bool{}
 	for _, value := range values {
 		raw := object(value)
+		if isAPIMAssociation(nativeType) {
+			raw, err = apimAssociationRow(target.ParentID, nativeType, raw)
+			if err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		wireID := responseID(kind.NativeType, text(raw["id"]))
 		id, parsedType, err := parseID(wireID)
 		if err != nil || !strings.EqualFold(parsedType, kind.NativeType) || !validResponseType(kind.NativeType, text(raw["type"])) || seen[id] {
@@ -198,7 +209,7 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 		}
 		// ARM list responses can omit lifecycle fields. Enrich from the native
 		// detail API before declaring the resource actionable.
-		detail, err := c.request(ctx, "GET", readURL)
+		detail, err := c.readResource(ctx, readURL)
 		if isNotFound(err) {
 			continue
 		}
@@ -209,6 +220,11 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if isAPIMType(kind.NativeType) {
+			if err := apimListedIncarnation(kind.NativeType, raw, data); err != nil {
+				return contracts.InventoryBatch{}, err
+			}
+		}
 		if isBatchType(kind.NativeType) {
 			if !nativeConfigurationContains(batchSnapshot(kind.NativeType, raw), batchSnapshot(kind.NativeType, data)) {
 				return contracts.InventoryBatch{}, serviceDenied("batch_listed_configuration_changed")
@@ -327,6 +343,12 @@ func productScopeMatches(request contracts.InventoryRequest, item contracts.Inve
 }
 
 func productGeneration(raw map[string]any) string {
+	if strings.EqualFold(text(raw["type"]), apimGatewayAlias) {
+		return apimConfiguration(apimGatewayType, raw)
+	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isAPIMType(kind) {
+		return apimConfiguration(kind, raw)
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isBatchType(kind) {
 		return batchConfiguration(batchKind(kind), raw)
 	}
@@ -432,7 +454,7 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if err != nil {
 		return err
 	}
-	current, err := c.request(ctx, "GET", endpoint)
+	current, err := c.readResource(ctx, endpoint)
 	if err != nil {
 		return err
 	}
@@ -444,6 +466,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
 		return err
+	}
+	if target.APIMPrivateConfiguration != "" && target.APIMPrivateConfiguration != c.privateConfiguration(apimSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
 	}
 	if target.StreamAnalyticsPrivateConfiguration != "" && target.StreamAnalyticsPrivateConfiguration != c.privateConfiguration(streamAnalyticsSnapshot(target.ParentType, current.data)) {
 		return errProductParentGenerationChanged
@@ -612,6 +637,9 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 		if parent.NativeID != "" {
 			target.ParentID, target.ParentType, target.Location = parent.NativeID, parent.NativeType, parent.Location
 			target.Generation = productGeneration(parent.Raw)
+			if isAPIMType(parent.NativeType) {
+				target.APIMPrivateConfiguration = text(parent.Normalized["_apim_private_configuration"])
+			}
 			if isCosmosType(parent.NativeType) {
 				target.ParentWireID = text(parent.Normalized["_cosmos_wire_id"])
 				target.CosmosAncestors = object(parent.Normalized["_cosmos_ancestors"])

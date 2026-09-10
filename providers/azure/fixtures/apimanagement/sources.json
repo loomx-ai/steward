@@ -1,0 +1,2594 @@
+[
+  {
+    "file": "ApiManagementServiceGetService.json",
+    "label": "ApiManagementServiceGetService",
+    "operation": "ApiManagementService_Get",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "6b30ea953114fad6ee11f473523ee28bf08a608f8f3f513cd782ea99142596bd",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementServiceGetService.json"
+  },
+  {
+    "file": "ApiManagementServiceGetServiceHavingMsi.json",
+    "label": "ApiManagementServiceGetServiceHavingMsi",
+    "operation": "ApiManagementService_Get",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "d4406f76d6162c121747c08c3c9bec99c1182754cba95f20b43bf3b930e4238a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementServiceGetServiceHavingMsi.json"
+  },
+  {
+    "file": "ApiManagementServiceGetMultiRegionInternalVnet.json",
+    "label": "ApiManagementServiceGetMultiRegionInternalVnet",
+    "operation": "ApiManagementService_Get",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "0d5dafd87ee9e4a3f2193e97460e1f48201a1a2a1d4edd2988f29efcb9d8f32f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementServiceGetMultiRegionInternalVnet.json"
+  },
+  {
+    "file": "ApiManagementServiceDeleteService.json",
+    "label": "ApiManagementServiceDeleteService",
+    "operation": "ApiManagementService_Delete",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "6f45db5a5ef8db19de8b4f5bb0c07144c1442d23ec58ff5e2e31d403bfcb1415",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementServiceDeleteService.json"
+  },
+  {
+    "file": "ApiManagementListServiceBySubscriptionAndResourceGroup.json",
+    "label": "ApiManagementListServiceBySubscriptionAndResourceGroup",
+    "operation": "ApiManagementService_ListByResourceGroup",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "84b3c4ec03ddc6aa3bbb67ceb4fb60a60e4d2a1573a4207f090c6c00249ed6ab",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListServiceBySubscriptionAndResourceGroup.json"
+  },
+  {
+    "file": "ApiManagementListServiceBySubscription.json",
+    "label": "ApiManagementListServiceBySubscription",
+    "operation": "ApiManagementService_List",
+    "source_document": "apimdeployment.json",
+    "source_sha256": "1527d37d1681823033db2760b438395cbc9d154ac6d02340fa5ade2628ee7c45",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListServiceBySubscription.json"
+  },
+  {
+    "file": "ApiManagementListApiVersionSets.json",
+    "label": "ApiManagementListApiVersionSets",
+    "operation": "ApiVersionSet_ListByService",
+    "source_document": "apimapiversionsets.json",
+    "source_sha256": "57beef89293d87a3b214f39f6280aff4539110c254027ecc81f9067c9ae0e770",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiVersionSets.json"
+  },
+  {
+    "file": "ApiManagementGetApiVersionSet.json",
+    "label": "ApiManagementGetApiVersionSet",
+    "operation": "ApiVersionSet_Get",
+    "source_document": "apimapiversionsets.json",
+    "source_sha256": "ecc9a55f40d12e2c9ce822dbe01b70605c77b36b3244cfc7b1262b9b37f8c8cc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiVersionSet.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiVersionSet.json",
+    "label": "ApiManagementDeleteApiVersionSet",
+    "operation": "ApiVersionSet_Delete",
+    "source_document": "apimapiversionsets.json",
+    "source_sha256": "e7c3ad7c88bc5414046a39b54e1926093191cd000e2d0362a5689fbbae72b3be",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiVersionSet.json"
+  },
+  {
+    "file": "ApiManagementListApis.json",
+    "label": "ApiManagementListApis",
+    "operation": "Api_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "c7aa9e2500f4fbd500865fd4cf8e8e2bde1055c46104837b1cbfe26a7b0051ed",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApis.json"
+  },
+  {
+    "file": "ApiManagementGetApiContract.json",
+    "label": "ApiManagementGetApiContract",
+    "operation": "Api_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "2c6844b8c7c6928f02efe31b58f9c34486c94618c1253033b72765e6706e30bc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiContract.json"
+  },
+  {
+    "file": "ApiManagementGetApiRevision.json",
+    "label": "ApiManagementGetApiRevisionContract",
+    "operation": "Api_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "be20824827f1d0b32909d6836a8a30a44b67771d830a2ed016a68637fa979a4f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiRevision.json"
+  },
+  {
+    "file": "ApiManagementDeleteApi.json",
+    "label": "ApiManagementDeleteApi",
+    "operation": "Api_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "293ad9d8eb10f29273f5aa076620c7b28423bf5ad4bbef2ee21736c729595019",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApi.json"
+  },
+  {
+    "file": "ApiManagementListApiRevisions.json",
+    "label": "ApiManagementListApiRevisions",
+    "operation": "ApiRevision_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "e52e5dd34a0c3a45511ef3fb07d3447f91a0deb7d18c813f02e44dfe6e1a5a6d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiRevisions.json"
+  },
+  {
+    "file": "ApiManagementListApiReleases.json",
+    "label": "ApiManagementListApiReleases",
+    "operation": "ApiRelease_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "a108df2636fef94e661b069430e4961155a6145f5bf1449b587ac6b7b3063595",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiReleases.json"
+  },
+  {
+    "file": "ApiManagementGetApiRelease.json",
+    "label": "ApiManagementGetApiRelease",
+    "operation": "ApiRelease_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "e3c16746757bb42b0c89a66a1d81f2fb4c7998067a866913a3383adcb57aa979",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiRelease.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiRelease.json",
+    "label": "ApiManagementDeleteApiRelease",
+    "operation": "ApiRelease_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "6ebfffe3ba3b81040d663d14336e0a92703e449e6159b5ffad2046a725695d11",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiRelease.json"
+  },
+  {
+    "file": "ApiManagementListApiOperations.json",
+    "label": "ApiManagementListApiOperations",
+    "operation": "ApiOperation_ListByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "e2a9a030e8ad66f79e0e0492db540437f6a5a5114dbf1b7e8107918fab25e771",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiOperations.json"
+  },
+  {
+    "file": "ApiManagementGetApiOperation.json",
+    "label": "ApiManagementGetApiOperation",
+    "operation": "ApiOperation_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "f90433ee276b99c331a72a6d999c32125bcbb13eb5b7bfc55f540e697cf3d906",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiOperation.json"
+  },
+  {
+    "file": "ApiManagementGetApiOperationPetStore.json",
+    "label": "ApiManagementGetApiOperationPetStore",
+    "operation": "ApiOperation_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "ac0c79b5b7631459463046331947600574a0183d1f8f449895c5e7cad30fe4ba",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiOperationPetStore.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiOperation.json",
+    "label": "ApiManagementDeleteApiOperation",
+    "operation": "ApiOperation_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "f59b5ddc82a6e63b3fc8c26a7e2ac578a581043b784910b19afcbaea8a2546f6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiOperation.json"
+  },
+  {
+    "file": "ApiManagementListApiOperationPolicies.json",
+    "label": "ApiManagementListApiOperationPolicies",
+    "operation": "ApiOperationPolicy_ListByOperation",
+    "source_document": "apimapis.json",
+    "source_sha256": "31e802dcaa64444adcf687cc90dbd803bf7ce35a0752ba745640faa764325d72",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiOperationPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetApiOperationPolicy.json",
+    "label": "ApiManagementGetApiOperationPolicy",
+    "operation": "ApiOperationPolicy_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "dd4c915ec142e80d3d4a7f839264884ac9f9ccecd4433c36f8dba65430dfe9f9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiOperationPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiOperationPolicy.json",
+    "label": "ApiManagementDeleteApiOperationPolicy",
+    "operation": "ApiOperationPolicy_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "b3c6975566c83330de85480c6c76da1394e4e90a263729277bd52ca2883e0b47",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiOperationPolicy.json"
+  },
+  {
+    "file": "ApiManagementListApiOperationTags.json",
+    "label": "ApiManagementListApiOperationTags",
+    "operation": "Tag_ListByOperation",
+    "source_document": "apimapis.json",
+    "source_sha256": "b5730cbe87146a700380cb6e9d1eccfd89f1093c177cfb289f5d87067420fd28",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiOperationTags.json"
+  },
+  {
+    "file": "ApiManagementGetApiOperationTag.json",
+    "label": "ApiManagementGetApiOperationTag",
+    "operation": "Tag_GetByOperation",
+    "source_document": "apimapis.json",
+    "source_sha256": "bbf88882d541ccac9d00125d4bf2df9e3dcdd78a25aaa04ebd2a649c1809ff9c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiOperationTag.json"
+  },
+  {
+    "file": "ApiManagementListGraphQLApiResolvers.json",
+    "label": "ApiManagementListGraphQLApiResolvers",
+    "operation": "GraphQLApiResolver_ListByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "45f596612a37e082d50d42981a2f4ec620a1f6ba59bb526b141d6f6eeaf1bfed",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGraphQLApiResolvers.json"
+  },
+  {
+    "file": "ApiManagementGetGraphQLApiResolver.json",
+    "label": "ApiManagementGetGraphQLApiResolver",
+    "operation": "GraphQLApiResolver_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "82d1eb6e5fecea6a06a4f32c8ca2a9c38bc1d84717403344b1c6c56095226c8f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGraphQLApiResolver.json"
+  },
+  {
+    "file": "ApiManagementDeleteGraphQLApiResolver.json",
+    "label": "ApiManagementDeleteGraphQLApiResolver",
+    "operation": "GraphQLApiResolver_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "8a4f3e243638bfc74dae4b3db74233d1676201d11f49ef4324ef3f83b5d550f6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGraphQLApiResolver.json"
+  },
+  {
+    "file": "ApiManagementListGraphQLApiResolverPolicies.json",
+    "label": "ApiManagementListGraphQLApiResolverPolicies",
+    "operation": "GraphQLApiResolverPolicy_ListByResolver",
+    "source_document": "apimapis.json",
+    "source_sha256": "422a64bb29ce19e973bd7e0f7d38590c73f4bc5e01fba50864d7a79e59d210a7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGraphQLApiResolverPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetGraphQLApiResolverPolicy.json",
+    "label": "ApiManagementGetGraphQLApiResolverPolicy",
+    "operation": "GraphQLApiResolverPolicy_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "471be2068c8178491e3e9ba24695afcb68dee98571fa0a540861df57cedc0db4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGraphQLApiResolverPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteGraphQLApiResolverPolicy.json",
+    "label": "ApiManagementDeleteGraphQLApiResolverPolicy",
+    "operation": "GraphQLApiResolverPolicy_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "88234befe79162f76b369a3f9c50149250c29874d33349c2d97da1b91ee5fb30",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGraphQLApiResolverPolicy.json"
+  },
+  {
+    "file": "ApiManagementListApiProducts.json",
+    "label": "ApiManagementListApiProducts",
+    "operation": "ApiProduct_ListByApis",
+    "source_document": "apimapis.json",
+    "source_sha256": "62e8a07428563514498327b3879db1fdc0a93f0b6419d96d70908754d7fd24de",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiProducts.json"
+  },
+  {
+    "file": "ApiManagementListApiPolicies.json",
+    "label": "ApiManagementListApiPolicies",
+    "operation": "ApiPolicy_ListByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "bfffcbb6250fa62f7046d3829e4a02117cfecb6161067258ee1a12dce73b7980",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetApiPolicy.json",
+    "label": "ApiManagementGetApiPolicy",
+    "operation": "ApiPolicy_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "d6e64653590a3b3eac9f843a16f59496bfa4661a823a9a6ce9a9ea82cc7c0de7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiPolicy.json",
+    "label": "ApiManagementDeleteApiPolicy",
+    "operation": "ApiPolicy_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "f4ecc0136bcf016cf452620a2d0f62d8ec14781b78ca8898249de4dea0febd34",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiPolicy.json"
+  },
+  {
+    "file": "ApiManagementListApiSchemas.json",
+    "label": "ApiManagementListApiSchemas",
+    "operation": "ApiSchema_ListByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "d0300159f1634928fdc4be51d4973ff3a7b3c03ba07b78d016606bdd57d941e9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiSchemas.json"
+  },
+  {
+    "file": "ApiManagementGetApiSchema.json",
+    "label": "ApiManagementGetApiSchema",
+    "operation": "ApiSchema_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "2d4a0d4537811d651d389cab732ecf70ba33e05ad3918cde5df133a0876f03bb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiSchema.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiSchema.json",
+    "label": "ApiManagementDeleteApiSchema",
+    "operation": "ApiSchema_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "03631f4f43b74519f678b71c2a943f58de6ead22c24823aee4db461e30ebb6e9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiSchema.json"
+  },
+  {
+    "file": "ApiManagementListApiDiagnostics.json",
+    "label": "ApiManagementListApiDiagnostics",
+    "operation": "ApiDiagnostic_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "5bd52530be710ab19c910c7f5a5f850d3356936ae3289543e9844d0f9524ef92",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiDiagnostics.json"
+  },
+  {
+    "file": "ApiManagementGetApiDiagnostic.json",
+    "label": "ApiManagementGetApiDiagnostic",
+    "operation": "ApiDiagnostic_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "ec4bdae65f1d56ead4dd2b875150b7f5301fa12bcf7fc1862de1348fd7bb10aa",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiDiagnostic.json",
+    "label": "ApiManagementDeleteApiDiagnostic",
+    "operation": "ApiDiagnostic_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "8fd2167fd011e2a03782da0344bd74291ce169b76ee4f1448c745065dfeed1a4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementListApiIssues.json",
+    "label": "ApiManagementListApiIssues",
+    "operation": "ApiIssue_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "ad0c79571973b99f3ead956e24683b0a41e7ebce6cd09e508e82c230f952ce53",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiIssues.json"
+  },
+  {
+    "file": "ApiManagementGetApiIssue.json",
+    "label": "ApiManagementGetApiIssue",
+    "operation": "ApiIssue_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "407e0ca99a94e89ded26509a619bd5e5425f61207b42cd798c1dcf195a96afe6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiIssue.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiIssue.json",
+    "label": "ApiManagementDeleteApiIssue",
+    "operation": "ApiIssue_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "db45885f4e1cd7482b544789c4671ca4e381cce69410579a6f986d4f8311cbc6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiIssue.json"
+  },
+  {
+    "file": "ApiManagementListApiIssueComments.json",
+    "label": "ApiManagementListApiIssueComments",
+    "operation": "ApiIssueComment_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "3aed4648e30b17d7ad8e91517dd651e910f52ea4610cbf398973d3a5e916ae59",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiIssueComments.json"
+  },
+  {
+    "file": "ApiManagementGetApiIssueComment.json",
+    "label": "ApiManagementGetApiIssueComment",
+    "operation": "ApiIssueComment_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "47029b751697a07f03acf492f10cd93b06ddd937ddc8386f638b182b0e7e3053",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiIssueComment.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiIssueComment.json",
+    "label": "ApiManagementDeleteApiIssueComment",
+    "operation": "ApiIssueComment_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "513db2defb8e97715bd672e6e250cacabec103bf1b4c3277c2a4104e43223b7f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiIssueComment.json"
+  },
+  {
+    "file": "ApiManagementListApiIssueAttachments.json",
+    "label": "ApiManagementListApiIssueAttachments",
+    "operation": "ApiIssueAttachment_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "f28b2332b97206e14562f395451012fdb76d852a438be5e01a0b0d5170597331",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiIssueAttachments.json"
+  },
+  {
+    "file": "ApiManagementGetApiIssueAttachment.json",
+    "label": "ApiManagementGetApiIssueAttachment",
+    "operation": "ApiIssueAttachment_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "813a93fffb64c01fdde72d9d46f20381f7e34583b48b569855c34e59f6121b8e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiIssueAttachment.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiIssueAttachment.json",
+    "label": "ApiManagementDeleteApiIssueAttachment",
+    "operation": "ApiIssueAttachment_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "6f4b595858eb74aa995145e481880e27c43aaecefa0c3e423b560fa7f295813c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiIssueAttachment.json"
+  },
+  {
+    "file": "ApiManagementListApiTagDescriptions.json",
+    "label": "ApiManagementListApiTagDescriptions",
+    "operation": "ApiTagDescription_ListByService",
+    "source_document": "apimapis.json",
+    "source_sha256": "41ce9a5230fe8bc49b938957cb436c809d8e2cfa2adedd2f53efdd6e26aa954a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiTagDescriptions.json"
+  },
+  {
+    "file": "ApiManagementGetApiTagDescription.json",
+    "label": "ApiManagementGetApiTagDescription",
+    "operation": "ApiTagDescription_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "3fd2993f0027f75883d432195a00fcb2caf6d4f4d3d2c2d6a4d29d30e5299e31",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiTagDescription.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiTagDescription.json",
+    "label": "ApiManagementDeleteApiTagDescription",
+    "operation": "ApiTagDescription_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "cadfa6a88b57410fe3afb9906ea8ae3303495fb146204bc3492b69e034aea11a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiTagDescription.json"
+  },
+  {
+    "file": "ApiManagementListApiTags.json",
+    "label": "ApiManagementListApiTags",
+    "operation": "Tag_ListByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "bd9191147e93975f22bb4fe9b80dcc9f7e201aebe6bc7dc78667b2d76776667b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiTags.json"
+  },
+  {
+    "file": "ApiManagementGetApiTag.json",
+    "label": "ApiManagementGetApiTag",
+    "operation": "Tag_GetByApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "23f1615b3cfaf0eee01b5bd2f7aa41f3d4d4584ac661f286a14274dead85e9b5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiTag.json"
+  },
+  {
+    "file": "ApiManagementGetApiWiki.json",
+    "label": "ApiManagementGetApiWiki",
+    "operation": "ApiWiki_Get",
+    "source_document": "apimapis.json",
+    "source_sha256": "4668969e710b47df57c28c2c8257549870822ac0e0bb05fe00fb1ef2bbca0047",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetApiWiki.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiWiki.json",
+    "label": "ApiManagementDeleteApiWiki",
+    "operation": "ApiWiki_Delete",
+    "source_document": "apimapis.json",
+    "source_sha256": "04dfe3faaa1fef0e2e4858a11858934dcd1577d9ed7f7fb188bc280da93cef44",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiWiki.json"
+  },
+  {
+    "file": "ApiManagementListApiWikis.json",
+    "label": "ApiManagementListApiWikis",
+    "operation": "ApiWikis_List",
+    "source_document": "apimapis.json",
+    "source_sha256": "6a668826683c7b331394163e6bc9aeb2113c0c9ef151dcd71b862455bff31b4c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListApiWikis.json"
+  },
+  {
+    "file": "ApiManagementListAuthorizationProviders.json",
+    "label": "ApiManagementListAuthorizationProviders",
+    "operation": "AuthorizationProvider_ListByService",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "543227aacf7e54c400b4ce92ec40cecbbffd282de7de6f44c794a9bae2d64979",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListAuthorizationProviders.json"
+  },
+  {
+    "file": "ApiManagementGetAuthorizationProvider.json",
+    "label": "ApiManagementGetAuthorizationProvider",
+    "operation": "AuthorizationProvider_Get",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "35e9d6a78bb696ef412d668a8dde94664256d1eb173d55616e1948029b55a490",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetAuthorizationProvider.json"
+  },
+  {
+    "file": "ApiManagementDeleteAuthorizationProvider.json",
+    "label": "ApiManagementDeleteAuthorizationProvider",
+    "operation": "AuthorizationProvider_Delete",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "3d7379da610b7f3bb336553a3a2402be363998e90f4bc420bdba6ec556a8bdac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteAuthorizationProvider.json"
+  },
+  {
+    "file": "ApiManagementListAuthorizationsAuthCode.json",
+    "label": "ApiManagementListAuthorizationsAuthCode",
+    "operation": "Authorization_ListByAuthorizationProvider",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "150c80305fa603f7b8d72bfaa1c8a288af05c045acad156b9130174c9d59c9b8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListAuthorizationsAuthCode.json"
+  },
+  {
+    "file": "ApiManagementListAuthorizationsClientCred.json",
+    "label": "ApiManagementListAuthorizationsClientCred",
+    "operation": "Authorization_ListByAuthorizationProvider",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "98b0be48423699ddad6cee4528261acdaec401ed86820de16d7fdc711f086e29",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListAuthorizationsClientCred.json"
+  },
+  {
+    "file": "ApiManagementGetAuthorization.json",
+    "label": "ApiManagementGetAuthorization",
+    "operation": "Authorization_Get",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "b6d2dbbd08160a5048b7322dc1505f5ff22a95433f3182170633ba7193952cb6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetAuthorization.json"
+  },
+  {
+    "file": "ApiManagementDeleteAuthorization.json",
+    "label": "ApiManagementDeleteAuthorization",
+    "operation": "Authorization_Delete",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "133bd427c1827f69723123e2a4d35d7f6a5130b416533967d518e8ed79562f37",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteAuthorization.json"
+  },
+  {
+    "file": "ApiManagementListAuthorizationAccessPolicies.json",
+    "label": "ApiManagementListAuthorizationAccessPolicies",
+    "operation": "AuthorizationAccessPolicy_ListByAuthorization",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "dabb10e1d0d505a397fe9082723e8d3e1a5c712862bdb026c1af351a9cff3011",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListAuthorizationAccessPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetAuthorizationAccessPolicy.json",
+    "label": "ApiManagementGetAuthorizationAccessPolicy",
+    "operation": "AuthorizationAccessPolicy_Get",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "9d35fe91d7afc8159bb2e8eb5105263c3a3236526e65e2911a09c0aac78bbb51",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetAuthorizationAccessPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteAuthorizationAccessPolicy.json",
+    "label": "ApiManagementDeleteAuthorizationAccessPolicy",
+    "operation": "AuthorizationAccessPolicy_Delete",
+    "source_document": "apimauthorizationproviders.json",
+    "source_sha256": "faa27568f1354af74d7b87d2199de9be43a203bfe7b07179bf6b83ed81f85469",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteAuthorizationAccessPolicy.json"
+  },
+  {
+    "file": "ApiManagementListAuthorizationServers.json",
+    "label": "ApiManagementListAuthorizationServers",
+    "operation": "AuthorizationServer_ListByService",
+    "source_document": "apimauthorizationservers.json",
+    "source_sha256": "460af366552e5f234551ad25c56b952645bd89022c7fb04c1da74a448e94f9f7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListAuthorizationServers.json"
+  },
+  {
+    "file": "ApiManagementGetAuthorizationServer.json",
+    "label": "ApiManagementGetAuthorizationServer",
+    "operation": "AuthorizationServer_Get",
+    "source_document": "apimauthorizationservers.json",
+    "source_sha256": "d603089f3052c7e5b8eb97a12715c857ab09aeda210f493c0a0d8b544434404c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetAuthorizationServer.json"
+  },
+  {
+    "file": "ApiManagementDeleteAuthorizationServer.json",
+    "label": "ApiManagementDeleteAuthorizationServer",
+    "operation": "AuthorizationServer_Delete",
+    "source_document": "apimauthorizationservers.json",
+    "source_sha256": "218a4dd591604994f16937b614c725bc9c4bfc1c1bf3e235f9ad8a97742b5022",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteAuthorizationServer.json"
+  },
+  {
+    "file": "ApiManagementListBackends.json",
+    "label": "ApiManagementListBackends",
+    "operation": "Backend_ListByService",
+    "source_document": "apimbackends.json",
+    "source_sha256": "277f15a59f9c2bde365632d976d279051fc05b827b5c1bbb054733a400a2692e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListBackends.json"
+  },
+  {
+    "file": "ApiManagementGetBackend.json",
+    "label": "ApiManagementGetBackend",
+    "operation": "Backend_Get",
+    "source_document": "apimbackends.json",
+    "source_sha256": "ccf6840c167dcd953581375dd74044ea35b4b0ea4eb47dc869a59c49b3cd7c08",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetBackend.json"
+  },
+  {
+    "file": "ApiManagementDeleteBackend.json",
+    "label": "ApiManagementDeleteBackend",
+    "operation": "Backend_Delete",
+    "source_document": "apimbackends.json",
+    "source_sha256": "a25564bb162c271245465f687f9eeda6c6ff7ff83659145d199951aad176169a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteBackend.json"
+  },
+  {
+    "file": "ApiManagementListCaches.json",
+    "label": "ApiManagementListCaches",
+    "operation": "Cache_ListByService",
+    "source_document": "apimcaches.json",
+    "source_sha256": "6732d9692fe96cb3207a488f9abb17e1ef2becc7202c333c65cf228e56bdd6fc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListCaches.json"
+  },
+  {
+    "file": "ApiManagementGetCache.json",
+    "label": "ApiManagementGetCache",
+    "operation": "Cache_Get",
+    "source_document": "apimcaches.json",
+    "source_sha256": "93e45f0cab3c0e8ca3cf61938d4c21a2d013099db45192b8b8c319c736f95719",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetCache.json"
+  },
+  {
+    "file": "ApiManagementDeleteCache.json",
+    "label": "ApiManagementDeleteCache",
+    "operation": "Cache_Delete",
+    "source_document": "apimcaches.json",
+    "source_sha256": "e77086895f49733d2da4bdeebb45a782c41b7688610929bcaaf08113b9ea433f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteCache.json"
+  },
+  {
+    "file": "ApiManagementListCertificates.json",
+    "label": "ApiManagementListCertificates",
+    "operation": "Certificate_ListByService",
+    "source_document": "apimcertificates.json",
+    "source_sha256": "5b5d09a4e59b615aa86d50ca190348f4ee40079579bbce31a61d172d5e8a5326",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListCertificates.json"
+  },
+  {
+    "file": "ApiManagementGetCertificate.json",
+    "label": "ApiManagementGetCertificate",
+    "operation": "Certificate_Get",
+    "source_document": "apimcertificates.json",
+    "source_sha256": "6a22553db0195b2175ff3d49fda5791a4def4740ee836fefd98d0cc22cb0433b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetCertificate.json"
+  },
+  {
+    "file": "ApiManagementGetCertificateWithKeyVault.json",
+    "label": "ApiManagementGetCertificateWithKeyVault",
+    "operation": "Certificate_Get",
+    "source_document": "apimcertificates.json",
+    "source_sha256": "35c60218e284342870bfb7b5515732486a040fbd8fe2ba8a5a5c9f322c4157c5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetCertificateWithKeyVault.json"
+  },
+  {
+    "file": "ApiManagementDeleteCertificate.json",
+    "label": "ApiManagementDeleteCertificate",
+    "operation": "Certificate_Delete",
+    "source_document": "apimcertificates.json",
+    "source_sha256": "295f5f7ffa9b3b305d028b7c2066ce906b8a59254b6c97532bba45df47211142",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteCertificate.json"
+  },
+  {
+    "file": "ApiManagementListContentTypes.json",
+    "label": "ApiManagementListContentTypes",
+    "operation": "ContentType_ListByService",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "db719beee1623a3ec87bdcb5910eed9eceee22dd5283b59f59cb602b22e5723d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListContentTypes.json"
+  },
+  {
+    "file": "ApiManagementGetContentType.json",
+    "label": "ApiManagementGetContentType",
+    "operation": "ContentType_Get",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "ae71d22b527e09eeacb5af9e8ced5ccda8a2520f3aed8dcde28414c593587414",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetContentType.json"
+  },
+  {
+    "file": "ApiManagementDeleteContentType.json",
+    "label": "ApiManagementDeleteContentType",
+    "operation": "ContentType_Delete",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "62b9a4a6780547a0d6a6e7b400e5cec8249c705e6faa713bca7bfd7806276ef7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteContentType.json"
+  },
+  {
+    "file": "ApiManagementListContentTypeContentItems.json",
+    "label": "ApiManagementListContentTypeContentItems",
+    "operation": "ContentItem_ListByService",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "dd5355c805de15aed1e6157fa6ee2cb04513dd5c779365ec9f587c9ccad5c956",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListContentTypeContentItems.json"
+  },
+  {
+    "file": "ApiManagementGetContentTypeContentItem.json",
+    "label": "ApiManagementGetContentTypeContentItem",
+    "operation": "ContentItem_Get",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "495f9ee9c792239bb93f9bac5d1f58fa16ba81b334c21efc800e14ae39cd3a3c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetContentTypeContentItem.json"
+  },
+  {
+    "file": "ApiManagementDeleteContentTypeContentItem.json",
+    "label": "ApiManagementDeleteContentTypeContentItem",
+    "operation": "ContentItem_Delete",
+    "source_document": "apimcontenttypes.json",
+    "source_sha256": "b14592b80409916a128639c911abb8aa8401cd40667cb54c93da35b21d505d0b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteContentTypeContentItem.json"
+  },
+  {
+    "file": "ApiManagementListDiagnostics.json",
+    "label": "ApiManagementListDiagnostics",
+    "operation": "Diagnostic_ListByService",
+    "source_document": "apimdiagnostics.json",
+    "source_sha256": "626027ea110de96345f196f06c2baecd31d4fa8721b7c70b9bbdbb4bed2d725b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListDiagnostics.json"
+  },
+  {
+    "file": "ApiManagementGetDiagnostic.json",
+    "label": "ApiManagementGetDiagnostic",
+    "operation": "Diagnostic_Get",
+    "source_document": "apimdiagnostics.json",
+    "source_sha256": "86963ee8599bde244f5684909c3b5d1b53aa262592094264f76c7bf0d2f4e649",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementDeleteDiagnostic.json",
+    "label": "ApiManagementDeleteDiagnostic",
+    "operation": "Diagnostic_Delete",
+    "source_document": "apimdiagnostics.json",
+    "source_sha256": "bd12274d24193cf973299eadbc8540de1518674c24c2f6e6710e74dc780ef640",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementListDocumentations.json",
+    "label": "ApiManagementListApis",
+    "operation": "Documentation_ListByService",
+    "source_document": "apimdocumentations.json",
+    "source_sha256": "0c87c11bbbb5874f89a7fe5af712f9eba03e9ed414a3326ec55a21850fc9d2ae",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListDocumentations.json"
+  },
+  {
+    "file": "ApiManagementGetDocumentation.json",
+    "label": "ApiManagementGetDocumentation",
+    "operation": "Documentation_Get",
+    "source_document": "apimdocumentations.json",
+    "source_sha256": "f53ed8d02bafaef56380c750a273f070844441690bc1fc0031f88c9ff2351cc1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetDocumentation.json"
+  },
+  {
+    "file": "ApiManagementDeleteDocumentation.json",
+    "label": "ApiManagementDeleteDocumentation",
+    "operation": "Documentation_Delete",
+    "source_document": "apimdocumentations.json",
+    "source_sha256": "2aaa844d438d0c658af5043a4aaf573a01802733c132685ef1ff4846f10b87f5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteDocumentation.json"
+  },
+  {
+    "file": "ApiManagementListGateways.json",
+    "label": "ApiManagementListGateways",
+    "operation": "Gateway_ListByService",
+    "source_document": "apimgateways.json",
+    "source_sha256": "417e2715109eb8e8dfdd40909aa93fcf02650bd48d710b358a5d43d44a355cbb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGateways.json"
+  },
+  {
+    "file": "ApiManagementGetGateway.json",
+    "label": "ApiManagementGetGateway",
+    "operation": "Gateway_Get",
+    "source_document": "apimgateways.json",
+    "source_sha256": "a51d47b3ee18e4bd0be7d4d95c22ec3190343ba3cd21c22d1108aaabaca166d2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGateway.json"
+  },
+  {
+    "file": "ApiManagementDeleteGateway.json",
+    "label": "ApiManagementDeleteGateway",
+    "operation": "Gateway_Delete",
+    "source_document": "apimgateways.json",
+    "source_sha256": "02e81bc874e654a6cbdf2483fd975a15bbb27c32c7f70932fe4efdc38b4e882d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGateway.json"
+  },
+  {
+    "file": "ApiManagementListGatewayHostnameConfigurations.json",
+    "label": "ApiManagementListGatewayHostnameConfigurations",
+    "operation": "GatewayHostnameConfiguration_ListByService",
+    "source_document": "apimgateways.json",
+    "source_sha256": "e4f55f6519e6f9d1e89812ba19a69b15eadbdb76b962fa741ab6d8ed954d8aeb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewayHostnameConfigurations.json"
+  },
+  {
+    "file": "ApiManagementGetGatewayHostnameConfiguration.json",
+    "label": "ApiManagementGetGatewayHostnameConfiguration",
+    "operation": "GatewayHostnameConfiguration_Get",
+    "source_document": "apimgateways.json",
+    "source_sha256": "0313df8254f14ddd66c21d6199d64819fadf6f445c752fa1fac4fbb340fd989b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGatewayHostnameConfiguration.json"
+  },
+  {
+    "file": "ApiManagementDeleteGatewayHostnameConfiguration.json",
+    "label": "ApiManagementDeleteGatewayHostnameConfiguration",
+    "operation": "GatewayHostnameConfiguration_Delete",
+    "source_document": "apimgateways.json",
+    "source_sha256": "5b137e6a918fb50c9d84e551a4e343783fd00d308985ccdb9a611ee030d2b6ff",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGatewayHostnameConfiguration.json"
+  },
+  {
+    "file": "ApiManagementListGatewayApis.json",
+    "label": "ApiManagementListGatewayApis",
+    "operation": "GatewayApi_ListByService",
+    "source_document": "apimgateways.json",
+    "source_sha256": "357432189647e7f6ca0375e69865bdfb91f683581317948cd207ed8fa1433749",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewayApis.json"
+  },
+  {
+    "file": "ApiManagementHeadGatewayApi.json",
+    "label": "ApiManagementHeadGatewayApi",
+    "operation": "GatewayApi_GetEntityTag",
+    "source_document": "apimgateways.json",
+    "source_sha256": "9647e048d3760a2fee277730728a0e3bb40ee849eff39bb0a4157ef269869aa0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadGatewayApi.json"
+  },
+  {
+    "file": "ApiManagementListGatewayCertificateAuthorities.json",
+    "label": "ApiManagementListGatewaycertificateAuthorities",
+    "operation": "GatewayCertificateAuthority_ListByService",
+    "source_document": "apimgateways.json",
+    "source_sha256": "7c002bd085a2545953477c6fd0fd397229e2f7bca96fed6d86e2fccc57e33f8a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewayCertificateAuthorities.json"
+  },
+  {
+    "file": "ApiManagementGetGatewayCertificateAuthority.json",
+    "label": "ApiManagementGetGatewayCertificateAuthority",
+    "operation": "GatewayCertificateAuthority_Get",
+    "source_document": "apimgateways.json",
+    "source_sha256": "f751dd87c4959048d30e302ed871e698b273cab18b73ab3113a4011b463dac3d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGatewayCertificateAuthority.json"
+  },
+  {
+    "file": "ApiManagementDeleteGatewayCertificateAuthority.json",
+    "label": "ApiManagementDeleteGatewayCertificateAuthority",
+    "operation": "GatewayCertificateAuthority_Delete",
+    "source_document": "apimgateways.json",
+    "source_sha256": "00531ecc7bb0fe5dba66634fce69a93a41834857f19484c293deae52a98eb233",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGatewayCertificateAuthority.json"
+  },
+  {
+    "file": "ApiManagementListGroups.json",
+    "label": "ApiManagementListGroups",
+    "operation": "Group_ListByService",
+    "source_document": "apimgroups.json",
+    "source_sha256": "f2ba3f56bb24dd037c201c633845aa229cfd0ec39711315758b046bf74ca0548",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGroups.json"
+  },
+  {
+    "file": "ApiManagementGetGroup.json",
+    "label": "ApiManagementGetGroup",
+    "operation": "Group_Get",
+    "source_document": "apimgroups.json",
+    "source_sha256": "f105eb904147466efc431dc8861f9e39d2acd29d7c9b3f17969502748aed8b1e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGroup.json"
+  },
+  {
+    "file": "ApiManagementDeleteGroup.json",
+    "label": "ApiManagementDeleteGroup",
+    "operation": "Group_Delete",
+    "source_document": "apimgroups.json",
+    "source_sha256": "d784ef1d37a36fb5253801843c6e0e538c41eaab7978713f930fdbfccb1db32a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGroup.json"
+  },
+  {
+    "file": "ApiManagementListGroupUsers.json",
+    "label": "ApiManagementListGroupUsers",
+    "operation": "GroupUser_List",
+    "source_document": "apimgroups.json",
+    "source_sha256": "261415bd705fc08db7476f27d3f149c41bc1eb49795af13acb0d9135d79f8de2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGroupUsers.json"
+  },
+  {
+    "file": "ApiManagementHeadGroupUser.json",
+    "label": "ApiManagementHeadGroupUser",
+    "operation": "GroupUser_CheckEntityExists",
+    "source_document": "apimgroups.json",
+    "source_sha256": "c0a955850a877603adf3ac57a9ddcf3fac493e8f4765810103e7c1d95fe4df27",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadGroupUser.json"
+  },
+  {
+    "file": "ApiManagementListIdentityProviders.json",
+    "label": "ApiManagementListIdentityProviders",
+    "operation": "IdentityProvider_ListByService",
+    "source_document": "apimidentityprovider.json",
+    "source_sha256": "57c384bc60f7c2d6aa65abc1b3b6f90499d6f26874bada10f555bb13b28a8b83",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListIdentityProviders.json"
+  },
+  {
+    "file": "ApiManagementGetIdentityProvider.json",
+    "label": "ApiManagementGetIdentityProvider",
+    "operation": "IdentityProvider_Get",
+    "source_document": "apimidentityprovider.json",
+    "source_sha256": "b961cdb64c7fb3737904f9851e8158661f07f90353d1013f21020796a7a3e268",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetIdentityProvider.json"
+  },
+  {
+    "file": "ApiManagementDeleteIdentityProvider.json",
+    "label": "ApiManagementDeleteIdentityProvider",
+    "operation": "IdentityProvider_Delete",
+    "source_document": "apimidentityprovider.json",
+    "source_sha256": "f9bafae2c7a87b26cf69bfe46a246697d432d79922b333221e993c9a229ae030",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteIdentityProvider.json"
+  },
+  {
+    "file": "ApiManagementListLoggers.json",
+    "label": "ApiManagementListLoggers",
+    "operation": "Logger_ListByService",
+    "source_document": "apimloggers.json",
+    "source_sha256": "1ff8cb7e775e2c090bd3055dc8a1fe9ef152be3f95b30fb7440df99d5bae8e77",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListLoggers.json"
+  },
+  {
+    "file": "ApiManagementGetLogger.json",
+    "label": "ApiManagementGetLogger",
+    "operation": "Logger_Get",
+    "source_document": "apimloggers.json",
+    "source_sha256": "5936660f2a3310f587e890d1f67af925931b3a458be9e114e4efea1bccd37a65",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetLogger.json"
+  },
+  {
+    "file": "ApiManagementDeleteLogger.json",
+    "label": "ApiManagementDeleteLogger",
+    "operation": "Logger_Delete",
+    "source_document": "apimloggers.json",
+    "source_sha256": "43c4c29b0c68f36cd6e96b6ee3f48922fb4533686d268ad7e5dc4f995558b3e2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteLogger.json"
+  },
+  {
+    "file": "ApiManagementListNamedValues.json",
+    "label": "ApiManagementListNamedValues",
+    "operation": "NamedValue_ListByService",
+    "source_document": "apimnamedvalues.json",
+    "source_sha256": "afec45a13acb17a68d725de76a5f5cb4e4248b965588ddfaf5b0f2120572264e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListNamedValues.json"
+  },
+  {
+    "file": "ApiManagementGetNamedValue.json",
+    "label": "ApiManagementGetNamedValue",
+    "operation": "NamedValue_Get",
+    "source_document": "apimnamedvalues.json",
+    "source_sha256": "677c5297712cac4500114bc858fdb4ba49333cbf9595ba70556219d8b0f5770a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetNamedValue.json"
+  },
+  {
+    "file": "ApiManagementGetNamedValueWithKeyVault.json",
+    "label": "ApiManagementGetNamedValueWithKeyVault",
+    "operation": "NamedValue_Get",
+    "source_document": "apimnamedvalues.json",
+    "source_sha256": "10aacb398e5b6a1f537cf56787a6835cdbf2733ac01b97c9a02b110a83f34588",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetNamedValueWithKeyVault.json"
+  },
+  {
+    "file": "ApiManagementDeleteNamedValue.json",
+    "label": "ApiManagementDeleteNamedValue",
+    "operation": "NamedValue_Delete",
+    "source_document": "apimnamedvalues.json",
+    "source_sha256": "27bbad89226a82402d25316373fbaa79b44bebc082f6f77c14997de26e305c94",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteNamedValue.json"
+  },
+  {
+    "file": "ApiManagementListOpenIdConnectProviders.json",
+    "label": "ApiManagementListOpenIdConnectProviders",
+    "operation": "OpenIdConnectProvider_ListByService",
+    "source_document": "apimopenidconnectproviders.json",
+    "source_sha256": "caf9ed0fd5c24bbfcaafabf171c2889e3c7b7bca94b2753b188970eddbc0c791",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListOpenIdConnectProviders.json"
+  },
+  {
+    "file": "ApiManagementGetOpenIdConnectProvider.json",
+    "label": "ApiManagementGetOpenIdConnectProvider",
+    "operation": "OpenIdConnectProvider_Get",
+    "source_document": "apimopenidconnectproviders.json",
+    "source_sha256": "b260aa93ebb442545ac7b6c485346688a017b7c85d7b835f8a81bb9f1fec2493",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetOpenIdConnectProvider.json"
+  },
+  {
+    "file": "ApiManagementDeleteOpenIdConnectProvider.json",
+    "label": "ApiManagementDeleteOpenIdConnectProvider",
+    "operation": "OpenIdConnectProvider_Delete",
+    "source_document": "apimopenidconnectproviders.json",
+    "source_sha256": "86f3d01355039523e7e4a5cedfd66cd7eaea5ef28b656865ee1dc357f3584c57",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteOpenIdConnectProvider.json"
+  },
+  {
+    "file": "ApiManagementListPolicies.json",
+    "label": "ApiManagementListPolicies",
+    "operation": "Policy_ListByService",
+    "source_document": "apimpolicies.json",
+    "source_sha256": "636b4f059c203aae17923e7bb42feb2a3fbefdd14615a143970609e3056386f3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetPolicy.json",
+    "label": "ApiManagementGetPolicy",
+    "operation": "Policy_Get",
+    "source_document": "apimpolicies.json",
+    "source_sha256": "069870acdc93bffbf49f2c1fd23c901416b9cc5fced8875fdf2e5e3241100976",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPolicy.json"
+  },
+  {
+    "file": "ApiManagementGetPolicyFormat.json",
+    "label": "ApiManagementGetPolicyFormat",
+    "operation": "Policy_Get",
+    "source_document": "apimpolicies.json",
+    "source_sha256": "c2c27c8885569cc99a5932e2eb59e319eaad91d983f283838643ab16868b1f77",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPolicyFormat.json"
+  },
+  {
+    "file": "ApiManagementDeletePolicy.json",
+    "label": "ApiManagementDeletePolicy",
+    "operation": "Policy_Delete",
+    "source_document": "apimpolicies.json",
+    "source_sha256": "d47c812438c3f78845731f8d4a401c27400be58d5b9eed19892740c3cbe9d79c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeletePolicy.json"
+  },
+  {
+    "file": "ApiManagementListPolicyFragments.json",
+    "label": "ApiManagementListPolicyFragments",
+    "operation": "PolicyFragment_ListByService",
+    "source_document": "apimpolicyfragments.json",
+    "source_sha256": "b8583cd39381aed9f100081772fcf6b094e81e0f965cbca9699cd9e2c2894f7f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPolicyFragments.json"
+  },
+  {
+    "file": "ApiManagementGetPolicyFragment.json",
+    "label": "ApiManagementGetPolicyFragment",
+    "operation": "PolicyFragment_Get",
+    "source_document": "apimpolicyfragments.json",
+    "source_sha256": "6d49c1234ec2cebe4290fe947a22c6eaa3419cacda8738e51e1b97ae54e89e43",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPolicyFragment.json"
+  },
+  {
+    "file": "ApiManagementGetPolicyFragmentFormat.json",
+    "label": "ApiManagementGetPolicyFragmentFormat",
+    "operation": "PolicyFragment_Get",
+    "source_document": "apimpolicyfragments.json",
+    "source_sha256": "561d16d43e11ed17ce4ce680846e24d97ad48530812bc06b994c428809f815d3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPolicyFragmentFormat.json"
+  },
+  {
+    "file": "ApiManagementDeletePolicyFragment.json",
+    "label": "ApiManagementDeletePolicy",
+    "operation": "PolicyFragment_Delete",
+    "source_document": "apimpolicyfragments.json",
+    "source_sha256": "48c5614530721599ad7653536d948828243523c8289b29410e54b61806d5a8b3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeletePolicyFragment.json"
+  },
+  {
+    "file": "ApiManagementListPolicyRestrictions.json",
+    "label": "ApiManagementListPolicyRestrictions",
+    "operation": "PolicyRestriction_ListByService",
+    "source_document": "apimpolicyrestrictions.json",
+    "source_sha256": "75149ec6f8666770f2fdf1e8a0ff6395b72ec8a8f22a3b9c7a3bcf6690333153",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPolicyRestrictions.json"
+  },
+  {
+    "file": "ApiManagementGetPolicyRestriction.json",
+    "label": "ApiManagementGetPolicyRestriction",
+    "operation": "PolicyRestriction_Get",
+    "source_document": "apimpolicyrestrictions.json",
+    "source_sha256": "f07e3095da3d295a82cef07237299586b7739f257e7c6cd7758928098049e5e1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPolicyRestriction.json"
+  },
+  {
+    "file": "ApiManagementDeletePolicyRestriction.json",
+    "label": "ApiManagementDeletePolicyRestriction",
+    "operation": "PolicyRestriction_Delete",
+    "source_document": "apimpolicyrestrictions.json",
+    "source_sha256": "eb172752e9783ebe0ab05a05176a0b9385b04427b4dd9ae1148edf726476a78a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeletePolicyRestriction.json"
+  },
+  {
+    "file": "ApiManagementListPrivateEndpointConnections.json",
+    "label": "ApiManagementListPrivateEndpointConnections",
+    "operation": "PrivateEndpointConnection_ListByService",
+    "source_document": "apimprivatelink.json",
+    "source_sha256": "53fb61987a04fdb9d0bcdd541b0936698556f6870d484919dd06c8b62d682cd8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPrivateEndpointConnections.json"
+  },
+  {
+    "file": "ApiManagementGetPrivateEndpointConnection.json",
+    "label": "ApiManagementGetPrivateEndpointConnection",
+    "operation": "PrivateEndpointConnection_GetByName",
+    "source_document": "apimprivatelink.json",
+    "source_sha256": "a34465fcdc974319ad93f5e17744a0af216eade63385fbc157cfbf6dc0016e58",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPrivateEndpointConnection.json"
+  },
+  {
+    "file": "ApiManagementDeletePrivateEndpointConnection.json",
+    "label": "ApiManagementDeletePrivateEndpointConnection",
+    "operation": "PrivateEndpointConnection_Delete",
+    "source_document": "apimprivatelink.json",
+    "source_sha256": "37de4fc5672d35a54c2a261eeb9f77408d5c4162b6a301661b217bc9343ccca6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeletePrivateEndpointConnection.json"
+  },
+  {
+    "file": "ApiManagementListProducts.json",
+    "label": "ApiManagementListProducts",
+    "operation": "Product_ListByService",
+    "source_document": "apimproducts.json",
+    "source_sha256": "7f21ae5bc275bc33ee4be42b386d9ae9484b39ac0cd8518230951eb3d767c612",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProducts.json"
+  },
+  {
+    "file": "ApiManagementGetProduct.json",
+    "label": "ApiManagementGetProduct",
+    "operation": "Product_Get",
+    "source_document": "apimproducts.json",
+    "source_sha256": "36456c4a8210c6b1801822eeb06a429e9507fc8d85485c7dbbd0a6921a33491f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProduct.json"
+  },
+  {
+    "file": "ApiManagementDeleteProduct.json",
+    "label": "ApiManagementDeleteProduct",
+    "operation": "Product_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "a37a2ba8e6c58ba116dd4e3b6648e3c907886b79804b03a579d3d9ebaaf4bb9e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProduct.json"
+  },
+  {
+    "file": "ApiManagementListProductApis.json",
+    "label": "ApiManagementListProductApis",
+    "operation": "ProductApi_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "81f340a378de90fdbcd99a80bcfcac69832dc1d9ad7a9629e69794240e9d5bab",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductApis.json"
+  },
+  {
+    "file": "ApiManagementHeadProductApi.json",
+    "label": "ApiManagementHeadProductApi",
+    "operation": "ProductApi_CheckEntityExists",
+    "source_document": "apimproducts.json",
+    "source_sha256": "35ebdb29bf79ab5ddc1fc99c61e117fadc67594e00bec55956b17c7115b77fe2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadProductApi.json"
+  },
+  {
+    "file": "ApiManagementListProductGroups.json",
+    "label": "ApiManagementListProductGroups",
+    "operation": "ProductGroup_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "22eba5dc61ecdb1d143efae168ae7196c674eb2d86c7f6d2fb3c9f9ac834c6e3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductGroups.json"
+  },
+  {
+    "file": "ApiManagementHeadProductGroup.json",
+    "label": "ApiManagementHeadProductGroup",
+    "operation": "ProductGroup_CheckEntityExists",
+    "source_document": "apimproducts.json",
+    "source_sha256": "032a6271f1ef6599cc0254829edfadebb5ba227efa07c380415ae2799cbfecb9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadProductGroup.json"
+  },
+  {
+    "file": "ApiManagementListProductSubscriptions.json",
+    "label": "ApiManagementListProductSubscriptions",
+    "operation": "ProductSubscriptions_List",
+    "source_document": "apimproducts.json",
+    "source_sha256": "7153a3aa736faf557c0490547a18e042d3aa20a5643c3c2920c17b11b32a2d02",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductSubscriptions.json"
+  },
+  {
+    "file": "ApiManagementListProductPolicies.json",
+    "label": "ApiManagementListProductPolicies",
+    "operation": "ProductPolicy_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "07ea3d6410aec2ddf08850d346a8a56f368e6c1c5f524c0795f46f3f59eb38ac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetProductPolicy.json",
+    "label": "ApiManagementGetProductPolicy",
+    "operation": "ProductPolicy_Get",
+    "source_document": "apimproducts.json",
+    "source_sha256": "3a4d89263856919f6e53e54707b5282eab1823ea767f40ed65de0b53303710b8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProductPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductPolicy.json",
+    "label": "ApiManagementDeleteProductPolicy",
+    "operation": "ProductPolicy_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "3a9b9efdb58dcb0ec794d28e82045e8f9306a50f8e282a6272f12b92bcbd87ac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductPolicy.json"
+  },
+  {
+    "file": "ApiManagementListProductTags.json",
+    "label": "ApiManagementListProductTags",
+    "operation": "Tag_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "a77ead4669b56b0a6ac8a759e47ec0f814f1a940a536096a77d5f6fd5b991822",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductTags.json"
+  },
+  {
+    "file": "ApiManagementGetProductTag.json",
+    "label": "ApiManagementGetProductTag",
+    "operation": "Tag_GetByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "9a40dab62bfa2d6a069811daa8779fd4bf1a26c5e035a37889319fda67b17f62",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProductTag.json"
+  },
+  {
+    "file": "ApiManagementGetProductWiki.json",
+    "label": "ApiManagementGetProductWiki",
+    "operation": "ProductWiki_Get",
+    "source_document": "apimproducts.json",
+    "source_sha256": "049d692409aa515f2559fdca1bb1f8a7bea4f79278a834849a10b2db2e544237",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProductWiki.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductWiki.json",
+    "label": "ApiManagementDeleteProductWiki",
+    "operation": "ProductWiki_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "0c7399f61d45db37cfc697c3067c3734b4ccdbd4f3d54e061a09a2fe4b8d1ddc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductWiki.json"
+  },
+  {
+    "file": "ApiManagementListProductWikis.json",
+    "label": "ApiManagementGetApiWiki",
+    "operation": "ProductWikis_list",
+    "source_document": "apimproducts.json",
+    "source_sha256": "5b2742f8777923889302b9cf02075ea03ff09462de8a6b1c27ac94e1bed24e35",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductWikis.json"
+  },
+  {
+    "file": "ApiManagementListProductApiLinks.json",
+    "label": "ApiManagementListProductApiLinks",
+    "operation": "ProductApiLink_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "2797db93d10a3d2918f767c3ce8b393b7a33baa5fe87429e38cfeb55492ad317",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductApiLinks.json"
+  },
+  {
+    "file": "ApiManagementGetProductApiLink.json",
+    "label": "ApiManagementGetProductApiLink",
+    "operation": "ProductApiLink_Get",
+    "source_document": "apimproducts.json",
+    "source_sha256": "6fcc2bf965ba5f920eb1100d1bb9f153f1fe60be85ae83f6ccbf454a9101bfab",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProductApiLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductApiLink.json",
+    "label": "ApiManagementDeleteProductApiLink",
+    "operation": "ProductApiLink_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "53d50618f0a9327f82d7763bfd4348344c3286c9c2bfdc3e5755c849873a3e21",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductApiLink.json"
+  },
+  {
+    "file": "ApiManagementListProductGroupLinks.json",
+    "label": "ApiManagementListProductGroupLinks",
+    "operation": "ProductGroupLink_ListByProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "2fd22fefd479549a0faaf76eb74c3740ead8011b0bb9f3ef20ad62c372349cf3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListProductGroupLinks.json"
+  },
+  {
+    "file": "ApiManagementGetProductGroupLink.json",
+    "label": "ApiManagementGetProductGroupLink",
+    "operation": "ProductGroupLink_Get",
+    "source_document": "apimproducts.json",
+    "source_sha256": "bb66c48c1b44996a61feb3e1ebf77f74e61fe664c3837a434e07ad771c108747",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetProductGroupLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductGroupLink.json",
+    "label": "ApiManagementDeleteProductGroupLink",
+    "operation": "ProductGroupLink_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "3eb7536cde2ce7eafa30ec6af2e0effb653a067a7b229f96674c7ffd8b4b11a9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductGroupLink.json"
+  },
+  {
+    "file": "ApiManagementListGlobalSchemas.json",
+    "label": "ApiManagementListSchemas",
+    "operation": "GlobalSchema_ListByService",
+    "source_document": "apimschema.json",
+    "source_sha256": "42aa37b2fd39d31668298dbfd7a4076ce0d131de305553b3a93647b79fc8dfce",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGlobalSchemas.json"
+  },
+  {
+    "file": "ApiManagementGetGlobalSchema1.json",
+    "label": "ApiManagementGetSchema1",
+    "operation": "GlobalSchema_Get",
+    "source_document": "apimschema.json",
+    "source_sha256": "68209099435d4844a2e82d3e2748e5baa6ee2de82fa6d17d7fe5df48b5c7ce3e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGlobalSchema1.json"
+  },
+  {
+    "file": "ApiManagementGetGlobalSchema2.json",
+    "label": "ApiManagementGetSchema2",
+    "operation": "GlobalSchema_Get",
+    "source_document": "apimschema.json",
+    "source_sha256": "05b7bfdbcff494fcaa8bf0046170892eae57dc93b0c4f6817dacb06c212c45c6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGlobalSchema2.json"
+  },
+  {
+    "file": "ApiManagementDeleteGlobalSchema.json",
+    "label": "ApiManagementDeleteSchema",
+    "operation": "GlobalSchema_Delete",
+    "source_document": "apimschema.json",
+    "source_sha256": "b1bfd01fcb066cc7fe3142b50e20124ef7d05db9c9b9662739a1df357432723b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGlobalSchema.json"
+  },
+  {
+    "file": "ApiManagementListSubscriptions.json",
+    "label": "ApiManagementListSubscriptions",
+    "operation": "Subscription_List",
+    "source_document": "apimsubscriptions.json",
+    "source_sha256": "6eb8f1bc27dfe07afec9c6eeb9b29476a026b0530f7d6251f179a6a4960f3b76",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListSubscriptions.json"
+  },
+  {
+    "file": "ApiManagementGetSubscription.json",
+    "label": "ApiManagementGetSubscription",
+    "operation": "Subscription_Get",
+    "source_document": "apimsubscriptions.json",
+    "source_sha256": "116ed4ea1e99c4ba6a4c98fa082805d5cc4e6ef80c434cbe130c03863defb589",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetSubscription.json"
+  },
+  {
+    "file": "ApiManagementDeleteSubscription.json",
+    "label": "ApiManagementDeleteSubscription",
+    "operation": "Subscription_Delete",
+    "source_document": "apimsubscriptions.json",
+    "source_sha256": "062b14b7c32e9966c69145235701dcef5282ed9d153f110a0b5cfee964a5b3d0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteSubscription.json"
+  },
+  {
+    "file": "ApiManagementListTags.json",
+    "label": "ApiManagementListTags",
+    "operation": "Tag_ListByService",
+    "source_document": "apimtags.json",
+    "source_sha256": "4f5d622eafc429853fc6e1744374b0076da24fb520f786f87c37f936508e1183",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTags.json"
+  },
+  {
+    "file": "ApiManagementGetTag.json",
+    "label": "ApiManagementGetTag",
+    "operation": "Tag_Get",
+    "source_document": "apimtags.json",
+    "source_sha256": "fe2efc695a903ded218c551ca794cbd3d9f21f7d4745fac3c9fbec85e937ca74",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTag.json"
+  },
+  {
+    "file": "ApiManagementDeleteTag.json",
+    "label": "ApiManagementDeleteTag",
+    "operation": "Tag_Delete",
+    "source_document": "apimtags.json",
+    "source_sha256": "062b9a46190a34eab17da26a5f079e914b4507787f79e2e11b6b7c19f561334f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteTag.json"
+  },
+  {
+    "file": "ApiManagementListTagApiLinks.json",
+    "label": "ApiManagementListTagApiLinks",
+    "operation": "TagApiLink_ListByProduct",
+    "source_document": "apimtags.json",
+    "source_sha256": "385e5f9853dd51cb33806c543f6c062c9b0e6791a4f706a92ed10932ff760edf",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTagApiLinks.json"
+  },
+  {
+    "file": "ApiManagementGetTagApiLink.json",
+    "label": "ApiManagementGetTagApiLink",
+    "operation": "TagApiLink_Get",
+    "source_document": "apimtags.json",
+    "source_sha256": "7353835db43318b6b05413d9df8505511415b111a88853c06e412e5ed2f8cee7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTagApiLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteTagApiLink.json",
+    "label": "ApiManagementDeleteTagApiLink",
+    "operation": "TagApiLink_Delete",
+    "source_document": "apimtags.json",
+    "source_sha256": "73dff8d16ce61a8310e6ce3368b08ff0d37586ec0084673eb2ff3d44ba6453e5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteTagApiLink.json"
+  },
+  {
+    "file": "ApiManagementListTagOperationLinks.json",
+    "label": "ApiManagementListTagOperationLinks",
+    "operation": "TagOperationLink_ListByProduct",
+    "source_document": "apimtags.json",
+    "source_sha256": "ab1c57dfcc27950ca0e940703a2e3978dc0f34773a79eb34609c539f14106d2a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTagOperationLinks.json"
+  },
+  {
+    "file": "ApiManagementGetTagOperationLink.json",
+    "label": "ApiManagementGetTagOperationLink",
+    "operation": "TagOperationLink_Get",
+    "source_document": "apimtags.json",
+    "source_sha256": "c6e50b83ec2a353d7d0a42f2c410f462709cb497ca7b023aade6dd7f37be12ba",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTagOperationLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteTagOperationLink.json",
+    "label": "ApiManagementDeleteTagOperationLink",
+    "operation": "TagOperationLink_Delete",
+    "source_document": "apimtags.json",
+    "source_sha256": "2413fd1f17de5940d67ae779141905c94250bb2e628b8b5d18cb66d6baf4f47b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteTagOperationLink.json"
+  },
+  {
+    "file": "ApiManagementListTagProductLinks.json",
+    "label": "ApiManagementListTagProductLinks",
+    "operation": "TagProductLink_ListByProduct",
+    "source_document": "apimtags.json",
+    "source_sha256": "dbe45691517732fe4e7b099bd79480547a7a641727e6c33db68f3de0e35562dc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTagProductLinks.json"
+  },
+  {
+    "file": "ApiManagementGetTagProductLink.json",
+    "label": "ApiManagementGetTagProductLink",
+    "operation": "TagProductLink_Get",
+    "source_document": "apimtags.json",
+    "source_sha256": "8d044c419736052d00cb77c477ca65a97f9faf0817e88ad2269218edea54f703",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTagProductLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteTagProductLink.json",
+    "label": "ApiManagementDeleteTagProductLink",
+    "operation": "TagProductLink_Delete",
+    "source_document": "apimtags.json",
+    "source_sha256": "3ea4ff69d50ec8d4f5b80fa3af317c703fa4c2e9677ca2a947f1dbb334fc29dd",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteTagProductLink.json"
+  },
+  {
+    "file": "ApiManagementListTemplates.json",
+    "label": "ApiManagementListTemplates",
+    "operation": "EmailTemplate_ListByService",
+    "source_document": "apimemailtemplates.json",
+    "source_sha256": "b2d7cbbd1d5f702f8a69a9460ca1f7be937262e477339182a31e383f4b14b716",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTemplates.json"
+  },
+  {
+    "file": "ApiManagementGetTemplate.json",
+    "label": "ApiManagementGetTemplate",
+    "operation": "EmailTemplate_Get",
+    "source_document": "apimemailtemplates.json",
+    "source_sha256": "da7fe2093b3030e57754d1fe07a6b6e2e524d2412419e2a4aab1a20163365ef5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTemplate.json"
+  },
+  {
+    "file": "ApiManagementDeleteTemplate.json",
+    "label": "ApiManagementDeleteTemplate",
+    "operation": "EmailTemplate_Delete",
+    "source_document": "apimemailtemplates.json",
+    "source_sha256": "21884872066ef35dd036cfeb2a11d376b7891fa807205abea0de3fb8cb1508e9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteTemplate.json"
+  },
+  {
+    "file": "ApiManagementListUsers.json",
+    "label": "ApiManagementListUsers",
+    "operation": "User_ListByService",
+    "source_document": "apimusers.json",
+    "source_sha256": "490195f2737c25c96fdf6ee1191aff26da84c10c65d90bed7c73fa35eed76b7b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListUsers.json"
+  },
+  {
+    "file": "ApiManagementGetUser.json",
+    "label": "ApiManagementGetUser",
+    "operation": "User_Get",
+    "source_document": "apimusers.json",
+    "source_sha256": "87baf5dc9d8f5f77626d1d3959b3a82a9c1e21bfb7b8345413cfb4001e296d84",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetUser.json"
+  },
+  {
+    "file": "ApiManagementDeleteUser.json",
+    "label": "ApiManagementDeleteUser",
+    "operation": "User_Delete",
+    "source_document": "apimusers.json",
+    "source_sha256": "7b6ceaf214c1b33f40626ff94f4ec2bc6ee8e848b1a020fd314972fb95608e76",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteUser.json"
+  },
+  {
+    "file": "ApiManagementListUserSubscriptions.json",
+    "label": "ApiManagementListUserSubscriptions",
+    "operation": "UserSubscription_List",
+    "source_document": "apimusers.json",
+    "source_sha256": "74712b527dbb007c52df08db9b3d47647935d93f7c9cb85a215fe8196935875f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListUserSubscriptions.json"
+  },
+  {
+    "file": "ApiManagementGetUserSubscription.json",
+    "label": "ApiManagementGetUserSubscription",
+    "operation": "UserSubscription_Get",
+    "source_document": "apimusers.json",
+    "source_sha256": "74921bb980865046cb63a47963db4b59ed51076ad9b676f12b95331f9b8e5a49",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetUserSubscription.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaces.json",
+    "label": "ApiManagementListWorkspaces",
+    "operation": "Workspace_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c8e3e3ece346a1b83ce3263d95c48fba81707c3b4178268d6b868b7c3565911a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaces.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspace.json",
+    "label": "ApiManagementGetWorkspace",
+    "operation": "Workspace_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c6ef34e012160458b39403a9cc322aee5d23d62912da6b97db10f909f70aba3f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspace.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspace.json",
+    "label": "ApiManagementDeleteWorkspace",
+    "operation": "Workspace_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b39c8cc0d9ab8a6b91e473d69d0d1843df37afd7a58be54fa1e73dc6efaec29e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspace.json"
+  },
+  {
+    "file": "ApiManagementListWorkspacePolicies.json",
+    "label": "ApiManagementListWorkspacePolicies",
+    "operation": "WorkspacePolicy_ListByApi",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "e2fa69773e8cb1db0a848a0d12c3ece9fcb8ccc22357655665d547ce2cc8ca2a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspacePolicies.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspacePolicy.json",
+    "label": "ApiManagementGetWorkspacePolicy",
+    "operation": "WorkspacePolicy_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "35e818a91eaeb6da51736bac67e028b911c1eb5ae6399fb76c0c043d34ddb8bd",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspacePolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspacePolicy.json",
+    "label": "ApiManagementDeleteWorkspacePolicy",
+    "operation": "WorkspacePolicy_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "8c456e44a20bf7bfb78b6c98133eeffd1185f3539b444cbfb047e9d488fde6e3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspacePolicy.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceNamedValues.json",
+    "label": "ApiManagementListWorkspaceNamedValues",
+    "operation": "WorkspaceNamedValue_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "7c41b25805b0c9e835458faf4c24c5b8d4acafb79a48e1537c0b789b2f5eaa47",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceNamedValues.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceNamedValue.json",
+    "label": "ApiManagementGetWorkspaceNamedValue",
+    "operation": "WorkspaceNamedValue_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "deaa42bade5a9a04a21760b0365228cafef2ce94be1eec463f74bc6bc278c095",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceNamedValue.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceNamedValueWithKeyVault.json",
+    "label": "ApiManagementGetWorkspaceNamedValueWithKeyVault",
+    "operation": "WorkspaceNamedValue_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b8511fb249d711cdc75078fd5b51ede1d97e71460695896f9565119e70976a6a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceNamedValueWithKeyVault.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceNamedValue.json",
+    "label": "ApiManagementDeleteWorkspaceNamedValue",
+    "operation": "WorkspaceNamedValue_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "5d663793596093ae386d4e99863d5a7912304893bafc17c54dd653b3385e6952",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceNamedValue.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceSchemas.json",
+    "label": "ApiManagementListWorkspaceSchemas",
+    "operation": "WorkspaceGlobalSchema_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "421a53d24517c1987e7d814fa1e887e53932ef39fe5cdde81ffbe377e20ef571",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceSchemas.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceSchema.json",
+    "label": "ApiManagementGetWorkspaceSchema",
+    "operation": "WorkspaceGlobalSchema_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "cfbe61060251001f9cc7b3fdac06d6b9229ee543648c585a0ef3f269f9ab1cd3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceSchema.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceSchema.json",
+    "label": "ApiManagementDeleteWorkspaceSchema",
+    "operation": "WorkspaceGlobalSchema_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "134494429dd0aed7e8ea8aef423a662a120bbc13b3f276abb7c03bd0d1bffe7d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceSchema.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceNotifications.json",
+    "label": "ApiManagementListWorkspaceNotifications",
+    "operation": "WorkspaceNotification_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "986a224db4c6c8a2af760e0c5f1b6bca09fd78b40c5511bc082a80b233e7c734",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceNotifications.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceNotification.json",
+    "label": "ApiManagementGetWorkspaceNotification",
+    "operation": "WorkspaceNotification_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c0e185b546a9bf7206cb3694cae0f1498a0e320f5b002906c286025ca8f3907d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceNotification.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceNotificationRecipientUsers.json",
+    "label": "ApiManagementListWorkspaceNotificationRecipientUsers",
+    "operation": "WorkspaceNotificationRecipientUser_ListByNotification",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "eb43977db0c11e99ee60a9f7eedc695aa3e7af8067b97963992e029d2198e372",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceNotificationRecipientUsers.json"
+  },
+  {
+    "file": "ApiManagementHeadWorkspaceNotificationRecipientUser.json",
+    "label": "ApiManagementHeadWorkspaceNotificationRecipientUser",
+    "operation": "WorkspaceNotificationRecipientUser_CheckEntityExists",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "6e8f15de1d006d06e055f6ed0af2959858d7aa4c0fb562b5f4d8514722377da7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadWorkspaceNotificationRecipientUser.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceNotificationRecipientEmails.json",
+    "label": "ApiManagementListWorkspaceNotificationRecipientEmails",
+    "operation": "WorkspaceNotificationRecipientEmail_ListByNotification",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "6dfe30010881cae934ef035da60f4783918c48723644c44d319b4ced9ad12d88",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceNotificationRecipientEmails.json"
+  },
+  {
+    "file": "ApiManagementHeadWorkspaceNotificationRecipientEmail.json",
+    "label": "ApiManagementHeadWorkspaceNotificationRecipientEmail",
+    "operation": "WorkspaceNotificationRecipientEmail_CheckEntityExists",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "e144513854099ca9e0dc143b02ee2ecdcb6920fd54fa67d1fba353ddbc4f2ab3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadWorkspaceNotificationRecipientEmail.json"
+  },
+  {
+    "file": "ApiManagementListWorkspacePolicyFragments.json",
+    "label": "ApiManagementListWorkspacePolicyFragments",
+    "operation": "WorkspacePolicyFragment_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "cadf5b41bebe97f3a76cb04522b241b0e709db590833532f4caa2ff023d10534",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspacePolicyFragments.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspacePolicyFragment.json",
+    "label": "ApiManagementGetWorkspacePolicyFragment",
+    "operation": "WorkspacePolicyFragment_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b15c9b0736a3df56db973bfa52c4aff1722899740f54c37198d88ec9ab21d70a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspacePolicyFragment.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspacePolicyFragmentFormat.json",
+    "label": "ApiManagementGetWorkspacePolicyFragmentFormat",
+    "operation": "WorkspacePolicyFragment_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c00e2344e2115520f3781578d0c5f4e7da17ad0cdf7856b13f5942d7ac395dc7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspacePolicyFragmentFormat.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspacePolicyFragment.json",
+    "label": "ApiManagementDeleteWorkspacePolicyFragment",
+    "operation": "WorkspacePolicyFragment_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "2b87dbd05fd253a7408c92f7e76241b6afdd7a8dd27c4e1c0196f8970104fc37",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspacePolicyFragment.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceGroups.json",
+    "label": "ApiManagementListWorkspaceGroups",
+    "operation": "WorkspaceGroup_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b30ab99719e8ff5457f50d4b73bf5d991e5ad3ec192963f35d38ef6e2a41982b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceGroups.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceGroup.json",
+    "label": "ApiManagementGetWorkspaceGroup",
+    "operation": "WorkspaceGroup_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "8784a55af84255bc57c799ffa1dc7db956d5944ca8562e93bc58385f04ad19f3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceGroup.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceGroup.json",
+    "label": "ApiManagementDeleteWorkspaceGroup",
+    "operation": "WorkspaceGroup_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "4309c0197cb434fbbbfe52fdfa0a5535054ed59ceb070869f628e6107553e7fe",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceGroup.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceGroupUsers.json",
+    "label": "ApiManagementListWorkspaceGroupUsers",
+    "operation": "WorkspaceGroupUser_List",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "563e296b1fa572570fbfbaac2292f8f40099ad52c4b44198b9cc208445cbc9d8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceGroupUsers.json"
+  },
+  {
+    "file": "ApiManagementHeadWorkspaceGroupUser.json",
+    "label": "ApiManagementHeadWorkspaceGroupUser",
+    "operation": "WorkspaceGroupUser_CheckEntityExists",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "00e6d6858c3277a33e3cdbc817522af6132ac60033c5b6734acdd0aad0e576f4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadWorkspaceGroupUser.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceSubscriptions.json",
+    "label": "ApiManagementListWorkspaceSubscriptions",
+    "operation": "WorkspaceSubscription_List",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b48b64d1831c28d2547bffb4699631e12e376dd375f946b05889c22192220b15",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceSubscriptions.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceSubscription.json",
+    "label": "ApiManagementGetWorkspaceSubscription",
+    "operation": "WorkspaceSubscription_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c3412eb6f7e5dc52da01facdd71d161334701768632fd2de8a0a2007e97fda8c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceSubscription.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceSubscription.json",
+    "label": "ApiManagementDeleteWorkspaceSubscription",
+    "operation": "WorkspaceSubscription_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c6dc8bbbf6311158da52b39afb2f015c3fe7f9daa6cd6fb56bf440819e5ea107",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceSubscription.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiVersionSets.json",
+    "label": "ApiManagementListWorkspaceApiVersionSets",
+    "operation": "WorkspaceApiVersionSet_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "e207d70a9513f37ee0cacbab2b1ccf5a168c04b786a60bd007ca80d627402cc3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiVersionSets.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiVersionSet.json",
+    "label": "ApiManagementGetWorkspaceApiVersionSet",
+    "operation": "WorkspaceApiVersionSet_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "311ac6f9d00270e885e7719056bf4a7601559e1d4f8a28d02564415370a31334",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiVersionSet.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiVersionSet.json",
+    "label": "ApiManagementDeleteWorkspaceApiVersionSet",
+    "operation": "WorkspaceApiVersionSet_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "ba2381a55dca1600ccf36f79fd0b075ab5998396db0056e13570479a0ba37c3e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiVersionSet.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApis.json",
+    "label": "ApiManagementListWorkspaceApis",
+    "operation": "WorkspaceApi_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "fb21dd38563e03f2018e9b4aedabb1f634068680c1387a92b0d4934b125be72e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApis.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiContract.json",
+    "label": "ApiManagementGetWorkspaceApiContract",
+    "operation": "WorkspaceApi_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "f72602158a710580907993d29d20be38e2bdeaf5b9f8d2e4508c202eb86471c2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiContract.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiRevision.json",
+    "label": "ApiManagementGetWorkspaceApiRevision",
+    "operation": "WorkspaceApi_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b0aa7ffd9bb9e42c6dca721fa0e2c509ff4c04714712d43b095c920036da6a6b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiRevision.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApi.json",
+    "label": "ApiManagementDeleteWorkspaceApi",
+    "operation": "WorkspaceApi_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "0ff8e6d71084ea891539958895db369096ff0bb72ddc781a83aae1ec69ec2dd1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApi.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiRevisions.json",
+    "label": "ApiManagementListWorkspaceApiRevisions",
+    "operation": "WorkspaceApiRevision_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "d5483a63a9d005e4935c3a8e54fee33764321e95d050d793843f256de7b65046",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiRevisions.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiReleases.json",
+    "label": "ApiManagementListWorkspaceApiReleases",
+    "operation": "WorkspaceApiRelease_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "759aa531c86ff34b764b726d3f91aef0ad10044a47004274db61ff6f0ada3d50",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiReleases.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiRelease.json",
+    "label": "ApiManagementGetWorkspaceApiRelease",
+    "operation": "WorkspaceApiRelease_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "adfc195278eac0b29556205ed354eea39470c21c3594ec643125e6f3bac91447",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiRelease.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiRelease.json",
+    "label": "ApiManagementDeleteWorkspaceApiRelease",
+    "operation": "WorkspaceApiRelease_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "169fc6f769fa436903420c71c9ff7b365a0989fe98758179106662917dbf10c1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiRelease.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiOperations.json",
+    "label": "ApiManagementListWorkspaceApiOperations",
+    "operation": "WorkspaceApiOperation_ListByApi",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "65133c038e2de595515cf28a4f3f8601baa38830e9ec6195c82cf4306f1c7ab1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiOperations.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiOperation.json",
+    "label": "ApiManagementGetWorkspaceApiOperation",
+    "operation": "WorkspaceApiOperation_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b0131f1434ef7b657e8f015569606c23ca8bccf5ae661c43c48720a873d3a6e5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiOperation.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiOperation.json",
+    "label": "ApiManagementDeleteWorkspaceApiOperation",
+    "operation": "WorkspaceApiOperation_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "12902a8ed93af5fcdcf46c0f3f02b6b82352e6c2ff9893d366a7065f7da04d5d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiOperation.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiOperationPolicies.json",
+    "label": "ApiManagementListWorkspaceApiOperationPolicies",
+    "operation": "WorkspaceApiOperationPolicy_ListByOperation",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "f73b4946d5c4f16ef6e40a19e111cf5608473d4dfb37c9c5adbb0c7eca8e0c99",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiOperationPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiOperationPolicy.json",
+    "label": "ApiManagementGetWorkspaceApiOperationPolicy",
+    "operation": "WorkspaceApiOperationPolicy_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "66fe468837a2c408c602c333e37fb1d4d01d105f7de116833ff366648dacfff6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiOperationPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiOperationPolicy.json",
+    "label": "ApiManagementDeleteWorkspaceApiOperationPolicy",
+    "operation": "WorkspaceApiOperationPolicy_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "48b84daa5afb6e16f18a98348d3a18006c698a403efd187a7583d7a435a1fc00",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiOperationPolicy.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiPolicies.json",
+    "label": "ApiManagementListWorkspaceApiPolicies",
+    "operation": "WorkspaceApiPolicy_ListByApi",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "bba24ade68233fdb88c417e12dfee170e278b02457fee2c7a90e23b6c8961356",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiPolicy.json",
+    "label": "ApiManagementGetWorkspaceApiPolicy",
+    "operation": "WorkspaceApiPolicy_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "8ecbf6ffe29e89720f4b49723d39a785f78ded7c422e8cf048b4794a77f96275",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiPolicy.json",
+    "label": "ApiManagementDeleteWorkspaceApiPolicy",
+    "operation": "WorkspaceApiPolicy_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "7c6f1148f443dfdef4c5694216bff3f4f83476e748349cc605ac5cd408b728d8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiPolicy.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiSchemas.json",
+    "label": "ApiManagementListWorkspaceApiSchemas",
+    "operation": "WorkspaceApiSchema_ListByApi",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "34ed9939696d13c8dc21c919325d63dd191a91e4fe9c983bdee2ee0d3f5403a8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiSchemas.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiSchema.json",
+    "label": "ApiManagementGetWorkspaceApiSchema",
+    "operation": "WorkspaceApiSchema_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "d499328b319755df6c4598ab1bc788f795097e6cc5d37ba0790ccac58c2c23a5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiSchema.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiSchema.json",
+    "label": "ApiManagementDeleteWorkspaceApiSchema",
+    "operation": "WorkspaceApiSchema_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "a56e8ebbe0f5fec3b80e71fffb7135e7b8468b26a73c0bd673c827b377b0cf15",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiSchema.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceProducts.json",
+    "label": "ApiManagementListWorkspaceProducts",
+    "operation": "WorkspaceProduct_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "da900df35818045f0d108b26819a579d35ec83ecc2ffd5db4a421c0811434be2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceProducts.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceProduct.json",
+    "label": "ApiManagementGetWorkspaceProduct",
+    "operation": "WorkspaceProduct_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "01f03c687f0677201829b88ce595192220da6892065dccecf4065d1734a07571",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceProduct.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceProduct.json",
+    "label": "ApiManagementDeleteWorkspaceProduct",
+    "operation": "WorkspaceProduct_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "747897db25d9ac0ab70e4ecad2ecd20efa6159ebf89b125184c2b327e5883ded",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceProduct.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceProductApiLinks.json",
+    "label": "ApiManagementListWorkspaceProductApiLinks",
+    "operation": "WorkspaceProductApiLink_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "4512946f91fd5e1eb3116678f4a331480160db79cea6c27941cd973f8fc29fb1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceProductApiLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceProductApiLink.json",
+    "label": "ApiManagementGetWorkspaceProductApiLink",
+    "operation": "WorkspaceProductApiLink_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "15b21c8a40a575928af35dbc5eadf5f6420bc721531c9a2f50bc7199f8280d2f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceProductApiLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceProductApiLink.json",
+    "label": "ApiManagementDeleteWorkspaceProductApiLink",
+    "operation": "WorkspaceProductApiLink_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "e75be9239cf79451bfe9b97af96230e33edc50bf70ee566821387045d42e24e1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceProductApiLink.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceProductGroupLinks.json",
+    "label": "ApiManagementListWorkspaceProductGroupLinks",
+    "operation": "WorkspaceProductGroupLink_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "5e8180933e25361fa4ffa3c0471759e2c42915d10dd5c8267f4a15bdd99be375",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceProductGroupLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceProductGroupLink.json",
+    "label": "ApiManagementGetWorkspaceProductGroupLink",
+    "operation": "WorkspaceProductGroupLink_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "6ac5da5b656476113f666556b38c83ab1685e21a32c1098a4a96899af878fe09",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceProductGroupLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceProductGroupLink.json",
+    "label": "ApiManagementDeleteWorkspaceProductGroupLink",
+    "operation": "WorkspaceProductGroupLink_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "96ff701690abd0fdd993467e4f8399e8b47d055ed33cad13908a593a225c0c9d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceProductGroupLink.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceProductPolicies.json",
+    "label": "ApiManagementListWorkspaceProductPolicies",
+    "operation": "WorkspaceProductPolicy_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "81a1ba7dec6048998221ff3fd03ae6bbda901ea035ddcac6718e4007524da97c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceProductPolicies.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceProductPolicy.json",
+    "label": "ApiManagementGetWorkspaceProductPolicy",
+    "operation": "WorkspaceProductPolicy_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "52fcc7bb2bd0f4924afcf4d096c536e02d4652160a971a0159545ad744e34204",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceProductPolicy.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceProductPolicy.json",
+    "label": "ApiManagementDeleteWorkspaceProductPolicy",
+    "operation": "WorkspaceProductPolicy_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "997d211473101e958dee356593cdba1c08c2306a27f5128ef66eef8148360ce8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceProductPolicy.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceTags.json",
+    "label": "ApiManagementListWorkspaceTags",
+    "operation": "WorkspaceTag_ListByService",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "485849464de4a0dcb763c4d62890a01a3117ef3192f70c5b39c574c948af7312",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceTags.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceTag.json",
+    "label": "ApiManagementGetWorkspaceTag",
+    "operation": "WorkspaceTag_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "37806d9e4bccb5f14452f47c2a79c83beb876f88bd9dc6e4c99a804fc5a49453",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceTag.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceTag.json",
+    "label": "ApiManagementDeleteWorkspaceTag",
+    "operation": "WorkspaceTag_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "51f09375080665da0d59c069bb6ed56232881d4f0d56d0a4f9320bf2bfe4b048",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceTag.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceTagApiLinks.json",
+    "label": "ApiManagementListWorkspaceTagApiLinks",
+    "operation": "WorkspaceTagApiLink_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "86b552ba6d10fcc3f1d51e3dd30c90a050a9c8cb46812e04394049b7b60a058c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceTagApiLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceTagApiLink.json",
+    "label": "ApiManagementGetWorkspaceTagApiLink",
+    "operation": "WorkspaceTagApiLink_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "c86d0cfe7e03fe734592d83b393b239bce4eb69626f34484ecedd36f5555981d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceTagApiLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceTagApiLink.json",
+    "label": "ApiManagementDeleteWorkspaceTagApiLink",
+    "operation": "WorkspaceTagApiLink_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "1c524391ed3baac7a27289fcf6e47ad79ab03f027782cf9a6b166f73afd8ea0d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceTagApiLink.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceTagOperationLinks.json",
+    "label": "ApiManagementListWorkspaceTagOperationLinks",
+    "operation": "WorkspaceTagOperationLink_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "6e995d5201f8e9dd96e852d6017ed9c20536e231ab5193f2a31bcff746572858",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceTagOperationLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceTagOperationLink.json",
+    "label": "ApiManagementGetWorkspaceTagOperationLink",
+    "operation": "WorkspaceTagOperationLink_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "72c3afc9407ff84727d444f78ba71a87a1315a682a01e3f9809a4a9d7450eac3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceTagOperationLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceTagOperationLink.json",
+    "label": "ApiManagementDeleteWorkspaceTagOperationLink",
+    "operation": "WorkspaceTagOperationLink_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "a6feb35a82c23856a4102165ee97d4a51464666c503a0b2d6c81f6407f3ac1e9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceTagOperationLink.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceTagProductLinks.json",
+    "label": "ApiManagementListWorkspaceTagProductLinks",
+    "operation": "WorkspaceTagProductLink_ListByProduct",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "4f1cf3a3fa320785e325a39bbe81cac8734a27f128d59430c4872121689227ce",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceTagProductLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceTagProductLink.json",
+    "label": "ApiManagementGetWorkspaceTagProductLink",
+    "operation": "WorkspaceTagProductLink_Get",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "7c304bc813eb9e2cfe72a48d5a38adcfe8f47d82966fc799a43bec33774a5532",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceTagProductLink.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceTagProductLink.json",
+    "label": "ApiManagementDeleteWorkspaceTagProductLink",
+    "operation": "WorkspaceTagProductLink_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "4f7c96ae2faefa523a278d15953597841b51a862e75261765fc343cfe186c744",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceTagProductLink.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceDiagnostics.json",
+    "label": "ApiManagementListWorkspaceDiagnostics",
+    "operation": "WorkspaceDiagnostic_ListByWorkspace",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "f111716214f31f6000b73ae9c0b403df9a80e1016b6a546ed109b01cab8cd76e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceDiagnostics.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceDiagnostic.json",
+    "label": "ApiManagementGetWorkspaceDiagnostic",
+    "operation": "WorkspaceDiagnostic_Get",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "2102326066b950aefa8a33eed4c9d59b1d6d22b65e03216517ab05709b2a9d44",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceDiagnostic.json",
+    "label": "ApiManagementDeleteWorkspaceDiagnostic",
+    "operation": "WorkspaceDiagnostic_Delete",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "fa24e8161847bdb3d14b39705b078dba910896ab526f203925121b7aa18f5b3d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceApiDiagnostics.json",
+    "label": "ApiManagementListWorkspaceApiDiagnostics",
+    "operation": "WorkspaceApiDiagnostic_ListByWorkspace",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "49723b6c8703ad537fee655bd0a82fefa2ae1d1ddd4807f8c51c4d90ea91250c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceApiDiagnostics.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceApiDiagnostic.json",
+    "label": "ApiManagementGetWorkspaceApiDiagnostic",
+    "operation": "WorkspaceApiDiagnostic_Get",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "a7c937ec57ff15622da3dc59f561024c667c5b9b4f9c1b53a4b532188f85210f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceApiDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceApiDiagnostic.json",
+    "label": "ApiManagementDeleteWorkspaceApiDiagnostic",
+    "operation": "WorkspaceApiDiagnostic_Delete",
+    "source_document": "apimworkspacediagnostics.json",
+    "source_sha256": "302becd137ed86433d7d6b71b8fdef7fabe81ecea934ad0e88ab9523f3bc8912",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceApiDiagnostic.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceBackends.json",
+    "label": "ApiManagementListWorkspaceBackends",
+    "operation": "WorkspaceBackend_ListByWorkspace",
+    "source_document": "apimworkspacebackends.json",
+    "source_sha256": "1d24d350d04783fb23884f0749113a8fc8a90fba7555691c27b0d0bf26c2be4e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceBackends.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceBackend.json",
+    "label": "ApiManagementGetWorkspaceBackend",
+    "operation": "WorkspaceBackend_Get",
+    "source_document": "apimworkspacebackends.json",
+    "source_sha256": "b609d72da56b2ce83b586379e824ace5ac41600a2d26224eec03654469bfaa32",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceBackend.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceBackend.json",
+    "label": "ApiManagementDeleteWorkspaceBackend",
+    "operation": "WorkspaceBackend_Delete",
+    "source_document": "apimworkspacebackends.json",
+    "source_sha256": "d917d0f57dc94a072f039d060885bb71e29de2982a0053dff85ff98cf6b07f31",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceBackend.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceCertificates.json",
+    "label": "ApiManagementListWorkspaceCertificates",
+    "operation": "WorkspaceCertificate_ListByWorkspace",
+    "source_document": "apimworkspacecertificates.json",
+    "source_sha256": "868da600bc3bf8371df596e99ca854587e5917d1383d1d5b4ae9769036d4ecbe",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceCertificates.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceCertificate.json",
+    "label": "ApiManagementGetWorkspaceCertificate",
+    "operation": "WorkspaceCertificate_Get",
+    "source_document": "apimworkspacecertificates.json",
+    "source_sha256": "9c7066884910ce0ff2043052072b8ece984a85103e7b24748b5b0e5fbb3ac12e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceCertificate.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceCertificateWithKeyVault.json",
+    "label": "ApiManagementGetWorkspaceCertificateWithKeyVault",
+    "operation": "WorkspaceCertificate_Get",
+    "source_document": "apimworkspacecertificates.json",
+    "source_sha256": "b794842c9a67614d963928b5d45f177008a450545fefbccbecd4fcc3cf7f5cd2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceCertificateWithKeyVault.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceCertificate.json",
+    "label": "ApiManagementDeleteWorkspaceCertificate",
+    "operation": "WorkspaceCertificate_Delete",
+    "source_document": "apimworkspacecertificates.json",
+    "source_sha256": "5487d5c0afc5b2d9702e18919146a6adb702b098979a68e5278a2b36b6eaec4d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceCertificate.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceLoggers.json",
+    "label": "ApiManagementListWorkspaceLoggers",
+    "operation": "WorkspaceLogger_ListByWorkspace",
+    "source_document": "apimworkspaceloggers.json",
+    "source_sha256": "8c1b49cac89717dd0bf84c97d0561346e5a17f645678344397a812886f6d81da",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceLoggers.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceLogger.json",
+    "label": "ApiManagementGetWorkspaceLogger",
+    "operation": "WorkspaceLogger_Get",
+    "source_document": "apimworkspaceloggers.json",
+    "source_sha256": "77478515a663b34b040d9209238c1275ee43ee08576b2b8a50fcc0b2b5a1d4c9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceLogger.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceLogger.json",
+    "label": "ApiManagementDeleteWorkspaceLogger",
+    "operation": "WorkspaceLogger_Delete",
+    "source_document": "apimworkspaceloggers.json",
+    "source_sha256": "359785573124a3920dc071bed94d03ebde6c0cae67e4e6f11d0882631709a1e5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceLogger.json"
+  },
+  {
+    "file": "ApiManagementListNotifications.json",
+    "label": "ApiManagementListNotifications",
+    "operation": "Notification_ListByService",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "69d0f2a9871ddf861a3f32099e8883f8dbe06c168c6863da523daa35004c0205",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListNotifications.json"
+  },
+  {
+    "file": "ApiManagementGetNotification.json",
+    "label": "ApiManagementGetNotification",
+    "operation": "Notification_Get",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "a533d53014c75df937920909181eb15ff860bed9908022b97a3ac1e7821273f6",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetNotification.json"
+  },
+  {
+    "file": "ApiManagementListNotificationRecipientUsers.json",
+    "label": "ApiManagementListNotificationRecipientUsers",
+    "operation": "NotificationRecipientUser_ListByNotification",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "99cf8c23c7313550fb64a8367e05f5af61d4ddd3203c80d25c7b54c7a3856f2c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListNotificationRecipientUsers.json"
+  },
+  {
+    "file": "ApiManagementHeadNotificationRecipientUser.json",
+    "label": "ApiManagementHeadNotificationRecipientUser",
+    "operation": "NotificationRecipientUser_CheckEntityExists",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "a7690778bc6259e767afb184a1266c44ab0a00f5359ca10163a9232d63bcda7e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadNotificationRecipientUser.json"
+  },
+  {
+    "file": "ApiManagementListNotificationRecipientEmails.json",
+    "label": "ApiManagementListNotificationRecipientEmails",
+    "operation": "NotificationRecipientEmail_ListByNotification",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "13dfa0592fb1429aa8c96d4ca8df5e41321fe56c774d49cc738050e50ad77c4d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListNotificationRecipientEmails.json"
+  },
+  {
+    "file": "ApiManagementHeadNotificationRecipientEmail.json",
+    "label": "ApiManagementHeadNotificationRecipientEmail",
+    "operation": "NotificationRecipientEmail_CheckEntityExists",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "174d9287b1c788dd0083e01c4dbd28be0cdedc73b5a9f898d2f09bb8c66dd987",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementHeadNotificationRecipientEmail.json"
+  },
+  {
+    "file": "ApiManagementGetOperationStatus.json",
+    "label": "Get operation status",
+    "operation": "OperationStatus_Get",
+    "source_document": "operationStatuses.json",
+    "source_sha256": "3115e44587714cd3c164a2a39afa998aa09822b086374bbf4dc115409889db2f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetOperationStatus.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductApi.json",
+    "label": "ApiManagementDeleteProductApi",
+    "operation": "ProductApi_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "c78b73323c27aca1268eac730e11de6654a1de29d9d01a88a90aa49952f0af7c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductApi.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductGroup.json",
+    "label": "ApiManagementDeleteProductGroup",
+    "operation": "ProductGroup_Delete",
+    "source_document": "apimproducts.json",
+    "source_sha256": "5dacb0a9542c30a8139473aa93e542bbad12c00c6a1b091560751aa3db67e480",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductGroup.json"
+  },
+  {
+    "file": "ApiManagementDeleteGatewayApi.json",
+    "label": "ApiManagementDeleteGatewayApi",
+    "operation": "GatewayApi_Delete",
+    "source_document": "apimgateways.json",
+    "source_sha256": "3c7377c3841edc122b0ba9138757734a4c9b70c0276c16684a9ed0f1b7a31ed7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGatewayApi.json"
+  },
+  {
+    "file": "ApiManagementDeleteGroupUser.json",
+    "label": "ApiManagementDeleteGroupUser",
+    "operation": "GroupUser_Delete",
+    "source_document": "apimgroups.json",
+    "source_sha256": "c5e86ecb46cefc8e1c166a200321d1aeb7a756c34afba78eb0352f243181da0b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGroupUser.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceGroupUser.json",
+    "label": "ApiManagementDeleteWorkspaceGroupUser",
+    "operation": "WorkspaceGroupUser_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "b03dc4db1c71a65bc54422d17a074127e0a3845ad240e8f86c45fbcbce665a39",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceGroupUser.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiOperationTag.json",
+    "label": "ApiManagementDeleteApiOperationTag",
+    "operation": "Tag_DetachFromOperation",
+    "source_document": "apimapis.json",
+    "source_sha256": "66fe0d946431c871ca91983d7190984b4dfcf8a6c635f261468f5f9f5c538b54",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiOperationTag.json"
+  },
+  {
+    "file": "ApiManagementDeleteApiTag.json",
+    "label": "ApiManagementDeleteApiTag",
+    "operation": "Tag_DetachFromApi",
+    "source_document": "apimapis.json",
+    "source_sha256": "281daf3b418451028bd372db55215d087f4e05b3a4858367c7e778e6e1e20dcf",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteApiTag.json"
+  },
+  {
+    "file": "ApiManagementDeleteProductTag.json",
+    "label": "ApiManagementDeleteProductTag",
+    "operation": "Tag_DetachFromProduct",
+    "source_document": "apimproducts.json",
+    "source_sha256": "2db79be462d50a5798951e736692ed6f8d26f274abddd9df3296c4a342cf4a7b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteProductTag.json"
+  },
+  {
+    "file": "ApiManagementDeleteNotificationRecipientUser.json",
+    "label": "ApiManagementDeleteNotificationRecipientUser",
+    "operation": "NotificationRecipientUser_Delete",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "ccca0b92ba396be43dedcccbfebefd19f4ec3de133cb100453d26300cb23b828",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteNotificationRecipientUser.json"
+  },
+  {
+    "file": "ApiManagementDeleteNotificationRecipientEmail.json",
+    "label": "ApiManagementDeleteNotificationRecipientEmail",
+    "operation": "NotificationRecipientEmail_Delete",
+    "source_document": "apimnotifications.json",
+    "source_sha256": "7c89d8c7b8b5b68228847d9314fdafd38736a59d692b0622ddfd9f0bc5c90d95",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteNotificationRecipientEmail.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceNotificationRecipientUser.json",
+    "label": "ApiManagementDeleteWorkspaceNotificationRecipientUser",
+    "operation": "WorkspaceNotificationRecipientUser_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "07df6dfe0980ed053760179b662fba3f25eb87163a37f5f26ae2a0d8c23afe11",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceNotificationRecipientUser.json"
+  },
+  {
+    "file": "ApiManagementDeleteWorkspaceNotificationRecipientEmail.json",
+    "label": "ApiManagementDeleteWorkspaceNotificationRecipientEmail",
+    "operation": "WorkspaceNotificationRecipientEmail_Delete",
+    "source_document": "apimworkspaces.json",
+    "source_sha256": "a81ca2dd3e9623ac8ea7288a584dc946f77d2f509a6bf8d8524876801749caba",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteWorkspaceNotificationRecipientEmail.json"
+  },
+  {
+    "file": "ApiManagementListPortalConfig.json",
+    "label": "ApiManagementListPortalConfig",
+    "operation": "PortalConfig_ListByService",
+    "source_document": "apimportalconfigs.json",
+    "source_sha256": "8f7607c92f1fc68b93a5c6251c4284a5671b51c642f37fdffcb582e1f198dfb1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPortalConfig.json"
+  },
+  {
+    "file": "ApiManagementPortalConfig.json",
+    "label": "ApiManagementPortalConfig",
+    "operation": "PortalConfig_Get",
+    "source_document": "apimportalconfigs.json",
+    "source_sha256": "0f68d54dbba45cb8b7a177cb7f03444b2c6684b5a7b30ac1b9e4540bfdf7f215",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementPortalConfig.json"
+  },
+  {
+    "file": "ApiManagementListPortalRevisions.json",
+    "label": "ApiManagementListPortalRevisions",
+    "operation": "PortalRevision_ListByService",
+    "source_document": "apimportalrevisions.json",
+    "source_sha256": "d292f615fbad469bbfd9860ccb283b7b7c7dd5d7fbf2f222f5f3054e2e8dd2e9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPortalRevisions.json"
+  },
+  {
+    "file": "ApiManagementGetPortalRevision.json",
+    "label": "ApiManagementGetPortalRevision",
+    "operation": "PortalRevision_Get",
+    "source_document": "apimportalrevisions.json",
+    "source_sha256": "a19cb10e2d60e9e778d96239eb3fcc02df2c0772b9a3cb75cd89bb555c61e789",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetPortalRevision.json"
+  },
+  {
+    "file": "ApiManagementListPortalSettings.json",
+    "label": "ApiManagementListPortalSettings",
+    "operation": "PortalSettings_ListByService",
+    "source_document": "apimportalsettings.json",
+    "source_sha256": "95b93a978733c2cbfeb4e2318bca55271fbf192daec8f0e08c1bfc581cd1b423",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListPortalSettings.json"
+  },
+  {
+    "file": "ApiManagementPortalSettingsGetSignIn.json",
+    "label": "ApiManagementPortalSettingsGetSignIn",
+    "operation": "SignInSettings_Get",
+    "source_document": "apimportalsettings.json",
+    "source_sha256": "4c634ff846bd14171d72531072ece927397c23af76424e9f5a656d97b199ff0c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementPortalSettingsGetSignIn.json"
+  },
+  {
+    "file": "ApiManagementPortalSettingsGetSignUp.json",
+    "label": "ApiManagementPortalSettingsGetSignUp",
+    "operation": "SignUpSettings_Get",
+    "source_document": "apimportalsettings.json",
+    "source_sha256": "b063a4f84e1a2d9a05cb8bc9eb42462e9790b34b8abf31e48c9a8019b2a89f38",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementPortalSettingsGetSignUp.json"
+  },
+  {
+    "file": "ApiManagementPortalSettingsGetDelegation.json",
+    "label": "ApiManagementPortalSettingsGetDelegation",
+    "operation": "DelegationSettings_Get",
+    "source_document": "apimportalsettings.json",
+    "source_sha256": "25e41db36fce324a2c9863a01739fd6da964a694b46eb9789c9f3cbf4b9e4ed0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementPortalSettingsGetDelegation.json"
+  },
+  {
+    "file": "ApiManagementListTenantSettings.json",
+    "label": "ApiManagementListTenantSettings",
+    "operation": "TenantSettings_ListByService",
+    "source_document": "apimsettings.json",
+    "source_sha256": "0062d5e73ad99ec3ec1a698a9a7389b84dfdf6c7722714401f295207ebd3a374",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTenantSettings.json"
+  },
+  {
+    "file": "ApiManagementGetTenantSettings.json",
+    "label": "ApiManagementGetTenantSettings",
+    "operation": "TenantSettings_Get",
+    "source_document": "apimsettings.json",
+    "source_sha256": "296283ca5b4d159c4739fde5c9a247eb55db4f6313441e573a91ff8cec882dc0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTenantSettings.json"
+  },
+  {
+    "file": "ApiManagementListTenantAccess.json",
+    "label": "ApiManagementListTenantAccess",
+    "operation": "TenantAccess_ListByService",
+    "source_document": "apimtenant.json",
+    "source_sha256": "c040259a1858644c3e79d241bc2cc86dc176502034015f8052b5aa9d5401f3b0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListTenantAccess.json"
+  },
+  {
+    "file": "ApiManagementGetTenantAccess.json",
+    "label": "ApiManagementGetTenantAccess",
+    "operation": "TenantAccess_Get",
+    "source_document": "apimtenant.json",
+    "source_sha256": "647835e7ce1b1a3ad50cf246dfcf2733437b70f857a5e9a5bfcfd390bf6be6ac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTenantAccess.json"
+  },
+  {
+    "file": "ApiManagementGetTenantGitAccess.json",
+    "label": "ApiManagementGetTenantGitAccess",
+    "operation": "TenantAccess_Get",
+    "source_document": "apimtenant.json",
+    "source_sha256": "1b07ed2975cbdee49008a0a7707d29b92213133554123961fa21cee3a12fc86c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetTenantGitAccess.json"
+  },
+  {
+    "file": "ApiManagementGatewayGetGateway.json",
+    "label": "ApiManagementGatewayGetGateway",
+    "operation": "ApiGateway_Get",
+    "source_document": "apigateway.json",
+    "source_sha256": "1417766826817caf54f510a0bedebcbd6e4dd49cd8d2d0d7a76058e31860edd7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGatewayGetGateway.json"
+  },
+  {
+    "file": "ApiManagementGatewayDeleteGateway.json",
+    "label": "ApiManagementGatewayDeleteGateway",
+    "operation": "ApiGateway_Delete",
+    "source_document": "apigateway.json",
+    "source_sha256": "aa9a51da50b157e219690deeae689fd7645c5401f5b9cce9fd7a60825a27d734",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGatewayDeleteGateway.json"
+  },
+  {
+    "file": "ApiManagementListGatewaysBySubscriptionAndResourceGroup.json",
+    "label": "ApiManagementListGatewaysBySubscriptionAndResourceGroup",
+    "operation": "ApiGateway_ListByResourceGroup",
+    "source_document": "apigateway.json",
+    "source_sha256": "88befe118f6caba9e68ea7bc4df22ffbc635dcac9452888cfdd6151d3f233bc7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewaysBySubscriptionAndResourceGroup.json"
+  },
+  {
+    "file": "ApiManagementListGatewaysBySubscription.json",
+    "label": "ApiManagementListGatewaysBySubscription",
+    "operation": "ApiGateway_List",
+    "source_document": "apigateway.json",
+    "source_sha256": "a8d48eaa1055851822914e7b37dad97719d3adf75b633cb438d0d997c8044461",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewaysBySubscription.json"
+  },
+  {
+    "file": "ApiManagementListGatewayConfigConnection.json",
+    "label": "ApiManagementListGatewayConfigConnection",
+    "operation": "ApiGatewayConfigConnection_ListByGateway",
+    "source_document": "apimgatewayConfigConnections.json",
+    "source_sha256": "62af1745dd446bea6b9b942da835d9765b4b827c7668b6ead90c9f3387643dfc",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListGatewayConfigConnection.json"
+  },
+  {
+    "file": "ApiManagementGetGatewayConfigConnection.json",
+    "label": "ApiManagementGetGatewayConfigConnection",
+    "operation": "ApiGatewayConfigConnection_Get",
+    "source_document": "apimgatewayConfigConnections.json",
+    "source_sha256": "1021b635a61197b6f360b84de9d49b809cf4f7e9d49be693dfb32f1be93c6cf9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetGatewayConfigConnection.json"
+  },
+  {
+    "file": "ApiManagementDeleteGatewayConfigConnection.json",
+    "label": "ApiManagementGatewayDeleteGateway",
+    "operation": "ApiGatewayConfigConnection_Delete",
+    "source_document": "apimgatewayConfigConnections.json",
+    "source_sha256": "9a1b89cfef0847656d3431f6c06c6519c6b64b3a877f88c9a5370cc8bce9aec9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementDeleteGatewayConfigConnection.json"
+  },
+  {
+    "file": "ApiManagementListIssues.json",
+    "label": "ApiManagementListIssues",
+    "operation": "Issue_ListByService",
+    "source_document": "apimissues.json",
+    "source_sha256": "92d0bcc47961a027b455019e90d9ade99bc4e57168e09c8e57e21f23fc0bdce9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListIssues.json"
+  },
+  {
+    "file": "ApiManagementGetIssue.json",
+    "label": "ApiManagementGetIssue",
+    "operation": "Issue_Get",
+    "source_document": "apimissues.json",
+    "source_sha256": "8d6b48700b4bea5dba62266eecb7db403deb17833a531aec51883a3ca3bee365",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetIssue.json"
+  },
+  {
+    "file": "ApiManagementListWorkspaceLinks.json",
+    "label": "ApiManagementListGatewayConfigConnection",
+    "operation": "ApiManagementWorkspaceLinks_ListByService",
+    "source_document": "apimworkspacelinks.json",
+    "source_sha256": "8d2abdbdefd7e311aaaac58430b942b9dd790d89972f154d867c4b9be2536cd3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementListWorkspaceLinks.json"
+  },
+  {
+    "file": "ApiManagementGetWorkspaceLink.json",
+    "label": "ApiManagementGetWorkspaceLinks",
+    "operation": "ApiManagementWorkspaceLink_Get",
+    "source_document": "apimworkspacelinks.json",
+    "source_sha256": "a4e178d282d36f1a4383134257907e5f1fca0d08650fbd466ea28d6fb98e9657",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetWorkspaceLink.json"
+  },
+  {
+    "file": "ApiManagementGetOperationResult.json",
+    "label": "ApiManagementGetOperationResult",
+    "operation": "OperationsResults_Get",
+    "source_document": "operationStatuses.json",
+    "source_sha256": "e79b6f4baec1e0105d61ced5e9e4ee6a40fa2bb82312cf377f0b479e82e256eb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/examples/ApiManagementGetOperationResult.json"
+  }
+]

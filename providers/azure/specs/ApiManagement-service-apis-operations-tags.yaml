@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/apis/operations/tags
+  class: organization.tag_binding
+presentation:
+  displayNames:
+    en-US: API Management operation tag association
+    zh-CN: API 管理操作标签关联
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.Tag_ListByOperation
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+      apiId: parent.normalized.arm_parameters.apiId
+      operationId: parent.normalized.arm_parameters.operationId
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.Tag_GetByOperation
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service/apis/operations
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/apis/operations
+  targetIdPath: refs_microsoft_apimanagement_service_apis_operations
+- type: uses
+  targetType: Microsoft.ApiManagement/service/tags
+  targetIdPath: refs_microsoft_apimanagement_service_tags
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.Tag_DetachFromOperation
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.Tag_GetByOperation
+      itemsPath: $
+      identityPath: id

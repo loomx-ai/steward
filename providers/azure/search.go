@@ -72,7 +72,7 @@ func (c *client) linkedResource(ctx context.Context, value string) (map[string]a
 	if err != nil {
 		return nil, err
 	}
-	response, err := c.request(ctx, "GET", endpoint)
+	response, err := c.readResource(ctx, endpoint)
 	if err != nil {
 		return nil, err
 	}

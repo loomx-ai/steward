@@ -287,6 +287,9 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		}
 		out.data = map[string]any{}
 	}
+	if err := apimResponseETag(method, &out); err != nil {
+		return out, err
+	}
 	execution.LogCloudAPIResponse(ctx, u.Host, method, safePayload(map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}))
 	return out, nil
 }
@@ -376,6 +379,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 		return nil, "", response{}, err
 	}
 	u, _ := url.Parse(endpoint)
+	if err := apimListQuery(u); err != nil {
+		return nil, "", response{}, err
+	}
 	if strings.Contains(strings.ToLower(u.Path), "/providers/microsoft.batch/") {
 		if err := batchListQuery(endpoint, false); err != nil {
 			return nil, "", response{}, err
@@ -414,6 +420,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		nu, _ := url.Parse(next)
+		if err := apimListQuery(nu); err != nil {
+			return nil, "", response{}, err
+		}
 		if strings.Contains(strings.ToLower(nu.Path), "/providers/microsoft.batch/") {
 			if err := batchListQuery(next, false); err != nil {
 				return nil, "", response{}, err
@@ -436,21 +445,30 @@ func (c *client) listAll(ctx context.Context, path, version string) ([]any, erro
 }
 
 func (c *client) listAllURL(ctx context.Context, next, path string) ([]any, error) {
+	items, _, err := c.listAllURLResult(ctx, next, path)
+	return items, err
+}
+
+func (c *client) listAllURLResult(ctx context.Context, next, path string) ([]any, response, error) {
 	var items []any
+	var provenance response
 	seen := map[string]bool{}
 	for next != "" {
 		if seen[next] {
-			return nil, fmt.Errorf("Azure pagination repeated a page")
+			return nil, response{}, fmt.Errorf("Azure pagination repeated a page")
 		}
 		seen[next] = true
-		page, cursor, err := c.listPage(ctx, next, path)
+		page, cursor, res, err := c.listPageResult(ctx, next, path)
 		if err != nil {
-			return nil, err
+			return nil, response{}, err
+		}
+		if res.requestID != "" {
+			provenance = res
 		}
 		items = append(items, page...)
 		next = cursor
 	}
-	return items, nil
+	return items, provenance, nil
 }
 func text(value any) string           { s, _ := value.(string); return strings.TrimSpace(s) }
 func object(value any) map[string]any { result, _ := value.(map[string]any); return result }

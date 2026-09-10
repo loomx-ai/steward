@@ -289,6 +289,13 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_creation_generation"] = creation
 	}
 	normalized["arm_etag"] = text(raw["etag"])
+	if err := c.apimInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
+	if location := text(normalized["_apim_location"]); location != "" {
+		region = location
+		scope = contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}
+	}
 	if isCosmosType(nativeType) {
 		wire := responseID(nativeType, text(raw["id"]))
 		normalized["_cosmos_wire_id"] = wire
@@ -402,7 +409,7 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["_arm_parent_configuration"] = serviceParentConfiguration(nativeType, raw)
 	}
 	if known {
-		_, parameters, err := c.resourceOperation(kind, responseID(nativeType, text(raw["id"])), "GET")
+		_, parameters, err := c.resourceOperation(kind, responseID(nativeType, text(raw["id"])), resourceReadMethod(nativeType))
 		if err != nil {
 			return contracts.InventoryItem{}, err
 		}
@@ -458,6 +465,20 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["cleanup_protection_reason"] = reason
 	}
 	refs := references(nativeType, id, raw)
+	if isAPIMType(nativeType) {
+		for typ, values := range normalized["_apim_external_references"].(map[string][]string) {
+			for _, value := range stringValues(values) {
+				addReference(refs, typ, value)
+			}
+		}
+		for _, value := range stringValues(normalized["_apim_references"]) {
+			if ref, kind, err := parseID(value); err == nil {
+				if mapping, known := findType(kind); known {
+					addReference(refs, mapping.NativeType, ref)
+				}
+			}
+		}
+	}
 	if isBatchType(nativeType) {
 		batchAddReferences(normalized, refs)
 	}
@@ -604,6 +625,13 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 				break
 			}
 		}
+	}
+	if isAPIMType(nativeType) {
+		refs, _ := apimReferences(nativeType, self, raw) // Inventory validates these before normalization.
+		for _, ref := range refs {
+			add(ref)
+		}
+		return result
 	}
 	fields := map[string]bool{"subnet": true, "virtualnetwork": true, "networksecuritygroup": true, "routetable": true, "natgateway": true,
 		"publicipaddress": true, "publicipaddresses": true, "publicipprefix": true, "publicipprefixes": true,
@@ -811,6 +839,9 @@ func locked(id string, locks []any) bool {
 func safeResource(value any) any {
 	switch typed := value.(type) {
 	case map[string]any:
+		if apimRaw(typed) {
+			typed = apimSafeRaw(typed)
+		}
 		if batchRaw(typed) {
 			typed = object(batchSafeValue(typed))
 		}

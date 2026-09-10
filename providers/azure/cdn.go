@@ -364,6 +364,11 @@ func (c *client) cdnChildren(ctx context.Context, parent asset.Identity, raw map
 // Sensitive content in rule actions and key references is compared through a
 // credential-keyed digest. Ordinary JSON hashes only contain sanitized values.
 func (c *client) servicePrivateIncarnation(planned asset.Asset, live map[string]any) error {
+	if isAPIMType(planned.Identity.NativeType) {
+		if expected := text(planned.Normalized["_apim_private_configuration"]); expected == "" || expected != c.privateConfiguration(apimSnapshot(planned.Identity.NativeType, live)) {
+			return serviceDenied("apim_private_configuration_changed")
+		}
+	}
 	if isStreamAnalyticsType(planned.Identity.NativeType) {
 		if expected := text(planned.Normalized["_stream_analytics_private_configuration"]); expected == "" || expected != c.privateConfiguration(streamAnalyticsSnapshot(planned.Identity.NativeType, live)) {
 			return serviceDenied("stream_analytics_private_configuration_changed")

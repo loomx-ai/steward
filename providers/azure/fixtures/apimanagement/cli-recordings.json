@@ -1,0 +1,1942 @@
+[
+  {
+    "file": "test_apim_core_service.yaml",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/8bead7f93f086629efb160d56c25f508156925bf/src/azure-cli/azure/cli/command_modules/apim/tests/latest/recordings/test_apim_core_service.yaml",
+    "source_sha256": "ffdbb745bd5fcd9e5736578e4f5ba1571d1bd75d13bc844b5b7b8ae5710c7774",
+    "recordings": [
+      {
+        "interaction_index": 43,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAADmxzU=\""
+          ]
+        },
+        "body": {
+          "etag": "AAAAAADmxzU=",
+          "properties": {
+            "publisherEmail": "publisher@contoso.com",
+            "publisherName": "Contoso",
+            "notificationSenderEmail": "publisher@contoso.com",
+            "provisioningState": "Succeeded",
+            "targetProvisioningState": "",
+            "createdAtUtc": "2026-01-27T14:39:14.3257355Z",
+            "gatewayUrl": "https://cli-test-apim-000003.azure-api.net",
+            "gatewayRegionalUrl": "https://cli-test-apim-000003-wu-01.regional.azure-api.net",
+            "portalUrl": "https://cli-test-apim-000003.portal.azure-api.net",
+            "developerPortalUrl": "https://cli-test-apim-000003.developer.azure-api.net",
+            "managementApiUrl": "https://cli-test-apim-000003.management.azure-api.net",
+            "scmUrl": "https://cli-test-apim-000003.scm.azure-api.net",
+            "hostnameConfigurations": [
+              {
+                "type": "Proxy",
+                "hostName": "cli-test-apim-000003.azure-api.net",
+                "encodedCertificate": null,
+                "keyVaultId": null,
+                "certificatePassword": null,
+                "negotiateClientCertificate": false,
+                "certificate": null,
+                "defaultSslBinding": true,
+                "identityClientId": null,
+                "certificateSource": "BuiltIn",
+                "certificateStatus": null
+              }
+            ],
+            "publicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "privateIPAddresses": null,
+            "additionalLocations": null,
+            "virtualNetworkConfiguration": null,
+            "customProperties": {
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+            },
+            "virtualNetworkType": "None",
+            "certificates": null,
+            "disableGateway": false,
+            "natGatewayState": "Disabled",
+            "outboundPublicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "apiVersionConstraint": {
+              "minApiVersion": null
+            },
+            "publicIpAddressId": null,
+            "publicNetworkAccess": "Enabled",
+            "privateEndpointConnections": null,
+            "platformVersion": "stv2"
+          },
+          "sku": {
+            "name": "Developer",
+            "capacity": 1
+          },
+          "identity": {
+            "type": "SystemAssigned",
+            "principalId": "b1585aa5-e5dc-43b7-9f6a-fa15cc37e00c",
+            "tenantId": "7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"
+          },
+          "zones": null,
+          "systemData": {
+            "createdBy": "aaaaaaa@a.com",
+            "createdByType": "User",
+            "createdAt": "2026-01-27T14:39:11.9091806Z",
+            "lastModifiedBy": "aaaaaaa@a.com",
+            "lastModifiedByType": "User",
+            "lastModifiedAt": "2026-01-27T14:39:11.9091806Z"
+          },
+          "location": "West US",
+          "tags": {},
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003",
+          "name": "cli-test-apim-000003",
+          "type": "Microsoft.ApiManagement/service"
+        }
+      },
+      {
+        "interaction_index": 111,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAADmyEk=\""
+          ]
+        },
+        "body": {
+          "etag": "AAAAAADmyEk=",
+          "properties": {
+            "publisherEmail": "publisher@contoso2.com",
+            "publisherName": "Contoso2",
+            "notificationSenderEmail": "publisher@contoso.com",
+            "provisioningState": "Succeeded",
+            "targetProvisioningState": "",
+            "createdAtUtc": "2026-01-27T14:39:14.3257355Z",
+            "gatewayUrl": "https://cli-test-apim-000003.azure-api.net",
+            "gatewayRegionalUrl": "https://cli-test-apim-000003-wu-01.regional.azure-api.net",
+            "portalUrl": "https://cli-test-apim-000003.portal.azure-api.net",
+            "developerPortalUrl": "https://cli-test-apim-000003.developer.azure-api.net",
+            "managementApiUrl": "https://cli-test-apim-000003.management.azure-api.net",
+            "scmUrl": "https://cli-test-apim-000003.scm.azure-api.net",
+            "hostnameConfigurations": [
+              {
+                "type": "Proxy",
+                "hostName": "cli-test-apim-000003.azure-api.net",
+                "encodedCertificate": null,
+                "keyVaultId": null,
+                "certificatePassword": null,
+                "negotiateClientCertificate": false,
+                "certificate": null,
+                "defaultSslBinding": true,
+                "identityClientId": null,
+                "certificateSource": "BuiltIn",
+                "certificateStatus": null
+              }
+            ],
+            "publicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "privateIPAddresses": null,
+            "additionalLocations": null,
+            "virtualNetworkConfiguration": null,
+            "customProperties": {
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+            },
+            "virtualNetworkType": "None",
+            "certificates": null,
+            "disableGateway": false,
+            "natGatewayState": "Disabled",
+            "outboundPublicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "apiVersionConstraint": {
+              "minApiVersion": null
+            },
+            "publicIpAddressId": null,
+            "publicNetworkAccess": "Enabled",
+            "privateEndpointConnections": null,
+            "platformVersion": "stv2"
+          },
+          "sku": {
+            "name": "Developer",
+            "capacity": 1
+          },
+          "identity": {
+            "type": "SystemAssigned",
+            "principalId": "b1585aa5-e5dc-43b7-9f6a-fa15cc37e00c",
+            "tenantId": "7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"
+          },
+          "zones": null,
+          "systemData": {
+            "createdBy": "aaaaaaa@a.com",
+            "createdByType": "User",
+            "createdAt": "2026-01-27T14:39:11.9091806Z",
+            "lastModifiedBy": "aaaaaaa@a.com",
+            "lastModifiedByType": "User",
+            "lastModifiedAt": "2026-01-27T15:04:24.2993442Z"
+          },
+          "location": "West US",
+          "tags": {},
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003",
+          "name": "cli-test-apim-000003",
+          "type": "Microsoft.ApiManagement/service"
+        }
+      },
+      {
+        "interaction_index": 112,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAADmyEk=\""
+          ]
+        },
+        "body": {
+          "etag": "AAAAAADmyEk=",
+          "properties": {
+            "publisherEmail": "publisher@contoso2.com",
+            "publisherName": "Contoso2",
+            "notificationSenderEmail": "publisher@contoso.com",
+            "provisioningState": "Succeeded",
+            "targetProvisioningState": "",
+            "createdAtUtc": "2026-01-27T14:39:14.3257355Z",
+            "gatewayUrl": "https://cli-test-apim-000003.azure-api.net",
+            "gatewayRegionalUrl": "https://cli-test-apim-000003-wu-01.regional.azure-api.net",
+            "portalUrl": "https://cli-test-apim-000003.portal.azure-api.net",
+            "developerPortalUrl": "https://cli-test-apim-000003.developer.azure-api.net",
+            "managementApiUrl": "https://cli-test-apim-000003.management.azure-api.net",
+            "scmUrl": "https://cli-test-apim-000003.scm.azure-api.net",
+            "hostnameConfigurations": [
+              {
+                "type": "Proxy",
+                "hostName": "cli-test-apim-000003.azure-api.net",
+                "encodedCertificate": null,
+                "keyVaultId": null,
+                "certificatePassword": null,
+                "negotiateClientCertificate": false,
+                "certificate": null,
+                "defaultSslBinding": true,
+                "identityClientId": null,
+                "certificateSource": "BuiltIn",
+                "certificateStatus": null
+              }
+            ],
+            "publicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "privateIPAddresses": null,
+            "additionalLocations": null,
+            "virtualNetworkConfiguration": null,
+            "customProperties": {
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+            },
+            "virtualNetworkType": "None",
+            "certificates": null,
+            "disableGateway": false,
+            "natGatewayState": "Disabled",
+            "outboundPublicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "apiVersionConstraint": {
+              "minApiVersion": null
+            },
+            "publicIpAddressId": null,
+            "publicNetworkAccess": "Enabled",
+            "privateEndpointConnections": null,
+            "platformVersion": "stv2"
+          },
+          "sku": {
+            "name": "Developer",
+            "capacity": 1
+          },
+          "identity": {
+            "type": "SystemAssigned",
+            "principalId": "b1585aa5-e5dc-43b7-9f6a-fa15cc37e00c",
+            "tenantId": "7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"
+          },
+          "zones": null,
+          "systemData": {
+            "createdBy": "aaaaaaa@a.com",
+            "createdByType": "User",
+            "createdAt": "2026-01-27T14:39:11.9091806Z",
+            "lastModifiedBy": "aaaaaaa@a.com",
+            "lastModifiedByType": "User",
+            "lastModifiedAt": "2026-01-27T15:04:24.2993442Z"
+          },
+          "location": "West US",
+          "tags": {},
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003",
+          "name": "cli-test-apim-000003",
+          "type": "Microsoft.ApiManagement/service"
+        }
+      },
+      {
+        "interaction_index": 273,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACX4=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "az-cli000004",
+          "properties": {
+            "displayName": "Contoso API",
+            "apiRevision": "1",
+            "description": null,
+            "subscriptionRequired": false,
+            "serviceUrl": "https://contoso.com",
+            "backendId": null,
+            "path": "test",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "header",
+              "query": "query"
+            },
+            "isCurrent": true
+          }
+        }
+      },
+      {
+        "interaction_index": 275,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "az-cli000004",
+              "properties": {
+                "displayName": "Contoso API",
+                "apiRevision": "1",
+                "description": "Contoso API Description",
+                "subscriptionRequired": false,
+                "serviceUrl": "https://contoso.com",
+                "backendId": null,
+                "path": "test",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "header",
+                  "query": "query"
+                },
+                "isCurrent": true
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/echo-api",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "echo-api",
+              "properties": {
+                "displayName": "Echo API",
+                "apiRevision": "1",
+                "description": null,
+                "subscriptionRequired": true,
+                "serviceUrl": "https://echo.playground.azure-api.net/api",
+                "backendId": null,
+                "path": "echo",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "Ocp-Apim-Subscription-Key",
+                  "query": "subscription-key"
+                },
+                "isCurrent": true
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/48242ec7f53745de9cbb800757a4204a",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "48242ec7f53745de9cbb800757a4204a",
+              "properties": {
+                "displayName": "Swagger Petstore",
+                "apiRevision": "1",
+                "description": null,
+                "subscriptionRequired": true,
+                "serviceUrl": "http://petstore.swagger.io/v1",
+                "backendId": null,
+                "path": "test2",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "header",
+                  "query": "query"
+                },
+                "license": {
+                  "name": "MIT",
+                  "url": null
+                },
+                "isCurrent": true,
+                "apiVersion": "v1",
+                "apiVersionSetId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apiVersionSets/MyVSId"
+              }
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "interaction_index": 276,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/starter",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "starter",
+              "properties": {
+                "displayName": "Starter",
+                "description": "Subscribers will be able to run 5 calls/minute up to a maximum of 100 calls/week.",
+                "terms": "",
+                "subscriptionRequired": true,
+                "approvalRequired": false,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/unlimited",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "unlimited",
+              "properties": {
+                "displayName": "Unlimited",
+                "description": "Subscribers have completely unlimited access to the API. Administrator approval is required.",
+                "terms": null,
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            }
+          ],
+          "count": 2
+        }
+      },
+      {
+        "interaction_index": 278,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "standard",
+              "properties": {
+                "displayName": "product1",
+                "description": "Contoso Product Description",
+                "terms": "Terms",
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 8,
+                "state": "notPublished",
+                "groups": []
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/starter",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "starter",
+              "properties": {
+                "displayName": "Starter",
+                "description": "Subscribers will be able to run 5 calls/minute up to a maximum of 100 calls/week.",
+                "terms": "",
+                "subscriptionRequired": true,
+                "approvalRequired": false,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/unlimited",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "unlimited",
+              "properties": {
+                "displayName": "Unlimited",
+                "description": "Subscribers have completely unlimited access to the API. Administrator approval is required.",
+                "terms": null,
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            }
+          ],
+          "count": 3
+        }
+      },
+      {
+        "interaction_index": 279,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACas=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard",
+          "type": "Microsoft.ApiManagement/service/products",
+          "name": "standard",
+          "properties": {
+            "displayName": "product1",
+            "description": "Contoso Product Description",
+            "terms": "Terms",
+            "subscriptionRequired": true,
+            "approvalRequired": true,
+            "subscriptionsLimit": 8,
+            "state": "notPublished",
+            "groups": []
+          }
+        }
+      },
+      {
+        "interaction_index": 282,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 284,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations/testOperation",
+              "type": "Microsoft.ApiManagement/service/apis/operations",
+              "name": "testOperation",
+              "properties": {
+                "displayName": "GetSPSession",
+                "method": "GET",
+                "urlTemplate": "/session/{id}/oid/{oname}",
+                "templateParameters": [
+                  {
+                    "name": "id",
+                    "description": "Format - int32.",
+                    "type": "integer",
+                    "required": true,
+                    "values": []
+                  },
+                  {
+                    "name": "oname",
+                    "description": "oid name",
+                    "type": "string",
+                    "required": true,
+                    "values": []
+                  }
+                ],
+                "description": "This is Description",
+                "responses": [],
+                "policies": null
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 285,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations/testOperation?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACbg=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations/testOperation",
+          "type": "Microsoft.ApiManagement/service/apis/operations",
+          "name": "testOperation",
+          "properties": {
+            "displayName": "GetSPSession",
+            "method": "GET",
+            "urlTemplate": "/session/{id}/oid/{oname}",
+            "templateParameters": [
+              {
+                "name": "id",
+                "description": "Format - int32.",
+                "type": "integer",
+                "required": true,
+                "values": []
+              },
+              {
+                "name": "oname",
+                "description": "oid name",
+                "type": "string",
+                "required": true,
+                "values": []
+              }
+            ],
+            "description": "This is Description",
+            "request": {
+              "queryParameters": [],
+              "headers": [],
+              "representations": []
+            },
+            "responses": [],
+            "policies": null
+          }
+        }
+      },
+      {
+        "interaction_index": 288,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations/testOperation?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 289,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/operations?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 290,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/revisions?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/apis/az-cli000004;rev=1/revisions/az-cli000004;rev=1",
+              "apiId": "/apis/az-cli000004;rev=1",
+              "apiRevision": "1",
+              "createdDateTime": "2026-01-27T15:35:05.873Z",
+              "updatedDateTime": "2026-01-27T17:14:22.547Z",
+              "description": null,
+              "privateUrl": "/test",
+              "isOnline": true,
+              "isCurrent": true
+            }
+          ],
+          "count": 1,
+          "nextLink": null
+        }
+      },
+      {
+        "interaction_index": 291,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACcM=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "az-cli000004",
+          "properties": {
+            "displayName": "Contoso API",
+            "apiRevision": "1",
+            "description": "Contoso API Description",
+            "subscriptionRequired": false,
+            "serviceUrl": "https://contoso.com",
+            "backendId": null,
+            "path": "test",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "header",
+              "query": "query"
+            },
+            "isCurrent": true
+          }
+        }
+      },
+      {
+        "interaction_index": 293,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004%3Brev%3D2?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACcY=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004;rev=2",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "az-cli000004;rev=2",
+          "properties": {
+            "displayName": "Contoso API",
+            "apiRevision": "2",
+            "description": "Contoso API Description",
+            "subscriptionRequired": false,
+            "serviceUrl": "https://contoso.com",
+            "backendId": null,
+            "path": "test",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "header",
+              "query": "query"
+            },
+            "apiRevisionDescription": "New API Revision"
+          }
+        }
+      },
+      {
+        "interaction_index": 294,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/releases?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 296,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACcw=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "az-cli000004",
+          "properties": {
+            "displayName": "Contoso API",
+            "apiRevision": "2",
+            "description": "Contoso API Description",
+            "subscriptionRequired": false,
+            "serviceUrl": "https://contoso.com",
+            "backendId": null,
+            "path": "test",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "header",
+              "query": "query"
+            },
+            "isCurrent": true,
+            "apiRevisionDescription": "New API Revision"
+          }
+        }
+      },
+      {
+        "interaction_index": 297,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/releases/releaseVersionOne?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACdA=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/releases/releaseVersionOne",
+          "type": "Microsoft.ApiManagement/service/apis/releases",
+          "name": "releaseVersionOne",
+          "properties": {
+            "apiId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004",
+            "createdDateTime": "2026-01-27T17:14:29.057Z",
+            "updatedDateTime": "2026-01-27T17:14:29.057Z",
+            "notes": "release this version"
+          }
+        }
+      },
+      {
+        "interaction_index": 300,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/releases/releaseVersionOne?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 301,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004/releases?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 302,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 304,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard/apis/az-cli000004",
+              "type": "Microsoft.ApiManagement/service/products/apis",
+              "name": "az-cli000004",
+              "properties": {
+                "displayName": "Contoso API",
+                "apiRevision": "2",
+                "description": "Contoso API Description",
+                "specificationLastUpdated": "2026-01-27T17:14:26.2866667Z",
+                "subscriptionRequired": false,
+                "serviceUrl": "https://contoso.com",
+                "backendId": null,
+                "path": "test",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": null,
+                "subscriptionKeyParameterNames": null,
+                "isCurrent": true,
+                "apiRevisionDescription": "New API Revision"
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 306,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard/apis/az-cli000004?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 307,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 308,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/standard?deleteSubscriptions=true&api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 309,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/starter",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "starter",
+              "properties": {
+                "displayName": "Starter",
+                "description": "Subscribers will be able to run 5 calls/minute up to a maximum of 100 calls/week.",
+                "terms": "",
+                "subscriptionRequired": true,
+                "approvalRequired": false,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/products/unlimited",
+              "type": "Microsoft.ApiManagement/service/products",
+              "name": "unlimited",
+              "properties": {
+                "displayName": "Unlimited",
+                "description": "Subscribers have completely unlimited access to the API. Administrator approval is required.",
+                "terms": null,
+                "subscriptionRequired": true,
+                "approvalRequired": true,
+                "subscriptionsLimit": 1,
+                "state": "published",
+                "groups": []
+              }
+            }
+          ],
+          "count": 2
+        }
+      },
+      {
+        "interaction_index": 310,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/az-cli000004?deleteRevisions=true&api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 311,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/echo-api",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "echo-api",
+              "properties": {
+                "displayName": "Echo API",
+                "apiRevision": "1",
+                "description": null,
+                "subscriptionRequired": true,
+                "serviceUrl": "https://echo.playground.azure-api.net/api",
+                "backendId": null,
+                "path": "echo",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "Ocp-Apim-Subscription-Key",
+                  "query": "subscription-key"
+                },
+                "isCurrent": true
+              }
+            },
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/48242ec7f53745de9cbb800757a4204a",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "48242ec7f53745de9cbb800757a4204a",
+              "properties": {
+                "displayName": "Swagger Petstore",
+                "apiRevision": "1",
+                "description": null,
+                "subscriptionRequired": true,
+                "serviceUrl": "http://petstore.swagger.io/v1",
+                "backendId": null,
+                "path": "test2",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "header",
+                  "query": "query"
+                },
+                "license": {
+                  "name": "MIT",
+                  "url": null
+                },
+                "isCurrent": true,
+                "apiVersion": "v1",
+                "apiVersionSetId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apiVersionSets/MyVSId"
+              }
+            }
+          ],
+          "count": 2
+        }
+      },
+      {
+        "interaction_index": 312,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/48242ec7f53745de9cbb800757a4204a?deleteRevisions=true&api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 313,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/echo-api",
+              "type": "Microsoft.ApiManagement/service/apis",
+              "name": "echo-api",
+              "properties": {
+                "displayName": "Echo API",
+                "apiRevision": "1",
+                "description": null,
+                "subscriptionRequired": true,
+                "serviceUrl": "https://echo.playground.azure-api.net/api",
+                "backendId": null,
+                "path": "echo",
+                "protocols": [
+                  "https"
+                ],
+                "mcpProperties": null,
+                "authenticationSettings": {
+                  "oAuth2": null,
+                  "openid": null,
+                  "oAuth2AuthenticationSettings": [],
+                  "openidAuthenticationSettings": []
+                },
+                "subscriptionKeyParameterNames": {
+                  "header": "Ocp-Apim-Subscription-Key",
+                  "query": "subscription-key"
+                },
+                "isCurrent": true
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 314,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "etag": "AAAAAADmyHA=",
+              "properties": {
+                "publisherEmail": "publisher@contoso2.com",
+                "publisherName": "Contoso2",
+                "notificationSenderEmail": "publisher@contoso.com",
+                "provisioningState": "Succeeded",
+                "targetProvisioningState": "",
+                "createdAtUtc": "2026-01-27T14:39:14.3257355Z",
+                "gatewayUrl": "https://cli-test-apim-000003.azure-api.net",
+                "gatewayRegionalUrl": "https://cli-test-apim-000003-wu-01.regional.azure-api.net",
+                "portalUrl": "https://cli-test-apim-000003.portal.azure-api.net",
+                "developerPortalUrl": "https://cli-test-apim-000003.developer.azure-api.net",
+                "managementApiUrl": "https://cli-test-apim-000003.management.azure-api.net",
+                "scmUrl": "https://cli-test-apim-000003.scm.azure-api.net",
+                "hostnameConfigurations": [
+                  {
+                    "type": "Proxy",
+                    "hostName": "cli-test-apim-000003.azure-api.net",
+                    "encodedCertificate": null,
+                    "keyVaultId": null,
+                    "certificatePassword": null,
+                    "negotiateClientCertificate": false,
+                    "certificate": null,
+                    "defaultSslBinding": true,
+                    "identityClientId": null,
+                    "certificateSource": "BuiltIn",
+                    "certificateStatus": null
+                  }
+                ],
+                "publicIPAddresses": [
+                  "20.245.21.110"
+                ],
+                "privateIPAddresses": null,
+                "additionalLocations": null,
+                "virtualNetworkConfiguration": null,
+                "customProperties": {
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+                  "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+                },
+                "virtualNetworkType": "None",
+                "certificates": null,
+                "disableGateway": false,
+                "natGatewayState": "Disabled",
+                "outboundPublicIPAddresses": [
+                  "20.245.21.110"
+                ],
+                "apiVersionConstraint": {
+                  "minApiVersion": null
+                },
+                "publicIpAddressId": null,
+                "publicNetworkAccess": "Enabled",
+                "privateEndpointConnections": null,
+                "platformVersion": "stv2"
+              },
+              "sku": {
+                "name": "Developer",
+                "capacity": 1
+              },
+              "identity": {
+                "type": "SystemAssigned",
+                "principalId": "b1585aa5-e5dc-43b7-9f6a-fa15cc37e00c",
+                "tenantId": "7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"
+              },
+              "zones": null,
+              "systemData": {
+                "createdBy": "aaaaaaa@a.com",
+                "createdByType": "User",
+                "createdAt": "2026-01-27T14:39:11.9091806Z",
+                "lastModifiedBy": "aaaaaaa@a.com",
+                "lastModifiedByType": "User",
+                "lastModifiedAt": "2026-01-27T15:04:24.2993442Z"
+              },
+              "location": "West US",
+              "tags": {},
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003",
+              "name": "cli-test-apim-000003",
+              "type": "Microsoft.ApiManagement/service"
+            }
+          ]
+        }
+      },
+      {
+        "interaction_index": 316,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-imp000006?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACfw=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-imp000006",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "gr-imp000006",
+          "properties": {
+            "displayName": "gr-imp000006",
+            "apiRevision": "1",
+            "description": null,
+            "subscriptionRequired": true,
+            "serviceUrl": "https://apim-gql-test-cartoons.azurewebsites.net/graphql/",
+            "backendId": null,
+            "path": "testingImportApiPath",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "Ocp-Apim-Subscription-Key",
+              "query": "subscription-key"
+            },
+            "type": "graphql",
+            "isCurrent": true
+          }
+        }
+      },
+      {
+        "interaction_index": 317,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-imp000006?deleteRevisions=true&api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 319,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACgk=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "gr-api000005",
+          "properties": {
+            "displayName": "graphQl API",
+            "apiRevision": "1",
+            "description": null,
+            "subscriptionRequired": false,
+            "serviceUrl": "https://apim-gql-test-cartoons.azurewebsites.net/graphql/",
+            "backendId": null,
+            "path": "graphqltestpath",
+            "protocols": [
+              "https"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "Ocp-Apim-Subscription-Key",
+              "query": "subscription-key"
+            },
+            "type": "graphql",
+            "isCurrent": true
+          }
+        }
+      },
+      {
+        "interaction_index": 324,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"FAoAAAAAAAA=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver",
+          "type": "Microsoft.ApiManagement/service/apis/resolvers",
+          "name": "newresolver",
+          "properties": {
+            "internalId": "6978f28a217d2008f012a50d",
+            "publicId": "newresolver",
+            "description": "A GraphQL Resolver example",
+            "path": "Query/allFamilies"
+          }
+        }
+      },
+      {
+        "interaction_index": 325,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver",
+              "type": "Microsoft.ApiManagement/service/apis/resolvers",
+              "name": "newresolver",
+              "properties": {
+                "internalId": null,
+                "publicId": null,
+                "description": "A GraphQL Resolver example",
+                "path": "Query/allFamilies"
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 327,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver/policies/policy?format=xml&api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAAChk=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver/policies/policy",
+          "type": "Microsoft.ApiManagement/service/apis/resolvers/policies",
+          "name": "policy",
+          "properties": {
+            "format": "xml",
+            "value": "<http-data-source>\r\n\t<http-request>\r\n\t\t<set-method>GET</set-method>\r\n\t\t<set-url>https://some.service.com</set-url>\r\n\t</http-request>\r\n</http-data-source>"
+          }
+        }
+      },
+      {
+        "interaction_index": 328,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver/policies/policy?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 329,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/resolvers/newresolver?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 330,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas/graphql?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAAChE=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas/graphql",
+          "type": "Microsoft.ApiManagement/service/apis/schemas",
+          "name": "graphql",
+          "properties": {
+            "contentType": "application/vnd.ms-azure-apim.graphql.schema",
+            "document": {
+              "value": "schema {\n  query: Query\n  mutation: Mutation\n  subscription: Subscription\n}\n\ntype Address {\n  address: String\n  city: String\n  state: String\n}\n\ntype Capsule {\n  id: ID\n  landings: Int\n  missions: [CapsuleMission]\n  original_launch: Date\n  reuse_count: Int\n  status: String\n  type: String\n  dragon: Dragon\n}\n\ntype CapsuleMission {\n  flight: Int\n  name: String\n}\n\ninput CapsulesFind {\n  id: ID\n  landings: Int\n  mission: String\n  original_launch: Date\n  reuse_count: Int\n  status: String\n  type: String\n}\n\ntype Core {\n  asds_attempts: Int\n  asds_landings: Int\n  block: Int\n  id: ID\n  missions: [CapsuleMission]\n  original_launch: Date\n  reuse_count: Int\n  rtls_attempts: Int\n  rtls_landings: Int\n  status: String\n  water_landing: Boolean\n}\n\ntype CoreMission {\n  name: String\n  flight: Int\n}\n\ninput CoresFind {\n  asds_attempts: Int\n  asds_landings: Int\n  block: Int\n  id: String\n  missions: String\n  original_launch: Date\n  reuse_count: Int\n  rtls_attempts: Int\n  rtls_landings: Int\n  status: String\n  water_landing: Boolean\n}\n\nscalar Date\n\ntype Distance {\n  feet: Float\n  meters: Float\n}\n\ntype Dragon {\n  active: Boolean\n  crew_capacity: Int\n  description: String\n  diameter: Distance\n  dry_mass_kg: Int\n  dry_mass_lb: Int\n  first_flight: String\n  heat_shield: DragonHeatShield\n  height_w_trunk: Distance\n  id: ID\n  launch_payload_mass: Mass\n  launch_payload_vol: Volume\n  name: String\n  orbit_duration_yr: Int\n  pressurized_capsule: DragonPressurizedCapsule\n  return_payload_mass: Mass\n  return_payload_vol: Volume\n  sidewall_angle_deg: Float\n  thrusters: [DragonThrust]\n  trunk: DragonTrunk\n  type: String\n  wikipedia: String\n}\n\ntype DragonHeatShield {\n  dev_partner: String\n  material: String\n  size_meters: Float\n  temp_degrees: Int\n}\n\ntype DragonPressurizedCapsule {\n  payload_volume: Volume\n}\n\ntype DragonThrust {\n  amount: Int\n  fuel_1: String\n  fuel_2: String\n  pods: Int\n  thrust: Force\n  type: String\n}\n\ntype DragonTrunk {\n  cargo: DragonTrunkCargo\n  trunk_volume: Volume\n}\n\ntype DragonTrunkCargo {\n  solar_array: Int\n  unpressurized_cargo: Boolean\n}\n\ntype Force {\n  kN: Float\n  lbf: Float\n}\n\ntype HistoriesResult {\n  result: Result\n  data: [History]\n}\n\ntype History {\n  details: String\n  event_date_unix: Date\n  event_date_utc: Date\n  id: ID\n  links: Link\n  title: String\n  flight: Launch\n}\n\ninput HistoryFind {\n  end: Date\n  flight_number: Int\n  id: ID\n  start: Date\n}\n\ntype Info {\n  ceo: String\n  coo: String\n  cto_propulsion: String\n  cto: String\n  employees: Int\n  founded: Int\n  founder: String\n  headquarters: Address\n  launch_sites: Int\n  links: InfoLinks\n  name: String\n  summary: String\n  test_sites: Int\n  valuation: Float\n  vehicles: Int\n}\n\ntype InfoLinks {\n  elon_twitter: String\n  flickr: String\n  twitter: String\n  website: String\n}\n\ntype Landpad {\n  attempted_landings: String\n  details: String\n  full_name: String\n  id: ID\n  landing_type: String\n  location: Location\n  status: String\n  successful_landings: String\n  wikipedia: String\n}\n\ntype Launch {\n  details: String\n  id: ID\n  is_tentative: Boolean\n  launch_date_local: Date\n  launch_date_unix: Date\n  launch_date_utc: Date\n  launch_site: LaunchSite\n  launch_success: Boolean\n  launch_year: String\n  links: LaunchLinks\n  mission_id: [String]\n  mission_name: String\n  rocket: LaunchRocket\n  static_fire_date_unix: Date\n  static_fire_date_utc: Date\n  telemetry: LaunchTelemetry\n  tentative_max_precision: String\n  upcoming: Boolean\n  ships: [Ship]\n}\n\ninput LaunchFind {\n  apoapsis_km: Float\n  block: Int\n  cap_serial: String\n  capsule_reuse: String\n  core_flight: Int\n  core_reuse: String\n  core_serial: String\n  customer: String\n  eccentricity: Float\n  end: Date\n  epoch: Date\n  fairings_recovered: String\n  fairings_recovery_attempt: String\n  fairings_reuse: String\n  fairings_reused: String\n  fairings_ship: String\n  gridfins: String\n  id: ID\n  inclination_deg: Float\n  land_success: String\n  landing_intent: String\n  landing_type: String\n  landing_vehicle: String\n  launch_date_local: Date\n  launch_date_utc: Date\n  launch_success: String\n  launch_year: String\n  legs: String\n  lifespan_years: Float\n  longitude: Float\n  manufacturer: String\n  mean_motion: Float\n  mission_id: String\n  mission_name: String\n  nationality: String\n  norad_id: Int\n  orbit: String\n  payload_id: String\n  payload_type: String\n  periapsis_km: Float\n  period_min: Float\n  raan: Float\n  reference_system: String\n  regime: String\n  reused: String\n  rocket_id: String\n  rocket_name: String\n  rocket_type: String\n  second_stage_block: String\n  semi_major_axis_km: Float\n  ship: String\n  side_core1_reuse: String\n  side_core2_reuse: String\n  site_id: String\n  site_name_long: String\n  site_name: String\n  start: Date\n  tbd: String\n  tentative_max_precision: String\n  tentative: String\n}\n\ntype LaunchLinks {\n  article_link: String\n  flickr_images: [String]\n  mission_patch_small: String\n  mission_patch: String\n  presskit: String\n  reddit_campaign: String\n  reddit_launch: String\n  reddit_media: String\n  reddit_recovery: String\n  video_link: String\n  wikipedia: String\n}\n\ntype LaunchRocket {\n  fairings: LaunchRocketFairings\n  first_stage: LaunchRocketFirstStage\n  rocket_name: String\n  rocket_type: String\n  rocket: Rocket\n  second_stage: LaunchRocketSecondStage\n}\n\ntype LaunchRocketFairings {\n  recovered: Boolean\n  recovery_attempt: Boolean\n  reused: Boolean\n  ship: String\n}\n\ntype LaunchRocketFirstStage {\n  cores: [LaunchRocketFirstStageCore]\n}\n\ntype LaunchRocketFirstStageCore {\n  block: Int\n  core: Core\n  flight: Int\n  gridfins: Boolean\n  land_success: Boolean\n  landing_intent: Boolean\n  landing_type: String\n  landing_vehicle: String\n  legs: Boolean\n  reused: Boolean\n}\n\ntype LaunchRocketSecondStage {\n  block: Int\n  payloads: [Payload]\n}\n\ntype LaunchSite {\n  site_id: String\n  site_name_long: String\n  site_name: String\n}\n\ntype LaunchTelemetry {\n  flight_club: String\n}\n\ntype LaunchesPastResult {\n  result: Result\n  data: [Launch]\n}\n\ntype Launchpad {\n  attempted_launches: Int\n  details: String\n  id: ID\n  location: Location\n  name: String\n  status: String\n  successful_launches: Int\n  vehicles_launched: [Rocket]\n  wikipedia: String\n}\n\ntype Link {\n  article: String\n  reddit: String\n  wikipedia: String\n}\n\ntype Location {\n  latitude: Float\n  longitude: Float\n  name: String\n  region: String\n}\n\ntype Mass {\n  kg: Int\n  lb: Int\n}\n\ntype Mission {\n  description: String\n  id: ID\n  manufacturers: [String]\n  name: String\n  twitter: String\n  website: String\n  wikipedia: String\n  payloads: [Payload]\n}\n\ntype MissionResult {\n  result: Result\n  data: [Mission]\n}\n\ninput MissionsFind {\n  id: ID\n  manufacturer: String\n  name: String\n  payload_id: String\n}\n\ntype Mutation {\n  # delete data from the table: \\\"users\\\"\n  delete_users(\n    # filter the rows which have to be deleted\n    where: users_bool_exp!\n  ): users_mutation_response\n  # insert data into the table: \\\"users\\\"\n  insert_users(\n    # the rows to be inserted\n    objects: [users_insert_input!]!\n    # on conflict condition\n    on_conflict: users_on_conflict\n  ): users_mutation_response\n  # update data of the table: \\\"users\\\"\n  update_users(\n    # sets the columns of the filtered rows to the given values\n    _set: users_set_input\n    # filter the rows which have to be updated\n    where: users_bool_exp!\n  ): users_mutation_response\n}\n\nscalar ObjectID\n\ntype Payload {\n  customers: [String]\n  id: ID\n  manufacturer: String\n  nationality: String\n  norad_id: [Int]\n  orbit_params: PayloadOrbitParams\n  orbit: String\n  payload_mass_kg: Float\n  payload_mass_lbs: Float\n  payload_type: String\n  reused: Boolean\n}\n\ntype PayloadOrbitParams {\n  apoapsis_km: Float\n  arg_of_pericenter: Float\n  eccentricity: Float\n  epoch: Date\n  inclination_deg: Float\n  lifespan_years: Float\n  longitude: Float\n  mean_anomaly: Float\n  mean_motion: Float\n  periapsis_km: Float\n  period_min: Float\n  raan: Float\n  reference_system: String\n  regime: String\n  semi_major_axis_km: Float\n}\n\ninput PayloadsFind {\n  apoapsis_km: Float\n  customer: String\n  eccentricity: Float\n  epoch: Date\n  inclination_deg: Float\n  lifespan_years: Float\n  longitude: Float\n  manufacturer: String\n  mean_motion: Float\n  nationality: String\n  norad_id: Int\n  orbit: String\n  payload_id: ID\n  payload_type: String\n  periapsis_km: Float\n  period_min: Float\n  raan: Float\n  reference_system: String\n  regime: String\n  reused: Boolean\n  semi_major_axis_km: Float\n}\n\ntype Query {\n  # fetch data from the table: \\\"users\\\"\n  users(\n    # distinct select on columns\n    distinct_on: [users_select_column!]\n    # limit the nuber of rows returned\n    limit: Int\n    # skip the first n rows. Use only with order_by\n    offset: Int\n    # sort the rows by one or more columns\n    order_by: [users_order_by!]\n    # filter the rows returned\n    where: users_bool_exp\n  ): [users!]!\n  # fetch aggregated fields from the table: \\\"users\\\"\n  users_aggregate(\n    # distinct select on columns\n    distinct_on: [users_select_column!]\n    # limit the nuber of rows returned\n    limit: Int\n    # skip the first n rows. Use only with order_by\n    offset: Int\n    # sort the rows by one or more columns\n    order_by: [users_order_by!]\n    # filter the rows returned\n    where: users_bool_exp\n  ): users_aggregate!\n  # fetch data from the table: \\\"users\\\" using primary key columns\n  users_by_pk(\n    id: uuid!\n  ): users\n  capsules(\n    find: CapsulesFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Capsule]\n  capsulesPast(\n    find: CapsulesFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Capsule]\n  capsulesUpcoming(\n    find: CapsulesFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Capsule]\n  capsule(\n    id: ID!\n  ): Capsule\n  company: Info\n  cores(\n    find: CoresFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Core]\n  coresPast(\n    find: CoresFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Core]\n  coresUpcoming(\n    find: CoresFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Core]\n  core(\n    id: ID!\n  ): Core\n  dragons(\n    limit: Int\n    offset: Int\n  ): [Dragon]\n  dragon(\n    id: ID!\n  ): Dragon\n  histories(\n    find: HistoryFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [History]\n  historiesResult(\n    find: HistoryFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): HistoriesResult\n  history(\n    id: ID!\n  ): History\n  landpads(\n    limit: Int\n    offset: Int\n  ): [Landpad]\n  landpad(\n    id: ID!\n  ): Landpad\n  launches(\n    find: LaunchFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Launch]\n  launchesPast(\n    find: LaunchFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Launch]\n  launchesPastResult(\n    find: LaunchFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): LaunchesPastResult\n  launchesUpcoming(\n    find: LaunchFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Launch]\n  launch(\n    id: ID!\n  ): Launch\n  launchLatest(\n    offset: Int\n  ): Launch\n  launchNext(\n    offset: Int\n  ): Launch\n  launchpads(\n    limit: Int\n    offset: Int\n  ): [Launchpad]\n  launchpad(\n    id: ID!\n  ): Launchpad\n  missions(\n    find: MissionsFind\n    limit: Int\n    offset: Int\n  ): [Mission]\n  missionsResult(\n    find: MissionsFind\n    limit: Int\n    offset: Int\n  ): MissionResult\n  mission(\n    id: ID!\n  ): Mission\n  payloads(\n    find: PayloadsFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Payload]\n  payload(\n    id: ID!\n  ): Payload\n  roadster: Roadster\n  rockets(\n    limit: Int\n    offset: Int\n  ): [Rocket]\n  rocketsResult(\n    limit: Int\n    offset: Int\n  ): RocketsResult\n  rocket(\n    id: ID!\n  ): Rocket\n  ships(\n    find: ShipsFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): [Ship]\n  shipsResult(\n    find: ShipsFind\n    limit: Int\n    offset: Int\n    order: String\n    sort: String\n  ): ShipsResult\n  ship(\n    id: ID!\n  ): Ship\n}\n\ntype Result {\n  totalCount: Int\n}\n\ntype Roadster {\n  apoapsis_au: Float\n  details: String\n  earth_distance_km: Float\n  earth_distance_mi: Float\n  eccentricity: Float\n  epoch_jd: Float\n  inclination: Float\n  launch_date_unix: Date\n  launch_date_utc: Date\n  launch_mass_kg: Int\n  launch_mass_lbs: Int\n  longitude: Float\n  mars_distance_km: Float\n  mars_distance_mi: Float\n  name: String\n  norad_id: Int\n  orbit_type: Float\n  periapsis_arg: Float\n  periapsis_au: Float\n  period_days: Float\n  semi_major_axis_au: Float\n  speed_kph: Float\n  speed_mph: Float\n  wikipedia: String\n}\n\ntype Rocket {\n  active: Boolean\n  boosters: Int\n  company: String\n  cost_per_launch: Int\n  country: String\n  description: String\n  diameter: Distance\n  engines: RocketEngines\n  first_flight: Date\n  first_stage: RocketFirstStage\n  height: Distance\n  id: ID\n  landing_legs: RocketLandingLegs\n  mass: Mass\n  name: String\n  payload_weights: [RocketPayloadWeight]\n  second_stage: RocketSecondStage\n  stages: Int\n  success_rate_pct: Int\n  type: String\n  wikipedia: String\n}\n\ntype RocketEngines {\n  number: Int\n  type: String\n  version: String\n  layout: String\n  engine_loss_max: String\n  propellant_1: String\n  propellant_2: String\n  thrust_sea_level: Force\n  thrust_vacuum: Force\n  thrust_to_weight: Float\n}\n\ntype RocketFirstStage {\n  burn_time_sec: Int\n  engines: Int\n  fuel_amount_tons: Float\n  reusable: Boolean\n  thrust_sea_level: Force\n  thrust_vacuum: Force\n}\n\ntype RocketLandingLegs {\n  number: Int\n  material: String\n}\n\ntype RocketPayloadWeight {\n  id: String\n  kg: Int\n  lb: Int\n  name: String\n}\n\ntype RocketSecondStage {\n  burn_time_sec: Int\n  engines: Int\n  fuel_amount_tons: Float\n  payloads: RocketSecondStagePayloads\n  thrust: Force\n}\n\ntype RocketSecondStagePayloadCompositeFairing {\n  height: Distance\n  diameter: Distance\n}\n\ntype RocketSecondStagePayloads {\n  option_1: String\n  composite_fairing: RocketSecondStagePayloadCompositeFairing\n}\n\ntype RocketsResult {\n  result: Result\n  data: [Rocket]\n}\n\ntype Ship {\n  abs: Int\n  active: Boolean\n  attempted_landings: Int\n  class: Int\n  course_deg: Int\n  home_port: String\n  id: ID\n  image: String\n  imo: Int\n  missions: [ShipMission]\n  mmsi: Int\n  model: String\n  name: String\n  position: ShipLocation\n  roles: [String]\n  speed_kn: Float\n  status: String\n  successful_landings: Int\n  type: String\n  url: String\n  weight_kg: Int\n  weight_lbs: Int\n  year_built: Int\n}\n\ntype ShipLocation {\n  latitude: Float\n  longitude: Float\n}\n\ntype ShipMission {\n  flight: String\n  name: String\n}\n\ninput ShipsFind {\n  id: ID\n  name: String\n  model: String\n  type: String\n  role: String\n  active: Boolean\n  imo: Int\n  mmsi: Int\n  abs: Int\n  class: Int\n  weight_lbs: Int\n  weight_kg: Int\n  year_built: Int\n  home_port: String\n  status: String\n  speed_kn: Int\n  course_deg: Int\n  latitude: Float\n  longitude: Float\n  successful_landings: Int\n  attempted_landings: Int\n  mission: String\n}\n\ntype ShipsResult {\n  result: Result\n  data: [Ship]\n}\n\n# expression to compare columns of type String. All fields are combined with logical 'AND'.\ninput String_comparison_exp {\n  _eq: String\n  _gt: String\n  _gte: String\n  _ilike: String\n  _in: [String!]\n  _is_null: Boolean\n  _like: String\n  _lt: String\n  _lte: String\n  _neq: String\n  _nilike: String\n  _nin: [String!]\n  _nlike: String\n  _nsimilar: String\n  _similar: String\n}\n\ntype Subscription {\n  # fetch data from the table: \\\"users\\\"\n  users(\n    # distinct select on columns\n    distinct_on: [users_select_column!]\n    # limit the nuber of rows returned\n    limit: Int\n    # skip the first n rows. Use only with order_by\n    offset: Int\n    # sort the rows by one or more columns\n    order_by: [users_order_by!]\n    # filter the rows returned\n    where: users_bool_exp\n  ): [users!]!\n  # fetch aggregated fields from the table: \\\"users\\\"\n  users_aggregate(\n    # distinct select on columns\n    distinct_on: [users_select_column!]\n    # limit the nuber of rows returned\n    limit: Int\n    # skip the first n rows. Use only with order_by\n    offset: Int\n    # sort the rows by one or more columns\n    order_by: [users_order_by!]\n    # filter the rows returned\n    where: users_bool_exp\n  ): users_aggregate!\n  # fetch data from the table: \\\"users\\\" using primary key columns\n  users_by_pk(\n    id: uuid!\n  ): users\n}\n\ntype Volume {\n  cubic_feet: Int\n  cubic_meters: Int\n}\n\n# conflict action\nenum conflict_action {\n  # ignore the insert on this row\n  ignore\n  # update the row with the given values\n  update\n}\n\n# column ordering options\nenum order_by {\n  # in the ascending order, nulls last\n  asc\n  # in the ascending order, nulls first\n  asc_nulls_first\n  # in the ascending order, nulls last\n  asc_nulls_last\n  # in the descending order, nulls first\n  desc\n  # in the descending order, nulls first\n  desc_nulls_first\n  # in the descending order, nulls last\n  desc_nulls_last\n}\n\nscalar timestamptz\n\n# expression to compare columns of type timestamptz. All fields are combined with logical 'AND'.\ninput timestamptz_comparison_exp {\n  _eq: timestamptz\n  _gt: timestamptz\n  _gte: timestamptz\n  _in: [timestamptz!]\n  _is_null: Boolean\n  _lt: timestamptz\n  _lte: timestamptz\n  _neq: timestamptz\n  _nin: [timestamptz!]\n}\n\n# columns and relationships of \\\"users\\\"\ntype users {\n  id: uuid!\n  name: String\n  rocket: String\n  timestamp: timestamptz!\n  twitter: String\n}\n\n# aggregated selection of \\\"users\\\"\ntype users_aggregate {\n  aggregate: users_aggregate_fields\n  nodes: [users!]!\n}\n\n# aggregate fields of \\\"users\\\"\ntype users_aggregate_fields {\n  count(\n    columns: [users_select_column!]\n    distinct: Boolean\n  ): Int\n  max: users_max_fields\n  min: users_min_fields\n}\n\n# order by aggregate values of table \\\"users\\\"\ninput users_aggregate_order_by {\n  count: order_by\n  max: users_max_order_by\n  min: users_min_order_by\n}\n\n# input type for inserting array relation for remote table \\\"users\\\"\ninput users_arr_rel_insert_input {\n  data: [users_insert_input!]!\n  on_conflict: users_on_conflict\n}\n\n# Boolean expression to filter rows from the table \\\"users\\\". All fields are combined with a logical 'AND'.\ninput users_bool_exp {\n  _and: [users_bool_exp]\n  _not: users_bool_exp\n  _or: [users_bool_exp]\n  id: uuid_comparison_exp\n  name: String_comparison_exp\n  rocket: String_comparison_exp\n  timestamp: timestamptz_comparison_exp\n  twitter: String_comparison_exp\n}\n\n# unique or primary key constraints on table \\\"users\\\"\nenum users_constraint {\n  # unique or primary key constraint\n  users_pkey\n}\n\n# input type for inserting data into table \\\"users\\\"\ninput users_insert_input {\n  id: uuid\n  name: String\n  rocket: String\n  timestamp: timestamptz\n  twitter: String\n}\n\n# aggregate max on columns\ntype users_max_fields {\n  name: String\n  rocket: String\n  timestamp: timestamptz\n  twitter: String\n}\n\n# order by max() on columns of table \\\"users\\\"\ninput users_max_order_by {\n  name: order_by\n  rocket: order_by\n  timestamp: order_by\n  twitter: order_by\n}\n\n# aggregate min on columns\ntype users_min_fields {\n  name: String\n  rocket: String\n  timestamp: timestamptz\n  twitter: String\n}\n\n# order by min() on columns of table \\\"users\\\"\ninput users_min_order_by {\n  name: order_by\n  rocket: order_by\n  timestamp: order_by\n  twitter: order_by\n}\n\n# response of any mutation on the table \\\"users\\\"\ntype users_mutation_response {\n  # number of affected rows by the mutation\n  affected_rows: Int!\n  # data of the affected rows by the mutation\n  returning: [users!]!\n}\n\n# input type for inserting object relation for remote table \\\"users\\\"\ninput users_obj_rel_insert_input {\n  data: users_insert_input!\n  on_conflict: users_on_conflict\n}\n\n# on conflict condition type for table \\\"users\\\"\ninput users_on_conflict {\n  constraint: users_constraint!\n  update_columns: [users_update_column!]!\n}\n\n# ordering options when selecting data from \\\"users\\\"\ninput users_order_by {\n  id: order_by\n  name: order_by\n  rocket: order_by\n  timestamp: order_by\n  twitter: order_by\n}\n\n# select columns of table \\\"users\\\"\nenum users_select_column {\n  # column name\n  id\n  # column name\n  name\n  # column name\n  rocket\n  # column name\n  timestamp\n  # column name\n  twitter\n}\n\n# input type for updating data in table \\\"users\\\"\ninput users_set_input {\n  id: uuid\n  name: String\n  rocket: String\n  timestamp: timestamptz\n  twitter: String\n}\n\n# update columns of table \\\"users\\\"\nenum users_update_column {\n  # column name\n  id\n  # column name\n  name\n  # column name\n  rocket\n  # column name\n  timestamp\n  # column name\n  twitter\n}\n\nscalar uuid\n\n# expression to compare columns of type uuid. All fields are combined with logical 'AND'.\ninput uuid_comparison_exp {\n  _eq: uuid\n  _gt: uuid\n  _gte: uuid\n  _in: [uuid!]\n  _is_null: Boolean\n  _lt: uuid\n  _lte: uuid\n  _neq: uuid\n  _nin: [uuid!]\n}\n"
+            },
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 331,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas/graphql",
+              "type": "Microsoft.ApiManagement/service/apis/schemas",
+              "name": "graphql",
+              "properties": {
+                "contentType": "application/vnd.ms-azure-apim.graphql.schema"
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 333,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas/graphql?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 334,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/gr-api000005/schemas?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 336,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/ws-api000007?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACic=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apis/ws-api000007",
+          "type": "Microsoft.ApiManagement/service/apis",
+          "name": "ws-api000007",
+          "properties": {
+            "displayName": "ws API",
+            "apiRevision": "1",
+            "description": null,
+            "subscriptionRequired": false,
+            "serviceUrl": "wss://httpbin.org",
+            "backendId": null,
+            "path": "wstestpath",
+            "protocols": [
+              "wss"
+            ],
+            "mcpProperties": null,
+            "authenticationSettings": {
+              "oAuth2": null,
+              "openid": null,
+              "oAuth2AuthenticationSettings": [],
+              "openidAuthenticationSettings": []
+            },
+            "subscriptionKeyParameterNames": {
+              "header": "Ocp-Apim-Subscription-Key",
+              "query": "subscription-key"
+            },
+            "type": "websocket",
+            "isCurrent": true
+          }
+        }
+      },
+      {
+        "interaction_index": 341,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACjA=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009",
+          "type": "Microsoft.ApiManagement/service/namedValues",
+          "name": "az-nv000009",
+          "properties": {
+            "displayName": "nv-name000008",
+            "tags": [
+              "foo"
+            ],
+            "secret": true,
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 342,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACjA=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009",
+          "type": "Microsoft.ApiManagement/service/namedValues",
+          "name": "az-nv000009",
+          "properties": {
+            "displayName": "nv-name000008",
+            "tags": [
+              "foo"
+            ],
+            "secret": true,
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 346,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009?api-version=2022-08-01&asyncId=6978f298217d2008f012a518&asyncCode=200",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACjE=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009",
+          "type": "Microsoft.ApiManagement/service/namedValues",
+          "name": "az-nv000009",
+          "properties": {
+            "displayName": "nv-name000008",
+            "tags": [
+              "foo"
+            ],
+            "secret": true,
+            "provisioningState": "Succeeded"
+          }
+        }
+      },
+      {
+        "interaction_index": 348,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009",
+              "type": "Microsoft.ApiManagement/service/namedValues",
+              "name": "az-nv000009",
+              "properties": {
+                "displayName": "nv-name000008",
+                "tags": [
+                  "foo"
+                ],
+                "secret": true
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 349,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues/az-nv000009?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 350,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/namedValues?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 351,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apiVersionSets/MyVSId?api-version=2022-08-01",
+        "status": 204,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 352,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/apiVersionSets?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 354,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACjM=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010",
+          "type": "Microsoft.ApiManagement/service/backends",
+          "name": "backend-id-000010",
+          "properties": {
+            "title": null,
+            "description": "My backend description",
+            "url": "https://mybackend.com/api",
+            "protocol": "http"
+          }
+        }
+      },
+      {
+        "interaction_index": 355,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010?api-version=2022-08-01",
+        "status": 200,
+        "headers": {
+          "etag": [
+            "\"AAAAAAAACjM=\""
+          ]
+        },
+        "body": {
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010",
+          "type": "Microsoft.ApiManagement/service/backends",
+          "name": "backend-id-000010",
+          "properties": {
+            "title": null,
+            "description": "My backend description",
+            "url": "https://mybackend.com/api",
+            "protocol": "http"
+          }
+        }
+      },
+      {
+        "interaction_index": 357,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [
+            {
+              "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010",
+              "type": "Microsoft.ApiManagement/service/backends",
+              "name": "backend-id-000010",
+              "properties": {
+                "title": null,
+                "description": "Updated backend description",
+                "url": "https://mybackend.com/api",
+                "protocol": "http"
+              }
+            }
+          ],
+          "count": 1
+        }
+      },
+      {
+        "interaction_index": 358,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends/backend-id-000010?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": null
+      },
+      {
+        "interaction_index": 359,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/backends?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": [],
+          "count": 0
+        }
+      },
+      {
+        "interaction_index": 360,
+        "method": "DELETE",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003?api-version=2022-08-01",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459443063&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=pPo3a-eTqfSGCLyGxlmFbAIRjpenPiXyyMAfQ7n1NrqPMeMVvZZmGBad1strdTFRc7ITbObhhCUV4g3xI6c8JW8vcZznLf8jkLzKWx6L55eQHxdQD-8RxetIqCMaWzIEJcerI8P6sNfgMIutuiKifj0kFf3UuwykUA8LlPwBVuRq4Q8uRHlL-zrOxW94YiFzCeJM-LUFHvvNV1yTzIy7-pbsEDhyw7QgRGjaSwtiw8qkklPp189VZ5NTDaYnZmVlA1PXQ7L6-7Py5mLWYj6Tzyz7rnIaTMuEHBSPNbeiSzZenu6rTlFDUfXb0j96kWyJ3f5VgKJFJri8bXaNBg2Vng&h=ZnP5HdNZVzrWSO76fAs2YNMmA0e-5bbqEXMPGvn9ojE"
+          ]
+        },
+        "body": {
+          "etag": "AAAAAADmy34=",
+          "properties": {
+            "publisherEmail": "publisher@contoso2.com",
+            "publisherName": "Contoso2",
+            "notificationSenderEmail": "publisher@contoso.com",
+            "provisioningState": "Deleting",
+            "targetProvisioningState": "Deleting",
+            "createdAtUtc": "2026-01-27T14:39:14.3257355Z",
+            "gatewayUrl": "https://cli-test-apim-000003.azure-api.net",
+            "gatewayRegionalUrl": "https://cli-test-apim-000003-wu-01.regional.azure-api.net",
+            "portalUrl": "https://cli-test-apim-000003.portal.azure-api.net",
+            "developerPortalUrl": "https://cli-test-apim-000003.developer.azure-api.net",
+            "managementApiUrl": "https://cli-test-apim-000003.management.azure-api.net",
+            "scmUrl": "https://cli-test-apim-000003.scm.azure-api.net",
+            "hostnameConfigurations": [
+              {
+                "type": "Proxy",
+                "hostName": "cli-test-apim-000003.azure-api.net",
+                "encodedCertificate": null,
+                "keyVaultId": null,
+                "certificatePassword": null,
+                "negotiateClientCertificate": false,
+                "certificate": null,
+                "defaultSslBinding": true,
+                "identityClientId": null,
+                "certificateSource": "BuiltIn",
+                "certificateStatus": null
+              }
+            ],
+            "publicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "privateIPAddresses": null,
+            "additionalLocations": null,
+            "virtualNetworkConfiguration": null,
+            "customProperties": {
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": "False",
+              "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": "False"
+            },
+            "virtualNetworkType": "None",
+            "certificates": null,
+            "disableGateway": false,
+            "natGatewayState": "Disabled",
+            "outboundPublicIPAddresses": [
+              "20.245.21.110"
+            ],
+            "apiVersionConstraint": {
+              "minApiVersion": null
+            },
+            "publicIpAddressId": null,
+            "publicNetworkAccess": "Enabled",
+            "privateEndpointConnections": null,
+            "platformVersion": "stv2"
+          },
+          "sku": {
+            "name": "Developer",
+            "capacity": 1
+          },
+          "identity": {
+            "type": "SystemAssigned",
+            "principalId": "b1585aa5-e5dc-43b7-9f6a-fa15cc37e00c",
+            "tenantId": "7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"
+          },
+          "zones": null,
+          "systemData": {
+            "createdBy": "aaaaaaa@a.com",
+            "createdByType": "User",
+            "createdAt": "2026-01-27T14:39:11.9091806Z",
+            "lastModifiedBy": "aaaaaaa@a.com",
+            "lastModifiedByType": "User",
+            "lastModifiedAt": "2026-01-27T15:04:24.2993442Z"
+          },
+          "location": "West US",
+          "tags": {},
+          "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003",
+          "name": "cli-test-apim-000003",
+          "type": "Microsoft.ApiManagement/service"
+        }
+      },
+      {
+        "interaction_index": 361,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309466672870&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=MifrDcWZKRqtXiA1cVSOTGXkZ4CBTdHaM-aUYUhzdY0xb8_UsBwg0fI7WTYJSfGJlRclbh4ZNdlGtf9zAG_w1-EhocIYxJJrbLdBk41y4hQav7uqSaFe3zczUahwN3JylPeWNXDfSjWfoggcJyxlW4wc3UXphyM6ImcDrRQoRegUqaunZ8QzpDNe1Vo84vIWbVKZbyO10z7idD9z270DvRuJq7IQTyGPCnclZQahAwPdJAkSAUrafcW7daPYQUmwtQXmfalkfLf_jDyPlsONkBlgEr3nbTdOw9_Q-qRclg0TZl_s5wYFHDY0UU88NQnGIualIpnXrbxDgfE3a_VTDw&h=06oSjh14j6SUmJjX5znowqXSpQQ5i3FFPiqZUZK8YJ8"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309466829153&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=nLjMlS8DZtXMtfWfxAQsXwjmaCZw6NrB-IVj23kVTMkRlFR92XGfcnwITuEIQhhFdjju6G_4wT2cwuRnV7XJDifTi5KhVRdOPa6jRYAwYUWpjKafrIIiJYIF1tUKEEXDayEj4YxOvVslixGpwa6D5DY8GZM-ZmOd7VNbByA9v2lyHxQn8Iy-8QIoiEJF2N2rcY8jD4kL2aONYymntNffG-Vp0fVOndPCF408Pz7TRTRKOsm60Hi6BgXW4pxb1wKnSf2DsA89YAzBKoVBt1vh0X6G1FGMho0mtoipoMgZfADm_djP3igeCepOeEajR9GivNSGMKLbbopuP_U4lGTlHA&h=dmB7Tm3An_OPbgUPSBAiL2Vgu5EaGbuQoLzlrvLP6RQ"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 362,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309675730991&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=blJBW8LjkDeI5UmSuCO0oMpxxdJd7Y77qi4RW5smcFUkVI7Eh_7A-fCaNXsIXrd3AzHR62Xiw9IA-TFnvAxYG158O3YEn2_yF2bjI78IDi74OdrhleqgSdENKsubWoTcp1-yUwaDK9qUPpr3m3NajWb2odXyqKaMg6LpMoRLvJ4Bu06iC1yHdIo4M1-8qqFO4XjvRC8C1rAS5ERoNYz_kT1-YZIhthYMFTvFT2I3hKSmjA7Bp9Ho6qKb1FUkSjKaq4FlNq6xlbvwSw6WGWMZgAuJO9eG8lXkGEGU8t225O4C6UOG9uR2i3Zm-zbnkckqPbWNJJeIc_5bUTwFLF1t_A&h=aLNh74aETSzV2GH0d65p-Ey1bxQiAp0Rw8c_6fF3PCg"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309675887243&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=Qs8eYVWwmYbIp1j0u9SMUGP7OHDSClZ2t9NTkMEM3zcFQnEbmMjtvy0j2mJIX7iDar6QO0Nym_ftpHuuaK0uqp8busvq7mQrxz4xbpfEuUJ_zJ9s933jeJ_ObLy4FyTgA2bmqv9_LHUwWwOa09fXYr5Qo6KEBW07iQ0JqCeGpAA2dvl7vYsZoPHXSPY090VFeLpRXn44-w4NuHDmIYHNbwTqDUca2lP070xs7csCxs-areX2JmEd_b0l3vAABirH0HYQa6o308i4lbADC4pmCOWW69zFjZPo8B_S8LRPM_Q71yyWVUrq7L0PdRdRTtvjIu969KSQZLbxKNVxedQiTg&h=V6F4nw8ntNP01URy-beijAsG4ZO28yyTTn7VTV3qeL4"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 363,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309884270156&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=EVjlIMx8xiWBt6iA5D7fkN06UaOdE7on3hyR9IA5sUeNxeV5R0jVOpnxiJJjqUgq7eozLNZsy16Nz4KCtLBaD1Nk2jX8KDCcHDsCYBj5G1d-Kxw3WJpVk527BDP4BiIzahzViBuHH_U-r51rfcgkPbKDSkYN9i4504Zh7qi5EncZGzKU2Wf1uMBsSb0x4CM0-RVOqZ6sWoqEWQmPUmGaFlClf7LmzRTYFMN85dAvjB9Vc0ZK38dvbkio-Dd2qwY8QTwu9Va81NeqBN6XxxQX35C-7IuKkS-p9jzQlEgTXRWcZhMv6YneIXHTxu_rDOS9oKQpny8_xxqunRMMPyMfVw&h=o1JEII6RnLyMhiT8H1lW5e9vfvb_bNU0Od9PA-s88DI"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309884426425&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=OehLqsq0HggGIqXTYjZL_0RTP0jPacbAxmNHkiD2GoXzOFFLD16VkaJrjK6ARnwNiyMrWYAReCKSpny2awcfuUTLlvBlY8_qGU3qmvnXK8mOSRfiBh7xNeD6CgpH_ycR1tL60hxZ_xnHpQ2nytYR8A9pM1dJMkiElAxMz5VSyI1mgQNMYLwz_96WAccoACBh_2La0YmMkPM5IopVrA24X145lOJjFCKSC_3FvLZyIJEoN4r_88XCH264bJ6COUjBISCBXUrt4F4P-_9_nuwwf6j6EZEWLQ5ZsnJFNT3XgdIVOAruH2huNRgW1AilC1dZARplrBu3FPBlsZ8dFownLQ&h=XcZYt-9yGxnLESikWXHLyWnliNQPaGmkrZfjorG6acc"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 364,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310091937490&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=dajGQQfIMT5-08OYMTOC5JEeqFgmp9toRaMedykrwoQ_cKOV6rSj77F8ZPObWH5gELSuK9l_WyUZp8O4gZG-i9n0OpCVOITk7pBJSLMXH8Y7NfsC7I-YZ8ddkXHvFep7WfVbHJm2qW24T-FUl5lW-GuzaOW7NxzV1lGykefD3WdOi3FyVnaYZ-635L0ks1dhXpkb60pIhVWC3X6llUeFEevBge4axlfZXiLP581aqYnbPjLzHkuQbOjlUsGrU7v04g0x0vFDDn8uZNMjLpRbf4yC3C7qgP4qMsBeG8Zujl2tHAh-Nq_P4BPzkT0EnSNvE76OXc79iKO1MTJV-z22_w&h=VjN528LwtuffnwlvKx8ohB6QbGjL7J5h-al-oyb91uw"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310092094302&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=bO2KpKkFmY_1Ti0Ks2dOXbZi5OPS9AsomtTL6eqzY7T-nBFyw_Lhpv_qmXk56GF9WAAKPT1Bq2dEdtV10lAVwBoN1mZT0iJHtuLbyJ3TqmCUHU1Eb5Fe_inJ5zeLnQcZqI8RYfi-lanzePAyJqAW5_aiYppLbhfJxkdjhbHtp40vSFSU_CfMyGjV1m7l2y6MBRdzkoullr9j8aLTNQ75_QftBHJR831dv_SFCzAjrPvrCnPZVLWM4Qi1UKlcVVLxjZ9wZbsMcvsulZAKJbV62C4EW9tPFb1prJuLiFNL2Xg7isdOtguLqE_dmENlQjaeQOqPOGTzf5h41g1nU1t90A&h=ehtv_V0mU-9V_qgEr1kciv18khu-1omlxN87GrNE9C8"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 365,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310299479531&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=PZrJ57Z_343g0IMhn0ndmCCszDlPepuTC2fB6mpe5U2GL9FlFAtQ-a4ibPI5snV4eIp2QM-L-x3YFIaeh6yVBCrplksBJnVTDKT3JUceQDaxGjmMQGDHSQDbpqemD2o5qZkO6PCw3vv81FQfZ7zEKozk9dQOOQcZiyjV5X7Jkkt4pEFR-hn5lNj3cVGkyDMdrtzY660JTYSx-yqBgP5EwctQJTdqXf5sg6di5Nv8reQjiRXj9g0qaSkz3bY41jM2WyFNccsXgesRzHIrJ51HTi9GgjxWwPsUHnasLv9GVc22xv6W56qVMd2hLLeE--X9Miz8jE_KUBjI3Ck6lQqQHA&h=hTCUnd-Xs3_CVCLI3py1gnGrJSxKzYM7_pcUhEEIpO8"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310299479531&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=PZrJ57Z_343g0IMhn0ndmCCszDlPepuTC2fB6mpe5U2GL9FlFAtQ-a4ibPI5snV4eIp2QM-L-x3YFIaeh6yVBCrplksBJnVTDKT3JUceQDaxGjmMQGDHSQDbpqemD2o5qZkO6PCw3vv81FQfZ7zEKozk9dQOOQcZiyjV5X7Jkkt4pEFR-hn5lNj3cVGkyDMdrtzY660JTYSx-yqBgP5EwctQJTdqXf5sg6di5Nv8reQjiRXj9g0qaSkz3bY41jM2WyFNccsXgesRzHIrJ51HTi9GgjxWwPsUHnasLv9GVc22xv6W56qVMd2hLLeE--X9Miz8jE_KUBjI3Ck6lQqQHA&h=hTCUnd-Xs3_CVCLI3py1gnGrJSxKzYM7_pcUhEEIpO8"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 366,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310506849921&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=g2uG4Fw4YBts296D6qj-jH2ukUVgSod8L9CDu0V2GdhMJJ3PdVq3gmpATAM4rrK5XELDVVzSIw9MWGyrfmumra7SYm5PkOICNah5TaB5MQDqauysUaIXUtBblUiL0adoXbQ24BZbu1DaSHT_Q29l7dZHtyLZSIcwFFwXnP2N516CjLQU4Cv0dhS6KsQoBd3DOcaqv7HYvggSu73cZe5hbYSLB6eFqd02I1YX1qtsBMCIEkJSYASFiWed3tik_WEYvX4dfeSsUJk7IfwYzg12FOkNt2F_m0aH8qP4FzTTKgEiIEW1Sl3orU9V07kS6eO2WA7kkX1NzR03CWXXj-YutA&h=OoDnWLBLUaHnMnXtjwg1YC0WtXmCdu-CUWDXFqLLsSQ"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051310506849921&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=g2uG4Fw4YBts296D6qj-jH2ukUVgSod8L9CDu0V2GdhMJJ3PdVq3gmpATAM4rrK5XELDVVzSIw9MWGyrfmumra7SYm5PkOICNah5TaB5MQDqauysUaIXUtBblUiL0adoXbQ24BZbu1DaSHT_Q29l7dZHtyLZSIcwFFwXnP2N516CjLQU4Cv0dhS6KsQoBd3DOcaqv7HYvggSu73cZe5hbYSLB6eFqd02I1YX1qtsBMCIEkJSYASFiWed3tik_WEYvX4dfeSsUJk7IfwYzg12FOkNt2F_m0aH8qP4FzTTKgEiIEW1Sl3orU9V07kS6eO2WA7kkX1NzR03CWXXj-YutA&h=OoDnWLBLUaHnMnXtjwg1YC0WtXmCdu-CUWDXFqLLsSQ"
+          ]
+        },
+        "body": {
+          "status": "InProgress"
+        }
+      },
+      {
+        "interaction_index": 367,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service/cli-test-apim-000003/operationResults/d2VzdHVzOmNsaS10ZXN0LWFwaW0ta2RjdjJtNm5qb3R1aWZ5eW93Zmpna2J0aTNranV5Y2VjZWNlX1Rlcm1fYWJkZWQ3OTI6YXBpcnBzZjFkNTdkNTk3M2Qw?api-version=2022-08-01&asyncResponse&t=639051309459287132&c=MIIHhzCCBm-gAwIBAgITfAoFj3UnLFat7-UOvQAACgWPdTANBgkqhkiG9w0BAQsFADBEMRMwEQYKCZImiZPyLGQBGRYDR0JMMRMwEQYKCZImiZPyLGQBGRYDQU1FMRgwFgYDVQQDEw9BTUUgSW5mcmEgQ0EgMDUwHhcNMjYwMTE1MTEyNDI1WhcNMjYwNTI0MjI1NzAzWjBAMT4wPAYDVQQDEzVhc3luY29wZXJhdGlvbnNpZ25pbmdjZXJ0aWZpY2F0ZS5tYW5hZ2VtZW50LmF6dXJlLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAL7q0FwMI4pK9lgk52VrKK0P6Z6MwRyR6Mzfg0d4v1dzxqST3G7RQfjhQG39dCI9Mqy5lsmCerbLetSdc1VE4mJJyuNqCsLo7Xhf2CV7wmEO09A2_8WwFfyTUxp45W8rRYa1zwHHFrdcjFQv20LolrP8mRmDFdRa8ZJvyL4gJLvstuWI3gw_Ksl2SSN2tDRNIef_UKj04bXdF-fCZCGo0jqYSS8e8Clin1cQlNRt0aLeInNG7ppk7EM_Pcz26onkMivaBql7Rg6TNnDDvM524Q7850OSMTKXNbh58e4Za1OcyVOAPvhx0aaydGQ-xHBxmEfMl2syBwmvbnAj8Iswv-0CAwEAAaOCBHQwggRwMCcGCSsGAQQBgjcVCgQaMBgwCgYIKwYBBQUHAwEwCgYIKwYBBQUHAwIwPQYJKwYBBAGCNxUHBDAwLgYmKwYBBAGCNxUIhpDjDYTVtHiE8Ys-hZvdFs6dEoFghfmRS4WsmTQCAWQCAQcwggHLBggrBgEFBQcBAQSCAb0wggG5MGMGCCsGAQUFBzAChldodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vcGtpaW5mcmEvQ2VydHMvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmwxLmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MFMGCCsGAQUFBzAChkdodHRwOi8vY3JsMi5hbWUuZ2JsL2FpYS9DTzFQS0lJTlRDQTAxLkFNRS5HQkxfQU1FJTIwSW5mcmElMjBDQSUyMDA1LmNydDBTBggrBgEFBQcwAoZHaHR0cDovL2NybDMuYW1lLmdibC9haWEvQ08xUEtJSU5UQ0EwMS5BTUUuR0JMX0FNRSUyMEluZnJhJTIwQ0ElMjAwNS5jcnQwUwYIKwYBBQUHMAKGR2h0dHA6Ly9jcmw0LmFtZS5nYmwvYWlhL0NPMVBLSUlOVENBMDEuQU1FLkdCTF9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3J0MB0GA1UdDgQWBBRMuwNSmuAZx_T5anD1Wx0cvqIrxDAOBgNVHQ8BAf8EBAMCBaAwggEmBgNVHR8EggEdMIIBGTCCARWgggERoIIBDYY_aHR0cDovL2NybC5taWNyb3NvZnQuY29tL3BraWluZnJhL0NSTC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMS5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMi5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsMy5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JshjFodHRwOi8vY3JsNC5hbWUuZ2JsL2NybC9BTUUlMjBJbmZyYSUyMENBJTIwMDUuY3JsMIGdBgNVHSAEgZUwgZIwDAYKKwYBBAGCN3sBATBmBgorBgEEAYI3ewICMFgwVgYIKwYBBQUHAgIwSh5IADMAMwBlADAAMQA5ADIAMQAtADQAZAA2ADQALQA0AGYAOABjAC0AYQAwADUANQAtADUAYgBkAGEAZgBmAGQANQBlADMAMwBkMAwGCisGAQQBgjd7AwIwDAYKKwYBBAGCN3sEAjAfBgNVHSMEGDAWgBR61hmFKHlscXYeYPjzS--iBUIWHTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDQYJKoZIhvcNAQELBQADggEBACjtkHb5TanqpNigb0DttCimJSPYHrIg6lNBvXVy8789Vr2cGfPAEFox1evwMNExZLtQKv9gy6rx6281gkNcJA4Yc7tUxdS9J_1U7ZtG_BNn-pNt72tBez50Amzrbtp1Gd0XnY4fKXBHw4qdG7ftmlNNWTqfRVgka_EorpmVFs6e_mnWuxb-rJSnUG9Y15iPF-uGetF94xhedcLLhvyzwqo-yGRcXwPG635JCUtNWOsst3HlkbhCissfyYSKr7xWsjcCOKI58wyoC4ydfgHzsq5sC2gZDxQ2m1jwYXr8fSCiJ_3YlUBM1bXeWrIQ5-qmYif4TRCrqdV-NTtmheaDL1M&s=fJ9emcgbiuap-L7VI0D7wydAHiwyWz6ua6jPc89TNSvFIX6ytO6hVW-ZbtW8HcLnaLPNxyK5YIqp9J8bz3K7cMxH0UHG1XnOCSwxIk2LPnu4NP3NNiyMowjFp4vsUNFp_0JFrvdEw-nhFvr24KrcwUxiQdnn6jf-2awMexpZ-bSH69qIGiOCCSrlZYMej6NCMm898Fc-dhCi2NLU1F2kCxkZiIrbjThl0vUT9CNYbab9zQ630Cda8_Rqhu7vCMYFRIC1mRvb4avOgjSoTDh9FnFwRfxjIIk9Zei3NKK5HN-rooYAIYJLA3t39pRcsLT6UKEJk_TF2mxfphjkHwW2AQ&h=hBCkkfU2GQak5RpQXnEPL7nP_KVglUn785YZjAHVJzY",
+        "status": 404,
+        "headers": {},
+        "body": {
+          "error": {
+            "code": "ResourceNotFound",
+            "message": "The Resource 'Microsoft.ApiManagement/service/cli-test-apim-000003' under resource group 'cli_test_apim-000001' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix"
+          }
+        }
+      },
+      {
+        "interaction_index": 368,
+        "method": "GET",
+        "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli_test_apim-000001/providers/Microsoft.ApiManagement/service?api-version=2022-08-01",
+        "status": 200,
+        "headers": {},
+        "body": {
+          "value": []
+        }
+      }
+    ]
+  }
+]

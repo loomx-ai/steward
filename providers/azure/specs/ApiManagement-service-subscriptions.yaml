@@ -1,0 +1,82 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/subscriptions
+  class: network.api_subscription
+presentation:
+  displayNames:
+    en-US: API Management subscription
+    zh-CN: API 管理订阅
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.Subscription_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.Subscription_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  displayName:
+    path: displayName
+    type: string
+  scope:
+    path: scope
+    type: string
+  ownerId:
+    path: ownerId
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service
+  targetIdPath: refs_microsoft_apimanagement_service
+- type: uses
+  targetType: Microsoft.ApiManagement/service/apis
+  targetIdPath: refs_microsoft_apimanagement_service_apis
+- type: uses
+  targetType: Microsoft.ApiManagement/service/products
+  targetIdPath: refs_microsoft_apimanagement_service_products
+- type: uses
+  targetType: Microsoft.ApiManagement/service/users
+  targetIdPath: refs_microsoft_apimanagement_service_users
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.Subscription_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.Subscription_Get
+      itemsPath: $
+      identityPath: id
+    parameters:
+      If-Match: resource.normalized.arm_etag

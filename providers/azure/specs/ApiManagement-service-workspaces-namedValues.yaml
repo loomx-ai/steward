@@ -1,0 +1,77 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/workspaces/namedValues
+  class: security.named_value
+presentation:
+  displayNames:
+    en-US: API Management workspace named value
+    zh-CN: API 管理工作区命名值
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNamedValue_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+      workspaceId: parent.normalized.arm_parameters.workspaceId
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNamedValue_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service/workspaces
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  displayName:
+    path: displayName
+    type: string
+  secret:
+    path: secret
+    type: boolean
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/workspaces
+  targetIdPath: refs_microsoft_apimanagement_service_workspaces
+- type: uses
+  targetType: Microsoft.KeyVault/vaults
+  targetIdPath: refs_microsoft_keyvault_vaults
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNamedValue_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.WorkspaceNamedValue_Get
+      itemsPath: $
+      identityPath: id
+    parameters:
+      If-Match: resource.normalized.arm_etag

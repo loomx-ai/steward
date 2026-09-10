@@ -42,7 +42,7 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			t.Fatalf("spec has no resource mapping: %s", compiled.ResourceKind.NativeType)
 		}
 		read, ok := metadata.catalog.Operation(compiled.Definition.Discovery.Detail.Operation)
-		if !ok || read.Call.Method != "GET" || read.SourceURI == "" {
+		if !ok || read.Call.Method != resourceReadMethod(kind.NativeType) || read.SourceURI == "" {
 			t.Fatalf("missing official read operation for %s", kind.NativeType)
 		}
 		if len(kind.DeleteOperations) > 0 {
@@ -52,9 +52,10 @@ func TestCatalogReproducibleAndSpecsExecutable(t *testing.T) {
 			}
 		}
 		for _, relation := range compiled.Definition.Relationships {
-			// Native inheritance, replication, and Batch task dependencies can
-			// reference another resource of the same kind through explicit IDs.
-			if relation.TargetType == kind.NativeType && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType {
+			// Native inheritance, replication, Batch tasks, and APIM revisions,
+			// backend pools/fragments use explicit same-kind resource references.
+			apimReference := isAPIMType(kind.NativeType) && (last(kind.NativeType) == "apis" || last(kind.NativeType) == "backends" || last(kind.NativeType) == "policyFragments")
+			if relation.TargetType == kind.NativeType && !apimReference && kind.NativeType != "Microsoft.Network/firewallPolicies" && kind.NativeType != "Microsoft.Network/trafficManagerProfiles" && kind.NativeType != serviceBusQueueType && kind.NativeType != cognitiveDeploymentType && kind.NativeType != cosmosMongoRoleType && kind.NativeType != mongoClusterType && kind.NativeType != kustoType && kind.NativeType != batchTaskType {
 				t.Fatalf("unexpected blanket/self dependency for %s", kind.NativeType)
 			}
 		}
@@ -109,6 +110,12 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				deletion, parameters, err := c.resourceOperation(kind, nativeID, "DELETE")
 				if err != nil {
 					t.Fatal(err)
+				}
+				if object(object(deletion.InputSchema["properties"])["If-Match"])["required"] == true {
+					if _, err := catalog.BindREST(deletion, parameters); err == nil {
+						t.Fatal("conditional delete accepted without its native ETag")
+					}
+					parameters["If-Match"] = `"reviewed-etag"`
 				}
 				request, err := catalog.BindREST(deletion, parameters)
 				wantMethod := "DELETE"

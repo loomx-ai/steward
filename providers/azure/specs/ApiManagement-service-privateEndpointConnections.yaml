@@ -1,0 +1,68 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/privateEndpointConnections
+  class: network.private_endpoint_connection
+presentation:
+  displayNames:
+    en-US: API Management private endpoint connection
+    zh-CN: API 管理专用终结点连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.PrivateEndpointConnection_ListByService
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.PrivateEndpointConnection_GetByName
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  privateLinkServiceConnectionState:
+    path: privateLinkServiceConnectionState
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service
+  targetIdPath: refs_microsoft_apimanagement_service
+- type: uses
+  targetType: Microsoft.Network/privateEndpoints
+  targetIdPath: refs_microsoft_network_privateendpoints
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.PrivateEndpointConnection_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.PrivateEndpointConnection_GetByName
+      itemsPath: $
+      identityPath: id

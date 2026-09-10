@@ -1290,6 +1290,530 @@
         "Tasks_ListTasks",
         "Tasks_TerminateTask"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapis.json",
+      "operations": [
+        "ApiDiagnostic_Delete",
+        "ApiDiagnostic_Get",
+        "ApiDiagnostic_ListByService",
+        "ApiIssueAttachment_Delete",
+        "ApiIssueAttachment_Get",
+        "ApiIssueAttachment_ListByService",
+        "ApiIssueComment_Delete",
+        "ApiIssueComment_Get",
+        "ApiIssueComment_ListByService",
+        "ApiIssue_Delete",
+        "ApiIssue_Get",
+        "ApiIssue_ListByService",
+        "ApiOperationPolicy_Delete",
+        "ApiOperationPolicy_Get",
+        "ApiOperationPolicy_ListByOperation",
+        "ApiOperation_Delete",
+        "ApiOperation_Get",
+        "ApiOperation_ListByApi",
+        "ApiPolicy_Delete",
+        "ApiPolicy_Get",
+        "ApiPolicy_ListByApi",
+        "ApiProduct_ListByApis",
+        "ApiRelease_Delete",
+        "ApiRelease_Get",
+        "ApiRelease_ListByService",
+        "ApiRevision_ListByService",
+        "ApiSchema_Delete",
+        "ApiSchema_Get",
+        "ApiSchema_ListByApi",
+        "ApiTagDescription_Delete",
+        "ApiTagDescription_Get",
+        "ApiTagDescription_ListByService",
+        "ApiWiki_Delete",
+        "ApiWiki_Get",
+        "ApiWikis_List",
+        "Api_Delete",
+        "Api_Get",
+        "Api_ListByService",
+        "GraphQLApiResolverPolicy_Delete",
+        "GraphQLApiResolverPolicy_Get",
+        "GraphQLApiResolverPolicy_ListByResolver",
+        "GraphQLApiResolver_Delete",
+        "GraphQLApiResolver_Get",
+        "GraphQLApiResolver_ListByApi",
+        "Tag_GetByApi",
+        "Tag_GetByOperation",
+        "Tag_ListByApi",
+        "Tag_ListByOperation",
+        "Tag_DetachFromApi",
+        "Tag_DetachFromOperation"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapiversionsets.json",
+      "operations": [
+        "ApiVersionSet_Delete",
+        "ApiVersionSet_Get",
+        "ApiVersionSet_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationproviders.json",
+      "operations": [
+        "AuthorizationAccessPolicy_Delete",
+        "AuthorizationAccessPolicy_Get",
+        "AuthorizationAccessPolicy_ListByAuthorization",
+        "AuthorizationProvider_Delete",
+        "AuthorizationProvider_Get",
+        "AuthorizationProvider_ListByService",
+        "Authorization_Delete",
+        "Authorization_Get",
+        "Authorization_ListByAuthorizationProvider"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationservers.json",
+      "operations": [
+        "AuthorizationServer_Delete",
+        "AuthorizationServer_Get",
+        "AuthorizationServer_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimbackends.json",
+      "operations": [
+        "Backend_Delete",
+        "Backend_Get",
+        "Backend_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcaches.json",
+      "operations": [
+        "Cache_Delete",
+        "Cache_Get",
+        "Cache_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcertificates.json",
+      "operations": [
+        "Certificate_Delete",
+        "Certificate_Get",
+        "Certificate_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcontenttypes.json",
+      "operations": [
+        "ContentItem_Delete",
+        "ContentItem_Get",
+        "ContentItem_ListByService",
+        "ContentType_Delete",
+        "ContentType_Get",
+        "ContentType_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdeployment.json",
+      "operations": [
+        "ApiManagementService_Delete",
+        "ApiManagementService_Get",
+        "ApiManagementService_List",
+        "ApiManagementService_ListByResourceGroup"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdiagnostics.json",
+      "operations": [
+        "Diagnostic_Delete",
+        "Diagnostic_Get",
+        "Diagnostic_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdocumentations.json",
+      "operations": [
+        "Documentation_Delete",
+        "Documentation_Get",
+        "Documentation_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimemailtemplates.json",
+      "operations": [
+        "EmailTemplate_Delete",
+        "EmailTemplate_Get",
+        "EmailTemplate_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgateways.json",
+      "operations": [
+        "GatewayApi_GetEntityTag",
+        "GatewayApi_ListByService",
+        "GatewayCertificateAuthority_Delete",
+        "GatewayCertificateAuthority_Get",
+        "GatewayCertificateAuthority_ListByService",
+        "GatewayHostnameConfiguration_Delete",
+        "GatewayHostnameConfiguration_Get",
+        "GatewayHostnameConfiguration_ListByService",
+        "Gateway_Delete",
+        "Gateway_Get",
+        "Gateway_ListByService",
+        "GatewayApi_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgroups.json",
+      "operations": [
+        "GroupUser_CheckEntityExists",
+        "GroupUser_List",
+        "Group_Delete",
+        "Group_Get",
+        "Group_ListByService",
+        "GroupUser_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimidentityprovider.json",
+      "operations": [
+        "IdentityProvider_Delete",
+        "IdentityProvider_Get",
+        "IdentityProvider_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimloggers.json",
+      "operations": [
+        "Logger_Delete",
+        "Logger_Get",
+        "Logger_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnamedvalues.json",
+      "operations": [
+        "NamedValue_Delete",
+        "NamedValue_Get",
+        "NamedValue_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnotifications.json",
+      "operations": [
+        "NotificationRecipientEmail_CheckEntityExists",
+        "NotificationRecipientEmail_ListByNotification",
+        "NotificationRecipientUser_CheckEntityExists",
+        "NotificationRecipientUser_ListByNotification",
+        "Notification_Get",
+        "Notification_ListByService",
+        "NotificationRecipientUser_Delete",
+        "NotificationRecipientEmail_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimopenidconnectproviders.json",
+      "operations": [
+        "OpenIdConnectProvider_Delete",
+        "OpenIdConnectProvider_Get",
+        "OpenIdConnectProvider_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicies.json",
+      "operations": [
+        "Policy_Delete",
+        "Policy_Get",
+        "Policy_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyfragments.json",
+      "operations": [
+        "PolicyFragment_Delete",
+        "PolicyFragment_Get",
+        "PolicyFragment_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyrestrictions.json",
+      "operations": [
+        "PolicyRestriction_Delete",
+        "PolicyRestriction_Get",
+        "PolicyRestriction_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimprivatelink.json",
+      "operations": [
+        "PrivateEndpointConnection_Delete",
+        "PrivateEndpointConnection_GetByName",
+        "PrivateEndpointConnection_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimproducts.json",
+      "operations": [
+        "ProductApiLink_Delete",
+        "ProductApiLink_Get",
+        "ProductApiLink_ListByProduct",
+        "ProductApi_CheckEntityExists",
+        "ProductApi_ListByProduct",
+        "ProductGroupLink_Delete",
+        "ProductGroupLink_Get",
+        "ProductGroupLink_ListByProduct",
+        "ProductGroup_CheckEntityExists",
+        "ProductGroup_ListByProduct",
+        "ProductPolicy_Delete",
+        "ProductPolicy_Get",
+        "ProductPolicy_ListByProduct",
+        "ProductSubscriptions_List",
+        "ProductWiki_Delete",
+        "ProductWiki_Get",
+        "ProductWikis_list",
+        "Product_Delete",
+        "Product_Get",
+        "Product_ListByService",
+        "Tag_GetByProduct",
+        "Tag_ListByProduct",
+        "ProductApi_Delete",
+        "ProductGroup_Delete",
+        "Tag_DetachFromProduct"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimschema.json",
+      "operations": [
+        "GlobalSchema_Delete",
+        "GlobalSchema_Get",
+        "GlobalSchema_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsubscriptions.json",
+      "operations": [
+        "Subscription_Delete",
+        "Subscription_Get",
+        "Subscription_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtags.json",
+      "operations": [
+        "TagApiLink_Delete",
+        "TagApiLink_Get",
+        "TagApiLink_ListByProduct",
+        "TagOperationLink_Delete",
+        "TagOperationLink_Get",
+        "TagOperationLink_ListByProduct",
+        "TagProductLink_Delete",
+        "TagProductLink_Get",
+        "TagProductLink_ListByProduct",
+        "Tag_Delete",
+        "Tag_Get",
+        "Tag_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimusers.json",
+      "operations": [
+        "UserSubscription_Get",
+        "UserSubscription_List",
+        "User_Delete",
+        "User_Get",
+        "User_ListByService"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacebackends.json",
+      "operations": [
+        "WorkspaceBackend_Delete",
+        "WorkspaceBackend_Get",
+        "WorkspaceBackend_ListByWorkspace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacecertificates.json",
+      "operations": [
+        "WorkspaceCertificate_Delete",
+        "WorkspaceCertificate_Get",
+        "WorkspaceCertificate_ListByWorkspace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacediagnostics.json",
+      "operations": [
+        "WorkspaceApiDiagnostic_Delete",
+        "WorkspaceApiDiagnostic_Get",
+        "WorkspaceApiDiagnostic_ListByWorkspace",
+        "WorkspaceDiagnostic_Delete",
+        "WorkspaceDiagnostic_Get",
+        "WorkspaceDiagnostic_ListByWorkspace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaceloggers.json",
+      "operations": [
+        "WorkspaceLogger_Delete",
+        "WorkspaceLogger_Get",
+        "WorkspaceLogger_ListByWorkspace"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaces.json",
+      "operations": [
+        "WorkspaceApiOperationPolicy_Delete",
+        "WorkspaceApiOperationPolicy_Get",
+        "WorkspaceApiOperationPolicy_ListByOperation",
+        "WorkspaceApiOperation_Delete",
+        "WorkspaceApiOperation_Get",
+        "WorkspaceApiOperation_ListByApi",
+        "WorkspaceApiPolicy_Delete",
+        "WorkspaceApiPolicy_Get",
+        "WorkspaceApiPolicy_ListByApi",
+        "WorkspaceApiRelease_Delete",
+        "WorkspaceApiRelease_Get",
+        "WorkspaceApiRelease_ListByService",
+        "WorkspaceApiRevision_ListByService",
+        "WorkspaceApiSchema_Delete",
+        "WorkspaceApiSchema_Get",
+        "WorkspaceApiSchema_ListByApi",
+        "WorkspaceApiVersionSet_Delete",
+        "WorkspaceApiVersionSet_Get",
+        "WorkspaceApiVersionSet_ListByService",
+        "WorkspaceApi_Delete",
+        "WorkspaceApi_Get",
+        "WorkspaceApi_ListByService",
+        "WorkspaceGlobalSchema_Delete",
+        "WorkspaceGlobalSchema_Get",
+        "WorkspaceGlobalSchema_ListByService",
+        "WorkspaceGroupUser_CheckEntityExists",
+        "WorkspaceGroupUser_List",
+        "WorkspaceGroup_Delete",
+        "WorkspaceGroup_Get",
+        "WorkspaceGroup_ListByService",
+        "WorkspaceNamedValue_Delete",
+        "WorkspaceNamedValue_Get",
+        "WorkspaceNamedValue_ListByService",
+        "WorkspaceNotificationRecipientEmail_CheckEntityExists",
+        "WorkspaceNotificationRecipientEmail_ListByNotification",
+        "WorkspaceNotificationRecipientUser_CheckEntityExists",
+        "WorkspaceNotificationRecipientUser_ListByNotification",
+        "WorkspaceNotification_Get",
+        "WorkspaceNotification_ListByService",
+        "WorkspacePolicyFragment_Delete",
+        "WorkspacePolicyFragment_Get",
+        "WorkspacePolicyFragment_ListByService",
+        "WorkspacePolicy_Delete",
+        "WorkspacePolicy_Get",
+        "WorkspacePolicy_ListByApi",
+        "WorkspaceProductApiLink_Delete",
+        "WorkspaceProductApiLink_Get",
+        "WorkspaceProductApiLink_ListByProduct",
+        "WorkspaceProductGroupLink_Delete",
+        "WorkspaceProductGroupLink_Get",
+        "WorkspaceProductGroupLink_ListByProduct",
+        "WorkspaceProductPolicy_Delete",
+        "WorkspaceProductPolicy_Get",
+        "WorkspaceProductPolicy_ListByProduct",
+        "WorkspaceProduct_Delete",
+        "WorkspaceProduct_Get",
+        "WorkspaceProduct_ListByService",
+        "WorkspaceSubscription_Delete",
+        "WorkspaceSubscription_Get",
+        "WorkspaceSubscription_List",
+        "WorkspaceTagApiLink_Delete",
+        "WorkspaceTagApiLink_Get",
+        "WorkspaceTagApiLink_ListByProduct",
+        "WorkspaceTagOperationLink_Delete",
+        "WorkspaceTagOperationLink_Get",
+        "WorkspaceTagOperationLink_ListByProduct",
+        "WorkspaceTagProductLink_Delete",
+        "WorkspaceTagProductLink_Get",
+        "WorkspaceTagProductLink_ListByProduct",
+        "WorkspaceTag_Delete",
+        "WorkspaceTag_Get",
+        "WorkspaceTag_ListByService",
+        "Workspace_Delete",
+        "Workspace_Get",
+        "Workspace_ListByService",
+        "WorkspaceGroupUser_Delete",
+        "WorkspaceNotificationRecipientUser_Delete",
+        "WorkspaceNotificationRecipientEmail_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/operationStatuses.json",
+      "operations": [
+        "OperationStatus_Get",
+        "OperationsResults_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalconfigs.json",
+      "operations": [
+        "PortalConfig_ListByService",
+        "PortalConfig_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalrevisions.json",
+      "operations": [
+        "PortalRevision_ListByService",
+        "PortalRevision_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalsettings.json",
+      "operations": [
+        "PortalSettings_ListByService",
+        "SignInSettings_Get",
+        "SignUpSettings_Get",
+        "DelegationSettings_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsettings.json",
+      "operations": [
+        "TenantSettings_ListByService",
+        "TenantSettings_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtenant.json",
+      "operations": [
+        "TenantAccess_ListByService",
+        "TenantAccess_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apigateway.json",
+      "operations": [
+        "ApiGateway_List",
+        "ApiGateway_Get",
+        "ApiGateway_Delete",
+        "ApiGateway_ListByResourceGroup"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgatewayConfigConnections.json",
+      "operations": [
+        "ApiGatewayConfigConnection_ListByGateway",
+        "ApiGatewayConfigConnection_Get",
+        "ApiGatewayConfigConnection_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacelinks.json",
+      "operations": [
+        "ApiManagementWorkspaceLinks_ListByService",
+        "ApiManagementWorkspaceLink_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimissues.json",
+      "operations": [
+        "Issue_ListByService",
+        "Issue_Get"
+      ]
     }
   ],
   "resource_types": [
@@ -6163,6 +6687,1898 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Batch.DataPlane.Nodes_ListNodes"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service",
+      "class": "network.api_gateway",
+      "display_name": "API Management service",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "service",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiManagementService_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiManagementService_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiManagementService_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apiVersionSets",
+      "class": "network.api_version_set",
+      "display_name": "API Management API version set",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiVersionSets",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiVersionSet_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiVersionSet_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiVersionSet_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis",
+      "class": "network.api",
+      "display_name": "API Management API",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Api_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Api_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Api_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/diagnostics",
+      "class": "observability.diagnostic",
+      "display_name": "API Management diagnostic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "diagnostics",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiDiagnostic_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiDiagnostic_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiDiagnostic_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/issues",
+      "class": "collaboration.issue",
+      "display_name": "API Management API issue",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "issues",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssue_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssue_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssue_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/issues/attachments",
+      "class": "collaboration.attachment",
+      "display_name": "API Management issue attachment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "attachments",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueAttachment_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueAttachment_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueAttachment_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/issues/comments",
+      "class": "collaboration.comment",
+      "display_name": "API Management issue comment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "comments",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueComment_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueComment_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiIssueComment_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/operations",
+      "class": "network.api_operation",
+      "display_name": "API Management API operation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "operations",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperation_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperation_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperation_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/operations/policies",
+      "class": "security.policy",
+      "display_name": "API Management policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperationPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperationPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiOperationPolicy_ListByOperation"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/policies",
+      "class": "security.policy",
+      "display_name": "API Management policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiPolicy_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/releases",
+      "class": "network.api_release",
+      "display_name": "API Management API release",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "releases",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiRelease_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiRelease_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiRelease_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/resolvers",
+      "class": "network.api_resolver",
+      "display_name": "API Management GraphQL resolver",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "resolvers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolver_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolver_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolver_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/resolvers/policies",
+      "class": "security.policy",
+      "display_name": "API Management policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolverPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolverPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GraphQLApiResolverPolicy_ListByResolver"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/schemas",
+      "class": "data.schema",
+      "display_name": "API Management schema",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "schemas",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiSchema_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiSchema_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiSchema_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/tagDescriptions",
+      "class": "organization.tag",
+      "display_name": "API Management API tag description",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tagDescriptions",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiTagDescription_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiTagDescription_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiTagDescription_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/wikis",
+      "class": "content.wiki",
+      "display_name": "API Management wiki",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "wikis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiWiki_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiWiki_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiWikis_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/authorizationProviders",
+      "class": "security.authorization_provider",
+      "display_name": "API Management authorization provider",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "authorizationProviders",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationProvider_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationProvider_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationProvider_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/authorizationProviders/authorizations",
+      "class": "security.authorization",
+      "display_name": "API Management authorization",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "authorizations",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Authorization_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Authorization_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Authorization_ListByAuthorizationProvider"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/authorizationProviders/authorizations/accessPolicies",
+      "class": "security.access_policy",
+      "display_name": "API Management authorization access policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "accessPolicies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationAccessPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationAccessPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationAccessPolicy_ListByAuthorization"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/authorizationServers",
+      "class": "security.authorization_server",
+      "display_name": "API Management OAuth server",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "authorizationServers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationServer_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationServer_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.AuthorizationServer_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/backends",
+      "class": "network.api_backend",
+      "display_name": "API Management backend",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "backends",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Backend_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Backend_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Backend_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/caches",
+      "class": "data.cache",
+      "display_name": "API Management external cache",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "caches",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Cache_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Cache_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Cache_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/certificates",
+      "class": "security.certificate",
+      "display_name": "API Management certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Certificate_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Certificate_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Certificate_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/contentTypes",
+      "class": "content.type",
+      "display_name": "API Management portal content type",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "contentTypes",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ContentType_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ContentType_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ContentType_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/contentTypes/contentItems",
+      "class": "content.item",
+      "display_name": "API Management portal content item",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "contentItems",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ContentItem_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ContentItem_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ContentItem_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/diagnostics",
+      "class": "observability.diagnostic",
+      "display_name": "API Management diagnostic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "diagnostics",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Diagnostic_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Diagnostic_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Diagnostic_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/documentations",
+      "class": "content.document",
+      "display_name": "API Management documentation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "documentations",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Documentation_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Documentation_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Documentation_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/gateways",
+      "class": "network.gateway",
+      "display_name": "API Management self-hosted gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "gateways",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Gateway_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Gateway_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Gateway_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/gateways/certificateAuthorities",
+      "class": "security.certificate_binding",
+      "display_name": "API Management gateway CA binding",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificateAuthorities",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayCertificateAuthority_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayCertificateAuthority_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayCertificateAuthority_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/gateways/hostnameConfigurations",
+      "class": "network.domain_binding",
+      "display_name": "API Management gateway hostname",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "hostnameConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayHostnameConfiguration_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayHostnameConfiguration_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayHostnameConfiguration_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/groups",
+      "class": "identity.group",
+      "display_name": "API Management group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "groups",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Group_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Group_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Group_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/identityProviders",
+      "class": "security.identity_provider",
+      "display_name": "API Management identity provider",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "identityProviders",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.IdentityProvider_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.IdentityProvider_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.IdentityProvider_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/loggers",
+      "class": "observability.logger",
+      "display_name": "API Management logger",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "loggers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Logger_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Logger_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Logger_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/namedValues",
+      "class": "security.named_value",
+      "display_name": "API Management named value",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "namedValues",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.NamedValue_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.NamedValue_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.NamedValue_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/openidConnectProviders",
+      "class": "security.identity_provider",
+      "display_name": "API Management OpenID Connect provider",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "openidConnectProviders",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.OpenIdConnectProvider_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.OpenIdConnectProvider_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.OpenIdConnectProvider_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/policies",
+      "class": "security.policy",
+      "display_name": "API Management policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Policy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Policy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Policy_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/policyFragments",
+      "class": "security.policy_fragment",
+      "display_name": "API Management policy fragment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policyFragments",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyFragment_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyFragment_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyFragment_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/policyRestrictions",
+      "class": "security.policy",
+      "display_name": "API Management policy restriction",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policyRestrictions",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyRestriction_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyRestriction_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PolicyRestriction_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "API Management private endpoint connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.PrivateEndpointConnection_GetByName"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.PrivateEndpointConnection_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PrivateEndpointConnection_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products",
+      "class": "network.api_product",
+      "display_name": "API Management product",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "products",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Product_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Product_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Product_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/apiLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management API link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApiLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApiLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApiLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/groupLinks",
+      "class": "identity.group_binding",
+      "display_name": "API Management group link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "groupLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroupLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroupLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroupLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/policies",
+      "class": "security.policy",
+      "display_name": "API Management policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductPolicy_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/wikis",
+      "class": "content.wiki",
+      "display_name": "API Management wiki",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "wikis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductWiki_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductWiki_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductWikis_list"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/schemas",
+      "class": "data.schema",
+      "display_name": "API Management schema",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "schemas",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GlobalSchema_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GlobalSchema_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GlobalSchema_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/subscriptions",
+      "class": "network.api_subscription",
+      "display_name": "API Management subscription",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "subscriptions",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Subscription_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Subscription_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Subscription_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/tags",
+      "class": "organization.tag",
+      "display_name": "API Management tag",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tags",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/tags/apiLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management API link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.TagApiLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.TagApiLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.TagApiLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/tags/operationLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management operation link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "operationLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.TagOperationLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.TagOperationLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.TagOperationLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/tags/productLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management product link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "productLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.TagProductLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.TagProductLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.TagProductLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/templates",
+      "class": "content.template",
+      "display_name": "API Management email template",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "templates",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.EmailTemplate_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.EmailTemplate_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/users",
+      "class": "identity.user",
+      "display_name": "API Management user",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "users",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.User_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.User_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.User_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces",
+      "class": "network.api_workspace",
+      "display_name": "API Management workspace",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "workspaces",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Workspace_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Workspace_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Workspace_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apiVersionSets",
+      "class": "network.api_version_set",
+      "display_name": "API Management workspace API version set",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiVersionSets",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiVersionSet_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiVersionSet_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiVersionSet_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis",
+      "class": "network.api",
+      "display_name": "API Management workspace API",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApi_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApi_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApi_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/diagnostics",
+      "class": "observability.diagnostic",
+      "display_name": "API Management workspace diagnostic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "diagnostics",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiDiagnostic_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiDiagnostic_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiDiagnostic_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/operations",
+      "class": "network.api_operation",
+      "display_name": "API Management workspace API operation",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "operations",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperation_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperation_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperation_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/operations/policies",
+      "class": "security.policy",
+      "display_name": "API Management workspace policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperationPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperationPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiOperationPolicy_ListByOperation"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/policies",
+      "class": "security.policy",
+      "display_name": "API Management workspace policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiPolicy_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/releases",
+      "class": "network.api_release",
+      "display_name": "API Management workspace API release",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "releases",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiRelease_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiRelease_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiRelease_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/apis/schemas",
+      "class": "data.schema",
+      "display_name": "API Management workspace schema",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "schemas",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiSchema_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiSchema_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceApiSchema_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/backends",
+      "class": "network.api_backend",
+      "display_name": "API Management workspace backend",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "backends",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceBackend_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceBackend_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceBackend_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/certificates",
+      "class": "security.certificate",
+      "display_name": "API Management workspace certificate",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "certificates",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceCertificate_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceCertificate_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceCertificate_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/diagnostics",
+      "class": "observability.diagnostic",
+      "display_name": "API Management workspace diagnostic",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "diagnostics",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceDiagnostic_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceDiagnostic_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceDiagnostic_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/groups",
+      "class": "identity.group",
+      "display_name": "API Management workspace group",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "groups",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroup_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroup_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroup_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/loggers",
+      "class": "observability.logger",
+      "display_name": "API Management workspace logger",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "loggers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceLogger_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceLogger_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceLogger_ListByWorkspace"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/namedValues",
+      "class": "security.named_value",
+      "display_name": "API Management workspace named value",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "namedValues",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNamedValue_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNamedValue_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNamedValue_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/policies",
+      "class": "security.policy",
+      "display_name": "API Management workspace policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicy_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/policyFragments",
+      "class": "security.policy_fragment",
+      "display_name": "API Management workspace policy fragment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policyFragments",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicyFragment_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicyFragment_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspacePolicyFragment_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/products",
+      "class": "network.api_product",
+      "display_name": "API Management workspace product",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "products",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProduct_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProduct_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProduct_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/products/apiLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management workspace API link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductApiLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductApiLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductApiLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/products/groupLinks",
+      "class": "identity.group_binding",
+      "display_name": "API Management workspace group link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "groupLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductGroupLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductGroupLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductGroupLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/products/policies",
+      "class": "security.policy",
+      "display_name": "API Management workspace policy",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "policies",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductPolicy_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductPolicy_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceProductPolicy_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/schemas",
+      "class": "data.schema",
+      "display_name": "API Management workspace schema",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "schemas",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGlobalSchema_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGlobalSchema_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGlobalSchema_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/subscriptions",
+      "class": "network.api_subscription",
+      "display_name": "API Management workspace subscription",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "subscriptions",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceSubscription_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceSubscription_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceSubscription_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/tags",
+      "class": "organization.tag",
+      "display_name": "API Management workspace tag",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tags",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTag_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTag_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTag_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/tags/apiLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management workspace API link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apiLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagApiLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagApiLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagApiLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/tags/operationLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management workspace operation link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "operationLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagOperationLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagOperationLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagOperationLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/tags/productLinks",
+      "class": "network.api_binding",
+      "display_name": "API Management workspace product link",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "productLinks",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagProductLink_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagProductLink_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceTagProductLink_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/apis",
+      "class": "network.api_binding",
+      "display_name": "API Management API association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApi_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApi_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductApi_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/groups",
+      "class": "identity.group_binding",
+      "display_name": "API Management group association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "groups",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroup_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroup_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ProductGroup_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/gateways/apis",
+      "class": "network.api_binding",
+      "display_name": "API Management gateway API association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "apis",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayApi_GetEntityTag"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayApi_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GatewayApi_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/groups/users",
+      "class": "identity.user_binding",
+      "display_name": "API Management group user association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "users",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.GroupUser_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.GroupUser_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.GroupUser_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/groups/users",
+      "class": "identity.user_binding",
+      "display_name": "API Management workspace group user association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "users",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroupUser_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroupUser_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceGroupUser_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/tags",
+      "class": "organization.tag_binding",
+      "display_name": "API Management API tag association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tags",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_GetByApi"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_DetachFromApi"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_ListByApi"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "class": "organization.tag_binding",
+      "display_name": "API Management operation tag association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tags",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_GetByOperation"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_DetachFromOperation"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_ListByOperation"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/products/tags",
+      "class": "organization.tag_binding",
+      "display_name": "API Management product tag association",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tags",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_GetByProduct"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_DetachFromProduct"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Tag_ListByProduct"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/notifications",
+      "class": "notification.configuration",
+      "display_name": "API Management notification configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "notifications",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.Notification_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.Notification_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/notifications/recipientUsers",
+      "class": "notification.recipient",
+      "display_name": "API Management notification user recipient",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "recipientUsers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientUser_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientUser_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientUser_ListByNotification"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/notifications/recipientEmails",
+      "class": "notification.recipient",
+      "display_name": "API Management notification email recipient",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "recipientEmails",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientEmail_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientEmail_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.NotificationRecipientEmail_ListByNotification"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/notifications",
+      "class": "notification.configuration",
+      "display_name": "API Management notification configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "notifications",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotification_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotification_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/notifications/recipientUsers",
+      "class": "notification.recipient",
+      "display_name": "API Management notification user recipient",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "recipientUsers",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_ListByNotification"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/workspaces/notifications/recipientEmails",
+      "class": "notification.recipient",
+      "display_name": "API Management notification email recipient",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "recipientEmails",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientEmail_CheckEntityExists"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientEmail_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientEmail_ListByNotification"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/portalconfigs",
+      "class": "configuration.portal",
+      "display_name": "API Management portal configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "portalconfigs",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.PortalConfig_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PortalConfig_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/portalRevisions",
+      "class": "configuration.portal",
+      "display_name": "API Management portal revision",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "portalRevisions",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.PortalRevision_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PortalRevision_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/portalsettings",
+      "class": "configuration.portal",
+      "display_name": "API Management portal settings",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "portalsettings",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.SignInSettings_Get",
+        "Azure.Microsoft.ApiManagement.SignUpSettings_Get",
+        "Azure.Microsoft.ApiManagement.DelegationSettings_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.PortalSettings_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/settings",
+      "class": "configuration.access",
+      "display_name": "API Management tenant settings",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "settings",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.TenantSettings_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.TenantSettings_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/service/tenant",
+      "class": "configuration.access",
+      "display_name": "API Management tenant access configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "tenant",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.TenantAccess_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.TenantAccess_ListByService"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/gateways",
+      "class": "network.api_gateway",
+      "display_name": "API Management managed workspace gateway",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "gateways",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGateway_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGateway_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGateway_List"
+      ],
+      "response_types": [
+        "Microsoft.ApiManagement/gateway"
+      ],
+      "response_id_types": [
+        "Microsoft.ApiManagement/gateway"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ApiManagement/gateways/configConnections",
+      "class": "network.gateway_binding",
+      "display_name": "API Management gateway configuration connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "configConnections",
+      "read_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGatewayConfigConnection_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGatewayConfigConnection_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ApiManagement.ApiGatewayConfigConnection_ListByGateway"
       ]
     }
   ]

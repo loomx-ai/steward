@@ -1,0 +1,67 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ApiManagement/service/workspaces/notifications/recipientUsers
+  class: notification.recipient
+presentation:
+  displayNames:
+    en-US: API Management notification user recipient
+    zh-CN: API 管理通知用户接收者
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_ListByNotification
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      serviceName: parent.normalized.arm_parameters.serviceName
+      workspaceId: parent.normalized.arm_parameters.workspaceId
+      notificationName: parent.normalized.arm_parameters.notificationName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_CheckEntityExists
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.ApiManagement/service/workspaces/notifications
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ApiManagement/service/workspaces/notifications
+  targetIdPath: refs_microsoft_apimanagement_service_workspaces_notifications
+- type: uses
+  targetType: Microsoft.ApiManagement/service/users
+  targetIdPath: refs_microsoft_apimanagement_service_users
+actions:
+  delete:
+    operation: Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ApiManagement.WorkspaceNotificationRecipientUser_CheckEntityExists
+      itemsPath: $
+      identityPath: id

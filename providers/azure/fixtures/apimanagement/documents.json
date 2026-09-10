@@ -1,0 +1,227 @@
+[
+  {
+    "dependency": true,
+    "source_sha256": "b2492a74aae325969cbb217500435914c0bf827dc87f2449e32280838db703a9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimanagement.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "9aea8fa5763f3d4f694196be96b737e28d6be0e62ff1fd6c2250860bc09bec95",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapis.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "830cf27c5927a5194ee86e18fe1a57c7311385656f9f37dc33e7f2ce9b825961",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimapiversionsets.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "808a26a73e335f3fa8710d74db4f40304a4a9b74d65af0101124bba8cfd49d7f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationproviders.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "a67520bf2d28fc447fd330b8a14c2886d2bab3707f3360efb94744daff248ebd",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimauthorizationservers.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "695bd084df0a66eb07f7244f35fc4f377cee54a6866d50d7b93686dc5fb8b64a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimbackends.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "8086c89940735d0b7c896c3be933c6af5534e87ada0c76243a2a90ba78d5b612",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcaches.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "4c5bef70118dd781713375b3ef10803886c7504b938f9d674e827dabbfd2fe3a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcertificates.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "94fdd4661784993d3f086160322ada497d960d02c5a868eec68d5fdd64f5ebaa",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimcontenttypes.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "a9aa63fa1ce6e54e59e5ecd6481e3e221a04b3260b3836e5387513aa5e42495c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdeployment.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "d1adae4131b2dae3aa2ef93e9b90ab934ace08f954f4856a0179c92380078545",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdiagnostics.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "d111a4740ae53faa7a9370ed6b467dae3a636845946f1ccb7471b8c5502e4b70",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimdocumentations.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "380f55a28e2010377114d99c32b2990d4057ca99542687ad95b058b9349dcc2f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimemailtemplates.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "ce9cdaa28e9ccb1c066b0c456f1477df1e086744eec9f366d2d464a90fada29d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgateways.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "addaa32fd81e4e0050596ee821480879773b97b93d9f9446feb7b8451e321371",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgroups.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "59b6ee696c55959ca275f9e13155ff0159672c6854d07d917ff4b9d59b244d26",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimidentityprovider.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "083635bf3a3f576f565a1532e4353555aa744d993d4ef16bb2302114a134f7b8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimloggers.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "cb8e9d37480d57c307753782d94d70fd140cb1cbce839c7c2216c30c3b277814",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnamedvalues.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "853f6da9a2f86a127bdde8b2c16b281f9c16a64ef6b81d99d5e01292dc4bc1cf",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimnotifications.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "fbfddfbed7b9331068910ec02d65b9151a9669556e5632e1bd6ab28f28e92877",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimopenidconnectproviders.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "95408078993df30c70d53307fc1eba9e90900f9976b03ee680edebf02504f6f4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicies.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "a0a9f51be9bbc4f0d06ea4a79560173c449700f9a5cb8fb5e14ad6088a81f17c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyfragments.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "2ce1824749230760e5e933e24632c9de8b8cb4d5b574c4f4d75ec66ca030b5c8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimpolicyrestrictions.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "431964d463d644de44ce82b81b08b729f507f2bef2bc3dd254969a5112cbcb37",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimprivatelink.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "c4d11fd1d0b59585e566b6c8a5fcefe084e19de551e676054cca8cf66a1b3ed8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimproducts.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "8f482ea54d579c7965de0ae08e1702e142446615cf1f79c5281091a64d58aeff",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimschema.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "b16662e11d8f2a3c5932cda4b5a0862d8524faf9ff92c03e7f15a8ed8e08d81b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsubscriptions.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "8dbb519394d5e298b1ea29029813be52d94aa733f135fc277b9fec7bab46b236",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtags.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "06cbaf6ff23da6dbe09cb34c911e59bc798f8683f68c80d220aebc8d6b577651",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimusers.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "a9c5128419eb2c23055bdc1fd8388259fb9f70450583824f8d7805501880924d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacebackends.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "d65f3f97f8c2f70e74f2cbe9d0601c70edb420c0a35576528d1f849f51db7bbb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacecertificates.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "fa7bbd9176801643e23a564969c4242377ae463489bce2ba511771449429b17e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacediagnostics.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "c9d1ccc092b9a48b0e80043fd3c358933ee802a2452a018ace9c0e0684f2e4d1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaceloggers.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "3151f22597d6fca6b35559bbe088d32c56b6672db34abafe28845fdeb6056754",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspaces.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "269825de593ea83e0aa18105bb17a774f7d069e9ae6df1a2b0af05b6da3e4efb",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/definitions.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "ce0d9a612dd8c6e5fbff3599302449015430e90abf6ebbdade821e235b397a09",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/operationStatuses.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "f8f065db90b0b8f6f9eaba294b27ab4cfcf0bb828142436c406379bb6dd5ac76",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalconfigs.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "34ba27a3df099ccd6457acaa9089662c4b14de2977fbd872bba7efd611763b24",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalrevisions.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "75724907d74051dd651aef846f5087d58c89fad7599daf158c1ee4f75f145518",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimportalsettings.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "b3f91cc7139e566a450d84c3e4c6a082a75e4acde3cedb2d5640d044e6aefae4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimsettings.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "f50e83361a98bbac19343f83e9c630aea488fd9e0dd697429361f55e6519a50a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimtenant.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "644b03426837b2193b3a1482a98d6a3fd82fd9cb9579367ffa0a1fbfa894471f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apigateway.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "84b887f1318c65e1f648ed7db4d673cd2dfcc4b78d560e24b77e1e2b04fcd62c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimgatewayConfigConnections.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "18344024732a4c0adeae8ade2f75a56033c999c3a887a7af13dfa492cc609c93",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimissues.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "344f75034ed113a67e1b44979276703da09cf9b6c618d5f23ed845a13b81214b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/apimanagement/resource-manager/Microsoft.ApiManagement/ApiManagement/stable/2024-05-01/apimworkspacelinks.json"
+  }
+]
