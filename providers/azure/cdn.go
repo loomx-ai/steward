@@ -372,6 +372,11 @@ func (c *client) servicePrivateIncarnation(planned asset.Asset, live map[string]
 			return serviceDenied("cosmos_private_configuration_changed")
 		}
 	}
+	if isKustoType(planned.Identity.NativeType) {
+		if expected := text(planned.Normalized["_kusto_private_configuration"]); expected == "" || expected != c.privateConfiguration(kustoSnapshot(planned.Identity.NativeType, live)) {
+			return serviceDenied("kusto_private_configuration_changed")
+		}
+	}
 	if isMongoClusterType(planned.Identity.NativeType) {
 		if expected := text(planned.Normalized["_mongocluster_private_configuration"]); expected == "" || expected != c.privateConfiguration(mongoClusterSnapshot(planned.Identity.NativeType, live)) {
 			return serviceDenied("mongocluster_private_configuration_changed")
@@ -440,6 +445,9 @@ func cdnPrerequisite(parent, referrer asset.Asset) bool {
 // on successful and pending polls. Preserve all other errors, including a failed
 // status carrying that placeholder. This exception is specific to this API.
 func (a *action) operationError(res response) error {
+	if isKustoType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
+		return fmt.Errorf("incomplete Kusto operation response")
+	}
 	if isMongoClusterType(a.kind.NativeType) && res.status != 200 && res.status != 202 && res.status != 204 {
 		return fmt.Errorf("incomplete DocumentDB operation response")
 	}

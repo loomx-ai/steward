@@ -169,6 +169,9 @@ func aksNativeAsset(raw map[string]any) asset.Asset {
 }
 
 func aksExternalRelation(parent, child asset.Asset) bool {
+	if kustoSharedPrerequisite(parent, child) {
+		return false // Group deletion does not detach an external follower.
+	}
 	if strings.EqualFold(child.Identity.NativeType, dataCollectionAssociationType) {
 		return false // Deleting the group does not prove external associations are unlinked.
 	}
@@ -400,6 +403,16 @@ func (a *action) managedGroupPreflight(ctx context.Context, request contracts.Ac
 		visited[id] = true
 		if err := a.client.servicePrivateIncarnation(impact.Asset, resource); err != nil {
 			return "", err
+		}
+		if isKustoType(kind) {
+			if err := kustoReady(kind, resource); err != nil {
+				return "", err
+			}
+			mapping, _ := findType(kind)
+			childAction := action{client: a.client, kind: mapping, id: id}
+			if err := childAction.kustoTargetPreflight(ctx, impact.Asset, resource); err != nil {
+				return "", err
+			}
 		}
 		if err := serviceCreationIdentity(impact.Asset, resource); err != nil {
 			return "", err

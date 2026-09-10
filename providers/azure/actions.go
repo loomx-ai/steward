@@ -83,6 +83,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 func (*action) DeletionCheckTimeout() time.Duration { return time.Hour }
 func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.kustoRequestIdentity(request.Asset); err != nil {
+		return contracts.PreflightResult{}, err
+	}
 	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
 		return contracts.PreflightResult{}, err
 	}
@@ -140,6 +143,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.cosmosPreflight(ctx, request.Asset, res.data); err != nil {
+		return contracts.PreflightResult{}, err
+	}
+	if err := a.kustoPreflight(ctx, request.Asset, res.data); err != nil {
 		return contracts.PreflightResult{}, err
 	}
 	if err := a.mongoClusterPreflight(ctx, request.Asset, res.data); err != nil {
@@ -328,6 +334,9 @@ func (a *action) operationResult(res response) (contracts.ActionResult, error) {
 		}
 	}
 	data := map[string]any{"polling": polling}
+	if isKustoType(a.kind.NativeType) && operation != "" {
+		data["kusto_operation_binding"] = a.operationBinding(operation)
+	}
 	if isMongoClusterType(a.kind.NativeType) && operation != "" {
 		data["mongocluster_operation_binding"] = a.operationBinding(operation)
 	}
@@ -369,6 +378,9 @@ func operationError(response response) error {
 	return nil
 }
 func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if err := a.kustoRequestIdentity(request.Asset); err != nil {
+		return contracts.WaitResult{}, err
+	}
 	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -406,6 +418,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 		}
 		if polling := text(result.Data["polling"]); polling != "status" && polling != "location" {
 			return contracts.WaitResult{}, fmt.Errorf("invalid Azure polling protocol")
+		}
+		if isKustoType(a.kind.NativeType) && text(result.Data["kusto_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
+			return contracts.WaitResult{}, fmt.Errorf("Kusto polling receipt does not match its resource")
 		}
 		if isMongoClusterType(a.kind.NativeType) && text(result.Data["mongocluster_operation_binding"]) != a.operationBinding(result.ProviderOperationID) {
 			return contracts.WaitResult{}, fmt.Errorf("DocumentDB polling receipt does not match its resource")
@@ -465,6 +480,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if isKustoType(a.kind.NativeType) {
+		return validateKustoOperationURL(a.client.subscription, a.location, a.kind.Version, endpoint)
+	}
 	if isMongoClusterType(a.kind.NativeType) {
 		return validateMongoClusterOperationURL(a.client.subscription, a.location, a.kind.Version, endpoint)
 	}
@@ -508,6 +526,9 @@ func (a *action) validateOperationURL(endpoint string) error {
 	return nil
 }
 func (a *action) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.kustoRequestIdentity(request.Asset); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
 	if err := a.mongoClusterRequestIdentity(request.Asset); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -547,6 +568,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
+	}
+	if reason := kustoProtection(kind.NativeType, raw); reason != "" {
+		return reason
 	}
 	if reason := cosmosProtection(kind.NativeType, raw); reason != "" {
 		return reason
@@ -625,7 +649,7 @@ func controllerOnlyReason(reason string) bool {
 	switch reason {
 	case "azure_managed_resource", "azure_managed_resource_group", "azure_scale_set_managed_vm", "azure_scale_set_managed_network", "azure_vpn_connection_managed_link", "azure_private_endpoint_managed_nic", "azure_system_database", "azure_dns_system_record", "azure_dns_auto_registered_record":
 		return true
-	case "azure_cosmos_builtin_role", "azure_cosmos_managed_encryption_key", "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
+	case "azure_kusto_following_database", "azure_kusto_active_image", "azure_cosmos_builtin_role", "azure_cosmos_managed_encryption_key", "azure_cognitive_managed_configuration", "azure_search_managed_configuration", "azure_redis_builtin_policy", "azure_redis_secondary_link", "azure_messaging_recovery_secondary", "azure_messaging_managed_configuration", "azure_messaging_default_authorization_rule", "azure_messaging_replication_requires_unpairing", "azure_app_service_default_hostname":
 		return true
 	default:
 		return false

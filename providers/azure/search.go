@@ -101,6 +101,9 @@ func searchTargetRegion(link, target map[string]any) error {
 	return nil
 }
 func searchTargetSnapshot(raw map[string]any) map[string]any {
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isKustoType(kind) {
+		return kustoSnapshot(kind, raw)
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isMongoClusterType(kind) {
 		return mongoClusterSnapshot(kind, raw)
 	}

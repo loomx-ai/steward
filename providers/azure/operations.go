@@ -86,6 +86,11 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 				return validateCosmosOperationURL(c.subscription, u.Path, operation.Call.Version, endpoint)
 			}
 		}
+		if strings.HasPrefix(invocation.Operation, "Azure.Microsoft.Kusto.") {
+			validate = func(endpoint string) error {
+				return validateKustoOperationURL(c.subscription, "", operation.Call.Version, endpoint)
+			}
+		}
 		if isMongoClusterType(kind) {
 			validate = func(endpoint string) error {
 				return validateMongoClusterOperationURL(c.subscription, "", operation.Call.Version, endpoint)

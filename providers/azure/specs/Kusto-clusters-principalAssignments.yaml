@@ -1,0 +1,74 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Kusto/clusters/principalAssignments
+  class: security.principal_assignment
+presentation:
+  displayNames:
+    en-US: Kusto cluster principal assignment
+    zh-CN: Kusto 集群主体分配
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Kusto.ClusterPrincipalAssignments_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      clusterName: parent.normalized.arm_parameters.clusterName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.Kusto/clusters
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  principalId:
+    path: principalId
+    type: string
+  principalType:
+    path: principalType
+    type: string
+  role:
+    path: role
+    type: string
+  tenantId:
+    path: tenantId
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Kusto/clusters
+  targetIdPath: refs_microsoft_kusto_clusters
+actions:
+  delete:
+    operation: Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Get
+      itemsPath: $
+      identityPath: id

@@ -290,6 +290,13 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.cosmosInventory(ctx, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
+	if err := c.kustoInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
+	if location := text(normalized["_kusto_location"]); location != "" {
+		region = location
+		scope = contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: region, Name: region, Location: region}
+	}
 	if err := c.mongoClusterInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
@@ -396,6 +403,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 		normalized["zone_id"] = fmt.Sprint(zones[0])
 	}
 	reason := protectionReason(kind, raw)
+	if reason == "" && nativeType == kustoImageType && normalized["_kusto_active_image"] == true {
+		reason = "azure_kusto_active_image"
+	}
 	if reason == "" && isCosmosType(nativeType) {
 		reason = cosmosThroughputProtection(object(normalized["_cosmos_throughput"]))
 	}
@@ -594,6 +604,34 @@ func references(nativeType, self string, raw map[string]any) map[string][]string
 			fields[key] = true
 		}
 	}
+	if isKustoType(nativeType) {
+		for _, key := range []string{"clusterresourceid", "leaderclusterresourceid", "privatelinkresourceid", "managedidentityresourceid", "cosmosdbaccountresourceid", "eventhubresourceid", "eventhubresourceidformanagedidentity", "storageaccountresourceid", "storageaccountresourceidformanagedidentity", "eventgridresourceid", "iothubresourceid", "useridentity", "enginepublicipid", "datamanagementpublicipid"} {
+			fields[key] = true
+		}
+		if nativeType == kustoDatabaseType {
+			if attachment, err := kustoFollowingAttachment(raw); err == nil {
+				add(attachment)
+			}
+		}
+		if nativeType == kustoType {
+			add(text(object(object(raw["properties"])["migrationCluster"])["id"]))
+			for _, value := range array(object(object(raw["properties"])["languageExtensions"])["value"]) {
+				if name, err := kustoName(object(value)["languageExtensionCustomImageName"]); err == nil {
+					add(self + "/sandboxCustomImages/" + name)
+				}
+			}
+		}
+		if nativeType == kustoDataConnectionType {
+			props := object(raw["properties"])
+			hub := text(props["eventHubResourceId"])
+			if hub == "" {
+				hub = text(props["eventHubResourceIdForManagedIdentity"])
+			}
+			if name, err := kustoName(props["consumerGroup"]); err == nil && hub != "" {
+				add(hub + "/consumerGroups/" + name)
+			}
+		}
+	}
 	if nativeType == mongoClusterType {
 		if source, err := mongoClusterSource(raw); err == nil && source != "" {
 			add(source)
@@ -774,10 +812,10 @@ func safeResource(value any) any {
 			case "password", "adminpassword", "secret", "secrets", "clientsecret", "accesskey", "connectionstring", "connectionstrings",
 				"servicekey", "authorizationkey", "sharedkey", "presharedkey", "peeringsharedkey", "radiusserversecret", "authenticationkey", "saskey", "sastoken", "primarykey", "secondarykey",
 				"requestheaders", "httpheaders", "appsettings", "env", "environmentvariables", "customdata", "userdata", "protectedsettings", "protectedsettingsfromkeyvault", "error", "publishingpassword", "publishingprofile", "privatekey", "administratorloginpassword",
-				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody", "pfxblob", "files", "config", "testdata", "secretsfilehref", "customdomainverificationid", "appcommandline", "migrationtoken", "qnaazuresearchendpointkey":
+				"command", "configmap", "workspacekey", "storageaccountkey", "securevalue", "keyvalue", "validationtoken", "validationdata", "customblockresponsebody", "defaultcustomblockresponsebody", "pfxblob", "files", "config", "testdata", "secretsfilehref", "customdomainverificationid", "appcommandline", "migrationtoken", "qnaazuresearchendpointkey", "scriptcontent", "scripturlsastoken", "requirementsfilecontent":
 				continue
 			}
-			if strings.EqualFold(key, "sampleBlobUrl") || strings.EqualFold(key, "target") || strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") || strings.HasSuffix(strings.ToLower(key), "href") || key == "invoke_url_template" {
+			if strings.EqualFold(key, "scriptUrl") || strings.EqualFold(key, "sampleBlobUrl") || strings.EqualFold(key, "target") || strings.EqualFold(key, "storagePath") || strings.EqualFold(key, "blobUrl") || strings.EqualFold(key, "repository") || strings.EqualFold(key, "vaultBaseUrl") || strings.EqualFold(key, "secretReferenceUri") || strings.HasSuffix(strings.ToLower(key), "href") || key == "invoke_url_template" {
 				if endpoint, err := url.Parse(text(value)); err == nil && endpoint.Scheme != "" {
 					endpoint.RawQuery, endpoint.Fragment, endpoint.User = "", "", nil
 					result[key] = endpoint.String()

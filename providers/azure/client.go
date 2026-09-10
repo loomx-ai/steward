@@ -265,8 +265,14 @@ func (c *client) requestAt(ctx context.Context, method, endpoint string, body []
 	}
 	if out.data == nil || len(bytes.TrimSpace(payload)) == 0 {
 		// LRO Location polling may finish with 204, and an accepted operation
-		// may return 202 without a body. An empty ordinary resource GET fails.
-		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent {
+		// may return 202 without a body. Kusto's recorded Location result uses
+		// an empty 200. Keep ordinary resource GETs and JSON null invalid.
+		emptyKustoResult := false
+		if len(bytes.TrimSpace(payload)) == 0 && res.StatusCode == http.StatusOK && u.Query().Get("operationResultResponseType") == "Location" {
+			kind, _ := findType(kustoType)
+			emptyKustoResult = validateKustoOperationURL(c.subscription, "", kind.Version, u.String()) == nil
+		}
+		if method == http.MethodGet && res.StatusCode != http.StatusAccepted && res.StatusCode != http.StatusNoContent && !emptyKustoResult {
 			return out, apiError(res.StatusCode, "invalid_response", res.Header)
 		}
 		out.data = map[string]any{}

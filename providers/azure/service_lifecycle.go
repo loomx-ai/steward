@@ -26,6 +26,9 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	kustoType:                      kustoOwnedKinds(kustoType),
+	kustoDatabaseType:              append(kustoOwnedKinds(kustoDatabaseType), kustoAttachmentType),
+	kustoAttachmentType:            {kustoDatabaseType},
 	mongoClusterType:               append(mongoClusterOwnedKinds(), mongoClusterType),
 	cognitiveType:                  cognitiveOwnedKinds(cognitiveType),
 	cognitiveProjectType:           cognitiveOwnedKinds(cognitiveProjectType),
@@ -248,6 +251,12 @@ func serviceListedIncarnation(listed, live map[string]any) error {
 }
 
 func serviceIncarnation(planned asset.Asset, live map[string]any) error {
+	if err := kustoIncarnation(planned, live); err != nil {
+		return err
+	}
+	if isKustoType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
 	if isCosmosType(planned.Identity.NativeType) {
 		if err := cosmosIncarnation(planned, live); err != nil {
 			return err
@@ -448,7 +457,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
-			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) {
+			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) || kustoSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -456,7 +465,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				continue
 			}
 			childKind, known := findType(child.kind)
-			directAllowed := known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
+			directAllowed := target.Normalized["_kusto_active_image"] != true && known && !childKind.ReadOnly && !dnsExternalController(parent.Identity.NativeType) && protectionReason(childKind, child.data) == ""
 			if text(target.Normalized["cleanup_protection_reason"]) == "azure_messaging_replication_requires_unpairing" {
 				directAllowed = false
 			}
@@ -703,6 +712,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
+	if parent == kustoAttachmentType && child == kustoDatabaseType && reason == "azure_kusto_following_database" {
+		return true
+	}
 	return cosmosIntrinsicChild(parent, child, reason) || (isCognitiveType(parent) && isCognitiveType(child) && reason == "azure_cognitive_managed_configuration") || (parent == searchType && child == searchPerimeterType && reason == "azure_search_managed_configuration") || (parent == redisType && child == redisPolicyType && reason == "azure_redis_builtin_policy") ||
 		(parent == redisLinkType && child == redisLinkType && reason == "azure_redis_secondary_link") ||
 		(recoveryType(parent) && parent == child && reason == "azure_messaging_recovery_secondary") ||
@@ -728,6 +740,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	case isCosmosType(parent.NativeType):
 		native = true // The Cosmos walk validates both complete native reads.
 		children, err = c.cosmosChildren(ctx, parent, raw)
+	case isKustoType(parent.NativeType):
+		native = true
+		children, err = c.kustoChildren(ctx, parent, raw)
 	case parent.NativeType == mongoClusterType:
 		native = true
 		children, err = c.mongoClusterChildren(ctx, parent, raw)
@@ -776,6 +791,15 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	}
 	for i := range children {
 		children[i].direct = children[i].direct || servicePrerequisiteKind(parent.NativeType, children[i].kind)
+		if parent.NativeType == kustoType && children[i].kind == kustoImageType {
+			active, err := kustoActiveImage(raw, last(children[i].id))
+			if err != nil {
+				return nil, err
+			}
+			if active {
+				children[i].direct = false
+			}
+		}
 		if isCosmosType(parent.NativeType) && cosmosIntrinsicChild(parent.NativeType, children[i].kind, cosmosProtection(children[i].kind, children[i].data)) {
 			children[i].direct = false
 		}
@@ -805,6 +829,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if isKustoType(parent.Identity.NativeType) {
+		return kustoSharedPrerequisite(parent, child) || kustoControlledDatabase(parent, child) || slices.Contains(kustoOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
+	}
 	if parent.Identity.NativeType == mongoClusterType {
 		return mongoClusterReplicaPrerequisite(parent, child) || (slices.Contains(mongoClusterOwnedKinds(), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID))
 	}

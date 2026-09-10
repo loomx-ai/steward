@@ -1339,3 +1339,72 @@ background evidence only, not acceptance evidence for this work.
   no conditional ETag parameter; concurrent final read/delete races and
   independent end-to-end cloud acceptance remain open, alongside the rest of
   GCP/Azure behavior parity. No provider acceptance box is closed by this batch.
+
+### Azure Data Explorer / Kusto progress (acceptance remains open)
+
+- Added ten native 2025-02-14 rules for clusters, databases, follower attachments,
+  data connections, database/cluster principal assignments, scripts, managed
+  private endpoints, private endpoint connections and custom sandbox images.
+  Thirty-six operations include native child collections, the GET follower
+  index, original principal/list alternatives and regional operation results.
+- Full child/detail walks, parent rereads and native indexes bind each reviewed
+  cascade or prerequisite. A source's follower index must agree with the actual
+  foreign attachment. Reviewed attachment deletion precedes source deletion
+  without owning the follower cluster. Attachments control only matching local
+  read-only database views; source, selector, prefix/override, sharing and native
+  names must agree. Wildcard attachments review all matching views. Retention,
+  unreviewed members and contradictory or inaccessible indexes block cleanup.
+- Read-only database selection identifies its attachment controller. Active
+  custom images require cluster cleanup and independent final absence. Other
+  reviewed child DELETEs precede their parent. Script registration deletion does
+  not roll back executed KQL. Cluster soft delete is not rollback for earlier
+  database deletions, and no soft-delete opt-out, restore or purge is offered.
+- Native/proxy region handling uses the cluster's real region, including the
+  recorded `DummyLocation` endpoint response. Configuration, ancestor and target
+  digests retain exact large integers and sensitive values without exposing
+  scripts, SAS tokens, custom-image requirements or URL credentials. Operation
+  states and independently reconciled child indexes do not hide configuration
+  changes. Managed private endpoint deletion checks the target's actual API,
+  private configuration, inherited locks, protection and managed ownership.
+- Managed resource-group preflight also checks Kusto readiness and linked-target
+  protection. Group ownership cannot absorb an external follower attachment;
+  that attachment requires separate cleanup before group review. Tests exercise
+  the AKS plan, execution and final readback with a retained external data target,
+  including target protection, private drift and denied reads.
+- Forty-two unchanged official examples from commit
+  `e45039baa985c442877529906e705982a6e0099d` retain original schemas and hashes.
+  Thirty-one bodies pass native schemas offline, plus six concrete discriminator
+  checks. The full Kusto Swagger SHA-256 is
+  `6c09537668b6efc3a76e6a96f29572aac2457d4188c162f8c74cd8f1690bc59b`.
+  A fresh two-document snapshot matches the checked-in source, preserving all
+  231 earlier types and 129 earlier documents apart from additive shared content.
+- One pinned official CLI scenario supplies 45 original responses. Eight DELETE
+  chains replay every recorded status poll. The selected resource API bridges
+  2022-02-01 to 2025-02-14 while preserving the native response bodies and LRO
+  URLs. Earlier parent/database GETs, synthetic indexes/target Storage state and
+  final 404s are distinguished in the [Kusto evidence](providers/azure/fixtures/kusto/README.md).
+  The recording's already-absent attachment DELETE is not counted as successful
+  native attachment removal. No native custom-image deletion replay is claimed.
+- Bounded polling accepts the exact native operationResults collection and
+  documented version/display-region formats, including the Location query and
+  its recorded empty HTTP 200 result. Ordinary empty resource reads and JSON null
+  stay invalid. Target-bound receipts and request identity checks survive restart;
+  partial, denied, failed/canceled, forged and mismatched responses cannot finish
+  cleanup. Operation success and expiry still require final native absence of
+  the target and every reviewed dependency. The generic detach invocation also
+  applies the Kusto operation boundary despite its non-resource action path.
+- Azure now has 241 rules, 225 native DELETE bindings and 756 operations from
+  86 root plus 44 reference documents. Two generations reproduce SHA-256
+  `a27b61df236291108f405eeaf5288f12268563e0d09d8a151b77b2e165a43c76`.
+  Two independent CLI extractions reproduce SHA-256
+  `9d6ca20104ca75ef77bf18abbbd354939c702037269174b8ba1a0879ab321599`.
+  Final full Go tests, Azure/catalog/contracts/plan/cleanup race checks, `go vet`,
+  eleven offline importer/SDK metadata tests and bilingual documentation checks
+  passed, including the managed-group additions.
+- Microsoft's Kusto emulator exposes query APIs, not this ARM control plane.
+  Reviewed Floci-AZ 0.12.0 source has no Kusto routes in 331 Java files. No live
+  Azure mutation or independent emulator acceptance is claimed. Unmodeled IoT
+  Hub/Digital Twins link targets, data-plane tables/functions, ingestion behavior,
+  backup/restore, the final read/delete race and full GCP/Azure application parity
+  remain open. Native DELETE does not declare conditional ETag protection, and
+  no provider acceptance item is closed by this batch.

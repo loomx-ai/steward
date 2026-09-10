@@ -67,3 +67,10 @@ Swagger examples and 483 responses from 10 official CLI recordings. Fourteen
 exact-version DELETE/LRO replays complement replica-order, protection, paging,
 private-configuration and synthetic final-absence checks. Its ARM surface is
 separate from Cosmos DB accounts and from MongoDB data-protocol emulators.
+
+[Azure Data Explorer](kusto/README.md) retains 42 original Swagger examples and
+45 responses from the official Kusto CLI scenario. Eight native DELETE/status
+poll chains, display-region URLs and an empty Location result complement the
+follower, protection, retention, configuration and resumed-readback tests.
+The evidence distinguishes the older CLI API bridge, composed topology,
+synthetic indexes/final absence and query-engine-only emulator scope.

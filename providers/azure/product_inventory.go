@@ -28,6 +28,8 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	KustoAncestors                   map[string]any `json:"kusto_ancestors,omitempty"`
+	KustoPrivateConfiguration        string         `json:"kusto_private_configuration,omitempty"`
 	MongoClusterPrivateConfiguration string         `json:"mongocluster_private_configuration,omitempty"`
 	CosmosAncestors                  map[string]any `json:"cosmos_ancestors,omitempty"`
 	CosmosThroughput                 string         `json:"cosmos_throughput,omitempty"`
@@ -319,6 +321,9 @@ func productGeneration(raw map[string]any) string {
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isCDNType(kind) {
 		values = append(values, cdnConfiguration(kind, raw))
 	}
+	if _, kind, err := parseID(text(raw["id"])); err == nil && isKustoType(kind) {
+		values = append(values, kustoConfiguration(kind, raw))
+	}
 	if _, kind, err := parseID(text(raw["id"])); err == nil && isMongoClusterType(kind) {
 		values = append(values, mongoClusterConfiguration(kind, raw))
 	}
@@ -398,6 +403,14 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	}
 	if err := c.verifyCosmosProductParent(ctx, target, current.data); err != nil {
 		return err
+	}
+	if target.KustoPrivateConfiguration != "" && target.KustoPrivateConfiguration != c.privateConfiguration(kustoSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
+	}
+	if target.KustoAncestors != nil {
+		if err := c.kustoAncestors(ctx, target.ParentID, target.KustoAncestors, false); err != nil {
+			return err
+		}
 	}
 	if target.MongoClusterPrivateConfiguration != "" && target.MongoClusterPrivateConfiguration != c.privateConfiguration(mongoClusterSnapshot(target.ParentType, current.data)) {
 		return errProductParentGenerationChanged
@@ -556,6 +569,10 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 				target.ParentWireID = text(parent.Normalized["_cosmos_wire_id"])
 				target.CosmosAncestors = object(parent.Normalized["_cosmos_ancestors"])
 				target.CosmosThroughput = text(parent.Normalized["_cosmos_throughput_binding"])
+			}
+			if isKustoType(parent.NativeType) {
+				target.KustoAncestors = object(parent.Normalized["_kusto_ancestors"])
+				target.KustoPrivateConfiguration = text(parent.Normalized["_kusto_private_configuration"])
 			}
 			if isMongoClusterType(parent.NativeType) {
 				target.MongoClusterPrivateConfiguration = text(parent.Normalized["_mongocluster_private_configuration"])

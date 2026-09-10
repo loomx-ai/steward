@@ -36,12 +36,13 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 231 current resource rules discover through native product List operations.
+All 241 current resource rules discover through native product List operations.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
 product observations. Subnets, Blob containers, SQL databases and elastic pools
 enumerate their native parents first; detail reads supply lifecycle properties,
 inherited locks, ownership and network references. Child location falls back to
-the parent only when the native response omits it. Cosmos DB keeps global
+the parent only when the native response omits it. Kusto proxies always use their
+cluster region, including native `DummyLocation` responses. Cosmos DB keeps global
 controllers and managed Cassandra deployment regions separate from native
 resource-group location metadata.
 
@@ -60,8 +61,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 720 operations from
-85 root documents and 44 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 756 operations from
+86 root documents and 44 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -362,3 +363,13 @@ Private configuration, parent identity, pagination and resumed signed operations
 are bound separately from moving backup clocks. [DocumentDB evidence](../fixtures/mongocluster/README.md)
 contains 14 unchanged examples, 483 official CLI responses, 14 native deletion
 replays and the limits of data-plane and independent emulator verification.
+
+Azure Data Explorer adds ten native 2025-02-14 rules and 36 operations. Clusters,
+databases and attachments use complete native child/follower indexes. Reviewed
+foreign attachments precede source deletion without owning the follower cluster;
+read-only views and active custom images require their actual controller. Managed
+private endpoint targets receive native configuration/protection checks. Private
+ancestor bindings, bounded operation URLs and final native absence survive
+restart. The [Kusto evidence](../fixtures/kusto/README.md) retains 42 original
+examples, 45 CLI responses, eight DELETE/status replays, the precise API-version
+bridge, Location response compatibility and independent verification limits.

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "368cbd03087ddf8b94c975e96c3a955756c0d2da8028f809cb545991c629e192",
+    "checksum": "40135c549e2ab9dd9f26e16cdbc59345f54abd81771cc2714eb3bb5573288512",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "60af3e6bd9924c5f90b65503940763aa9a47fe39bb837873a4c5fdb434a44ae7",
+  "content_checksum": "a6296ee81edd1e64fd25a5a831256007904c142ba53d2b1f3c089913959f5232",
   "operations": [
     {
       "id": "Azure.Microsoft.App.ContainerApps_Delete",
@@ -35834,6 +35834,2875 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json"
     },
     {
+      "id": "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Delete",
+      "name": "AttachedDatabaseConfigurations_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations/{attachedDatabaseConfigurationName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "attachedDatabaseConfigurationName": {
+            "description": "The name of the attached database configuration.",
+            "in": "path",
+            "name": "attachedDatabaseConfigurationName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations/{attachedDatabaseConfigurationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Get",
+      "name": "AttachedDatabaseConfigurations_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations/{attachedDatabaseConfigurationName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "attachedDatabaseConfigurationName": {
+            "description": "The name of the attached database configuration.",
+            "in": "path",
+            "name": "attachedDatabaseConfigurationName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing an attached database configuration.",
+        "properties": {
+          "location": {
+            "description": "Resource location.",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/AttachedDatabaseConfigurationProperties",
+            "description": "The properties of the attached database configuration.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations/{attachedDatabaseConfigurationName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_ListByCluster",
+      "name": "AttachedDatabaseConfigurations_ListByCluster",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list attached database configurations operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of attached database configurations.",
+            "items": {
+              "$ref": "#/definitions/AttachedDatabaseConfiguration"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/attachedDatabaseConfigurations",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Delete",
+      "name": "ClusterPrincipalAssignments_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments/{principalAssignmentName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "principalAssignmentName": {
+            "description": "The name of the Kusto principalAssignment.",
+            "in": "path",
+            "name": "principalAssignmentName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments/{principalAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Get",
+      "name": "ClusterPrincipalAssignments_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments/{principalAssignmentName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "principalAssignmentName": {
+            "description": "The name of the Kusto principalAssignment.",
+            "in": "path",
+            "name": "principalAssignmentName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a cluster principal assignment.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ClusterPrincipalProperties",
+            "description": "The cluster principal.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments/{principalAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_List",
+      "name": "ClusterPrincipalAssignments_List",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto cluster principal assignments operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto cluster principal assignments.",
+            "items": {
+              "$ref": "#/definitions/ClusterPrincipalAssignment"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/principalAssignments",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_Delete",
+      "name": "Clusters_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_DetachFollowerDatabases",
+      "name": "Clusters_DetachFollowerDatabases",
+      "service": "Microsoft.Kusto",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/detachFollowerDatabases",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "followerDatabaseToRemove": {
+            "description": "The follower databases properties to remove.",
+            "in": "body",
+            "name": "followerDatabaseToRemove",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FollowerDatabaseDefinition"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/detachFollowerDatabases",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_Get",
+      "name": "Clusters_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Class representing a Kusto cluster.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The identity of the cluster, if configured."
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterProperties",
+            "description": "The cluster properties.",
+            "x-ms-client-flatten": true
+          },
+          "sku": {
+            "$ref": "#/definitions/AzureSku",
+            "description": "The SKU of the cluster."
+          },
+          "zones": {
+            "description": "The availability zones.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "sku"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_List",
+      "name": "Clusters_List",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kusto/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto clusters operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto clusters.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kusto/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_ListByResourceGroup",
+      "name": "Clusters_ListByResourceGroup",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto clusters operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto clusters.",
+            "items": {
+              "$ref": "#/definitions/Cluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_ListFollowerDatabases",
+      "name": "Clusters_ListFollowerDatabases",
+      "service": "Microsoft.Kusto",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/listFollowerDatabases",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto database principals operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of follower database result.",
+            "items": {
+              "$ref": "#/definitions/FollowerDatabaseDefinition"
+            },
+            "type": "array",
+            "x-ms-identifiers": []
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/listFollowerDatabases",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Clusters_ListFollowerDatabasesGet",
+      "name": "Clusters_ListFollowerDatabasesGet",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/listFollowerDatabases",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto database principals operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FollowerDatabaseDefinitionGet items on this page",
+            "items": {
+              "$ref": "#/definitions/FollowerDatabaseDefinitionGet"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/listFollowerDatabases",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DataConnections_Delete",
+      "name": "DataConnections_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections/{dataConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "dataConnectionName": {
+            "description": "The name of the data connection.",
+            "in": "path",
+            "name": "dataConnectionName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections/{dataConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DataConnections_Get",
+      "name": "DataConnections_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections/{dataConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "dataConnectionName": {
+            "description": "The name of the data connection.",
+            "in": "path",
+            "name": "dataConnectionName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing an data connection.",
+        "discriminator": "kind",
+        "properties": {
+          "kind": {
+            "$ref": "#/definitions/DataConnectionKind",
+            "description": "Kind of the endpoint for the data connection"
+          },
+          "location": {
+            "description": "Resource location.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections/{dataConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DataConnections_ListByDatabase",
+      "name": "DataConnections_ListByDatabase",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto data connections operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto data connections.",
+            "items": {
+              "$ref": "#/definitions/DataConnection"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/dataConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Delete",
+      "name": "DatabasePrincipalAssignments_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments/{principalAssignmentName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "principalAssignmentName": {
+            "description": "The name of the Kusto principalAssignment.",
+            "in": "path",
+            "name": "principalAssignmentName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments/{principalAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Get",
+      "name": "DatabasePrincipalAssignments_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments/{principalAssignmentName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "principalAssignmentName": {
+            "description": "The name of the Kusto principalAssignment.",
+            "in": "path",
+            "name": "principalAssignmentName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a database principal assignment.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DatabasePrincipalProperties",
+            "description": "The database principal.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments/{principalAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_List",
+      "name": "DatabasePrincipalAssignments_List",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto database principal assignments operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto database principal assignments.",
+            "items": {
+              "$ref": "#/definitions/DatabasePrincipalAssignment"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/principalAssignments",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Databases_Delete",
+      "name": "Databases_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Databases_Get",
+      "name": "Databases_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a Kusto database.",
+        "discriminator": "kind",
+        "properties": {
+          "kind": {
+            "$ref": "#/definitions/Kind",
+            "description": "Kind of the database"
+          },
+          "location": {
+            "description": "Resource location.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind"
+        ],
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Databases_ListByCluster",
+      "name": "Databases_ListByCluster",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skiptoken": {
+            "description": "Skiptoken is only used if a previous operation returned a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skiptoken parameter that specifies a starting point to use for subsequent calls.",
+            "in": "query",
+            "name": "$skiptoken",
+            "required": false,
+            "type": "string"
+          },
+          "$top": {
+            "description": "limit the number of results",
+            "format": "int32",
+            "in": "query",
+            "maximum": 1000,
+            "minimum": 5,
+            "name": "$top",
+            "required": false,
+            "type": "integer"
+          },
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Database list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Database items on this page",
+            "items": {
+              "$ref": "#/definitions/Database"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Databases_ListPrincipals",
+      "name": "Databases_ListPrincipals",
+      "service": "Microsoft.Kusto",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/listPrincipals",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto database principals operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto database principals.",
+            "items": {
+              "$ref": "#/definitions/DatabasePrincipal"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/listPrincipals",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Delete",
+      "name": "ManagedPrivateEndpoints_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "managedPrivateEndpointName": {
+            "description": "The name of the managed private endpoint.",
+            "in": "path",
+            "name": "managedPrivateEndpointName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Get",
+      "name": "ManagedPrivateEndpoints_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "managedPrivateEndpointName": {
+            "description": "The name of the managed private endpoint.",
+            "in": "path",
+            "name": "managedPrivateEndpointName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a managed private endpoint.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ManagedPrivateEndpointProperties",
+            "description": "A managed private endpoint.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_List",
+      "name": "ManagedPrivateEndpoints_List",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list managed private endpoints operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of managed private endpoints.",
+            "items": {
+              "$ref": "#/definitions/ManagedPrivateEndpoint"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/managedPrivateEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.OperationsResults_Get",
+      "name": "OperationsResults_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kusto/locations/{location}/operationResults/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "location": {
+            "description": "The name of Azure region.",
+            "in": "path",
+            "minLength": 1,
+            "name": "location",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "operationId": {
+            "description": "The ID of an ongoing async operation.",
+            "in": "path",
+            "minLength": 1,
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Operation Result Entity.",
+        "properties": {
+          "endTime": {
+            "description": "The operation end time",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "#/definitions/OperationResultErrorProperties",
+            "description": "Object that contains the error code and message if the operation failed.",
+            "x-ms-client-flatten": true
+          },
+          "id": {
+            "description": "ID of the resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the resource.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "percentComplete": {
+            "description": "Percentage completed.",
+            "format": "double",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "properties": {
+            "$ref": "#/definitions/OperationResultProperties",
+            "description": "Properties of the operation results",
+            "x-ms-client-flatten": true
+          },
+          "startTime": {
+            "description": "The operation start time",
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "status of the Operation result.",
+            "readOnly": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kusto/locations/{location}/operationResults/{operationId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the private endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A private endpoint connection",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Resource properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.PrivateEndpointConnections_List",
+      "name": "PrivateEndpointConnections_List",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of private endpoint connections",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of private endpoint connections",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.SandboxCustomImages_Delete",
+      "name": "SandboxCustomImages_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages/{sandboxCustomImageName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sandboxCustomImageName": {
+            "description": "The name of the sandbox custom image.",
+            "in": "path",
+            "name": "sandboxCustomImageName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages/{sandboxCustomImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.SandboxCustomImages_Get",
+      "name": "SandboxCustomImages_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages/{sandboxCustomImageName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "sandboxCustomImageName": {
+            "description": "The name of the sandbox custom image.",
+            "in": "path",
+            "name": "sandboxCustomImageName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a Kusto sandbox custom image.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SandboxCustomImageProperties",
+            "description": "A sandbox custom image.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages/{sandboxCustomImageName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.SandboxCustomImages_ListByCluster",
+      "name": "SandboxCustomImages_ListByCluster",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto sandbox custom images operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SandboxCustomImage items on this page",
+            "items": {
+              "$ref": "#/definitions/SandboxCustomImage"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/sandboxCustomImages",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Scripts_Delete",
+      "name": "Scripts_Delete",
+      "service": "Microsoft.Kusto",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts/{scriptName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "scriptName": {
+            "description": "The name of the Kusto database script.",
+            "in": "path",
+            "name": "scriptName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts/{scriptName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Scripts_Get",
+      "name": "Scripts_Get",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts/{scriptName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "scriptName": {
+            "description": "The name of the Kusto database script.",
+            "in": "path",
+            "name": "scriptName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Class representing a database script.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ScriptProperties",
+            "description": "The database script.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts/{scriptName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kusto.Scripts_ListByDatabase",
+      "name": "Scripts_ListByDatabase",
+      "service": "Microsoft.Kusto",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-02-14"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kusto cluster.",
+            "in": "path",
+            "name": "clusterName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "databaseName": {
+            "description": "The name of the database in the Kusto cluster.",
+            "in": "path",
+            "name": "databaseName",
+            "pattern": "^.*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list Kusto database script operation response.",
+        "properties": {
+          "nextLink": {
+            "description": "Link to the next page of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of Kusto scripts.",
+            "items": {
+              "$ref": "#/definitions/Script"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kusto",
+        "version": "2025-02-14",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kusto/clusters/{clusterName}/databases/{databaseName}/scripts",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json"
+    },
+    {
       "id": "Azure.Microsoft.ManagedIdentity.UserAssignedIdentities_Delete",
       "name": "UserAssignedIdentities_Delete",
       "service": "Microsoft.ManagedIdentity",
@@ -61345,6 +64214,216 @@
         ],
         "list_operations": [
           "Azure.Microsoft.KeyVault.Vaults_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters",
+      "class": "data.database_cluster",
+      "display_name": "Data Explorer cluster",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "clusters",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.Clusters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.Clusters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.Clusters_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/attachedDatabaseConfigurations",
+      "class": "data.database_attachment",
+      "display_name": "Kusto attached database configuration",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "attachedDatabaseConfigurations",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_ListByCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases",
+      "class": "data.database",
+      "display_name": "Kusto database",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "databases",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.Databases_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.Databases_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.Databases_ListByCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/dataConnections",
+      "class": "data.connection",
+      "display_name": "Kusto data connection",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "dataConnections",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.DataConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.DataConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.DataConnections_ListByDatabase"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/principalAssignments",
+      "class": "security.principal_assignment",
+      "display_name": "Kusto database principal assignment",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "principalAssignments",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/scripts",
+      "class": "data.database_script",
+      "display_name": "Kusto database script",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "scripts",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.Scripts_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.Scripts_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.Scripts_ListByDatabase"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Kusto managed private endpoint",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "managedPrivateEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/principalAssignments",
+      "class": "security.principal_assignment",
+      "display_name": "Kusto cluster principal assignment",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "principalAssignments",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Kusto private endpoint connection",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.PrivateEndpointConnections_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.PrivateEndpointConnections_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/sandboxCustomImages",
+      "class": "compute.sandbox_image",
+      "display_name": "Kusto sandbox custom image",
+      "scope_kinds": [
+        "global",
+        "region"
+      ],
+      "rest": {
+        "collection": "sandboxCustomImages",
+        "read_operations": [
+          "Azure.Microsoft.Kusto.SandboxCustomImages_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Kusto.SandboxCustomImages_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Kusto.SandboxCustomImages_ListByCluster"
         ]
       }
     },

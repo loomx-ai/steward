@@ -1,0 +1,296 @@
+[
+  {
+    "file": "KustoAttachedDatabaseConfigurationsDelete.json",
+    "operation": "AttachedDatabaseConfigurations_Delete",
+    "label": "AttachedDatabaseConfigurationsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoAttachedDatabaseConfigurationsDelete.json",
+    "source_sha256": "33e18de1d8ae2c7dd58867be42363defe1ea18b06fd2e31e40adb087e90013fa"
+  },
+  {
+    "file": "KustoAttachedDatabaseConfigurationsGet.json",
+    "operation": "AttachedDatabaseConfigurations_Get",
+    "label": "AttachedDatabaseConfigurationsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoAttachedDatabaseConfigurationsGet.json",
+    "source_sha256": "b3701be57f33bed3abc341d441a16a486050634b8c1e9793db8201f1ff49afc2"
+  },
+  {
+    "file": "KustoAttachedDatabaseConfigurationsListByCluster.json",
+    "operation": "AttachedDatabaseConfigurations_ListByCluster",
+    "label": "KustoAttachedDatabaseConfigurationsListByCluster",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoAttachedDatabaseConfigurationsListByCluster.json",
+    "source_sha256": "c8bc04008a6f1c6308a499af0c82182b96ce88c59736f9625bd8c103124bf661"
+  },
+  {
+    "file": "KustoClusterDetachFollowerDatabases.json",
+    "operation": "Clusters_DetachFollowerDatabases",
+    "label": "KustoClusterDetachFollowerDatabases",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterDetachFollowerDatabases.json",
+    "source_sha256": "2b67b0618d6b4cf3e13d3439299dc9c3f7ba8e7822bfdc5b8cb4fdd892346df7"
+  },
+  {
+    "file": "KustoClusterListFollowerDatabases.json",
+    "operation": "Clusters_ListFollowerDatabases",
+    "label": "KustoClusterListFollowerDatabases",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterListFollowerDatabases.json",
+    "source_sha256": "352970cd3aef0591282c106efa6c096fa24e338d2afc84b4f859be2e0fa835b5"
+  },
+  {
+    "file": "KustoClusterListFollowerDatabasesGet.json",
+    "operation": "Clusters_ListFollowerDatabasesGet",
+    "label": "KustoClusterListFollowerDatabasesGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterListFollowerDatabasesGet.json",
+    "source_sha256": "bde0838392549258071c5b2da8b633b2716b2b63601830e56c01e973f0368e03"
+  },
+  {
+    "file": "KustoClusterPrincipalAssignmentsDelete.json",
+    "operation": "ClusterPrincipalAssignments_Delete",
+    "label": "KustoClusterPrincipalAssignmentsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterPrincipalAssignmentsDelete.json",
+    "source_sha256": "562dbee7ab86a75d87b6e292986ec93a71341a6d2c89a7c4256515846d06c01d"
+  },
+  {
+    "file": "KustoClusterPrincipalAssignmentsGet.json",
+    "operation": "ClusterPrincipalAssignments_Get",
+    "label": "KustoClusterPrincipalAssignmentsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterPrincipalAssignmentsGet.json",
+    "source_sha256": "3608ff0a5f20250eef41ce522b03e22270799898a300aa0104901cab541433e8"
+  },
+  {
+    "file": "KustoClusterPrincipalAssignmentsList.json",
+    "operation": "ClusterPrincipalAssignments_List",
+    "label": "KustoPrincipalAssignmentsList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClusterPrincipalAssignmentsList.json",
+    "source_sha256": "933a8352adefcdd0e674ec3ad29c361de244b50f6d34bef97cc9b93adc9a4966"
+  },
+  {
+    "file": "KustoClustersDelete.json",
+    "operation": "Clusters_Delete",
+    "label": "KustoClustersDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClustersDelete.json",
+    "source_sha256": "8799f10a180f6a46699b8734900829c5efedd1c8abc4b9d06eb8dc46a3356d66"
+  },
+  {
+    "file": "KustoClustersGet.json",
+    "operation": "Clusters_Get",
+    "label": "KustoClustersGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClustersGet.json",
+    "source_sha256": "62d4d8d43111b9e56309f52c49a45c9ece5ee0d21581e995ea3f4a7b6017d99b"
+  },
+  {
+    "file": "KustoClustersList.json",
+    "operation": "Clusters_List",
+    "label": "KustoClustersList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClustersList.json",
+    "source_sha256": "48920bbeff98e4036122975e10544e8d2ef384adeb8ae6379c569641194241f5"
+  },
+  {
+    "file": "KustoClustersListByResourceGroup.json",
+    "operation": "Clusters_ListByResourceGroup",
+    "label": "KustoClustersListByResourceGroup",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoClustersListByResourceGroup.json",
+    "source_sha256": "08e832dceda9f09b69cc113a00f9d78e5605a38e5447a62044d2593fb92d456a"
+  },
+  {
+    "file": "KustoDataConnectionsCosmosDbGet.json",
+    "operation": "DataConnections_Get",
+    "label": "KustoDataConnectionsCosmosDbGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsCosmosDbGet.json",
+    "source_sha256": "dc6ace0c6eae45287ba0acea2d2eb45ee4b34858a157b93830fdc46892f32b27"
+  },
+  {
+    "file": "KustoDataConnectionsDelete.json",
+    "operation": "DataConnections_Delete",
+    "label": "KustoDataConnectionsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsDelete.json",
+    "source_sha256": "f8b0e81d1db36f8d7377df0a99f5002963a90d7aa4d4ded22012e53cf101f91c"
+  },
+  {
+    "file": "KustoDataConnectionsEventGridGet.json",
+    "operation": "DataConnections_Get",
+    "label": "KustoDataConnectionsEventGridGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsEventGridGet.json",
+    "source_sha256": "afdcf54a2895d86296c5360c67b82016e0c4222888178d920998357f56de95d2"
+  },
+  {
+    "file": "KustoDataConnectionsEventGridWithManagedIdentityGet.json",
+    "operation": "DataConnections_Get",
+    "label": "KustoDataConnectionsEventGridWithManagedIdentityGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsEventGridWithManagedIdentityGet.json",
+    "source_sha256": "877d21134e67fdca494fd4402b4cf0df0efe171a96b66b9ac21dad79b2b2abfa"
+  },
+  {
+    "file": "KustoDataConnectionsEventHubWithManagedIdentityGet.json",
+    "operation": "DataConnections_Get",
+    "label": "KustoDataConnectionsEventHubWithManagedIdentityGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsEventHubWithManagedIdentityGet.json",
+    "source_sha256": "8fc062ffe32c898968c8b38cb69a6bb94f994aa927687ad7b44ee37a53f944db"
+  },
+  {
+    "file": "KustoDataConnectionsGet.json",
+    "operation": "DataConnections_Get",
+    "label": "KustoDataConnectionsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsGet.json",
+    "source_sha256": "5bc5fb350f7d70d3804c82744f73fc7e991098c967306e4661541df9508d1c3a"
+  },
+  {
+    "file": "KustoDataConnectionsListByDatabase.json",
+    "operation": "DataConnections_ListByDatabase",
+    "label": "KustoDatabasesListByCluster",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDataConnectionsListByDatabase.json",
+    "source_sha256": "d3459c34fb9da42372c9d9418a4d5521ba519a2af1172569f6631cb1e442f5b0"
+  },
+  {
+    "file": "KustoDatabaseListPrincipals.json",
+    "operation": "Databases_ListPrincipals",
+    "label": "KustoDatabaseListPrincipals",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabaseListPrincipals.json",
+    "source_sha256": "f8c4713eb817145af7db327d25060d84af5b7869d28cce0be9ee17d3ec2da72b"
+  },
+  {
+    "file": "KustoDatabasePrincipalAssignmentsDelete.json",
+    "operation": "DatabasePrincipalAssignments_Delete",
+    "label": "KustoDatabasePrincipalAssignmentsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasePrincipalAssignmentsDelete.json",
+    "source_sha256": "70f8da533506f8bde424fb5a5fafe23fedfa32f11161ad47517f1672e223adf8"
+  },
+  {
+    "file": "KustoDatabasePrincipalAssignmentsGet.json",
+    "operation": "DatabasePrincipalAssignments_Get",
+    "label": "KustoDatabasePrincipalAssignmentsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasePrincipalAssignmentsGet.json",
+    "source_sha256": "b97d629378364e66edbb4e3284d0373b07b73fa98c2102d70d2ea0c99bd2426d"
+  },
+  {
+    "file": "KustoDatabasePrincipalAssignmentsList.json",
+    "operation": "DatabasePrincipalAssignments_List",
+    "label": "KustoPrincipalAssignmentsList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasePrincipalAssignmentsList.json",
+    "source_sha256": "f0a3951de5a9ffeeec553be2d29a7b23b523f47bef9220f10aba8c3ec51a901a"
+  },
+  {
+    "file": "KustoDatabasesDelete.json",
+    "operation": "Databases_Delete",
+    "label": "KustoDatabasesDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasesDelete.json",
+    "source_sha256": "ed754f87c46495e98d46b90c313476b808ab13a449950defdf3c0068ced58917"
+  },
+  {
+    "file": "KustoDatabasesGet.json",
+    "operation": "Databases_Get",
+    "label": "KustoDatabasesGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasesGet.json",
+    "source_sha256": "7d9651ce270404323f517c677e73bef621340047366d8069223b4ed54970bd73"
+  },
+  {
+    "file": "KustoDatabasesListByCluster.json",
+    "operation": "Databases_ListByCluster",
+    "label": "KustoDatabasesListByCluster",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoDatabasesListByCluster.json",
+    "source_sha256": "03f9b9e2dcbcb68468ad3d119d60391d8c9b000982631e76575f98a8fa7ba36d"
+  },
+  {
+    "file": "KustoManagedPrivateEndpointsDelete.json",
+    "operation": "ManagedPrivateEndpoints_Delete",
+    "label": "ManagedPrivateEndpointsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoManagedPrivateEndpointsDelete.json",
+    "source_sha256": "b4d7c26c620325690625dd1277d0edde58513bee9180f75127bd9b5d81c3f8fe"
+  },
+  {
+    "file": "KustoManagedPrivateEndpointsGet.json",
+    "operation": "ManagedPrivateEndpoints_Get",
+    "label": "KustoManagedPrivateEndpointsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoManagedPrivateEndpointsGet.json",
+    "source_sha256": "163bec3ec03afe4ae8921465b6715d4051bcb8cfe919c357236e13323eae8447"
+  },
+  {
+    "file": "KustoManagedPrivateEndpointsList.json",
+    "operation": "ManagedPrivateEndpoints_List",
+    "label": "KustoManagedPrivateEndpointsList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoManagedPrivateEndpointsList.json",
+    "source_sha256": "fe52f87554d0064bdf6b829eba3586aa20d4c67420d12d88d8076f87277e78d6"
+  },
+  {
+    "file": "KustoOperationResultsGet.json",
+    "operation": "OperationsResults_Get",
+    "label": "KustoOperationResultsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoOperationResultsGet.json",
+    "source_sha256": "6a86c01c7290a6d5e5965c3306112c97940e8e31ae9844fda79d6c14dec5d812"
+  },
+  {
+    "file": "KustoPrivateEndpointConnectionsDelete.json",
+    "operation": "PrivateEndpointConnections_Delete",
+    "label": "Deletes a private endpoint connection with a given name.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoPrivateEndpointConnectionsDelete.json",
+    "source_sha256": "6c46057d0a34d9efd6ef59b5b92bf8b0e997967c1c5a770521ae6e77464a30fc"
+  },
+  {
+    "file": "KustoPrivateEndpointConnectionsGet.json",
+    "operation": "PrivateEndpointConnections_Get",
+    "label": "Gets private endpoint connection.",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoPrivateEndpointConnectionsGet.json",
+    "source_sha256": "4cadb3c536e274b253c736304334f5cdd75c0f5965d9c2b5cfccff6b176935f8"
+  },
+  {
+    "file": "KustoPrivateEndpointConnectionsList.json",
+    "operation": "PrivateEndpointConnections_List",
+    "label": "KustoPrivateEndpointConnectionsList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoPrivateEndpointConnectionsList.json",
+    "source_sha256": "3d69adb55f7d2cda4a4c911f4fedf922b46264d24977cfcda10e1003cb072c6e"
+  },
+  {
+    "file": "KustoSandboxCustomImageDelete.json",
+    "operation": "SandboxCustomImages_Delete",
+    "label": "SandboxCustomImagesDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoSandboxCustomImageDelete.json",
+    "source_sha256": "3169099a3d2e1acd5a1d41de13e624bf4dd4f811475888de70b4d9bbe26a8a53"
+  },
+  {
+    "file": "KustoSandboxCustomImagesGet.json",
+    "operation": "SandboxCustomImages_Get",
+    "label": "KustoSandboxCustomImagesGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoSandboxCustomImagesGet.json",
+    "source_sha256": "00902727e43a001a70f60158bed709c215bfe2f6c312c6d54dae986637c54cbe"
+  },
+  {
+    "file": "KustoSandboxCustomImagesList.json",
+    "operation": "SandboxCustomImages_ListByCluster",
+    "label": "KustoSandboxCustomImagesListByCluster",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoSandboxCustomImagesList.json",
+    "source_sha256": "7d3f706830674660aa0d4b7595a47d629b35a91a9a32d435a951710cbe10e091"
+  },
+  {
+    "file": "KustoScriptsDelete.json",
+    "operation": "Scripts_Delete",
+    "label": "KustoScriptsDelete",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoScriptsDelete.json",
+    "source_sha256": "37ab061036e2dd02ef7c8b064a41cf1f1b1d0d9db51f4be4bff0f55a711a92a1"
+  },
+  {
+    "file": "KustoScriptsGet.json",
+    "operation": "Scripts_Get",
+    "label": "KustoScriptsGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoScriptsGet.json",
+    "source_sha256": "68e71b4585b471f651e399891c9d8c916b7c1fdba78b1b07ec0b2ae053eb67fe"
+  },
+  {
+    "file": "KustoScriptsGetWithManagedIdentity.json",
+    "operation": "Scripts_Get",
+    "label": "KustoScriptsGetWithManagedIdentity",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoScriptsGetWithManagedIdentity.json",
+    "source_sha256": "91c1f5865da38d8e96adccfab369a09248f26a6c92db825e5e6a1398703a280f"
+  },
+  {
+    "file": "KustoScriptsListByDatabase.json",
+    "operation": "Scripts_ListByDatabase",
+    "label": "KustoScriptsList",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoScriptsListByDatabase.json",
+    "source_sha256": "5d24d9e177e904f1653938fb8709be1fb83c4d4bc73aeb44c3dee4316a99e89f"
+  },
+  {
+    "file": "KustoSuspendedDatabasesGet.json",
+    "operation": "Databases_Get",
+    "label": "KustoSuspendedDatabasesGet",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/examples/KustoSuspendedDatabasesGet.json",
+    "source_sha256": "f4ac36564ac1c273673f0ec56eac4be52f63a417e0afa14f7fc596811e70f354"
+  }
+]

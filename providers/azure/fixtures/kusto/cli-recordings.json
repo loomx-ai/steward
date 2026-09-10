@@ -1,0 +1,935 @@
+{
+  "file": "test_kusto_Scenario.yaml",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/0349eb646d3225db5fd677114e200efdfd11e3f8/src/kusto/azext_kusto/tests/latest/recordings/test_kusto_Scenario.yaml",
+  "source_sha256": "653dc385bfeae90470db0f4749ca4d7c2f435b2401d300421a65a8fb4bb90ee1",
+  "recordings": [
+    {
+      "interaction_index": 28,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster",
+        "name": "kustoCluster",
+        "type": "Microsoft.Kusto/Clusters",
+        "etag": "\"2022-04-06T15:34:45.7083917Z\"",
+        "location": "West US 2",
+        "sku": {
+          "name": "Standard_E2a_v4",
+          "tier": "Standard",
+          "capacity": 2
+        },
+        "tags": {},
+        "properties": {
+          "state": "Running",
+          "stateReason": null,
+          "uri": "https://kustocluster.westus2.dev.kusto.windows.net",
+          "dataIngestionUri": "https://ingest-kustocluster.westus2.dev.kusto.windows.net",
+          "trustedExternalTenants": [],
+          "virtualNetworkConfiguration": null,
+          "optimizedAutoscale": null,
+          "enableDiskEncryption": false,
+          "enableStreamingIngest": true,
+          "keyVaultProperties": null,
+          "languageExtensions": {
+            "value": []
+          },
+          "enablePurge": true,
+          "enableDoubleEncryption": false,
+          "engineType": "V3",
+          "acceptedAudiences": [],
+          "restrictOutboundNetworkAccess": "Disabled",
+          "allowedFqdnList": [],
+          "publicNetworkAccess": "Enabled",
+          "allowedIpRangeList": [
+            "0.0.0.0/0"
+          ],
+          "enableAutoStop": true,
+          "publicIPType": "IPv4",
+          "virtualClusterGraduationProperties": null,
+          "privateEndpointConnections": [],
+          "provisioningState": "Succeeded"
+        },
+        "identity": {
+          "principalId": "8be1f333-a07f-4511-b062-f056df1b196d",
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "type": "SystemAssigned"
+        }
+      }
+    },
+    {
+      "interaction_index": 63,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/Databases/KustoDatabase",
+        "name": "kustoCluster/KustoDatabase",
+        "type": "Microsoft.Kusto/Clusters/Databases",
+        "location": "West US 2",
+        "kind": "ReadWrite",
+        "properties": {
+          "softDeletePeriod": "P1D",
+          "statistics": {
+            "size": 0.0
+          },
+          "isFollowed": false,
+          "provisioningState": "Succeeded"
+        }
+      }
+    },
+    {
+      "interaction_index": 145,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/principalAssignments/testcli1?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/PrincipalAssignments/testcli1",
+        "name": "kustoCluster/testcli1",
+        "type": "Microsoft.Kusto/Clusters/PrincipalAssignments",
+        "properties": {
+          "principalId": "ad064aa1-8b51-41ec-9c64-0d3037577d63",
+          "role": "AllDatabasesAdmin",
+          "principalType": "App",
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "tenantName": "Microsoft",
+          "principalName": "testcli1",
+          "aadObjectId": "5d67d9cd-c517-4114-858f-466831b02bf3",
+          "provisioningState": "Succeeded"
+        }
+      }
+    },
+    {
+      "interaction_index": 148,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/principalAssignments/testcli1?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/Databases/KustoDatabase/PrincipalAssignments/testcli1",
+        "name": "kustoCluster/KustoDatabase/testcli1",
+        "type": "Microsoft.Kusto/Clusters/Databases/PrincipalAssignments",
+        "properties": {
+          "principalId": "ad064aa1-8b51-41ec-9c64-0d3037577d63",
+          "role": "Admin",
+          "principalType": "App",
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "tenantName": "Microsoft",
+          "principalName": "testcli1",
+          "aadObjectId": "5d67d9cd-c517-4114-858f-466831b02bf3",
+          "provisioningState": "Succeeded"
+        }
+      }
+    },
+    {
+      "interaction_index": 152,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/privateEndpointConnections/kustoPrivateEndpoint4-e14d3c51-32e3-429b-8f72-f6ce28ee9561?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "name": "kustoPrivateEndpoint4-e14d3c51-32e3-429b-8f72-f6ce28ee9561",
+        "type": "Microsoft.Kusto/Clusters/privateEndpointConnections",
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/privateEndpointConnections/kustoPrivateEndpoint4-e14d3c51-32e3-429b-8f72-f6ce28ee9561",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "groupId": "cluster",
+          "privateEndpoint": {
+            "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Network/privateEndpoints/kustoPrivateEndpoint4"
+          },
+          "privateLinkServiceConnectionState": {
+            "status": "Approved",
+            "description": "Approved by test",
+            "actionsRequired": null
+          }
+        }
+      }
+    },
+    {
+      "interaction_index": 179,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/dataConnections/dataConnectionTest?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/Databases/KustoDatabase/DataConnections/dataConnectionTest",
+        "name": "kustoCluster/KustoDatabase/dataConnectionTest",
+        "type": "Microsoft.Kusto/Clusters/Databases/DataConnections",
+        "location": "West US 2",
+        "kind": "EventHub",
+        "properties": {
+          "eventHubResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.EventHub/namespaces/testcli/eventhubs/eventhubTest1",
+          "consumerGroup": "$Default",
+          "tableName": null,
+          "mappingRuleName": null,
+          "dataFormat": null,
+          "eventSystemProperties": [],
+          "compression": "None",
+          "managedIdentityResourceId": null,
+          "managedIdentityObjectId": null,
+          "databaseRouting": "Single",
+          "provisioningState": "Succeeded"
+        }
+      }
+    },
+    {
+      "interaction_index": 183,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/managedPrivateEndpoints/kustoManagedPrivateEndpoint4?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/ManagedPrivateEndpoints/kustoManagedPrivateEndpoint4",
+        "name": "kustoCluster/kustoManagedPrivateEndpoint4",
+        "type": "Microsoft.Kusto/Clusters/ManagedPrivateEndpoints",
+        "location": "DummyLocation",
+        "properties": {
+          "privateLinkResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/testrg/providers/Microsoft.Storage/storageAccounts/clisatest",
+          "groupId": "blob",
+          "requestMessage": "Please Approve.",
+          "provisioningState": "Succeeded"
+        },
+        "systemData": {
+          "createdBy": "zoharhen@microsoft.com",
+          "createdByType": "User",
+          "createdAt": "2022-04-06T15:51:39.1180391Z",
+          "lastModifiedBy": "zoharhen@microsoft.com",
+          "lastModifiedByType": "User",
+          "lastModifiedAt": "2022-04-06T16:22:12.5172609Z"
+        }
+      }
+    },
+    {
+      "interaction_index": 190,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/scripts/kustoScript?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/kustoCluster/Databases/KustoDatabase/Scripts/kustoScript",
+        "name": "kustoCluster/KustoDatabase/kustoScript",
+        "type": "Microsoft.Kusto/Clusters/Databases/Scripts",
+        "properties": {
+          "scriptUrl": "https://clisatest.blob.core.windows.net/kustosa/kustoscript.txt",
+          "continueOnErrors": true,
+          "provisioningState": "Succeeded"
+        },
+        "systemData": {
+          "createdBy": "zoharhen@microsoft.com",
+          "createdByType": "User",
+          "createdAt": "2022-04-06T15:51:05.3440745Z",
+          "lastModifiedBy": "zoharhen@microsoft.com",
+          "lastModifiedByType": "User",
+          "lastModifiedAt": "2022-04-06T16:23:48.6404628Z"
+        }
+      }
+    },
+    {
+      "interaction_index": 248,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/KustoClusterLeader?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/Clusters/KustoClusterLeader",
+        "name": "KustoClusterLeader",
+        "type": "Microsoft.Kusto/Clusters",
+        "etag": "\"2022-04-06T16:49:44.4312546Z\"",
+        "location": "West US 2",
+        "sku": {
+          "name": "Standard_E2a_v4",
+          "tier": "Standard",
+          "capacity": 2
+        },
+        "tags": {},
+        "properties": {
+          "state": "Running",
+          "stateReason": null,
+          "uri": "https://kustoclusterleader.westus2.dev.kusto.windows.net",
+          "dataIngestionUri": "https://ingest-kustoclusterleader.westus2.dev.kusto.windows.net",
+          "trustedExternalTenants": [],
+          "virtualNetworkConfiguration": null,
+          "optimizedAutoscale": null,
+          "enableDiskEncryption": false,
+          "enableStreamingIngest": true,
+          "keyVaultProperties": null,
+          "languageExtensions": {
+            "value": []
+          },
+          "enablePurge": true,
+          "enableDoubleEncryption": false,
+          "engineType": "V3",
+          "acceptedAudiences": [],
+          "restrictOutboundNetworkAccess": "Disabled",
+          "allowedFqdnList": [],
+          "publicNetworkAccess": "Enabled",
+          "allowedIpRangeList": [],
+          "enableAutoStop": true,
+          "publicIPType": "IPv4",
+          "virtualClusterGraduationProperties": null,
+          "privateEndpointConnections": [],
+          "provisioningState": "Succeeded"
+        },
+        "identity": {
+          "principalId": "9e876a9b-7eda-4eca-96f9-f51c22c2fd86",
+          "tenantId": "72f988bf-86f1-41af-91ab-2d7cd011db47",
+          "type": "SystemAssigned"
+        }
+      }
+    },
+    {
+      "interaction_index": 285,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/managedPrivateEndpoints/kustoManagedPrivateEndpoint4?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/78b24609-05c4-43c9-aa84-781d62076607?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/78b24609-05c4-43c9-aa84-781d62076607?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 286,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/78b24609-05c4-43c9-aa84-781d62076607?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/78b24609-05c4-43c9-aa84-781d62076607",
+        "name": "78b24609-05c4-43c9-aa84-781d62076607",
+        "status": "Running",
+        "startTime": "2022-04-06T17:07:14.0550549Z",
+        "endTime": "2022-04-06T17:07:14.0706784Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ManagedPrivateEndpointDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 287,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/78b24609-05c4-43c9-aa84-781d62076607?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/78b24609-05c4-43c9-aa84-781d62076607",
+        "name": "78b24609-05c4-43c9-aa84-781d62076607",
+        "status": "Running",
+        "startTime": "2022-04-06T17:07:14.0550549Z",
+        "endTime": "2022-04-06T17:07:14.0706784Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ManagedPrivateEndpointDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 288,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/78b24609-05c4-43c9-aa84-781d62076607?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/78b24609-05c4-43c9-aa84-781d62076607",
+        "name": "78b24609-05c4-43c9-aa84-781d62076607",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:07:14.0550549Z",
+        "endTime": "2022-04-06T17:08:42.9551997Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "ManagedPrivateEndpointDelete",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 289,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/privateEndpointConnections/kustoPrivateEndpoint4-e14d3c51-32e3-429b-8f72-f6ce28ee9561?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/fe008cf4-cb02-4d55-85c2-d16cc50368ec?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/fe008cf4-cb02-4d55-85c2-d16cc50368ec?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 290,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/fe008cf4-cb02-4d55-85c2-d16cc50368ec?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/fe008cf4-cb02-4d55-85c2-d16cc50368ec",
+        "name": "fe008cf4-cb02-4d55-85c2-d16cc50368ec",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:08:47.9836494Z",
+        "endTime": "2022-04-06T17:09:16.8543307Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "PrivateEndpointConnectionDeleteCommand",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 291,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/scripts/kustoScript?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/37a2ccf2-37fe-4aee-af6b-838cd3304736?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/37a2ccf2-37fe-4aee-af6b-838cd3304736?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 292,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/37a2ccf2-37fe-4aee-af6b-838cd3304736?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/37a2ccf2-37fe-4aee-af6b-838cd3304736",
+        "name": "37a2ccf2-37fe-4aee-af6b-838cd3304736",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:09:33.4822044Z",
+        "endTime": "2022-04-06T17:09:33.5603871Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "DatabaseScriptDelete",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 294,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/principalAssignments/testcli1?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/1b38b8e3-cbcd-429d-9160-a7f39ee31a4a?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/1b38b8e3-cbcd-429d-9160-a7f39ee31a4a?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 295,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/1b38b8e3-cbcd-429d-9160-a7f39ee31a4a?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/1b38b8e3-cbcd-429d-9160-a7f39ee31a4a",
+        "name": "1b38b8e3-cbcd-429d-9160-a7f39ee31a4a",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:10:08.8342973Z",
+        "endTime": "2022-04-06T17:10:13.1900732Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "DatabaseDropPrincipals",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 296,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/principalAssignments/testcli1?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/2c4ab54f-a43d-4853-b33d-4a75eab39c1f?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/2c4ab54f-a43d-4853-b33d-4a75eab39c1f?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 297,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/2c4ab54f-a43d-4853-b33d-4a75eab39c1f?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/2c4ab54f-a43d-4853-b33d-4a75eab39c1f",
+        "name": "2c4ab54f-a43d-4853-b33d-4a75eab39c1f",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:10:40.1209565Z",
+        "endTime": "2022-04-06T17:10:43.0524298Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "ServicePrincipalAssignmentsDrop",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 299,
+      "method": "POST",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/detachFollowerDatabases?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/e014dc4a-d1b3-4d07-8011-b178caba13b1?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/e014dc4a-d1b3-4d07-8011-b178caba13b1?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 300,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/e014dc4a-d1b3-4d07-8011-b178caba13b1?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/e014dc4a-d1b3-4d07-8011-b178caba13b1",
+        "name": "e014dc4a-d1b3-4d07-8011-b178caba13b1",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:11:13.1966434Z",
+        "endTime": "2022-04-06T17:11:30.139947Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "FollowerDatabaseDetach",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 301,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/e014dc4a-d1b3-4d07-8011-b178caba13b1?api-version=2022-02-01&operationResultResponseType=Location",
+      "status": 200,
+      "headers": {},
+      "body": null
+    },
+    {
+      "interaction_index": 302,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/attachedDatabaseConfigurations/attachedDatabaseConfigurationsTest?api-version=2022-02-01",
+      "status": 204,
+      "headers": {},
+      "body": null
+    },
+    {
+      "interaction_index": 303,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase/dataConnections/dataConnectionTest?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/8956b39a-6ba2-4516-a8df-01e2b85ed346?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/8956b39a-6ba2-4516-a8df-01e2b85ed346?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 304,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/8956b39a-6ba2-4516-a8df-01e2b85ed346?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/8956b39a-6ba2-4516-a8df-01e2b85ed346",
+        "name": "8956b39a-6ba2-4516-a8df-01e2b85ed346",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:11:49.0711501Z",
+        "endTime": "2022-04-06T17:11:51.7673068Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "DmServiceDataObtainerDrop",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 305,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/kustoCluster/databases/KustoDatabase?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/d6444c4f-e0b0-4c61-833e-ddf29ac07707?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/d6444c4f-e0b0-4c61-833e-ddf29ac07707?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 306,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/d6444c4f-e0b0-4c61-833e-ddf29ac07707?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/d6444c4f-e0b0-4c61-833e-ddf29ac07707",
+        "name": "d6444c4f-e0b0-4c61-833e-ddf29ac07707",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:12:22.576977Z",
+        "endTime": "2022-04-06T17:12:26.9399228Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "DatabaseDelete",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    },
+    {
+      "interaction_index": 307,
+      "method": "DELETE",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest000001/providers/Microsoft.Kusto/clusters/KustoClusterLeader?api-version=2022-02-01",
+      "status": 202,
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01&operationResultResponseType=Location"
+        ]
+      },
+      "body": null
+    },
+    {
+      "interaction_index": 308,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 309,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 310,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 311,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 312,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 313,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 314,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 315,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 316,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 317,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 318,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 319,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 320,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 321,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Running",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:12:57.0891572Z",
+        "percentComplete": 0.5,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Running",
+          "operationState": "InProgress"
+        }
+      }
+    },
+    {
+      "interaction_index": 322,
+      "method": "GET",
+      "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West%20US%202/operationResults/c55fd5d8-0a38-406a-8050-d056c7b80204?api-version=2022-02-01",
+      "status": 200,
+      "headers": {},
+      "body": {
+        "id": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.Kusto/locations/West US 2/operationresults/c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "name": "c55fd5d8-0a38-406a-8050-d056c7b80204",
+        "status": "Succeeded",
+        "startTime": "2022-04-06T17:12:57.0110123Z",
+        "endTime": "2022-04-06T17:20:20.7568626Z",
+        "percentComplete": 1.0,
+        "properties": {
+          "operationKind": "ClusterDelete",
+          "provisioningState": "Succeeded",
+          "operationState": "Completed"
+        }
+      }
+    }
+  ]
+}

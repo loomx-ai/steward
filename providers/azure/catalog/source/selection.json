@@ -1144,6 +1144,47 @@
         "Users_Get",
         "Users_ListByMongoCluster"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/azure-kusto/resource-manager/Microsoft.Kusto/Kusto/stable/2025-02-14/kusto.json",
+      "operations": [
+        "AttachedDatabaseConfigurations_Delete",
+        "AttachedDatabaseConfigurations_Get",
+        "AttachedDatabaseConfigurations_ListByCluster",
+        "ClusterPrincipalAssignments_Delete",
+        "ClusterPrincipalAssignments_Get",
+        "ClusterPrincipalAssignments_List",
+        "Clusters_Delete",
+        "Clusters_DetachFollowerDatabases",
+        "Clusters_Get",
+        "Clusters_List",
+        "Clusters_ListByResourceGroup",
+        "Clusters_ListFollowerDatabases",
+        "Clusters_ListFollowerDatabasesGet",
+        "DataConnections_Delete",
+        "DataConnections_Get",
+        "DataConnections_ListByDatabase",
+        "DatabasePrincipalAssignments_Delete",
+        "DatabasePrincipalAssignments_Get",
+        "DatabasePrincipalAssignments_List",
+        "Databases_Delete",
+        "Databases_Get",
+        "Databases_ListByCluster",
+        "Databases_ListPrincipals",
+        "ManagedPrivateEndpoints_Delete",
+        "ManagedPrivateEndpoints_Get",
+        "ManagedPrivateEndpoints_List",
+        "OperationsResults_Get",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "SandboxCustomImages_Delete",
+        "SandboxCustomImages_Get",
+        "SandboxCustomImages_ListByCluster",
+        "Scripts_Delete",
+        "Scripts_Get",
+        "Scripts_ListByDatabase"
+      ]
     }
   ],
   "resource_types": [
@@ -5508,6 +5549,196 @@
       ],
       "delete_operations": [
         "Azure.Microsoft.DocumentDB.Users_Delete"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters",
+      "class": "data.database_cluster",
+      "display_name": "Data Explorer cluster",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "clusters",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.Clusters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.Clusters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.Clusters_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/attachedDatabaseConfigurations",
+      "class": "data.database_attachment",
+      "display_name": "Kusto attached database configuration",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "attachedDatabaseConfigurations",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_ListByCluster"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases",
+      "class": "data.database",
+      "display_name": "Kusto database",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "databases",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.Databases_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.Databases_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.Databases_ListByCluster"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/dataConnections",
+      "class": "data.connection",
+      "display_name": "Kusto data connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "dataConnections",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.DataConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.DataConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.DataConnections_ListByDatabase"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/principalAssignments",
+      "class": "security.principal_assignment",
+      "display_name": "Kusto database principal assignment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "principalAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.DatabasePrincipalAssignments_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/databases/scripts",
+      "class": "data.database_script",
+      "display_name": "Kusto database script",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "scripts",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.Scripts_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.Scripts_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.Scripts_ListByDatabase"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Kusto managed private endpoint",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "managedPrivateEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.ManagedPrivateEndpoints_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/principalAssignments",
+      "class": "security.principal_assignment",
+      "display_name": "Kusto cluster principal assignment",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "principalAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.ClusterPrincipalAssignments_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Kusto private endpoint connection",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.PrivateEndpointConnections_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.PrivateEndpointConnections_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.PrivateEndpointConnections_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Kusto/clusters/sandboxCustomImages",
+      "class": "compute.sandbox_image",
+      "display_name": "Kusto sandbox custom image",
+      "scope_kinds": [
+        "region",
+        "global"
+      ],
+      "collection": "sandboxCustomImages",
+      "read_operations": [
+        "Azure.Microsoft.Kusto.SandboxCustomImages_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Kusto.SandboxCustomImages_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Kusto.SandboxCustomImages_ListByCluster"
       ]
     }
   ]
