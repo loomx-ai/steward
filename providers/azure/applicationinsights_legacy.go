@@ -269,8 +269,11 @@ func (c *client) insightsComponent(ctx context.Context, id string) (map[string]a
 		return nil, err
 	}
 	_, hasProperties := result.data["properties"].(map[string]any)
-	if result.status != 200 || !validResourceResponse(result, id, applicationInsightsType) || !hasProperties || text(result.data["location"]) == "" || !strings.EqualFold(text(result.data["name"]), last(id)) || operationLocation(result.header) != "" {
+	if !insightsARMReadValid(result, id, applicationInsightsType) || !hasProperties || text(result.data["location"]) == "" || !strings.EqualFold(text(result.data["name"]), last(id)) {
 		return nil, serviceDenied("invalid_insights_component_response")
+	}
+	if _, err := insightsWorkspaceID(result.data); err != nil {
+		return nil, err
 	}
 	return result.data, nil
 }

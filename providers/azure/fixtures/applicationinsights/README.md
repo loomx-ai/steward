@@ -219,6 +219,39 @@ substituted subscription/group/component scope; source example files remain
 unchanged. These are composed protocol tests, not independent emulator or
 real-cloud verification. The inspected Topaz release lacks these child APIs.
 
+## Managed-workspace inventory in progress
+
+Component product inventory now binds `WorkspaceResourceId` to the complete
+native resource-group index. A matching `managedBy` on the workspace's group
+establishes the current managed group; names do not establish ownership. The
+same subscription can contain detached groups still managed by the component
+after a workspace switch. Their identities/configuration are retained separately
+and are not treated as automatic effects of deleting the component. Shared and
+foreign-subscription workspaces remain ordinary references.
+
+Current managed groups are read before and after their full, unfiltered ARM
+member index. Known members use product GETs; unknown kinds retain their native
+indexed identity and private configuration digest. Workspace AMPLS associations
+are reconciled through the existing native forward/reverse indexes, including
+explicit foreign references. The two component inventory snapshots and page
+cursors bind this state. Private configuration is represented by credential-keyed
+digests and survives real application projection and SQLite persistence.
+
+`TestApplicationInsightsManagedWorkspace*` and
+`TestApplicationInsightsWorkspace*` cover managed/shared/detached/classic
+classification, multi-page indexes, private and membership changes, malformed
+references, permission failures, incomplete responses, AMPLS contradictions,
+cross-subscription boundaries and cursor/persistence integrity. The component
+and AMPLS bodies use the unchanged published examples with explicit scope/link
+substitution. Group ownership and Log Analytics responses are composed native
+protocol data; they are not recordings or independent emulator evidence.
+
+This captures native group membership, not yet every member's product-specific
+descendants. Component cleanup still requires those lifecycle contributions,
+native child prerequisites and final group/workspace absence checks; components
+remain read-only. No component-delete or managed-group cascade is claimed by
+these inventory tests. See the [native managed-workspace rules](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces).
+
 ## Monitor private-link lifecycle
 
 Three global resource kinds bind their original native GET/LIST/DELETE APIs:

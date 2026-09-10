@@ -1822,3 +1822,33 @@ background evidence only, not acceptance evidence for this work.
   Component cleanup, managed-workspace effects, annotation coverage and the
   remaining service families still require work. All eight acceptance criteria
   remain open.
+
+### Azure Application Insights managed-workspace inventory
+
+- Component inventory now reconciles the native resource-group index with the
+  current workspace reference and each relevant group's `managedBy`. Shared,
+  foreign, current managed and detached managed groups remain distinct; names
+  never establish ownership. A workspace switch leaves the old group's
+  identity/configuration visible without claiming component deletion removes it.
+- The current managed group's unfiltered, paginated ARM member index includes
+  unknown kinds. Known members receive product GETs, and group reads bracket
+  membership discovery. Existing native AMPLS forward/reverse reconciliation
+  captures required associations, including unresolved foreign references.
+  Private member/group configuration stays behind credential-keyed digests.
+- Two complete component snapshots and continuation cursors bind ownership,
+  group membership and association state. Tests cover permission failures,
+  incomplete/filtered/cyclic pages, malformed references, private/creation/
+  membership changes, changing owners, native ID case, unrelated group churn
+  and AMPLS contradictions. Real application projection and SQLite persistence
+  preserve the populated managed-workspace snapshot and its digest.
+- Full Go tests and vet passed (Azure 148.522s; GCP cached). Application Insights
+  and AMPLS race checks passed (15.325s), including the SQLite scenarios.
+  Bilingual documentation validation passed for 40 chapters and 10 original
+  screenshots. The component and AMPLS example shapes are retained; managed
+  group and Log Analytics bodies are composed protocol data, not independent
+  emulator or live-cloud evidence. No new emulator/cloud run was performed.
+- Counts remain 369 rules, 342 cleanup bindings and 1,188 catalog operations.
+  Member product-specific descendants, component child/configuration impacts,
+  controller deletion and final managed-group/workspace absence still need
+  lifecycle integration. Components remain read-only. The 29 missing mapped
+  Azure roots and all eight provider acceptance criteria remain unfinished.

@@ -390,6 +390,7 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 		retainedIDs[value.ID] = true
 	}
 	projection := inventory.NewService(repository)
+	workspaceConfiguration := ""
 	for _, kind := range kinds {
 		request := productRequest(r, kind)
 		request.Limit = 1
@@ -404,6 +405,11 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 			}
 			if err := projection.ProjectBatch(ctx, &shards[0], connection, page, inventory.ProjectionOptions{}); err != nil {
 				t.Fatal("native inventory failed application projection", err)
+			}
+			for _, item := range page.Items {
+				if item.NativeType == applicationInsightsType {
+					workspaceConfiguration = text(item.Normalized["_insights_workspace_configuration"])
+				}
 			}
 			if page.Complete {
 				break
@@ -423,6 +429,9 @@ func testInsightsInventoryPipeline(t *testing.T, f *insightsInventoryFixture, ki
 		if value.Identity.NativeType == applicationInsightsType {
 			parent = value
 		}
+	}
+	if workspaceConfiguration == "" || text(parent.Normalized["_insights_workspace_configuration"]) != workspaceConfiguration || object(parent.Normalized["_insights_workspace"]) == nil {
+		t.Fatal("workspace ownership snapshot was lost in application persistence")
 	}
 	lifecycle, err := r.ServiceLifecycle(ctx, connection.ID)
 	if err != nil {

@@ -128,3 +128,7 @@ App Service 清理会审查部署槽、函数、应用证书和主机名绑定�
 Azure Monitor 专用链接范围（AMPLS）清理会审查两类原生子资源清单和专用链接能力描述。范围资源关联与专用终结点连接都有独立删除步骤；保留其中任何一个都会阻止范围删除。关联的 Log Analytics 工作区、Application Insights 组件和使用方网络终结点保持独立。配置核对覆盖访问模式及连接级例外。原生 DELETE 接口没有条件删除头，读取与删除之间仍存在并发修改窗口。
 
 删除 Log Analytics 工作区或 DCE 前，Steward 会核对订阅内完整的 AMPLS 清单、关联的原生列表与详情，以及目标资源的反向引用。因此需要读取这些范围的权限，包括所选资源组之外的范围。缺失盘点、读取失败及跨订阅反向引用都会阻止删除；跨订阅关联需在所属订阅中解除后重新扫描。Monitor 工作区托管组中的 DCE 也执行相同检查。相对操作地址经校验后绑定到所选连接和资源，并持久化保存；异步成功后仍须确认资源及前置关联均已不存在。验证使用固定版本的官方样例和组合协议测试，尚未进行 AMPLS 独立模拟器或真实云验证。Application Insights 组件清理仍在实现中。参阅[AMPLS 关联要求](https://learn.microsoft.com/en-us/azure/azure-monitor/fundamentals/private-link-configure#connect-resources-to-the-ampls)。
+
+Application Insights 盘点覆盖组件、共享及个人分析项、持续导出、收藏、工作项配置、API Key 和 Profiler 关联存储。七类子资源支持独立清理，并核对组件、资源组、锁及最终原生 GET 不存在状态；共享存储保持独立。注释尚未注册，因为原生接口的时间窗口不能证明更早记录已经不存在。组件的完整删除生命周期仍在实现，当前保持只读。
+
+组件扫描还会读取完整资源组索引，以及当前托管工作区的组成员和 AMPLS 关联。因此需要资源组、资源列表、成员产品详情和 AMPLS 读取权限，包括组件资源组以外的托管组。归属须由组件的工作区引用与资源组 `managedBy` 共同确认，不能仅凭名称推断；共享工作区和切换后留下的旧托管组会分别记录。读取失败或索引不一致会使扫描失败，跨订阅引用不会授权跨订阅读取。资源组、工作区删除及残留清理仍待实现；参阅[托管工作区行为](https://learn.microsoft.com/en-us/azure/azure-monitor/app/managed-workspaces)。

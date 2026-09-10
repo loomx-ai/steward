@@ -139,7 +139,15 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 	if err != nil {
 		return nil, "", err
 	}
-	owners, locks, err := c.inventoryProtection(ctx)
+	indexedGroups, err := c.insightsGroups(ctx)
+	if err != nil {
+		return nil, "", err
+	}
+	owners := map[string]string{}
+	for id, group := range indexedGroups {
+		owners[id] = text(group["managedBy"])
+	}
+	locks, err := c.managementLocks(ctx)
 	if err != nil {
 		return nil, "", err
 	}
@@ -156,15 +164,13 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		groupID := strings.Join(strings.Split(component.id, "/")[:5], "/")
 		group, exists := groups[groupID]
 		if !exists {
-			result, err := c.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+			if indexedGroups[groupID] == nil {
+				return nil, "", serviceDenied("insights_inventory_group_disagrees")
+			}
+			group, err = c.insightsGroup(ctx, groupID, indexedGroups[groupID])
 			if err != nil {
 				return nil, "", err
 			}
-			owner, indexed := owners[groupID]
-			if !indexed || result.status != 200 || !validResourceResponse(result, groupID, groupType) || text(result.data["managedBy"]) != owner {
-				return nil, "", serviceDenied("insights_inventory_group_disagrees")
-			}
-			group = result.data
 			groups[groupID] = group
 		}
 		if protectedAzureTags(object(group["tags"])) {
@@ -174,6 +180,9 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		parent.Normalized["_insights_group_configuration"] = c.privateConfiguration(map[string]any{"id": groupID, "tags": group["tags"], "managedBy": group["managedBy"]})
 		parent.Normalized["_inventory_source"] = productInventorySource
 		if strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) {
+			if err := c.insightsWorkspaceInventory(ctx, &parent, component.data, indexedGroups); err != nil {
+				return nil, "", err
+			}
 			items = append(items, parent)
 			continue
 		}
@@ -204,7 +213,7 @@ func insightsInventoryBindings(items []contracts.InventoryItem) map[string]any {
 	bindings := map[string]any{}
 	for _, item := range items {
 		value := map[string]any{"kind": item.NativeType, "location": item.Location, "scope": item.Scope, "references": item.NetworkReferences}
-		for _, key := range []string{"_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_child_private_configuration", "_insights_group_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
+		for _, key := range []string{"_monitor_private_link_target_configuration", "_insights_component_configuration", "_insights_legacy_private_configuration", "_insights_child_private_configuration", "_insights_group_configuration", "_insights_workspace_configuration", "cleanup_protection_reason", "cleanup_protected", "cleanup_controller_only"} {
 			value[key] = item.Normalized[key]
 		}
 		bindings[item.NativeID] = value
