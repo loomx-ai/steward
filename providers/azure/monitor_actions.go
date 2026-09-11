@@ -70,12 +70,17 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 		if value.Identity.NativeType == diagnosticSettingsType {
 			id, _, kind, err = diagnosticResourceID(value.Identity.NativeID)
 		}
+		if rbacResourceKind(value.Identity.NativeType) != "" {
+			id, _, kind, err = rbacResourceID(value.Identity.NativeID)
+		}
 		if err != nil || id != value.Identity.NativeID || kind != value.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || value.ID == "" || seenIDs[id] || seenAssets[value.ID] || !prerequisite.Delete || prerequisite.ControllerID != a.assetID || value.Identity.Provider != asset.ProviderAzure || value.Identity.ConnectionID != a.connection || value.Identity.Partition != a.partition {
 			return serviceDenied("invalid_monitor_prerequisite_identity")
 		}
 		seenIDs[id], seenAssets[value.ID] = true, true
 		var refs map[string]any
-		if kind == diagnosticSettingsType {
+		if rbacResourceKind(kind) != "" {
+			refs, err = a.client.rbacRecordedReferences(value)
+		} else if kind == diagnosticSettingsType {
 			refs, err = a.client.diagnosticRecordedReferences(value)
 		} else {
 			refs, err = a.client.monitorRecordedReferences(value)
@@ -90,7 +95,9 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 		if !linked {
 			return serviceDenied("monitor_prerequisite_reference_changed")
 		}
-		if kind == diagnosticSettingsType {
+		if rbacResourceKind(kind) != "" {
+			_, err = a.client.rbacRead(ctx, kind, text(value.Normalized[rbacWireSelector]))
+		} else if kind == diagnosticSettingsType {
 			_, err = a.client.diagnosticRead(ctx, text(value.Normalized[diagnosticWireSelector]), kind)
 		} else {
 			_, err = a.client.monitorResourceRead(ctx, kind, id)

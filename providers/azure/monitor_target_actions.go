@@ -73,7 +73,7 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 	controllers := map[asset.AssetID]asset.AssetID{}
 	for _, impact := range request.LifecycleImpacts {
 		member := impact.Asset
-		if member.Identity.NativeType == diagnosticSettingsType {
+		if member.Identity.NativeType == diagnosticSettingsType || rbacResourceKind(member.Identity.NativeType) != "" {
 			return filtered, nil, serviceDenied("diagnostic_requires_independent_deletion")
 		}
 		if member.ID == "" || seenAssets[member.ID] || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
@@ -117,7 +117,7 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			return filtered, nil, serviceDenied("ambiguous_monitor_target_prerequisite")
 		}
 		seenIDs[member.Identity.NativeID], seenAssets[member.ID] = true, true
-		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType {
+		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" {
 			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, prerequisite)
 			continue // The native driver authenticates its own prerequisite families.
 		}
@@ -125,11 +125,16 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if member.Identity.NativeType == diagnosticSettingsType {
 			id, _, kind, err = diagnosticResourceID(member.Identity.NativeID)
 		}
+		if rbacResourceKind(member.Identity.NativeType) != "" {
+			id, _, kind, err = rbacResourceID(member.Identity.NativeID)
+		}
 		if err != nil || id != member.Identity.NativeID || kind != member.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || !prerequisite.Delete || prerequisite.ControllerID != value.ID || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
 			return filtered, nil, serviceDenied("invalid_monitor_target_prerequisite")
 		}
 		var refs map[string]any
-		if kind == diagnosticSettingsType {
+		if rbacResourceKind(kind) != "" {
+			refs, err = a.client.rbacRecordedReferences(member)
+		} else if kind == diagnosticSettingsType {
 			refs, err = a.client.diagnosticRecordedReferences(member)
 		} else {
 			refs, err = a.client.monitorRecordedReferences(member)
@@ -152,7 +157,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if !linked {
 			return filtered, nil, serviceDenied("monitor_target_prerequisite_reference_changed")
 		}
-		if kind == diagnosticSettingsType {
+		if rbacResourceKind(kind) != "" {
+			_, err = a.client.rbacRead(ctx, kind, text(member.Normalized[rbacWireSelector]))
+		} else if kind == diagnosticSettingsType {
 			_, err = a.client.diagnosticRead(ctx, text(member.Normalized[diagnosticWireSelector]), kind)
 		} else {
 			_, err = a.client.monitorResourceRead(ctx, kind, id)
@@ -168,8 +175,8 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 }
 
 func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, source monitorIncomingSource) (bool, error) {
-	if source.resource.kind == diagnosticSettingsType {
-		return false, nil // Settings require independent deletion even in managed groups.
+	if source.resource.kind == diagnosticSettingsType || rbacResourceKind(source.resource.kind) != "" {
+		return false, nil // Extensions require independent deletion even in managed groups.
 	}
 	group, ok := a.client.monitorControllerGroup(request.Asset)
 	if !ok || !inResourceGroup(source.resource.id, group) {

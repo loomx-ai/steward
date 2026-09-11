@@ -51,6 +51,16 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 		request.Source = diagnosticInventorySource
 		return r.listDiagnosticSettings(ctx, c, request)
 	}
+	if request.ResourceKind != nil && rbacResourceKind(request.ResourceKind.NativeType) != "" {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		if request.Source != "" && request.Source != productInventorySource {
+			return contracts.InventoryBatch{}, serviceDenied("invalid_rbac_inventory_source")
+		}
+		request.Source = productInventorySource
+		return r.listRBAC(ctx, c, request)
+	}
 	if request.ResourceKind != nil && monitorResourceKind(request.ResourceKind.NativeType) != "" {
 		if request.Source == inventorySource {
 			return contracts.InventoryBatch{Complete: true}, nil
@@ -924,7 +934,7 @@ func safeResource(value any) any {
 		if monitorBudgetPath(text(typed["id"])) || monitorBudgetPath("/providers/"+text(typed["type"])) {
 			typed = object(monitorBudgetSafeValue(typed))
 		}
-		if diagnosticSettingsPath(text(typed["id"])) || diagnosticSettingsPath("/providers/"+text(typed["type"])) {
+		if diagnosticSettingsPath(text(typed["id"])) || diagnosticSettingsPath("/providers/"+text(typed["type"])) || rbacPath(text(typed["id"])) || rbacPath("/providers/"+text(typed["type"])) {
 			typed = object(diagnosticSettingsSafeValue(typed))
 		}
 		if apimRaw(typed) {

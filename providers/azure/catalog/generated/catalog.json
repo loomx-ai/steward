@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "02b68c316d46ea343f2e62bbb618a00fa457df14af5a61f923d5c2e92cda8d13",
+    "checksum": "6cca8521bda5763e04cd1e57c802e4c2340eadc3bc5a88e822899dfec7446732",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "a169ced06eeccc51775e6777a6812a302ef8a2a338140800ffaf52ad8b25901a",
+  "content_checksum": "04eebc15adfab186556fd99dcea63510c4864c21f1fa255b73f21516db161077",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -111709,6 +111709,47 @@
         ],
         "list_operations": [
           "Azure.Microsoft.App.ManagedEnvironments_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Authorization/roleAssignments",
+      "class": "identity.role_assignment",
+      "display_name": "Azure role assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "roleAssignments",
+        "read_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_ListForSubscription",
+          "Azure.Microsoft.Authorization.RoleAssignments_ListForScope"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Authorization/roleDefinitions",
+      "class": "identity.policy",
+      "display_name": "Azure role definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "roleDefinitions",
+        "read_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_List"
         ]
       }
     },

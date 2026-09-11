@@ -54,9 +54,8 @@ parameters, and detects duplicate local identities and repeated pages.
 The composed protocol tests cover all four read families, subscription/group/
 resource identities, aliases, inherited assignments, private-data changes,
 metadata errors, collection failures and paging boundaries. They do not run an
-independent emulator or a live Azure account. These native primitives and API
-sources precede registered inventory, application graph integration and action
-workers; those paths remain unfinished at this checkpoint.
+independent emulator or a live Azure account. Registered inventory, graph integration and native action workers now use these
+contracts; their additional verification and remaining boundaries follow below.
 
 Official behavior references:
 
@@ -66,3 +65,46 @@ Official behavior references:
 - [Custom-role assignment prerequisites and assignable scopes](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles)
 - [Role-definition tenant/subscription ID forms](https://learn.microsoft.com/en-us/python/api/azure-mgmt-authorization/azure.mgmt.authorization.aio.operations.roledefinitionsoperations?view=azure-python-preview)
 - [Role-assignment scope, conditions and orphaned principals](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments)
+
+## Registered native inventory and cleanup
+
+Two global product sources register role definitions and role assignments. Each
+page observes the native collection, individual GETs, scope contexts, locks and
+PIM schedules twice and binds the resulting private configuration into the
+continuation. Shared assignable scopes outside the connection, built-in roles,
+unknown native scope readers, protected tags, management locks and matching PIM
+schedules remain protected. Resource/group absence does not remove a surviving
+assignment. Native Cosmos scope names and response aliases survive projection,
+requests and JSON recovery without lowercasing the source selector.
+
+Reviewed references create independent deletion prerequisites for role,
+assignable scope, assignment scope, their resource ancestors and delegated
+identity ARM IDs. Native reverse indexes discover sources that have not been
+saved. Known sources also receive their own GET even if omitted from LIST.
+Unreadable lists/details, changed observations and late references block target
+cleanup and recovery. Managed-group discovery excludes RBAC extensions from
+ownership; an AKS composition test deletes a reviewed assignment separately
+before permitting the controller's existing native cascade.
+
+Both native DELETE success variants are covered: a 200 resource body must match
+the reviewed private configuration, and a 204 response has no resource body.
+Neither acknowledgement establishes absence. The resource's own GET, authenticated
+request and durable receipt govern waiter/readback completion. Tests reject
+changed configuration/scopes/PIM, forged references/selectors/receipts, unexpected
+async headers/statuses and resources recreated after deletion. Invocation, log
+and normalized/Raw projections do not expose conditions, descriptions,
+permissions or unknown authored fields.
+
+The SQLite integration uses registered global scan sources, the scheduled graph
+worker, persisted cleanup plans and real execution workers. A role-only plan is
+blocked by retained assignments; selecting the two assignments and custom role
+produces three ordered native jobs. Every job is restarted from JSON and saved
+state while deletion remains pending, and only individual native absence closes
+the resource. The built-in role and independent scope resources remain. A later
+403 does not close the surviving inventory record.
+
+These are composed protocol and application tests, not an independent RBAC
+emulator or live deployment. Principal-GUID matching to managed identities and
+system-assigned resource identities, PIM schedule deletion and tenant/management-
+group administration remain unfinished. Native DELETE has no conditional version
+guard, so the preflight-to-mutation edit window cannot be eliminated.

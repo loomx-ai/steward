@@ -126,6 +126,15 @@ func azureRequestID(key string) string {
 }
 
 func (c *client) resourceOperation(kind resourceType, nativeID, method string) (catalog.Operation, map[string]any, error) {
+	if rbacResourceKind(kind.NativeType) != "" {
+		id, _, typ, err := rbacResourceID(nativeID)
+		wire, wireErr := c.rbacWireID(nativeID)
+		if err != nil || wireErr != nil || typ != kind.NativeType || !strings.HasPrefix(id, c.root()+"/") {
+			return catalog.Operation{}, nil, serviceDenied("invalid_rbac_resource_operation")
+		}
+		return c.rbacOperation(typ, wire[:strings.LastIndex(wire, "/providers/")], last(id), method)
+	}
+
 	if kind.NativeType == diagnosticSettingsType {
 		id, _, typ, err := diagnosticResourceID(nativeID)
 		if err != nil || typ != kind.NativeType {

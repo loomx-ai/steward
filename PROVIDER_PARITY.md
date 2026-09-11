@@ -2548,3 +2548,53 @@ background evidence only, not acceptance evidence for this work.
   execution and application recovery are next. No new independent-emulator or
   real-cloud run is claimed. All 28 mapped Azure type gaps and the eight overall
   acceptance criteria remain open.
+
+
+### Registered RBAC inventory and independent scope cleanup
+
+- Registered global role-definition and role-assignment inventory and native
+  independent deletion. The catalog now has 386 types/specifications and 360
+  cleanup bindings; the existing 1,243 operations and 223 source documents are
+  unchanged. One mapped type gap closes, leaving 27 absent mapped Azure types.
+- Native collection/detail, scope, protection and PIM observations participate in
+  stable paging and action revalidation. Built-in roles, shared assignable scopes
+  outside the connection, unverified scopes, matching PIM schedules, locks and
+  protected tags cannot authorize independent deletion. Native Cosmos scope names
+  and aliases retain their exact selector through scans and JSON recovery.
+- Forward references and complete native reverse indexes require explicit prior
+  deletion of assignments before roles, and of referring assignments/custom roles
+  before ARM scopes and ancestors. Delegated identity ARM references are included.
+  Sources omitted from inventory remain blockers; saved sources omitted from a
+  list receive their own GET. Failed reads and late references block final
+  readback even when the target has disappeared. Existing Monitor and general
+  ARM action families share these checks without replacing their native drivers.
+- RBAC extensions never acquire managed-group cascade ownership. An AKS scenario
+  with an assignment in the native group index verifies explicit selection,
+  assignment deletion, retained controller until prerequisite absence and native
+  controller recovery. Scope ownership metadata is authenticated; it does not
+  prevent an explicitly reviewed independent authorization deletion.
+- DELETE 200 bodies and 204 acknowledgements retain native request IDs and require
+  subsequent own-resource GET absence. Private/unknown fields participate in
+  configuration comparison but do not leave invocation, log, normalized or Raw
+  projections. Wrong identities/scopes, forged prerequisites/receipts, native
+  mutation errors and post-delete recreation fail without invented completion.
+- Actual SQLite registered scan, scheduled graph, plan and execution workers
+  verify role-only blocking, two assignments ordered before the custom role,
+  independent jobs, durable pending state, recreated clients/application services,
+  JSON recovery and final native readback. Built-in roles and independent scopes
+  remain; failed discovery does not close prior observations.
+- Focused RBAC, Monitor and diagnostic checks passed. Full Go tests passed
+  (Azure 188.584s; final internal guard run 21.843s; unchanged GCP tests cached).
+  Affected race checks passed (Azure 101.584s, server 6.429s, architecture guards
+  304.411s), repository-wide vet passed and all five offline source checks passed.
+- The first full run exposed the architecture checker's 64 KiB line limit in a
+  retained native response. Both source checks now read complete lines without
+  dropping fixtures or changing forbidden patterns. A 2 MiB response and a
+  forbidden query literal at the end of a long source line verify that full
+  content is checked. The final full run and guard race test include this fix.
+- Bilingual Azure docs and retained native evidence describe supported permissions
+  and boundaries. Principal-GUID matching to managed identities/system-assigned
+  resource identities, PIM mutation and tenant/management-group administration
+  remain unfinished; no independent emulator or real-cloud RBAC run is claimed.
+  The native DELETE edit window and all eight full-provider acceptance criteria
+  remain open, alongside the remaining mapped families and lifecycle gaps.

@@ -21,6 +21,9 @@ import (
 // use the original Monitor responses instead, including native 403/404 errors.
 func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
 	t.Helper()
+	if response, handled := emptyRBACIndexResponse(t, req); handled {
+		return response, true
+	}
 	if response, handled := emptyDiagnosticIndexResponse(t, req); handled {
 		return response, true
 	}
@@ -38,6 +41,29 @@ func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response,
 		}
 		if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != version {
 			t.Fatal("unexpected empty native Monitor index contract", req.Method, req.URL)
+		}
+		return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
+	}
+	return nil, false
+}
+
+// Isolated non-RBAC fixtures compose an empty subscription authorization index.
+// Real RBAC fixtures keep their explicit native collection and error responses.
+func emptyRBACIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
+	t.Helper()
+	for _, kind := range []string{rbacRoleType, rbacAssignmentType} {
+		if !strings.EqualFold(req.URL.Path, "/subscriptions/"+testSubscription+"/providers/"+kind) {
+			continue
+		}
+		query, count := req.URL.Query(), 1
+		if kind == rbacRoleType {
+			count = 2
+			if query.Get("$filter") != "atScopeAndBelow()" {
+				t.Fatal("empty role index lost its scope filter")
+			}
+		}
+		if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(query) != count || query.Get("api-version") != rbacVersion(kind) {
+			t.Fatal("unexpected empty RBAC index contract", req.Method, req.URL)
 		}
 		return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 	}

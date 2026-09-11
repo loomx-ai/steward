@@ -95,6 +95,38 @@ func (c *client) rbacRoleID(wire string) (string, error) {
 	return c.root() + "/providers/microsoft.authorization/roledefinitions/" + last(id), nil
 }
 
+// RBAC extensions on a native Cosmos resource inherit its case-sensitive
+// source selector even though the inventory identity is a canonical ARM ID.
+func rbacWireScope(scope string) (string, error) {
+	if _, err := rbacScope(scope); err != nil {
+		return "", err
+	}
+	if scope == "/" || strings.HasPrefix(strings.ToLower(scope), "/providers/microsoft.management/managementgroups/") {
+		return strings.ToLower(scope), nil
+	}
+	return diagnosticSourceWire(scope)
+}
+
+func (c *client) rbacWireID(wire string) (string, error) {
+	id, _, kind, err := rbacResourceID(wire)
+	if err != nil {
+		return "", err
+	}
+	if kind == rbacRoleType {
+		return c.rbacRoleID(wire)
+	}
+	index := strings.LastIndex(strings.ToLower(wire), "/providers/microsoft.authorization/")
+	scope := wire[:index]
+	if scope == "" {
+		scope = "/"
+	}
+	scope, err = rbacWireScope(scope)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSuffix(scope, "/") + id[index:], nil
+}
+
 func rbacVersion(kind string) string {
 	if kind == rbacRoleType || kind == rbacAssignmentType {
 		return "2022-04-01"
@@ -107,7 +139,8 @@ func rbacVersion(kind string) string {
 
 func (c *client) rbacOperation(kind, scope, name, method string) (catalog.Operation, map[string]any, error) {
 	canonical, err := rbacScope(scope)
-	if err != nil || canonical != scope || !c.rbacLocalScope(scope) || rbacKind(kind) != kind || name != "" && !uuidPattern.MatchString(name) || method != "GET" && method != "DELETE" || method == "DELETE" && (name == "" || kind != rbacRoleType && kind != rbacAssignmentType) || kind == rbacRoleType && scope != c.root() {
+	wire, wireErr := rbacWireScope(scope)
+	if err != nil || wireErr != nil || wire != scope || !c.rbacLocalScope(canonical) || rbacKind(kind) != kind || name != "" && !uuidPattern.MatchString(name) || method != "GET" && method != "DELETE" || method == "DELETE" && (name == "" || kind != rbacRoleType && kind != rbacAssignmentType) || kind == rbacRoleType && scope != c.root() {
 		return catalog.Operation{}, nil, serviceDenied("invalid_rbac_operation_scope")
 	}
 	prefix, selector := "RoleDefinitions", "roleDefinitionId"
@@ -222,6 +255,11 @@ func (c *client) rbacValidate(kind string, raw map[string]any) (string, error) {
 	if err != nil || suppliedScope != scope || props["scope"] != text(props["scope"]) {
 		return "", serviceDenied("rbac_assignment_scope_changed")
 	}
+	wireScope, wireErr := rbacWireScope(text(props["scope"]))
+	wireID, identityErr := c.rbacWireID(text(raw["id"]))
+	if wireErr != nil || identityErr != nil || strings.TrimSuffix(wireScope, "/")+strings.TrimPrefix(id, strings.TrimSuffix(scope, "/")) != wireID {
+		return "", serviceDenied("rbac_assignment_native_scope_changed")
+	}
 	if props["roleDefinitionId"] != text(props["roleDefinitionId"]) {
 		return "", serviceDenied("invalid_rbac_role_reference")
 	}
@@ -257,14 +295,17 @@ func (c *client) rbacSnapshot(kind string, raw map[string]any) map[string]any {
 		id, _ = c.rbacRoleID(id)
 	}
 	result["id"], result["type"], result["name"] = id, kind, last(id)
+	result["_source_wire_id"], _ = c.rbacWireID(text(raw["id"]))
 	return result
 }
 
 func (c *client) rbacRead(ctx context.Context, kind, nativeID string) (response, error) {
-	id, scope, actual, err := rbacResourceID(nativeID)
-	if err != nil || id != nativeID || actual != kind {
+	id, _, actual, err := rbacResourceID(nativeID)
+	wire, wireErr := c.rbacWireID(nativeID)
+	if err != nil || wireErr != nil || wire != nativeID || actual != kind {
 		return response{}, serviceDenied("invalid_rbac_read_identity")
 	}
+	scope := wire[:strings.LastIndex(wire, "/providers/")]
 	request, err := c.rbacRequest(kind, scope, last(id), "GET")
 	if err != nil {
 		return response{}, err
@@ -274,7 +315,8 @@ func (c *client) rbacRead(ctx context.Context, kind, nativeID string) (response,
 		return result, err
 	}
 	current, err := c.rbacValidate(kind, result.data)
-	if err != nil || current != id || result.status != 200 || operationLocation(result.header) != "" {
+	currentWire, wireErr := c.rbacWireID(text(result.data["id"]))
+	if err != nil || wireErr != nil || currentWire != wire || current != id || result.status != 200 || operationLocation(result.header) != "" {
 		return response{}, serviceDenied("rbac_resource_read_changed")
 	}
 	return result, nil
@@ -351,7 +393,11 @@ func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]
 				}
 				return nil, "", serviceDenied("rbac_index_contains_foreign_subscription")
 			}
-			current, err := c.rbacRead(ctx, kind, id)
+			wire, err := c.rbacWireID(text(raw["id"]))
+			if err != nil {
+				return nil, "", err
+			}
+			current, err := c.rbacRead(ctx, kind, wire)
 			if err != nil {
 				return nil, "", contracts.DependencyReadError(err)
 			}
@@ -363,4 +409,25 @@ func (c *client) rbacIndex(ctx context.Context, kind, scope string) (map[string]
 		next = following
 	}
 	return rows, provenance, nil
+}
+
+func rbacPath(path string) bool {
+	parts := strings.Split(strings.ToLower(path), "/")
+	for i := 0; i+2 < len(parts); i++ {
+		if parts[i] == "providers" && parts[i+1] == "microsoft.authorization" && rbacKind("Microsoft.Authorization/"+parts[i+2]) != "" {
+			return true
+		}
+	}
+	return false
+}
+
+// A broad ARM group listing may contain only resource identity metadata. It
+// cannot make RBAC extensions controller-owned; their native index verifies the
+// full configuration independently in the same dependency walk.
+func rbacListedIdentity(raw map[string]any) error {
+	id, _, kind, err := rbacResourceID(text(raw["id"]))
+	if err != nil || rbacResourceKind(kind) == "" || !strings.EqualFold(kind, text(raw["type"])) || !strings.EqualFold(last(id), text(raw["name"])) {
+		return serviceDenied("invalid_rbac_arm_index_identity")
+	}
+	return nil
 }

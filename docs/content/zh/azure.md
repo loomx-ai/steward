@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 384 类资源，其中 358 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 386 类资源，其中 360 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -66,6 +66,7 @@ Steward 识别 384 类资源，其中 358 类具有原生清理操作（包括 B
 | Application Insights | 组件、分析项、持续导出、收藏、工作项配置、API Key 和 Profiler 存储关联 | 先独立删除子资源并解除 AMPLS 关联，再审查当前托管工作区资源组的删除影响 |
 | Azure Monitor 工作簿 | 共享工作簿、私有工作簿及工作簿模板 | 独立清理并核对完整内容和历史版本，引用的存储和身份保持独立 |
 | Azure Monitor 告警 | 指标、活动日志、计划查询、智能检测、Prometheus 和处理规则；动作组与 Web 测试 | 独立清理；引用规则须经审查并先于共享 Monitor 目标删除 |
+| Azure RBAC | 自定义和内置角色定义；订阅、资源组及资源范围的角色分配 | 符合条件的自定义角色与分配独立删除；内置或跨范围共享角色、PIM 管理的分配保持受保护 |
 | 诊断设置 | 资源和订阅级设置，包括 Blob、File、Queue、Table 各自的服务范围 | 先独立删除设置，再删除其引用的源、目标或祖先；共享目标资源保持独立 |
 | 预算 | 订阅及资源组范围的 Consumption、Cost Management 预算 | 独立清理，通知动作组保持独立 |
 | 尚待实现生命周期的集合资源 | 资源组、Key Vault、Container Apps 环境 | 只读 |
@@ -75,6 +76,12 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Azure RBAC 角色定义和角色分配显示在全局清单。发现使用当前订阅的原生 Authorization API，也覆盖更小的资源范围；继承自租户或管理组的分配不由当前连接管理。需要 `Microsoft.Authorization/roleDefinitions/read`、`Microsoft.Authorization/roleAssignments/read`、`Microsoft.Authorization/roleEligibilitySchedules/read`、`Microsoft.Authorization/roleAssignmentSchedules/read`，以及相关作用域资源、资源组和管理锁的原生读取权限。删除自定义角色需要对每个可分配范围拥有 `Microsoft.Authorization/roleDefinitions/delete`；删除分配需要在其确切范围拥有 `Microsoft.Authorization/roleAssignments/delete`。参阅[自定义角色删除要求](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role)。
+
+删除自定义角色前，须明确选择并先删除引用它的角色分配。删除作用域资源或其祖先前，同样需要先独立删除引用它们的分配和自定义角色定义，包括托管资源组中的扩展资源。所有 ARM 依赖图与清理检查都会读取订阅的角色分配和角色定义索引；存在关联时还需要作用域和 PIM 读取权限。新出现、未入库或不可读的引用会阻止清理，目标已被删除也不例外。保护标签、管理锁、原生配置或作用域身份变化、内置角色、连接范围之外的可分配范围，以及匹配的 PIM 计划都会阻止独立删除。原生 DELETE 返回 200/204 仅表示接受请求，仍需所选资源自身的 GET 确认不存在才能完成。
+
+RBAC 权限表达式和编写的配置不会进入清单及日志；共享目标和 Entra 身份保持独立。目前依赖排序覆盖 ARM 作用域、角色定义及委托身份资源 ID，角色分配 `principalId` 与托管身份、系统分配身份资源的匹配仍在补充，不能从作用域清理推断身份清理。微软说明删除托管身份后仍会保留其角色分配，参阅[托管身份维护](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance)。尚未实现 PIM 计划删除或租户、管理组级管理。RBAC DELETE 没有版本条件保护，预检后仍可能发生外部并发修改。
 
 诊断设置显示在全局清单。发现过程需要订阅资源列表、已发现源资源的原生读取及子资源列表、资源组和管理锁读取，以及每个确切源范围内的诊断设置列举、读取权限。清理还需要所选设置的 `Microsoft.Insights/diagnosticSettings/delete` 权限。清理源、目标或其祖先时，必须先明确选择并删除相关诊断设置，包括托管资源组中的设置。删除设置会停止相应的导出；共享存储、Event Hubs 和工作区仍是独立资源。参阅微软的[诊断设置说明](https://learn.microsoft.com/zh-cn/azure/azure-monitor/platform/diagnostic-settings)。
 

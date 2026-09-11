@@ -186881,6 +186881,47 @@
       "scopeKinds": [
         "global"
       ]
+    },
+    {
+      "class": "identity.policy",
+      "displayName": "Azure role definition",
+      "nativeType": "Microsoft.Authorization/roleDefinitions",
+      "rest": {
+        "collection": "roleDefinitions",
+        "delete_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Authorization.RoleDefinitions_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
+    },
+    {
+      "class": "identity.role_assignment",
+      "displayName": "Azure role assignment",
+      "nativeType": "Microsoft.Authorization/roleAssignments",
+      "rest": {
+        "collection": "roleAssignments",
+        "delete_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_ListForSubscription",
+          "Azure.Microsoft.Authorization.RoleAssignments_ListForScope"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.Authorization.RoleAssignments_Get"
+        ]
+      },
+      "scopeKinds": [
+        "global"
+      ]
     }
   ]
 }

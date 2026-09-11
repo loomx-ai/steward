@@ -117,7 +117,7 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 		if monitorBudgetPath(u.Path) {
 			value = object(monitorBudgetSafeValue(value))
 		}
-		if diagnosticSettingsPath(u.Path) {
+		if diagnosticSettingsPath(u.Path) || rbacPath(u.Path) {
 			cleaned := object(diagnosticSettingsSafeValue(value))
 			if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "DELETE") {
 				cleaned["method"], cleaned["path"] = value["method"], u.Path

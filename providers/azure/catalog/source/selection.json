@@ -9337,6 +9337,43 @@
         "Azure.Microsoft.Insights.DiagnosticSettings_List",
         "Azure.Microsoft.Insights.SubscriptionDiagnosticSettings_List"
       ]
+    },
+    {
+      "native_type": "Microsoft.Authorization/roleDefinitions",
+      "class": "identity.policy",
+      "display_name": "Azure role definition",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "roleDefinitions",
+      "read_operations": [
+        "Azure.Microsoft.Authorization.RoleDefinitions_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Authorization.RoleDefinitions_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Authorization.RoleDefinitions_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Authorization/roleAssignments",
+      "class": "identity.role_assignment",
+      "display_name": "Azure role assignment",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "roleAssignments",
+      "read_operations": [
+        "Azure.Microsoft.Authorization.RoleAssignments_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Authorization.RoleAssignments_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Authorization.RoleAssignments_ListForSubscription",
+        "Azure.Microsoft.Authorization.RoleAssignments_ListForScope"
+      ]
     }
   ]
 }

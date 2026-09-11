@@ -25,6 +25,9 @@ func (c *client) diagnosticSourceCandidates(ctx context.Context) (map[string]map
 		if err != nil || !strings.HasPrefix(id, c.root()+"/") || text(raw["type"]) != "" && !validResponseType(kind, text(raw["type"])) || diagnosticSourceMetadata(raw) != nil {
 			return serviceDenied("invalid_diagnostic_source_index_identity")
 		}
+		if rbacResourceKind(kind) != "" {
+			return rbacListedIdentity(raw)
+		}
 		if previous := sources[id]; previous != nil {
 			wire, wireErr := diagnosticSourceWire(text(raw["id"]))
 			previousWire, previousErr := diagnosticSourceWire(text(previous["id"]))

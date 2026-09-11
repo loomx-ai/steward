@@ -11,6 +11,9 @@ const monitorReceiverTargetProof = "_monitor_receiver_target_identity"
 func monitorARMTarget(value asset.Asset) bool {
 	// Legacy component records retain case-sensitive opaque selectors. They are
 	// not ARM scope resources, even though their service URL includes a component.
+	if rbacResourceKind(value.Identity.NativeType) != "" {
+		return false
+	}
 	if value.Identity.Provider != asset.ProviderAzure || insightsLegacyKind(value.Identity.NativeType).kind != "" || value.Identity.NativeType == insightsAnnotationType {
 		return false
 	}

@@ -178,6 +178,9 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 		if err != nil || id == group || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
 			return serviceDenied("invalid_insights_workspace_group_member")
 		}
+		if rbacResourceKind(kind) != "" {
+			return rbacListedIdentity(raw) // Independent prerequisite, never a group-owned impact.
+		}
 		if strings.EqualFold(kind, diagnosticSettingsType) {
 			return diagnosticIdentity(raw, id, diagnosticSettingsType) // Independent prerequisite, never a group-owned impact.
 		}

@@ -1,0 +1,66 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Authorization/roleAssignments
+  class: identity.role_assignment
+presentation:
+  displayNames:
+    en-US: Azure role assignment
+    zh-CN: Azure 角色分配
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Authorization.RoleAssignments_ListForSubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Authorization.RoleAssignments_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  createdOn:
+    path: createdOn
+    type: string
+  updatedOn:
+    path: updatedOn
+    type: string
+  scope:
+    path: scope
+    type: string
+  roleDefinitionId:
+    path: roleDefinitionId
+    type: string
+  principalId:
+    path: principalId
+    type: string
+  principalType:
+    path: principalType
+    type: string
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Authorization.RoleAssignments_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Authorization.RoleAssignments_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Authorization/roleDefinitions
+  targetIdPath: refs_microsoft_authorization_roledefinitions

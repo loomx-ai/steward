@@ -200,8 +200,19 @@ func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Ass
 		for target, sources := range diagnostics {
 			incoming[target] = append(incoming[target], sources...)
 		}
+		rbac, err := c.rbacIncomingObservation(ctx, targets, known)
+		if err != nil {
+			return nil, contracts.DependencyReadError(err)
+		}
+		for target, sources := range rbac {
+			incoming[target] = append(incoming[target], sources...)
+		}
 		return incoming, nil
 	}
+	return c.verifiedIncoming(observe)
+}
+
+func (c *client) verifiedIncoming(observe func() (map[string][]monitorIncomingSource, error)) (map[string][]monitorIncomingSource, error) {
 	snapshot := func(incoming map[string][]monitorIncomingSource) string {
 		values := map[string]any{}
 		for target, sources := range incoming {
@@ -214,6 +225,9 @@ func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Ass
 				}
 				if source.resource.kind == diagnosticSettingsType {
 					configuration, group = diagnosticSnapshot(source.resource.data), source.group
+				}
+				if rbacResourceKind(source.resource.kind) != "" {
+					configuration, group = c.rbacSnapshot(source.resource.kind, source.resource.data), source.group
 				}
 				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": configuration, "group": group, "references": source.references}
 			}
@@ -253,6 +267,10 @@ func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets 
 	if err != nil {
 		return contribution, err
 	}
+	return c.contributeIncomingSources(targets, assets, incoming)
+}
+
+func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incoming map[string][]monitorIncomingSource) (contribution governance.Contribution, err error) {
 	for _, target := range targets {
 		for _, entry := range incoming[target.Identity.NativeID] {
 			source := entry.resource
@@ -271,6 +289,12 @@ func (c *client) contributeMonitorIncoming(ctx context.Context, targets, assets 
 				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
 					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
 				}})
+				continue
+			}
+			if rbacResourceKind(source.kind) != "" {
+				if err := c.rbacIncomingUnchanged(*indexed, entry); err != nil {
+					return contribution, err
+				}
 				continue
 			}
 			if source.kind == diagnosticSettingsType {

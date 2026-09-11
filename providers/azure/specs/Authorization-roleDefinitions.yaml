@@ -1,0 +1,60 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Authorization/roleDefinitions
+  class: identity.policy
+presentation:
+  displayNames:
+    en-US: Azure role definition
+    zh-CN: Azure 角色定义
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.Authorization.RoleDefinitions_List
+    parameters:
+      scope: scope.subscriptionPath
+      $filter: atScopeAndBelow()
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Authorization.RoleDefinitions_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  createdOn:
+    path: createdOn
+    type: string
+  updatedOn:
+    path: updatedOn
+    type: string
+  roleName:
+    path: roleName
+    type: string
+  roleType:
+    path: roleType
+    type: string
+  assignableScopes:
+    path: assignableScopes
+    type: array
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Authorization.RoleDefinitions_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Authorization.RoleDefinitions_Get
+      itemsPath: $
+      identityPath: id

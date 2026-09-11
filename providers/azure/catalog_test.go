@@ -98,6 +98,13 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if budget, _ := monitorBudgetKind(kind.NativeType); budget != "" && match[1] == "scope" {
 					value = "subscriptions/" + testSubscription
 				}
+				if rbacResourceKind(kind.NativeType) != "" {
+					if match[1] == "scope" {
+						value = "subscriptions/" + testSubscription
+					} else {
+						value = rbacTestRoleName
+					}
+				}
 				nativeID = strings.ReplaceAll(nativeID, match[0], value)
 			}
 			wantPath := nativeID

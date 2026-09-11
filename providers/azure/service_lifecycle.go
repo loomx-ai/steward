@@ -404,8 +404,11 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
-	var monitorTargets []asset.Asset
+	var monitorTargets, roleTargets []asset.Asset
 	for _, value := range assets {
+		if value.Identity.Provider == asset.ProviderAzure && value.Identity.NativeType == rbacRoleType {
+			roleTargets = append(roleTargets, value)
+		}
 		if monitorARMTarget(value) && strings.HasPrefix(strings.ToLower(value.Identity.NativeID), s.client.root()+"/") {
 			monitorTargets = append(monitorTargets, value)
 		}
@@ -413,6 +416,17 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	incoming, err := s.client.contributeMonitorIncoming(ctx, monitorTargets, assets)
 	if err != nil {
 		return result, err
+	}
+	result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
+	rbac, err := s.client.verifiedIncoming(func() (map[string][]monitorIncomingSource, error) {
+		return s.client.rbacIncomingObservation(ctx, roleTargets, assets)
+	})
+	if err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
+	incoming, err = s.client.contributeIncomingSources(roleTargets, assets, rbac)
+	if err != nil {
+		return result, contracts.DependencyReadError(err)
 	}
 	result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
 	if err := s.contributeBatch(ctx, assets, &result); err != nil {
@@ -443,6 +457,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	for _, parent := range parents {
 		if batchOwners[parent.ID].ID != "" {
 			continue // Batch already contributed this VM's complete native tree.
+		}
+		if parent.Identity.Provider == asset.ProviderAzure && rbacResourceKind(parent.Identity.NativeType) != "" {
+			contribution, err := s.client.contributeRBACReferences(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			continue
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && parent.Identity.NativeType == diagnosticSettingsType {
 			contribution, err := s.client.contributeDiagnosticReferences(ctx, parent, assets)

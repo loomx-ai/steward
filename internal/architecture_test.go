@@ -1,7 +1,6 @@
 package internal_test
 
 import (
-	"bufio"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -255,23 +254,19 @@ func assertForbiddenSourcePatternsAbsent(t *testing.T, root string) {
 			if extension != ".go" && extension != ".ts" && extension != ".tsx" && extension != ".js" && extension != ".mjs" && extension != ".sql" {
 				return
 			}
-			file, err := os.Open(path)
+			content, err := os.ReadFile(path)
 			if err != nil {
-				t.Errorf("open %s: %v", path, err)
+				t.Errorf("read %s: %v", path, err)
 				return
 			}
-			defer file.Close()
-			scanner := bufio.NewScanner(file)
-			for line := 1; scanner.Scan(); line++ {
-				text := scanner.Text()
+			line := 0
+			for text := range strings.SplitSeq(string(content), "\n") {
+				line++
 				for name, pattern := range patterns {
 					if pattern.MatchString(text) {
 						t.Errorf("%s remains at %s:%d", name, relativePath(root, path), line)
 					}
 				}
-			}
-			if err := scanner.Err(); err != nil {
-				t.Errorf("scan %s: %v", path, err)
 			}
 		})
 	}
@@ -319,6 +314,21 @@ func TestTopologyCutoverGuardRejectsLegacyProtocolShapes(t *testing.T) {
 				t.Fatalf("legacy protocol shape was accepted: %q", source)
 			}
 		})
+	}
+}
+
+func TestTopologyCutoverGuardChecksCompleteLongLines(t *testing.T) {
+	root := t.TempDir()
+	padding := strings.Repeat("a", 2<<20)
+	writeTopologyGuardFixture(t, root, "providers/example/recorded.json", `{"body":"`+padding+`"}`+"\n")
+	violations, err := topologyCutoverViolations(root)
+	if err != nil || len(violations) != 0 {
+		t.Fatal("long native response prevented architecture checks", violations, err)
+	}
+	writeTopologyGuardFixture(t, root, "web/src/example.ts", `const value = "`+padding+`" + "`+"dep"+"th"+`";`+"\n")
+	violations, err = topologyCutoverViolations(root)
+	if err != nil || len(violations) != 1 || !strings.Contains(violations[0], "web/src/example.ts:1") {
+		t.Fatal("long-line suffix escaped architecture checks", violations, err)
 	}
 }
 
@@ -421,14 +431,13 @@ func topologyCutoverViolations(root string) ([]string, error) {
 			if filepath.Base(path) == "architecture_test.go" {
 				return nil
 			}
-			file, err := os.Open(path)
+			content, err := os.ReadFile(path)
 			if err != nil {
-				return err
+				return fmt.Errorf("read %s: %w", path, err)
 			}
-			defer file.Close()
-			scanner := bufio.NewScanner(file)
-			for line := 1; scanner.Scan(); line++ {
-				text := scanner.Text()
+			line := 0
+			for text := range strings.SplitSeq(string(content), "\n") {
+				line++
 				for name, pattern := range obsolete {
 					if pattern.MatchString(text) {
 						violations = append(violations, fmt.Sprintf("%s remains at %s:%d", name, relativePath(root, path), line))
@@ -446,9 +455,6 @@ func topologyCutoverViolations(root string) ([]string, error) {
 						))
 					}
 				}
-			}
-			if err := scanner.Err(); err != nil {
-				return err
 			}
 			return nil
 		})
