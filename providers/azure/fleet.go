@@ -20,7 +20,9 @@ const (
 	fleetStrategyType   = fleetType + "/updateStrategies"
 	fleetProfileType    = fleetType + "/autoUpgradeProfiles"
 	fleetGateType       = fleetType + "/gates"
+	fleetMeshType       = fleetType + "/clusterMeshProfiles"
 	fleetVersion        = "2026-06-01"
+	fleetMeshVersion    = "2026-06-02-preview"
 	fleetArcClusterType = "Microsoft.Kubernetes/connectedClusters"
 )
 
@@ -47,6 +49,7 @@ func fleetKind(kind string) fleetResource {
 		{fleetStrategyType, "FleetUpdateStrategies", "updateStrategyName"},
 		{fleetProfileType, "AutoUpgradeProfiles", "autoUpgradeProfileName"},
 		{fleetGateType, "Gates", "gateName"},
+		{fleetMeshType, "ClusterMeshProfiles", "clusterMeshProfileName"},
 	} {
 		if strings.EqualFold(row.kind, kind) {
 			return row
@@ -91,14 +94,24 @@ func fleetParent(id, kind string) string {
 	return ""
 }
 
-// All routes come from the pinned native operation. Gates have no DELETE;
-// stopping a run is the only POST needed by its deletion lifecycle.
-func (c *client) fleetRequest(kind, scope, name, method string) (catalog.RESTRequest, error) {
+func fleetAPIVersion(kind, method string) string {
+	if kind == fleetMeshType || kind == fleetMemberType && method == "GET" {
+		return fleetMeshVersion
+	}
+	return fleetVersion
+}
+
+// Member reads need the preview's native mesh association. Other existing
+// operations retain their stable contract. Mesh PUT/Apply only prepare cleanup.
+func (c *client) fleetRequest(kind, scope, name, method string, body ...map[string]any) (catalog.RESTRequest, error) {
 	row := fleetKind(kind)
-	if row.kind != kind || kind == "" || method != "GET" && method != "DELETE" && method != "POST" || method == "DELETE" && (name == "" || kind == fleetGateType) || method == "POST" && (name == "" || kind != fleetRunType) {
+	if row.kind != kind || kind == "" || method != "GET" && method != "DELETE" && method != "POST" && method != "PUT" || method == "DELETE" && (name == "" || kind == fleetGateType) || method == "POST" && (name == "" || kind != fleetRunType && kind != fleetMeshType) || method == "PUT" && (kind != fleetMeshType || name == "" || len(body) != 1 || body[0] == nil) || method != "PUT" && len(body) != 0 {
 		return catalog.RESTRequest{}, serviceDenied("invalid_fleet_operation")
 	}
 	parameters := map[string]any{"subscriptionId": c.subscription}
+	if method == "PUT" {
+		parameters["resource"] = body[0]
+	}
 	operation := "ListByFleet"
 	if kind == fleetType && scope == c.root() && name == "" {
 		operation = "ListBySubscription"
@@ -126,6 +139,11 @@ func (c *client) fleetRequest(kind, scope, name, method string) (catalog.RESTReq
 				operation = "Delete"
 			} else if method == "POST" {
 				operation = "Stop"
+				if kind == fleetMeshType {
+					operation = "Apply"
+				}
+			} else if method == "PUT" {
+				operation = "CreateOrUpdate"
 			}
 		}
 	}
@@ -134,7 +152,7 @@ func (c *client) fleetRequest(kind, scope, name, method string) (catalog.RESTReq
 		return catalog.RESTRequest{}, err
 	}
 	op, ok := metadata.catalog.Operation("Azure.Microsoft.ContainerService." + row.prefix + "_" + operation)
-	if !ok || op.Call == nil || op.Call.Version != fleetVersion || op.Call.Method != method {
+	if !ok || op.Call == nil || op.Call.Version != fleetAPIVersion(kind, method) || op.Call.Method != method {
 		return catalog.RESTRequest{}, serviceDenied("fleet_native_operation_changed")
 	}
 	return bindAzureREST(op, parameters)
@@ -148,7 +166,12 @@ func fleetListQuery(u *url.URL) error {
 		return nil
 	}
 	query, err := url.ParseQuery(u.RawQuery)
-	if err != nil || len(query["api-version"]) != 1 || query.Get("api-version") != fleetVersion || u.RawPath != "" && u.RawPath != u.Path {
+	parts := strings.Split(path[index+len(provider):], "/")
+	kind := fleetType
+	if len(parts) == 3 {
+		kind = fleetKind(fleetType + "/" + parts[2]).kind
+	}
+	if kind == "" || len(parts) != 1 && len(parts) != 3 || err != nil || len(query["api-version"]) != 1 || query.Get("api-version") != fleetAPIVersion(kind, "GET") || u.RawPath != "" && u.RawPath != u.Path {
 		return serviceDenied("invalid_fleet_list_query")
 	}
 	for key, values := range query {
@@ -185,6 +208,11 @@ func fleetSnapshot(kind string, raw map[string]any) map[string]any {
 	if kind == fleetProfileType {
 		delete(props, "autoUpgradeProfileStatus")
 	}
+	if kind == fleetMemberType {
+		// Read-only mesh attachment changes when its independently reviewed
+		// profile disconnects this member. The mesh observer checks this link.
+		delete(props, "meshProperties")
+	}
 	copy["properties"] = props
 	return copy
 }
@@ -198,7 +226,7 @@ func fleetValidate(kind string, raw map[string]any) error {
 		return serviceDenied("fleet_response_identity_changed")
 	}
 	props, ok := raw["properties"].(map[string]any)
-	if !ok || props == nil || monitorRuleFields(props, "provisioningState", "hubProfile", "clusterResourceId", "group", "labels", "managedNamespaceProperties", "adoptionPolicy", "deletePolicy", "propagationPolicy", "strategy", "managedClusterUpdate", "updateStrategyId", "autoUpgradeProfileId", "channel", "disabled", "autoUpgradeProfileStatus", "status", "gateType", "target", "state") != nil {
+	if !ok || props == nil || monitorRuleFields(props, "provisioningState", "hubProfile", "clusterResourceId", "group", "labels", "meshProperties", "memberSelector", "managedNamespaceProperties", "adoptionPolicy", "deletePolicy", "propagationPolicy", "strategy", "managedClusterUpdate", "updateStrategyId", "autoUpgradeProfileId", "channel", "disabled", "autoUpgradeProfileStatus", "status", "gateType", "target", "state") != nil {
 		return serviceDenied("invalid_fleet_properties")
 	}
 	if kind == fleetType || kind == fleetNamespaceType {
@@ -247,6 +275,13 @@ func fleetValidate(kind string, raw map[string]any) error {
 	case fleetMemberType:
 		if props["clusterResourceId"] == nil {
 			return serviceDenied("fleet_member_cluster_missing")
+		}
+		if _, err := fleetMemberMesh(raw); err != nil {
+			return err
+		}
+	case fleetMeshType:
+		if err := fleetMeshValidate(raw); err != nil {
+			return err
 		}
 	case fleetNamespaceType:
 		if props["deletePolicy"] != text(props["deletePolicy"]) || props["adoptionPolicy"] != text(props["adoptionPolicy"]) || !slices.Contains([]string{"Keep", "Delete"}, text(props["deletePolicy"])) || !slices.Contains([]string{"Never", "IfIdentical", "Always"}, text(props["adoptionPolicy"])) {

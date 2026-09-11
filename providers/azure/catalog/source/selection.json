@@ -2098,8 +2098,6 @@
         "FleetManagedNamespaces_Get",
         "FleetManagedNamespaces_ListByFleet",
         "FleetMembers_Delete",
-        "FleetMembers_Get",
-        "FleetMembers_ListByFleet",
         "FleetUpdateStrategies_Delete",
         "FleetUpdateStrategies_Get",
         "FleetUpdateStrategies_ListByFleet",
@@ -2113,6 +2111,18 @@
         "UpdateRuns_Get",
         "UpdateRuns_ListByFleet",
         "UpdateRuns_Stop"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+      "operations": [
+        "ClusterMeshProfiles_Apply",
+        "ClusterMeshProfiles_CreateOrUpdate",
+        "ClusterMeshProfiles_Delete",
+        "ClusterMeshProfiles_Get",
+        "ClusterMeshProfiles_ListByFleet",
+        "FleetMembers_Get",
+        "FleetMembers_ListByFleet"
       ]
     }
   ],
@@ -9523,6 +9533,24 @@
       "delete_operations": [],
       "list_operations": [
         "Azure.Microsoft.ContainerService.Gates_ListByFleet"
+      ]
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/clusterMeshProfiles",
+      "class": "container.cluster_mesh",
+      "display_name": "Fleet cross-cluster network",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "clusterMeshProfiles",
+      "read_operations": [
+        "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.ContainerService.ClusterMeshProfiles_ListByFleet"
       ]
     }
   ]

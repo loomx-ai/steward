@@ -80,7 +80,11 @@ func newFleetFixture(t *testing.T) *fleetFixture {
 			}
 			return jsonResponse(200, body, nil), nil
 		}
-		if !fleetPath(path) || req.URL.Query().Get("api-version") != fleetVersion || len(req.URL.Query()) != 1 {
+		version := fleetVersion
+		if strings.Contains(path, "/clustermeshprofiles") || strings.Contains(path, "/members") {
+			version = fleetMeshVersion
+		}
+		if !fleetPath(path) || req.URL.Query().Get("api-version") != version || len(req.URL.Query()) != 1 {
 			t.Fatal("Fleet read escaped native route", req.URL)
 		}
 		if _, _, err := fleetIdentity(path); err == nil {

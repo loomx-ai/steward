@@ -18,16 +18,27 @@ import (
 )
 
 func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
-	testFleetRegisteredWorkers(t, false)
+	testFleetRegisteredWorkers(t, "inventory")
 }
 
 func TestFleetRegisteredCleanupWorkerAndPhaseRecovery(t *testing.T) {
-	testFleetRegisteredWorkers(t, true)
+	testFleetRegisteredWorkers(t, "cleanup")
 }
 
-func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
+func TestFleetMeshRegisteredWorkersAndPhaseRecovery(t *testing.T) {
+	testFleetRegisteredWorkers(t, "mesh")
+}
+
+func testFleetRegisteredWorkers(t *testing.T, mode string) {
 	ctx := t.Context()
 	f := newFleetFixture(t)
+	kinds, count := fleetTestKinds, 7
+	var mesh *fleetMeshCleanupFixture
+	if mode == "mesh" {
+		mesh = newFleetMeshCleanupFixture(t)
+		f, kinds, count = mesh.fleetFixture, append(append([]string{}, fleetTestKinds...), fleetMeshType), 9
+	}
+	mutationTransport := f.override
 	r := f.runtime
 	repository, err := sqlite.Open(filepath.Join(t.TempDir(), "fleet.db"), "../../migrations")
 	if err != nil {
@@ -116,8 +127,8 @@ func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
 		}
 		return values
 	}
-	values := scan(fleetTestKinds, false)
-	if len(values) != 7 {
+	values := scan(kinds, false)
+	if len(values) != count {
 		t.Fatal("Fleet worker lost a registered native kind", len(values))
 	}
 	byKind := map[string]asset.Asset{}
@@ -159,9 +170,9 @@ func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
 	}
 	nativeGraph = true
 	f.override = func(req *http.Request) (*http.Response, bool) { return fleetGraphEmptyIndexes(t, req) }
-	values = scan(fleetTestKinds, false)
+	values = scan(kinds, false)
 	bindings, err := repository.ListLifecycleBindingsByConnection(ctx, connection.ID)
-	if err != nil || len(bindings) != 6 {
+	if err != nil || len(bindings) != count-1 {
 		t.Fatal("Fleet native graph worker did not persist child lifecycles", bindings, err)
 	}
 	for _, binding := range bindings {
@@ -173,7 +184,15 @@ func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
 			t.Fatal("persisted Fleet bypassed a child's independent cleanup", binding)
 		}
 	}
-	if cleanup {
+	if mode == "mesh" {
+		f.override = mutationTransport
+		testFleetMeshCleanupWorkers(t, mesh, repository, registry, values)
+		if remaining := scan(kinds, false); len(remaining) != 6 {
+			t.Fatal("post-cleanup Mesh scan lost tombstones or unrelated Fleet resources", remaining)
+		}
+		return
+	}
+	if mode == "cleanup" {
 		testFleetCleanupWorkers(t, f, repository, registry, values)
 		if remaining := scan(fleetTestKinds, false); len(remaining) != 1 || remaining[0].Identity.NativeType != fleetType {
 			t.Fatal("post-cleanup Fleet scan lost native tombstones or the retained Fleet", remaining)

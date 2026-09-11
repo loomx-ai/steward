@@ -106,6 +106,9 @@ func (r *Runtime) fleetObservedInventoryItem(ctx context.Context, c *client, raw
 		parent = result.data
 	}
 	item, err := r.fleetInventoryItem(c, kind, current.data, parent, group, locks)
+	if err == nil && kind == fleetMeshType {
+		err = r.fleetMeshInventory(ctx, c, &item, current.data, nil)
+	}
 	if err != nil || kind != fleetType {
 		return item, err
 	}
@@ -173,6 +176,9 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	reason := ""
 	if kind == fleetType {
 		reason = "azure_fleet_lifecycle_pending"
+	}
+	if kind == fleetMeshType {
+		normalized["mesh_state"] = object(object(raw["properties"])["status"])["state"]
 	}
 	if kind == fleetGateType {
 		reason = "azure_fleet_gate_requires_update_run"
@@ -256,7 +262,13 @@ func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request
 	if kind != fleetType {
 		rows = map[string]map[string]any{}
 		for _, parent := range slices.Sorted(maps.Keys(roots)) {
-			children, requestID, err := c.fleetIndex(ctx, kind, parent)
+			var children map[string]map[string]any
+			var requestID string
+			if kind == fleetMeshType {
+				children, requestID, err = c.fleetMeshes(ctx, parent, nil)
+			} else {
+				children, requestID, err = c.fleetIndex(ctx, kind, parent)
+			}
 			if err != nil {
 				return nil, nil, nil, "", err
 			}
@@ -321,7 +333,12 @@ func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request
 				return nil, nil, nil, "", err
 			}
 		}
-		object(bindings["items"])[id] = map[string]any{"configuration": item.Normalized[fleetConfigurationProof], "context": item.Normalized[fleetContextProof], "references": item.Normalized[fleetReferencesProof], "hub": item.Normalized[fleetHubProof], "protection": item.Normalized["cleanup_protection_reason"]}
+		if kind == fleetMeshType {
+			if err := r.fleetMeshInventory(ctx, c, &item, rows[id], request.KnownNativeMetadata[id]); err != nil {
+				return nil, nil, nil, "", err
+			}
+		}
+		object(bindings["items"])[id] = map[string]any{"configuration": item.Normalized[fleetConfigurationProof], "context": item.Normalized[fleetContextProof], "references": item.Normalized[fleetReferencesProof], "hub": item.Normalized[fleetHubProof], "mesh": item.Normalized[fleetMeshProof], "protection": item.Normalized["cleanup_protection_reason"]}
 		if productScopeMatches(request, item) {
 			items = append(items, item)
 		}
@@ -351,6 +368,14 @@ func (r *Runtime) listFleet(ctx context.Context, c *client, request contracts.In
 				return batch, serviceDenied("fleet_child_has_hub_metadata")
 			}
 			if _, err := c.fleetRecordedHub(id, normalized); err != nil {
+				return batch, err
+			}
+		}
+		if normalized[fleetMeshState] != nil || normalized[fleetMeshProof] != nil {
+			if request.ResourceKind.NativeType != fleetMeshType {
+				return batch, serviceDenied("non_mesh_resource_has_mesh_metadata")
+			}
+			if _, err := c.fleetRecordedMesh(id, normalized); err != nil {
 				return batch, err
 			}
 		}

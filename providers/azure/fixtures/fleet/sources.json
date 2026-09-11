@@ -27,6 +27,51 @@
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/AutoUpgradeProfiles_ListByFleet.json"
   },
   {
+    "file": "ClusterMeshProfiles_Apply.json",
+    "method": "POST",
+    "operation": "ClusterMeshProfiles_Apply",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}/apply",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "5528c5bd5208171c48c48bb2099a34ed0cf2b159144973c0383c4832ef57e6a8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/ClusterMeshProfiles_Apply.json"
+  },
+  {
+    "file": "ClusterMeshProfiles_CreateOrUpdate.json",
+    "method": "PUT",
+    "operation": "ClusterMeshProfiles_CreateOrUpdate",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "a661df21a7acafb46c93fdc4c4e4d512d3adab8841c3dbc24ae58d586cbb2c5e",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/ClusterMeshProfiles_CreateOrUpdate.json"
+  },
+  {
+    "file": "ClusterMeshProfiles_Delete.json",
+    "method": "DELETE",
+    "operation": "ClusterMeshProfiles_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "b42c50895dedeb699eaa95cf355ef6a14fc9d07278346728da8cf5a2acac3337",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/ClusterMeshProfiles_Delete.json"
+  },
+  {
+    "file": "ClusterMeshProfiles_Get.json",
+    "method": "GET",
+    "operation": "ClusterMeshProfiles_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "f49fd731e59894c7b9ce92f722eeae7fb317e8ddcb127789534b2e6f31595546",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/ClusterMeshProfiles_Get.json"
+  },
+  {
+    "file": "ClusterMeshProfiles_ListByFleet.json",
+    "method": "GET",
+    "operation": "ClusterMeshProfiles_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "9bdc89739f88e334f9fb82ab0c1d69856a494df74825a59bdc380fcd908d7d97",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/ClusterMeshProfiles_ListByFleet.json"
+  },
+  {
     "file": "FleetManagedNamespaces_Delete.json",
     "method": "DELETE",
     "operation": "FleetManagedNamespaces_Delete",
@@ -67,18 +112,18 @@
     "method": "GET",
     "operation": "FleetMembers_Get",
     "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
-    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
-    "source_sha256": "4718fc45a85a7c085dfdbcd5e9f520f583399314e2ee7d8050cfd8ac6c811274",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetMembers_Get.json"
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "511408462cdebaa7b466cb8d55a1c7b19a5c1e730e59e8a0641792376fd6bbd1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/FleetMembers_Get.json"
   },
   {
     "file": "FleetMembers_ListByFleet.json",
     "method": "GET",
     "operation": "FleetMembers_ListByFleet",
     "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members",
-    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
-    "source_sha256": "53781fbe665cd4a52ccaca600da2460005e39995cce2aeb977ecfd9a1721be66",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetMembers_ListByFleet.json"
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json",
+    "source_sha256": "4c437af3fd80ad14d1e8c0d3dd03b05352610e9de8c97ba749813b3d023df84a",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/examples/FleetMembers_ListByFleet.json"
   },
   {
     "file": "Fleets_Delete.json",

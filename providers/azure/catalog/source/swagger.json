@@ -2155,6 +2155,1032 @@
       "dependency": false,
       "document": {
         "definitions": {
+          "CiliumProperties": {
+            "description": "The Cilium specific properties of the member cluster.",
+            "properties": {
+              "id": {
+                "description": "Cilium requires each cluster to be assigned a unique numeric cluster id from 1 - 255. The id is managed by Fleet and cannot be set by the user.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "name": {
+                "description": "Cilium requires each cluster to be assigned a unique human-readable name. The name is managed by Fleet, based on the Fleet Member name, and cannot be set by the user.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "type": "object"
+          },
+          "ClusterMeshProfile": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A cluster mesh profile stores the general information about the mesh.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/ClusterMeshProfileProperties",
+                "description": "The resource-specific properties for this resource."
+              }
+            },
+            "type": "object"
+          },
+          "ClusterMeshProfileListResult": {
+            "description": "The response of a ClusterMeshProfile list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The ClusterMeshProfile items on this page",
+                "items": {
+                  "$ref": "#/definitions/ClusterMeshProfile"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "ClusterMeshProfileProperties": {
+            "description": "A cluster mesh profile stores the general information about the mesh.",
+            "properties": {
+              "memberSelector": {
+                "$ref": "#/definitions/MemberSelector",
+                "description": "Select the members of the mesh.\n  * Only key/value pairs with the `=` operator are accepted in the label selector.\n  * If empty or not specified, no Fleet members will be selected to join the mesh.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/ClusterMeshProfileProvisioningState",
+                "description": "The provisioning state of the cluster mesh profile.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/ClusterMeshProfileStatus",
+                "description": "The cluster mesh profile status.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "ClusterMeshProfileProvisioningState": {
+            "description": "The provisioning state of the cluster mesh profile resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ClusterMeshProfileProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "ClusterMeshProfileResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/fleets/clusterMeshProfiles"
+                }
+              ]
+            }
+          },
+          "ClusterMeshProfileStatus": {
+            "description": "Status of the cluster mesh.",
+            "properties": {
+              "lastAppliedMemberSelector": {
+                "$ref": "#/definitions/MemberSelector",
+                "description": "The last applied MemberSelector for the cluster mesh profile.",
+                "readOnly": true
+              },
+              "lastOperationError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The last operation error of the cluster mesh profile.",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID for the cluster mesh profile.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "state": {
+                "$ref": "#/definitions/ClusterMeshState",
+                "description": "The state of the cluster mesh.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          "ClusterMeshState": {
+            "description": "Cluster mesh state.",
+            "enum": [
+              "NotConnected",
+              "Applying",
+              "Connected",
+              "Degraded",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ClusterMeshState",
+              "values": [
+                {
+                  "description": "The mesh is not connected.",
+                  "name": "NotConnected",
+                  "value": "NotConnected"
+                },
+                {
+                  "description": "The mesh is applying.",
+                  "name": "Applying",
+                  "value": "Applying"
+                },
+                {
+                  "description": "The mesh is connected.",
+                  "name": "Connected",
+                  "value": "Connected"
+                },
+                {
+                  "description": "The mesh is degraded.",
+                  "name": "Degraded",
+                  "value": "Degraded"
+                },
+                {
+                  "description": "The mesh failed to connect.",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "ClusterResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/managedClusters"
+                }
+              ]
+            }
+          },
+          "FleetMember": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/FleetMemberProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "FleetMemberListResult": {
+            "description": "The response of a FleetMember list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The FleetMember items on this page",
+                "items": {
+                  "$ref": "#/definitions/FleetMember"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "FleetMemberProperties": {
+            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
+            "properties": {
+              "clusterResourceId": {
+                "$ref": "#/definitions/ClusterResourceId",
+                "description": "The ARM resource id of the cluster that joins the Fleet. Must be a valid Azure resource id. e.g.: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{clusterName}'.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "group": {
+                "description": "The group this member belongs to for multi-cluster update management.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "type": "string"
+              },
+              "labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The labels for the fleet member.",
+                "type": "object"
+              },
+              "meshProperties": {
+                "$ref": "#/definitions/MeshProperties",
+                "description": "The Mesh Member Properties associated with this Fleet Member.",
+                "readOnly": true
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/FleetMemberProvisioningState",
+                "description": "The status of the last operation.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/FleetMemberStatus",
+                "description": "Status information of the last operation for fleet member.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "clusterResourceId"
+            ],
+            "type": "object"
+          },
+          "FleetMemberProvisioningState": {
+            "description": "The provisioning state of the last accepted operation.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "Joining",
+              "Leaving",
+              "Updating"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "FleetMemberProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "The provisioning state of a member joining a fleet.",
+                  "name": "Joining",
+                  "value": "Joining"
+                },
+                {
+                  "description": "The provisioning state of a member leaving a fleet.",
+                  "name": "Leaving",
+                  "value": "Leaving"
+                },
+                {
+                  "description": "The provisioning state of a member being updated.",
+                  "name": "Updating",
+                  "value": "Updating"
+                }
+              ]
+            }
+          },
+          "FleetMemberStatus": {
+            "description": "Status information for the fleet member",
+            "properties": {
+              "lastOperationError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The last operation error of the fleet member",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID for the fleet member",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MemberSelector": {
+            "description": "Select members of a fleet.",
+            "properties": {
+              "byLabel": {
+                "description": "Kubernetes-style label selector for selecting Fleet members, e.g. `env=production`.",
+                "maxLength": 512,
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "byLabel"
+            ],
+            "type": "object"
+          },
+          "MeshMemberState": {
+            "description": "Mesh member state.",
+            "enum": [
+              "Connecting",
+              "Connected",
+              "Disconnecting",
+              "Failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "MeshMemberState",
+              "values": [
+                {
+                  "description": "The member is connecting to the mesh.",
+                  "name": "Connecting",
+                  "value": "Connecting"
+                },
+                {
+                  "description": "The member is connected to the mesh.",
+                  "name": "Connected",
+                  "value": "Connected"
+                },
+                {
+                  "description": "The member is disconnecting from the mesh.",
+                  "name": "Disconnecting",
+                  "value": "Disconnecting"
+                },
+                {
+                  "description": "The member failed to connect due to an error.",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "MeshMemberStatus": {
+            "description": "Status of the mesh member.",
+            "properties": {
+              "error": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The error affecting this member.",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID that affected the mesh properties of the fleet member.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "lastUpdatedAt": {
+                "description": "When the status was last updated.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "state": {
+                "$ref": "#/definitions/MeshMemberState",
+                "description": "The mesh member state.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "state"
+            ],
+            "type": "object"
+          },
+          "MeshProperties": {
+            "description": "The Mesh Member data for a Fleet Member resource.",
+            "properties": {
+              "ciliumProperties": {
+                "$ref": "#/definitions/CiliumProperties",
+                "description": "The Cilium cluster properties.",
+                "readOnly": true
+              },
+              "clusterMeshProfileResourceId": {
+                "$ref": "#/definitions/ClusterMeshProfileResourceId",
+                "description": "Resource id of the cluster mesh profile associated with this mesh member.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/MeshMemberStatus",
+                "description": "The status of the mesh member.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "ciliumProperties",
+              "status",
+              "clusterMeshProfileResourceId"
+            ],
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Kubernetes Fleet Manager api client.",
+          "title": "ContainerServiceFleetClient",
+          "version": "2026-06-02-preview",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "parameters": {
+          "FilterQueryParameter": {
+            "description": "Filter the result list using the given expression.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "filter",
+            "x-ms-parameter-location": "method"
+          },
+          "SkipTokenQueryParameter": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "TopQueryParameter": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles": {
+            "get": {
+              "description": "List ClusterMeshProfile resources by Fleet",
+              "operationId": "ClusterMeshProfiles_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfileListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ClusterMeshProfiles"
+              ],
+              "x-ms-examples": {
+                "List the ClusterMeshProfile resources by fleet.": {
+                  "$ref": "./examples/ClusterMeshProfiles_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}": {
+            "delete": {
+              "description": "Delete a ClusterMeshProfile",
+              "operationId": "ClusterMeshProfiles_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ClusterMeshProfile resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "clusterMeshProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ClusterMeshProfiles"
+              ],
+              "x-ms-examples": {
+                "Delete an ClusterMeshProfile resource.": {
+                  "$ref": "./examples/ClusterMeshProfiles_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Get a ClusterMeshProfile",
+              "operationId": "ClusterMeshProfiles_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ClusterMeshProfile resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "clusterMeshProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfile"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ClusterMeshProfiles"
+              ],
+              "x-ms-examples": {
+                "Get a ClusterMeshProfile resource.": {
+                  "$ref": "./examples/ClusterMeshProfiles_Get.json"
+                }
+              }
+            },
+            "put": {
+              "description": "Create a ClusterMeshProfile",
+              "operationId": "ClusterMeshProfiles_CreateOrUpdate",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The request should only proceed if no entity matches this string.",
+                  "in": "header",
+                  "name": "If-None-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifNoneMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ClusterMeshProfile resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "clusterMeshProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Resource create parameters.",
+                  "in": "body",
+                  "name": "resource",
+                  "required": true,
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfile"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource 'ClusterMeshProfile' update operation succeeded",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfile"
+                  }
+                },
+                "201": {
+                  "description": "Resource 'ClusterMeshProfile' create operation succeeded",
+                  "headers": {
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfile"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ClusterMeshProfiles"
+              ],
+              "x-ms-examples": {
+                "Create or update a ClusterMeshProfile.": {
+                  "$ref": "./examples/ClusterMeshProfiles_CreateOrUpdate.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "original-uri"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}/apply": {
+            "post": {
+              "description": "Applies the cluster mesh profile to selected fleet members.",
+              "operationId": "ClusterMeshProfiles_Apply",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the ClusterMeshProfile resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "clusterMeshProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/ClusterMeshProfile"
+                  }
+                },
+                "202": {
+                  "description": "Resource operation accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "ClusterMeshProfiles"
+              ],
+              "x-ms-examples": {
+                "Apply a ClusterMeshProfile": {
+                  "$ref": "./examples/ClusterMeshProfiles_Apply.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members": {
+            "get": {
+              "description": "List FleetMember resources by Fleet",
+              "operationId": "FleetMembers_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/FilterQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetMemberListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetMembers"
+              ],
+              "x-ms-examples": {
+                "Lists the members of a Fleet.": {
+                  "$ref": "./examples/FleetMembers_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}": {
+            "get": {
+              "description": "Get a FleetMember",
+              "operationId": "FleetMembers_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Fleet member resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "fleetMemberName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetMember"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetMembers"
+              ],
+              "x-ms-examples": {
+                "Gets a FleetMember resource.": {
+                  "$ref": "./examples/FleetMembers_Get.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "c794ff05d14345310a35d83f00876f187ad618386d94dbf3c664e61ccdf2bfa3",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
           "APIServerAccessProfile": {
             "description": "Access profile for the Fleet hub API server.",
             "properties": {
@@ -2464,18 +3490,6 @@
             },
             "type": "object"
           },
-          "ClusterResourceId": {
-            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
-            "format": "arm-id",
-            "type": "string",
-            "x-ms-arm-id-details": {
-              "allowedResources": [
-                {
-                  "type": "Microsoft.ContainerService/managedClusters"
-                }
-              ]
-            }
-          },
           "Core.V1.TaintEffect": {
             "description": "TaintEffect",
             "enum": [
@@ -2777,154 +3791,6 @@
               },
               "lastOperationId": {
                 "description": "The last operation ID for the fleet managed namespace",
-                "readOnly": true,
-                "type": "string"
-              }
-            },
-            "type": "object"
-          },
-          "FleetMember": {
-            "allOf": [
-              {
-                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
-              }
-            ],
-            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
-            "properties": {
-              "eTag": {
-                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
-                "readOnly": true,
-                "type": "string"
-              },
-              "properties": {
-                "$ref": "#/definitions/FleetMemberProperties",
-                "description": "The resource-specific properties for this resource.",
-                "x-ms-client-flatten": true
-              }
-            },
-            "type": "object"
-          },
-          "FleetMemberListResult": {
-            "description": "The response of a FleetMember list operation.",
-            "properties": {
-              "nextLink": {
-                "description": "The link to the next page of items",
-                "format": "uri",
-                "type": "string"
-              },
-              "value": {
-                "description": "The FleetMember items on this page",
-                "items": {
-                  "$ref": "#/definitions/FleetMember"
-                },
-                "type": "array"
-              }
-            },
-            "required": [
-              "value"
-            ],
-            "type": "object"
-          },
-          "FleetMemberProperties": {
-            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
-            "properties": {
-              "clusterResourceId": {
-                "$ref": "#/definitions/ClusterResourceId",
-                "description": "The ARM resource id of the cluster that joins the Fleet. Must be a valid Azure resource id. e.g.: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{clusterName}'.",
-                "x-ms-mutability": [
-                  "read",
-                  "create"
-                ]
-              },
-              "group": {
-                "description": "The group this member belongs to for multi-cluster update management.",
-                "maxLength": 50,
-                "minLength": 1,
-                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-                "type": "string"
-              },
-              "labels": {
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "description": "The labels for the fleet member.",
-                "type": "object"
-              },
-              "provisioningState": {
-                "$ref": "#/definitions/FleetMemberProvisioningState",
-                "description": "The status of the last operation.",
-                "readOnly": true
-              },
-              "status": {
-                "$ref": "#/definitions/FleetMemberStatus",
-                "description": "Status information of the last operation for fleet member.",
-                "readOnly": true
-              }
-            },
-            "required": [
-              "clusterResourceId"
-            ],
-            "type": "object"
-          },
-          "FleetMemberProvisioningState": {
-            "description": "The provisioning state of the last accepted operation.",
-            "enum": [
-              "Succeeded",
-              "Failed",
-              "Canceled",
-              "Joining",
-              "Leaving",
-              "Updating"
-            ],
-            "readOnly": true,
-            "type": "string",
-            "x-ms-enum": {
-              "modelAsString": true,
-              "name": "FleetMemberProvisioningState",
-              "values": [
-                {
-                  "description": "Resource has been created.",
-                  "name": "Succeeded",
-                  "value": "Succeeded"
-                },
-                {
-                  "description": "Resource creation failed.",
-                  "name": "Failed",
-                  "value": "Failed"
-                },
-                {
-                  "description": "Resource creation was canceled.",
-                  "name": "Canceled",
-                  "value": "Canceled"
-                },
-                {
-                  "description": "The provisioning state of a member joining a fleet.",
-                  "name": "Joining",
-                  "value": "Joining"
-                },
-                {
-                  "description": "The provisioning state of a member leaving a fleet.",
-                  "name": "Leaving",
-                  "value": "Leaving"
-                },
-                {
-                  "description": "The provisioning state of a member being updated.",
-                  "name": "Updating",
-                  "value": "Updating"
-                }
-              ]
-            }
-          },
-          "FleetMemberStatus": {
-            "description": "Status information for the fleet member",
-            "properties": {
-              "lastOperationError": {
-                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
-                "description": "The last operation error of the fleet member",
-                "readOnly": true
-              },
-              "lastOperationId": {
-                "description": "The last operation ID for the fleet member",
                 "readOnly": true,
                 "type": "string"
               }
@@ -5351,67 +6217,6 @@
               }
             }
           },
-          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members": {
-            "get": {
-              "description": "List FleetMember resources by Fleet",
-              "operationId": "FleetMembers_ListByFleet",
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "description": "The name of the Fleet resource.",
-                  "in": "path",
-                  "maxLength": 63,
-                  "minLength": 1,
-                  "name": "fleetName",
-                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "$ref": "#/parameters/TopQueryParameter"
-                },
-                {
-                  "$ref": "#/parameters/SkipTokenQueryParameter"
-                },
-                {
-                  "$ref": "#/parameters/FilterQueryParameter"
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "Azure operation completed successfully.",
-                  "schema": {
-                    "$ref": "#/definitions/FleetMemberListResult"
-                  }
-                },
-                "default": {
-                  "description": "An unexpected error response.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
-                  }
-                }
-              },
-              "tags": [
-                "FleetMembers"
-              ],
-              "x-ms-examples": {
-                "Lists the members of a Fleet.": {
-                  "$ref": "./examples/FleetMembers_ListByFleet.json"
-                }
-              },
-              "x-ms-pageable": {
-                "nextLinkName": "nextLink"
-              }
-            }
-          },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}": {
             "delete": {
               "description": "Delete a FleetMember",
@@ -5494,63 +6299,6 @@
               "x-ms-long-running-operation": true,
               "x-ms-long-running-operation-options": {
                 "final-state-via": "location"
-              }
-            },
-            "get": {
-              "description": "Get a FleetMember",
-              "operationId": "FleetMembers_Get",
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "description": "The name of the Fleet resource.",
-                  "in": "path",
-                  "maxLength": 63,
-                  "minLength": 1,
-                  "name": "fleetName",
-                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-                  "required": true,
-                  "type": "string"
-                },
-                {
-                  "description": "The name of the Fleet member resource.",
-                  "in": "path",
-                  "maxLength": 50,
-                  "minLength": 1,
-                  "name": "fleetMemberName",
-                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
-                  "required": true,
-                  "type": "string"
-                }
-              ],
-              "responses": {
-                "200": {
-                  "description": "Azure operation completed successfully.",
-                  "schema": {
-                    "$ref": "#/definitions/FleetMember"
-                  }
-                },
-                "default": {
-                  "description": "An unexpected error response.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
-                  }
-                }
-              },
-              "tags": [
-                "FleetMembers"
-              ],
-              "x-ms-examples": {
-                "Gets a FleetMember resource.": {
-                  "$ref": "./examples/FleetMembers_Get.json"
-                }
               }
             }
           },
@@ -191149,6 +191897,26 @@
         ],
         "read_operations": [
           "Azure.Microsoft.ContainerService.Gates_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.cluster_mesh",
+      "displayName": "Fleet cross-cluster network",
+      "nativeType": "Microsoft.ContainerService/fleets/clusterMeshProfiles",
+      "rest": {
+        "collection": "clusterMeshProfiles",
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Get"
         ]
       },
       "scopeKinds": [

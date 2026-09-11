@@ -34,10 +34,10 @@ func TestFleetNativeSources(t *testing.T) {
 		}
 	}
 	var examples []map[string]string
-	read("sources.json", "0461d05aa2cbbdf8f1f242064dd1d6588869f237747b83708fa0ac6ad2540d96", &examples)
+	read("sources.json", "698d8d6bedc68dca3b2a86755bb6a2e02a810907f0751d28167e65783af249db", &examples)
 	var expected []catalog.RESTSourceDocument
-	read("documents.json", "75bd395f77c8b9c3279f73a0dae4d1e29bd6e393bca6cffea0dcbd0049cb5e0f", &expected)
-	if len(examples) != 22 || len(expected) != 3 {
+	read("documents.json", "37e983e49440a62b985100209b4147f15ba653536bc8a7e46b9507a745986ed9", &expected)
+	if len(examples) != 27 || len(expected) != 4 {
 		t.Fatal("incomplete Fleet native evidence")
 	}
 	raw, err := os.ReadFile("catalog/source/swagger.json")
@@ -114,7 +114,7 @@ func TestFleetNativeSources(t *testing.T) {
 			t.Error("native Fleet operation lacks retained evidence", op.ID)
 		}
 	}
-	if len(operations) != 22 || responses != 33 || bodies != 16 {
+	if len(operations) != 27 || responses != 41 || bodies != 21 {
 		t.Fatal("incomplete Fleet schema validation", len(operations), responses, bodies)
 	}
 }

@@ -1,0 +1,253 @@
+{
+  "records": [
+    {
+      "body": "{\"eTag\":\"\\\"ee002d23-0000-3400-0000-6a54a53e0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm1-000003\",\"name\":\"cm1-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/cm1-000003\",\"group\":\"group1\",\"labels\":{\"env\":\"production\",\"fleet.azure.com/cluster-name\":\"cm1-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"eastus2euap\",\"fleet.azure.com/member-name\":\"cm1-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"df17ab21-853b-4734-a6fa-6c5f5434b5a8\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:43:33.890547Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:43:33.890547Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 58,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm1-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee007a25-0000-3400-0000-6a54a56a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm2-000004\",\"name\":\"cm2-000004\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/cm2-000004\",\"group\":\"group1\",\"labels\":{\"env\":\"production\",\"fleet.azure.com/cluster-name\":\"cm2-000004\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"eastus2euap\",\"fleet.azure.com/member-name\":\"cm2-000004\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b1bf7373-9496-415c-8318-c86311c87327\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:18.6606712Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:18.6606712Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 64,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm2-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee004227-0000-3400-0000-6a54a58a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"72534f5d-fc58-48d8-971c-7a530f1f0f93\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 67,
+      "method": "PUT",
+      "request_body": "{\"properties\": {\"memberSelector\": {\"byLabel\": \"env=production\"}}}",
+      "status": 201,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee005e27-0000-3400-0000-6a54a58d0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000006\",\"name\":\"cmp-000006\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"e78ca793-ae1f-46ec-9abb-67bcc23b89c2\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:45:01.0717341Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:45:01.0717341Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 68,
+      "method": "PUT",
+      "request_body": "{\"properties\": {\"memberSelector\": {\"byLabel\": \"env=production\"}}}",
+      "status": 201,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000006?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"ee005e27-0000-3400-0000-6a54a58d0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000006\",\"name\":\"cmp-000006\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"e78ca793-ae1f-46ec-9abb-67bcc23b89c2\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:45:01.0717341Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:45:01.0717341Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"},{\"eTag\":\"\\\"ee004227-0000-3400-0000-6a54a58a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"72534f5d-fc58-48d8-971c-7a530f1f0f93\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 69,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee004227-0000-3400-0000-6a54a58a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"72534f5d-fc58-48d8-971c-7a530f1f0f93\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 70,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee000128-0000-3400-0000-6a54a5970000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=production\"},\"lastOperationId\":\"a03bbb7a-0dd7-4fcd-a192-053ea8f8e5a4\",\"state\":\"Applying\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 75,
+      "method": "POST",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005/apply?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee000128-0000-3400-0000-6a54a5970000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=production\"},\"lastOperationId\":\"a03bbb7a-0dd7-4fcd-a192-053ea8f8e5a4\",\"state\":\"Applying\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 76,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ee001c66-0000-3400-0000-6a54a95e0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=production\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=production\"},\"lastOperationId\":\"a03bbb7a-0dd7-4fcd-a192-053ea8f8e5a4\",\"state\":\"Failed\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:58.7370414Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:58.7370414Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 108,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"ef00971d-0000-3400-0000-6a54b3c70000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm1-000003\",\"name\":\"cm1-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/cm1-000003\",\"group\":\"group1\",\"labels\":{\"env\":\"production\",\"fleet.azure.com/cluster-name\":\"cm1-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"eastus2euap\",\"fleet.azure.com/member-name\":\"cm1-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"meshProperties\":{\"ciliumProperties\":{\"id\":1,\"name\":\"cm1-0000031\"},\"clusterMeshProfileResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"status\":{\"error\":{\"code\":\"ConnectivityTimeout\",\"message\":\"No peers visible to Cilium for 1h0m2s (timeout: 15m0s)\"},\"lastUpdatedAt\":\"2026-07-13T09:45:43.213889015Z\",\"state\":\"Failed\"}},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"df17ab21-853b-4734-a6fa-6c5f5434b5a8\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:43:33.890547Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:43:33.890547Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 196,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm1-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'><html xmlns='http://www.w3.org/1999/xhtml'><head><meta content='text/html; charset=utf-8' http-equiv='content-type'/><style type='text/css'>body {font-family:Arial; margin-left:40px; }img  { border:0 none; }#content { margin-left: auto; margin-right: auto }#message h2 { font-size: 20px; font-weight: normal; color: #000000; margin: 34px 0px 0px 0px }#message p  { font-size: 13px; color: #000000; margin: 7px 0px 0px0px}#errorref { font-size: 11px; color: #737373; margin-top: 41px }</style><title>AzureResourceManager</title></head><body><div id='content'><div id='message'><h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p></div><div id='errorref'><span>Ref A: 6EBB671235564966BEAF8EB7AA6561F7 Ref B: SG2AA1040513036 Ref C: 2026-07-13T09:52:45Z</span></div></div></body></html>",
+      "headers": {
+        "content-type": [
+          "text/html"
+        ]
+      },
+      "interaction": 209,
+      "method": "GET",
+      "request_body": null,
+      "status": 503,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm1-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"f000fd0f-0000-3400-0000-6a54c1dc0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm2-000004\",\"name\":\"cm2-000004\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/cm2-000004\",\"group\":\"group1\",\"labels\":{\"env\":\"production\",\"fleet.azure.com/cluster-name\":\"cm2-000004\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"eastus2euap\",\"fleet.azure.com/member-name\":\"cm2-000004\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"meshProperties\":{\"ciliumProperties\":{\"id\":2,\"name\":\"cm2-0000042\"},\"clusterMeshProfileResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"status\":{\"error\":{\"code\":\"ConnectivityTimeout\",\"message\":\"No peers visible to Cilium for 2h0m2s (timeout: 15m0s)\"},\"lastUpdatedAt\":\"2026-07-13T10:45:48.938965119Z\",\"state\":\"Failed\"}},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b1bf7373-9496-415c-8318-c86311c87327\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:44:18.6606712Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:44:18.6606712Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 317,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/cm2-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"d8034558-0000-3400-0000-6a54d02a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=none\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=production\"},\"lastOperationId\":\"6a9ebdc5-fd1f-4bb1-bb89-5cff07b23f58\",\"state\":\"Failed\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:46:50.2088924Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:46:50.2088924Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 443,
+      "method": "PUT",
+      "request_body": "{\"properties\": {\"memberSelector\": {\"byLabel\": \"env=none\"}}}",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"d8034958-0000-3400-0000-6a54d02c0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=none\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=none\"},\"lastOperationId\":\"d12717b4-17fb-4fee-8626-82d65c0e4e73\",\"state\":\"Applying\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:46:50.2088924Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:46:50.2088924Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 444,
+      "method": "POST",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005/apply?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"d8034958-0000-3400-0000-6a54d02c0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=none\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=none\"},\"lastOperationId\":\"d12717b4-17fb-4fee-8626-82d65c0e4e73\",\"state\":\"Applying\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:46:50.2088924Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:46:50.2088924Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 445,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"d8036458-0000-3400-0000-6a54d0320000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005\",\"name\":\"cmp-000005\",\"properties\":{\"memberSelector\":{\"byLabel\":\"env=none\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastAppliedMemberSelector\":{\"byLabel\":\"env=none\"},\"lastOperationId\":\"d12717b4-17fb-4fee-8626-82d65c0e4e73\",\"state\":\"NotConnected\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:46:50.2088924Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:46:50.2088924Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/clusterMeshProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 446,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 447,
+      "method": "DELETE",
+      "request_body": null,
+      "status": 204,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 448,
+      "method": "DELETE",
+      "request_body": null,
+      "status": 204,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles/cmp-000006?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 449,
+      "method": "GET",
+      "request_body": null,
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/clusterMeshProfiles?api-version=2026-06-02-preview"
+    }
+  ],
+  "source_sha256": "f67ba23b52fdddc4566e64af5478a600d883a8bd241a8b480c41147e567ceee7",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_cluster_mesh.yaml"
+}

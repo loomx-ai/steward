@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "35b739a7313527c1edd13af37277adb18cfada15851df78408a92f646a309751",
+    "checksum": "25acfc632295b5ecf3460e018215aafc3683173664efd6b352c7aa0e3e75eb3c",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4960db88d0275382a1bca41afd1579bc448eb7d9a0b36db33aabab450dfc25ce",
+  "content_checksum": "76d81aa70990dffd7f32fd15dae9353fe631af3c0d3987fe73319fd56f80c93f",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -57284,6 +57284,472 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
     },
     {
+      "id": "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Apply",
+      "name": "ClusterMeshProfiles_Apply",
+      "service": "Microsoft.ContainerService",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}/apply",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-02-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterMeshProfileName": {
+            "description": "The name of the ClusterMeshProfile resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "clusterMeshProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A cluster mesh profile stores the general information about the mesh.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterMeshProfileProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-02-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}/apply",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.ClusterMeshProfiles_CreateOrUpdate",
+      "name": "ClusterMeshProfiles_CreateOrUpdate",
+      "service": "Microsoft.ContainerService",
+      "method": "PUT",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "If-None-Match": {
+            "description": "The request should only proceed if no entity matches this string.",
+            "in": "header",
+            "name": "If-None-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifNoneMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-02-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterMeshProfileName": {
+            "description": "The name of the ClusterMeshProfile resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "clusterMeshProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resource": {
+            "description": "Resource create parameters.",
+            "in": "body",
+            "name": "resource",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterMeshProfile"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A cluster mesh profile stores the general information about the mesh.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterMeshProfileProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-02-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "PUT",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Delete",
+      "name": "ClusterMeshProfiles_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-02-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterMeshProfileName": {
+            "description": "The name of the ClusterMeshProfile resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "clusterMeshProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-02-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Get",
+      "name": "ClusterMeshProfiles_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-02-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterMeshProfileName": {
+            "description": "The name of the ClusterMeshProfile resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "clusterMeshProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A cluster mesh profile stores the general information about the mesh.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ClusterMeshProfileProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-02-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles/{clusterMeshProfileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.ClusterMeshProfiles_ListByFleet",
+      "name": "ClusterMeshProfiles_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-02-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a ClusterMeshProfile list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ClusterMeshProfile items on this page",
+            "items": {
+              "$ref": "#/definitions/ClusterMeshProfile"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-02-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/clusterMeshProfiles",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+    },
+    {
       "id": "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Delete",
       "name": "FleetManagedNamespaces_Delete",
       "service": "Microsoft.ContainerService",
@@ -57625,7 +58091,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2026-06-01"
+              "2026-06-02-preview"
             ],
             "in": "query",
             "type": "string"
@@ -57694,7 +58160,7 @@
       },
       "call": {
         "product": "Microsoft.ContainerService",
-        "version": "2026-06-01",
+        "version": "2026-06-02-preview",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -57703,7 +58169,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
     },
     {
       "id": "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet",
@@ -57744,7 +58210,7 @@
           },
           "api-version": {
             "enum": [
-              "2026-06-01"
+              "2026-06-02-preview"
             ],
             "in": "query",
             "type": "string"
@@ -57807,7 +58273,7 @@
       },
       "call": {
         "product": "Microsoft.ContainerService",
-        "version": "2026-06-01",
+        "version": "2026-06-02-preview",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -57816,7 +58282,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
     },
     {
       "id": "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Delete",
@@ -115416,6 +115882,26 @@
         ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/clusterMeshProfiles",
+      "class": "container.cluster_mesh",
+      "display_name": "Fleet cross-cluster network",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "clusterMeshProfiles",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.ClusterMeshProfiles_ListByFleet"
         ]
       }
     },

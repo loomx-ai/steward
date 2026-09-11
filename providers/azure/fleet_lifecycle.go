@@ -17,7 +17,7 @@ import (
 // no DELETE: the run referenced by target.id deletes them, irrespective of
 // their sibling position in the ARM path.
 // https://learn.microsoft.com/azure/kubernetes-fleet/faq
-var fleetDirectKinds = []string{fleetMemberType, fleetNamespaceType, fleetRunType, fleetStrategyType, fleetProfileType}
+var fleetDirectKinds = []string{fleetMemberType, fleetNamespaceType, fleetRunType, fleetStrategyType, fleetProfileType, fleetMeshType}
 
 func (c *client) fleetRecordedReferences(value asset.Asset) (map[string]any, error) {
 	id, kind, err := fleetIdentity(value.Identity.NativeID)
@@ -61,6 +61,11 @@ func (c *client) fleetRecordedReferences(value asset.Asset) (map[string]any, err
 	if expected != text(value.Normalized[fleetReferencesProof]) {
 		return nil, serviceDenied("fleet_recorded_references_changed")
 	}
+	if kind == fleetMeshType {
+		if _, err := c.fleetRecordedMesh(id, value.Normalized); err != nil {
+			return nil, err
+		}
+	}
 	return refs, nil
 }
 
@@ -76,6 +81,10 @@ func (c *client) fleetIncarnation(value asset.Asset, raw map[string]any) error {
 	refs, err := fleetCurrentReferences(kind, raw)
 	if err != nil {
 		return err
+	}
+	if kind == fleetMeshType {
+		recorded = maps.Clone(recorded)
+		delete(recorded, fleetMemberType) // Native member joins are verified separately.
 	}
 	if c.privateConfiguration(recorded) != c.privateConfiguration(monitorReferenceProjection(refs)) {
 		return serviceDenied("fleet_references_changed")
@@ -128,6 +137,10 @@ func (c *client) fleetKnownIndex(ctx context.Context, kind, scope string, known 
 	if err != nil {
 		return nil, err
 	}
+	return c.fleetRecoverKnown(ctx, kind, scope, values, known)
+}
+
+func (c *client) fleetRecoverKnown(ctx context.Context, kind, scope string, values map[string]map[string]any, known []asset.Asset) (map[string]map[string]any, error) {
 	seen := map[string]bool{}
 	for _, value := range known {
 		if value.Identity.Provider != asset.ProviderAzure || value.Identity.NativeType != kind || !strings.HasPrefix(value.Identity.NativeID, c.root()+"/") || kind != fleetType && fleetParent(value.Identity.NativeID, kind) != scope {
@@ -167,7 +180,13 @@ func (c *client) fleetChildren(ctx context.Context, parent asset.Identity, raw m
 	observe := func() ([]serviceChild, string, error) {
 		indexed := map[string]map[string]map[string]any{}
 		for _, kind := range kinds {
-			values, err := c.fleetKnownIndex(ctx, kind, scope, known)
+			var values map[string]map[string]any
+			var err error
+			if kind == fleetMeshType {
+				values, _, err = c.fleetMeshes(ctx, scope, known)
+			} else {
+				values, err = c.fleetKnownIndex(ctx, kind, scope, known)
+			}
 			if err != nil {
 				return nil, "", err
 			}
@@ -252,6 +271,19 @@ func (c *client) contributeFleetReferences(ctx context.Context, value asset.Asse
 		refs, err = fleetCurrentReferences(value.Identity.NativeType, live.data)
 		if err != nil {
 			return result, err
+		}
+		if value.Identity.NativeType == fleetMeshType {
+			previous := object(value.Normalized[fleetMeshState]) // Authenticated above.
+			state, _, err := c.readFleetMesh(ctx, value.Identity.NativeID, live.data, previous, assets...)
+			if err != nil {
+				return result, err
+			}
+			if c.privateConfiguration(previous) != c.privateConfiguration(state) {
+				return result, serviceDenied("fleet_mesh_membership_changed")
+			}
+			for id := range object(state["members"]) {
+				addReference(refs, fleetMemberType, id)
+			}
 		}
 	}
 	// Dynamic placement may select any member. These conservative dependency

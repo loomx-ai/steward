@@ -2983,3 +2983,48 @@ background evidence only, not acceptance evidence for this work.
 - Verification: repository-wide `go test ./...` passed (Azure 203.686s),
   Fleet/AKS/attachment race tests passed (73.358s), and `go vet ./...` passed.
   Focused Arc/reference tests passed (1.051s), and diff checks passed.
+
+### Fleet Cluster Mesh inventory, disconnection and cleanup
+
+- Registered Cluster Mesh profiles with native inventory, applied-member
+  references and conditional cleanup. Five unchanged native Mesh operations
+  and member GET/LIST use the pinned `2026-06-02-preview` document; other Fleet
+  operations retain `2026-06-01`. The catalog now has 394 resource types/specs,
+  366 cleanup drivers, 1,270 native operations and 226 source documents.
+  All 27 retained Fleet examples, 41 responses and 21 bodies are source-bound
+  and schema-checked; the catalog and recording generation are reproducible.
+- Inventory joins actual member mesh associations using unfiltered native
+  lists and individual GETs. Labels alone cannot establish attachment. Known
+  omitted profiles/members are recovered through native reads, and surviving
+  orphan associations cannot become absence. Configuration, Cilium association
+  and last-applied selection are privately authenticated. Mesh cleanup is an
+  explicit prerequisite for member removal, without owning members or clusters.
+- Cleanup waits for an active Apply, sets an empty selector while preserving
+  other authored configuration, applies disconnection, verifies zero attached
+  members, and deletes the profile. Each conditional phase and configuration
+  receipt survives serialization and provider/worker recreation. HTTP 200
+  Applying, LRO success and DELETE acknowledgment never substitute for native
+  resource and member readback. Protected members, missing permissions, changed
+  configuration, new attachments and forged receipts block progression.
+- Retained 19 native responses from Microsoft's pinned CLI Mesh recording,
+  including PUT 200/201, Apply 200/Applying, DELETE 204, a real HTML 503 and the
+  failed ConnectivityTimeout connection attempt. Native disconnection updates
+  the selector, replaces createdAt, applies and reaches NotConnected. This is
+  response evidence, not a recorded Connected network. Individual post-disconnect
+  member reads and final profile 404s are composed protocol evidence.
+- A real SQLite scan/graph/plan/execution test requires both namespace and Mesh
+  cleanup before member deletion. A fresh provider and worker resumes every
+  phase, performs exactly one PUT/Apply/DELETE for Mesh, verifies independent
+  resource absence and redaction, then rescans the retained Fleet and unrelated
+  resources. Other tests cover association drift, list omission, profile/parent
+  absence with surviving members, synchronous/asynchronous operation envelopes,
+  delayed disappearance and conditional failures.
+- Verification: `go test ./...` passed (Azure 205.624s), Fleet/AKS/attachment
+  race tests passed (94.262s), and `go vet ./...` passed. All Fleet tests passed
+  (9.923s), the native recording test passed (0.402s), and the restarted Mesh
+  execution test passed (1.736s). Five catalog importer tests, deterministic
+  catalog generation, native recording reproduction and diff checks passed.
+- Fleet root deletion and managed Hub residual verification remain unfinished.
+  All eight acceptance criteria and all 27 mapped Azure gaps remain open;
+  these protocol and native-response tests do not establish emulator or
+  live-cloud acceptance.

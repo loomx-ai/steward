@@ -38,6 +38,7 @@ func fleetTestBody(t *testing.T, kind, name string) map[string]any {
 		}
 		raw["identity"] = map[string]any{"type": "None"}
 	case fleetMemberType:
+		delete(p, "meshProperties") // The base fixture is not enrolled in a mesh.
 		p["clusterResourceId"] = resourceID(aksType, "cluster1")
 	case fleetProfileType:
 		p["updateStrategyId"] = parent + "/updateStrategies/strategy1"
@@ -82,7 +83,7 @@ func TestFleetNativeOperationBoundaries(t *testing.T) {
 				} else if method == "POST" {
 					path += "/stop"
 				}
-				if !strings.EqualFold(u.Path, path) || u.Query().Get("api-version") != fleetVersion || len(u.Query()) != 1 {
+				if !strings.EqualFold(u.Path, path) || u.Query().Get("api-version") != fleetAPIVersion(kind, method) || len(u.Query()) != 1 {
 					t.Fatal("native route binding changed", request)
 				}
 			}
@@ -278,7 +279,7 @@ func TestFleetNativeIndexBoundaries(t *testing.T) {
 				}
 				lists, gets := 0, 0
 				c := directClient(func(r *http.Request) (*http.Response, error) {
-					if r.Method != "GET" || r.URL.Query().Get("api-version") != fleetVersion || r.URL.Host != "management.azure.com" {
+					if r.Method != "GET" || r.URL.Query().Get("api-version") != fleetAPIVersion(kind, "GET") || r.URL.Host != "management.azure.com" {
 						t.Fatal("unrequested native operation", r.Method, r.URL)
 					}
 					path := strings.ToLower(r.URL.Path)
@@ -345,7 +346,7 @@ func TestFleetNativeIndexBoundaries(t *testing.T) {
 					case "foreign-page":
 						body["nextLink"] = "https://foreign.example/list?api-version=" + fleetVersion
 					case "wrong-version":
-						body["nextLink"] = strings.Replace(next.String(), fleetVersion, "2025-03-01", 1)
+						body["nextLink"] = strings.Replace(next.String(), fleetAPIVersion(kind, "GET"), "2025-03-01", 1)
 					case "filtered-page":
 						body["nextLink"] = next.String() + "&%24filter=group%20eq%20%27one%27"
 					case "repeat-page":

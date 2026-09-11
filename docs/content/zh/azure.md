@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 393 类资源，其中 365 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 394 类资源，其中 366 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -54,7 +54,7 @@ Steward 识别 393 类资源，其中 365 类具有原生清理操作（包括 B
 | CDN 与 Front Door | 配置、经典终结点/源站/源站组/域名；Front Door 终结点/路由/源站组/源站/域名/规则集/规则/安全关联/证书引用 | 配置及所属子资源审查级联影响；共享引用按依赖顺序清理 |
 | WAF | CDN 与 Front Door 策略 | 先删除已审查的引用终结点或安全关联，再删除策略；经典 Front Door 引用仍阻止清理 |
 | 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
-| Kubernetes Fleet Manager | Fleet、AKS 和 Arc 成员、托管命名空间、更新运行、策略、自动升级配置与 Gate | 支持子资源原生清理；更新运行先停止再删除，并核验所属 Gate。Fleet 本身尚未启用清理 |
+| Kubernetes Fleet Manager | Fleet、AKS 和 Arc 成员、托管命名空间、更新运行、策略、自动升级配置、Gate 与跨集群网络 | 支持子资源原生清理；跨集群网络先断开再删除；更新运行先停止再删除，并核验所属 Gate。Fleet 本身尚未启用清理 |
 | DNS 与私有终结点 | 公有/私有 DNS 区域及记录、私有 DNS 链接、Private Endpoint 与 DNS 区域组 | 级联审查包含已验证的托管网卡和外部 DNS 记录；系统 DNS 记录不可独立删除 |
 | Virtual WAN 网关 | VPN/ExpressRoute 网关、连接、VPN NAT 规则及链路 | 显式编排连接和 NAT 的前置删除；VPN 链路由连接管理 |
 | Service Bus | 命名空间、队列、主题、订阅、规则、授权规则、灾难恢复别名、迁移配置、私有终结点连接 | 支持原生操作及经过审查的命名空间/实体级联；迁移清理先中止复制再删除；配对别名经审查后先解除配对再删除 |
@@ -174,11 +174,13 @@ Application Insights 盘点覆盖组件、共享及个人分析项、持续导�
 
 组件盘点还会读取当前计费功能、每日上限、定价计划、配额状态及旧版主动检测设置，需要授予这些组件接口的读取权限。删除前会重新核对可编辑设置，包括私密通知收件人；设置变化后需要重新扫描和生成计划。配额等只读运行数据的变化不会使计划失效，私密收件人不会进入盘点和日志。这些设置随组件清理，没有独立删除操作。迁移后的智能检测告警规则及其动作组独立盘点和删除，参阅[迁移说明](https://learn.microsoft.com/en-us/azure/azure-monitor/alerts/alerts-smart-detections-migration)。
 
-Kubernetes Fleet 清单需要原生 `Microsoft.ContainerService/fleets/read`、六类子资源读取权限，以及资源组和管理锁读取权限。系统逐个核验已知资源；Fleet 被列表遗漏或已不存在，都不能证明子资源已删除。代理子资源使用 Fleet 所在地域，托管命名空间保留原生地域。命名空间注释和放置表达式不进入清单与日志；动态放置会明确标记，不声称已验证实际成员集合。当前接入稳定版 API `2026-06-01`，支持 AKS 和 Arc Kubernetes 成员引用；Fleet 本身的清理仍未完成。更新运行保留策略副本，Gate 指向其所属运行。参阅 [Fleet 常见问题](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/faq)。
+Kubernetes Fleet 清单需要原生 `Microsoft.ContainerService/fleets/read`、七类子资源读取权限，以及资源组和管理锁读取权限。系统逐个核验已知资源；Fleet 被列表遗漏或已不存在，都不能证明子资源已删除。代理子资源使用 Fleet 所在地域，托管命名空间保留原生地域。命名空间注释和放置表达式不进入清单与日志；动态放置会明确标记，不声称已验证实际成员集合。多数 Fleet 操作使用稳定版 API `2026-06-01`；成员读取和 Cluster Mesh 操作使用 `2026-06-02-preview`，以核验实际网络成员关系。成员引用支持 AKS 和 Arc Kubernetes 集群；Fleet 本身的清理仍未完成。更新运行保留策略副本，Gate 指向其所属运行。参阅 [Fleet 常见问题](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/faq)。
 
 原生生命周期图已记录 Fleet 各类配置的独立清理关系，以及 Gate 对关联更新运行的归属。删除 AKS 集群、子网和用户分配托管身份时，也会读取当前连接订阅中相关的 Fleet 集合，检查尚未进入清单的引用来源；仍有引用时阻止删除。动态命名空间放置会保守地要求先清理命名空间，再移除该 Fleet 中的任何成员。即使选择的是其他资源类型，这些检查也需要 Fleet 读取权限；不会因此赋予 Fleet 删除成员集群或共享网络的权限。
 
 Fleet 成员、托管命名空间、更新运行、更新策略和自动升级配置已支持原生条件删除，需要相应子资源的删除权限。状态为 `Running`、`Pending` 或 `Skipped` 的更新运行还需要停止权限；已经处于停止过程中的运行不会重复发送 Stop。系统确认运行进入终止状态后才删除，并逐个核验运行及已审查 Gate 的消失。轮询和执行阶段可在 worker 重启后恢复。Fleet 本身的删除仍未启用，正在补齐托管 Hub 资源的核验。
+
+Cluster Mesh 清理会先断开已审查的跨集群网络，再删除其配置，因此会中断跨集群连接和服务发现。清单通过未过滤的原生成员列表及逐项读取，核验成员的 `meshProperties`；标签匹配不能证明实际连接。系统等待正在进行的 Apply 完成，保留其他配置并将成员选择器设为空，应用断开操作，确认没有成员仍然连接后才删除。这需要配置的读取、写入、Apply、删除权限及成员读取权限。成员保护或管理锁、新增连接、配置变化及无法读取的残留会阻止推进。最终通过配置自身的 404 和已知连接的逐项核验确认完成。成员及其集群保留；清理已连接的成员时，必须显式先清理其 Mesh 配置。参阅[跨集群网络删除说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-configure-use-cross-cluster-networking#delete-a-cross-cluster-network)。
 
 Fleet 根资源扫描通过托管资源组的 `managedBy`、Fleet 与 AKS 的 API 地址，以及 AKS 的 `nodeResourceGroup` 和该组反向指向 AKS 的归属信息，核验 Hub 归属。随后遍历两个资源组，展开原生子资源和有文档支持的外部后代，并补查通用 ARM 列表遗漏的 Monitor 资源。这需要未过滤的资源组和组内资源列表、成员原生读取及子资源列表，以及相关的订阅 Monitor 和 DNS 索引权限。归属缺失或有歧义时保留为未核实状态，命名规则不能证明归属。已认证的历史标识通过逐项读取找回列表遗漏；未知类型的资源被遗漏或外部归属证据不完整时，扫描不会完成。RBAC 分配和诊断设置仍需独立清理。Hub 和成员的完整配置仅保存私有摘要。生命周期图已将经核验的 Hub 集群、两个托管资源组及其后代统一归属 Fleet，避免再归属 AKS 或挂载资源控制器。清单中缺失的资源保留为待解析引用；证明或原生状态变化会阻止关系图重建。Fleet 根资源删除及残留核验仍未启用。参阅 [Hub 集群说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle)。
 

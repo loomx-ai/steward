@@ -25,7 +25,7 @@ func fleetIncomingKinds(kind string) []string {
 	case fleetStrategyType:
 		return []string{fleetProfileType}
 	case fleetMemberType:
-		return []string{fleetNamespaceType}
+		return []string{fleetNamespaceType, fleetMeshType}
 	case subnetType, "Microsoft.ManagedIdentity/userAssignedIdentities":
 		return []string{fleetType}
 	}
@@ -125,17 +125,36 @@ func (c *client) fleetIncomingObservation(ctx context.Context, targets, known []
 	for _, parent := range slices.Sorted(maps.Keys(parents)) {
 		for _, kind := range slices.Sorted(maps.Keys(kinds)) {
 			values := map[string]map[string]any{parent: parents[parent]}
-			if kind != fleetType {
+			if kind == fleetMeshType {
+				values, _, err = c.fleetMeshes(ctx, parent, known)
+			} else if kind != fleetType {
 				values, err = c.fleetKnownIndex(ctx, kind, parent, known)
-				if err != nil {
-					return nil, err
-				}
+			}
+			if err != nil {
+				return nil, err
 			}
 			for _, id := range slices.Sorted(maps.Keys(values)) {
 				raw := values[id]
 				refs, err := fleetCurrentReferences(kind, raw)
 				if err != nil {
 					return nil, err
+				}
+				var meshState map[string]any
+				if kind == fleetMeshType {
+					var previous map[string]any
+					if value, exists := hints[id]; exists {
+						if _, err := c.fleetRecordedReferences(value); err != nil {
+							return nil, err
+						}
+						previous = object(value.Normalized[fleetMeshState])
+					}
+					meshState, _, err = c.readFleetMesh(ctx, id, raw, previous, known...)
+					if err != nil {
+						return nil, err
+					}
+					for member := range object(meshState["members"]) {
+						addReference(refs, fleetMemberType, member)
+					}
 				}
 				source := asset.Asset{Identity: asset.Identity{NativeType: kind, NativeID: id}, Normalized: map[string]any{}}
 				if kind == fleetNamespaceType {
@@ -161,6 +180,9 @@ func (c *client) fleetIncomingObservation(ctx context.Context, targets, known []
 					if kind != fleetType {
 						context["parent"] = fleetSnapshot(fleetType, parents[parent])
 					}
+					if kind == fleetMeshType {
+						context["mesh"] = meshState
+					}
 					incoming[target.Identity.NativeID] = append(incoming[target.Identity.NativeID], monitorIncomingSource{resource: serviceChild{id: id, kind: kind, data: raw}, references: refs, group: context})
 				}
 			}
@@ -185,7 +207,15 @@ func (c *client) fleetIncomingUnchanged(value asset.Asset, entry monitorIncoming
 	if value.Identity.NativeType != fleetType && value.Identity.NativeType != fleetNamespaceType {
 		location = resourceRegion(object(entry.group["parent"]))
 	}
-	if value.Location != location || text(value.Normalized[fleetContextProof]) != c.privateConfiguration(entry.group) {
+	context := entry.group
+	if value.Identity.NativeType == fleetMeshType {
+		if c.privateConfiguration(object(value.Normalized[fleetMeshState])) != c.privateConfiguration(object(context["mesh"])) {
+			return serviceDenied("fleet_mesh_membership_changed")
+		}
+		context = maps.Clone(context)
+		delete(context, "mesh")
+	}
+	if value.Location != location || text(value.Normalized[fleetContextProof]) != c.privateConfiguration(context) {
 		return serviceDenied("fleet_dependency_context_changed")
 	}
 	return nil

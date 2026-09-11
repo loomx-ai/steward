@@ -57,7 +57,8 @@ func (a *fleetAction) phaseBinding(request contracts.ActionRequest, result contr
 
 func (a *fleetAction) verifyPhase(request contracts.ActionRequest, result contracts.ActionResult) error {
 	phase := text(result.Data["fleet_phase"])
-	if phase != "delete" && (phase != "stop" || a.kind.NativeType != fleetRunType) || text(result.Data["fleet_phase_binding"]) != a.phaseBinding(request, result) {
+	valid := phase == "delete" || phase == "stop" && a.kind.NativeType == fleetRunType || a.kind.NativeType == fleetMeshType && slices.Contains([]string{"mesh-wait", "mesh-prepare", "mesh-apply"}, phase)
+	if !valid || a.kind.NativeType == fleetMeshType && text(result.Data["fleet_mesh_configuration"]) == "" || text(result.Data["fleet_phase_binding"]) != a.phaseBinding(request, result) {
 		return serviceDenied("fleet_cleanup_receipt_changed")
 	}
 	return nil
@@ -69,6 +70,9 @@ func (a *fleetAction) phaseResult(request contracts.ActionRequest, phase string,
 		return result, err
 	}
 	result.Data = map[string]any{"fleet_phase": phase, "fleet_phase_operation": result.ProviderOperationID, "fleet_operation": result.Data}
+	if a.kind.NativeType == fleetMeshType {
+		result.Data["fleet_mesh_configuration"] = a.meshExpectedConfiguration(request)
+	}
 	result.Data["fleet_phase_binding"] = a.phaseBinding(request, result)
 	return result, nil
 }
@@ -98,13 +102,17 @@ func (a *fleetAction) preflight(ctx context.Context, request contracts.ActionReq
 	}
 	raw, err = a.client.fleetRead(ctx, a.kind.NativeType, a.id)
 	if isNotFound(err) {
+		if a.kind.NativeType == fleetMeshType {
+			read, err := a.meshResidualReadback(ctx, request)
+			return response{}, contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
+		}
 		read, err := a.serviceCascadeReadback(ctx, request)
 		return response{}, contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
 	}
 	if err != nil {
 		return raw, check, err
 	}
-	if err := a.client.fleetIncarnation(request.Asset, raw.data); err != nil {
+	if err := a.incarnation(request, raw.data); err != nil {
 		return raw, check, err
 	}
 	context, err := a.client.fleetVerifiedContext(ctx, request.Asset, raw.data)
@@ -139,6 +147,9 @@ func (a *fleetAction) preflight(ctx context.Context, request contracts.ActionReq
 	if locked(a.id, locks) {
 		return raw, check, serviceDenied("azure_management_lock")
 	}
+	if a.kind.NativeType == fleetMeshType {
+		return a.meshPreflightMembers(ctx, request, raw, locks)
+	}
 	if err := a.serviceCascadePreflight(ctx, request, raw.data, locks); err != nil {
 		return raw, check, err
 	}
@@ -156,6 +167,9 @@ func (a *fleetAction) mutate(ctx context.Context, request contracts.ActionReques
 		return contracts.ActionResult{}, serviceDenied("invalid_fleet_conditional_etag")
 	}
 	operation := a.deletion
+	if a.kind.NativeType == fleetMeshType {
+		return a.meshMutate(ctx, request, raw, phase, etag)
+	}
 	if phase == "stop" {
 		var err error
 		operation, err = a.client.fleetRequest(a.kind.NativeType, fleetParent(a.id, a.kind.NativeType), last(a.id), "POST")
@@ -193,12 +207,15 @@ func (a *fleetAction) Execute(ctx context.Context, request contracts.ActionReque
 	if request.ExecutionResult != nil {
 		return *request.ExecutionResult, nil
 	}
-	raw, _, err := a.preflight(ctx, request)
+	raw, check, err := a.preflight(ctx, request)
 	if err != nil {
 		return contracts.ActionResult{}, err
 	}
 	if raw.data == nil || object(raw.data["properties"])["provisioningState"] == "Deleting" {
 		return a.phaseResult(request, "delete", response{})
+	}
+	if a.kind.NativeType == fleetMeshType {
+		return a.meshAdvance(ctx, request, raw, check)
 	}
 	if a.kind.NativeType == fleetRunType {
 		state, _ := fleetRunState(raw.data) // Preflight validated the native state.
@@ -235,6 +252,9 @@ func (a *fleetAction) Wait(ctx context.Context, request contracts.ActionRequest,
 	if !poll.Done {
 		return poll, nil
 	}
+	if a.kind.NativeType == fleetMeshType && result.Data["fleet_phase"] != "delete" {
+		return a.meshWait(ctx, request, result)
+	}
 	if result.Data["fleet_phase"] == "stop" {
 		raw, _, err := a.preflight(ctx, request)
 		if err != nil {
@@ -259,6 +279,9 @@ func (a *fleetAction) Wait(ctx context.Context, request contracts.ActionRequest,
 		next.Data["fleet_phase_binding"] = a.phaseBinding(request, next)
 		return contracts.WaitResult{State: "Deleting", RetryAfter: next.RetryAfter, Data: next.Data}, nil
 	}
+	if a.kind.NativeType == fleetMeshType {
+		request.ExecutionResult = &result
+	}
 	read, err := a.Readback(ctx, request)
 	return contracts.WaitResult{Done: err == nil && !read.Exists, RetryAfter: 2 * time.Second, State: read.State, Data: poll.Data}, err
 }
@@ -270,12 +293,15 @@ func (a *fleetAction) Readback(ctx context.Context, request contracts.ActionRequ
 	}
 	live, err := a.client.fleetRead(ctx, a.kind.NativeType, a.id)
 	if isNotFound(err) {
+		if a.kind.NativeType == fleetMeshType {
+			return a.meshResidualReadback(ctx, request)
+		}
 		return a.serviceCascadeReadback(ctx, request)
 	}
 	if err != nil {
 		return out, err
 	}
-	if err := a.client.fleetIncarnation(request.Asset, live.data); err != nil {
+	if err := a.incarnation(request, live.data); err != nil {
 		return out, err
 	}
 	if err := a.client.fleetContext(ctx, request.Asset, live.data); err != nil {

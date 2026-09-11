@@ -11,6 +11,11 @@
   },
   {
     "dependency": false,
+    "source_sha256": "c794ff05d14345310a35d83f00876f187ad618386d94dbf3c664e61ccdf2bfa3",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview/fleets.json"
+  },
+  {
+    "dependency": false,
     "source_sha256": "778a2f9cd9c0ec9f80bd198995b41459487c240169a146d64bd2c0281b796b51",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
   }

@@ -1,20 +1,21 @@
 # Azure Kubernetes Fleet native evidence
 
-The 22 JSON examples are unchanged files from Microsoft's
-[stable 2026-06-01 Fleet API](https://github.com/Azure/azure-rest-api-specs/tree/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01).
+The 27 JSON examples are unchanged files from Microsoft's
+[stable 2026-06-01 Fleet API](https://github.com/Azure/azure-rest-api-specs/tree/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01) and its [2026-06-02-preview API](https://github.com/Azure/azure-rest-api-specs/tree/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/preview/2026-06-02-preview). Member GET/LIST and the five Cluster Mesh operations use the preview; other existing operations retain the stable version.
 `sources.json` records each operation, route, original URI and SHA-256;
-`documents.json` records the full-source fingerprints of the root Swagger and
-its two common-type dependencies. The checked-in catalog retains the selected
+`documents.json` records the full-source fingerprints of the two root Swaggers and
+their two shared common-type dependencies. The checked-in catalog retains the selected
 operations and their transitive native schemas. Ordinary tests need no network.
 
 Selected operations cover Fleet GET, both root LISTs and DELETE; member,
 managed namespace, update strategy, auto-upgrade profile and update run
-GET/LIST/DELETE; update-run Stop; and Gate GET/LIST. Gates have no native DELETE.
-Credentials, creation, update, start, skip and approval operations are not part
-of this cleanup contract.
+GET/LIST/DELETE; update-run Stop; Gate GET/LIST; and Cluster Mesh GET/LIST,
+PUT CreateOrUpdate, POST Apply and DELETE. Gates have no native DELETE.
+Mesh PUT and Apply are used only to prepare disconnection during cleanup.
+Credentials, resource creation, run Start, Skip and Gate approval are not exposed.
 
-`TestFleetNativeSources` verifies provenance, binds all 22 requests, and checks
-the 33 native responses, including 16 bodies, against the retained schemas.
+`TestFleetNativeSources` verifies provenance, binds all 27 requests, and checks
+the 41 native responses, including 21 bodies, against the retained schemas.
 Two original list responses use `nextLink:null` although their schema says
 string. The test asserts that exact discrepancy before checking the remaining
 fields. Original placeholder subscription IDs, differing request/response
@@ -79,15 +80,15 @@ The native lifecycle distinctions driving the subsequent registered integration:
   Their ARM path is under the Fleet, but the run identified by `target.id` owns
   this lifecycle. Native resource nesting alone would assign the wrong owner.
 
-All seven kinds are registered for native inventory with private configuration
+All eight kinds are registered for native inventory with private configuration
 and context proofs and non-authoritative known-ID reconciliation. The native
 lifecycle graph verifies independent child cleanup and Gate ownership by its
 referenced run. Reverse Fleet indexes also guard deletion of AKS clusters,
 subnets, user-assigned identities, strategies and members. Dynamic namespace
 placement conservatively blocks removal of any member of the same Fleet until
 the namespace is explicitly removed; it does not assert actual placement.
-Five independent child kinds now have registered native cleanup drivers.
-Fleet root cleanup remains disabled pending managed Hub reconciliation; Gates
+Six independent child kinds now have registered native cleanup drivers.
+Fleet root cleanup remains disabled pending its driver and residual readback; Gates
 have no independent action and are removed with their reviewed owning run.
 
 `cli-deletion-polls.json` retains 13 representative GET responses belonging to
@@ -211,3 +212,52 @@ explicitly supports `Microsoft.Kubernetes/connectedClusters`. The adapter accept
 exactly those two documented root resource types; it does not change the native
 metadata or claim that a schema annotation or composed test proves live Arc
 compatibility. No Arc recording or independent Arc emulator is retained.
+
+
+`cli-mesh-recordings.json` retains 19 distinct responses from Microsoft's
+`test_fleet_cluster_mesh.yaml` at the same immutable CLI-extension commit.
+`reproduce_mesh_recordings.py` verifies the full source SHA-256 and retains the
+first response for each method/path/status/selector/profile-state/member-state
+combination, including list values and member error codes. It preserves native
+request and response body strings and only the protocol response headers listed
+above. Reproduce with `python3 reproduce_mesh_recordings.py ORIGINAL.yaml`.
+
+`TestFleetMeshRecordedResponseCompatibility` replays these native envelopes,
+including PUT 200/201, two HTTP 200 Apply responses that still say `Applying`,
+DELETE 204 and a member GET returning HTML 503. The recorded connection attempt
+ends in `Failed/ConnectivityTimeout`; it is not evidence of a successful
+Connected network. The native disconnect changes the selector to `env=none`,
+performs Apply and observes `NotConnected` before deletion. Its update also
+replaces `systemData.createdAt`, so the action binds the actual returned
+configuration to its saved phase. The recording has no individual member GET
+after disconnection and no profile GET/404 after deletion; those residual checks
+are covered by composed protocol responses.
+
+`TestFleetMeshInventoryRecordsAppliedMembers` and the graph/boundary tests use
+unfiltered preview member lists plus individual GETs to join actual
+`meshProperties`. Selector matches are not applied membership. Known omitted
+profiles and members are recovered by their own GETs; a surviving association
+whose profile is absent remains a dependency error. Full authored configuration,
+Cilium association and last-applied selector are privately bound. The graph
+requires explicit Mesh cleanup before member removal and never makes a profile
+the owner of its member or cluster.
+
+`TestFleetMeshRegisteredDisconnectDeleteAndRecovery` covers conditional native
+PUT, Apply and DELETE with serialized receipts, fresh drivers, synchronous and
+asynchronous acknowledgments, pending Apply, delayed native disappearance,
+protected members, configuration/membership drift and forged receipts. Empty
+selectors mean no members according to the unchanged preview Swagger. The
+composed cleanup sets `byLabel:""` instead of choosing a potentially matching
+label, preserves other authored fields and rejects unknown selector semantics.
+Already applying profiles wait without interruption. Empty terminal profiles
+can be deleted without an unnecessary Apply. Profile or parent absence cannot
+hide surviving known member attachments; 403s remain failures.
+
+`TestFleetMeshRegisteredWorkersAndPhaseRecovery` runs native scan and graph jobs,
+creates a real SQLite cleanup plan and executes its durable jobs with a fresh
+provider and worker at every phase. Member cleanup requires both namespace and
+Mesh prerequisites. It verifies exactly one PUT, Apply and DELETE for the mesh,
+then independent namespace/member deletion, individual native absence, private
+execution/log redaction and a final scan retaining the Fleet and unrelated
+resources. This is composed end-to-end protocol evidence, not an independent
+Mesh emulator or a live-cloud test.

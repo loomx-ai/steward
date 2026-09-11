@@ -73,6 +73,9 @@ func fleetAssertMutation(t *testing.T, f *fleetFixture, request contracts.Action
 
 func TestFleetRegisteredIndependentChildDeletion(t *testing.T) {
 	for _, kind := range fleetDirectKinds {
+		if kind == fleetMeshType {
+			continue // Mesh has a separate conditional disconnect lifecycle.
+		}
 		t.Run(last(kind), func(t *testing.T) {
 			f := newFleetFixture(t)
 			for id, raw := range f.resources {
