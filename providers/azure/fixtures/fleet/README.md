@@ -79,7 +79,28 @@ The native lifecycle distinctions driving the subsequent registered integration:
   Their ARM path is under the Fleet, but the run identified by `target.id` owns
   this lifecycle. Native resource nesting alone would assign the wrong owner.
 
-At this checkpoint, these are native source/read/index primitives. Fleet has
-not yet been registered for inventory or cleanup. Registered graph, reviewed
-deletion, managed-group reconciliation and application recovery are still being
-implemented.
+All seven kinds are registered for native inventory with private configuration
+and context proofs, non-authoritative known-ID reconciliation, and spec-based
+references. Cleanup, native lifecycle graph ownership, managed Hub reconciliation
+and execution recovery are still being implemented.
+
+`cli-deletion-polls.json` retains 13 representative GET responses belonging to
+the five asynchronous Fleet deletions in those same immutable recordings. For
+each operation and endpoint collection, it keeps the first response for each
+distinct HTTP status and operation state. Repeated identical pending states are
+omitted; original URLs, body strings, protocol headers and interaction indexes
+are unchanged. With PyYAML installed, reproduce it from the two original YAML
+files using `python3 reproduce_poll_recordings.py HUBFUL.yaml HUBLESS.yaml`.
+The script verifies both full-file SHA-256s before writing the fixture.
+
+These recordings expose subscription-scoped ContainerService `operations` and
+`operationresults` endpoints, signed with `api-version=2016-03-30` and four opaque
+query parameters. The stable Swagger examples separately publish unsigned,
+resource-group-scoped `operationResults` with `api-version=2022-02-01`.
+`TestFleetRecordedDeletionPollingAndLogRedaction` replays the native DELETE
+envelopes and all 13 retained polls through the actual transport and parser,
+including Location-only fallback, and verifies that signing material stays out
+of logs. Additional protocol tests cover changed scope/version/operation IDs,
+malformed or failed status envelopes, expired operation URLs, refreshed signed
+successors and serialized recovery receipts. Operation success or operation 404
+only permits resource readback; it does not establish resource absence.

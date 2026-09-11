@@ -2727,3 +2727,26 @@ background evidence only, not acceptance evidence for this work.
   passed. Shared catalog tests now bind the native Gate UUID selector. Bilingual
   coverage docs explicitly label these seven kinds as inventory-only. All eight
   acceptance criteria and the Fleet lifecycle gap remain open.
+
+### Fleet native asynchronous operation protocol
+
+- Retained 13 representative polling responses from the same two pinned Azure
+  CLI recordings, with a deterministic source-hash-verifying reproduction
+  script. They belong to five native asynchronous Fleet deletions and preserve
+  pending/succeeded status envelopes and final 204 Location responses.
+- Bound native signed ContainerService regional operations (2016-03-30) and the
+  stable Swagger's unsigned group operationResults route (2022-02-01) to the
+  selected subscription, resource group, region, operation UUID and credential.
+  Conflicting headers, foreign endpoints, altered versions/signing parameters,
+  malformed states and substituted operation IDs are rejected. Refreshed signed
+  successors are authenticated and survive serialized execution results.
+- Added redaction for the ContainerService `operations` route as well as its
+  `operationresults` route. Request signing material and unknown response fields
+  stay out of API logs. Polling success or an expired operation's 404 authorizes
+  only subsequent native resource readback; neither alone proves deletion.
+- Native recorded polling, generated failure cases, serialization and resource
+  readback tests passed. All Fleet/AKS/managed-resource/Invoke tests passed under
+  `-race` (20.615s); Azure `go vet` and diff checks passed. The full repository
+  run from the inventory checkpoint preceded this transport addition. This is
+  transport groundwork for the Fleet cleanup driver: the seven registered
+  kinds remain inventory-only and the acceptance criteria remain open.

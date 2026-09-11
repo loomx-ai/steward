@@ -406,6 +406,9 @@ func (a *action) delete(ctx context.Context, request contracts.ActionRequest) (c
 }
 
 func (a *action) operationResult(res response) (contracts.ActionResult, error) {
+	if fleetKind(a.kind.NativeType).kind != "" {
+		return a.fleetOperationResult(res)
+	}
 	if isAPIMType(a.kind.NativeType) {
 		return a.apimOperationResult(res)
 	}
@@ -520,6 +523,9 @@ func (a *action) Wait(ctx context.Context, request contracts.ActionRequest, resu
 }
 
 func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contracts.WaitResult, error) {
+	if fleetKind(a.kind.NativeType).kind != "" {
+		return a.fleetPoll(ctx, result)
+	}
 	if err := a.monitorPrivateLinkPollReceipt(result); err != nil {
 		return contracts.WaitResult{}, err
 	}
@@ -605,6 +611,9 @@ func (a *action) poll(ctx context.Context, result contracts.ActionResult) (contr
 }
 
 func (a *action) validateOperationURL(endpoint string) error {
+	if fleetKind(a.kind.NativeType).kind != "" {
+		return validateFleetOperationURL(a.client.subscription, a.id, a.location, endpoint)
+	}
 	if monitorPrivateLinkKind(a.kind.NativeType) != "" {
 		normalized, err := monitorPrivateLinkOperationURL(a.client.subscription, a.id, endpoint)
 		if err == nil && normalized != endpoint {
