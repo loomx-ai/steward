@@ -74,6 +74,21 @@ func appServiceConfiguration(kind string, raw map[string]any) string {
 	return serviceParentConfiguration(kind, appServiceSnapshot(kind, raw))
 }
 
+// Removing an independent hostname binding updates the parent's read-only
+// indexes. Its siblings still bind their own full configuration and the
+// parent's authored settings and creation identity.
+func appServiceParentSnapshot(kind string, raw map[string]any) map[string]any {
+	snapshot := appServiceSnapshot(kind, raw)
+	for _, field := range []string{"hostNames", "enabledHostNames", "hostNameSslStates"} {
+		delete(object(snapshot["properties"]), field)
+	}
+	return snapshot
+}
+
+func appServiceParentConfiguration(kind string, raw map[string]any) string {
+	return serviceParentConfiguration(kind, appServiceParentSnapshot(kind, raw))
+}
+
 func appServiceIncarnation(planned asset.Asset, live map[string]any) error {
 	if !isAppServiceType(planned.Identity.NativeType) {
 		return nil
@@ -134,15 +149,15 @@ func (c *client) appServiceInventory(ctx context.Context, id, kind string, raw, 
 	}
 	_, parentType, _ := parseID(text(parent["id"]))
 	parentKind, _ := findType(parentType)
-	normalized["_app_service_parent_configuration"] = appServiceConfiguration(parentKind.NativeType, parent)
-	normalized["_app_service_parent_private_configuration"] = c.privateConfiguration(appServiceSnapshot(parentKind.NativeType, parent))
+	normalized["_app_service_parent_configuration"] = appServiceParentConfiguration(parentKind.NativeType, parent)
+	normalized["_app_service_parent_private_configuration"] = c.privateConfiguration(appServiceParentSnapshot(parentKind.NativeType, parent))
 	if parentKind.NativeType == appSlotType {
 		root, err := c.appServiceParent(ctx, text(parent["id"]))
 		if err != nil {
 			return err
 		}
-		normalized["_app_service_root_configuration"] = appServiceConfiguration(appSiteType, root)
-		normalized["_app_service_root_private_configuration"] = c.privateConfiguration(appServiceSnapshot(appSiteType, root))
+		normalized["_app_service_root_configuration"] = appServiceParentConfiguration(appSiteType, root)
+		normalized["_app_service_root_private_configuration"] = c.privateConfiguration(appServiceParentSnapshot(appSiteType, root))
 	}
 	if isAppFunction(kind) {
 		functionHost, err := appFunctionHost(parent)
@@ -190,10 +205,10 @@ func (a *action) appServicePreflight(ctx context.Context, planned asset.Asset, l
 		}
 		_, parentType, _ := parseID(text(parent["id"]))
 		parentKind, _ := findType(parentType)
-		if expected := text(planned.Normalized["_app_service_parent_configuration"]); expected == "" || expected != appServiceConfiguration(parentKind.NativeType, parent) {
+		if expected := text(planned.Normalized["_app_service_parent_configuration"]); expected == "" || expected != appServiceParentConfiguration(parentKind.NativeType, parent) {
 			return serviceDenied("app_service_parent_changed")
 		}
-		if expected := text(planned.Normalized["_app_service_parent_private_configuration"]); expected == "" || expected != a.client.privateConfiguration(appServiceSnapshot(parentKind.NativeType, parent)) {
+		if expected := text(planned.Normalized["_app_service_parent_private_configuration"]); expected == "" || expected != a.client.privateConfiguration(appServiceParentSnapshot(parentKind.NativeType, parent)) {
 			return serviceDenied("app_service_parent_changed")
 		}
 		if parentKind.NativeType == appSlotType {
@@ -201,10 +216,10 @@ func (a *action) appServicePreflight(ctx context.Context, planned asset.Asset, l
 			if err != nil {
 				return err
 			}
-			if expected := text(planned.Normalized["_app_service_root_configuration"]); expected == "" || expected != appServiceConfiguration(appSiteType, root) {
+			if expected := text(planned.Normalized["_app_service_root_configuration"]); expected == "" || expected != appServiceParentConfiguration(appSiteType, root) {
 				return serviceDenied("app_service_root_changed")
 			}
-			if expected := text(planned.Normalized["_app_service_root_private_configuration"]); expected == "" || expected != a.client.privateConfiguration(appServiceSnapshot(appSiteType, root)) {
+			if expected := text(planned.Normalized["_app_service_root_private_configuration"]); expected == "" || expected != a.client.privateConfiguration(appServiceParentSnapshot(appSiteType, root)) {
 				return serviceDenied("app_service_root_changed")
 			}
 		}

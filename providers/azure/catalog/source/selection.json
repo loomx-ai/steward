@@ -2124,6 +2124,18 @@
         "FleetMembers_Get",
         "FleetMembers_ListByFleet"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+      "operations": [
+        "Domains_List",
+        "Domains_ListByResourceGroup",
+        "Domains_Get",
+        "Domains_Delete",
+        "Domains_ListOwnershipIdentifiers",
+        "Domains_GetOwnershipIdentifier",
+        "Domains_DeleteOwnershipIdentifier"
+      ]
     }
   ],
   "resource_types": [
@@ -9553,6 +9565,43 @@
       ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.ClusterMeshProfiles_ListByFleet"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DomainRegistration/domains",
+      "class": "dns.registered_domain",
+      "display_name": "Registered domain",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "domains",
+      "read_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_List",
+        "Azure.Microsoft.DomainRegistration.Domains_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DomainRegistration/domains/domainOwnershipIdentifiers",
+      "class": "dns.domain_ownership",
+      "display_name": "Domain ownership identifier",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "domainOwnershipIdentifiers",
+      "read_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_GetOwnershipIdentifier"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_DeleteOwnershipIdentifier"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers"
       ]
     }
   ]

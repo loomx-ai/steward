@@ -122,6 +122,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 		return nil, err
 	}
 	driver := &action{client: c, kind: kind, id: nativeID, wireID: wireID, endpoint: endpoint, deletion: deletion, location: strings.ToLower(value.Location), connectionID: id, partition: value.Identity.Partition}
+	if isDomainType(kind.NativeType) {
+		return newDomainAction(driver, value)
+	}
 	if kind.NativeType == applicationInsightsType {
 		if value.ID == "" || value.Identity.NativeID != nativeID || value.Identity.ConnectionID != id || value.Identity.Partition == "" || value.Location == "" || value.Location != driver.location {
 			return nil, serviceDenied("invalid_insights_component_action_identity")
@@ -273,6 +276,9 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 	if text(group.data["managedBy"]) != "" {
 		return contracts.PreflightResult{Reason: "azure_managed_resource_group"}, nil
 	}
+	if isDomainType(a.kind.NativeType) && (!insightsARMReadValid(group, strings.Join(parts[:5], "/"), groupType) || protectedAzureTags(object(group.data["tags"]))) {
+		return contracts.PreflightResult{Reason: "azure_domain_resource_group_protected"}, nil
+	}
 	locks, err := a.client.managementLocks(ctx)
 	if err != nil {
 		return contracts.PreflightResult{}, err
@@ -307,6 +313,10 @@ func (a *action) Preflight(ctx context.Context, request contracts.ActionRequest)
 		}
 	}
 	switch a.kind.NativeType {
+	case publicDNSZoneType:
+		if err := a.client.domainZoneUnused(ctx, a.id); err != nil {
+			return contracts.PreflightResult{}, err
+		}
 	case aksType:
 		if reason, err := a.managedGroupPreflight(ctx, request, res.data, locks); reason != "" || err != nil {
 			return contracts.PreflightResult{Reason: reason}, err

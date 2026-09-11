@@ -334,6 +334,10 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		// diagnostic envelope retains only Fleet's public resource projection.
 		responseLog = object(fleetSafeValue(responseLog))
 	}
+	if ctx.Value(domainReadContextKey{}) == true {
+		// Domain dependency joins need full app/binding bodies only internally.
+		responseLog = object(domainSafeValue(responseLog))
+	}
 	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(responseLog, endpoint))
 	return out, nil
 }

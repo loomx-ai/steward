@@ -28,6 +28,7 @@ type productCursor struct {
 	Resources []string `json:"resources,omitempty"`
 }
 type productTarget struct {
+	DomainPrivateConfiguration          string         `json:"domain_private_configuration,omitempty"`
 	APIMPrivateConfiguration            string         `json:"apim_private_configuration,omitempty"`
 	BatchPrivateConfiguration           string         `json:"batch_private_configuration,omitempty"`
 	StreamAnalyticsPrivateConfiguration string         `json:"stream_analytics_private_configuration,omitempty"`
@@ -220,6 +221,9 @@ func (r *Runtime) listProduct(ctx context.Context, c *client, request contracts.
 			return contracts.InventoryBatch{}, fmt.Errorf("Azure product detail identity mismatch")
 		}
 		data := detail.data
+		if isDomainType(kind.NativeType) && (!insightsARMReadValid(detail, id, kind.NativeType) || !nativeConfigurationContains(domainSnapshot(kind.NativeType, raw), domainSnapshot(kind.NativeType, data))) {
+			return contracts.InventoryBatch{}, serviceDenied("domain_listed_configuration_changed")
+		}
 		if err := monitorPrivateLinkListed(kind.NativeType, raw, data); err != nil {
 			return contracts.InventoryBatch{}, err
 		}
@@ -467,6 +471,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 	if !validResourceResponse(current, target.ParentID, target.ParentType) {
 		return fmt.Errorf("Azure product parent identity mismatch during child discovery")
 	}
+	if ctx.Value(domainReadContextKey{}) == true && !insightsARMReadValid(current, target.ParentID, target.ParentType) {
+		return serviceDenied("invalid_domain_dependency_parent_response")
+	}
 	if isCosmosType(target.ParentType) && !cosmosSameWireID(responseID(target.ParentType, text(current.data["id"])), parentID) {
 		return fmt.Errorf("Cosmos DB parent changed its resource name")
 	}
@@ -474,6 +481,9 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 		return err
 	}
 	if target.APIMPrivateConfiguration != "" && target.APIMPrivateConfiguration != c.privateConfiguration(apimSnapshot(target.ParentType, current.data)) {
+		return errProductParentGenerationChanged
+	}
+	if target.DomainPrivateConfiguration != "" && (!insightsARMReadValid(current, target.ParentID, target.ParentType) || target.DomainPrivateConfiguration != c.privateConfiguration(domainSnapshot(target.ParentType, current.data))) {
 		return errProductParentGenerationChanged
 	}
 	if target.StreamAnalyticsPrivateConfiguration != "" && target.StreamAnalyticsPrivateConfiguration != c.privateConfiguration(streamAnalyticsSnapshot(target.ParentType, current.data)) {
@@ -515,7 +525,7 @@ func (c *client) verifyProductParent(ctx context.Context, target productTarget) 
 		if err != nil {
 			return err
 		}
-		if appServiceConfiguration(appSiteType, root) != target.AppServiceRootConfiguration {
+		if appServiceParentConfiguration(appSiteType, root) != target.AppServiceRootConfiguration {
 			return errProductParentGenerationChanged
 		}
 	}
@@ -645,6 +655,10 @@ func (r *Runtime) productTargets(ctx context.Context, c *client, request contrac
 			target.Generation = productGeneration(parent.Raw)
 			if isAPIMType(parent.NativeType) {
 				target.APIMPrivateConfiguration = text(parent.Normalized["_apim_private_configuration"])
+			}
+			if parent.NativeType == domainType {
+				target.DomainPrivateConfiguration = text(parent.Normalized[domainConfiguration])
+				target.Generation = text(parent.Normalized["_arm_generation"])
 			}
 			if isCosmosType(parent.NativeType) {
 				target.ParentWireID = text(parent.Normalized["_cosmos_wire_id"])

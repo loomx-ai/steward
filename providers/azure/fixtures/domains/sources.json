@@ -1,0 +1,65 @@
+[
+  {
+    "file": "Domains_Delete.json",
+    "method": "DELETE",
+    "operation": "Domains_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/DeleteAppServiceDomain.json",
+    "source_sha256": "0b8c2e536483e60ff89e558f00a85e7b934cb1b74af6ebd3b4f01e6ffb5bd0db"
+  },
+  {
+    "file": "Domains_DeleteOwnershipIdentifier.json",
+    "method": "DELETE",
+    "operation": "Domains_DeleteOwnershipIdentifier",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/DeleteAppServiceDomainOwnershipIdentifier.json",
+    "source_sha256": "182428148fdc1abb4dec13323185ebc51faca0c75ddfad4ed49424d99778c5bd"
+  },
+  {
+    "file": "Domains_Get.json",
+    "method": "GET",
+    "operation": "Domains_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/GetDomain.json",
+    "source_sha256": "ef6cb8249409ecd538c2f61ede2e7ea999f5f59a8d115694eb32e51ec06e40a0"
+  },
+  {
+    "file": "Domains_GetOwnershipIdentifier.json",
+    "method": "GET",
+    "operation": "Domains_GetOwnershipIdentifier",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/GetDomainOwnershipIdentifier.json",
+    "source_sha256": "19f2daf493b7ac46847e92c7b2095cf69157ee229275abc2f4a34482cdb31699"
+  },
+  {
+    "file": "Domains_List.json",
+    "method": "GET",
+    "operation": "Domains_List",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DomainRegistration/domains",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/ListDomainsBySubscription.json",
+    "source_sha256": "a2e1cb335ac0ac6c4b0fee39c04dbfdf891119e7ccbf696cb113c0ca5da9dec5"
+  },
+  {
+    "file": "Domains_ListByResourceGroup.json",
+    "method": "GET",
+    "operation": "Domains_ListByResourceGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/ListDomainsByResourceGroup.json",
+    "source_sha256": "d8baa8a7c4e7a33c825aef910a4c28bf5379b576efb0121248f756b8cae03f81"
+  },
+  {
+    "file": "Domains_ListOwnershipIdentifiers.json",
+    "method": "GET",
+    "operation": "Domains_ListOwnershipIdentifiers",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/examples/ListDomainOwnershipIdentifiers.json",
+    "source_sha256": "60135b1ff966e64b9243ed82f18a986cba306d3376171b8627fb1518ef555649"
+  }
+]

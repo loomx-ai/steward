@@ -135,6 +135,9 @@ func newDNSScenario() *dnsScenario {
 	// added. Target deletion now verifies this independent native collection.
 	index := "/subscriptions/" + testSubscription + "/providers/microsoft.insights/privatelinkscopes"
 	s := &dnsScenario{records: map[string]map[string]any{}, lists: map[string][]any{index: {}}, gone: map[string]bool{}, version: map[string]string{index: monitorPrivateLinkVersion}, status: map[string]int{}}
+	// These composed DNS fixtures have no registered domains unless added.
+	domains := "/subscriptions/" + testSubscription + "/providers/microsoft.domainregistration/domains"
+	s.lists[domains], s.version[domains] = []any{}, "2024-11-01"
 	// These composed network scenarios have no alert sources unless a case
 	// explicitly adds one to the native collection. Error/status overrides still
 	// take precedence over every collection response.

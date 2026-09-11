@@ -414,6 +414,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if err := c.appServiceInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
 	}
+	if err := c.domainInventory(ctx, id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, contracts.DependencyReadError(err)
+	}
 	if err := c.cdnInventory(ctx, id, nativeType, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, err
 	}
@@ -942,6 +945,9 @@ func locked(id string, locks []any) bool {
 func safeResource(value any) any {
 	switch typed := value.(type) {
 	case map[string]any:
+		if domainPath(text(typed["id"])) || domainPath("/providers/"+text(typed["type"])) {
+			typed = object(domainSafeValue(typed))
+		}
 		if fleetPath(text(typed["id"])) || fleetPath("/providers/"+text(typed["type"])) {
 			typed = object(fleetSafeValue(typed))
 		}

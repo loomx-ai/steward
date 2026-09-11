@@ -26,6 +26,7 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	domainType:                     {domainOwnershipType},
 	fleetType:                      fleetDirectKinds,
 	fleetRunType:                   {fleetGateType},
 	streamAnalyticsJobType:         streamAnalyticsOwnedKinds(streamAnalyticsJobType),
@@ -227,6 +228,17 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			if !validResourceResponse(live, id, childType) {
 				return nil, fmt.Errorf("Azure cascade child read identity mismatch")
 			}
+			if ctx.Value(domainReadContextKey{}) == true && isAppServiceType(childType) && (!insightsARMReadValid(live, id, childType) || !nativeConfigurationContains(appServiceSnapshot(childType, record), appServiceSnapshot(childType, live.data))) {
+				return nil, serviceDenied("domain_binding_index_changed")
+			}
+			if isDomainType(childType) && (!insightsARMReadValid(live, id, childType) || !nativeConfigurationContains(domainSnapshot(childType, record), domainSnapshot(childType, live.data))) {
+				return nil, serviceDenied("domain_child_index_changed")
+			}
+			if isDomainType(childType) {
+				if err := domainMetadata(childType, live.data); err != nil {
+					return nil, err
+				}
+			}
 			if isAPIMType(childType) {
 				if err := apimListedIncarnation(childType, record, live.data); err != nil {
 					return nil, err
@@ -348,6 +360,11 @@ func serviceIncarnation(planned asset.Asset, live map[string]any) error {
 		return err
 	}
 	if isAppServiceType(planned.Identity.NativeType) {
+		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
+	}
+	if isDomainType(planned.Identity.NativeType) {
+		// The private domain snapshot binds creation, renewal and DNS settings;
+		// independent prerequisite deletion may change the operational ETag.
 		planned.Normalized = cloneNormalizedWithoutGeneration(planned.Normalized)
 	}
 	if err := wafIncarnation(planned, live); err != nil {
@@ -572,6 +589,18 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if err := serviceIncarnation(parent, live.data); err != nil {
 			return result, err
 		}
+		if parent.Identity.NativeType == domainType {
+			zone := text(parent.Normalized["_domain_dns_zone"])
+			for _, target := range assets {
+				if target.Identity.Provider != parent.Identity.Provider || target.Identity.ConnectionID != parent.Identity.ConnectionID || target.Identity.Partition != parent.Identity.Partition || target.Identity.NativeType != publicDNSZoneType || target.Identity.NativeID != zone {
+					continue
+				}
+				// DNS hosting does not own the registration. Deleting a zone
+				// requires explicit selection of its registered domain or repointing it.
+				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource}
+				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: parent.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
+			}
+		}
 		if parent.Identity.NativeType == eventHubClusterType {
 			if err := s.client.verifyEventHubClusterSettings(ctx, parent); err != nil {
 				return result, err
@@ -655,7 +684,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: parent.ID, TargetAssetID: target.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 				continue
 			}
-			if child.kind == dataCollectionAssociationType || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) || kustoSharedPrerequisite(parent, *target) {
+			if child.kind == dataCollectionAssociationType || domainPrerequisite(parent, *target) || redisSharedPrerequisite(parent, *target) || cognitiveSharedPrerequisite(parent, *target) || cosmosSharedPrerequisite(parent, *target) || mongoClusterReplicaPrerequisite(parent, *target) || kustoSharedPrerequisite(parent, *target) {
 				// Reverse indexes establish an unlink prerequisite, not ownership
 				// of the monitored resource or a potentially shared association.
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": child.kind, "instance_id": child.id}
@@ -971,6 +1000,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case parent.NativeType == domainType:
+		native = true
+		children, err = c.domainChildren(ctx, parent, raw, nil)
 	case fleetKind(parent.NativeType).kind != "":
 		native = true
 		children, err = c.fleetChildren(ctx, parent, raw)
@@ -1074,6 +1106,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if domainPrerequisite(parent, child) {
+		return true
+	}
 	if fleetKind(parent.Identity.NativeType).kind != "" {
 		return fleetChildRelation(parent, child)
 	}

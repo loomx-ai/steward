@@ -36,7 +36,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 384 current resource rules discover through native product APIs. Stream
+All 396 current resource rules discover through native product APIs. Stream
 Analytics transformations use an explicitly expanded job GET because Azure has
 no transformation list operation; other rules use native product Lists.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
@@ -63,8 +63,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 1,243 operations from
-169 root documents and 54 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 1,277 operations from
+172 root documents and 56 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -399,3 +399,10 @@ distinguishes unchanged Swagger examples, exact-version assignment recordings
 and role-definition preview response compatibility. Native scope/read/paging
 primitives are verified; registered inventory and lifecycle integration remain
 unfinished at this checkpoint.
+
+DomainRegistration adds native global domain and ownership-identifier discovery
+and deletion. The default 24-hour delay is preserved; persisted hostname/deletion
+phases and independent dependency reads gate final absence. App/slot bindings
+are prerequisites, while DNS hosting remains independent. The
+[domain evidence](../fixtures/domains/README.md) distinguishes native Swagger
+examples, composed protocol cases and the restarted SQLite execution test.

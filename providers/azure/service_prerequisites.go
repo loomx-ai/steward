@@ -29,6 +29,8 @@ const (
 // https://learn.microsoft.com/azure/virtual-wan/virtual-wan-faq
 // https://learn.microsoft.com/troubleshoot/azure/virtual-machines/windows/capacity-reservation-cant-delete-group
 var servicePrerequisiteRules = map[string][]string{
+	publicDNSZoneType:              {domainType},
+	domainType:                     {domainOwnershipType, appBindingType, appSlotBindingType},
 	fleetType:                      fleetDirectKinds,
 	streamAnalyticsClusterType:     {streamAnalyticsEndpointType, streamAnalyticsJobType},
 	kustoType:                      kustoOwnedKinds(kustoType),
@@ -114,6 +116,7 @@ func serviceParentConfiguration(kind string, raw map[string]any) string {
 		delete(object(safe["systemData"]), field)
 	}
 	fields := map[string][]string{
+		domainType:                 {"managedHostNames", "registrationStatus", "readyForDnsRecordManagement", "domainNotRenewableReasons"},
 		dataCollectionEndpointType: {"privateLinkScopedResources"},
 		monitorPrivateLinkType:     {"privateEndpointConnections"},
 		grafanaType:                {"privateEndpointConnections"},
@@ -166,6 +169,11 @@ func (a *action) servicePrerequisitesAbsent(ctx context.Context, request contrac
 			return serviceDenied("invalid_service_prerequisite")
 		}
 		seen[id], assetIDs[prerequisite.Asset.ID] = true, true
+		if isDomainType(identity.NativeType) {
+			if _, err := a.client.domainPlan(prerequisite.Asset); err != nil {
+				return err
+			}
+		}
 		kind, known := findType(identity.NativeType)
 		if !known || kind.ReadOnly {
 			return serviceDenied("invalid_service_prerequisite")

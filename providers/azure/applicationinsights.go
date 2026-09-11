@@ -108,6 +108,14 @@ func applicationInsightsSafeValue(value any) any {
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
 	if err == nil && u.Host == "management.azure.com" {
+		if domainPath(u.Path) {
+			cleaned := object(domainSafeValue(value))
+			if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "DELETE") {
+				cleaned["method"], cleaned["path"] = value["method"], u.Path
+				cleaned["query"] = map[string]any{"api-version": u.Query().Get("api-version")}
+			}
+			value = cleaned
+		}
 		if containerServiceOperationPath(u.Path) {
 			cleaned := fleetOperationSafeValue(value)
 			if value["method"] == "GET" && value["path"] == u.Path {

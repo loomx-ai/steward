@@ -73,6 +73,7 @@ func TestNetworkAndCapacityNativeResourceWire(t *testing.T) {
 			}
 			details := map[string]map[string]any{strings.ToLower(group): {"id": group, "name": "test", "location": "eastus"}}
 			lists := map[string][]any{strings.ToLower(root + "/resourcegroups"): {details[strings.ToLower(group)]}, strings.ToLower(root + "/providers/Microsoft.Authorization/locks"): {}}
+			lists[strings.ToLower(root+"/providers/Microsoft.DomainRegistration/domains")] = []any{}
 			for _, parent := range []struct{ kind, name string }{
 				{privateDNSZoneType, "private.example"}, {"Microsoft.Network/privateEndpoints", "endpoint"},
 				{"Microsoft.Compute/capacityReservationGroups", "cg"}, {"Microsoft.Compute/hostGroups", "hg"},

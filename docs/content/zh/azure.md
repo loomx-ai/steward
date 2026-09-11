@@ -30,7 +30,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 394 类资源，其中 367 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 396 类资源，其中 369 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -51,6 +51,7 @@ Steward 识别 394 类资源，其中 367 类具有原生清理操作（包括 B
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
 | Redis | 经典缓存、访问策略/分配、防火墙规则、复制连接、维护计划和专用终结点连接；Enterprise / Managed Redis 集群、数据库、访问分配和专用终结点连接 | 先删除已审查的子资源，再删除父资源；经典复制先解除链接；健康的主动复制组检查全部成员 |
 | App Service | Web App / Function App、部署槽、函数、证书、主机名绑定与服务计划 | 应用/部署槽审查所属子资源的级联影响；服务计划保持独立；证书须无 TLS 绑定 |
+| 域名注册 | 注册域名与所有权标识 | 先删除已审查的标识和应用/部署槽主机名绑定，再按原生延迟删除域名；DNS 托管保持独立 |
 | CDN 与 Front Door | 配置、经典终结点/源站/源站组/域名；Front Door 终结点/路由/源站组/源站/域名/规则集/规则/安全关联/证书引用 | 配置及所属子资源审查级联影响；共享引用按依赖顺序清理 |
 | WAF | CDN 与 Front Door 策略 | 先删除已审查的引用终结点或安全关联，再删除策略；经典 Front Door 引用仍阻止清理 |
 | 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
@@ -157,6 +158,10 @@ Front Door 批量模式的规则显示在规则集内，并随整个规则集保
 删除 WAF 策略也会删除其内嵌规则。引用该策略的 CDN 终结点或 Front Door 安全关联必须先经审查并删除；保留引用方会阻止策略删除。经典 Front Door 前端或路由引用仍需在 Steward 外解除。清点需要策略与引用方的读取权限，清理还需要各自的删除及操作状态查询权限。执行前重新核对策略配置、锁和全部剩余关联；成功响应后仍须确认资源最终不存在。参见 [Front Door 策略删除契约](https://learn.microsoft.com/en-us/rest/api/frontdoorservice/webapplicationfirewall/policies/delete?view=rest-frontdoorservice-webapplicationfirewall-2025-11-01)。
 
 App Service 清理会审查部署槽、函数、应用证书和主机名绑定。保留子资源会阻止应用或部署槽删除；默认主机名随所属应用或部署槽清理，服务计划保持独立。独立删除证书需要读取所有应用及部署槽的 TLS 状态和主机名绑定；任何匹配的证书 ID 或指纹都会阻止删除。请先移除相关绑定并重新扫描。通过部署包运行的函数可能不支持单个删除，Steward 会保留 Azure 返回的错误。清点和清理需要子资源的原生读取、列举权限，以及所选操作的删除权限。参见[应用删除契约](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/delete?view=rest-appservice-2025-05-01)与[部署包行为](https://learn.microsoft.com/en-us/azure/azure-functions/run-functions-from-deployment-package)。
+
+注册域名及其所有权标识显示在全局清单。盘点与清理需要域名和标识的原生列举、读取权限，订阅范围的 App Service 列表、应用/部署槽详情与主机名绑定读取权限，以及资源组和管理锁读取权限。仅为已审查的步骤授予域名、标识和绑定的删除权限。选择域名后，计划先删除其所有权标识及关联的应用/部署槽主机名绑定；应用、证书、服务计划和 DNS 区域保持独立。DNS 区域仍被注册域名引用时，须显式同时选择该域名，或先更改 DNS 托管并重新扫描。
+
+删除域名会释放注册，其他人可能重新购买该名称。Steward 保留 Azure 的购买锁，并使用 `forceHardDeleteDomain=false`，遵循原生 24 小时删除延迟。已保存的等待阶段最长允许 48 小时，可在 worker 重启后恢复。已删除、已审查的应用绑定若仍出现在主机名索引中，系统会继续等待；未知分配仍会阻止删除。DELETE 回执或列表遗漏不能证明完成，域名及每个已知依赖都须分别读取确认不存在。联系人信息、转移授权及所有权令牌值不进入清单与日志；配置变化后须重新扫描和生成计划。域名 DELETE 契约不提供 If-Match 条件，无法阻止预检之后同时发生的外部修改。参阅微软的[域名管理与取消说明](https://learn.microsoft.com/en-us/azure/app-service/manage-custom-dns-buy-domain)及已固定版本的 [DomainRegistration API 契约](https://github.com/Azure/azure-rest-api-specs/blob/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json)。
 
 Azure Monitor 专用链接范围（AMPLS）清理会审查两类原生子资源清单和专用链接能力描述。范围资源关联与专用终结点连接都有独立删除步骤；保留其中任何一个都会阻止范围删除。关联的 Log Analytics 工作区、Application Insights 组件和使用方网络终结点保持独立。配置核对覆盖访问模式及连接级例外。原生 DELETE 接口没有条件删除头，读取与删除之间仍存在并发修改窗口。
 

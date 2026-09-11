@@ -1,0 +1,59 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DomainRegistration/domains/domainOwnershipIdentifiers
+  class: dns.domain_ownership
+presentation:
+  displayNames:
+    en-US: Domain ownership identifier
+    zh-CN: 域名所有权标识
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: product-api
+  list:
+    operation: Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      domainName: parent.normalized.arm_parameters.domainName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DomainRegistration.Domains_GetOwnershipIdentifier
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: product-api
+    nativeType: Microsoft.DomainRegistration/domains
+fields:
+  name:
+    path: name
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DomainRegistration/domains
+  targetIdPath: refs_microsoft_domainregistration_domains
+actions:
+  delete:
+    operation: Azure.Microsoft.DomainRegistration.Domains_DeleteOwnershipIdentifier
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DomainRegistration.Domains_GetOwnershipIdentifier
+      itemsPath: $
+      identityPath: id

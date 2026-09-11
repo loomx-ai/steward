@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "ec2a2f282ac605c759688846732e5d52c8729245f0cbf289b8f39958229b89cf",
+    "checksum": "7c93bde0f1b345ec2c164a17a7f1f8a385d88d84c71b6d6fde43281268846c86",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4ca5e4eee529527fddb25410c8fb053d52dfa7f205876cf623445c277aaa5b6e",
+  "content_checksum": "2bec17d58f0e3dc42c880f761312571def48ef0c49525d9ade3c6e24c0c03075",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -72133,6 +72133,522 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/mongocluster/resource-manager/Microsoft.DocumentDB/MongoCluster/stable/2026-06-01/mongoCluster.json"
     },
     {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_Delete",
+      "name": "Domains_Delete",
+      "service": "Microsoft.DomainRegistration",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "Name of the domain.",
+            "in": "path",
+            "name": "domainName",
+            "pattern": "[a-zA-Z0-9][a-zA-Z0-9\\.-]+",
+            "required": true,
+            "type": "string"
+          },
+          "forceHardDeleteDomain": {
+            "description": "Specify \u003ccode\u003etrue\u003c/code\u003e to delete the domain immediately. The default is \u003ccode\u003efalse\u003c/code\u003e which deletes the domain after 24 hours.",
+            "in": "query",
+            "name": "forceHardDeleteDomain",
+            "required": false,
+            "type": "boolean"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_DeleteOwnershipIdentifier",
+      "name": "Domains_DeleteOwnershipIdentifier",
+      "service": "Microsoft.DomainRegistration",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "Name of the domain.",
+            "in": "path",
+            "name": "domainName",
+            "pattern": "[a-zA-Z0-9][a-zA-Z0-9\\.-]+",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of identifier.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_Get",
+      "name": "Domains_Get",
+      "service": "Microsoft.DomainRegistration",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "Name of the domain.",
+            "in": "path",
+            "name": "domainName",
+            "pattern": "[a-zA-Z0-9][a-zA-Z0-9\\.-]+",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Information about a domain.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/DomainProperties",
+            "description": "Domain resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_GetOwnershipIdentifier",
+      "name": "Domains_GetOwnershipIdentifier",
+      "service": "Microsoft.DomainRegistration",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "Name of the domain.",
+            "in": "path",
+            "name": "domainName",
+            "pattern": "[a-zA-Z0-9][a-zA-Z0-9\\.-]+",
+            "required": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of identifier.",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Domain ownership Identifier.",
+        "properties": {
+          "kind": {
+            "description": "Kind of resource",
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/DomainOwnershipIdentifierProperties",
+            "description": "DomainOwnershipIdentifier resource specific properties",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers/{name}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_List",
+      "name": "Domains_List",
+      "service": "Microsoft.DomainRegistration",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DomainRegistration/domains",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of domains.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Domain items on this page",
+            "items": {
+              "$ref": "#/definitions/Domain"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DomainRegistration/domains",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_ListByResourceGroup",
+      "name": "Domains_ListByResourceGroup",
+      "service": "Microsoft.DomainRegistration",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of domains.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Domain items on this page",
+            "items": {
+              "$ref": "#/definitions/Domain"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers",
+      "name": "Domains_ListOwnershipIdentifiers",
+      "service": "Microsoft.DomainRegistration",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-11-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "Name of the domain.",
+            "in": "path",
+            "name": "domainName",
+            "pattern": "[a-zA-Z0-9][a-zA-Z0-9\\.-]+",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of domain ownership identifiers.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DomainOwnershipIdentifier items on this page",
+            "items": {
+              "$ref": "#/definitions/DomainOwnershipIdentifier"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DomainRegistration",
+        "version": "2024-11-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DomainRegistration/domains/{domainName}/domainOwnershipIdentifiers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.EventHub.ApplicationGroup_Delete",
       "name": "ApplicationGroup_Delete",
       "service": "Microsoft.EventHub",
@@ -116977,6 +117493,47 @@
         ],
         "list_operations": [
           "Azure.Microsoft.DocumentDB.Users_ListByMongoCluster"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DomainRegistration/domains",
+      "class": "dns.registered_domain",
+      "display_name": "Registered domain",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "domains",
+        "read_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_List",
+          "Azure.Microsoft.DomainRegistration.Domains_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DomainRegistration/domains/domainOwnershipIdentifiers",
+      "class": "dns.domain_ownership",
+      "display_name": "Domain ownership identifier",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "domainOwnershipIdentifiers",
+        "read_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_GetOwnershipIdentifier"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_DeleteOwnershipIdentifier"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers"
         ]
       }
     },

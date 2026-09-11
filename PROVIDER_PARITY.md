@@ -3080,3 +3080,52 @@ background evidence only, not acceptance evidence for this work.
   criteria remain open, including other lifecycle work, independent emulator
   and full application/publication verification. No live Azure deletion is
   claimed by this checkpoint.
+
+### DomainRegistration discovery and delayed cleanup
+
+- Added native global registered-domain and ownership-identifier rules using
+  Microsoft's stable `2024-11-01` DomainRegistration contract. The catalog now
+  has 396 types/specs, 369 cleanup rules and 1,277 operations from 172 root and
+  56 reference documents. Seven unchanged upstream examples retain immutable
+  source URLs and hashes; all seven requests and nine responses (five bodies)
+  are checked against the retained schemas. The upstream GET's extra example
+  parameter and DELETE's hard-delete example remain documented and unchanged.
+- Inventory privately binds creation, renewal, contacts, authorization, DNS
+  configuration and ownership identifiers. Two native dependency observations
+  enumerate independent app/slot bindings and identifiers; known omitted entries
+  receive their own reads. Private parent changes invalidate child cursors even
+  without an ETag. App/slot hostname bindings establish deletion order without
+  owning the application. DNS-zone deletion requires explicit registration
+  selection or repointing; registration cleanup preserves its DNS zone.
+- The registered driver deletes reviewed prerequisites first and preserves
+  `forceHardDeleteDomain=false` and the native 24-hour delay. Saved hostname
+  and deletion phases survive provider and worker recreation. The former waits
+  only for reviewed, independently absent app bindings to leave the native
+  index; unknown assignments block deletion. The 48-hour waiter requires root
+  and known-child GET absence, including children surviving an absent root.
+  Configuration, protection, permission and plan/receipt changes fail closed.
+  A saved delete receipt or native Deleting state prevents ordinary repeat
+  deletion. The API has no If-Match condition; external-write atomicity and
+  exactly-once mutation across the write/receipt crash window are not claimed.
+- A real SQLite test scans 21 global/regional shards into 14 native assets,
+  runs graph reconciliation and creates four deletion steps with three
+  independent prerequisites and no cascade impacts. Each retry reopens SQLite
+  and recreates the registry/provider/worker. It verifies durable write intent,
+  delayed hostname cleanup, native deletion after the hostname phase, a wait
+  clock beyond 25 hours, surviving children, final closure of four assets and
+  ten retained assets. Private domain settings do not enter plans, journals or
+  API logs. A shared App Service fix permits sibling binding deletion after
+  Azure updates the parent's read-only hostname indexes while preserving checks
+  on parent authored settings and each binding's own configuration.
+- Verification: `go test ./...` passed (Azure 214.454s), the targeted
+  Domain/AppService/DNS/network/attachment/AKS race check passed (67.720s), and
+  `go vet ./...` passed. The final focused domain/AppService/DNS suite passed
+  (6.156s). Five offline importer tests, deterministic regeneration and diff
+  checks passed. Bilingual capability/permission docs and fixture provenance
+  distinguish native schema examples, composed protocol tests and real SQLite
+  worker execution. Inspected Azure CLI domain recordings contain availability
+  and agreement calls rather than registration CRUD; no independent domain
+  emulator or live deletion is claimed.
+- A fresh matrix comparison finds 25 mapped Azure types still without rules.
+  All eight overall acceptance criteria remain open, including remaining
+  lifecycle work, independent emulator/full application checks and publication.
