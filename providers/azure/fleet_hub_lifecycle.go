@@ -7,7 +7,6 @@ import (
 
 	"github.com/loomx-ai/steward/internal/app/governance"
 	"github.com/loomx-ai/steward/internal/core/asset"
-	"github.com/loomx-ai/steward/internal/core/graph"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -122,14 +121,6 @@ func (c *client) contributeFleetHub(ctx context.Context, parent asset.Asset, ass
 		contribution, err := c.bindManagedGroup(ctx, parent, group, fleetHubSource, raw.requestID, members, assets)
 		if err != nil {
 			return governance.Contribution{}, err
-		}
-		// Fleet remains non-actionable until its root driver verifies every
-		// residual member. Do not advertise that unimplemented readback yet.
-		for _, binding := range contribution.Bindings {
-			delete(binding.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
-		}
-		for _, reference := range contribution.Unresolved {
-			delete(reference.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
 		}
 		result.Bindings = append(result.Bindings, contribution.Bindings...)
 		result.Relationships = append(result.Relationships, contribution.Relationships...)

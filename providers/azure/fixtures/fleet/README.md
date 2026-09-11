@@ -87,9 +87,9 @@ referenced run. Reverse Fleet indexes also guard deletion of AKS clusters,
 subnets, user-assigned identities, strategies and members. Dynamic namespace
 placement conservatively blocks removal of any member of the same Fleet until
 the namespace is explicitly removed; it does not assert actual placement.
-Six independent child kinds now have registered native cleanup drivers.
-Fleet root cleanup remains disabled pending its driver and residual readback; Gates
-have no independent action and are removed with their reviewed owning run.
+Six independent child kinds and the Fleet root have registered native cleanup
+drivers. Root cleanup requires verified Hub ownership or a verified hubless Fleet;
+Gates have no independent action and are removed with their reviewed owning run.
 
 `cli-deletion-polls.json` retains 13 representative GET responses belonging to
 the five asynchronous Fleet deletions in those same immutable recordings. For
@@ -147,8 +147,8 @@ response logs. Full native responses remain available to the ownership checks.
 The AKS and resource-group responses in these tests are composed protocol
 fixtures. The retained Fleet CLI recordings contain no Hub AKS or managed-group
 GETs, so these tests do not establish live-cloud compatibility of that ownership
-join. Unverified joins remain protected, and root cleanup remains disabled until
-the root driver and residual checks are ready.
+join. Unverified joins remain protected; verified roots now use the driver and
+residual checks described below.
 
 `TestFleetHubInventoryCapturesNativeDescendants` composes the established native
 Uniform scale-set and private-DNS protocol scenarios beneath the verified Hub.
@@ -174,7 +174,8 @@ composed protocol tests, not live Azure observations of Hub descendants.
 and recreates the provider/client/worker for each registered scan. It checks
 that the real known-metadata path restores an omitted member, retains the
 previous Hub snapshot after a 403 failure, and updates membership only after
-the member's own 404. The Fleet itself remains present and protected.
+the member's own 404. The Fleet itself remains present and its verified Hub
+ownership permits reviewed root cleanup.
 
 `TestFleetHubNativeLifecycleDelegation` normalizes every resource in the composed
 17-member scenario and combines the production attachment, service and AKS
@@ -191,8 +192,8 @@ assets, reopens SQLite and recreates the runtime and all three contributors for
 the actual graph worker. Omitted known members retain their ownership; tampered
 proofs and native 403s fail reconciliation and preserve the previous graph
 revision and all 17 Hub bindings. This is a composed protocol/persistence test,
-not a live-cloud Hub deletion. The Fleet root remains non-actionable and its
-bindings do not claim that an unfinished root driver verifies member absence.
+not a live-cloud Hub deletion. The bindings now advertise the root driver's
+independent residual verification.
 
 `TestFleetMemberClusterReferenceBoundaries`, `TestFleetArcMemberRegisteredLifecycle`
 and `TestFleetArcReferenceScopeAndDrift` exercise documented AKS and Arc member
@@ -261,3 +262,42 @@ then independent namespace/member deletion, individual native absence, private
 execution/log redaction and a final scan retaining the Fleet and unrelated
 resources. This is composed end-to-end protocol evidence, not an independent
 Mesh emulator or a live-cloud test.
+
+
+`TestFleetRootNativeHubCleanup` exercises the registered root driver for public,
+private, hubless and expanded 17-member Hub configurations. The root manifest
+also records every native child and Gate ID, allowing individual GET recovery
+when a later LIST omits it or the Fleet is already absent. Two native ownership
+observations match the exact reviewed Hub lifecycle configuration; operational
+ETags and deletion progress may change, while creation identity and authored
+settings remain bound. The root sends only its conditional native DELETE.
+
+Root boundary tests reject missing, duplicate, foreign, retained or forged
+impacts and receipts before API access. They cover independent child/Gate
+residuals, native collection and detail failures, ownership/configuration drift,
+new members, protection, locks, external-group ownership and protection,
+conditional conflicts, native 202 status/Location operations, existing Deleting
+state and serialized recovery. Managed Monitor rules may refer to other reviewed
+Hub members; external or newly introduced rules remain blockers. Diagnostic
+extensions require independent deletion even when their Fleet or Hub source is
+already absent. Known typed Hub resources always receive their own GET after
+root/group absence; only unknown contained types rely on group absence.
+
+`TestFleetRootRegisteredWorkersAndResidualRecovery` scans all eight Fleet kinds
+through 16 registered region shards, normalizes the composed Hub resources,
+runs the native graph worker and creates a real SQLite cleanup plan. Selecting
+the Fleet produces seven separate steps and 18 delegated impacts: six native
+child deletions before the root, 17 Hub members owned by Fleet, and one Gate
+owned by its run. Retaining the Hub blocks the plan. Every execution retry
+reopens SQLite and recreates the provider, registry and worker. The test verifies
+exactly seven conditional DELETEs, delayed Gate and Hub disappearance, an
+external disk surviving both managed groups, final impact closure, and four
+retained shared/unrelated resources. The Fleet proof, operation journal and logs
+exclude full private Hub bodies; individual assets retain their existing product
+inventory projections in the reviewed plan.
+
+Root and Hub lifecycle tests are composed protocol/persistence evidence. The
+unchanged Microsoft recordings verify native Fleet DELETE and polling envelopes,
+but contain no Hub ownership reads or complete post-delete resource absence
+observations. These tests do not establish independent emulator or live Azure
+acceptance.

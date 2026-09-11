@@ -3028,3 +3028,55 @@ background evidence only, not acceptance evidence for this work.
   All eight acceptance criteria and all 27 mapped Azure gaps remain open;
   these protocol and native-response tests do not establish emulator or
   live-cloud acceptance.
+
+### Fleet root cleanup and managed Hub residual recovery
+
+- Enabled the native Fleet root DELETE for verified Hub ownership and verified
+  hubless Fleets. Unverified ownership remains protected. The existing stable
+  operation now appears in the root spec and generated resource binding;
+  Azure has 394 types/specs and 367 cleanup rules, with 1,270 operations and
+  226 retained source documents. Catalog regeneration and selected metadata
+  remain deterministic without modifying the native operation schemas.
+- Root inventory also authenticates the native child/Gate identity manifest.
+  Named GETs recover omitted known children and gate-referenced runs. Before
+  root deletion, two complete observations require all independent children
+  absent and exactly the reviewed Hub members/ownership/configuration. Full
+  authored settings and creation identity remain privately bound while ETags,
+  deletion progress and modification audit fields may change.
+- The driver sends only Fleet DELETE for the Hub cascade, with the current
+  native If-Match condition. Root absence still requires every known Fleet
+  child, Gate, managed group and typed Hub descendant's own GET/404, including
+  external managed disks and DNS resources. Unknown contained types rely only
+  on their owning group's absence. Existing Deleting state and persisted native
+  operation receipts resume without issuing another DELETE.
+- Root review rejects missing, extra, foreign, duplicate, retained and forged
+  impacts before API access. Native membership changes, locks, protected tags,
+  unreadable resources and conditional conflicts block cleanup. Managed Hub
+  Monitor references retain their verified internal ownership; new/external
+  rules and diagnostic extensions remain independent blockers even after the
+  root disappears. Shared managed-group checks now additionally require a
+  synchronous, valid external group read and honor its protection tags.
+- The registered SQLite test scans eight Fleet kinds across 16 region shards,
+  normalizes the composed Hub resources and runs the native graph worker.
+  Selecting Fleet creates seven separate deletion steps and 18 impacts: six
+  independent child steps before the root, 17 Fleet-owned Hub members and a
+  Run-owned Gate. Retaining the Hub blocks the plan. Every retry reopens SQLite
+  and recreates the provider/registry/worker. Exactly seven conditional DELETEs,
+  delayed Gate/Hub disappearance, both groups gone with an external disk still
+  present, final impact closure and four retained shared resources are verified.
+- Fleet root proof records, operation journals and API logs exclude full Hub
+  configuration. Individual assets retain their existing product inventory
+  projections in the reviewed plan. Bilingual docs describe root eligibility,
+  native deletion/read permissions, reviewed prerequisites, retention and
+  residual behavior. The Hub responses remain composed evidence; retained CLI
+  recordings establish native Fleet DELETE/poll compatibility, not complete
+  live Hub ownership or post-delete absence observations.
+- Verification: `go test ./...` passed (Azure 209.165s), Fleet/AKS/attachment
+  race tests passed (165.800s), and `go vet ./...` passed. All Fleet tests passed
+  (20.735s); the final Root/AKS focused check passed (8.629s). Five catalog
+  importer tests, deterministic regeneration and diff checks also passed.
+- A fresh matrix comparison finds 26 mapped Azure types still without rules.
+  Fleet now has its root cleanup path, but all eight overall acceptance
+  criteria remain open, including other lifecycle work, independent emulator
+  and full application/publication verification. No live Azure deletion is
+  claimed by this checkpoint.

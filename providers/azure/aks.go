@@ -407,7 +407,7 @@ func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 
 func (a *action) managedGroupImpacts(request contracts.ActionRequest, group string) (map[string]contracts.ActionImpact, error) {
 	root := request.Asset
-	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) || (a.kind.NativeType != aksType && a.kind.NativeType != monitorWorkspaceType && a.kind.NativeType != applicationInsightsType) {
+	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) || (a.kind.NativeType != aksType && a.kind.NativeType != monitorWorkspaceType && a.kind.NativeType != applicationInsightsType && a.kind.NativeType != fleetType) {
 		return nil, serviceDenied("invalid_aks_controller")
 	}
 	impacts := map[string]contracts.ActionImpact{}
@@ -526,6 +526,14 @@ func (a *action) managedGroupResourcesPreflight(ctx context.Context, request con
 			// match after the reviewed AMPLS association removals.
 			impact.Asset.Normalized = cloneNormalizedWithoutGeneration(impact.Asset.Normalized)
 		}
+		if a.kind.NativeType == fleetType {
+			state := object(request.Asset.Normalized[fleetHubState])
+			expected := text(object(object(state["members"])[id])["lifecycle_configuration"])
+			if expected == "" || expected != a.client.privateConfiguration(fleetHubLifecycleSnapshot(resource)) {
+				return "fleet_hub_member_configuration_changed", nil
+			}
+			impact.Asset.Normalized = cloneNormalizedWithoutGeneration(impact.Asset.Normalized)
+		}
 		if err := serviceIncarnation(impact.Asset, resource); err != nil {
 			return "", err
 		}
@@ -539,11 +547,18 @@ func (a *action) managedGroupResourcesPreflight(ctx context.Context, request con
 				if err != nil {
 					return "", err
 				}
-				if !validResourceResponse(current, external, groupType) {
+				if !insightsARMReadValid(current, external, groupType) {
 					return "", fmt.Errorf("AKS external resource group identity mismatch")
 				}
-				if text(current.data["managedBy"]) != "" {
+				owner, err := insightsManagedBy(current.data)
+				if err != nil {
+					return "", err
+				}
+				if owner != "" {
 					return "azure_managed_resource_group", nil
+				}
+				if protectedAzureTags(object(current.data["tags"])) {
+					return "azure_protected_tag", nil
 				}
 				externalGroups[external] = true
 			}

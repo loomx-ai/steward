@@ -171,11 +171,10 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	normalized["arm_parameters"] = parameters
 	normalized[fleetConfigurationProof] = c.privateConfiguration(fleetSnapshot(kind, raw))
 	normalized[fleetContextProof] = c.privateConfiguration(context)
-	// Fleet root still requires managed Hub reconciliation. Its independent
-	// children use their native cleanup drivers; Gates follow their owning run.
+	// Root cleanup is enabled only after the native Hub observation below.
 	reason := ""
 	if kind == fleetType {
-		reason = "azure_fleet_lifecycle_pending"
+		reason = "azure_fleet_hub_unverified"
 	}
 	if kind == fleetMeshType {
 		normalized["mesh_state"] = object(object(raw["properties"])["status"])["state"]

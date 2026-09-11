@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "25acfc632295b5ecf3460e018215aafc3683173664efd6b352c7aa0e3e75eb3c",
+    "checksum": "ec2a2f282ac605c759688846732e5d52c8729245f0cbf289b8f39958229b89cf",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "76d81aa70990dffd7f32fd15dae9353fe631af3c0d3987fe73319fd56f80c93f",
+  "content_checksum": "4ca5e4eee529527fddb25410c8fb053d52dfa7f205876cf623445c277aaa5b6e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -115858,6 +115858,9 @@
         "collection": "fleets",
         "read_operations": [
           "Azure.Microsoft.ContainerService.Fleets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.Fleets_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.Fleets_ListBySubscription",

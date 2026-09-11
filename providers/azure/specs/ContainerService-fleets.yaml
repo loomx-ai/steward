@@ -41,6 +41,16 @@ fields:
     type: object
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.ContainerService.Fleets_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ContainerService.Fleets_Get
+      itemsPath: $
+      identityPath: id
 relationships:
 - type: uses
   targetType: Microsoft.Network/virtualNetworks/subnets

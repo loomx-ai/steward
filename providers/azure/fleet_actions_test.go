@@ -396,7 +396,7 @@ func TestFleetCleanupRevalidatesNativeBoundaries(t *testing.T) {
 	}
 }
 
-func TestFleetTerminalRunStatesAndUnsupportedRootActions(t *testing.T) {
+func TestFleetTerminalRunStatesAndUnverifiedRootActions(t *testing.T) {
 	for _, state := range []string{"NotStarted", "Stopped", "Failed", "Completed"} {
 		t.Run(state, func(t *testing.T) {
 			f := newFleetFixture(t)
@@ -423,7 +423,7 @@ func TestFleetTerminalRunStatesAndUnsupportedRootActions(t *testing.T) {
 		}
 		clear(f.calls)
 		if _, err := f.runtime.ResolveAction(t.Context(), asset.ConnectionID("connection"), value); err == nil || len(f.calls) != 0 {
-			t.Fatal("unimplemented root/Gate deletion became actionable", err)
+			t.Fatal("unverified root or independently unsupported Gate became actionable", err)
 		}
 	}
 }

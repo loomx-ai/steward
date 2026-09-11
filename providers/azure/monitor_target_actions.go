@@ -221,6 +221,15 @@ func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, sourc
 		return false, nil // Extensions require independent deletion even in managed groups.
 	}
 	group, ok := a.client.monitorControllerGroup(request.Asset)
+	if request.Asset.Identity.NativeType == fleetType {
+		state, err := a.client.fleetRecordedHub(request.Asset.Identity.NativeID, request.Asset.Normalized)
+		if err != nil {
+			return false, err
+		}
+		member := object(object(state["members"])[source.resource.id])
+		group = text(member["group"])
+		ok = state["mode"] == "managed" && (group == text(state["group"]) || group == text(state["node_group"])) && strings.EqualFold(text(member["kind"]), source.resource.kind)
+	}
 	if !ok || !inResourceGroup(source.resource.id, group) {
 		return false, nil
 	}
@@ -244,6 +253,9 @@ func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, sourc
 
 func (a *monitorTargetAction) dependencies(ctx context.Context, request contracts.ActionRequest, targets []asset.Asset) (err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
+	if request.Asset.Identity.NativeType == fleetType {
+		ctx = context.WithValue(ctx, fleetHubReadContextKey{}, true)
+	}
 	known := []asset.Asset{}
 	for _, prerequisite := range request.PrerequisiteDeletions {
 		known = append(known, prerequisite.Asset)

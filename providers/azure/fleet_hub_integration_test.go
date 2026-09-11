@@ -239,8 +239,8 @@ func TestFleetHubScanWorkerPersistsAndRecoversMembers(t *testing.T) {
 			t.Fatal(err)
 		}
 		state, err := c.fleetRecordedHub(value.Identity.NativeID, value.Normalized)
-		if err != nil || state["mode"] != "managed" || value.Capabilities.Has(asset.CapabilityActionable) {
-			t.Fatal("stored Hub membership proof or root protection changed", state, err)
+		if err != nil || state["mode"] != "managed" || !value.Capabilities.Has(asset.CapabilityActionable) {
+			t.Fatal("stored Hub membership proof or root cleanup capability changed", state, err)
 		}
 		members := object(state["members"])
 		proof := text(value.Normalized[fleetHubProof])

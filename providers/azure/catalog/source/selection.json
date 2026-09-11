@@ -9423,7 +9423,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.Fleets_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.Fleets_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.Fleets_ListBySubscription",
         "Azure.Microsoft.ContainerService.Fleets_ListByResourceGroup"

@@ -17,18 +17,28 @@ type fleetAction struct {
 }
 
 func newFleetAction(c *client, connection asset.ConnectionID, value asset.Asset, kind resourceType) (*fleetAction, error) {
-	if !slices.Contains(fleetDirectKinds, kind.NativeType) || value.ID == "" || value.Identity.ConnectionID != connection || connection == "" || value.Identity.Partition == "" || value.Identity.NativeType != kind.NativeType || value.Location == "" || value.Location == "global" || value.Location != strings.ToLower(value.Location) {
+	if kind.NativeType != fleetType && !slices.Contains(fleetDirectKinds, kind.NativeType) || value.ID == "" || value.Identity.ConnectionID != connection || connection == "" || value.Identity.Partition == "" || value.Identity.NativeType != kind.NativeType || value.Location == "" || value.Location == "global" || value.Location != strings.ToLower(value.Location) {
 		return nil, serviceDenied("invalid_fleet_action_identity")
 	}
 	if _, err := c.fleetRecordedReferences(value); err != nil {
 		return nil, err
 	}
 	id := value.Identity.NativeID
-	deletion, err := c.fleetRequest(kind.NativeType, fleetParent(id, kind.NativeType), last(id), "DELETE")
+	scope := fleetParent(id, kind.NativeType)
+	if kind.NativeType == fleetType {
+		scope = strings.Join(strings.Split(id, "/")[:5], "/")
+	}
+	deletion, err := c.fleetRequest(kind.NativeType, scope, last(id), "DELETE")
 	if err != nil {
 		return nil, err
 	}
-	return &fleetAction{action: action{client: c, kind: kind, id: id, wireID: id, location: value.Location, connectionID: connection, partition: value.Identity.Partition, deletion: deletion}, planned: value}, nil
+	a := &fleetAction{action: action{client: c, kind: kind, id: id, wireID: id, location: value.Location, connectionID: connection, partition: value.Identity.Partition, deletion: deletion}, planned: value}
+	if kind.NativeType == fleetType {
+		if _, err := a.rootState(value); err != nil {
+			return nil, err
+		}
+	}
+	return a, nil
 }
 
 func (a *fleetAction) identity(request contracts.ActionRequest) error {
@@ -36,8 +46,14 @@ func (a *fleetAction) identity(request contracts.ActionRequest) error {
 	if request.Action != "delete" || value.ID != a.planned.ID || value.Identity != a.planned.Identity || value.Location != a.location || text(value.Normalized[fleetReferencesProof]) != text(a.planned.Normalized[fleetReferencesProof]) || len(request.PrerequisiteDeletions) != 0 || len(request.Parameters) != 0 {
 		return serviceDenied("fleet_action_request_changed")
 	}
-	if _, err := a.serviceImpacts(request); err != nil {
-		return err
+	if a.kind.NativeType == fleetType {
+		if _, err := a.rootImpacts(request); err != nil {
+			return err
+		}
+	} else {
+		if _, err := a.serviceImpacts(request); err != nil {
+			return err
+		}
 	}
 	if request.ExecutionResult != nil {
 		return a.verifyPhase(request, *request.ExecutionResult)
@@ -102,6 +118,10 @@ func (a *fleetAction) preflight(ctx context.Context, request contracts.ActionReq
 	}
 	raw, err = a.client.fleetRead(ctx, a.kind.NativeType, a.id)
 	if isNotFound(err) {
+		if a.kind.NativeType == fleetType {
+			read, err := a.rootResidualReadback(ctx, request)
+			return response{}, contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
+		}
 		if a.kind.NativeType == fleetMeshType {
 			read, err := a.meshResidualReadback(ctx, request)
 			return response{}, contracts.PreflightResult{Allowed: err == nil, Absent: err == nil && !read.Exists}, err
@@ -146,6 +166,9 @@ func (a *fleetAction) preflight(ctx context.Context, request contracts.ActionReq
 	}
 	if locked(a.id, locks) {
 		return raw, check, serviceDenied("azure_management_lock")
+	}
+	if a.kind.NativeType == fleetType {
+		return a.rootPreflight(ctx, request, raw, locks)
 	}
 	if a.kind.NativeType == fleetMeshType {
 		return a.meshPreflightMembers(ctx, request, raw, locks)
@@ -293,6 +316,9 @@ func (a *fleetAction) Readback(ctx context.Context, request contracts.ActionRequ
 	}
 	live, err := a.client.fleetRead(ctx, a.kind.NativeType, a.id)
 	if isNotFound(err) {
+		if a.kind.NativeType == fleetType {
+			return a.rootResidualReadback(ctx, request)
+		}
 		if a.kind.NativeType == fleetMeshType {
 			return a.meshResidualReadback(ctx, request)
 		}

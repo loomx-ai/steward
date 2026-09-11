@@ -7,6 +7,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
@@ -16,6 +17,84 @@ const (
 )
 
 type fleetHubReadContextKey struct{}
+
+// Operational ETags and deletion progress can change after reviewed dependency
+// removals. Keep authored fields and immutable creation identity in this proof.
+func fleetHubLifecycleSnapshot(raw map[string]any) map[string]any {
+	snapshot := insightsWorkspaceLifecycleSnapshot(raw)
+	delete(snapshot, "etag")
+	delete(snapshot, "eTag")
+	props := maps.Clone(object(snapshot["properties"]))
+	delete(props, "provisioningState")
+	if snapshot["properties"] != nil {
+		snapshot["properties"] = props
+	}
+	if data, present := snapshot["systemData"]; present {
+		data := maps.Clone(object(data))
+		for _, field := range []string{"lastModifiedAt", "lastModifiedBy", "lastModifiedByType"} {
+			delete(data, field)
+		}
+		snapshot["systemData"] = data
+		if len(data) == 0 {
+			delete(snapshot, "systemData")
+		}
+	}
+	return snapshot
+}
+
+func fleetRootChildHints(id string, state map[string]any) ([]asset.Asset, error) {
+	var known []asset.Asset
+	for child, value := range object(state["children"]) {
+		canonical, kind, err := fleetIdentity(child)
+		if err != nil || canonical != child || kind == fleetType || fleetParent(child, kind) != id || text(object(value)["kind"]) != kind || text(object(value)["configuration"]) == "" {
+			return nil, serviceDenied("invalid_fleet_root_child_proof")
+		}
+		known = append(known, asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, NativeID: child, NativeType: kind}})
+	}
+	return known, nil
+}
+
+// Record Gate IDs too: their owning runs may be gone when the root's own GET
+// first returns 404. Named GETs, never collection omissions, prove absence.
+func (c *client) fleetRootChildren(ctx context.Context, id string, previous map[string]any) (map[string]any, error) {
+	known, err := fleetRootChildHints(id, previous)
+	if err != nil {
+		return nil, err
+	}
+	children := map[string]any{}
+	for _, kind := range append(slices.Clone(fleetDirectKinds), fleetGateType) {
+		var rows map[string]map[string]any
+		if kind == fleetMeshType {
+			rows, _, err = c.fleetMeshes(ctx, id, known)
+		} else {
+			rows, err = c.fleetKnownIndex(ctx, kind, id, known)
+		}
+		if err != nil {
+			return nil, err
+		}
+		for _, child := range slices.Sorted(maps.Keys(rows)) {
+			live, err := c.fleetRead(ctx, kind, child)
+			if err != nil {
+				return nil, err
+			}
+			if !nativeConfigurationContains(fleetSnapshot(kind, rows[child]), fleetSnapshot(kind, live.data)) {
+				return nil, serviceDenied("fleet_root_child_changed_during_scan")
+			}
+			children[child] = map[string]any{"kind": kind, "configuration": c.privateConfiguration(fleetSnapshot(kind, live.data))}
+			if kind == fleetGateType {
+				target, _, _ := fleetIdentity(text(object(object(live.data["properties"])["target"])["id"]))
+				if children[target] == nil {
+					run, err := c.fleetRead(ctx, fleetRunType, target)
+					if err != nil {
+						return nil, err
+					}
+					children[target] = map[string]any{"kind": fleetRunType, "configuration": c.privateConfiguration(fleetSnapshot(fleetRunType, run.data))}
+				}
+			}
+		}
+	}
+	return children, nil
+}
 
 func (c *client) fleetHubBinding(id string, normalized map[string]any) string {
 	return c.privateConfiguration(map[string]any{"id": id, "configuration": normalized[fleetConfigurationProof], "context": normalized[fleetContextProof], "hub": normalized[fleetHubState], "protocol": "fleet-hub-1"})
@@ -230,7 +309,7 @@ func (c *client) fleetHubObservation(ctx context.Context, raw map[string]any, in
 	state["mode"], state["group"], state["cluster"], state["node_group"] = "managed", group, clusterID, nodeGroup
 	for anchorID, resource := range map[string]map[string]any{group: groups[group], clusterID: cluster, nodeGroup: nodes} {
 		_, typ, _ := parseID(anchorID)
-		object(state["anchors"])[anchorID] = map[string]any{"kind": typ, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(resource))}
+		object(state["anchors"])[anchorID] = map[string]any{"kind": typ, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(resource)), "lifecycle_configuration": c.privateConfiguration(fleetHubLifecycleSnapshot(resource))}
 	}
 	return state, nil
 }
@@ -251,6 +330,11 @@ func (r *Runtime) fleetHubInventory(ctx context.Context, c *client, item *contra
 	}
 	item.Normalized[fleetHubState] = state
 	item.Normalized[fleetHubProof] = c.fleetHubBinding(item.NativeID, item.Normalized)
+	if (state["mode"] == "none" || state["mode"] == "managed") && item.Normalized["cleanup_protection_reason"] == "azure_fleet_hub_unverified" {
+		item.Normalized["cleanup_protection_reason"], item.Normalized["cleanup_protected"] = "", false
+		actionable := true
+		item.Actionable = &actionable
+	}
 	return nil
 }
 
@@ -286,6 +370,10 @@ func (c *client) readFleetHub(ctx context.Context, id string, raw map[string]any
 			return nil, nil, serviceDenied("fleet_hub_anchor_changed_during_scan")
 		}
 		resources[memberID] = current.data
+	}
+	state["children"], err = c.fleetRootChildren(ctx, id, previous)
+	if err != nil {
+		return nil, nil, err
 	}
 	current, err := c.fleetRead(ctx, fleetType, id)
 	if err != nil {
@@ -332,7 +420,7 @@ func (c *client) fleetHubMembers(ctx context.Context, state, previous map[string
 				return nil, serviceDenied("ambiguous_fleet_hub_member_group")
 			}
 			native[id] = raw
-			members[id] = map[string]any{"kind": kind, "group": group, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(raw))}
+			members[id] = map[string]any{"kind": kind, "group": group, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(raw)), "lifecycle_configuration": c.privateConfiguration(fleetHubLifecycleSnapshot(raw))}
 		}
 		member := maps.Clone(object(anchors[group]))
 		member["group"] = group

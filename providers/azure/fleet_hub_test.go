@@ -126,7 +126,7 @@ func TestFleetHubRegisteredInventoryAnchors(t *testing.T) {
 			item := batch.Items[0]
 			client, _ := h.runtime.resolve(t.Context(), "connection")
 			state, err := client.fleetRecordedHub(item.NativeID, item.Normalized)
-			if err != nil || state["location"] != "westus" || item.Actionable == nil || *item.Actionable {
+			if err != nil || state["location"] != "westus" || item.Actionable == nil || *item.Actionable != (mode != "unverified") {
 				t.Fatal("hub anchors or root cleanup boundary lost", item, err)
 			}
 			want := map[string]string{"public": "managed", "private": "managed", "hubless": "none", "unverified": "unverified"}[mode]
