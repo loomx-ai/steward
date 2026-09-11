@@ -167,6 +167,38 @@ func (c *client) insightsWorkspaceMemberBindings(resources []map[string]any) map
 // then bind their full GET bodies. External resources require an existing,
 // documented deletion relationship; a reference alone never makes them owned.
 func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspace string) ([]map[string]any, error) {
+	resources, err := c.nativeManagedGroupResources(ctx, group, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	if !slices.ContainsFunc(resources, func(raw map[string]any) bool { return strings.EqualFold(text(raw["id"]), workspace) }) {
+		return nil, serviceDenied("insights_managed_workspace_missing_from_group")
+	}
+	return resources, nil
+}
+
+func nativeManagedResourceMetadata(raw map[string]any) bool {
+	if raw["id"] != text(raw["id"]) || monitorRuleFields(raw, "id", "name", "type", "location", "properties", "managedBy", "tags", "systemData") != nil {
+		return false
+	}
+	for _, field := range []string{"id", "name", "type"} {
+		if value, present := raw[field]; present {
+			name, ok := value.(string)
+			if !ok || name != strings.TrimSpace(name) {
+				return false
+			}
+		}
+	}
+	// Native products use both etag and eTag. Preserve those keys verbatim in
+	// the private snapshot instead of interpreting one as a spelling alias.
+	_, err := insightsManagedBy(raw)
+	return err == nil
+}
+
+// allowedControllers contains only separately verified anchors whose managed
+// groups the caller also inventories. Saved members recover LIST omissions;
+// they do not establish absence or authorize a new external relationship.
+func (c *client) nativeManagedGroupResources(ctx context.Context, group string, allowedControllers map[string]bool, known map[string]any) ([]map[string]any, error) {
 	values, err := c.insightsARMIndex(ctx, group+"/resources")
 	if err != nil {
 		return nil, err
@@ -175,7 +207,7 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 	var visit func(map[string]any, bool) error
 	visit = func(raw map[string]any, indexed bool) error {
 		id, kind, err := parseID(text(raw["id"]))
-		if err != nil || id == group || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) {
+		if err != nil || id == group || !strings.HasPrefix(id, c.root()+"/") || !validResponseType(kind, text(raw["type"])) || !nativeManagedResourceMetadata(raw) {
 			return serviceDenied("invalid_insights_workspace_group_member")
 		}
 		if rbacResourceKind(kind) != "" {
@@ -185,7 +217,11 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 			return diagnosticIdentity(raw, id, diagnosticSettingsType) // Independent prerequisite, never a group-owned impact.
 		}
 		if previous := resources[id]; previous != nil {
-			if !nativeConfigurationContains(insightsWorkspaceResourceSnapshot(raw), insightsWorkspaceResourceSnapshot(previous)) {
+			listed := insightsWorkspaceResourceSnapshot(raw)
+			if !indexed && previous["location"] == nil {
+				delete(listed, "location")
+			}
+			if !nativeConfigurationContains(listed, insightsWorkspaceResourceSnapshot(previous)) {
 				return serviceDenied("insights_workspace_descendant_disagrees")
 			}
 			return nil
@@ -204,7 +240,7 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 			if !indexed && current.data["location"] == nil {
 				delete(listed, "location") // c.children supplies inherited proxy locations.
 			}
-			if !insightsARMReadValid(current, id, kind) || !nativeConfigurationContains(listed, insightsWorkspaceResourceSnapshot(current.data)) {
+			if !insightsARMReadValid(current, id, kind) || !nativeManagedResourceMetadata(current.data) || !nativeConfigurationContains(listed, insightsWorkspaceResourceSnapshot(current.data)) {
 				return serviceDenied("insights_workspace_member_changed")
 			}
 			raw = current.data
@@ -213,7 +249,7 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 		if !known {
 			return nil
 		}
-		if strings.EqualFold(kind, applicationInsightsType) || strings.EqualFold(kind, aksType) || strings.EqualFold(kind, monitorWorkspaceType) {
+		if !allowedControllers[id] && (strings.EqualFold(kind, applicationInsightsType) || strings.EqualFold(kind, aksType) || strings.EqualFold(kind, monitorWorkspaceType) || strings.EqualFold(kind, fleetType)) {
 			return serviceDenied("insights_workspace_nested_managed_controller")
 		}
 		children, err := c.children(ctx, rule, raw)
@@ -260,8 +296,75 @@ func (c *client) insightsWorkspaceResources(ctx context.Context, group, workspac
 			return nil, err
 		}
 	}
-	if resources[workspace] == nil {
-		return nil, serviceDenied("insights_managed_workspace_missing_from_group")
+	// Recover contained parents first, then resolve omitted external children
+	// from their current native deletion relationships. A parent 404 never
+	// substitutes for a child's own 404, including after a process restart.
+	pending := map[string]map[string]any{}
+	for _, id := range slices.Sorted(maps.Keys(known)) {
+		member := object(known[id])
+		canonical, kind, err := parseID(id)
+		if err != nil || canonical != id || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(kind, text(member["kind"])) || text(member["group"]) != group || text(member["configuration"]) == "" {
+			return nil, serviceDenied("invalid_native_managed_known_member")
+		}
+		if resources[id] != nil || id == group {
+			continue
+		}
+		rule, registered := findType(kind)
+		if !registered {
+			return nil, serviceDenied("native_managed_unknown_member_omitted")
+		}
+		endpoint, err := c.resourceURL(rule, id)
+		if err != nil {
+			return nil, err
+		}
+		current, err := c.request(ctx, "GET", endpoint)
+		if isNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		if !insightsARMReadValid(current, id, kind) {
+			return nil, serviceDenied("invalid_native_managed_known_read")
+		}
+		if inResourceGroup(id, group) {
+			if err := visit(current.data, true); err != nil {
+				return nil, err
+			}
+		} else {
+			pending[id] = current.data
+		}
+	}
+	for len(pending) != 0 {
+		progress := false
+		for _, id := range slices.Sorted(maps.Keys(pending)) {
+			if resources[id] != nil {
+				if err := visit(pending[id], true); err != nil {
+					return nil, err
+				}
+				delete(pending, id)
+				progress = true
+				continue
+			}
+			for _, parentID := range slices.Sorted(maps.Keys(resources)) {
+				parent, child := aksNativeAsset(resources[parentID]), aksNativeAsset(pending[id])
+				// A VNet link has a direct reciprocal native reference. Other
+				// external ownership needs its product's complete child walk;
+				// an auto-DNS record's zone membership alone is insufficient.
+				if !strings.EqualFold(parent.Identity.NativeType, vnetType) || !strings.EqualFold(child.Identity.NativeType, privateDNSLinkType) || !aksExternalRelation(parent, child) {
+					continue
+				}
+				if err := visit(pending[id], true); err != nil {
+					return nil, err
+				}
+				delete(pending, id)
+				progress = true
+				break
+			}
+		}
+		if !progress {
+			return nil, serviceDenied("native_managed_member_ownership_changed")
+		}
 	}
 	result := make([]map[string]any, 0, len(resources))
 	for _, id := range slices.Sorted(maps.Keys(resources)) {

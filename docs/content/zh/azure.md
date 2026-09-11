@@ -180,6 +180,6 @@ Kubernetes Fleet 清单需要原生 `Microsoft.ContainerService/fleets/read`、�
 
 Fleet 成员、托管命名空间、更新运行、更新策略和自动升级配置已支持原生条件删除，需要相应子资源的删除权限。状态为 `Running`、`Pending` 或 `Skipped` 的更新运行还需要停止权限；已经处于停止过程中的运行不会重复发送 Stop。系统确认运行进入终止状态后才删除，并逐个核验运行及已审查 Gate 的消失。轮询和执行阶段可在 worker 重启后恢复。Fleet 本身的删除仍未启用，正在补齐托管 Hub 资源的核验。
 
-Fleet 根资源扫描现已通过托管资源组的 `managedBy`、Fleet 与 AKS 的 API 地址，以及 AKS 的 `nodeResourceGroup` 和该组反向指向 AKS 的归属信息，核验 Hub 归属。这需要未过滤的资源组和组内资源列表，以及 Hub AKS 集群和两个资源组的原生读取权限。归属缺失或有歧义时保留为未核实状态，命名规则不能证明归属。已认证的历史标识可找回后续列表遗漏的资源组和集群；Hub 配置仅保存私有摘要。托管后代清单、委托清理关系和根资源删除验证仍待补齐。参阅 [Hub 集群说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle)。
+Fleet 根资源扫描通过托管资源组的 `managedBy`、Fleet 与 AKS 的 API 地址，以及 AKS 的 `nodeResourceGroup` 和该组反向指向 AKS 的归属信息，核验 Hub 归属。随后遍历两个资源组，展开原生子资源和有文档支持的外部后代，并补查通用 ARM 列表遗漏的 Monitor 资源。这需要未过滤的资源组和组内资源列表、成员原生读取及子资源列表，以及相关的订阅 Monitor 和 DNS 索引权限。归属缺失或有歧义时保留为未核实状态，命名规则不能证明归属。已认证的历史标识通过逐项读取找回列表遗漏；未知类型的资源被遗漏或外部归属证据不完整时，扫描不会完成。RBAC 分配和诊断设置仍需独立清理。Hub 和成员的完整配置仅保存私有摘要。委托清理关系和根资源删除验证仍待补齐。参阅 [Hub 集群说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle)。
 
 托管命名空间清理沿用已审查的 `deletePolicy`：`Keep` 移除 ARM 管理并保留 Kubernetes 命名空间；`Delete` 删除 Hub 和成员集群上的命名空间及其内容。两种策略都会删除关联的 Azure RBAC 分配。策略或放置配置变化后，需要重新扫描和审查。移除 Fleet 成员只解除成员关系，不会删除其引用的 AKS 集群。参阅[命名空间删除说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-managed-namespaces#delete-a-managed-fleet-namespace)和[更新运行状态](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-update-orchestration#update-run-states)。

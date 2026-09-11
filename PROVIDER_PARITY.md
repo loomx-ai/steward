@@ -2872,3 +2872,44 @@ background evidence only, not acceptance evidence for this work.
   `go test ./...` passed (Azure 201.081s), Fleet/AKS/managed-resource race tests
   passed (42.653s), repository-wide `go vet ./...` and diff checks passed.
   The focused Fleet/AKS tests also passed, including private Hub log checks.
+
+### Fleet managed Hub descendant inventory
+
+- Verified Hub scans now capture both managed groups and their native resource
+  trees, including documented external descendants and Monitor resources absent
+  from the generic ARM index. Reused the existing Application Insights managed
+  workspace walker, including native product reads, recursive child discovery
+  and unfiltered pagination. Only the independently verified Hub AKS can
+  introduce its separately inventoried node group; other nested managed
+  controllers fail closed until their ownership is reconciled.
+- Captured IDs, owning group and complete private configuration digests inside
+  the authenticated Hub state. Re-read every known member and the controller
+  after discovery; the two-pass scan and page fingerprint cover the member set.
+  Unknown contained types remain represented without inventing a product GET.
+  RBAC assignments and diagnostic settings remain independent prerequisites.
+- Serialized known members recover native LIST omissions with individual GETs.
+  Only the named member's own 404 removes it from the captured membership; it
+  never closes the Fleet. External recovery requires native ownership evidence,
+  including the reciprocal VNet reference on a DNS link. Missing automatic DNS
+  records cannot regain ownership from their zone alone. Unknown omitted kinds,
+  incomplete native ownership, forbidden reads and asynchronous responses prevent
+  scan completion. Full native configurations stay out of Fleet inventory/logs.
+- Added a composed 17-member Hub scenario with Uniform scale-set instances,
+  extensions, nested network resources, an external disk, VNet/DNS descendants,
+  unknown membership and an omitted Monitor action group. Tests preserve shared
+  zones/manual records and cover recovery, private changes, typed metadata,
+  pagination, incomplete indexes and separate extensions. The actual registered
+  scan worker reopens SQLite and recreates clients between scans, preserving
+  existing membership after 403 and reconciling only individual native 404s.
+- Broader managed-workspace tests caught the native budget `eTag` spelling;
+  the shared walker now retains both native ETag spellings in the complete
+  digest and validates metadata types without imposing one product's spelling.
+- Lifecycle delegation, residual checks, Fleet root cleanup, Arc membership
+  and preview Cluster Mesh remain unfinished. This checkpoint does not close
+  any of the 27 mapped Azure gaps or eight overall acceptance criteria. Catalog
+  counts remain 393 resource types, 365 cleanup rules and 1,265 native operations.
+- Final verification after the native ETag compatibility fix and SQLite worker
+  coverage: repository-wide `go test ./...` passed (Azure 198.865s), Fleet/AKS/
+  managed-group race tests passed (87.352s), and repository-wide `go vet ./...`
+  passed. The focused native/managed-workspace tests passed (14.989s), the
+  dedicated restarted Hub scan-worker test passed (0.942s), and diff checks passed.

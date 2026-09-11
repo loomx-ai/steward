@@ -19,6 +19,8 @@ type fleetHubFixture struct {
 	*fleetFixture
 	fleet, hub, nodes, cluster string
 	groups, resources          map[string]map[string]any
+	lists                      map[string][]any
+	versions                   map[string]string
 	omit, gone                 map[string]bool
 	override                   func(*http.Request) (*http.Response, bool)
 }
@@ -27,7 +29,7 @@ func newFleetHubFixture(t *testing.T, private bool) *fleetHubFixture {
 	t.Helper()
 	f := newFleetFixture(t)
 	root := "/subscriptions/" + testSubscription
-	h := &fleetHubFixture{fleetFixture: f, fleet: strings.ToLower(resourceID(fleetType, "fleet1")), hub: root + "/resourcegroups/native-hub-owner", nodes: root + "/resourcegroups/native-node-owner", groups: map[string]map[string]any{text(f.group["id"]): f.group}, resources: map[string]map[string]any{}, omit: map[string]bool{}, gone: map[string]bool{}}
+	h := &fleetHubFixture{fleetFixture: f, fleet: strings.ToLower(resourceID(fleetType, "fleet1")), hub: root + "/resourcegroups/native-hub-owner", nodes: root + "/resourcegroups/native-node-owner", groups: map[string]map[string]any{text(f.group["id"]): f.group}, resources: map[string]map[string]any{}, lists: map[string][]any{}, versions: map[string]string{}, omit: map[string]bool{}, gone: map[string]bool{}}
 	h.cluster = h.hub + "/providers/microsoft.containerservice/managedclusters/hub"
 	fqdn, field := "hub-private-proof.hcp.westus.azmk8s.io", "fqdn"
 	if private {
@@ -50,12 +52,22 @@ func newFleetHubFixture(t *testing.T, private bool) *fleetHubFixture {
 		if fleetPath(path) || strings.HasSuffix(path, "/locks") {
 			return nil, false
 		}
+		if _, explicit := h.lists[path]; !explicit {
+			if response, handled := emptyMonitorIndexResponse(t, req); handled {
+				return response, true
+			}
+		}
 		if req.Method != "GET" || len(req.URL.Query()) != 1 || req.URL.Host != "management.azure.com" {
 			t.Fatal("hub inventory made an unexpected request", req.Method, req.URL)
 		}
 		version := resourcesVersion
-		if h.resources[path] != nil {
-			version = "2024-02-01"
+		if raw := h.resources[path]; raw != nil {
+			if kind, known := findType(text(raw["type"])); known {
+				version = kind.Version
+			}
+		}
+		if h.versions[path] != "" {
+			version = h.versions[path]
 		}
 		if req.URL.Query().Get("api-version") != version {
 			t.Fatal("hub inventory changed native API version", req.URL)
@@ -68,6 +80,9 @@ func newFleetHubFixture(t *testing.T, private bool) *fleetHubFixture {
 		}
 		if resource := h.resources[path]; resource != nil {
 			return jsonResponse(200, resource, nil), true
+		}
+		if values, ok := h.lists[path]; ok {
+			return jsonResponse(200, map[string]any{"value": values}, nil), true
 		}
 		values := []any{}
 		if path == root+"/resourcegroups" {

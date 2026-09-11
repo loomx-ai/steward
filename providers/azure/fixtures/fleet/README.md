@@ -147,4 +147,30 @@ The AKS and resource-group responses in these tests are composed protocol
 fixtures. The retained Fleet CLI recordings contain no Hub AKS or managed-group
 GETs, so these tests do not establish live-cloud compatibility of that ownership
 join. Unverified joins remain protected, and root cleanup remains disabled until
-managed descendant discovery, lifecycle delegation and residual checks are ready.
+lifecycle delegation and residual checks are ready.
+
+`TestFleetHubInventoryCapturesNativeDescendants` composes the established native
+Uniform scale-set and private-DNS protocol scenarios beneath the verified Hub.
+It covers both groups, nested instances/NICs/IPs/extensions, an external managed
+disk, a VNet's external DNS link and auto-registration record, an unknown
+contained type, and an ARM-omitted Monitor action group. Shared DNS zones and
+manual records stay outside the captured membership. IDs, owning group and full
+private configuration digests survive serialization without exposing authored
+settings or endpoints in inventory or response logs.
+
+The same registered scan tests recover omitted known members by native GET,
+require each removed known member's own 404, and refuse permission failures,
+asynchronous reads, filtered continuations, duplicate or foreign members,
+private configuration drift, changed external ownership and unsupported nested
+managed controllers. A missing auto-registration record cannot be recovered
+solely from its DNS zone: its product's native ownership walk must agree.
+Unknown omitted kinds have no invented GET contract and prevent completion.
+Native group pagination is tested independently, and RBAC assignments and
+diagnostic settings are excluded from group-owned membership. These remain
+composed protocol tests, not live Azure observations of Hub descendants.
+
+`TestFleetHubScanWorkerPersistsAndRecoversMembers` reopens the SQLite database
+and recreates the provider/client/worker for each registered scan. It checks
+that the real known-metadata path restores an omitted member, retains the
+previous Hub snapshot after a 403 failure, and updates membership only after
+the member's own 404. The Fleet itself remains present and protected.
