@@ -1,0 +1,308 @@
+[
+  {
+    "file": "CommunicationServices_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/communicationServices/delete.json",
+    "source_sha256": "9d89a5e69edcfd535e21efb8643988d8e5f99ca5fab801a3ac4f1bd30e3c980a",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "CommunicationServices_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}"
+  },
+  {
+    "file": "CommunicationServices_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/communicationServices/get.json",
+    "source_sha256": "ad248ffa4e534c029c14dcc56e58b283aa55d3a68b3608eb322dc964a7aea976",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "CommunicationServices_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}"
+  },
+  {
+    "file": "CommunicationServices_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/communicationServices/listByResourceGroup.json",
+    "source_sha256": "e59604ddf857557495967e35b13d8bafb3bc516ba6a7bdc886542b4bfb934245",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "CommunicationServices_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices"
+  },
+  {
+    "file": "CommunicationServices_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/communicationServices/listBySubscription.json",
+    "source_sha256": "4ce974a8b2f8a70d42bf0debc33e7074fb636bb1472641c80de6c5e7be714718",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "CommunicationServices_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/communicationServices"
+  },
+  {
+    "file": "Domains_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/domains/delete.json",
+    "source_sha256": "9790885251da498d7419217c76bdbf7a46c170d5774fa3912506fa7a254b84d6",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "Domains_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}"
+  },
+  {
+    "file": "Domains_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/domains/get.json",
+    "source_sha256": "4fffc913eb2331fd76d984fd3f1bfd0de01bb367236c8eff726fe63cc68f787c",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "Domains_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}"
+  },
+  {
+    "file": "Domains_ListByEmailServiceResource.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/domains/listByEmailService.json",
+    "source_sha256": "6d6cbd6d0e9b9acc93f1f7f98f186b1df7d2407f913f7cf46a015cfe815d4679",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "Domains_ListByEmailServiceResource",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains"
+  },
+  {
+    "file": "EmailServices_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/emailServices/delete.json",
+    "source_sha256": "77b0b3045c6e45fce36f580025873701bd554d5b165c237dfdf22169d8bd0259",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "EmailServices_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}"
+  },
+  {
+    "file": "EmailServices_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/emailServices/get.json",
+    "source_sha256": "16ad58bff3f6cdffa2da865990f9db81469458546e25cf10015d1677f9ac2dab",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "EmailServices_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}"
+  },
+  {
+    "file": "EmailServices_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/emailServices/listByResourceGroup.json",
+    "source_sha256": "8da72fe1c417fa6e50e2801102fed07a30a2b4520886d706cde8dd60a5523ad8",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "EmailServices_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices"
+  },
+  {
+    "file": "EmailServices_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/emailServices/listBySubscription.json",
+    "source_sha256": "9d822ca2e062c5a2af1804d40cd6ba8f734e9ed802304012091174bb25d0c310",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "EmailServices_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/emailServices"
+  },
+  {
+    "file": "Participants_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/examples/Participants_List.json",
+    "source_sha256": "dece99364df19fa810f8093af3cb3a184c8786cc87d56abd8ce5e6e371ac89d4",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json",
+    "operation": "Participants_List",
+    "method": "GET",
+    "path": "/rooms/{roomId}/participants"
+  },
+  {
+    "file": "PhoneNumbers_DeleteReservation.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/DeleteReservation.json",
+    "source_sha256": "b8075db51ef0be3db2b340d6cfa09f5f17c3ede31a9134e089113724d97351b5",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_DeleteReservation",
+    "method": "DELETE",
+    "path": "/availablePhoneNumbers/reservations/{reservationId}"
+  },
+  {
+    "file": "PhoneNumbers_GetByNumber.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/GetPhoneNumber.json",
+    "source_sha256": "6cdae1c5b410fa0142ae8399b77242e576a0d7380a02b4194b794397f4e97bf8",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_GetByNumber",
+    "method": "GET",
+    "path": "/phoneNumbers/{phoneNumber}"
+  },
+  {
+    "file": "PhoneNumbers_GetOperation.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/GetOperation.json",
+    "source_sha256": "930329e3261c92830a25b28e8a613b2baa1a3316193dd74ffb874bdc00095e74",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_GetOperation",
+    "method": "GET",
+    "path": "/phoneNumbers/operations/{operationId}"
+  },
+  {
+    "file": "PhoneNumbers_GetReservation.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/GetReservation.json",
+    "source_sha256": "850c216daba8fec7e669beba1e4401c5f70e1208c22fb73a1cbe0259abfc5f8c",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_GetReservation",
+    "method": "GET",
+    "path": "/availablePhoneNumbers/reservations/{reservationId}"
+  },
+  {
+    "file": "PhoneNumbers_ListPhoneNumbers.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/GetPhoneNumbers.json",
+    "source_sha256": "8f8324104616a4214be6e00d467c19197d797bfc33276b1c1d713be8d38912a6",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_ListPhoneNumbers",
+    "method": "GET",
+    "path": "/phoneNumbers"
+  },
+  {
+    "file": "PhoneNumbers_ListReservations.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/GetReservations.json",
+    "source_sha256": "59c7ea81218885ebddfe4f95fae5942c72f6034079e39bceb2120cc3d600d3ab",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_ListReservations",
+    "method": "GET",
+    "path": "/availablePhoneNumbers/reservations"
+  },
+  {
+    "file": "PhoneNumbers_ReleasePhoneNumber.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/examples/ReleasePhoneNumber.json",
+    "source_sha256": "622e422f1f6e0db9a287d95076b0c6c5822084f313b9757b023cff361e4a6679",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+    "operation": "PhoneNumbers_ReleasePhoneNumber",
+    "method": "DELETE",
+    "path": "/phoneNumbers/{phoneNumber}"
+  },
+  {
+    "file": "Rooms_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/examples/Rooms_Delete.json",
+    "source_sha256": "8eecb5d47a23dea943a0a555ced3c9cf6ff284dba16a08c29ce35ba296a0bbe6",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json",
+    "operation": "Rooms_Delete",
+    "method": "DELETE",
+    "path": "/rooms/{roomId}"
+  },
+  {
+    "file": "Rooms_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/examples/Rooms_Get.json",
+    "source_sha256": "336a5fe36c350c8d797f4c07418353ba61e2eeb0c1b7bab12aa7059919cea7dc",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json",
+    "operation": "Rooms_Get",
+    "method": "GET",
+    "path": "/rooms/{roomId}"
+  },
+  {
+    "file": "Rooms_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/examples/Rooms_List.json",
+    "source_sha256": "010f556113e51e8afdb056d913b18deeb4db463db1a74e2b2b63c67352bfd109",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json",
+    "operation": "Rooms_List",
+    "method": "GET",
+    "path": "/rooms"
+  },
+  {
+    "file": "SenderUsernames_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/senderUsernames/delete.json",
+    "source_sha256": "a7c5a2880efec8b554b8d133809c27498f6c8899341a159b533e00aaaaff1b26",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SenderUsernames_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}"
+  },
+  {
+    "file": "SenderUsernames_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/senderUsernames/get.json",
+    "source_sha256": "f7a434af7386998317faf75b58b854477697789b0c7013d06a6921502e740303",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SenderUsernames_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}"
+  },
+  {
+    "file": "SenderUsernames_ListByDomains.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/senderUsernames/listByDomain.json",
+    "source_sha256": "a18e7aade7a127898ba4afa2963d30483765588682b77791cc76384b27fbf2c1",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SenderUsernames_ListByDomains",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames"
+  },
+  {
+    "file": "SmtpUsernames_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/smtpUsername/delete.json",
+    "source_sha256": "516f5ab54b476f65d9137363dc98c103c3f0072f1ccc51d3a8b1d579a0803ecc",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SmtpUsernames_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}"
+  },
+  {
+    "file": "SmtpUsernames_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/smtpUsername/get.json",
+    "source_sha256": "be73b6701f0ab1d8bdf24c14a048f3a6bfaca0a03da488229b9e01c627862e87",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SmtpUsernames_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}"
+  },
+  {
+    "file": "SmtpUsernames_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/smtpUsername/getAll.json",
+    "source_sha256": "a99d122493bc0ebc9fb08e4653c7de54f06bbe9d1dfbae685227f283cebc0a0d",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SmtpUsernames_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames"
+  },
+  {
+    "file": "SuppressionListAddresses_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/deleteAddress.json",
+    "source_sha256": "506775c6caea0241087a178c3f71e5642d734bc2d25bea754ad28914e7f08fe6",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionListAddresses_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}"
+  },
+  {
+    "file": "SuppressionListAddresses_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/getAddress.json",
+    "source_sha256": "0a4e3698c3e0af4bc64c7783c68ac5d3b5b8bd469bd1b23dda95db724452d2ca",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionListAddresses_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}"
+  },
+  {
+    "file": "SuppressionListAddresses_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/getAddresses.json",
+    "source_sha256": "06407f6a4705526e7d9dae5d246d7d2185b5df094e7fed5ef8ea3529093d8def",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionListAddresses_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses"
+  },
+  {
+    "file": "SuppressionLists_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/deleteSuppressionList.json",
+    "source_sha256": "266044641409e5f61f5d7578607cec3058dd723a44891774fe32ff70097b49e1",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionLists_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}"
+  },
+  {
+    "file": "SuppressionLists_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/getSuppressionList.json",
+    "source_sha256": "735999ec183fba3778db784b68a30be7c363a0afa38415e9583fd15fcaa25a84",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionLists_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}"
+  },
+  {
+    "file": "SuppressionLists_ListByDomain.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/examples/suppressionLists/getSuppressionLists.json",
+    "source_sha256": "e6893dbd71aba2b8de639a9dbea723c959515ecf984b06cec9c8b59c968cea8a",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+    "operation": "SuppressionLists_ListByDomain",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists"
+  }
+]

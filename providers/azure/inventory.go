@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	communication := request.ResourceKind != nil && communicationKind(request.ResourceKind.NativeType) != ""
+	if request.Source == communicationInventorySource && !communication || communication && request.Source != "" && request.Source != inventorySource && request.Source != communicationInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_communication_inventory_source")
 	}
 	fleet := request.ResourceKind != nil && fleetKind(request.ResourceKind.NativeType).kind != ""
 	if request.Source == fleetInventorySource && !fleet || fleet && request.Source != "" && request.Source != inventorySource && request.Source != fleetInventorySource {
@@ -38,6 +42,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if communication {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = communicationInventorySource
+		return r.listCommunication(ctx, c, request)
 	}
 	if fleet {
 		if request.Source == inventorySource {

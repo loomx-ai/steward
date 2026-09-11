@@ -1,0 +1,56 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/emailServices
+  class: messaging.email_service
+presentation:
+  displayNames:
+    en-US: Email service
+    zh-CN: 电子邮件服务
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.EmailServices_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.EmailServices_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  dataLocation:
+    path: dataLocation
+    type: string
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.EmailServices_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.EmailServices_Get
+      itemsPath: $
+      identityPath: id

@@ -204,14 +204,22 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 			return Catalog{}, fmt.Errorf("decode Azure OpenAPI document: %w", err)
 		}
 		batch := document.Host == "" && document.Info.Title == "Azure Batch" && document.ParameterizedHost != nil
-		if batch {
+		communication := document.Host == "" && (document.Info.Title == "PhoneNumbersClient" || document.Info.Title == "Azure Communication Room Service") && document.ParameterizedHost != nil
+		var endpointParameter map[string]any
+		if batch || communication {
 			host := document.ParameterizedHost
-			if host.Template != "{endpoint}" || host.UseSchemePrefix || len(host.Parameters) != 1 || host.Parameters[0]["name"] != "endpoint" || host.Parameters[0]["in"] != "path" || host.Parameters[0]["type"] != "string" || host.Parameters[0]["required"] != true || host.Parameters[0]["x-ms-skip-url-encoding"] != true || document.BasePath != "" {
-				return Catalog{}, fmt.Errorf("unsupported Azure Batch parameterized host")
+			if len(host.Parameters) == 1 {
+				endpointParameter, err = resolver.resolve(host.Parameters[0], upstream.SourceURI)
+				if err != nil {
+					return Catalog{}, err
+				}
+			}
+			if host.Template != "{endpoint}" || host.UseSchemePrefix || len(host.Parameters) != 1 || endpointParameter["name"] != "endpoint" || endpointParameter["in"] != "path" || endpointParameter["type"] != "string" || endpointParameter["required"] != true || endpointParameter["x-ms-skip-url-encoding"] != true || document.BasePath != "" {
+				return Catalog{}, fmt.Errorf("unsupported Azure data-plane parameterized host")
 			}
 		}
-		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
-			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a versioned ARM or Batch API")
+		if document.Swagger != "2.0" || document.Info.Version == "" || (!batch && !communication && (document.Host != "management.azure.com" || document.ParameterizedHost != nil)) {
+			return Catalog{}, fmt.Errorf("Azure OpenAPI document must describe a supported versioned Azure API")
 		}
 		titles[upstream.SourceURI] = document.Info.Title
 		paths := map[string]json.RawMessage{}
@@ -250,6 +258,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				if batch {
 					service = "Microsoft.Batch.DataPlane"
 				}
+				if communication {
+					service = "Microsoft.Communication.DataPlane"
+				}
 				properties := map[string]any{}
 				rawParameters := []string{}
 				for _, parameter := range append(common, operation.Parameters...) {
@@ -272,8 +283,8 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 					}
 				}
 				properties["api-version"] = map[string]any{"type": "string", "in": "query", "enum": []string{document.Info.Version}}
-				if batch {
-					properties["endpoint"] = document.ParameterizedHost.Parameters[0]
+				if batch || communication {
+					properties["endpoint"] = endpointParameter
 				}
 				var output map[string]any
 				for _, status := range []string{"200", "201", "202", "204"} {
@@ -299,6 +310,9 @@ func (AzureOpenAPIImporter) Import(provider asset.Provider, sourceURI string, so
 				call.RawPathParameters = rawParameters
 				if batch {
 					call.Style, call.Endpoint, call.EndpointParameters = "azure-batch-rest", "{endpoint}", []string{"endpoint"}
+				}
+				if communication {
+					call.Style, call.Endpoint, call.EndpointParameters = "azure-communication-rest", "{endpoint}", []string{"endpoint"}
 				}
 				destructive := isDestructiveOperation(operation.ID, method) || (batch && operation.ID == "Pools_RemoveNodes" && method == "post" && path == "/pools/{poolId}/removenodes")
 				c.Operations = append(c.Operations, Operation{ID: "Azure." + service + "." + operation.ID, Name: operation.ID, Service: service, Method: call.Method, Path: fullPath, Destructive: destructive, InputSchema: map[string]any{"type": "object", "properties": properties}, OutputSchema: output, Pagination: pagination, Call: call, SourceURI: upstream.SourceURI})

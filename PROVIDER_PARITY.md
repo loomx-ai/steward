@@ -3129,3 +3129,60 @@ background evidence only, not acceptance evidence for this work.
 - A fresh matrix comparison finds 25 mapped Azure types still without rules.
   All eight overall acceptance criteria remain open, including remaining
   lifecycle work, independent emulator/full application checks and publication.
+
+
+### Communication and Email native inventory, lifecycle and cleanup
+
+- Added ten native kinds: Communication accounts, SMTP usernames, purchased
+  phone numbers, number reservations, rooms, Email resources, domains, sender
+  usernames, suppression lists and addresses. Azure now has 406 types/specs,
+  379 cleanup rules and 1,311 operations from 175 root and 61 reference
+  documents. ARM uses `2026-03-18`, phone APIs `2025-06-01`, and Rooms
+  `2025-03-13`. All 34 selected operations, 56 example responses and 36 bodies
+  retain immutable upstream provenance and native contract checks. Catalog
+  generation remains deterministic and offline.
+- Registered inventory uses separate ARM and Communication Entra audiences and
+  establishes each data endpoint through its owned ARM account. Two complete
+  native observations cover descendants and room participants. Omitted known
+  resources require named GETs; parent/list absence never establishes child
+  absence. Private configuration, SMTP, recipient, verification and participant
+  fields are authenticated without exposing them in inventory or API logs.
+- Account deletion releases its reviewed phone numbers. Other modeled children
+  are direct deletion prerequisites, ordered before their parents. Linked email
+  domains require explicit account selection or prior unlink and rescan. Reverse
+  checks cover the connected subscription and known omitted accounts, not all
+  subscriptions. Linked Notification Hubs and assigned identities remain
+  independent references; malformed or changed links fail review.
+- Native DELETE, signed ARM polling, signature rotation, relative phone release
+  receipts and the final absence phase survive serialization and provider/worker
+  recreation. Operation success or an expired operation cannot replace the
+  selected resource and every recorded descendant's own GET/404. Participant
+  collection failures cannot become room absence. Account/phone verification
+  allows 40 days, with hourly absence checks after operation completion; this
+  bounds verification and makes no claim about when charges stop.
+- The real SQLite scan/graph/plan/execution test scans ten global shards and
+  executes nine native DELETE steps with one account-owned phone impact. Every
+  retry reopens SQLite and recreates runtime/registry/worker. It verifies durable
+  intent, retained assets while an account is gone but its phone remains, a
+  simulated delay beyond 32 days, final closure and no repeated persisted
+  DELETE. Unit tests cover graph and action drift, missing permissions, locks,
+  protection, forged identities/receipts, list omissions and surviving orphans.
+- Retained 134 responses from Microsoft's pinned CLI recordings, including
+  unchanged ARM/phone DELETE receipts, data responses and signed polling. The
+  polling replay checks three native DELETE headers and 45 operation responses
+  (29 nonterminal); these include creation/update polls as well as deletion.
+  Current-version worker responses are composed protocol evidence. No complete
+  live cleanup, independent ACS emulator, atomic external-write exclusion or
+  exactly-once write across a crash before receipt persistence is claimed.
+- Account deletion also irreversibly removes associated application data.
+  Chat/Identity data and Event Grid filters are not individually inventoried
+  lifecycle impacts here. Notification Hubs are references, not registered
+  cleanup kinds. These rules do not establish full ACS or SMS-template parity.
+  A fresh matrix comparison leaves 24 mapped Azure types without rules. All
+  eight acceptance criteria remain open, including remaining families,
+  lifecycle work, independent emulator and full application/publication checks.
+- Verification: repository-wide `go test ./...`, Communication race tests
+  (74.940s), and `go vet ./...` passed. Focused Communication/spec tests passed
+  (8.985s / 0.541s), all five offline importer tests passed, catalog regeneration
+  was byte-identical, and diff checks passed. These results do not close the
+  remaining acceptance scope above.

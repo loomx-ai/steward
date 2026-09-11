@@ -1,0 +1,69 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/communicationServices
+  class: media.rtc_application
+presentation:
+  displayNames:
+    en-US: Communication service
+    zh-CN: 通信服务
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.CommunicationServices_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.CommunicationServices_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  dataLocation:
+    path: dataLocation
+    type: string
+  publicNetworkAccess:
+    path: publicNetworkAccess
+    type: string
+  disableLocalAuth:
+    path: disableLocalAuth
+    type: boolean
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.CommunicationServices_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.CommunicationServices_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/emailServices/domains
+  targetIdPath: _communication_email_domains
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities

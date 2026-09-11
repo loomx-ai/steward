@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/communicationServices/smtpUsernames
+  class: messaging.smtp_username
+presentation:
+  displayNames:
+    en-US: SMTP username
+    zh-CN: SMTP 用户名
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.SmtpUsernames_List
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      communicationServiceName: parent.normalized.arm_parameters.communicationServiceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.SmtpUsernames_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: communication-services
+    nativeType: Microsoft.Communication/communicationServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.SmtpUsernames_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.SmtpUsernames_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/communicationServices
+  targetIdPath: _communication_parent

@@ -2136,6 +2136,55 @@
         "Domains_GetOwnershipIdentifier",
         "Domains_DeleteOwnershipIdentifier"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json",
+      "operations": [
+        "CommunicationServices_Delete",
+        "CommunicationServices_Get",
+        "CommunicationServices_ListByResourceGroup",
+        "CommunicationServices_ListBySubscription",
+        "Domains_Delete",
+        "Domains_Get",
+        "Domains_ListByEmailServiceResource",
+        "EmailServices_Delete",
+        "EmailServices_Get",
+        "EmailServices_ListByResourceGroup",
+        "EmailServices_ListBySubscription",
+        "SenderUsernames_Delete",
+        "SenderUsernames_Get",
+        "SenderUsernames_ListByDomains",
+        "SmtpUsernames_Delete",
+        "SmtpUsernames_Get",
+        "SmtpUsernames_List",
+        "SuppressionListAddresses_Delete",
+        "SuppressionListAddresses_Get",
+        "SuppressionListAddresses_List",
+        "SuppressionLists_Delete",
+        "SuppressionLists_Get",
+        "SuppressionLists_ListByDomain"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json",
+      "operations": [
+        "PhoneNumbers_DeleteReservation",
+        "PhoneNumbers_GetByNumber",
+        "PhoneNumbers_GetOperation",
+        "PhoneNumbers_GetReservation",
+        "PhoneNumbers_ListPhoneNumbers",
+        "PhoneNumbers_ListReservations",
+        "PhoneNumbers_ReleasePhoneNumber"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json",
+      "operations": [
+        "Participants_List",
+        "Rooms_Delete",
+        "Rooms_Get",
+        "Rooms_List"
+      ]
     }
   ],
   "resource_types": [
@@ -9602,6 +9651,198 @@
       ],
       "list_operations": [
         "Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices",
+      "class": "media.rtc_application",
+      "display_name": "Communication service",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "communicationServices",
+      "read_operations": [
+        "Azure.Microsoft.Communication.CommunicationServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.CommunicationServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.CommunicationServices_ListBySubscription",
+        "Azure.Microsoft.Communication.CommunicationServices_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/smtpUsernames",
+      "class": "messaging.smtp_username",
+      "display_name": "SMTP username",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "smtpUsernames",
+      "read_operations": [
+        "Azure.Microsoft.Communication.SmtpUsernames_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.SmtpUsernames_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.SmtpUsernames_List"
+      ],
+      "response_types": [
+        "Microsoft.Communication/communicationServices/smtpUsername",
+        "CommunicationServices/SmtpUsernames"
+      ],
+      "response_id_types": [
+        "Microsoft.Communication/communicationServices/smtpUsername"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices",
+      "class": "messaging.email_service",
+      "display_name": "Email service",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "emailServices",
+      "read_operations": [
+        "Azure.Microsoft.Communication.EmailServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.EmailServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.EmailServices_ListBySubscription",
+        "Azure.Microsoft.Communication.EmailServices_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains",
+      "class": "messaging.email_domain",
+      "display_name": "Email domain",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "domains",
+      "read_operations": [
+        "Azure.Microsoft.Communication.Domains_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.Domains_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.Domains_ListByEmailServiceResource"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/senderUsernames",
+      "class": "messaging.email_sender",
+      "display_name": "Email sender",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "senderUsernames",
+      "read_operations": [
+        "Azure.Microsoft.Communication.SenderUsernames_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.SenderUsernames_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.SenderUsernames_ListByDomains"
+      ],
+      "response_types": [
+        "EmailServices/Domains/SenderUsernames"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/suppressionLists",
+      "class": "messaging.email_suppression_list",
+      "display_name": "Email suppression list",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "suppressionLists",
+      "read_operations": [
+        "Azure.Microsoft.Communication.SuppressionLists_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.SuppressionLists_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.SuppressionLists_ListByDomain"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/suppressionLists/suppressionListAddresses",
+      "class": "messaging.email_suppression_address",
+      "display_name": "Suppressed email address",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "suppressionListAddresses",
+      "read_operations": [
+        "Azure.Microsoft.Communication.SuppressionListAddresses_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.SuppressionListAddresses_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.SuppressionListAddresses_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/phoneNumbers",
+      "class": "communication.phone_number",
+      "display_name": "Phone number",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "phoneNumbers",
+      "read_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetByNumber"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ReleasePhoneNumber"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListPhoneNumbers"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/phoneNumberReservations",
+      "class": "communication.phone_reservation",
+      "display_name": "Phone number reservation",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "phoneNumberReservations",
+      "read_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetReservation"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_DeleteReservation"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListReservations"
+      ]
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/rooms",
+      "class": "media.rtc_room",
+      "display_name": "Communication room",
+      "scope_kinds": [
+        "global"
+      ],
+      "collection": "rooms",
+      "read_operations": [
+        "Azure.Microsoft.Communication.DataPlane.Rooms_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.Communication.DataPlane.Rooms_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.Communication.DataPlane.Rooms_List"
       ]
     }
   ]

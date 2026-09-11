@@ -31,9 +31,9 @@ var uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]
 var storageNamePattern = regexp.MustCompile(`^[a-z0-9]{3,24}$`)
 
 type client struct {
-	http, storageHTTP, batchHTTP      *http.Client
-	subscription, tenant, application string
-	fingerprint                       [32]byte
+	http, storageHTTP, batchHTTP, communicationHTTP *http.Client
+	subscription, tenant, application               string
+	fingerprint                                     [32]byte
 }
 type response struct {
 	data      map[string]any
@@ -130,7 +130,7 @@ func newClient(credential contracts.Credential, transport http.RoundTripper) (*c
 	// identity, executable credential, or user-selected token endpoint is allowed.
 	return &client{subscription: subscription, tenant: tenant, application: application,
 		fingerprint: sha256.Sum256([]byte(subscription + "\x00" + tenant + "\x00" + application + "\x00" + secret)),
-		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default")}, nil
+		http:        makeHTTP(armOrigin + "/.default"), storageHTTP: makeHTTP("https://storage.azure.com/.default"), batchHTTP: makeHTTP("https://batch.core.windows.net//.default"), communicationHTTP: makeHTTP("https://communication.azure.com/.default")}, nil
 }
 
 // Cache the token, while binding every refresh to the active request context.

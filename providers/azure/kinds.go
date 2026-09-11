@@ -127,7 +127,7 @@ func loadProviderData() (providerMetadata, error) {
 		for _, ids := range [][]string{kind.ReadOperations, kind.DeleteOperations, kind.ListOperations} {
 			for _, id := range ids {
 				operation, ok := result.catalog.Operation(id)
-				if !ok || operation.Call == nil || (operation.Call.Style != "azure-rest" && operation.Call.Style != "azure-batch-rest") {
+				if !ok || operation.Call == nil || (operation.Call.Style != "azure-rest" && operation.Call.Style != "azure-batch-rest" && operation.Call.Style != "azure-communication-rest") {
 					return result, fmt.Errorf("Azure resource %q references an unknown operation %q", kind.NativeType, id)
 				}
 				if (slices.Contains(kind.ReadOperations, id) && operation.Call.Method != resourceReadMethod(kind.NativeType)) || (slices.Contains(kind.ListOperations, id) && operation.Call.Method != "GET") {

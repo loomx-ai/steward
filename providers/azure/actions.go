@@ -32,6 +32,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if isAPIMType(kind.NativeType) && value.Identity.ConnectionID != id {
 		return nil, serviceDenied("apim_action_connection_changed")
 	}
+	if communicationKind(kind.NativeType) != "" && value.Identity.ConnectionID != id {
+		return nil, serviceDenied("communication_action_connection_changed")
+	}
 	if (monitorPrivateLinkKind(kind.NativeType) != "" || monitorPrivateLinkTarget(kind.NativeType)) && value.Identity.ConnectionID != id {
 		return nil, serviceDenied("monitor_private_link_action_connection_changed")
 	}
@@ -68,6 +71,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 			return nil, serviceDenied("batch_action_connection_changed")
 		}
 		return newBatchAction(c, value, kind)
+	}
+	if communicationKind(kind.NativeType) != "" {
+		return newCommunicationAction(c, id, value, kind)
 	}
 	if insightsLegacyKind(kind.NativeType).kind != "" || insightsARMChildKind(kind.NativeType) != "" {
 		return newInsightsChildAction(c, id, value, kind)

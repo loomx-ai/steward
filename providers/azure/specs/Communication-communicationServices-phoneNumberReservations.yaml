@@ -1,0 +1,62 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/communicationServices/phoneNumberReservations
+  class: communication.phone_reservation
+presentation:
+  displayNames:
+    en-US: Phone number reservation
+    zh-CN: 电话号码预留
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListReservations
+    parameters:
+      endpoint: parent.normalized._communication_endpoint
+    itemsPath: reservations
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetReservation
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: communication-services
+    nativeType: Microsoft.Communication/communicationServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  expiresAt:
+    path: expiresAt
+    type: string
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.DataPlane.PhoneNumbers_DeleteReservation
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetReservation
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/communicationServices
+  targetIdPath: _communication_parent

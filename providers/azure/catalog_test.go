@@ -86,6 +86,16 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if kind.NativeType == fleetGateType && match[1] == "gateName" {
 					value = rbacTestRoleName
 				}
+				if isCommunicationDataType(kind.NativeType) {
+					switch match[1] {
+					case "phoneNumber":
+						value = "+12065551234"
+					case "reservationId":
+						value = "65c18c7f-8074-4efb-a572-e0df127a9964"
+					case "roomId":
+						value = "RoomOpaqueID"
+					}
+				}
 				if strings.EqualFold(match[1], "recordType") {
 					value = kind.Collection
 				}
@@ -114,6 +124,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			if isBatchDataType(kind.NativeType) {
 				nativeID = "https://account.eastus2.batch.azure.com" + nativeID
 			}
+			if isCommunicationDataType(kind.NativeType) {
+				nativeID = "https://account.communication.azure.com" + nativeID
+			}
 			if row := insightsLegacyKind(kind.NativeType); row.kind != "" {
 				nativeID, err = insightsLegacyURL(resourceID(applicationInsightsType, "stewardtest"), row.kind, "OpaqueID")
 				if err != nil {
@@ -129,6 +142,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 			u, _ := url.Parse(endpoint)
 			if !strings.EqualFold(u.Path, wantPath) || u.Query().Get("api-version") != operation.Call.Version {
 				t.Fatalf("wrong request %s", endpoint)
+			}
+			if isCommunicationDataType(kind.NativeType) && (u.Path != wantPath || u.Host != "account.communication.azure.com") {
+				t.Fatal("Communication endpoint or opaque native identity changed")
 			}
 			if insightsLegacyKind(kind.NativeType).kind != "" {
 				if err := c.insightsLegacyEndpoint(endpoint, nativeID); err != nil {

@@ -17,6 +17,8 @@ navTitle: "Microsoft Azure"
 
 Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访问令牌。除了所选账户资源的 ARM 权限，还需要相应的 Batch 数据权限；清理可使用 **Azure Batch Data Contributor** 角色。存储及密钥 URL 引用需要订阅级 Storage/Key Vault 列表权限与匹配资源的读取权限。用户订阅模式的节点还需要读取其 VM、磁盘和网络资源的 Compute/Network 权限。参见 [Batch 身份验证](https://learn.microsoft.com/en-us/azure/batch/batch-aad-auth)与 [Batch 角色](https://learn.microsoft.com/en-us/azure/batch/batch-role-based-access-control)。
 
+Communication Services 的电话号码、预留号码和房间使用独立的 Microsoft Entra 令牌，作用域为 `https://communication.azure.com/.default`。服务主体需要原生数据读取权限（包括房间参与者列表），清理时还需相应的删除权限。ARM 权限须覆盖通信与邮件资源、子资源、资源组和管理锁的列表及读取；清理还需要各所选资源的原生 DELETE 与操作状态读取权限。Steward 从已验证归属的 ARM 账户获取数据端点，不使用账户密钥。参见 [Communication Services 身份验证](https://learn.microsoft.com/en-us/rest/api/communication/authentication)。
+
 凭证使用部署的凭证加密密钥加密保存。轮换密钥时使用**替换凭证**；订阅、租户和应用必须保持一致。参阅微软的[服务主体认证说明](https://learn.microsoft.com/en-us/entra/identity-platform/v2-oauth2-client-creds-grant-flow)。
 
 ## 第一次盘点
@@ -30,7 +32,7 @@ Batch 作业、计划、任务和节点使用账户的 Batch 端点及独立访�
 
 ## 盘点与清理范围
 
-Steward 识别 396 类资源，其中 369 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 406 类资源，其中 379 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -52,6 +54,7 @@ Steward 识别 396 类资源，其中 369 类具有原生清理操作（包括 B
 | Redis | 经典缓存、访问策略/分配、防火墙规则、复制连接、维护计划和专用终结点连接；Enterprise / Managed Redis 集群、数据库、访问分配和专用终结点连接 | 先删除已审查的子资源，再删除父资源；经典复制先解除链接；健康的主动复制组检查全部成员 |
 | App Service | Web App / Function App、部署槽、函数、证书、主机名绑定与服务计划 | 应用/部署槽审查所属子资源的级联影响；服务计划保持独立；证书须无 TLS 绑定 |
 | 域名注册 | 注册域名与所有权标识 | 先删除已审查的标识和应用/部署槽主机名绑定，再按原生延迟删除域名；DNS 托管保持独立 |
+| Communication Services | 通信账户、SMTP 用户名、电话号码、预留号码、房间、邮件资源、域、发件人用户名、抑制列表及地址 | 先清理已审查的子资源；账户删除负责释放已审查的电话号码；邮件域共享连接要求明确选择前置清理 |
 | CDN 与 Front Door | 配置、经典终结点/源站/源站组/域名；Front Door 终结点/路由/源站组/源站/域名/规则集/规则/安全关联/证书引用 | 配置及所属子资源审查级联影响；共享引用按依赖顺序清理 |
 | WAF | CDN 与 Front Door 策略 | 先删除已审查的引用终结点或安全关联，再删除策略；经典 Front Door 引用仍阻止清理 |
 | 容器 | 容器注册表、Container App、Container Instances 容器组、AKS | AKS 清理审查节点资源组及已知的嵌套、外部托管资源 |
@@ -78,6 +81,14 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+通信与邮件资源在全局范围盘点。电话号码、预留号码和房间保留原生账户 URL，房间 ID 区分大小写。扫描会两次核对完整账户层级和房间参与者；已知资源从列表遗漏时，会通过该资源自己的 GET 补读。账户或域不存在不能证明已记录的子孙资源已删除。私有 SMTP、收件人、验证和参与者详情不会进入公开清单及 API 日志。
+
+通信账户清理先删除已审查的 SMTP 用户名、预留号码和房间，再通过账户原生 DELETE 释放已审查的电话号码；单独选择电话号码则调用号码释放 API。邮件清理按地址、抑制列表、发件人用户名、域与父资源的依赖顺序执行。邮件域仍有通信账户连接时，需要明确选择该账户，或先解除连接再重新扫描。反向连接检查覆盖当前连接的订阅，并补读已知但遗漏的账户；不能据此断言其他订阅没有连接。参见[连接邮件域](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/email/connect-email-communication-resource)。
+
+关联的 Notification Hub 保持独立，不会随通信账户自动选中清理；关联变更后需要重新扫描和审查账户配置。
+
+通信资源删除不可恢复，也会删除其关联应用数据。这十类资源规则不单独列举聊天、通信身份数据或 Event Grid 筛选器，也不将其逐项列为清理影响。微软区分号码释放与计费周期内继续可见的状态。Steward 将异步轮询和后续不存在检查持久化，重启后可继续；账户及号码的核验最多等待 40 天，只有资源及每个已记录子孙资源自己的 GET 均返回 404 才完成。操作结束后仍未消失的账户或号码按小时复查；这不表示费用何时停止。正在购买、保护标签、管理锁、配置变化或资源不可读都会阻止清理。原生 DELETE 没有版本条件，无法消除检查后的外部并发修改。参见[资源删除](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/create-communication-resource)与[号码释放](https://learn.microsoft.com/en-us/azure/communication-services/quickstarts/telephony/get-phone-number)。这些资源规则不包含短信发送或模板管理。
 
 Azure RBAC 角色定义和角色分配显示在全局清单。发现使用当前订阅的原生 Authorization API，也覆盖更小的资源范围；继承自租户或管理组的分配不由当前连接管理。需要 `Microsoft.Authorization/roleDefinitions/read`、`Microsoft.Authorization/roleAssignments/read`、`Microsoft.Authorization/roleEligibilitySchedules/read`、`Microsoft.Authorization/roleAssignmentSchedules/read`，以及相关作用域资源、资源组和管理锁的原生读取权限。删除自定义角色需要对每个可分配范围拥有 `Microsoft.Authorization/roleDefinitions/delete`；删除分配需要在其确切范围拥有 `Microsoft.Authorization/roleAssignments/delete`。参阅[自定义角色删除要求](https://learn.microsoft.com/en-us/azure/role-based-access-control/custom-roles-rest#delete-a-custom-role)。
 

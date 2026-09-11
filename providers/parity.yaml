@@ -2294,8 +2294,9 @@ resources:
     resources:
     - Microsoft.Communication/communicationServices
   status: pending_verification
-  notes: SMS template lifecycle differs by provider and regulatory region; an Azure Communication Services
-    account alone does not prove template cleanup parity.
+  notes: Azure Communication and Email inventory and cleanup cover ten ARM/data resource kinds,
+    including phone release and room cleanup. SMS template lifecycle differs by provider and regulatory
+    region; these account/resource operations do not implement SMS template cleanup parity.
 - alicloud: ACS::ECS::Snapshot
   spec: providers/alicloud/specs/snapshot.yaml
   class: storage.snapshot

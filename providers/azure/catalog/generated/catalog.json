@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "7c93bde0f1b345ec2c164a17a7f1f8a385d88d84c71b6d6fde43281268846c86",
+    "checksum": "9d3292b73ec7401a65590319a14f8e43d08ebcb1b52293d57d52da6a00a4ad93",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "2bec17d58f0e3dc42c880f761312571def48ef0c49525d9ade3c6e24c0c03075",
+  "content_checksum": "82ae45ed1afde4c7f52a3a37f62298ca716616bf62ecde3555d17e9797c87653",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -51510,6 +51510,2763 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/cognitiveservices/resource-manager/Microsoft.CognitiveServices/stable/2026-05-01/cognitiveservices.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.CommunicationServices_Delete",
+      "name": "CommunicationServices_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "communicationServiceName": {
+            "description": "The name of the CommunicationService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "communicationServiceName",
+            "pattern": "^[-\\w]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.CommunicationServices_Get",
+      "name": "CommunicationServices_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "communicationServiceName": {
+            "description": "The name of the CommunicationService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "communicationServiceName",
+            "pattern": "^[-\\w]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A class representing a CommunicationService resource.",
+        "properties": {
+          "identity": {
+            "$ref": "../../../../../common-types/resource-management/v6/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "The managed service identities assigned to this resource.",
+            "x-ms-mutability": [
+              "read",
+              "update",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/CommunicationServiceProperties",
+            "description": "The properties of the service.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.CommunicationServices_ListByResourceGroup",
+      "name": "CommunicationServices_ListByResourceGroup",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object that includes an array of CommunicationServices and a possible link for next set.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The CommunicationServiceResource items on this page",
+            "items": {
+              "$ref": "#/definitions/CommunicationServiceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.CommunicationServices_ListBySubscription",
+      "name": "CommunicationServices_ListBySubscription",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/communicationServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object that includes an array of CommunicationServices and a possible link for next set.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The CommunicationServiceResource items on this page",
+            "items": {
+              "$ref": "#/definitions/CommunicationServiceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/communicationServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.Participants_List",
+      "name": "Participants_List",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/rooms/{roomId}/participants",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint of the Azure Communication resource.",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "roomId": {
+            "description": "The id of the room to get participants from.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A collection of participants in a room.",
+        "properties": {
+          "nextLink": {
+            "description": "If there are more participants that can be retrieved, the next link will be populated.",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of participants.",
+            "items": {
+              "$ref": "#/definitions/RoomParticipant"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-03-13",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/rooms/{roomId}/participants",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_DeleteReservation",
+      "name": "PhoneNumbers_DeleteReservation",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "DELETE",
+      "path": "/availablePhoneNumbers/reservations/{reservationId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "reservationId": {
+            "description": "The id of the reservation.",
+            "format": "uuid",
+            "in": "path",
+            "name": "reservationId",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/availablePhoneNumbers/reservations/{reservationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetByNumber",
+      "name": "PhoneNumbers_GetByNumber",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/phoneNumbers/{phoneNumber}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "phoneNumber": {
+            "description": "The purchased phone number whose details are to be fetched in E.164 format, e.g. +11234567890.",
+            "in": "path",
+            "name": "phoneNumber",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a purchased phone number.",
+        "properties": {
+          "assignmentType": {
+            "description": "The assignment type of the phone number. A phone number can be assigned to a person, or to an application.",
+            "enum": [
+              "person",
+              "application"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PhoneNumberAssignmentType"
+            }
+          },
+          "capabilities": {
+            "$ref": "#/definitions/PhoneNumberCapabilities"
+          },
+          "cost": {
+            "$ref": "#/definitions/PhoneNumberCost"
+          },
+          "countryCode": {
+            "description": "The ISO 3166-2 code of the phone number's country, e.g. US.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The id of the phone number, e.g. 11234567890.",
+            "type": "string"
+          },
+          "phoneNumber": {
+            "description": "String of the E.164 format of the phone number, e.g. +11234567890.",
+            "type": "string"
+          },
+          "phoneNumberType": {
+            "description": "The phone number's type, e.g. geographic, tollFree, mobile.",
+            "enum": [
+              "geographic",
+              "tollFree",
+              "mobile"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PhoneNumberType"
+            }
+          },
+          "purchaseDate": {
+            "description": "The date and time that the phone number was purchased.",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assignmentType",
+          "capabilities",
+          "cost",
+          "countryCode",
+          "id",
+          "phoneNumber",
+          "phoneNumberType",
+          "purchaseDate"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/phoneNumbers/{phoneNumber}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetOperation",
+      "name": "PhoneNumbers_GetOperation",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/phoneNumbers/operations/{operationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "operationId": {
+            "description": "The id of the operation",
+            "in": "path",
+            "name": "operationId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "createdDateTime": {
+            "description": "The date that the operation was created.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "error": {
+            "$ref": "../../../Common/stable/2021-03-07/common.json#/definitions/CommunicationError"
+          },
+          "id": {
+            "description": "Id of operation.",
+            "type": "string"
+          },
+          "lastActionDateTime": {
+            "description": "The most recent date that the operation was changed.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "operationType": {
+            "description": "The type of operation, e.g. Search",
+            "enum": [
+              "purchase",
+              "releasePhoneNumber",
+              "search",
+              "updatePhoneNumberCapabilities",
+              "reservationPurchase"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PhoneNumberOperationType"
+            }
+          },
+          "resourceLocation": {
+            "description": "URL for retrieving the result of the operation, if any.",
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of operation.",
+            "enum": [
+              "notStarted",
+              "running",
+              "succeeded",
+              "failed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PhoneNumberOperationStatus"
+            }
+          }
+        },
+        "required": [
+          "createdDateTime",
+          "id",
+          "operationType",
+          "status"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/phoneNumbers/operations/{operationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetReservation",
+      "name": "PhoneNumbers_GetReservation",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/availablePhoneNumbers/reservations/{reservationId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "reservationId": {
+            "description": "The id of the reservation.",
+            "format": "uuid",
+            "in": "path",
+            "name": "reservationId",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a reservation for phone numbers. A reservation is a temporary hold on phone numbers that can later be purchased. The reservation has a limited lifetime after which the phone numbers are released if not purchased. Reservations older than 1 month are automatically deleted.",
+        "properties": {
+          "expiresAt": {
+            "description": "The time at which the reservation will expire. If a reservation is not purchased before this time, all of the reserved phone numbers will be released and made available for others to purchase.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "id": {
+            "description": "The id of the reservation.",
+            "format": "uuid",
+            "readOnly": true,
+            "type": "string"
+          },
+          "phoneNumbers": {
+            "additionalProperties": {
+              "$ref": "#/definitions/AvailablePhoneNumber",
+              "x-nullable": true
+            },
+            "description": "A dictionary containing the reservation phone numbers. The key is the ID of the phone number (digits only) and values are AvailablePhoneNumber objects. Not populated when retrieving PhoneNumbersReservation collections.",
+            "type": "object"
+          },
+          "status": {
+            "description": "Represents the status of the reservation. Possible values include: 'active', 'submitted', 'completed', 'expired'.",
+            "enum": [
+              "active",
+              "submitted",
+              "completed",
+              "expired"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ReservationStatus"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/availablePhoneNumbers/reservations/{reservationId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListPhoneNumbers",
+      "name": "PhoneNumbers_ListPhoneNumbers",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/phoneNumbers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "skip": {
+            "default": 0,
+            "description": "An optional parameter for how many entries to skip, for pagination purposes. The default value is 0.",
+            "format": "int32",
+            "in": "query",
+            "name": "skip",
+            "type": "integer"
+          },
+          "top": {
+            "default": 100,
+            "description": "An optional parameter for how many entries to return, for pagination purposes. The default value is 100.",
+            "format": "int32",
+            "in": "query",
+            "name": "top",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The list of purchased phone numbers.",
+        "properties": {
+          "nextLink": {
+            "description": "Represents the URL link to the next page of phone number results.",
+            "type": "string"
+          },
+          "phoneNumbers": {
+            "description": "Represents a list of phone numbers.",
+            "items": {
+              "$ref": "#/definitions/PurchasedPhoneNumber"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "phoneNumbers"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "phoneNumbers"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/phoneNumbers",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListReservations",
+      "name": "PhoneNumbers_ListReservations",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/availablePhoneNumbers/reservations",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "maxPageSize": {
+            "default": 100,
+            "description": "An optional parameter for how many entries to return, for pagination purposes. The default value is 100.",
+            "format": "int32",
+            "in": "query",
+            "name": "maxPageSize",
+            "type": "integer",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Represents a list of phone numbers reservations. Note that the phone numbers from each reservation are not included.",
+        "properties": {
+          "nextLink": {
+            "description": "Represents the URL link to the next page of phone number results.",
+            "type": "string"
+          },
+          "reservations": {
+            "description": "Represents a list of phone numbers reservations. Note that the phone numbers from each reservation are not included.",
+            "items": {
+              "$ref": "#/definitions/PhoneNumbersReservation"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "reservations"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "reservations"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/availablePhoneNumbers/reservations",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ReleasePhoneNumber",
+      "name": "PhoneNumbers_ReleasePhoneNumber",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "DELETE",
+      "path": "/phoneNumbers/{phoneNumber}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The communication resource, for example https://resourcename.communication.azure.com",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "phoneNumber": {
+            "description": "Phone number to be released, e.g. +11234567890.",
+            "in": "path",
+            "name": "phoneNumber",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-06-01",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/phoneNumbers/{phoneNumber}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/PhoneNumbers/stable/2025-06-01/phonenumbers.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.Rooms_Delete",
+      "name": "Rooms_Delete",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "DELETE",
+      "path": "/rooms/{roomId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint of the Azure Communication resource.",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "roomId": {
+            "description": "The id of the room to be deleted.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-03-13",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/rooms/{roomId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.Rooms_Get",
+      "name": "Rooms_Get",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/rooms/{roomId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint of the Azure Communication resource.",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          },
+          "roomId": {
+            "description": "The id of the room requested.",
+            "in": "path",
+            "name": "roomId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The meeting room.",
+        "properties": {
+          "createdAt": {
+            "description": "The timestamp when the room was created at the server. The timestamp is in RFC3339 format: `yyyy-MM-ddTHH:mm:ssZ`.",
+            "example": "2021-09-06T05:55:41Z",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique identifier of a room. This id is server generated.",
+            "example": "99199690362660524",
+            "type": "string"
+          },
+          "pstnDialOutEnabled": {
+            "description": "Set this flag to true if, at the time of the call, dial out to a PSTN number is enabled in a particular room. By default, this flag is set to false.",
+            "example": true,
+            "type": "boolean"
+          },
+          "validFrom": {
+            "description": "The timestamp from when the room is open for joining. The timestamp is in RFC3339 format: `yyyy-MM-ddTHH:mm:ssZ`.",
+            "example": "2021-09-07T07:55:41Z",
+            "format": "date-time",
+            "type": "string"
+          },
+          "validUntil": {
+            "description": "The timestamp from when the room can no longer be joined. The timestamp is in RFC3339 format: `yyyy-MM-ddTHH:mm:ssZ`.",
+            "example": "2021-09-08T15:55:41Z",
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "createdAt",
+          "id",
+          "validFrom",
+          "validUntil",
+          "pstnDialOutEnabled"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-03-13",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/rooms/{roomId}",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.DataPlane.Rooms_List",
+      "name": "Rooms_List",
+      "service": "Microsoft.Communication.DataPlane",
+      "method": "GET",
+      "path": "/rooms",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-03-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "The endpoint of the Azure Communication resource.",
+            "format": "url",
+            "in": "path",
+            "name": "endpoint",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "client",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A collection of rooms.",
+        "properties": {
+          "nextLink": {
+            "description": "If there are more rooms that can be retrieved, the next link will be populated.",
+            "type": "string"
+          },
+          "value": {
+            "description": "A collection of rooms.",
+            "items": {
+              "$ref": "#/definitions/RoomModel"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication.DataPlane",
+        "version": "2025-03-13",
+        "style": "azure-communication-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/rooms",
+        "endpoint": "{endpoint}",
+        "endpoint_parameters": [
+          "endpoint"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/data-plane/Rooms/stable/2025-03-13/communicationservicesrooms.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.Domains_Delete",
+      "name": "Domains_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.Domains_Get",
+      "name": "Domains_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A class representing a Domains resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/DomainProperties",
+            "description": "The properties of a Domains resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.Domains_ListByEmailServiceResource",
+      "name": "Domains_ListByEmailServiceResource",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object that includes an array of Domains resource and a possible link for next set.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DomainResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DomainResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.EmailServices_Delete",
+      "name": "EmailServices_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.EmailServices_Get",
+      "name": "EmailServices_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A class representing an EmailService resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/EmailServiceProperties",
+            "description": "The properties of the service.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.EmailServices_ListByResourceGroup",
+      "name": "EmailServices_ListByResourceGroup",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object that includes an array of EmailServices and a possible link for next set.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The EmailServiceResource items on this page",
+            "items": {
+              "$ref": "#/definitions/EmailServiceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.EmailServices_ListBySubscription",
+      "name": "EmailServices_ListBySubscription",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/emailServices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Object that includes an array of EmailServices and a possible link for next set.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The EmailServiceResource items on this page",
+            "items": {
+              "$ref": "#/definitions/EmailServiceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Communication/emailServices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SenderUsernames_Delete",
+      "name": "SenderUsernames_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "senderUsername": {
+            "description": "The valid sender Username.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "senderUsername",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SenderUsernames_Get",
+      "name": "SenderUsernames_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "senderUsername": {
+            "description": "The valid sender Username.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "senderUsername",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A class representing a SenderUsername resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SenderUsernameProperties",
+            "description": "The properties of a SenderUsername resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames/{senderUsername}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SenderUsernames_ListByDomains",
+      "name": "SenderUsernames_ListByDomains",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A class representing a Domains SenderUsernames collection.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SenderUsernameResource items on this page",
+            "items": {
+              "$ref": "#/definitions/SenderUsernameResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/senderUsernames",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SmtpUsernames_Delete",
+      "name": "SmtpUsernames_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "communicationServiceName": {
+            "description": "The name of the CommunicationService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "communicationServiceName",
+            "pattern": "^[-\\w]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "smtpUsername": {
+            "description": "The name of the SmtpUsernameResource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "smtpUsername",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SmtpUsernames_Get",
+      "name": "SmtpUsernames_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "communicationServiceName": {
+            "description": "The name of the CommunicationService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "communicationServiceName",
+            "pattern": "^[-\\w]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "smtpUsername": {
+            "description": "The name of the SmtpUsernameResource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "smtpUsername",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The object describing the smtp username resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SmtpUsernameProperties",
+            "description": "The properties of a SmtpUsername resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames/{smtpUsername}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SmtpUsernames_List",
+      "name": "SmtpUsernames_List",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "communicationServiceName": {
+            "description": "The name of the CommunicationService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "communicationServiceName",
+            "pattern": "^[-\\w]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of SmtpUsername resources. Response will include a nextLink if response contains more pages.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SmtpUsernameResource items on this page",
+            "items": {
+              "$ref": "#/definitions/SmtpUsernameResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/communicationServices/{communicationServiceName}/smtpUsernames",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionListAddresses_Delete",
+      "name": "SuppressionListAddresses_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "addressId": {
+            "description": "The id of the address in a suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "addressId",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "suppressionListName": {
+            "description": "The name of the suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "suppressionListName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionListAddresses_Get",
+      "name": "SuppressionListAddresses_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "addressId": {
+            "description": "The id of the address in a suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "addressId",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "suppressionListName": {
+            "description": "The name of the suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "suppressionListName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A object that represents a SuppressionList record.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SuppressionListAddressProperties",
+            "description": "The properties of a SuppressionListAddress resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses/{addressId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionListAddresses_List",
+      "name": "SuppressionListAddresses_List",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "suppressionListName": {
+            "description": "The name of the suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "suppressionListName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Collection of addresses in a suppression list. Response will include a nextLink if response contains more pages.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SuppressionListAddressResource items on this page",
+            "items": {
+              "$ref": "#/definitions/SuppressionListAddressResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}/suppressionListAddresses",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionLists_Delete",
+      "name": "SuppressionLists_Delete",
+      "service": "Microsoft.Communication",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "suppressionListName": {
+            "description": "The name of the suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "suppressionListName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionLists_Get",
+      "name": "SuppressionLists_Get",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "suppressionListName": {
+            "description": "The name of the suppression list.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "suppressionListName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A class representing a SuppressionList resource.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SuppressionListProperties",
+            "description": "The properties of a SuppressionList resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists/{suppressionListName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.Communication.SuppressionLists_ListByDomain",
+      "name": "SuppressionLists_ListByDomain",
+      "service": "Microsoft.Communication",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-03-18"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "domainName": {
+            "description": "The name of the Domains resource.",
+            "in": "path",
+            "maxLength": 253,
+            "minLength": 1,
+            "name": "domainName",
+            "required": true,
+            "type": "string"
+          },
+          "emailServiceName": {
+            "description": "The name of the EmailService resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "emailServiceName",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A class representing a Domains SuppressionListResource collection.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The SuppressionListResource items on this page",
+            "items": {
+              "$ref": "#/definitions/SuppressionListResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Communication",
+        "version": "2026-03-18",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Communication/emailServices/{emailServiceName}/domains/{domainName}/suppressionLists",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/communication/resource-manager/Microsoft.Communication/stable/2026-03-18/openapi.json"
     },
     {
       "id": "Azure.Microsoft.Compute.AvailabilitySets_Delete",
@@ -115931,6 +118688,218 @@
         ],
         "list_operations": [
           "Azure.Microsoft.CognitiveServices.CommitmentPlans_ListAssociations"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices",
+      "class": "media.rtc_application",
+      "display_name": "Communication service",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "communicationServices",
+        "read_operations": [
+          "Azure.Microsoft.Communication.CommunicationServices_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.CommunicationServices_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.CommunicationServices_ListBySubscription",
+          "Azure.Microsoft.Communication.CommunicationServices_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/phoneNumberReservations",
+      "class": "communication.phone_reservation",
+      "display_name": "Phone number reservation",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "phoneNumberReservations",
+        "read_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetReservation"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_DeleteReservation"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListReservations"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/phoneNumbers",
+      "class": "communication.phone_number",
+      "display_name": "Phone number",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "phoneNumbers",
+        "read_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_GetByNumber"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ReleasePhoneNumber"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.DataPlane.PhoneNumbers_ListPhoneNumbers"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/rooms",
+      "class": "media.rtc_room",
+      "display_name": "Communication room",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "rooms",
+        "read_operations": [
+          "Azure.Microsoft.Communication.DataPlane.Rooms_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.DataPlane.Rooms_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.DataPlane.Rooms_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/communicationServices/smtpUsernames",
+      "class": "messaging.smtp_username",
+      "display_name": "SMTP username",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "smtpUsernames",
+        "read_operations": [
+          "Azure.Microsoft.Communication.SmtpUsernames_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.SmtpUsernames_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.SmtpUsernames_List"
+        ],
+        "response_types": [
+          "Microsoft.Communication/communicationServices/smtpUsername",
+          "CommunicationServices/SmtpUsernames"
+        ],
+        "response_id_types": [
+          "Microsoft.Communication/communicationServices/smtpUsername"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices",
+      "class": "messaging.email_service",
+      "display_name": "Email service",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "emailServices",
+        "read_operations": [
+          "Azure.Microsoft.Communication.EmailServices_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.EmailServices_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.EmailServices_ListBySubscription",
+          "Azure.Microsoft.Communication.EmailServices_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains",
+      "class": "messaging.email_domain",
+      "display_name": "Email domain",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "domains",
+        "read_operations": [
+          "Azure.Microsoft.Communication.Domains_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.Domains_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.Domains_ListByEmailServiceResource"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/senderUsernames",
+      "class": "messaging.email_sender",
+      "display_name": "Email sender",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "senderUsernames",
+        "read_operations": [
+          "Azure.Microsoft.Communication.SenderUsernames_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.SenderUsernames_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.SenderUsernames_ListByDomains"
+        ],
+        "response_types": [
+          "EmailServices/Domains/SenderUsernames"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/suppressionLists",
+      "class": "messaging.email_suppression_list",
+      "display_name": "Email suppression list",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "suppressionLists",
+        "read_operations": [
+          "Azure.Microsoft.Communication.SuppressionLists_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.SuppressionLists_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.SuppressionLists_ListByDomain"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.Communication/emailServices/domains/suppressionLists/suppressionListAddresses",
+      "class": "messaging.email_suppression_address",
+      "display_name": "Suppressed email address",
+      "scope_kinds": [
+        "global"
+      ],
+      "rest": {
+        "collection": "suppressionListAddresses",
+        "read_operations": [
+          "Azure.Microsoft.Communication.SuppressionListAddresses_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.Communication.SuppressionListAddresses_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.Communication.SuppressionListAddresses_List"
         ]
       }
     },

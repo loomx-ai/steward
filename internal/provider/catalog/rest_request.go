@@ -20,7 +20,7 @@ type RESTRequest struct {
 
 func BindREST(operation Operation, parameters map[string]any) (RESTRequest, error) {
 	call := operation.Call
-	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest") {
+	if call == nil || (call.Style != "google-rest" && call.Style != "azure-rest" && call.Style != "azure-batch-rest" && call.Style != "azure-communication-rest") {
 		return RESTRequest{}, fmt.Errorf("operation %q is not a REST operation", operation.ID)
 	}
 	domain := "googleapis.com"
@@ -35,6 +35,13 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 			return RESTRequest{}, fmt.Errorf("invalid Azure Batch endpoint")
 		}
 	}
+	if call.Style == "azure-communication-rest" {
+		endpoint, _ := parameters["endpoint"].(string)
+		origin, err = trustedRESTOrigin(endpoint, "communication.azure.com")
+		if call.Endpoint != "{endpoint}" || !slices.Equal(call.EndpointParameters, []string{"endpoint"}) || !azureCommunicationOrigin.MatchString(origin) {
+			return RESTRequest{}, fmt.Errorf("invalid Azure Communication endpoint")
+		}
+	}
 	if err != nil || !strings.HasPrefix(call.Path, "/") || strings.ContainsAny(call.Path, "?#") {
 		return RESTRequest{}, fmt.Errorf("invalid REST operation endpoint or path")
 	}
@@ -46,7 +53,7 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 		}
 		values[key] = value
 	}
-	if call.Style == "azure-rest" || call.Style == "azure-batch-rest" {
+	if call.Style == "azure-rest" || call.Style == "azure-batch-rest" || call.Style == "azure-communication-rest" {
 		if version, ok := values["api-version"]; ok && version != call.Version {
 			return RESTRequest{}, fmt.Errorf("Azure API version differs from catalog")
 		}
@@ -215,3 +222,7 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 // The runtime additionally binds this public-cloud endpoint to the Batch
 // account returned by ARM for the explicitly selected subscription.
 var azureBatchOrigin = regexp.MustCompile(`^https://[a-z0-9]{3,24}\.[a-z0-9-]+\.batch\.azure\.com$`)
+
+// Runtime authorization additionally verifies the endpoint returned by the
+// selected subscription's native Communication Services resource GET.
+var azureCommunicationOrigin = regexp.MustCompile(`^https://[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.communication\.azure\.com$`)

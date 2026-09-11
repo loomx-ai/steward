@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/communicationServices/rooms
+  class: media.rtc_room
+presentation:
+  displayNames:
+    en-US: Communication room
+    zh-CN: 通信会议室
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.DataPlane.Rooms_List
+    parameters:
+      endpoint: parent.normalized._communication_endpoint
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.DataPlane.Rooms_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: communication-services
+    nativeType: Microsoft.Communication/communicationServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  createdAt:
+    path: createdAt
+    type: string
+  validFrom:
+    path: validFrom
+    type: string
+  validUntil:
+    path: validUntil
+    type: string
+  pstnDialOutEnabled:
+    path: pstnDialOutEnabled
+    type: boolean
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.DataPlane.Rooms_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.DataPlane.Rooms_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/communicationServices
+  targetIdPath: _communication_parent

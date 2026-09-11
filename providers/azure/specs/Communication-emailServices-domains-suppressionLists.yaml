@@ -1,0 +1,63 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/emailServices/domains/suppressionLists
+  class: messaging.email_suppression_list
+presentation:
+  displayNames:
+    en-US: Email suppression list
+    zh-CN: 邮件禁止发送列表
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.SuppressionLists_ListByDomain
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      emailServiceName: parent.normalized.arm_parameters.emailServiceName
+      domainName: parent.normalized.arm_parameters.domainName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.SuppressionLists_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: communication-services
+    nativeType: Microsoft.Communication/emailServices/domains
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.SuppressionLists_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.SuppressionLists_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/emailServices/domains
+  targetIdPath: _communication_parent

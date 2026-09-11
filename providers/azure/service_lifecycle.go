@@ -137,14 +137,17 @@ func serviceChildKinds(nativeType string) []string {
 	return nil
 }
 
-type serviceCascades struct{ client *client }
+type serviceCascades struct {
+	client       *client
+	connectionID asset.ConnectionID
+}
 
 func (r *Runtime) ServiceLifecycle(ctx context.Context, id asset.ConnectionID) (governance.Contributor, error) {
 	c, err := r.resolve(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return &serviceCascades{client: c}, nil
+	return &serviceCascades{client: c, connectionID: id}, nil
 }
 
 type serviceChild struct {
@@ -251,6 +254,9 @@ func (c *client) nativeServiceChildren(ctx context.Context, parent asset.Identit
 			}
 			if isBatchType(childType) && !nativeConfigurationContains(batchSnapshot(childType, record), batchSnapshot(childType, live.data)) {
 				return nil, serviceDenied("batch_listed_configuration_changed")
+			}
+			if communicationKind(childType) != "" && (communicationARMMetadata(childType, live.data) != nil || !nativeConfigurationContains(communicationSnapshot(childType, record), communicationSnapshot(childType, live.data))) {
+				return nil, serviceDenied("communication_child_index_changed")
 			}
 			if isCosmosType(childType) {
 				if err := cosmosListedIncarnation(childType, record, live.data); err != nil {
@@ -454,6 +460,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeBatch(ctx, assets, &result); err != nil {
 		return result, err
 	}
+	if err := s.contributeCommunication(ctx, assets, &result); err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	batchOwners := batchManagedNodes(assets, result)
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
@@ -536,7 +545,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
-		if isBatchType(parent.Identity.NativeType) {
+		if isBatchType(parent.Identity.NativeType) || communicationKind(parent.Identity.NativeType) != "" {
 			continue // Native data-plane identities have their own ownership walk.
 		}
 		if isWAFType(parent.Identity.NativeType) {

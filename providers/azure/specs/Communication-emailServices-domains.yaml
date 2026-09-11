@@ -1,0 +1,71 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.Communication/emailServices/domains
+  class: messaging.email_domain
+presentation:
+  displayNames:
+    en-US: Email domain
+    zh-CN: 电子邮件域名
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: global
+discovery:
+  source: communication-services
+  list:
+    operation: Azure.Microsoft.Communication.Domains_ListByEmailServiceResource
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      emailServiceName: parent.normalized.arm_parameters.emailServiceName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.Communication.Domains_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: communication-services
+    nativeType: Microsoft.Communication/emailServices
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscription_id:
+    path: subscription_id
+    type: string
+  resource_group:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  dataLocation:
+    path: dataLocation
+    type: string
+  domainManagement:
+    path: domainManagement
+    type: string
+  userEngagementTracking:
+    path: userEngagementTracking
+    type: string
+extensions:
+  hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.Communication.Domains_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.Communication.Domains_Get
+      itemsPath: $
+      identityPath: id
+relationships:
+- type: uses
+  targetType: Microsoft.Communication/emailServices
+  targetIdPath: _communication_parent

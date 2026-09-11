@@ -48,6 +48,9 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if operation.Call.Style == "azure-batch-rest" {
 		return c.invokeBatch(ctx, operation, invocation)
 	}
+	if operation.Call.Style == "azure-communication-rest" {
+		return c.invokeCommunication(ctx, operation, invocation)
+	}
 	parameters := map[string]any{}
 	for name, value := range invocation.Parameters {
 		parameters[name] = value
@@ -78,6 +81,15 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	result, err := c.requestBody(ctx, request.Method, request.URL, request.Body, request.Headers)
 	if err != nil {
 		return contracts.InvocationResult{}, err
+	}
+	if strings.HasPrefix(operation.ID, "Azure.Microsoft.Communication.") && request.Method == "DELETE" {
+		u, _ := url.Parse(request.URL)
+		_, typ, _ := parseID(u.Path)
+		operationID, _, err := communicationDeleteReceipt(c.subscription, u.Path, communicationKind(typ), "", result)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		return contracts.InvocationResult{Data: safeAPIPayload(result.data, request.URL), RequestID: result.requestID, OperationID: operationID}, nil
 	}
 	operationID := operationLocation(result.header)
 	if operationID != "" {
@@ -154,6 +166,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 	}
 	if isBatchDataType(kind.NativeType) {
 		return batchDataOperation(kind, nativeID, method)
+	}
+	if isCommunicationDataType(kind.NativeType) {
+		return communicationDataOperation(kind, nativeID, method)
 	}
 	id, nativeType, err := parseID(nativeID)
 	if err != nil || !strings.HasPrefix(id, c.root()+"/") || !strings.EqualFold(nativeType, kind.NativeType) {
