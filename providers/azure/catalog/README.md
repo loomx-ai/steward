@@ -36,7 +36,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 383 current resource rules discover through native product APIs. Stream
+All 384 current resource rules discover through native product APIs. Stream
 Analytics transformations use an explicitly expanded job GET because Azure has
 no transformation list operation; other rules use native product Lists.
 The broad subscription resource index supplies unknown kinds and cannot overwrite
@@ -63,8 +63,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 1,224 operations from
-163 root documents and 50 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 1,243 operations from
+169 root documents and 54 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -391,3 +391,11 @@ validated and persisted, and only a separate resource 404 can finish deletion.
 Public execution diagnostics omit signing parameters while the journal keeps
 the original receipts for resumed polling. Query-engine local tools and Floci-AZ
 do not establish independent ARM-emulator or live-cloud verification.
+
+
+Azure RBAC retains 11 selected native operations and six source documents for
+role definitions, assignments and PIM schedule reads. The [RBAC evidence](../fixtures/rbac/README.md)
+distinguishes unchanged Swagger examples, exact-version assignment recordings
+and role-definition preview response compatibility. Native scope/read/paging
+primitives are verified; registered inventory and lifecycle integration remain
+unfinished at this checkpoint.

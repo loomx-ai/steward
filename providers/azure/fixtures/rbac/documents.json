@@ -1,0 +1,32 @@
+[
+  {
+    "dependency": false,
+    "source_sha256": "89650dd509e5c47a8fd7d597f402c78bb79906c195f560a9fbd7827110035fff",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "4b5a0b9a95fe7a9796e4128f31f5724f1fc81ec4a7b0ac91c3b12a8f23e40ea0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "0a4e9a83b672454c9005edd88fc7adde48a545a553cb6c74e921a72af67b5f43",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "30d7eaad3b1c09e686affeefbd119bf2080a5ddb7bcba78e2955c20f343ffd59",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "ccb3b6327aad7d108bdaffca3eefcd15737032ec655ca3f933300e828047d723",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/common-types/resource-management/v2/types.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "5bdcf9b5ed1ea563367452e265e7ad60b411b1fbbbc20b8ba3ab7854d1ca624f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/common-types/resource-management/v6/types.json"
+  }
+]

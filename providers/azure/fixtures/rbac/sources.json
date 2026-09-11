@@ -1,0 +1,101 @@
+[
+  {
+    "file": "DeleteRoleDefinition.json",
+    "method": "DELETE",
+    "operation": "RoleDefinitions_Delete",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json",
+    "source_sha256": "1f637e6eb26a957cf4edfc833429ab7d4686cfae9bf21df9961fe70fe2d080b4",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/DeleteRoleDefinition.json"
+  },
+  {
+    "file": "GetRoleAssignmentScheduleByName.json",
+    "method": "GET",
+    "operation": "RoleAssignmentSchedules_Get",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules/{roleAssignmentScheduleName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json",
+    "source_sha256": "351d47582de70d62b6f805b6a650f323d28fd42debcda7edf2bc571c0f27207f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/examples/GetRoleAssignmentScheduleByName.json"
+  },
+  {
+    "file": "GetRoleAssignmentSchedulesByScope.json",
+    "method": "GET",
+    "operation": "RoleAssignmentSchedules_ListForScope",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json",
+    "source_sha256": "5912e6e13b2e45f94b4d5f78990868dc3d951dd3e143d5447de3cf51510395ac",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/examples/GetRoleAssignmentSchedulesByScope.json"
+  },
+  {
+    "file": "GetRoleDefinitionAtScope.json",
+    "method": "GET",
+    "operation": "RoleDefinitions_List",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json",
+    "source_sha256": "acd4d479d93f2f602e8fc37deb9a33e3126433d3d999cee108f1db94bc75bdba",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/GetRoleDefinitionAtScope.json"
+  },
+  {
+    "file": "GetRoleDefinitionByName.json",
+    "method": "GET",
+    "operation": "RoleDefinitions_Get",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json",
+    "source_sha256": "2fc7da8b2e8c35bfed8d924a7a4170dc0b1c2d3a5e963b725efc0936ff1096b2",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/GetRoleDefinitionByName.json"
+  },
+  {
+    "file": "GetRoleEligibilityScheduleByName.json",
+    "method": "GET",
+    "operation": "RoleEligibilitySchedules_Get",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules/{roleEligibilityScheduleName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json",
+    "source_sha256": "9065688d01b6aff83557e8adb8ed3dc796da993f4c918a3e399912a446e01022",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/examples/GetRoleEligibilityScheduleByName.json"
+  },
+  {
+    "file": "GetRoleEligibilitySchedulesByScope.json",
+    "method": "GET",
+    "operation": "RoleEligibilitySchedules_ListForScope",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json",
+    "source_sha256": "684ba19ae300c165b262735b8c323a21029a8f1927df44db466fa05cec4b711c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/examples/GetRoleEligibilitySchedulesByScope.json"
+  },
+  {
+    "file": "RoleAssignments_Delete.json",
+    "method": "DELETE",
+    "operation": "RoleAssignments_Delete",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json",
+    "source_sha256": "91cbe131901f874964050fb9d6d9085a400a5c65def1370eaafc4ddab1242cc0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/RoleAssignments_Delete.json"
+  },
+  {
+    "file": "RoleAssignments_Get.json",
+    "method": "GET",
+    "operation": "RoleAssignments_Get",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json",
+    "source_sha256": "60e5a1bc2fd4d85beea7927602ee93e0c2931026cd92c167a1650f7087fbf934",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/RoleAssignments_Get.json"
+  },
+  {
+    "file": "RoleAssignments_ListForScope.json",
+    "method": "GET",
+    "operation": "RoleAssignments_ListForScope",
+    "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json",
+    "source_sha256": "5ca8ed166c5c7deaba0f04f690dc38218102118d2a6aff4c3a35e089470d9b3c",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/RoleAssignments_ListForScope.json"
+  },
+  {
+    "file": "RoleAssignments_ListForSubscription.json",
+    "method": "GET",
+    "operation": "RoleAssignments_ListForSubscription",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json",
+    "source_sha256": "15c17272e0aa762ca90a736f1180c5c9ddd80f56f9d8c1778525a3192b053a47",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/examples/RoleAssignments_ListForSubscription.json"
+  }
+]

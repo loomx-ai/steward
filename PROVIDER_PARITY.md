@@ -2516,3 +2516,35 @@ background evidence only, not acceptance evidence for this work.
   native-absence follow-up above; remaining discovery/lifecycle/type gaps and
   all eight overall acceptance criteria remain open. These are native-protocol
   and application tests, not new independent-emulator or real-cloud evidence.
+
+### RBAC native contracts and scope boundaries
+
+- Added 11 native Authorization operations: role-definition and assignment
+  GET/LIST/DELETE, plus both PIM schedule GET/LIST pairs. Four immutable Swagger
+  roots and two common-type dependencies retain source fingerprints. The catalog
+  now has 1,243 operations and 223 documents (169 roots, 54 references). Existing
+  resource registrations are unchanged at 384 types/specifications.
+- Eleven unchanged examples cover all selected operations; their 13 responses
+  include 11 schema-validated bodies. Native placeholder identifiers and role
+  types remain unchanged in evidence. Fourteen Microsoft CLI recorded responses
+  additionally exercise 645 returned roles and 167 assignments, including 109
+  inherited assignments. Role definitions use a preview version in recordings;
+  those checks establish response compatibility only. Assignment recordings use
+  the exact selected version and retain a native DELETE 200 body.
+- Native scope/read/index primitives use subscription-local request endpoints,
+  recognize inherited tenant/management-group rows without out-of-bound reads,
+  and bind role GUID aliases. Private configuration and unknown fields remain
+  part of comparison. A recorded built-in role exposed legitimate duplicate
+  permission actions; preserving the native values fixed the initial overly
+  strict validator. Assignable-scope duplicates remain invalid.
+- Protocol tests cover all four read families, native paging/filter/version
+  binding, 403/404/partial responses, malformed identities and properties, native
+  LIST/GET disagreement, repeated rows/pages and foreign scopes. RBAC/catalog
+  binding checks passed (Azure 1.316s), RBAC race tests passed (5.063s), Azure vet
+  passed and all five offline source-import tests passed. The previous full
+  repository verification belongs to the completed native-absence step above.
+- This is a foundation for the mapped RAM policy/role gap, not completed support:
+  registered inventory, reviewed role-assignment dependencies, native action
+  execution and application recovery are next. No new independent-emulator or
+  real-cloud run is claimed. All 28 mapped Azure type gaps and the eight overall
+  acceptance criteria remain open.

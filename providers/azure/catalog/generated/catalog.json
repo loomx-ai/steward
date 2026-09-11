@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "78b398621de41b67f8e00f0742e06b55267b264c280e76b6172a6db7890829c2",
+    "checksum": "02b68c316d46ea343f2e62bbb618a00fa457df14af5a61f923d5c2e92cda8d13",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d719ec853ab0cfeefdf07f06578415b27c78987ec03ef700217455b1129ede0e",
+  "content_checksum": "a169ced06eeccc51775e6777a6812a302ef8a2a338140800ffaf52ad8b25901a",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -33773,6 +33773,841 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/app/resource-manager/Microsoft.App/ContainerApps/stable/2024-03-01/ManagedEnvironments.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignmentSchedules_Get",
+      "name": "RoleAssignmentSchedules_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules/{roleAssignmentScheduleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleAssignmentScheduleName": {
+            "description": "The name (guid) of the role assignment schedule to get.",
+            "in": "path",
+            "name": "roleAssignmentScheduleName",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role assignment schedule.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role Assignment schedule",
+        "properties": {
+          "id": {
+            "description": "The role assignment schedule Id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The role assignment schedule name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RoleAssignmentScheduleProperties",
+            "description": "Role assignment schedule properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The role assignment schedule type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2020-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules/{roleAssignmentScheduleName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignmentSchedules_ListForScope",
+      "name": "RoleAssignmentSchedules_ListForScope",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use $filter=atScope() to return all role assignment schedules at or above the scope. Use $filter=principalId eq {id} to return all role assignment schedules at, above or below the scope for the specified principal. Use $filter=assignedTo('{userId}') to return all role assignment schedules for the current user. Use $filter=asTarget() to return all role assignment schedules created for the current user.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role assignments schedules.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role assignment schedule list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Role assignment schedule list.",
+            "items": {
+              "$ref": "#/definitions/RoleAssignmentSchedule"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2020-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleAssignmentSchedules",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignments_Delete",
+      "name": "RoleAssignments_Delete",
+      "service": "Microsoft.Authorization",
+      "method": "DELETE",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleAssignmentName": {
+            "description": "The name of the role assignment. It can be any valid GUID.",
+            "in": "path",
+            "name": "roleAssignmentName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "tenantId": {
+            "description": "Tenant ID for cross-tenant request",
+            "in": "query",
+            "name": "tenantId",
+            "required": false,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Role Assignments",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/RoleAssignmentProperties",
+            "description": "Role assignment properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope",
+          "roleAssignmentName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignments_Get",
+      "name": "RoleAssignments_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleAssignmentName": {
+            "description": "The name of the role assignment. It can be any valid GUID.",
+            "in": "path",
+            "name": "roleAssignmentName",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "tenantId": {
+            "description": "Tenant ID for cross-tenant request",
+            "in": "query",
+            "name": "tenantId",
+            "required": false,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Role Assignments",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/RoleAssignmentProperties",
+            "description": "Role assignment properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments/{roleAssignmentName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope",
+          "roleAssignmentName"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignments_ListForScope",
+      "name": "RoleAssignments_ListForScope",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use $filter=atScope() to return all role assignments at or above the scope. Use $filter=principalId eq {id} to return all role assignments at, above or below the scope for the specified principal.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "$skipToken": {
+            "description": "The skipToken to apply on the operation. Use $skipToken={skiptoken} to return paged role assignments following the skipToken passed. Only supported on provider level calls.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The fully qualified Azure Resource manager identifier of the resource.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          },
+          "tenantId": {
+            "description": "Tenant ID for cross-tenant request",
+            "in": "query",
+            "name": "tenantId",
+            "required": false,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role assignment list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The RoleAssignment items on this page",
+            "items": {
+              "$ref": "#/definitions/RoleAssignment"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleAssignments",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleAssignments_ListForSubscription",
+      "name": "RoleAssignments_ListForSubscription",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use $filter=atScope() to return all role assignments at or above the scope. Use $filter=principalId eq {id} to return all role assignments at, above or below the scope for the specified principal.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "tenantId": {
+            "description": "Tenant ID for cross-tenant request",
+            "in": "query",
+            "name": "tenantId",
+            "required": false,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role assignment list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The RoleAssignment items on this page",
+            "items": {
+              "$ref": "#/definitions/RoleAssignment"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleDefinitions_Delete",
+      "name": "RoleDefinitions_Delete",
+      "service": "Microsoft.Authorization",
+      "method": "DELETE",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleDefinitionId": {
+            "description": "The ID of the role definition to delete.",
+            "in": "path",
+            "name": "roleDefinitionId",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role definition.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role definition.",
+        "properties": {
+          "id": {
+            "description": "The role definition ID.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The role definition name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RoleDefinitionProperties",
+            "description": "Role definition properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The role definition type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleDefinitions_Get",
+      "name": "RoleDefinitions_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleDefinitionId": {
+            "description": "The ID of the role definition.",
+            "in": "path",
+            "name": "roleDefinitionId",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role definition.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role definition.",
+        "properties": {
+          "id": {
+            "description": "The role definition ID.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The role definition name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RoleDefinitionProperties",
+            "description": "Role definition properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The role definition type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions/{roleDefinitionId}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleDefinitions_List",
+      "name": "RoleDefinitions_List",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use atScopeAndBelow filter to search below the given scope as well.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2022-04-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role definition.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role definition list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Role definition list.",
+            "items": {
+              "$ref": "#/definitions/RoleDefinition"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2022-04-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleDefinitions",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleEligibilitySchedules_Get",
+      "name": "RoleEligibilitySchedules_Get",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules/{roleEligibilityScheduleName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2020-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "roleEligibilityScheduleName": {
+            "description": "The name (guid) of the role eligibility schedule to get.",
+            "in": "path",
+            "name": "roleEligibilityScheduleName",
+            "required": true,
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role eligibility schedule.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Role eligibility schedule",
+        "properties": {
+          "id": {
+            "description": "The role eligibility schedule Id.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "name": {
+            "description": "The role eligibility schedule name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RoleEligibilityScheduleProperties",
+            "description": "role eligibility schedule properties.",
+            "x-ms-client-flatten": true
+          },
+          "type": {
+            "description": "The role eligibility schedule type.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2020-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules/{roleEligibilityScheduleName}",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json"
+    },
+    {
+      "id": "Azure.Microsoft.Authorization.RoleEligibilitySchedules_ListForScope",
+      "name": "RoleEligibilitySchedules_ListForScope",
+      "service": "Microsoft.Authorization",
+      "method": "GET",
+      "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "The filter to apply on the operation. Use $filter=atScope() to return all role eligibility schedules at or above the scope. Use $filter=principalId eq {id} to return all role eligibility schedules at, above or below the scope for the specified principal. Use $filter=assignedTo('{userId}') to return all role eligibility schedules for the user. Use $filter=asTarget() to return all role eligibility schedules created for the current user.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2020-10-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the role eligibility schedules.",
+            "in": "path",
+            "name": "scope",
+            "required": true,
+            "type": "string",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "role eligibility schedule list operation result.",
+        "properties": {
+          "nextLink": {
+            "description": "The URL to use for getting the next set of results.",
+            "type": "string"
+          },
+          "value": {
+            "description": "role eligibility schedule list.",
+            "items": {
+              "$ref": "#/definitions/RoleEligibilitySchedule"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Authorization",
+        "version": "2020-10-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{scope}/providers/Microsoft.Authorization/roleEligibilitySchedules",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "scope"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json"
     },
     {
       "id": "Azure.Microsoft.Batch.ApplicationPackage_Delete",

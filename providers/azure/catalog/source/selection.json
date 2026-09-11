@@ -2056,6 +2056,37 @@
         "SubscriptionDiagnosticSettings_Get",
         "SubscriptionDiagnosticSettings_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleAssignmentSchedule.json",
+      "operations": [
+        "RoleAssignmentSchedules_Get",
+        "RoleAssignmentSchedules_ListForScope"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2020-10-01/RoleEligibilitySchedule.json",
+      "operations": [
+        "RoleEligibilitySchedules_Get",
+        "RoleEligibilitySchedules_ListForScope"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleAssignmentsCalls.json",
+      "operations": [
+        "RoleAssignments_Get",
+        "RoleAssignments_ListForSubscription",
+        "RoleAssignments_ListForScope",
+        "RoleAssignments_Delete"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da82d5c3687ac3cc845330aaf0f13d3a40ce47e/specification/authorization/resource-manager/Microsoft.Authorization/Authorization/stable/2022-04-01/authorization-RoleDefinitionsCalls.json",
+      "operations": [
+        "RoleDefinitions_Get",
+        "RoleDefinitions_List",
+        "RoleDefinitions_Delete"
+      ]
     }
   ],
   "resource_types": [
