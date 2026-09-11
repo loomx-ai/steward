@@ -130,3 +130,21 @@ creates five native steps and one delegated Gate impact, resumes the run's Stop
 and DELETE phases after worker/client recreation, and only closes the Gate after
 its own GET confirms absence. A final scan retains only the Fleet root.
 These are protocol fixture and persistence tests, not live Azure execution.
+
+`TestFleetHubRegisteredInventoryAnchors` and its boundary/recovery tests join
+native resource-group `managedBy`, the Fleet hub endpoint, the AKS public or
+private endpoint, and its explicitly named node group with reciprocal ownership.
+The tests use deliberately arbitrary group names. They cover missing or
+ambiguous ownership, malformed/changed native details, asynchronous or forbidden
+reads, filtered continuations, known LIST omissions, own-resource 404s, private
+configuration changes, and changes during the independent observations. The
+three anchors and controller are re-read after the join. Saved IDs and full
+configuration digests are authenticated and survive JSON serialization; their
+raw configuration and endpoints never enter the Fleet inventory or Hub-read
+response logs. Full native responses remain available to the ownership checks.
+
+The AKS and resource-group responses in these tests are composed protocol
+fixtures. The retained Fleet CLI recordings contain no Hub AKS or managed-group
+GETs, so these tests do not establish live-cloud compatibility of that ownership
+join. Unverified joins remain protected, and root cleanup remains disabled until
+managed descendant discovery, lifecycle delegation and residual checks are ready.

@@ -105,7 +105,18 @@ func (r *Runtime) fleetObservedInventoryItem(ctx context.Context, c *client, raw
 		}
 		parent = result.data
 	}
-	return r.fleetInventoryItem(c, kind, current.data, parent, group, locks)
+	item, err := r.fleetInventoryItem(c, kind, current.data, parent, group, locks)
+	if err != nil || kind != fleetType {
+		return item, err
+	}
+	groups, err := c.insightsGroups(ctx)
+	if err != nil {
+		return item, err
+	}
+	if err := r.fleetHubInventory(ctx, c, &item, current.data, groups, nil); err != nil {
+		return item, err
+	}
+	return item, nil
 }
 
 // Uses describe current dependencies. A run keeps its own copied strategy and
@@ -305,7 +316,12 @@ func (r *Runtime) fleetInventorySnapshot(ctx context.Context, c *client, request
 		if err != nil {
 			return nil, nil, nil, "", err
 		}
-		object(bindings["items"])[id] = map[string]any{"configuration": item.Normalized[fleetConfigurationProof], "context": item.Normalized[fleetContextProof], "references": item.Normalized[fleetReferencesProof], "protection": item.Normalized["cleanup_protection_reason"]}
+		if kind == fleetType {
+			if err := r.fleetHubInventory(ctx, c, &item, rows[id], groups, request.KnownNativeMetadata[id]); err != nil {
+				return nil, nil, nil, "", err
+			}
+		}
+		object(bindings["items"])[id] = map[string]any{"configuration": item.Normalized[fleetConfigurationProof], "context": item.Normalized[fleetContextProof], "references": item.Normalized[fleetReferencesProof], "hub": item.Normalized[fleetHubProof], "protection": item.Normalized["cleanup_protection_reason"]}
 		if productScopeMatches(request, item) {
 			items = append(items, item)
 		}
@@ -326,9 +342,17 @@ func (r *Runtime) listFleet(ctx context.Context, c *client, request contracts.In
 		}
 		seen[id] = true
 	}
-	for id := range request.KnownNativeMetadata {
+	for id, normalized := range request.KnownNativeMetadata {
 		if !seen[id] {
 			return batch, serviceDenied("unrelated_fleet_known_metadata")
+		}
+		if normalized[fleetHubState] != nil || normalized[fleetHubProof] != nil {
+			if request.ResourceKind.NativeType != fleetType {
+				return batch, serviceDenied("fleet_child_has_hub_metadata")
+			}
+			if _, err := c.fleetRecordedHub(id, normalized); err != nil {
+				return batch, err
+			}
 		}
 	}
 	switch request.Scope.Kind {

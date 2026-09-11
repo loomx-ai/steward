@@ -328,7 +328,13 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 	if err := monitorPrivateLinkResponse(method, u, &out); err != nil {
 		return out, err
 	}
-	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}, endpoint))
+	responseLog := map[string]any{"request_id": out.requestID, "status_code": out.status, "body": out.data}
+	if ctx.Value(fleetHubReadContextKey{}) == true {
+		// Hub ownership needs full native AKS/group bodies internally. The
+		// diagnostic envelope retains only Fleet's public resource projection.
+		responseLog = object(fleetSafeValue(responseLog))
+	}
+	execution.LogCloudAPIResponse(ctx, u.Host, method, safeAPIPayload(responseLog, endpoint))
 	return out, nil
 }
 

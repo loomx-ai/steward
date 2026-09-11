@@ -2832,3 +2832,43 @@ background evidence only, not acceptance evidence for this work.
   ./...` passed, and all five Azure catalog synchronization tests passed. The
   native lifecycle state check includes Skipped -> Stop -> Stopped, following
   the published state-transition table rather than treating Skipped as terminal.
+
+### Fleet managed Hub inventory anchors
+
+- Fleet root inventory now joins the native group's `managedBy` with the
+  Fleet/AKS public or private API endpoint and the AKS `nodeResourceGroup`
+  with its reciprocal native group owner. Exactly one owned hub group and
+  one AKS cluster must agree with the Fleet's location. FL_/MC_FL_ naming
+  conventions never prove ownership. Hubless resources with unexpected owned
+  groups and incomplete/ambiguous joins remain unverified and protected.
+- Retained the three anchors and full private configuration digests in a
+  request-bound, authenticated inventory projection. Saved anchors recover
+  groups and the AKS cluster omitted from a subsequent native LIST; a named
+  anchor's own 404 invalidates that ownership join without closing the Fleet.
+  Invalid saved receipts fail before API access. Anchors and the Fleet are
+  read again after discovery, and the existing two-pass scan and pagination
+  fingerprint include the entire authenticated Hub state.
+- Full native bodies remain available to ownership validation. Hub-read
+  response logs use the Fleet public projection, while inventory stores only
+  IDs and private digests. Added public/private/hubless scenarios, ownership
+  conflicts, malformed responses, 403/404/202 failures, filtered continuations,
+  known omissions, JSON receipt recovery, tampering, private drift and changes
+  during or between scan pages. The real SQLite workers also verify persistence
+  of an authenticated unverified Hub when its native anchors are unavailable.
+- The native AKS schema supplies public/private FQDN and node-group fields;
+  these ownership-join test responses are composed protocol fixtures. The
+  retained Microsoft Fleet CLI recordings include no Hub AKS or managed-group
+  GETs, so this checkpoint does not claim live-cloud compatibility. Complete
+  managed descendant inventory, delegation, residue checks and Fleet root
+  actions remain unfinished, as does Arc membership. Counts stay 393 types
+  and 365 cleanup rules. All 27 mapped Azure gaps and all eight overall
+  acceptance criteria remain open.
+- The current stable Fleet source has no cluster-mesh profile routes. Native
+  preview documentation also requires removing mesh members before profile
+  and Fleet-member cleanup. That preview family remains to be modeled before
+  claiming complete Fleet coverage; it is not silently covered by these Hub
+  anchors or the five stable child drivers.
+- Final verification after the Hub log projection: repository-wide
+  `go test ./...` passed (Azure 201.081s), Fleet/AKS/managed-resource race tests
+  passed (42.653s), repository-wide `go vet ./...` and diff checks passed.
+  The focused Fleet/AKS tests also passed, including private Hub log checks.

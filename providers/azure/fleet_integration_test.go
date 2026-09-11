@@ -127,6 +127,14 @@ func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
 	if byKind[fleetNamespaceType].Location != "eastus" || byKind[fleetGateType].Location != "westus" {
 		t.Fatal("Fleet scopes were flattened")
 	}
+	client, err := r.resolve(ctx, connection.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hub, err := client.fleetRecordedHub(byKind[fleetType].Identity.NativeID, byKind[fleetType].Normalized)
+	if err != nil || hub["mode"] != "unverified" {
+		t.Fatal("SQLite inventory lost the authenticated unresolved Hub", hub, err)
+	}
 	relationships, err := repository.ListRelationshipsByConnection(ctx, connection.ID)
 	if err != nil {
 		t.Fatal(err)
