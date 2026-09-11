@@ -463,6 +463,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeCommunication(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	if err := s.contributeDataFactory(ctx, assets, &result); err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	batchOwners := batchManagedNodes(assets, result)
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err
@@ -545,7 +548,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
 			continue
 		}
-		if isBatchType(parent.Identity.NativeType) || communicationKind(parent.Identity.NativeType) != "" {
+		if isBatchType(parent.Identity.NativeType) || communicationKind(parent.Identity.NativeType) != "" || dataFactoryKind(parent.Identity.NativeType) != "" {
 			continue // Native data-plane identities have their own ownership walk.
 		}
 		if isWAFType(parent.Identity.NativeType) {

@@ -107,6 +107,14 @@ func applicationInsightsSafeValue(value any) any {
 
 func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	u, err := url.Parse(endpoint)
+	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.datafactory" {
+		cleaned := object(dataFactorySafeValue(value))
+		if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "POST" || value["method"] == "DELETE") {
+			cleaned["method"], cleaned["path"] = value["method"], u.Path
+			cleaned["query"] = map[string]any{"api-version": u.Query().Get("api-version")}
+		}
+		value = cleaned
+	}
 	if err == nil && (u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.communication" || communicationEndpointPattern.MatchString(u.Scheme+"://"+u.Host)) {
 		cleaned := object(communicationSafeValue(value))
 		if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "DELETE") {

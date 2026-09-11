@@ -3186,3 +3186,68 @@ background evidence only, not acceptance evidence for this work.
   (8.985s / 0.541s), all five offline importer tests passed, catalog regeneration
   was byte-identical, and diff checks passed. These results do not close the
   remaining acceptance scope above.
+
+### Data Factory native inventory, lifecycle and cleanup
+
+- Added fourteen native rules and 54 operations at `2018-06-01`: factories,
+  pipelines, datasets, dataflows, linked services, credentials, global parameters,
+  triggers, CDC, integration runtimes, node registrations, managed virtual
+  networks, managed private endpoints and inbound private connections. Thirteen
+  rules have native DELETE; managed virtual networks require factory cleanup.
+  Azure now has 420 rules, 392 cleanup actions and 1,365 operations from 176 root
+  and 61 reference documents. Previously retained source documents are unchanged.
+- Complete native family observations preserve the factory's region and the
+  node's original spelling. Node discovery uses native POST GetStatus. Known
+  identities and descendants receive their own reads despite list omission;
+  failed or inconsistent families cannot reconcile absence. Private authored
+  configuration and work content stay out of public assets, plans and logs.
+- Native discriminator-aware reference shapes cover 506 schema structures.
+  Typed artifact references order consumers without treating arbitrary JSON,
+  scripts or parameters as dependencies. Factory cascades can contain artifact
+  cycles; independently selected cycles, retained children and missing inventory
+  block the plan. Triggers, CDC, SSIS and linked runtimes are direct prerequisites;
+  SSIS consumers precede runtime Stop and deletion.
+- Pipeline-run queries preserve the full service-visible window and all pages,
+  and known run IDs receive independent GETs. Debug sessions have their native
+  paged query. Factory cleanup cancels reviewed runs individually and deletes
+  reviewed debug sessions; pipeline-only cleanup cancels only that pipeline's
+  reviewed runs. Other standalone artifacts wait for active factory work. New
+  work, changed identities or private configuration require a fresh review.
+- Key/RBAC shared runtimes use native host links, factory indexes and own reads.
+  Independent consumers require explicit selection. RemoveLinks applies only to
+  the reviewed consumer factory after every required runtime is absent. A stale
+  link to a deleted factory is resolved only through its signed recorded identity
+  and independent factory/runtime 404s. Foreign or ambiguous links block cleanup.
+- Trigger/CDC Stop, event unsubscription, SSIS status and final-result polling,
+  run cancellation, debug deletion, link removal and DELETE retain signed durable
+  receipts. Accepted operations are not replayed after persistence. Final reads
+  include every recorded descendant and required external consumer, even after
+  the host disappears. A regression test exposed and fixed omitted external
+  prerequisite readback after host deletion. Verification has a 24-hour bound;
+  it makes no billing, atomic-concurrency or crash-before-persistence guarantee.
+- The real SQLite scan, graph, plan and execution workers use generated asset
+  IDs. Each resumed job reopens the database and rebuilds runtime/registry/worker.
+  Seven-step SSIS and five-step shared-work plans each execute eight mutations,
+  retain assets until native absence, and verify durable receipt transitions.
+  Separate tests cover scan authority, protections, forged proofs, new consumers,
+  incomplete work queries, late reappearing prerequisites and surviving orphans.
+- The [Data Factory evidence](providers/azure/fixtures/datafactory/README.md)
+  retains 54 unchanged examples with 76 responses/35 schema-validated bodies and
+  64 original CLI responses from two checksum-pinned sources. Recorded Cancel
+  and CDC string bodies and the empty final Stop result are narrowly supported;
+  original credential/private-connection identity defects remain explicit.
+  Floci-AZ's current documented services do not establish Data Factory support.
+  Protocol/recording verification is distinct from independent emulator and
+  live-cloud acceptance. External data stores and self-hosted machines remain
+  independent; masked secrets and missing creation fields limit change detection.
+- A fresh parity comparison leaves 22 mapped Azure types without rules; GCP has
+  no missing mapped type, which does not establish behavior-level equivalence.
+  All eight acceptance criteria remain open, including remaining lifecycle work,
+  independent emulator/full application verification and publication.
+- Verification: final repository-wide `go test ./...` passed; all Data Factory
+  race tests passed (401.244s), and the final deterministic worker/reappearing
+  prerequisite race tests passed (70.914s). `go vet ./...`, all five offline
+  importer tests, byte-identical catalog regeneration, the 506-shape reference
+  check, 64-response original recording reproduction and documentation checks
+  (40 chapters / 10 screenshots) passed. These checks do not close the broader
+  acceptance criteria above.

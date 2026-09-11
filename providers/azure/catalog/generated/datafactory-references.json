@@ -1,0 +1,5446 @@
+{
+  "shapes": {
+    "Activity": {
+      "d": "type",
+      "v": {
+        "AppendVariable": {},
+        "AzureDataExplorerCommand": {
+          "s": "AzureDataExplorerCommandActivity"
+        },
+        "AzureFunctionActivity": {
+          "s": "AzureFunctionActivity"
+        },
+        "AzureMLBatchExecution": {
+          "s": "AzureMLBatchExecutionActivity"
+        },
+        "AzureMLExecutePipeline": {
+          "s": "AzureMLExecutePipelineActivity"
+        },
+        "AzureMLUpdateResource": {
+          "s": "AzureMLUpdateResourceActivity"
+        },
+        "Container": {},
+        "Copy": {
+          "s": "CopyActivity"
+        },
+        "Custom": {
+          "s": "CustomActivity"
+        },
+        "DataLakeAnalyticsU-SQL": {
+          "s": "DataLakeAnalyticsUSQLActivity"
+        },
+        "DatabricksJob": {
+          "s": "DatabricksJobActivity"
+        },
+        "DatabricksNotebook": {
+          "s": "DatabricksNotebookActivity"
+        },
+        "DatabricksSparkJar": {
+          "s": "DatabricksSparkJarActivity"
+        },
+        "DatabricksSparkPython": {
+          "s": "DatabricksSparkPythonActivity"
+        },
+        "Delete": {
+          "s": "DeleteActivity"
+        },
+        "ExecuteDataFlow": {
+          "s": "ExecuteDataFlowActivity"
+        },
+        "ExecutePipeline": {
+          "s": "ExecutePipelineActivity"
+        },
+        "ExecuteSSISPackage": {
+          "s": "ExecuteSSISPackageActivity"
+        },
+        "ExecuteWranglingDataflow": {
+          "s": "ExecuteWranglingDataflowActivity"
+        },
+        "Execution": {
+          "s": "ExecutionActivity"
+        },
+        "Fail": {},
+        "Filter": {},
+        "ForEach": {
+          "s": "ForEachActivity"
+        },
+        "GetMetadata": {
+          "s": "GetMetadataActivity"
+        },
+        "HDInsightHive": {
+          "s": "HDInsightHiveActivity"
+        },
+        "HDInsightMapReduce": {
+          "s": "HDInsightMapReduceActivity"
+        },
+        "HDInsightPig": {
+          "s": "HDInsightPigActivity"
+        },
+        "HDInsightSpark": {
+          "s": "HDInsightSparkActivity"
+        },
+        "HDInsightStreaming": {
+          "s": "HDInsightStreamingActivity"
+        },
+        "IfCondition": {
+          "s": "IfConditionActivity"
+        },
+        "Lookup": {
+          "s": "LookupActivity"
+        },
+        "Script": {
+          "s": "ScriptActivity"
+        },
+        "SetVariable": {},
+        "SparkJob": {
+          "s": "SynapseSparkJobDefinitionActivity"
+        },
+        "SqlServerStoredProcedure": {
+          "s": "SqlServerStoredProcedureActivity"
+        },
+        "Switch": {
+          "s": "SwitchActivity"
+        },
+        "SynapseNotebook": {
+          "s": "SynapseNotebookActivity"
+        },
+        "Until": {
+          "s": "UntilActivity"
+        },
+        "Validation": {
+          "s": "ValidationActivity"
+        },
+        "Wait": {},
+        "WebActivity": {
+          "s": "WebActivity"
+        },
+        "WebHook": {
+          "s": "WebHookActivity"
+        }
+      }
+    },
+    "AmazonMWSLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonMWSLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonMWSLinkedServiceTypeProperties": {
+      "f": {
+        "mwsAuthToken": {
+          "s": "SecretBase"
+        },
+        "secretKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AmazonMWSObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AmazonRdsForLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AmazonRdsForOracleLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonRdsForLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonRdsForOracleTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AmazonRdsForSqlServerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonRdsForSqlServerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonRdsForSqlServerLinkedServiceTypeProperties": {
+      "f": {
+        "alwaysEncryptedSettings": {
+          "s": "SqlAlwaysEncryptedProperties"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AmazonRdsForSqlServerTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AmazonRedshiftLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonRedshiftLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonRedshiftLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AmazonRedshiftSource": {
+      "f": {
+        "redshiftUnloadSettings": {
+          "s": "RedshiftUnloadSettings"
+        }
+      }
+    },
+    "AmazonRedshiftTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AmazonS3CompatibleLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonS3CompatibleLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonS3CompatibleLinkedServiceTypeProperties": {
+      "f": {
+        "secretAccessKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AmazonS3Dataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AmazonS3LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AmazonS3LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AmazonS3LinkedServiceTypeProperties": {
+      "f": {
+        "secretAccessKey": {
+          "s": "SecretBase"
+        },
+        "sessionToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AppFiguresLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AppFiguresLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AppFiguresLinkedServiceTypeProperties": {
+      "f": {
+        "clientKey": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AsanaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AsanaLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AsanaLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AvroDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureBatchLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureBatchLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureBatchLinkedServiceTypeProperties": {
+      "f": {
+        "accessKey": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureBlobDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureBlobFSDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureBlobFSLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureBlobFSLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureBlobFSLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "sasToken": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureBlobStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureBlobStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureBlobStorageLinkedServiceTypeProperties": {
+      "f": {
+        "accountKey": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "sasToken": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureDataExplorerCommandActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureDataExplorerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureDataExplorerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureDataExplorerLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureDataExplorerTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureDataLakeAnalyticsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureDataLakeAnalyticsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureDataLakeAnalyticsLinkedServiceTypeProperties": {
+      "f": {
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureDataLakeStoreDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureDataLakeStoreLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureDataLakeStoreLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureDataLakeStoreLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureDatabricksDeltaLakeDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureDatabricksDeltaLakeLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureDatabricksDetltaLakeLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureDatabricksDetltaLakeLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        }
+      }
+    },
+    "AzureDatabricksLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureDatabricksLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureDatabricksLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        }
+      }
+    },
+    "AzureFileStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureFileStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureFileStorageLinkedServiceTypeProperties": {
+      "f": {
+        "accountKey": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "sasToken": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "AzureFunctionActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureFunctionLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureFunctionLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureFunctionLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "functionKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureKeyVaultLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureKeyVaultLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureKeyVaultLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        }
+      }
+    },
+    "AzureKeyVaultSecretReference": {
+      "f": {
+        "store": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureMLBatchExecutionActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "AzureMLBatchExecutionActivityTypeProperties"
+        }
+      }
+    },
+    "AzureMLBatchExecutionActivityTypeProperties": {
+      "f": {
+        "webServiceInputs": {
+          "m": {
+            "s": "AzureMLWebServiceFile"
+          }
+        },
+        "webServiceOutputs": {
+          "m": {
+            "s": "AzureMLWebServiceFile"
+          }
+        }
+      }
+    },
+    "AzureMLExecutePipelineActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureMLLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureMLLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureMLLinkedServiceTypeProperties": {
+      "f": {
+        "apiKey": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureMLServiceLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureMLServiceLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureMLServiceLinkedServiceTypeProperties": {
+      "f": {
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureMLUpdateResourceActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "AzureMLUpdateResourceActivityTypeProperties"
+        }
+      }
+    },
+    "AzureMLUpdateResourceActivityTypeProperties": {
+      "f": {
+        "trainedModelLinkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureMLWebServiceFile": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureMariaDBLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureMariaDBLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureMariaDBLinkedServiceTypeProperties": {
+      "f": {
+        "pwd": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "AzureMariaDBTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureMySqlLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureMySqlLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureMySqlLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "AzureMySqlTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzurePostgreSqlLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzurePostgreSqlLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzurePostgreSqlLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "servicePrincipalEmbeddedCert": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCertPassword": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzurePostgreSqlTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureSearchIndexDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureSearchLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureSearchLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureSearchLinkedServiceTypeProperties": {
+      "f": {
+        "key": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureSqlDWLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureSqlDWLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureSqlDWLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureSqlDWTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureSqlDatabaseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureSqlDatabaseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureSqlDatabaseLinkedServiceTypeProperties": {
+      "f": {
+        "alwaysEncryptedSettings": {
+          "s": "SqlAlwaysEncryptedProperties"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureSqlMILinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureSqlMILinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureSqlMILinkedServiceTypeProperties": {
+      "f": {
+        "alwaysEncryptedSettings": {
+          "s": "SqlAlwaysEncryptedProperties"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "AzureSqlMITableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureSqlTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureStorageLinkedServiceTypeProperties": {
+      "f": {
+        "accountKey": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "sasToken": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "AzureSynapseArtifactsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      }
+    },
+    "AzureTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "AzureTableStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "AzureTableStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "AzureTableStorageLinkedServiceTypeProperties": {
+      "f": {
+        "accountKey": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "sasToken": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "BinaryDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "BlobEventsTrigger": {
+      "f": {
+        "pipelines": {
+          "a": {
+            "s": "TriggerPipelineReference"
+          }
+        }
+      }
+    },
+    "BlobTrigger": {
+      "f": {
+        "pipelines": {
+          "a": {
+            "s": "TriggerPipelineReference"
+          }
+        },
+        "typeProperties": {
+          "s": "BlobTriggerTypeProperties"
+        }
+      }
+    },
+    "BlobTriggerTypeProperties": {
+      "f": {
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CassandraLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "CassandraLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "CassandraLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "CassandraTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ChainingTrigger": {
+      "f": {
+        "pipeline": {
+          "s": "TriggerPipelineReference"
+        },
+        "typeProperties": {
+          "s": "ChainingTriggerTypeProperties"
+        }
+      }
+    },
+    "ChainingTriggerTypeProperties": {
+      "f": {
+        "dependsOn": {
+          "a": {
+            "s": "PipelineReference"
+          }
+        }
+      }
+    },
+    "ChangeDataCapture": {
+      "f": {
+        "sourceConnectionsInfo": {
+          "a": {
+            "s": "MapperSourceConnectionsInfo"
+          }
+        },
+        "targetConnectionsInfo": {
+          "a": {
+            "s": "MapperTargetConnectionsInfo"
+          }
+        }
+      }
+    },
+    "ChangeDataCaptureListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "ChangeDataCaptureResource"
+          }
+        }
+      }
+    },
+    "ChangeDataCaptureResource": {
+      "f": {
+        "properties": {
+          "s": "ChangeDataCapture"
+        }
+      }
+    },
+    "CloudError": {
+      "f": {
+        "error": {
+          "s": "CloudErrorBody"
+        }
+      }
+    },
+    "CloudErrorBody": {
+      "f": {
+        "details": {
+          "a": {
+            "s": "CloudError"
+          }
+        }
+      }
+    },
+    "CmdkeySetup": {
+      "f": {
+        "typeProperties": {
+          "s": "CmdkeySetupTypeProperties"
+        }
+      }
+    },
+    "CmdkeySetupTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "CommonDataServiceForAppsEntityDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CommonDataServiceForAppsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "CommonDataServiceForAppsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "CommonDataServiceForAppsLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ComponentSetup": {
+      "f": {
+        "typeProperties": {
+          "s": "LicensedComponentSetupTypeProperties"
+        }
+      }
+    },
+    "ConcurLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ConcurLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ConcurLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ConcurObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CopyActivity": {
+      "f": {
+        "inputs": {
+          "a": {
+            "s": "DatasetReference"
+          }
+        },
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "outputs": {
+          "a": {
+            "s": "DatasetReference"
+          }
+        },
+        "typeProperties": {
+          "s": "CopyActivityTypeProperties"
+        }
+      }
+    },
+    "CopyActivityTypeProperties": {
+      "f": {
+        "logSettings": {
+          "s": "LogSettings"
+        },
+        "logStorageSettings": {
+          "s": "LogStorageSettings"
+        },
+        "source": {
+          "s": "CopySource"
+        },
+        "stagingSettings": {
+          "s": "StagingSettings"
+        }
+      }
+    },
+    "CopySource": {
+      "d": "type",
+      "v": {
+        "AmazonMWSSource": {},
+        "AmazonRdsForOracleSource": {},
+        "AmazonRdsForSqlServerSource": {},
+        "AmazonRedshiftSource": {
+          "s": "AmazonRedshiftSource"
+        },
+        "AvroSource": {},
+        "AzureBlobFSSource": {},
+        "AzureDataExplorerSource": {},
+        "AzureDataLakeStoreSource": {},
+        "AzureDatabricksDeltaLakeSource": {},
+        "AzureMariaDBSource": {},
+        "AzureMySqlSource": {},
+        "AzurePostgreSqlSource": {},
+        "AzureSqlSource": {},
+        "AzureTableSource": {},
+        "BinarySource": {},
+        "BlobSource": {},
+        "CassandraSource": {},
+        "CommonDataServiceForAppsSource": {},
+        "ConcurSource": {},
+        "CosmosDbMongoDbApiSource": {},
+        "CosmosDbSqlApiSource": {},
+        "CouchbaseSource": {},
+        "Db2Source": {},
+        "DelimitedTextSource": {},
+        "DocumentDbCollectionSource": {},
+        "DrillSource": {},
+        "DynamicsAXSource": {},
+        "DynamicsCrmSource": {},
+        "DynamicsSource": {},
+        "EloquaSource": {},
+        "ExcelSource": {},
+        "FileSystemSource": {},
+        "GoogleAdWordsSource": {},
+        "GoogleBigQuerySource": {},
+        "GoogleBigQueryV2Source": {},
+        "GreenplumSource": {},
+        "HBaseSource": {},
+        "HdfsSource": {},
+        "HiveSource": {},
+        "HttpSource": {},
+        "HubspotSource": {},
+        "ImpalaSource": {},
+        "InformixSource": {},
+        "JiraSource": {},
+        "JsonSource": {},
+        "LakeHouseTableSource": {},
+        "MagentoSource": {},
+        "MariaDBSource": {},
+        "MarketoSource": {},
+        "MicrosoftAccessSource": {},
+        "MongoDbAtlasSource": {},
+        "MongoDbSource": {},
+        "MongoDbV2Source": {},
+        "MySqlSource": {},
+        "NetezzaSource": {},
+        "ODataSource": {},
+        "OdbcSource": {},
+        "Office365Source": {},
+        "OracleServiceCloudSource": {},
+        "OracleSource": {},
+        "OrcSource": {},
+        "ParquetSource": {},
+        "PaypalSource": {},
+        "PhoenixSource": {},
+        "PostgreSqlSource": {},
+        "PostgreSqlV2Source": {},
+        "PrestoSource": {},
+        "QuickBooksSource": {},
+        "RelationalSource": {},
+        "ResponsysSource": {},
+        "RestSource": {},
+        "SalesforceMarketingCloudSource": {},
+        "SalesforceServiceCloudSource": {},
+        "SalesforceServiceCloudV2Source": {},
+        "SalesforceSource": {},
+        "SalesforceV2Source": {},
+        "SapBwSource": {},
+        "SapCloudForCustomerSource": {},
+        "SapEccSource": {},
+        "SapHanaSource": {},
+        "SapOdpSource": {},
+        "SapOpenHubSource": {},
+        "SapTableSource": {},
+        "ServiceNowSource": {},
+        "ServiceNowV2Source": {
+          "s": "ServiceNowV2Source"
+        },
+        "SharePointOnlineListSource": {},
+        "ShopifySource": {},
+        "SnowflakeSource": {},
+        "SnowflakeV2Source": {},
+        "SparkSource": {},
+        "SqlDWSource": {},
+        "SqlMISource": {},
+        "SqlServerSource": {},
+        "SqlSource": {},
+        "SquareSource": {},
+        "SybaseSource": {},
+        "TabularSource": {},
+        "TeradataSource": {},
+        "VerticaSource": {},
+        "WarehouseSource": {},
+        "WebSource": {},
+        "XeroSource": {},
+        "XmlSource": {},
+        "ZohoSource": {}
+      }
+    },
+    "CosmosDbLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "CosmosDbLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "CosmosDbLinkedServiceTypeProperties": {
+      "f": {
+        "accountKey": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "CosmosDbMongoDbApiCollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CosmosDbMongoDbApiLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      }
+    },
+    "CosmosDbSqlApiCollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CouchbaseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "CouchbaseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "CouchbaseLinkedServiceTypeProperties": {
+      "f": {
+        "credString": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "CouchbaseTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Credential": {
+      "d": "type",
+      "v": {
+        "ManagedIdentity": {},
+        "ServicePrincipal": {
+          "s": "ServicePrincipalCredential"
+        }
+      }
+    },
+    "CredentialListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "CredentialResource"
+          }
+        }
+      }
+    },
+    "CredentialReference": {
+      "r": "credentials"
+    },
+    "CredentialResource": {
+      "f": {
+        "properties": {
+          "s": "Credential"
+        }
+      }
+    },
+    "CustomActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "CustomActivityTypeProperties"
+        }
+      }
+    },
+    "CustomActivityReferenceObject": {
+      "f": {
+        "datasets": {
+          "a": {
+            "s": "DatasetReference"
+          }
+        },
+        "linkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "CustomActivityTypeProperties": {
+      "f": {
+        "referenceObjects": {
+          "s": "CustomActivityReferenceObject"
+        },
+        "resourceLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CustomDataSourceLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      }
+    },
+    "CustomDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "CustomEventsTrigger": {
+      "f": {
+        "pipelines": {
+          "a": {
+            "s": "TriggerPipelineReference"
+          }
+        }
+      }
+    },
+    "CustomSetupBase": {
+      "d": "type",
+      "v": {
+        "AzPowerShellSetup": {},
+        "CmdkeySetup": {
+          "s": "CmdkeySetup"
+        },
+        "ComponentSetup": {
+          "s": "ComponentSetup"
+        },
+        "EnvironmentVariableSetup": {}
+      }
+    },
+    "DataFlow": {
+      "d": "type",
+      "v": {
+        "Flowlet": {
+          "s": "Flowlet"
+        },
+        "MappingDataFlow": {
+          "s": "MappingDataFlow"
+        },
+        "WranglingDataFlow": {
+          "s": "WranglingDataFlow"
+        }
+      }
+    },
+    "DataFlowListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "DataFlowResource"
+          }
+        }
+      }
+    },
+    "DataFlowReference": {
+      "r": "dataflows"
+    },
+    "DataFlowResource": {
+      "f": {
+        "properties": {
+          "s": "DataFlow"
+        }
+      }
+    },
+    "DataFlowSink": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "flowlet": {
+          "s": "DataFlowReference"
+        },
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "rejectedDataLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "schemaLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DataFlowSource": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "flowlet": {
+          "s": "DataFlowReference"
+        },
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "schemaLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DataFlowStagingInfo": {
+      "f": {
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DataLakeAnalyticsUSQLActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "DataLakeAnalyticsUSQLActivityTypeProperties"
+        }
+      }
+    },
+    "DataLakeAnalyticsUSQLActivityTypeProperties": {
+      "f": {
+        "scriptLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DatabricksJobActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DatabricksNotebookActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DatabricksSparkJarActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DatabricksSparkPythonActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Dataset": {
+      "d": "type",
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      },
+      "v": {
+        "AmazonMWSObject": {
+          "s": "AmazonMWSObjectDataset"
+        },
+        "AmazonRdsForOracleTable": {
+          "s": "AmazonRdsForOracleTableDataset"
+        },
+        "AmazonRdsForSqlServerTable": {
+          "s": "AmazonRdsForSqlServerTableDataset"
+        },
+        "AmazonRedshiftTable": {
+          "s": "AmazonRedshiftTableDataset"
+        },
+        "AmazonS3Object": {
+          "s": "AmazonS3Dataset"
+        },
+        "Avro": {
+          "s": "AvroDataset"
+        },
+        "AzureBlob": {
+          "s": "AzureBlobDataset"
+        },
+        "AzureBlobFSFile": {
+          "s": "AzureBlobFSDataset"
+        },
+        "AzureDataExplorerTable": {
+          "s": "AzureDataExplorerTableDataset"
+        },
+        "AzureDataLakeStoreFile": {
+          "s": "AzureDataLakeStoreDataset"
+        },
+        "AzureDatabricksDeltaLakeDataset": {
+          "s": "AzureDatabricksDeltaLakeDataset"
+        },
+        "AzureMariaDBTable": {
+          "s": "AzureMariaDBTableDataset"
+        },
+        "AzureMySqlTable": {
+          "s": "AzureMySqlTableDataset"
+        },
+        "AzurePostgreSqlTable": {
+          "s": "AzurePostgreSqlTableDataset"
+        },
+        "AzureSearchIndex": {
+          "s": "AzureSearchIndexDataset"
+        },
+        "AzureSqlDWTable": {
+          "s": "AzureSqlDWTableDataset"
+        },
+        "AzureSqlMITable": {
+          "s": "AzureSqlMITableDataset"
+        },
+        "AzureSqlTable": {
+          "s": "AzureSqlTableDataset"
+        },
+        "AzureTable": {
+          "s": "AzureTableDataset"
+        },
+        "Binary": {
+          "s": "BinaryDataset"
+        },
+        "CassandraTable": {
+          "s": "CassandraTableDataset"
+        },
+        "CommonDataServiceForAppsEntity": {
+          "s": "CommonDataServiceForAppsEntityDataset"
+        },
+        "ConcurObject": {
+          "s": "ConcurObjectDataset"
+        },
+        "CosmosDbMongoDbApiCollection": {
+          "s": "CosmosDbMongoDbApiCollectionDataset"
+        },
+        "CosmosDbSqlApiCollection": {
+          "s": "CosmosDbSqlApiCollectionDataset"
+        },
+        "CouchbaseTable": {
+          "s": "CouchbaseTableDataset"
+        },
+        "CustomDataset": {
+          "s": "CustomDataset"
+        },
+        "Db2Table": {
+          "s": "Db2TableDataset"
+        },
+        "DelimitedText": {
+          "s": "DelimitedTextDataset"
+        },
+        "DocumentDbCollection": {
+          "s": "DocumentDbCollectionDataset"
+        },
+        "DrillTable": {
+          "s": "DrillTableDataset"
+        },
+        "DynamicsAXResource": {
+          "s": "DynamicsAXResourceDataset"
+        },
+        "DynamicsCrmEntity": {
+          "s": "DynamicsCrmEntityDataset"
+        },
+        "DynamicsEntity": {
+          "s": "DynamicsEntityDataset"
+        },
+        "EloquaObject": {
+          "s": "EloquaObjectDataset"
+        },
+        "Excel": {
+          "s": "ExcelDataset"
+        },
+        "FileShare": {
+          "s": "FileShareDataset"
+        },
+        "GoogleAdWordsObject": {
+          "s": "GoogleAdWordsObjectDataset"
+        },
+        "GoogleBigQueryObject": {
+          "s": "GoogleBigQueryObjectDataset"
+        },
+        "GoogleBigQueryV2Object": {
+          "s": "GoogleBigQueryV2ObjectDataset"
+        },
+        "GreenplumTable": {
+          "s": "GreenplumTableDataset"
+        },
+        "HBaseObject": {
+          "s": "HBaseObjectDataset"
+        },
+        "HiveObject": {
+          "s": "HiveObjectDataset"
+        },
+        "HttpFile": {
+          "s": "HttpDataset"
+        },
+        "HubspotObject": {
+          "s": "HubspotObjectDataset"
+        },
+        "Iceberg": {
+          "s": "IcebergDataset"
+        },
+        "ImpalaObject": {
+          "s": "ImpalaObjectDataset"
+        },
+        "InformixTable": {
+          "s": "InformixTableDataset"
+        },
+        "JiraObject": {
+          "s": "JiraObjectDataset"
+        },
+        "Json": {
+          "s": "JsonDataset"
+        },
+        "LakehouseTable": {
+          "s": "LakeHouseTableDataset"
+        },
+        "MagentoObject": {
+          "s": "MagentoObjectDataset"
+        },
+        "MariaDBTable": {
+          "s": "MariaDBTableDataset"
+        },
+        "MarketoObject": {
+          "s": "MarketoObjectDataset"
+        },
+        "MicrosoftAccessTable": {
+          "s": "MicrosoftAccessTableDataset"
+        },
+        "MongoDbAtlasCollection": {
+          "s": "MongoDbAtlasCollectionDataset"
+        },
+        "MongoDbCollection": {
+          "s": "MongoDbCollectionDataset"
+        },
+        "MongoDbV2Collection": {
+          "s": "MongoDbV2CollectionDataset"
+        },
+        "MySqlTable": {
+          "s": "MySqlTableDataset"
+        },
+        "NetezzaTable": {
+          "s": "NetezzaTableDataset"
+        },
+        "ODataResource": {
+          "s": "ODataResourceDataset"
+        },
+        "OdbcTable": {
+          "s": "OdbcTableDataset"
+        },
+        "Office365Table": {
+          "s": "Office365Dataset"
+        },
+        "OracleServiceCloudObject": {
+          "s": "OracleServiceCloudObjectDataset"
+        },
+        "OracleTable": {
+          "s": "OracleTableDataset"
+        },
+        "Orc": {
+          "s": "OrcDataset"
+        },
+        "Parquet": {
+          "s": "ParquetDataset"
+        },
+        "PaypalObject": {
+          "s": "PaypalObjectDataset"
+        },
+        "PhoenixObject": {
+          "s": "PhoenixObjectDataset"
+        },
+        "PostgreSqlTable": {
+          "s": "PostgreSqlTableDataset"
+        },
+        "PostgreSqlV2Table": {
+          "s": "PostgreSqlV2TableDataset"
+        },
+        "PrestoObject": {
+          "s": "PrestoObjectDataset"
+        },
+        "QuickBooksObject": {
+          "s": "QuickBooksObjectDataset"
+        },
+        "RelationalTable": {
+          "s": "RelationalTableDataset"
+        },
+        "ResponsysObject": {
+          "s": "ResponsysObjectDataset"
+        },
+        "RestResource": {
+          "s": "RestResourceDataset"
+        },
+        "SalesforceMarketingCloudObject": {
+          "s": "SalesforceMarketingCloudObjectDataset"
+        },
+        "SalesforceObject": {
+          "s": "SalesforceObjectDataset"
+        },
+        "SalesforceServiceCloudObject": {
+          "s": "SalesforceServiceCloudObjectDataset"
+        },
+        "SalesforceServiceCloudV2Object": {
+          "s": "SalesforceServiceCloudV2ObjectDataset"
+        },
+        "SalesforceV2Object": {
+          "s": "SalesforceV2ObjectDataset"
+        },
+        "SapBwCube": {
+          "s": "SapBwCubeDataset"
+        },
+        "SapCloudForCustomerResource": {
+          "s": "SapCloudForCustomerResourceDataset"
+        },
+        "SapEccResource": {
+          "s": "SapEccResourceDataset"
+        },
+        "SapHanaTable": {
+          "s": "SapHanaTableDataset"
+        },
+        "SapOdpResource": {
+          "s": "SapOdpResourceDataset"
+        },
+        "SapOpenHubTable": {
+          "s": "SapOpenHubTableDataset"
+        },
+        "SapTableResource": {
+          "s": "SapTableResourceDataset"
+        },
+        "ServiceNowObject": {
+          "s": "ServiceNowObjectDataset"
+        },
+        "ServiceNowV2Object": {
+          "s": "ServiceNowV2ObjectDataset"
+        },
+        "SharePointOnlineListResource": {
+          "s": "SharePointOnlineListResourceDataset"
+        },
+        "ShopifyObject": {
+          "s": "ShopifyObjectDataset"
+        },
+        "SnowflakeTable": {
+          "s": "SnowflakeDataset"
+        },
+        "SnowflakeV2Table": {
+          "s": "SnowflakeV2Dataset"
+        },
+        "SparkObject": {
+          "s": "SparkObjectDataset"
+        },
+        "SqlServerTable": {
+          "s": "SqlServerTableDataset"
+        },
+        "SquareObject": {
+          "s": "SquareObjectDataset"
+        },
+        "SybaseTable": {
+          "s": "SybaseTableDataset"
+        },
+        "TeradataTable": {
+          "s": "TeradataTableDataset"
+        },
+        "VerticaTable": {
+          "s": "VerticaTableDataset"
+        },
+        "WarehouseTable": {
+          "s": "WarehouseTableDataset"
+        },
+        "WebTable": {
+          "s": "WebTableDataset"
+        },
+        "XeroObject": {
+          "s": "XeroObjectDataset"
+        },
+        "Xml": {
+          "s": "XmlDataset"
+        },
+        "ZohoObject": {
+          "s": "ZohoObjectDataset"
+        }
+      }
+    },
+    "DatasetListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "DatasetResource"
+          }
+        }
+      }
+    },
+    "DatasetReference": {
+      "r": "datasets"
+    },
+    "DatasetResource": {
+      "f": {
+        "properties": {
+          "s": "Dataset"
+        }
+      }
+    },
+    "DataworldLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "DataworldLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "DataworldLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "Db2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "Db2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "Db2LinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "Db2TableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DeleteActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "DeleteActivityTypeProperties"
+        }
+      }
+    },
+    "DeleteActivityTypeProperties": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "logStorageSettings": {
+          "s": "LogStorageSettings"
+        }
+      }
+    },
+    "DelimitedTextDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DependencyReference": {
+      "d": "type",
+      "v": {
+        "SelfDependencyTumblingWindowTriggerReference": {},
+        "TriggerDependencyReference": {
+          "s": "TriggerDependencyReference"
+        },
+        "TumblingWindowTriggerDependencyReference": {
+          "s": "TumblingWindowTriggerDependencyReference"
+        }
+      }
+    },
+    "DocumentDbCollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DrillLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "DrillLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "DrillLinkedServiceTypeProperties": {
+      "f": {
+        "pwd": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "DrillTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DynamicsAXLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "DynamicsAXLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "DynamicsAXLinkedServiceTypeProperties": {
+      "f": {
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "DynamicsAXResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DynamicsCrmEntityDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DynamicsCrmLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "DynamicsCrmLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "DynamicsCrmLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "DynamicsEntityDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "DynamicsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "DynamicsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "DynamicsLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "EloquaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "EloquaLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "EloquaLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "EloquaObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ExcelDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ExecuteDataFlowActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "ExecuteDataFlowActivityTypeProperties"
+        }
+      }
+    },
+    "ExecuteDataFlowActivityTypeProperties": {
+      "f": {
+        "dataFlow": {
+          "s": "DataFlowReference"
+        },
+        "integrationRuntime": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "staging": {
+          "s": "DataFlowStagingInfo"
+        }
+      }
+    },
+    "ExecutePipelineActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "ExecutePipelineActivityTypeProperties"
+        }
+      }
+    },
+    "ExecutePipelineActivityTypeProperties": {
+      "f": {
+        "pipeline": {
+          "s": "PipelineReference"
+        }
+      }
+    },
+    "ExecutePowerQueryActivityTypeProperties": {
+      "f": {
+        "dataFlow": {
+          "s": "DataFlowReference"
+        },
+        "integrationRuntime": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "queries": {
+          "a": {
+            "s": "PowerQuerySinkMapping"
+          }
+        },
+        "sinks": {
+          "m": {
+            "s": "PowerQuerySink"
+          }
+        },
+        "staging": {
+          "s": "DataFlowStagingInfo"
+        }
+      }
+    },
+    "ExecuteSSISPackageActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "ExecuteSSISPackageActivityTypeProperties"
+        }
+      }
+    },
+    "ExecuteSSISPackageActivityTypeProperties": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "logLocation": {
+          "s": "SSISLogLocation"
+        },
+        "packageLocation": {
+          "s": "SSISPackageLocation"
+        }
+      }
+    },
+    "ExecuteWranglingDataflowActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "ExecutePowerQueryActivityTypeProperties"
+        }
+      }
+    },
+    "ExecutionActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ExpressionV2": {
+      "f": {
+        "operands": {
+          "a": {
+            "s": "ExpressionV2"
+          }
+        }
+      }
+    },
+    "FileServerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "FileServerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "FileServerLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "FileShareDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Flowlet": {
+      "f": {
+        "typeProperties": {
+          "s": "FlowletTypeProperties"
+        }
+      }
+    },
+    "FlowletTypeProperties": {
+      "f": {
+        "sinks": {
+          "a": {
+            "s": "DataFlowSink"
+          }
+        },
+        "sources": {
+          "a": {
+            "s": "DataFlowSource"
+          }
+        },
+        "transformations": {
+          "a": {
+            "s": "Transformation"
+          }
+        }
+      }
+    },
+    "ForEachActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "ForEachActivityTypeProperties"
+        }
+      }
+    },
+    "ForEachActivityTypeProperties": {
+      "f": {
+        "activities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "FtpServerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "FtpServerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "FtpServerLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GetMetadataActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "GetMetadataActivityTypeProperties"
+        }
+      }
+    },
+    "GetMetadataActivityTypeProperties": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        }
+      }
+    },
+    "GoogleAdWordsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GoogleAdWordsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GoogleAdWordsLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "developerToken": {
+          "s": "SecretBase"
+        },
+        "privateKey": {
+          "s": "SecretBase"
+        },
+        "refreshToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GoogleAdWordsObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "GoogleBigQueryLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GoogleBigQueryLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GoogleBigQueryLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "refreshToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GoogleBigQueryObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "GoogleBigQueryV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GoogleBigQueryV2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GoogleBigQueryV2LinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "keyFileContent": {
+          "s": "SecretBase"
+        },
+        "refreshToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GoogleBigQueryV2ObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "GoogleCloudStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GoogleCloudStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GoogleCloudStorageLinkedServiceTypeProperties": {
+      "f": {
+        "secretAccessKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GoogleSheetsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GoogleSheetsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GoogleSheetsLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "GreenplumLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "GreenplumLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "GreenplumLinkedServiceTypeProperties": {
+      "f": {
+        "pwd": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "GreenplumTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "HBaseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HBaseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HBaseLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HBaseObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "HDInsightHiveActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightHiveActivityTypeProperties"
+        }
+      }
+    },
+    "HDInsightHiveActivityTypeProperties": {
+      "f": {
+        "scriptLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "storageLinkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "HDInsightLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HDInsightLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "hcatalogLinkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HDInsightMapReduceActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightMapReduceActivityTypeProperties"
+        }
+      }
+    },
+    "HDInsightMapReduceActivityTypeProperties": {
+      "f": {
+        "jarLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "storageLinkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "HDInsightOnDemandLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightOnDemandLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HDInsightOnDemandLinkedServiceTypeProperties": {
+      "f": {
+        "additionalLinkedServiceNames": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        },
+        "clusterPassword": {
+          "s": "SecretBase"
+        },
+        "clusterSshPassword": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "hcatalogLinkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HDInsightPigActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightPigActivityTypeProperties"
+        }
+      }
+    },
+    "HDInsightPigActivityTypeProperties": {
+      "f": {
+        "scriptLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "storageLinkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "HDInsightSparkActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightSparkActivityTypeProperties"
+        }
+      }
+    },
+    "HDInsightSparkActivityTypeProperties": {
+      "f": {
+        "sparkJobLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "HDInsightStreamingActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "HDInsightStreamingActivityTypeProperties"
+        }
+      }
+    },
+    "HDInsightStreamingActivityTypeProperties": {
+      "f": {
+        "fileLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "storageLinkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "HdfsLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HdfsLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HdfsLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HiveLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HiveLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HiveLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HiveObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "HttpDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "HttpLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HttpLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HttpLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HubspotLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "HubspotLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "HubspotLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        },
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "refreshToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "HubspotObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "IcebergDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "IfConditionActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "IfConditionActivityTypeProperties"
+        }
+      }
+    },
+    "IfConditionActivityTypeProperties": {
+      "f": {
+        "ifFalseActivities": {
+          "a": {
+            "s": "Activity"
+          }
+        },
+        "ifTrueActivities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "ImpalaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ImpalaLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ImpalaLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ImpalaObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "InformixLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "InformixLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "InformixLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "InformixTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "IntegrationRuntime": {
+      "d": "type",
+      "v": {
+        "Managed": {
+          "s": "ManagedIntegrationRuntime"
+        },
+        "SelfHosted": {
+          "s": "SelfHostedIntegrationRuntime"
+        }
+      }
+    },
+    "IntegrationRuntimeListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "IntegrationRuntimeResource"
+          }
+        }
+      }
+    },
+    "IntegrationRuntimeReference": {
+      "r": "integrationRuntimes"
+    },
+    "IntegrationRuntimeResource": {
+      "f": {
+        "properties": {
+          "s": "IntegrationRuntime"
+        }
+      }
+    },
+    "IntegrationRuntimeSsisProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "expressCustomSetupProperties": {
+          "a": {
+            "s": "CustomSetupBase"
+          }
+        }
+      }
+    },
+    "JiraLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "JiraLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "JiraLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "JiraObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "JsonDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "LakeHouseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "LakeHouseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "LakeHouseLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "LakeHouseTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "LicensedComponentSetupTypeProperties": {
+      "f": {
+        "licenseKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "LinkedIntegrationRuntimeRbacAuthorization": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        }
+      }
+    },
+    "LinkedIntegrationRuntimeType": {
+      "d": "authorizationType",
+      "v": {
+        "Key": {},
+        "RBAC": {
+          "s": "LinkedIntegrationRuntimeRbacAuthorization"
+        }
+      }
+    },
+    "LinkedService": {
+      "d": "type",
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      },
+      "v": {
+        "AmazonMWS": {
+          "s": "AmazonMWSLinkedService"
+        },
+        "AmazonRdsForOracle": {
+          "s": "AmazonRdsForOracleLinkedService"
+        },
+        "AmazonRdsForSqlServer": {
+          "s": "AmazonRdsForSqlServerLinkedService"
+        },
+        "AmazonRedshift": {
+          "s": "AmazonRedshiftLinkedService"
+        },
+        "AmazonS3": {
+          "s": "AmazonS3LinkedService"
+        },
+        "AmazonS3Compatible": {
+          "s": "AmazonS3CompatibleLinkedService"
+        },
+        "AppFigures": {
+          "s": "AppFiguresLinkedService"
+        },
+        "Asana": {
+          "s": "AsanaLinkedService"
+        },
+        "AzureBatch": {
+          "s": "AzureBatchLinkedService"
+        },
+        "AzureBlobFS": {
+          "s": "AzureBlobFSLinkedService"
+        },
+        "AzureBlobStorage": {
+          "s": "AzureBlobStorageLinkedService"
+        },
+        "AzureDataExplorer": {
+          "s": "AzureDataExplorerLinkedService"
+        },
+        "AzureDataLakeAnalytics": {
+          "s": "AzureDataLakeAnalyticsLinkedService"
+        },
+        "AzureDataLakeStore": {
+          "s": "AzureDataLakeStoreLinkedService"
+        },
+        "AzureDatabricks": {
+          "s": "AzureDatabricksLinkedService"
+        },
+        "AzureDatabricksDeltaLake": {
+          "s": "AzureDatabricksDeltaLakeLinkedService"
+        },
+        "AzureFileStorage": {
+          "s": "AzureFileStorageLinkedService"
+        },
+        "AzureFunction": {
+          "s": "AzureFunctionLinkedService"
+        },
+        "AzureKeyVault": {
+          "s": "AzureKeyVaultLinkedService"
+        },
+        "AzureML": {
+          "s": "AzureMLLinkedService"
+        },
+        "AzureMLService": {
+          "s": "AzureMLServiceLinkedService"
+        },
+        "AzureMariaDB": {
+          "s": "AzureMariaDBLinkedService"
+        },
+        "AzureMySql": {
+          "s": "AzureMySqlLinkedService"
+        },
+        "AzurePostgreSql": {
+          "s": "AzurePostgreSqlLinkedService"
+        },
+        "AzureSearch": {
+          "s": "AzureSearchLinkedService"
+        },
+        "AzureSqlDW": {
+          "s": "AzureSqlDWLinkedService"
+        },
+        "AzureSqlDatabase": {
+          "s": "AzureSqlDatabaseLinkedService"
+        },
+        "AzureSqlMI": {
+          "s": "AzureSqlMILinkedService"
+        },
+        "AzureStorage": {
+          "s": "AzureStorageLinkedService"
+        },
+        "AzureSynapseArtifacts": {
+          "s": "AzureSynapseArtifactsLinkedService"
+        },
+        "AzureTableStorage": {
+          "s": "AzureTableStorageLinkedService"
+        },
+        "Cassandra": {
+          "s": "CassandraLinkedService"
+        },
+        "CommonDataServiceForApps": {
+          "s": "CommonDataServiceForAppsLinkedService"
+        },
+        "Concur": {
+          "s": "ConcurLinkedService"
+        },
+        "CosmosDb": {
+          "s": "CosmosDbLinkedService"
+        },
+        "CosmosDbMongoDbApi": {
+          "s": "CosmosDbMongoDbApiLinkedService"
+        },
+        "Couchbase": {
+          "s": "CouchbaseLinkedService"
+        },
+        "CustomDataSource": {
+          "s": "CustomDataSourceLinkedService"
+        },
+        "Dataworld": {
+          "s": "DataworldLinkedService"
+        },
+        "Db2": {
+          "s": "Db2LinkedService"
+        },
+        "Drill": {
+          "s": "DrillLinkedService"
+        },
+        "Dynamics": {
+          "s": "DynamicsLinkedService"
+        },
+        "DynamicsAX": {
+          "s": "DynamicsAXLinkedService"
+        },
+        "DynamicsCrm": {
+          "s": "DynamicsCrmLinkedService"
+        },
+        "Eloqua": {
+          "s": "EloquaLinkedService"
+        },
+        "FileServer": {
+          "s": "FileServerLinkedService"
+        },
+        "FtpServer": {
+          "s": "FtpServerLinkedService"
+        },
+        "GoogleAdWords": {
+          "s": "GoogleAdWordsLinkedService"
+        },
+        "GoogleBigQuery": {
+          "s": "GoogleBigQueryLinkedService"
+        },
+        "GoogleBigQueryV2": {
+          "s": "GoogleBigQueryV2LinkedService"
+        },
+        "GoogleCloudStorage": {
+          "s": "GoogleCloudStorageLinkedService"
+        },
+        "GoogleSheets": {
+          "s": "GoogleSheetsLinkedService"
+        },
+        "Greenplum": {
+          "s": "GreenplumLinkedService"
+        },
+        "HBase": {
+          "s": "HBaseLinkedService"
+        },
+        "HDInsight": {
+          "s": "HDInsightLinkedService"
+        },
+        "HDInsightOnDemand": {
+          "s": "HDInsightOnDemandLinkedService"
+        },
+        "Hdfs": {
+          "s": "HdfsLinkedService"
+        },
+        "Hive": {
+          "s": "HiveLinkedService"
+        },
+        "HttpServer": {
+          "s": "HttpLinkedService"
+        },
+        "Hubspot": {
+          "s": "HubspotLinkedService"
+        },
+        "Impala": {
+          "s": "ImpalaLinkedService"
+        },
+        "Informix": {
+          "s": "InformixLinkedService"
+        },
+        "Jira": {
+          "s": "JiraLinkedService"
+        },
+        "Lakehouse": {
+          "s": "LakeHouseLinkedService"
+        },
+        "Magento": {
+          "s": "MagentoLinkedService"
+        },
+        "MariaDB": {
+          "s": "MariaDBLinkedService"
+        },
+        "Marketo": {
+          "s": "MarketoLinkedService"
+        },
+        "MicrosoftAccess": {
+          "s": "MicrosoftAccessLinkedService"
+        },
+        "MongoDb": {
+          "s": "MongoDbLinkedService"
+        },
+        "MongoDbAtlas": {
+          "s": "MongoDbAtlasLinkedService"
+        },
+        "MongoDbV2": {
+          "s": "MongoDbV2LinkedService"
+        },
+        "MySql": {
+          "s": "MySqlLinkedService"
+        },
+        "Netezza": {
+          "s": "NetezzaLinkedService"
+        },
+        "OData": {
+          "s": "ODataLinkedService"
+        },
+        "Odbc": {
+          "s": "OdbcLinkedService"
+        },
+        "Office365": {
+          "s": "Office365LinkedService"
+        },
+        "Oracle": {
+          "s": "OracleLinkedService"
+        },
+        "OracleCloudStorage": {
+          "s": "OracleCloudStorageLinkedService"
+        },
+        "OracleServiceCloud": {
+          "s": "OracleServiceCloudLinkedService"
+        },
+        "Paypal": {
+          "s": "PaypalLinkedService"
+        },
+        "Phoenix": {
+          "s": "PhoenixLinkedService"
+        },
+        "PostgreSql": {
+          "s": "PostgreSqlLinkedService"
+        },
+        "PostgreSqlV2": {
+          "s": "PostgreSqlV2LinkedService"
+        },
+        "Presto": {
+          "s": "PrestoLinkedService"
+        },
+        "QuickBooks": {
+          "s": "QuickBooksLinkedService"
+        },
+        "Quickbase": {
+          "s": "QuickbaseLinkedService"
+        },
+        "Responsys": {
+          "s": "ResponsysLinkedService"
+        },
+        "RestService": {
+          "s": "RestServiceLinkedService"
+        },
+        "Salesforce": {
+          "s": "SalesforceLinkedService"
+        },
+        "SalesforceMarketingCloud": {
+          "s": "SalesforceMarketingCloudLinkedService"
+        },
+        "SalesforceServiceCloud": {
+          "s": "SalesforceServiceCloudLinkedService"
+        },
+        "SalesforceServiceCloudV2": {
+          "s": "SalesforceServiceCloudV2LinkedService"
+        },
+        "SalesforceV2": {
+          "s": "SalesforceV2LinkedService"
+        },
+        "SapBW": {
+          "s": "SapBWLinkedService"
+        },
+        "SapCloudForCustomer": {
+          "s": "SapCloudForCustomerLinkedService"
+        },
+        "SapEcc": {
+          "s": "SapEccLinkedService"
+        },
+        "SapHana": {
+          "s": "SapHanaLinkedService"
+        },
+        "SapOdp": {
+          "s": "SapOdpLinkedService"
+        },
+        "SapOpenHub": {
+          "s": "SapOpenHubLinkedService"
+        },
+        "SapTable": {
+          "s": "SapTableLinkedService"
+        },
+        "ServiceNow": {
+          "s": "ServiceNowLinkedService"
+        },
+        "ServiceNowV2": {
+          "s": "ServiceNowV2LinkedService"
+        },
+        "Sftp": {
+          "s": "SftpServerLinkedService"
+        },
+        "SharePointOnlineList": {
+          "s": "SharePointOnlineListLinkedService"
+        },
+        "Shopify": {
+          "s": "ShopifyLinkedService"
+        },
+        "Smartsheet": {
+          "s": "SmartsheetLinkedService"
+        },
+        "Snowflake": {
+          "s": "SnowflakeLinkedService"
+        },
+        "SnowflakeV2": {
+          "s": "SnowflakeV2LinkedService"
+        },
+        "Spark": {
+          "s": "SparkLinkedService"
+        },
+        "SqlServer": {
+          "s": "SqlServerLinkedService"
+        },
+        "Square": {
+          "s": "SquareLinkedService"
+        },
+        "Sybase": {
+          "s": "SybaseLinkedService"
+        },
+        "TeamDesk": {
+          "s": "TeamDeskLinkedService"
+        },
+        "Teradata": {
+          "s": "TeradataLinkedService"
+        },
+        "Twilio": {
+          "s": "TwilioLinkedService"
+        },
+        "Vertica": {
+          "s": "VerticaLinkedService"
+        },
+        "Warehouse": {
+          "s": "WarehouseLinkedService"
+        },
+        "Web": {
+          "s": "WebLinkedService"
+        },
+        "Xero": {
+          "s": "XeroLinkedService"
+        },
+        "Zendesk": {
+          "s": "ZendeskLinkedService"
+        },
+        "Zoho": {
+          "s": "ZohoLinkedService"
+        }
+      }
+    },
+    "LinkedServiceListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "LinkedServiceResource"
+          }
+        }
+      }
+    },
+    "LinkedServiceReference": {
+      "r": "linkedservices"
+    },
+    "LinkedServiceResource": {
+      "f": {
+        "properties": {
+          "s": "LinkedService"
+        }
+      }
+    },
+    "LogLocationSettings": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "LogSettings": {
+      "f": {
+        "logLocationSettings": {
+          "s": "LogLocationSettings"
+        }
+      }
+    },
+    "LogStorageSettings": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "LookupActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "LookupActivityTypeProperties"
+        }
+      }
+    },
+    "LookupActivityTypeProperties": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "source": {
+          "s": "CopySource"
+        }
+      }
+    },
+    "MagentoLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MagentoLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MagentoLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "MagentoObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ManagedIntegrationRuntime": {
+      "f": {
+        "managedVirtualNetwork": {
+          "s": "ManagedVirtualNetworkReference"
+        },
+        "typeProperties": {
+          "s": "ManagedIntegrationRuntimeTypeProperties"
+        }
+      }
+    },
+    "ManagedIntegrationRuntimeTypeProperties": {
+      "f": {
+        "ssisProperties": {
+          "s": "IntegrationRuntimeSsisProperties"
+        }
+      }
+    },
+    "ManagedVirtualNetworkReference": {
+      "r": "managedVirtualNetworks"
+    },
+    "MapperConnection": {
+      "f": {
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MapperSourceConnectionsInfo": {
+      "f": {
+        "connection": {
+          "s": "MapperConnection"
+        }
+      }
+    },
+    "MapperTargetConnectionsInfo": {
+      "f": {
+        "connection": {
+          "s": "MapperConnection"
+        }
+      }
+    },
+    "MappingDataFlow": {
+      "f": {
+        "typeProperties": {
+          "s": "MappingDataFlowTypeProperties"
+        }
+      }
+    },
+    "MappingDataFlowTypeProperties": {
+      "f": {
+        "sinks": {
+          "a": {
+            "s": "DataFlowSink"
+          }
+        },
+        "sources": {
+          "a": {
+            "s": "DataFlowSource"
+          }
+        },
+        "transformations": {
+          "a": {
+            "s": "Transformation"
+          }
+        }
+      }
+    },
+    "MariaDBLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MariaDBLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MariaDBLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "MariaDBTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MarketoLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MarketoLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MarketoLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "MarketoObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MicrosoftAccessLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MicrosoftAccessLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MicrosoftAccessLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "MicrosoftAccessTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MongoDbAtlasCollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MongoDbAtlasLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      }
+    },
+    "MongoDbCollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MongoDbLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MongoDbLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MongoDbLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "MongoDbV2CollectionDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "MongoDbV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        }
+      }
+    },
+    "MultiplePipelineTrigger": {
+      "f": {
+        "pipelines": {
+          "a": {
+            "s": "TriggerPipelineReference"
+          }
+        }
+      }
+    },
+    "MySqlLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "MySqlLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "MySqlLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "MySqlTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "NetezzaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "NetezzaLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "NetezzaLinkedServiceTypeProperties": {
+      "f": {
+        "pwd": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "NetezzaTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ODataLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ODataLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ODataLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCert": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCertPassword": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ODataResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "OdbcLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "OdbcLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "OdbcLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "OdbcTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Office365Dataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Office365LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "Office365LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "Office365LinkedServiceTypeProperties": {
+      "f": {
+        "servicePrincipalEmbeddedCert": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCertPassword": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "OracleCloudStorageLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "OracleCloudStorageLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "OracleCloudStorageLinkedServiceTypeProperties": {
+      "f": {
+        "secretAccessKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "OracleLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "OracleLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "OracleLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "OracleServiceCloudLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "OracleServiceCloudLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "OracleServiceCloudLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "OracleServiceCloudObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "OracleTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "OrcDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ParquetDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PaypalLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "PaypalLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "PaypalLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "PaypalObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PhoenixLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "PhoenixLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "PhoenixLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "PhoenixObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Pipeline": {
+      "f": {
+        "activities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "PipelineListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "PipelineResource"
+          }
+        }
+      }
+    },
+    "PipelineReference": {
+      "r": "pipelines"
+    },
+    "PipelineResource": {
+      "f": {
+        "properties": {
+          "s": "Pipeline"
+        }
+      }
+    },
+    "PostgreSqlLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "PostgreSqlLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "PostgreSqlLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "PostgreSqlTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PostgreSqlV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "PostgreSqlV2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "PostgreSqlV2LinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "PostgreSqlV2TableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PowerQuerySink": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "flowlet": {
+          "s": "DataFlowReference"
+        },
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "rejectedDataLinkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "schemaLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PowerQuerySinkMapping": {
+      "f": {
+        "dataflowSinks": {
+          "a": {
+            "s": "PowerQuerySink"
+          }
+        }
+      }
+    },
+    "PowerQuerySource": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "flowlet": {
+          "s": "DataFlowReference"
+        },
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        },
+        "schemaLinkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "PowerQueryTypeProperties": {
+      "f": {
+        "sources": {
+          "a": {
+            "s": "PowerQuerySource"
+          }
+        }
+      }
+    },
+    "PrestoLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "PrestoLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "PrestoLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "PrestoObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "QuickBooksLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "QuickBooksLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "QuickBooksLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        },
+        "accessTokenSecret": {
+          "s": "SecretBase"
+        },
+        "consumerSecret": {
+          "s": "SecretBase"
+        },
+        "refreshToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "QuickBooksObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "QuickbaseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "QuickbaseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "QuickbaseLinkedServiceTypeProperties": {
+      "f": {
+        "userToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "RedshiftUnloadSettings": {
+      "f": {
+        "s3LinkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "RelationalTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ResponsysLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ResponsysLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ResponsysLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ResponsysObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "RestResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "RestServiceLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "RestServiceLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "RestServiceLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCert": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCertPassword": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SSISAccessCredential": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SSISLogLocation": {
+      "f": {
+        "typeProperties": {
+          "s": "SSISLogLocationTypeProperties"
+        }
+      }
+    },
+    "SSISLogLocationTypeProperties": {
+      "f": {
+        "accessCredential": {
+          "s": "SSISAccessCredential"
+        }
+      }
+    },
+    "SSISPackageLocation": {
+      "f": {
+        "typeProperties": {
+          "s": "SSISPackageLocationTypeProperties"
+        }
+      }
+    },
+    "SSISPackageLocationTypeProperties": {
+      "f": {
+        "accessCredential": {
+          "s": "SSISAccessCredential"
+        },
+        "configurationAccessCredential": {
+          "s": "SSISAccessCredential"
+        },
+        "packagePassword": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SalesforceLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SalesforceLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        },
+        "securityToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceMarketingCloudLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SalesforceMarketingCloudLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SalesforceMarketingCloudLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceMarketingCloudObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SalesforceObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SalesforceServiceCloudLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SalesforceServiceCloudLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SalesforceServiceCloudLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        },
+        "securityToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceServiceCloudObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SalesforceServiceCloudV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SalesforceServiceCloudV2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SalesforceServiceCloudV2LinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceServiceCloudV2ObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SalesforceV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SalesforceV2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SalesforceV2LinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SalesforceV2ObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapBWLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapBWLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapBWLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapBwCubeDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapCloudForCustomerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapCloudForCustomerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapCloudForCustomerLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapCloudForCustomerResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapEccLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapEccLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapEccLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapEccResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapHanaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapHanaLinkedServiceProperties"
+        }
+      }
+    },
+    "SapHanaLinkedServiceProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapHanaTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapOdpLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapOdpLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapOdpLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapOdpResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapOpenHubLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapOpenHubLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapOpenHubLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapOpenHubTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SapTableLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SapTableLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SapTableLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SapTableResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ScheduleTrigger": {
+      "f": {
+        "pipelines": {
+          "a": {
+            "s": "TriggerPipelineReference"
+          }
+        }
+      }
+    },
+    "ScriptActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "ScriptActivityTypeProperties"
+        }
+      }
+    },
+    "ScriptActivityTypeProperties": {
+      "f": {
+        "logSettings": {
+          "s": "ScriptActivityTypePropertiesLogSettings"
+        }
+      }
+    },
+    "ScriptActivityTypePropertiesLogSettings": {
+      "f": {
+        "logLocationSettings": {
+          "s": "LogLocationSettings"
+        }
+      }
+    },
+    "SecretBase": {
+      "d": "type",
+      "v": {
+        "AzureKeyVaultSecret": {
+          "s": "AzureKeyVaultSecretReference"
+        },
+        "SecureString": {}
+      }
+    },
+    "SelfHostedIntegrationRuntime": {
+      "f": {
+        "typeProperties": {
+          "s": "SelfHostedIntegrationRuntimeTypeProperties"
+        }
+      }
+    },
+    "SelfHostedIntegrationRuntimeTypeProperties": {
+      "f": {
+        "linkedInfo": {
+          "s": "LinkedIntegrationRuntimeType"
+        }
+      }
+    },
+    "ServiceNowLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ServiceNowLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ServiceNowLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ServiceNowObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ServiceNowV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ServiceNowV2LinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ServiceNowV2LinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ServiceNowV2ObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ServiceNowV2Source": {
+      "f": {
+        "expression": {
+          "s": "ExpressionV2"
+        }
+      }
+    },
+    "ServicePrincipalCredential": {
+      "f": {
+        "typeProperties": {
+          "s": "ServicePrincipalCredentialTypeProperties"
+        }
+      }
+    },
+    "ServicePrincipalCredentialTypeProperties": {
+      "f": {
+        "servicePrincipalKey": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "SftpServerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SftpServerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SftpServerLinkedServiceTypeProperties": {
+      "f": {
+        "passPhrase": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "privateKeyContent": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SharePointOnlineListLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SharePointOnlineListLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SharePointOnlineListLinkedServiceTypeProperties": {
+      "f": {
+        "servicePrincipalEmbeddedCert": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalEmbeddedCertPassword": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SharePointOnlineListResourceDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ShopifyLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ShopifyLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ShopifyLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ShopifyObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SmartsheetLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SmartsheetLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SmartsheetLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SnowflakeDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SnowflakeLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SnowflakeLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SnowflakeLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "SnowflakeLinkedV2ServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "privateKey": {
+          "s": "SecretBase"
+        },
+        "privateKeyPassphrase": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SnowflakeV2Dataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SnowflakeV2LinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SnowflakeLinkedV2ServiceTypeProperties"
+        }
+      }
+    },
+    "SparkLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SparkLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SparkLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SparkObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SqlAlwaysEncryptedProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SqlServerLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SqlServerLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SqlServerLinkedServiceTypeProperties": {
+      "f": {
+        "alwaysEncryptedSettings": {
+          "s": "SqlAlwaysEncryptedProperties"
+        },
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SqlServerStoredProcedureActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SqlServerTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SquareLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SquareLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SquareLinkedServiceTypeProperties": {
+      "f": {
+        "clientSecret": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SquareObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "StagingSettings": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SwitchActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "SwitchActivityTypeProperties"
+        }
+      }
+    },
+    "SwitchActivityTypeProperties": {
+      "f": {
+        "cases": {
+          "a": {
+            "s": "SwitchCase"
+          }
+        },
+        "defaultActivities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "SwitchCase": {
+      "f": {
+        "activities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "SybaseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "SybaseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "SybaseLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "SybaseTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SynapseNotebookActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "SynapseSparkJobDefinitionActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "TeamDeskLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "TeamDeskLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "TeamDeskLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "TeradataLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "TeradataLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "TeradataLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "TeradataTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Transformation": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        },
+        "flowlet": {
+          "s": "DataFlowReference"
+        },
+        "linkedService": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "Trigger": {
+      "d": "type",
+      "v": {
+        "BlobEventsTrigger": {
+          "s": "BlobEventsTrigger"
+        },
+        "BlobTrigger": {
+          "s": "BlobTrigger"
+        },
+        "ChainingTrigger": {
+          "s": "ChainingTrigger"
+        },
+        "CustomEventsTrigger": {
+          "s": "CustomEventsTrigger"
+        },
+        "MultiplePipelineTrigger": {
+          "s": "MultiplePipelineTrigger"
+        },
+        "RerunTumblingWindowTrigger": {},
+        "ScheduleTrigger": {
+          "s": "ScheduleTrigger"
+        },
+        "TumblingWindowTrigger": {
+          "s": "TumblingWindowTrigger"
+        }
+      }
+    },
+    "TriggerDependencyReference": {
+      "f": {
+        "referenceTrigger": {
+          "s": "TriggerReference"
+        }
+      }
+    },
+    "TriggerListResponse": {
+      "f": {
+        "value": {
+          "a": {
+            "s": "TriggerResource"
+          }
+        }
+      }
+    },
+    "TriggerPipelineReference": {
+      "f": {
+        "pipelineReference": {
+          "s": "PipelineReference"
+        }
+      }
+    },
+    "TriggerReference": {
+      "r": "triggers"
+    },
+    "TriggerResource": {
+      "f": {
+        "properties": {
+          "s": "Trigger"
+        }
+      }
+    },
+    "TumblingWindowTrigger": {
+      "f": {
+        "pipeline": {
+          "s": "TriggerPipelineReference"
+        },
+        "typeProperties": {
+          "s": "TumblingWindowTriggerTypeProperties"
+        }
+      }
+    },
+    "TumblingWindowTriggerDependencyReference": {
+      "f": {
+        "referenceTrigger": {
+          "s": "TriggerReference"
+        }
+      }
+    },
+    "TumblingWindowTriggerTypeProperties": {
+      "f": {
+        "dependsOn": {
+          "a": {
+            "s": "DependencyReference"
+          }
+        }
+      }
+    },
+    "TwilioLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "TwilioLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "TwilioLinkedServiceTypeProperties": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "UntilActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "UntilActivityTypeProperties"
+        }
+      }
+    },
+    "UntilActivityTypeProperties": {
+      "f": {
+        "activities": {
+          "a": {
+            "s": "Activity"
+          }
+        }
+      }
+    },
+    "ValidationActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "ValidationActivityTypeProperties"
+        }
+      }
+    },
+    "ValidationActivityTypeProperties": {
+      "f": {
+        "dataset": {
+          "s": "DatasetReference"
+        }
+      }
+    },
+    "VerticaLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "VerticaLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "VerticaLinkedServiceTypeProperties": {
+      "f": {
+        "pwd": {
+          "s": "AzureKeyVaultSecretReference"
+        }
+      }
+    },
+    "VerticaTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "WarehouseLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "WarehouseLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "WarehouseLinkedServiceTypeProperties": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "servicePrincipalCredential": {
+          "s": "SecretBase"
+        },
+        "servicePrincipalKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "WarehouseTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "WebActivity": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        },
+        "typeProperties": {
+          "s": "WebActivityTypeProperties"
+        }
+      }
+    },
+    "WebActivityAuthentication": {
+      "f": {
+        "credential": {
+          "s": "CredentialReference"
+        },
+        "password": {
+          "s": "SecretBase"
+        },
+        "pfx": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "WebActivityTypeProperties": {
+      "f": {
+        "authentication": {
+          "s": "WebActivityAuthentication"
+        },
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "datasets": {
+          "a": {
+            "s": "DatasetReference"
+          }
+        },
+        "linkedServices": {
+          "a": {
+            "s": "LinkedServiceReference"
+          }
+        }
+      }
+    },
+    "WebBasicAuthentication": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "WebClientCertificateAuthentication": {
+      "f": {
+        "password": {
+          "s": "SecretBase"
+        },
+        "pfx": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "WebHookActivity": {
+      "f": {
+        "typeProperties": {
+          "s": "WebHookActivityTypeProperties"
+        }
+      }
+    },
+    "WebHookActivityTypeProperties": {
+      "f": {
+        "authentication": {
+          "s": "WebActivityAuthentication"
+        }
+      }
+    },
+    "WebLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "WebLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "WebLinkedServiceTypeProperties": {
+      "d": "authenticationType",
+      "v": {
+        "Anonymous": {},
+        "Basic": {
+          "s": "WebBasicAuthentication"
+        },
+        "ClientCertificate": {
+          "s": "WebClientCertificateAuthentication"
+        }
+      }
+    },
+    "WebTableDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "WranglingDataFlow": {
+      "f": {
+        "typeProperties": {
+          "s": "PowerQueryTypeProperties"
+        }
+      }
+    },
+    "XeroLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "XeroLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "XeroLinkedServiceTypeProperties": {
+      "f": {
+        "consumerKey": {
+          "s": "SecretBase"
+        },
+        "privateKey": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "XeroObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "XmlDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    },
+    "ZendeskLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ZendeskLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ZendeskLinkedServiceTypeProperties": {
+      "f": {
+        "apiToken": {
+          "s": "SecretBase"
+        },
+        "password": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ZohoLinkedService": {
+      "f": {
+        "connectVia": {
+          "s": "IntegrationRuntimeReference"
+        },
+        "typeProperties": {
+          "s": "ZohoLinkedServiceTypeProperties"
+        }
+      }
+    },
+    "ZohoLinkedServiceTypeProperties": {
+      "f": {
+        "accessToken": {
+          "s": "SecretBase"
+        }
+      }
+    },
+    "ZohoObjectDataset": {
+      "f": {
+        "linkedServiceName": {
+          "s": "LinkedServiceReference"
+        }
+      }
+    }
+  },
+  "source_sha256": "4909c6f99d7bb77fd1176d80961ae36a1000c22f2996d18d71ccd14111a597c0",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+}

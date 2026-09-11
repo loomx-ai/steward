@@ -1,0 +1,48 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataFactory/factories/managedVirtualNetworks
+  class: network.managed_vpc
+presentation:
+  displayNames:
+    en-US: Data Factory managed virtual network
+    zh-CN: 数据工厂托管虚拟网络
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-factory
+  list:
+    operation: Azure.Microsoft.DataFactory.ManagedVirtualNetworks_ListByFactory
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataFactory.ManagedVirtualNetworks_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: data-factory
+    nativeType: Microsoft.DataFactory/factories
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DataFactory/factories
+  targetIdPath: _datafactory_parent

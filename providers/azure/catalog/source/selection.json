@@ -2185,6 +2185,65 @@
         "Rooms_Get",
         "Rooms_List"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json",
+      "operations": [
+        "ChangeDataCapture_Delete",
+        "ChangeDataCapture_Get",
+        "ChangeDataCapture_ListByFactory",
+        "ChangeDataCapture_Status",
+        "ChangeDataCapture_Stop",
+        "CredentialOperations_Delete",
+        "CredentialOperations_Get",
+        "CredentialOperations_ListByFactory",
+        "DataFlowDebugSession_Delete",
+        "DataFlowDebugSession_QueryByFactory",
+        "DataFlows_Delete",
+        "DataFlows_Get",
+        "DataFlows_ListByFactory",
+        "Datasets_Delete",
+        "Datasets_Get",
+        "Datasets_ListByFactory",
+        "Factories_Delete",
+        "Factories_Get",
+        "Factories_List",
+        "Factories_ListByResourceGroup",
+        "GlobalParameters_Delete",
+        "GlobalParameters_Get",
+        "GlobalParameters_ListByFactory",
+        "IntegrationRuntimeNodes_Delete",
+        "IntegrationRuntimeNodes_Get",
+        "IntegrationRuntimes_Delete",
+        "IntegrationRuntimes_Get",
+        "IntegrationRuntimes_GetStatus",
+        "IntegrationRuntimes_ListByFactory",
+        "IntegrationRuntimes_RemoveLinks",
+        "IntegrationRuntimes_Stop",
+        "LinkedServices_Delete",
+        "LinkedServices_Get",
+        "LinkedServices_ListByFactory",
+        "ManagedPrivateEndpoints_Delete",
+        "ManagedPrivateEndpoints_Get",
+        "ManagedPrivateEndpoints_ListByFactory",
+        "ManagedVirtualNetworks_Get",
+        "ManagedVirtualNetworks_ListByFactory",
+        "PipelineRuns_Cancel",
+        "PipelineRuns_Get",
+        "PipelineRuns_QueryByFactory",
+        "Pipelines_Delete",
+        "Pipelines_Get",
+        "Pipelines_ListByFactory",
+        "PrivateEndpointConnection_Delete",
+        "PrivateEndpointConnection_Get",
+        "Triggers_Delete",
+        "Triggers_Get",
+        "Triggers_GetEventSubscriptionStatus",
+        "Triggers_ListByFactory",
+        "Triggers_Stop",
+        "Triggers_UnsubscribeFromEvents",
+        "privateEndPointConnections_ListByFactory"
+      ]
     }
   ],
   "resource_types": [
@@ -9843,6 +9902,257 @@
       ],
       "list_operations": [
         "Azure.Microsoft.Communication.DataPlane.Rooms_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories",
+      "class": "data.pipeline",
+      "display_name": "Data Factory",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "factories",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.Factories_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.Factories_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.Factories_List",
+        "Azure.Microsoft.DataFactory.Factories_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/adfcdcs",
+      "class": "data.change_capture",
+      "display_name": "Change data capture",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "adfcdcs",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.ChangeDataCapture_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.ChangeDataCapture_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.ChangeDataCapture_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/credentials",
+      "class": "identity.credential",
+      "display_name": "Data Factory credential",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "credentials",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.CredentialOperations_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.CredentialOperations_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.CredentialOperations_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/dataflows",
+      "class": "data.flow",
+      "display_name": "Data Factory data flow",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "dataflows",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.DataFlows_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.DataFlows_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.DataFlows_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/datasets",
+      "class": "data.dataset",
+      "display_name": "Data Factory dataset",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "datasets",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.Datasets_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.Datasets_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.Datasets_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/globalParameters",
+      "class": "configuration.parameters",
+      "display_name": "Data Factory global parameters",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "globalParameters",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.GlobalParameters_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.GlobalParameters_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.GlobalParameters_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/integrationRuntimes",
+      "class": "data.resource_group",
+      "display_name": "Integration runtime",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "integrationRuntimes",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimes_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimes_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimes_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/integrationRuntimes/nodes",
+      "class": "compute.integration_runtime_node",
+      "display_name": "Integration runtime node",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "nodes",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.IntegrationRuntimes_GetStatus"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/linkedservices",
+      "class": "data.linked_service",
+      "display_name": "Data Factory linked service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "linkedservices",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.LinkedServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.LinkedServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.LinkedServices_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+      "class": "network.managed_vpc",
+      "display_name": "Data Factory managed virtual network",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "managedVirtualNetworks",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Data Factory managed private endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "managedPrivateEndpoints",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/pipelines",
+      "class": "data.pipeline",
+      "display_name": "Data Factory pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "pipelines",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.Pipelines_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.Pipelines_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.Pipelines_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Data Factory private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "privateEndpointConnections",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.privateEndPointConnections_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/triggers",
+      "class": "data.trigger",
+      "display_name": "Data Factory trigger",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "triggers",
+      "read_operations": [
+        "Azure.Microsoft.DataFactory.Triggers_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataFactory.Triggers_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataFactory.Triggers_ListByFactory"
       ]
     }
   ]

@@ -54,6 +54,7 @@ func (r *Runtime) InventorySources() []contracts.InventorySource {
 		{Name: insightsWorkbookSource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: diagnosticInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: fleetInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
+		{Name: dataFactoryInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: communicationInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeGlobal}, KindSpecific: true, NetworkClosure: true, ReconcileKnownIDs: true},
 		{Name: productInventorySource, RootScopeKinds: []asset.ScopeKind{asset.ScopeSubscription, asset.ScopeRegion, asset.ScopeGlobal}, AuthoritativeDefault: true, KindSpecific: true, NetworkClosure: true},
 	}

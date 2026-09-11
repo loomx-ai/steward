@@ -14,6 +14,11 @@ func monitorARMTarget(value asset.Asset) bool {
 	if rbacResourceKind(value.Identity.NativeType) != "" {
 		return false
 	}
+	// A Data Factory node is a self-hosted runtime registration. Its native
+	// API returns nodeName, without an ARM resource or managed identity.
+	if value.Identity.NativeType == dataFactoryNodeType {
+		return false
+	}
 	if value.Identity.Provider != asset.ProviderAzure || insightsLegacyKind(value.Identity.NativeType).kind != "" || value.Identity.NativeType == insightsAnnotationType {
 		return false
 	}

@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 406 类资源，其中 379 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 420 类资源，其中 392 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -48,6 +48,7 @@ Steward 识别 406 类资源，其中 379 类具有原生清理操作（包括 B
 | Cosmos DB | NoSQL、MongoDB、Cassandra、Gremlin、Table 账号及数据库/容器，角色、服务、笔记本与私有连接；托管 Cassandra 和 Fleet | 先删除已审查的子资源及共享依赖；客户端加密密钥和内置角色随控制资源清理；Fleet 解绑保留账号 |
 | Azure DocumentDB | MongoDB 兼容集群及副本、防火墙规则、专用终结点连接与 Microsoft Entra 用户 | 先删除已审查的副本及子资源，再删除源集群或父资源；单独删除副本会保留源集群 |
 | Azure Data Explorer | Kusto 集群、数据库、跟随挂接、数据连接、主体、脚本与私有连接；自定义沙箱映像 | 先删除已审查的子资源及跟随挂接；只读数据库与活动映像随控制资源清理 |
+| Data Factory | 工厂、管道、数据集、数据流、链接服务、凭据、触发器、CDC、全局参数、集成运行时及节点、私有连接 | 审查工厂级联；先处理运行时及运行任务；托管虚拟网络随工厂清理 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -81,6 +82,14 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Data Factory 按工厂所在区域清点 14 类原生资源，包括运行时节点注册和托管虚拟网络。盘点与清理需要完整的工厂及子资源列表、资源自身读取、运行时状态、触发器事件订阅状态、管道运行查询及读取、调试会话查询，以及资源组和管理锁读取权限。清理还需要所选 DELETE 和准备操作的权限。管道内容、连接值、运行参数及调试详情不会进入公开清单和日志。
+
+工厂清理会审查全部自有对象。触发器和 CDC 先停止，事件触发器还需等待取消事件订阅。SSIS 运行时及其引用对象是独立前置步骤，异步 Stop 完成后仍须读取运行时自身，确认已停止才能删除。托管虚拟网络没有独立 DELETE，随工厂清理；保留任何自有子资源都会阻止删除工厂。参见微软的 [SSIS 删除顺序](https://learn.microsoft.com/en-us/azure/data-factory/manage-azure-ssis-integration-runtime)与[取消事件订阅接口](https://learn.microsoft.com/en-us/rest/api/datafactory/triggers/unsubscribe-from-events?view=rest-datafactory-2018-06-01)。
+
+工厂清理逐个取消已审查的活动管道运行，并删除已审查的调试会话。单独清理管道仅取消该管道已审查的运行；其他独立对象会等待工厂任务结束。新发现的任务需要重新审查。共享自托管运行时要求明确选择引用它的运行时资源或其工厂；只有各自读取确认不存在后，才能解除已审查消费者工厂的链接。无法解析或来自其他订阅的链接会阻止清理宿主。源数据、外部计算、身份、网络和自托管机器保持独立；删除节点仅移除注册。参见[共享运行时管理](https://learn.microsoft.com/en-us/azure/data-factory/create-shared-self-hosted-integration-runtime-powershell)。
+
+准备和删除核验可在 worker 重启后继续，核验时限为 24 小时。收到回执或父资源消失均不能证明已记录的后代或必要消费者消失，仍须逐项读取确认。配置、创建身份、保护、管理锁发生变化，或原生上下文不可读取时，会阻止继续执行。查询覆盖服务可见的任务，并重读已知运行，无法证明不可访问的历史状态。脱敏凭据和缺少创建标识的对象会限制变更检测，原生 DELETE 也没有条件版本参数来阻止并发外部修改。目前验证包含协议测试、官方录制和 SQLite worker 测试，真实云及独立 Data Factory 模拟器验收仍待完成。
 
 通信与邮件资源在全局范围盘点。电话号码、预留号码和房间保留原生账户 URL，房间 ID 区分大小写。扫描会两次核对完整账户层级和房间参与者；已知资源从列表遗漏时，会通过该资源自己的 GET 补读。账户或域不存在不能证明已记录的子孙资源已删除。私有 SMTP、收件人、验证和参与者详情不会进入公开清单及 API 日志。
 

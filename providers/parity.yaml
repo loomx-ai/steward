@@ -750,6 +750,10 @@ resources:
     resources:
     - Microsoft.DataFactory/factories/integrationRuntimes
   status: pending_verification
+  notes: Azure native runtime and node inventory, SSIS stop/delete, linked-runtime prerequisites,
+    explicit shared-consumer cleanup and resumed own-resource absence are implemented and
+    tested through registered SQLite workers. Self-hosted machines remain independent;
+    functional equivalence and live-cloud acceptance remain open.
 - alicloud: ACS::DBS::BackupPlan
   spec: providers/alicloud/specs/dbs-backup-plan.yaml
   class: storage.backup_plan
@@ -1155,6 +1159,12 @@ resources:
     resources:
     - Microsoft.DataFactory/factories
   status: pending_verification
+  notes: Azure Data Factory covers fourteen native kinds and thirteen cleanup actions,
+    including reviewed artifact cascades, trigger/CDC preparation, work cancellation,
+    debug-session deletion and shared-runtime guards. Protocol and official CLI replay
+    tests include restarted SQLite scan, graph and execution workers. Data Factory is a
+    functional candidate rather than Logstash feature equivalence; emulator/live-cloud
+    acceptance remains open.
 - alicloud: ACS::EmrServerlessSpark::Workspace
   spec: providers/alicloud/specs/emr-serverless-workspace.yaml
   class: data.workspace

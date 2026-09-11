@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	datafactory := request.ResourceKind != nil && dataFactoryKind(request.ResourceKind.NativeType) != ""
+	if request.Source == dataFactoryInventorySource && !datafactory || datafactory && request.Source != "" && request.Source != inventorySource && request.Source != dataFactoryInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_datafactory_inventory_source")
 	}
 	communication := request.ResourceKind != nil && communicationKind(request.ResourceKind.NativeType) != ""
 	if request.Source == communicationInventorySource && !communication || communication && request.Source != "" && request.Source != inventorySource && request.Source != communicationInventorySource {
@@ -42,6 +46,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if datafactory {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = dataFactoryInventorySource
+		return r.listDataFactory(ctx, c, request)
 	}
 	if communication {
 		if request.Source == inventorySource {

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "9d3292b73ec7401a65590319a14f8e43d08ebcb1b52293d57d52da6a00a4ad93",
+    "checksum": "fc6ea8d872e195a29709d7af45d06178674315dfac59744fbed319f474b02387",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "82ae45ed1afde4c7f52a3a37f62298ca716616bf62ecde3555d17e9797c87653",
+  "content_checksum": "0ac37bed5b4b0b184f8d185002ed65bf3da81d8ec6f77b7b42eb153772cfd43e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -64427,6 +64427,4696 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/e45039baa985c442877529906e705982a6e0099d/specification/dashboard/resource-manager/Microsoft.Dashboard/Dashboard/stable/2025-08-01/grafana.json"
     },
     {
+      "id": "Azure.Microsoft.DataFactory.ChangeDataCapture_Delete",
+      "name": "ChangeDataCapture_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "changeDataCaptureName": {
+            "description": "The change data capture name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "changeDataCaptureName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ChangeDataCapture_Get",
+      "name": "ChangeDataCapture_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "changeDataCaptureName": {
+            "description": "The change data capture name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "changeDataCaptureName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the change data capture entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {},
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Change data capture resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ChangeDataCapture",
+            "description": "Properties of the change data capture.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ChangeDataCapture_ListByFactory",
+      "name": "ChangeDataCapture_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of change data capture resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ChangeDataCaptureResource items on this page",
+            "items": {
+              "$ref": "#/definitions/ChangeDataCaptureResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ChangeDataCapture_Status",
+      "name": "ChangeDataCapture_Status",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}/status",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "changeDataCaptureName": {
+            "description": "The change data capture name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "changeDataCaptureName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Current status of the change data capture resource.",
+        "type": "string"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}/status",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ChangeDataCapture_Stop",
+      "name": "ChangeDataCapture_Stop",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "changeDataCaptureName": {
+            "description": "The change data capture name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "changeDataCaptureName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/adfcdcs/{changeDataCaptureName}/stop",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.CredentialOperations_Delete",
+      "name": "CredentialOperations_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials/{credentialName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "credentialName": {
+            "description": "Credential name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "credentialName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials/{credentialName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.CredentialOperations_Get",
+      "name": "CredentialOperations_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials/{credentialName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "credentialName": {
+            "description": "Credential name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "credentialName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the credential entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Credential resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/Credential",
+            "description": "Properties of credentials."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials/{credentialName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.CredentialOperations_ListByFactory",
+      "name": "CredentialOperations_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of credential resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The CredentialResource items on this page",
+            "items": {
+              "$ref": "#/definitions/CredentialResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/credentials",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.DataFlowDebugSession_Delete",
+      "name": "DataFlowDebugSession_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/deleteDataFlowDebugSession",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "request": {
+            "description": "Data flow debug session definition for deletion",
+            "in": "body",
+            "name": "request",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteDataFlowDebugSessionRequest"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/deleteDataFlowDebugSession",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.DataFlowDebugSession_QueryByFactory",
+      "name": "DataFlowDebugSession_QueryByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/queryDataFlowDebugSessions",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paged collection of DataFlowDebugSessionInfo items",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataFlowDebugSessionInfo items on this page",
+            "items": {
+              "$ref": "#/definitions/DataFlowDebugSessionInfo"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "dataFlowName",
+              "sessionId"
+            ]
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/queryDataFlowDebugSessions",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.DataFlows_Delete",
+      "name": "DataFlows_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows/{dataFlowName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataFlowName": {
+            "description": "The data flow name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "dataFlowName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows/{dataFlowName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.DataFlows_Get",
+      "name": "DataFlows_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows/{dataFlowName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "dataFlowName": {
+            "description": "The data flow name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "dataFlowName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the data flow entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Data flow resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/DataFlow",
+            "description": "Data flow properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows/{dataFlowName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.DataFlows_ListByFactory",
+      "name": "DataFlows_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of data flow resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DataFlowResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DataFlowResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/dataflows",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Datasets_Delete",
+      "name": "Datasets_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets/{datasetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "datasetName": {
+            "description": "The dataset name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "datasetName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets/{datasetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Datasets_Get",
+      "name": "Datasets_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets/{datasetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "datasetName": {
+            "description": "The dataset name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "datasetName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the dataset entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Dataset resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/Dataset",
+            "description": "Dataset properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets/{datasetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Datasets_ListByFactory",
+      "name": "Datasets_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of dataset resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The DatasetResource items on this page",
+            "items": {
+              "$ref": "#/definitions/DatasetResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/datasets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Factories_Delete",
+      "name": "Factories_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Factories_Get",
+      "name": "Factories_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the factory entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {},
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Factory resource type.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "#/definitions/FactoryIdentity",
+            "description": "Managed service identity of the factory."
+          },
+          "location": {
+            "description": "The resource location.",
+            "type": "string",
+            "x-ms-mutability": [
+              "read",
+              "create"
+            ]
+          },
+          "properties": {
+            "$ref": "#/definitions/FactoryProperties",
+            "description": "Properties of the factory.",
+            "x-ms-client-flatten": true
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The resource tags.",
+            "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Factories_List",
+      "name": "Factories_List",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataFactory/factories",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of factory resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Factory items on this page",
+            "items": {
+              "$ref": "#/definitions/Factory"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataFactory/factories",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Factories_ListByResourceGroup",
+      "name": "Factories_ListByResourceGroup",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of factory resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Factory items on this page",
+            "items": {
+              "$ref": "#/definitions/Factory"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.GlobalParameters_Delete",
+      "name": "GlobalParameters_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters/{globalParameterName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "globalParameterName": {
+            "description": "The global parameter name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "globalParameterName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters/{globalParameterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.GlobalParameters_Get",
+      "name": "GlobalParameters_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters/{globalParameterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "globalParameterName": {
+            "description": "The global parameter name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "globalParameterName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Global parameters resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "additionalProperties": {
+              "$ref": "#/definitions/GlobalParameterSpecification"
+            },
+            "description": "Properties of the global parameter.",
+            "type": "object"
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters/{globalParameterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.GlobalParameters_ListByFactory",
+      "name": "GlobalParameters_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of Global parameters.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The GlobalParameterResource items on this page",
+            "items": {
+              "$ref": "#/definitions/GlobalParameterResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/globalParameters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Delete",
+      "name": "IntegrationRuntimeNodes_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/nodes/{nodeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "nodeName": {
+            "description": "The integration runtime node name.",
+            "in": "path",
+            "maxLength": 150,
+            "minLength": 1,
+            "name": "nodeName",
+            "pattern": "^[a-z0-9A-Z][a-z0-9A-Z_-]{0,149}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/nodes/{nodeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Get",
+      "name": "IntegrationRuntimeNodes_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/nodes/{nodeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "nodeName": {
+            "description": "The integration runtime node name.",
+            "in": "path",
+            "maxLength": 150,
+            "minLength": 1,
+            "name": "nodeName",
+            "pattern": "^[a-z0-9A-Z][a-z0-9A-Z_-]{0,149}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {},
+        "description": "Properties of Self-hosted integration runtime node.",
+        "properties": {
+          "capabilities": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The integration runtime capabilities dictionary",
+            "readOnly": true,
+            "type": "object"
+          },
+          "concurrentJobsLimit": {
+            "description": "Maximum concurrent jobs on the integration runtime node.",
+            "format": "int32",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "expiryTime": {
+            "description": "The time at which the integration runtime will expire in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "hostServiceUri": {
+            "description": "URI for the host machine of the integration runtime.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "isActiveDispatcher": {
+            "description": "Indicates whether this node is the active dispatcher for integration runtime requests.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "lastConnectTime": {
+            "description": "The most recent time at which the integration runtime was connected in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lastEndUpdateTime": {
+            "description": "The last time for the integration runtime node update end.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lastStartTime": {
+            "description": "The time the node last started up.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lastStartUpdateTime": {
+            "description": "The last time for the integration runtime node update start.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lastStopTime": {
+            "description": "The integration runtime node last stop time.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "lastUpdateResult": {
+            "$ref": "#/definitions/IntegrationRuntimeUpdateResult",
+            "description": "The result of the last integration runtime node update.",
+            "readOnly": true
+          },
+          "machineName": {
+            "description": "Machine name of the integration runtime node.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "maxConcurrentJobs": {
+            "description": "The maximum concurrent jobs in this integration runtime.",
+            "format": "int32",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "nodeName": {
+            "description": "Name of the integration runtime node.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "registerTime": {
+            "description": "The time at which the integration runtime node was registered in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/definitions/SelfHostedIntegrationRuntimeNodeStatus",
+            "description": "Status of the integration runtime node.",
+            "readOnly": true
+          },
+          "version": {
+            "description": "Version of the integration runtime node.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "versionStatus": {
+            "description": "Status of the integration runtime node version.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/nodes/{nodeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_Delete",
+      "name": "IntegrationRuntimes_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "description": "The integration runtime name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_Get",
+      "name": "IntegrationRuntimes_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the integration runtime entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "integrationRuntimeName": {
+            "description": "The integration runtime name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Integration runtime resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/IntegrationRuntime",
+            "description": "Integration runtime properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_GetStatus",
+      "name": "IntegrationRuntimes_GetStatus",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/getStatus",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "description": "The integration runtime name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Integration runtime status response.",
+        "properties": {
+          "name": {
+            "description": "The integration runtime name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/IntegrationRuntimeStatus",
+            "description": "Integration runtime properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/getStatus",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_ListByFactory",
+      "name": "IntegrationRuntimes_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of integration runtime resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The IntegrationRuntimeResource items on this page",
+            "items": {
+              "$ref": "#/definitions/IntegrationRuntimeResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_RemoveLinks",
+      "name": "IntegrationRuntimes_RemoveLinks",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/removeLinks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "description": "The integration runtime name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "linkedIntegrationRuntimeRequest": {
+            "description": "The data factory name for the linked integration runtime.",
+            "in": "body",
+            "name": "linkedIntegrationRuntimeRequest",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LinkedIntegrationRuntimeRequest"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/removeLinks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.IntegrationRuntimes_Stop",
+      "name": "IntegrationRuntimes_Stop",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "integrationRuntimeName": {
+            "description": "The integration runtime name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "integrationRuntimeName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/integrationRuntimes/{integrationRuntimeName}/stop",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.LinkedServices_Delete",
+      "name": "LinkedServices_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices/{linkedServiceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "linkedServiceName": {
+            "description": "The linked service name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "linkedServiceName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices/{linkedServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.LinkedServices_Get",
+      "name": "LinkedServices_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices/{linkedServiceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the linked service entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "linkedServiceName": {
+            "description": "The linked service name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "linkedServiceName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Linked service resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/LinkedService",
+            "description": "Properties of linked service."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices/{linkedServiceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.LinkedServices_ListByFactory",
+      "name": "LinkedServices_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of linked service resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The LinkedServiceResource items on this page",
+            "items": {
+              "$ref": "#/definitions/LinkedServiceResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/linkedservices",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Delete",
+      "name": "ManagedPrivateEndpoints_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "managedPrivateEndpointName": {
+            "description": "Managed private endpoint name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedPrivateEndpointName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "managedVirtualNetworkName": {
+            "description": "Managed virtual network name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedVirtualNetworkName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Get",
+      "name": "ManagedPrivateEndpoints_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the managed private endpoint entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "managedPrivateEndpointName": {
+            "description": "Managed private endpoint name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedPrivateEndpointName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "managedVirtualNetworkName": {
+            "description": "Managed virtual network name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedVirtualNetworkName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Managed private endpoint resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ManagedPrivateEndpoint",
+            "description": "Managed private endpoint properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints/{managedPrivateEndpointName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_ListByFactory",
+      "name": "ManagedPrivateEndpoints_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "managedVirtualNetworkName": {
+            "description": "Managed virtual network name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedVirtualNetworkName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Paged collection of ManagedPrivateEndpointResource items",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ManagedPrivateEndpointResource items on this page",
+            "items": {
+              "$ref": "#/definitions/ManagedPrivateEndpointResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}/managedPrivateEndpoints",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_Get",
+      "name": "ManagedVirtualNetworks_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the managed Virtual Network entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "managedVirtualNetworkName": {
+            "description": "Managed virtual network name",
+            "in": "path",
+            "maxLength": 127,
+            "minLength": 1,
+            "name": "managedVirtualNetworkName",
+            "pattern": "^([_A-Za-z0-9]|([_A-Za-z0-9][-_A-Za-z0-9]{0,125}[_A-Za-z0-9]))$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Managed Virtual Network resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/ManagedVirtualNetwork",
+            "description": "Managed Virtual Network properties."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks/{managedVirtualNetworkName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_ListByFactory",
+      "name": "ManagedVirtualNetworks_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of managed Virtual Network resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ManagedVirtualNetworkResource items on this page",
+            "items": {
+              "$ref": "#/definitions/ManagedVirtualNetworkResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/managedVirtualNetworks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.PipelineRuns_Cancel",
+      "name": "PipelineRuns_Cancel",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelineruns/{runId}/cancel",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "isRecursive": {
+            "description": "If true, cancel all the Child pipelines that are triggered by the current pipeline.",
+            "in": "query",
+            "name": "isRecursive",
+            "required": false,
+            "type": "boolean"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "runId": {
+            "description": "The pipeline run identifier.",
+            "in": "path",
+            "name": "runId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelineruns/{runId}/cancel",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.PipelineRuns_Get",
+      "name": "PipelineRuns_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelineruns/{runId}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "runId": {
+            "description": "The pipeline run identifier.",
+            "in": "path",
+            "name": "runId",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {},
+        "description": "Information about a pipeline run.",
+        "properties": {
+          "durationInMs": {
+            "description": "The duration of a pipeline run.",
+            "format": "int32",
+            "readOnly": true,
+            "type": "integer"
+          },
+          "invokedBy": {
+            "$ref": "#/definitions/PipelineRunInvokedBy",
+            "description": "Entity that started the pipeline run.",
+            "readOnly": true
+          },
+          "isLatest": {
+            "description": "Indicates if the recovered pipeline run is the latest in its group.",
+            "readOnly": true,
+            "type": "boolean"
+          },
+          "lastUpdated": {
+            "description": "The last updated timestamp for the pipeline run event in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "message": {
+            "description": "The message from a pipeline run.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "parameters": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The full or partial list of parameter name, value pair used in the pipeline run.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "pipelineName": {
+            "description": "The pipeline name.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "runDimensions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Run dimensions emitted by Pipeline run.",
+            "readOnly": true,
+            "type": "object"
+          },
+          "runEnd": {
+            "description": "The end time of a pipeline run in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "runGroupId": {
+            "description": "Identifier that correlates all the recovery runs of a pipeline run.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "runId": {
+            "description": "Identifier of a run.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "runStart": {
+            "description": "The start time of a pipeline run in ISO8601 format.",
+            "format": "date-time",
+            "readOnly": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "The status of a pipeline run. Possible values: Queued, InProgress, Succeeded, Failed, Canceling, Cancelled",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelineruns/{runId}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.PipelineRuns_QueryByFactory",
+      "name": "PipelineRuns_QueryByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/queryPipelineRuns",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "filterParameters": {
+            "description": "Parameters to filter the pipeline run.",
+            "in": "body",
+            "name": "filterParameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RunFilterParameters"
+            }
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list pipeline runs.",
+        "properties": {
+          "continuationToken": {
+            "description": "The continuation token for getting the next page of results, if any remaining results exist, null otherwise.",
+            "type": "string"
+          },
+          "value": {
+            "description": "List of pipeline runs.",
+            "items": {
+              "$ref": "#/definitions/PipelineRun"
+            },
+            "type": "array",
+            "x-ms-identifiers": [
+              "runId"
+            ]
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/queryPipelineRuns",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Pipelines_Delete",
+      "name": "Pipelines_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines/{pipelineName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "pipelineName": {
+            "description": "The pipeline name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "pipelineName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines/{pipelineName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Pipelines_Get",
+      "name": "Pipelines_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines/{pipelineName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the pipeline entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "pipelineName": {
+            "description": "The pipeline name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "pipelineName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "additionalProperties": {},
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Pipeline resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/Pipeline",
+            "description": "Properties of the pipeline.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines/{pipelineName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Pipelines_ListByFactory",
+      "name": "Pipelines_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of pipeline resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The PipelineResource items on this page",
+            "items": {
+              "$ref": "#/definitions/PipelineResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/pipelines",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Delete",
+      "name": "PrivateEndpointConnection_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The private endpoint connection name.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Get",
+      "name": "PrivateEndpointConnection_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the private endpoint connection entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The private endpoint connection name.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Private Endpoint Connection ARM resource.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/RemotePrivateEndpointConnection",
+            "description": "Core resource properties"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_Delete",
+      "name": "Triggers_Delete",
+      "service": "Microsoft.DataFactory",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "triggerName": {
+            "description": "The trigger name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "triggerName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_Get",
+      "name": "Triggers_Get",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "if-none-match": {
+            "description": "ETag of the trigger entity. Should only be specified for get. If the ETag matches the existing entity tag, or if * was provided, then no content will be returned.",
+            "in": "header",
+            "name": "if-none-match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "If-None-Match"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "triggerName": {
+            "description": "The trigger name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "triggerName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v6/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Trigger resource type.",
+        "properties": {
+          "etag": {
+            "description": "\"If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.\")",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/Trigger",
+            "description": "Properties of the trigger."
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_GetEventSubscriptionStatus",
+      "name": "Triggers_GetEventSubscriptionStatus",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/getEventSubscriptionStatus",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "triggerName": {
+            "description": "The trigger name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "triggerName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines the response of a trigger subscription operation.",
+        "properties": {
+          "status": {
+            "$ref": "#/definitions/EventSubscriptionStatus",
+            "description": "Event Subscription Status.",
+            "readOnly": true
+          },
+          "triggerName": {
+            "description": "Trigger name.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/getEventSubscriptionStatus",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_ListByFactory",
+      "name": "Triggers_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of trigger resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The TriggerResource items on this page",
+            "items": {
+              "$ref": "#/definitions/TriggerResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_Stop",
+      "name": "Triggers_Stop",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "triggerName": {
+            "description": "The trigger name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "triggerName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/stop",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.Triggers_UnsubscribeFromEvents",
+      "name": "Triggers_UnsubscribeFromEvents",
+      "service": "Microsoft.DataFactory",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/unsubscribeFromEvents",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "triggerName": {
+            "description": "The trigger name.",
+            "in": "path",
+            "maxLength": 260,
+            "minLength": 1,
+            "name": "triggerName",
+            "pattern": "^[A-Za-z0-9_][^\u003c\u003e*#.%\u0026:\\\\+?/]*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Defines the response of a trigger subscription operation.",
+        "properties": {
+          "status": {
+            "$ref": "#/definitions/EventSubscriptionStatus",
+            "description": "Event Subscription Status.",
+            "readOnly": true
+          },
+          "triggerName": {
+            "description": "Trigger name.",
+            "readOnly": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/triggers/{triggerName}/unsubscribeFromEvents",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.DataFactory.privateEndPointConnections_ListByFactory",
+      "name": "privateEndPointConnections_ListByFactory",
+      "service": "Microsoft.DataFactory",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2018-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "factoryName": {
+            "description": "The factory name.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "factoryName",
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of linked service resources.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The PrivateEndpointConnectionResource items on this page",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnectionResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.DataFactory",
+        "version": "2018-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataFactory/factories/{factoryName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datafactory/resource-manager/Microsoft.DataFactory/DataFactory/stable/2018-06-01/openapi.json"
+    },
+    {
       "id": "Azure.Microsoft.DocumentDB.CassandraClusters_Delete",
       "name": "CassandraClusters_Delete",
       "service": "Microsoft.DocumentDB",
@@ -119650,6 +124340,284 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Dashboard.PrivateEndpointConnections_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories",
+      "class": "data.pipeline",
+      "display_name": "Data Factory",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "factories",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.Factories_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.Factories_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.Factories_List",
+          "Azure.Microsoft.DataFactory.Factories_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/adfcdcs",
+      "class": "data.change_capture",
+      "display_name": "Change data capture",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "adfcdcs",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.ChangeDataCapture_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.ChangeDataCapture_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.ChangeDataCapture_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/credentials",
+      "class": "identity.credential",
+      "display_name": "Data Factory credential",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "credentials",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.CredentialOperations_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.CredentialOperations_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.CredentialOperations_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/dataflows",
+      "class": "data.flow",
+      "display_name": "Data Factory data flow",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "dataflows",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.DataFlows_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.DataFlows_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.DataFlows_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/datasets",
+      "class": "data.dataset",
+      "display_name": "Data Factory dataset",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "datasets",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.Datasets_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.Datasets_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.Datasets_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/globalParameters",
+      "class": "configuration.parameters",
+      "display_name": "Data Factory global parameters",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "globalParameters",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.GlobalParameters_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.GlobalParameters_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.GlobalParameters_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/integrationRuntimes",
+      "class": "data.resource_group",
+      "display_name": "Integration runtime",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "integrationRuntimes",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimes_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimes_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/integrationRuntimes/nodes",
+      "class": "compute.integration_runtime_node",
+      "display_name": "Integration runtime node",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "nodes",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimeNodes_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.IntegrationRuntimes_GetStatus"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/linkedservices",
+      "class": "data.linked_service",
+      "display_name": "Data Factory linked service",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "linkedservices",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.LinkedServices_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.LinkedServices_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.LinkedServices_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/managedVirtualNetworks",
+      "class": "network.managed_vpc",
+      "display_name": "Data Factory managed virtual network",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "managedVirtualNetworks",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.ManagedVirtualNetworks_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/managedVirtualNetworks/managedPrivateEndpoints",
+      "class": "network.managed_private_endpoint",
+      "display_name": "Data Factory managed private endpoint",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "managedPrivateEndpoints",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.ManagedPrivateEndpoints_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/pipelines",
+      "class": "data.pipeline",
+      "display_name": "Data Factory pipeline",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "pipelines",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.Pipelines_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.Pipelines_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.Pipelines_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Data Factory private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.PrivateEndpointConnection_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.privateEndPointConnections_ListByFactory"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.DataFactory/factories/triggers",
+      "class": "data.trigger",
+      "display_name": "Data Factory trigger",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "triggers",
+        "read_operations": [
+          "Azure.Microsoft.DataFactory.Triggers_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.DataFactory.Triggers_Delete"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.DataFactory.Triggers_ListByFactory"
         ]
       }
     },

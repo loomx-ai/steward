@@ -183,9 +183,9 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 		ids = kind.DeleteOperations
 	}
 	parts := strings.Split(id, "/")
-	if isCosmosType(kind.NativeType) {
+	if isCosmosType(kind.NativeType) || kind.NativeType == dataFactoryNodeType {
 		if nativeID != strings.TrimSpace(nativeID) {
-			return catalog.Operation{}, nil, fmt.Errorf("invalid Cosmos DB resource ID")
+			return catalog.Operation{}, nil, fmt.Errorf("invalid case-preserving resource ID")
 		}
 		parts = strings.Split(nativeID, "/")
 	}

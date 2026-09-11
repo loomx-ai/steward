@@ -130,7 +130,7 @@ func loadProviderData() (providerMetadata, error) {
 				if !ok || operation.Call == nil || (operation.Call.Style != "azure-rest" && operation.Call.Style != "azure-batch-rest" && operation.Call.Style != "azure-communication-rest") {
 					return result, fmt.Errorf("Azure resource %q references an unknown operation %q", kind.NativeType, id)
 				}
-				if (slices.Contains(kind.ReadOperations, id) && operation.Call.Method != resourceReadMethod(kind.NativeType)) || (slices.Contains(kind.ListOperations, id) && operation.Call.Method != "GET") {
+				if (slices.Contains(kind.ReadOperations, id) && operation.Call.Method != resourceReadMethod(kind.NativeType)) || (slices.Contains(kind.ListOperations, id) && operation.Call.Method != resourceListMethod(kind.NativeType)) {
 					return result, fmt.Errorf("Azure read binding %q does not use its native read method", id)
 				}
 				batchNodeRemoval := kind.NativeType == "Microsoft.Batch/batchAccounts/pools/nodes" && operation.ID == "Azure.Microsoft.Batch.DataPlane.Pools_RemoveNodes" && operation.Call.Method == "POST"
@@ -185,4 +185,11 @@ func validResponseIDType(nativeType, alias string) bool {
 	return len(parts) >= 3 && len(parts) == len(aliases) && aliases[len(aliases)-1] != "" &&
 		strings.EqualFold(strings.Join(parts[:len(parts)-1], "/"), strings.Join(aliases[:len(aliases)-1], "/")) &&
 		!strings.EqualFold(parts[len(parts)-1], aliases[len(aliases)-1])
+}
+
+func resourceListMethod(kind string) string {
+	if kind == dataFactoryNodeType {
+		return "POST"
+	}
+	return "GET"
 }

@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if dataFactoryKind(kind) != "" {
+		return dataFactoryInventorySource
+	}
 	if communicationKind(kind) != "" {
 		return communicationInventorySource
 	}

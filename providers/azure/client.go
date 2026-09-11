@@ -277,7 +277,18 @@ func (c *client) requestUsing(ctx context.Context, method, endpoint string, body
 		}
 		shape := applicationInsightsResponseShape(method, u)
 		rows, isArray := value.([]any)
-		if res.StatusCode == http.StatusOK && (shape == "array" || shape == "array-or-object" && isArray) {
+		if res.StatusCode == http.StatusOK && dataFactoryStringResponse(method, u) {
+			status, ok := value.(string)
+			if !ok || status == "" || status != strings.TrimSpace(status) {
+				return out, apiError(res.StatusCode, "invalid_response", res.Header)
+			}
+			out.data = map[string]any{"status": status}
+		} else if res.StatusCode == http.StatusOK && dataFactoryCancelStringResponse(method, u) {
+			if value != "" && (object(value) == nil || len(object(value)) != 0) {
+				return out, apiError(res.StatusCode, "invalid_response", res.Header)
+			}
+			out.data = map[string]any{}
+		} else if res.StatusCode == http.StatusOK && (shape == "array" || shape == "array-or-object" && isArray) {
 			if !isArray {
 				return out, apiError(res.StatusCode, "invalid_response", res.Header)
 			}
@@ -441,6 +452,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 	if err := cognitiveListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
+	if err := dataFactoryListQuery(u); err != nil {
+		return nil, "", response{}, err
+	}
 	if err := fleetListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
@@ -484,6 +498,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		if err := cognitiveListQuery(nu); err != nil {
+			return nil, "", response{}, err
+		}
+		if err := dataFactoryListQuery(nu); err != nil {
 			return nil, "", response{}, err
 		}
 		if err := fleetListQuery(nu); err != nil {
