@@ -64,8 +64,8 @@ func fleetSafeValue(value any) any {
 	}
 }
 
-func (c *client) fleetReferenceBinding(id, kind, location, configuration, context string, refs map[string]any) string {
-	return c.privateConfiguration(map[string]any{"id": id, "kind": kind, "location": location, "configuration": configuration, "context": context, "references": refs})
+func (c *client) fleetReferenceBinding(id, kind, location, configuration, context string, refs map[string]any, placement any) string {
+	return c.privateConfiguration(map[string]any{"id": id, "kind": kind, "location": location, "configuration": configuration, "context": context, "references": refs, "placement_dynamic": placement})
 }
 
 func (r *Runtime) fleetObservedInventoryItem(ctx context.Context, c *client, raw map[string]any, owners map[string]string, locks []any) (contracts.InventoryItem, error) {
@@ -193,7 +193,7 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	slices.Sort(network)
 	recorded := monitorReferenceProjection(refs)
 	normalized["_fleet_references"] = recorded
-	normalized[fleetReferencesProof] = c.fleetReferenceBinding(id, kind, location, text(normalized[fleetConfigurationProof]), text(normalized[fleetContextProof]), recorded)
+	normalized[fleetReferencesProof] = c.fleetReferenceBinding(id, kind, location, text(normalized[fleetConfigurationProof]), text(normalized[fleetContextProof]), recorded, normalized["placement_dynamic"])
 	if err := c.rbacIdentityInventory(id, kind, raw, normalized); err != nil {
 		return contracts.InventoryItem{}, err
 	}

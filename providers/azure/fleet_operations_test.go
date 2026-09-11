@@ -135,6 +135,13 @@ func TestFleetPollingStateReceiptAndResourceReadback(t *testing.T) {
 				t.Fatal(err)
 			}
 			request := contracts.ActionRequest{Action: "delete", Asset: asset.Asset{ID: "run", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeID: a.id, NativeType: fleetRunType}, Location: a.location}}
+			parent := fleetTestBody(t, fleetType, "fleet1")
+			parent["location"] = a.location
+			item, err := (&Runtime{}).fleetInventoryItem(c, fleetRunType, fleetTestBody(t, fleetRunType, "run1"), parent, map[string]any{"id": c.root() + "/resourcegroups/test"}, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			request.Asset.Normalized = item.Normalized
 			switch mode {
 			case "changed-operation":
 				result.ProviderOperationID = strings.Replace(endpoint, rbacTestRoleName, rbacTestAssignmentName, 1)

@@ -80,9 +80,14 @@ The native lifecycle distinctions driving the subsequent registered integration:
   this lifecycle. Native resource nesting alone would assign the wrong owner.
 
 All seven kinds are registered for native inventory with private configuration
-and context proofs, non-authoritative known-ID reconciliation, and spec-based
-references. Cleanup, native lifecycle graph ownership, managed Hub reconciliation
-and execution recovery are still being implemented.
+and context proofs and non-authoritative known-ID reconciliation. The native
+lifecycle graph verifies independent child cleanup and Gate ownership by its
+referenced run. Reverse Fleet indexes also guard deletion of AKS clusters,
+subnets, user-assigned identities, strategies and members. Dynamic namespace
+placement conservatively blocks removal of any member of the same Fleet until
+the namespace is explicitly removed; it does not assert actual placement.
+Fleet cleanup, managed Hub reconciliation and execution recovery are still
+being implemented, and all seven kinds remain non-actionable.
 
 `cli-deletion-polls.json` retains 13 representative GET responses belonging to
 the five asynchronous Fleet deletions in those same immutable recordings. For

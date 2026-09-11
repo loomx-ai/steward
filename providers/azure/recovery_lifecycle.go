@@ -64,7 +64,10 @@ func (s *serviceCascades) contributeRecoveryPrerequisite(ctx context.Context, pa
 
 // Preserve the reviewed peer view after BreakPairing clears partnerNamespace.
 // The peer may disappear during preparation or remain until primary DELETE.
-func (c *client) plannedServiceChildren(ctx context.Context, parent asset.Asset, raw map[string]any) ([]serviceChild, error) {
+func (c *client) plannedServiceChildren(ctx context.Context, parent asset.Asset, raw map[string]any, known ...asset.Asset) ([]serviceChild, error) {
+	if fleetKind(parent.Identity.NativeType).kind != "" {
+		return c.fleetChildren(ctx, parent.Identity, raw, known...)
+	}
 	if isCosmosType(parent.Identity.NativeType) {
 		wire, err := c.plannedResourceID(parent)
 		if err != nil {

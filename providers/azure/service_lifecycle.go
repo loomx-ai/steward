@@ -26,6 +26,8 @@ const networkWatcherType = "Microsoft.Network/networkWatchers"
 // Native deletion semantics, not an inference from ARM path nesting.
 // https://learn.microsoft.com/azure/network-watcher/network-watcher-create
 var serviceCascadeRules = map[string][]string{
+	fleetType:                      fleetDirectKinds,
+	fleetRunType:                   {fleetGateType},
 	streamAnalyticsJobType:         streamAnalyticsOwnedKinds(streamAnalyticsJobType),
 	streamAnalyticsClusterType:     {streamAnalyticsEndpointType, streamAnalyticsJobType},
 	kustoType:                      kustoOwnedKinds(kustoType),
@@ -458,6 +460,14 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		if batchOwners[parent.ID].ID != "" {
 			continue // Batch already contributed this VM's complete native tree.
 		}
+		if parent.Identity.Provider == asset.ProviderAzure && fleetKind(parent.Identity.NativeType).kind != "" {
+			contribution, err := s.client.contributeFleetReferences(ctx, parent, assets)
+			if err != nil {
+				return result, err
+			}
+			result.Relationships = append(result.Relationships, contribution.Relationships...)
+			result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+		}
 		if parent.Identity.Provider == asset.ProviderAzure && rbacResourceKind(parent.Identity.NativeType) != "" {
 			contribution, err := s.client.contributeRBACReferences(ctx, parent, assets)
 			if err != nil {
@@ -555,7 +565,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 				return result, err
 			}
 		}
-		children, err := s.client.plannedServiceChildren(ctx, parent, live.data)
+		children, err := s.client.plannedServiceChildren(ctx, parent, live.data, assets...)
 		if err != nil {
 			return result, err
 		}
@@ -616,6 +626,11 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			if err := s.client.servicePrivateIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
+			if fleetKind(child.kind).kind != "" {
+				if err := s.client.fleetContext(ctx, *target, child.data); err != nil {
+					return result, err
+				}
+			}
 			if err := serviceIncarnation(*target, child.data); err != nil {
 				return result, err
 			}
@@ -655,10 +670,20 @@ func (a *action) serviceImpacts(request contracts.ActionRequest) (map[string]con
 	if root.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(root.Identity.NativeID, a.id) || !strings.EqualFold(root.Identity.NativeType, a.kind.NativeType) {
 		return nil, serviceDenied("service_parent_identity_changed")
 	}
+	if fleetKind(root.Identity.NativeType).kind != "" {
+		if _, err := a.client.fleetRecordedReferences(root); err != nil {
+			return nil, err
+		}
+	}
 	impacts := map[string]contracts.ActionImpact{}
 	assets := map[asset.AssetID]asset.Asset{root.ID: root}
 	for _, impact := range request.LifecycleImpacts {
 		identity := impact.Asset.Identity
+		if fleetKind(identity.NativeType).kind != "" {
+			if _, err := a.client.fleetRecordedReferences(impact.Asset); err != nil {
+				return nil, err
+			}
+		}
 		id, kind, err := parseID(identity.NativeID)
 		if err != nil || impact.Asset.ID == "" || assets[impact.Asset.ID].Identity.NativeID != "" || impacts[id].Asset.Identity.NativeID != "" || identity.Provider != asset.ProviderAzure || identity.ConnectionID != root.Identity.ConnectionID || identity.Partition != root.Identity.Partition || !strings.EqualFold(kind, identity.NativeType) || !strings.HasPrefix(id, a.client.root()+"/") {
 			return nil, serviceDenied("invalid_service_lifecycle_impact")
@@ -889,6 +914,9 @@ func (a *action) serviceCascadeReadback(ctx context.Context, request contracts.A
 // The master database is part of the server's native lifetime. Its restriction
 // prohibits direct DELETE, while a reviewed server deletion can remove it.
 func serviceIntrinsicChild(parent, child, reason string) bool {
+	if parent == fleetRunType && child == fleetGateType && reason == "azure_fleet_gate_requires_update_run" {
+		return true
+	}
 	if isAPIMType(parent) && isAPIMType(child) && strings.HasPrefix(reason, "azure_apim_") && controllerOnlyReason(reason) && strings.EqualFold(parent, child[:strings.LastIndex(child, "/")]) {
 		return true
 	}
@@ -920,6 +948,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 	var err error
 	native := false
 	switch {
+	case fleetKind(parent.NativeType).kind != "":
+		native = true
+		children, err = c.fleetChildren(ctx, parent, raw)
 	case isAPIMType(parent.NativeType):
 		native = true
 		children, err = c.apimChildren(ctx, parent, raw)
@@ -1020,6 +1051,9 @@ func (c *client) serviceChildren(ctx context.Context, parent asset.Identity, raw
 }
 
 func serviceChildRelation(parent, child asset.Asset) bool {
+	if fleetKind(parent.Identity.NativeType).kind != "" {
+		return fleetChildRelation(parent, child)
+	}
 	if isAPIMType(parent.Identity.NativeType) {
 		return slices.Contains(apimOwnedKinds(parent.Identity.NativeType), child.Identity.NativeType) && strings.EqualFold(redisParentID(child.Identity.NativeID), parent.Identity.NativeID)
 	}

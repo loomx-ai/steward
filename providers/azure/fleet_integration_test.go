@@ -54,6 +54,7 @@ func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
 		t.Fatal(err)
 	}
 	handler := inventory.NewScanHandler(repository, registry, inventory.NewService(repository))
+	nativeGraph := false
 	scan := func(kinds []string, failure bool) []asset.Asset {
 		t.Helper()
 		var ids []asset.ResourceKindID
@@ -91,8 +92,12 @@ func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
 			}
 			for _, job := range jobs {
 				if job.Type == execution.JobGraph {
-					if err := governance.NewGraphHandler(repository, registry, nil).Handle(ctx, job); err != nil {
-						t.Fatal("Fleet spec graph worker failed", err)
+					var contributors governance.ContributorResolver
+					if nativeGraph {
+						contributors = diagnosticContributors{r}
+					}
+					if err := governance.NewGraphHandler(repository, registry, contributors).Handle(ctx, job); err != nil {
+						t.Fatal("Fleet graph worker failed", err)
 					}
 				}
 			}
@@ -136,6 +141,25 @@ func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
 	if !gateRun || !profileStrategy {
 		t.Fatal("Fleet native relationships missing", relationships)
 	}
+	nativeGraph = true
+	f.override = func(req *http.Request) (*http.Response, bool) { return fleetGraphEmptyIndexes(t, req) }
+	values = scan(fleetTestKinds, false)
+	bindings, err := repository.ListLifecycleBindingsByConnection(ctx, connection.ID)
+	if err != nil || len(bindings) != 6 {
+		t.Fatal("Fleet native graph worker did not persist child lifecycles", bindings, err)
+	}
+	for _, binding := range bindings {
+		if binding.ManagedAssetID == byKind[fleetGateType].ID {
+			if binding.ControllerAssetID != byKind[fleetRunType].ID || binding.CleanupPolicy != graph.CleanupDelegate || binding.DirectCleanupAllowed {
+				t.Fatal("persisted Gate lost its native Run owner", binding)
+			}
+		} else if binding.ControllerAssetID != byKind[fleetType].ID || binding.CleanupPolicy != graph.CleanupDirect {
+			t.Fatal("persisted Fleet bypassed a child's independent cleanup", binding)
+		}
+	}
+	// Continue the inventory-only absence scenarios below; they intentionally
+	// leave other stale live children after the parent is removed externally.
+	nativeGraph, f.override = false, nil
 	payload, _ := json.Marshal(values)
 	if strings.Contains(string(payload), "fleet-private-configuration") {
 		t.Fatal("Fleet private data entered SQLite")

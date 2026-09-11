@@ -730,6 +730,9 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 	if protectedAzureTags(object(raw["tags"])) {
 		return "azure_protected_tag"
 	}
+	if kind.NativeType == fleetGateType {
+		return "azure_fleet_gate_requires_update_run"
+	}
 	if reason := apimProtection(kind.NativeType, raw); reason != "" {
 		return reason
 	}
@@ -817,6 +820,8 @@ func protectionReason(kind resourceType, raw map[string]any) string {
 
 func controllerOnlyReason(reason string) bool {
 	switch reason {
+	case "azure_fleet_gate_requires_update_run":
+		return true
 	case "azure_apim_template_reset_only", "azure_apim_builtin_group", "azure_apim_administrator", "azure_apim_builtin_subscription":
 		return true
 	case "azure_batch_managed_configuration":

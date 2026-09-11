@@ -120,7 +120,7 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			return filtered, nil, serviceDenied("ambiguous_monitor_target_prerequisite")
 		}
 		seenIDs[member.Identity.NativeID], seenAssets[member.ID] = true, true
-		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" {
+		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" && fleetKind(member.Identity.NativeType).kind == "" {
 			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, prerequisite)
 			continue // The native driver authenticates its own prerequisite families.
 		}
@@ -131,11 +131,19 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if rbacResourceKind(member.Identity.NativeType) != "" {
 			id, _, kind, err = rbacResourceID(member.Identity.NativeID)
 		}
+		if fleetKind(member.Identity.NativeType).kind != "" {
+			id, kind, err = fleetIdentity(member.Identity.NativeID)
+			if kind == fleetGateType {
+				return filtered, nil, serviceDenied("fleet_gate_requires_owning_run")
+			}
+		}
 		if err != nil || id != member.Identity.NativeID || kind != member.Identity.NativeType || !strings.HasPrefix(id, a.client.root()+"/") || !prerequisite.Delete || prerequisite.ControllerID != value.ID || member.Identity.Provider != value.Identity.Provider || member.Identity.ConnectionID != value.Identity.ConnectionID || member.Identity.Partition != value.Identity.Partition {
 			return filtered, nil, serviceDenied("invalid_monitor_target_prerequisite")
 		}
 		var refs map[string]any
-		if rbacResourceKind(kind) != "" {
+		if fleetKind(kind).kind != "" {
+			refs, err = a.client.fleetRecordedReferences(member)
+		} else if rbacResourceKind(kind) != "" {
 			refs, err = a.client.rbacRecordedReferences(member)
 		} else if kind == diagnosticSettingsType {
 			refs, err = a.client.diagnosticRecordedReferences(member)
@@ -147,6 +155,10 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		}
 		linked := false
 		for _, target := range targets {
+			if fleetKind(kind).kind != "" {
+				linked = linked || fleetReferenceMatches(target, member, refs)
+				continue
+			}
 			for kind, ids := range refs {
 				for _, id := range stringValues(ids) {
 					matches, err := a.client.monitorReferenceMatches(target, kind, id)
@@ -160,7 +172,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if !linked {
 			return filtered, nil, serviceDenied("monitor_target_prerequisite_reference_changed")
 		}
-		if rbacResourceKind(kind) != "" {
+		if fleetKind(kind).kind != "" {
+			_, err = a.client.fleetRead(ctx, kind, id)
+		} else if rbacResourceKind(kind) != "" {
 			_, err = a.client.rbacRead(ctx, kind, text(member.Normalized[rbacWireSelector]))
 		} else if kind == diagnosticSettingsType {
 			_, err = a.client.diagnosticRead(ctx, text(member.Normalized[diagnosticWireSelector]), kind)
@@ -178,6 +192,17 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 }
 
 func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, source monitorIncomingSource) (bool, error) {
+	if fleetKind(source.resource.kind).kind != "" {
+		for _, impact := range request.LifecycleImpacts {
+			if source.resource.kind == fleetGateType && impact.Delete && impact.ControllerID == request.Asset.ID && impact.Asset.Identity.NativeID == source.resource.id && impact.Asset.Identity.NativeType == fleetGateType && fleetChildRelation(request.Asset, impact.Asset) {
+				if err := a.client.fleetIncomingUnchanged(impact.Asset, source); err != nil {
+					return false, err
+				}
+				return true, nil
+			}
+		}
+		return false, nil
+	}
 	if source.resource.kind == diagnosticSettingsType || rbacResourceKind(source.resource.kind) != "" {
 		return false, nil // Extensions require independent deletion even in managed groups.
 	}

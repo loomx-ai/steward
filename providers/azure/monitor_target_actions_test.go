@@ -21,6 +21,12 @@ import (
 // use the original Monitor responses instead, including native 403/404 errors.
 func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
 	t.Helper()
+	if strings.EqualFold(req.URL.Path, "/subscriptions/"+testSubscription+"/providers/"+fleetType) {
+		if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != fleetVersion {
+			t.Fatal("unexpected empty native Fleet index contract", req.Method, req.URL)
+		}
+		return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
+	}
 	if response, handled := emptyRBACIndexResponse(t, req); handled {
 		return response, true
 	}

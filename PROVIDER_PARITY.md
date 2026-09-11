@@ -2750,3 +2750,44 @@ background evidence only, not acceptance evidence for this work.
   run from the inventory checkpoint preceded this transport addition. This is
   transport groundwork for the Fleet cleanup driver: the seven registered
   kinds remain inventory-only and the acceptance criteria remain open.
+
+### Fleet native lifecycle graph and incoming dependencies
+
+- Registered native Fleet lifecycle discovery: members, namespaces, runs,
+  strategies and profiles require their own cleanup before their Fleet. Gates
+  belong exclusively to the run in `target.id`, not the enclosing Fleet ARM
+  path. Gate cleanup has no independent DELETE. Full private configuration,
+  resource-group/Fleet context, location and recorded references are checked
+  in native graph construction and cascade impact authentication.
+- Reconciled known children with their own GET when LIST omits them. A native
+  Gate can also reveal an unindexed run. Missing runs, unreadable collections,
+  private drift, late children and retargeted Gates fail closed. Both native
+  observations must agree before publishing ownership or prerequisite edges.
+- Added connected-subscription reverse Fleet indexes to the shared target
+  deletion boundary. Unindexed members block AKS deletion; native hub subnet
+  and user-assigned identity references block their targets. Profiles depend
+  on their current strategy, while a run's copied strategy and creating
+  profile stay provenance. Source deletion requires the source's own GET;
+  neither a missing parent nor LIST omission establishes child absence.
+- Dynamic namespace placement is authenticated separately with the saved
+  reference proof. It conservatively requires explicit namespace cleanup
+  before removing any member of the same Fleet. These are dependency edges,
+  not ownership of member clusters or a claimed exact placement set. Shared
+  dependencies are not automatically selected. Only a reviewed native Gate
+  can be accepted by the target guard as a run-owned incoming source.
+- Added failure/omission/change tests, a registered subnet action test with
+  native Fleet prerequisite absence and serialized receipt/readback, and a
+  SQLite scan/graph-worker test that persists all six native lifecycle
+  bindings. The existing transport tests now use the inventory projection's
+  authentic Fleet proof for cascade readback. Bilingual docs describe the
+  additional read permissions for affected target deletions.
+- This checkpoint does not enable Fleet DELETEs. The six independent action
+  drivers, durable Stop/DELETE progression, managed Hub ownership/residue and
+  namespace-policy execution remain unfinished. Counts stay 393 resource
+  types/specs and 360 cleanup rules; the 27 mapped Azure gaps and all eight
+  overall acceptance criteria remain open. Evidence is protocol fixtures and
+  real application workers, not a new Azure execution or independent emulator.
+- Verification after the final changes: repository-wide `go test ./...`
+  passed (Azure 196.688s); Fleet, AKS and native target-deletion tests passed
+  under `-race` (26.365s); repository-wide `go vet ./...`, all five offline
+  Azure catalog-sync tests and diff checks passed.

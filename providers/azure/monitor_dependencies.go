@@ -207,6 +207,13 @@ func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Ass
 		for target, sources := range rbac {
 			incoming[target] = append(incoming[target], sources...)
 		}
+		fleet, err := c.fleetIncomingObservation(ctx, targets, known)
+		if err != nil {
+			return nil, err
+		}
+		for target, sources := range fleet {
+			incoming[target] = append(incoming[target], sources...)
+		}
 		return incoming, nil
 	}
 	return c.verifiedIncoming(observe)
@@ -228,6 +235,9 @@ func (c *client) verifiedIncoming(observe func() (map[string][]monitorIncomingSo
 				}
 				if rbacResourceKind(source.resource.kind) != "" {
 					configuration, group = c.rbacSnapshot(source.resource.kind, source.resource.data), source.group
+				}
+				if fleetKind(source.resource.kind).kind != "" {
+					configuration, group = fleetSnapshot(source.resource.kind, source.resource.data), source.group
 				}
 				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": configuration, "group": group, "references": source.references}
 			}
@@ -289,6 +299,12 @@ func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incomi
 				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
 					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
 				}})
+				continue
+			}
+			if fleetKind(source.kind).kind != "" {
+				if err := c.fleetIncomingUnchanged(*indexed, entry); err != nil {
+					return contribution, err
+				}
 				continue
 			}
 			if rbacResourceKind(source.kind) != "" {
