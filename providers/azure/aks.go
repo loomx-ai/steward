@@ -3,6 +3,7 @@ package azure
 import (
 	"context"
 	"fmt"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -232,9 +233,16 @@ func managedGroupFrozenMembers(group string, assets []asset.Asset) map[string]bo
 
 func (h *aksLifecycle) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	fleetOwners, err := h.client.fleetHubOwners(assets)
+	if err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	for _, cluster := range assets {
 		if cluster.Identity.Provider != asset.ProviderAzure || !strings.EqualFold(cluster.Identity.NativeType, aksType) {
 			continue
+		}
+		if fleetOwners[managedGroupKey(cluster.Identity, cluster.Identity.NativeID)] != "" {
+			continue // Fleet verifies and owns the Hub's entire native cascade.
 		}
 		kind, _ := findType(aksType)
 		endpoint, err := h.client.resourceURL(kind, cluster.Identity.NativeID)
@@ -350,6 +358,22 @@ func managedGroupKey(identity asset.Identity, nativeID string) managedGroupMembe
 func managedGroupMembers(assets []asset.Asset) map[managedGroupMemberKey]bool {
 	result := map[managedGroupMemberKey]bool{}
 	for _, cluster := range assets {
+		if cluster.Identity.Provider == asset.ProviderAzure && cluster.Identity.NativeType == fleetType {
+			// This static hint only suppresses duplicate subordinate bindings.
+			// The mandatory service contributor authenticates the saved proof
+			// and reobserves every member before the graph can be persisted.
+			if state := object(cluster.Normalized[fleetHubState]); state["mode"] == "managed" && text(cluster.Normalized[fleetHubProof]) != "" {
+				for id := range object(state["members"]) {
+					result[managedGroupKey(cluster.Identity, id)] = true
+				}
+			}
+		}
+	}
+	fleetMembers := maps.Clone(result)
+	for _, cluster := range assets {
+		if fleetMembers[managedGroupKey(cluster.Identity, cluster.Identity.NativeID)] {
+			continue // A Fleet Hub cannot introduce another unsigned group hint.
+		}
 		if cluster.Identity.Provider != asset.ProviderAzure || (!strings.EqualFold(cluster.Identity.NativeType, aksType) && !strings.EqualFold(cluster.Identity.NativeType, monitorWorkspaceType) && !strings.EqualFold(cluster.Identity.NativeType, applicationInsightsType)) {
 			continue
 		}

@@ -245,54 +245,67 @@ func (r *Runtime) fleetHubInventory(ctx context.Context, c *client, item *contra
 			return err
 		}
 	}
-	state, err := c.fleetHubObservation(ctx, raw, groups, previous)
+	state, _, err := c.readFleetHub(ctx, item.NativeID, raw, groups, previous)
 	if err != nil {
 		return err
-	}
-	if err := c.fleetHubMembers(ctx, state, previous); err != nil {
-		return err
-	}
-	// Recheck every known member, including the anchors, and then the Fleet.
-	// Changes while discovering the other side invalidate the scan.
-	for _, id := range slices.Sorted(maps.Keys(object(state["members"]))) {
-		anchor := object(object(state["members"])[id])
-		kind := text(anchor["kind"])
-		rule, ok := findType(kind)
-		if !ok {
-			continue // Unknown contained kinds are bound by the unfiltered indexes.
-		}
-		endpoint, err := c.resourceURL(rule, id)
-		if err != nil {
-			return err
-		}
-		current, err := c.request(ctx, "GET", endpoint)
-		if err != nil {
-			return err
-		}
-		if !insightsARMReadValid(current, id, kind) || text(anchor["configuration"]) != c.privateConfiguration(insightsWorkspaceResourceSnapshot(current.data)) {
-			return serviceDenied("fleet_hub_anchor_changed_during_scan")
-		}
-	}
-	current, err := c.fleetRead(ctx, fleetType, item.NativeID)
-	if err != nil {
-		return err
-	}
-	if text(item.Normalized[fleetConfigurationProof]) != c.privateConfiguration(fleetSnapshot(fleetType, current.data)) {
-		return serviceDenied("fleet_hub_controller_changed_during_scan")
 	}
 	item.Normalized[fleetHubState] = state
 	item.Normalized[fleetHubProof] = c.fleetHubBinding(item.NativeID, item.Normalized)
 	return nil
 }
 
+// The same native observation supplies inventory proofs and lifecycle binding.
+// Full bodies are transient; only keyed configuration digests are persisted.
+func (c *client) readFleetHub(ctx context.Context, id string, raw map[string]any, groups map[string]map[string]any, previous map[string]any) (map[string]any, map[string]map[string]any, error) {
+	ctx = context.WithValue(ctx, fleetHubReadContextKey{}, true)
+	state, err := c.fleetHubObservation(ctx, raw, groups, previous)
+	if err != nil {
+		return nil, nil, err
+	}
+	resources, err := c.fleetHubMembers(ctx, state, previous)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Recheck every known member, including the anchors, and then the Fleet.
+	for _, memberID := range slices.Sorted(maps.Keys(object(state["members"]))) {
+		member := object(object(state["members"])[memberID])
+		kind := text(member["kind"])
+		rule, ok := findType(kind)
+		if !ok {
+			continue // Unknown contained kinds are bound by the unfiltered indexes.
+		}
+		endpoint, err := c.resourceURL(rule, memberID)
+		if err != nil {
+			return nil, nil, err
+		}
+		current, err := c.request(ctx, "GET", endpoint)
+		if err != nil {
+			return nil, nil, err
+		}
+		if !insightsARMReadValid(current, memberID, kind) || text(member["configuration"]) != c.privateConfiguration(insightsWorkspaceResourceSnapshot(current.data)) {
+			return nil, nil, serviceDenied("fleet_hub_anchor_changed_during_scan")
+		}
+		resources[memberID] = current.data
+	}
+	current, err := c.fleetRead(ctx, fleetType, id)
+	if err != nil {
+		return nil, nil, err
+	}
+	if c.privateConfiguration(fleetSnapshot(fleetType, raw)) != c.privateConfiguration(fleetSnapshot(fleetType, current.data)) {
+		return nil, nil, serviceDenied("fleet_hub_controller_changed_during_scan")
+	}
+	return state, resources, nil
+}
+
 // Both native managed groups use the same complete resource walk as other
 // managed controllers. Only the verified Hub AKS may introduce a second managed
 // group; other nested controllers require their own ownership reconciliation.
-func (c *client) fleetHubMembers(ctx context.Context, state, previous map[string]any) error {
+func (c *client) fleetHubMembers(ctx context.Context, state, previous map[string]any) (map[string]map[string]any, error) {
 	members := map[string]any{}
+	native := map[string]map[string]any{}
 	state["members"] = members
 	if state["mode"] != "managed" {
-		return nil
+		return native, nil
 	}
 	anchors := object(state["anchors"])
 	for _, group := range []string{text(state["group"]), text(state["node_group"])} {
@@ -311,13 +324,14 @@ func (c *client) fleetHubMembers(ctx context.Context, state, previous map[string
 		}
 		resources, err := c.nativeManagedGroupResources(ctx, group, map[string]bool{text(state["cluster"]): true}, known)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		for _, raw := range resources {
 			id, kind, _ := parseID(text(raw["id"]))
 			if members[id] != nil {
-				return serviceDenied("ambiguous_fleet_hub_member_group")
+				return nil, serviceDenied("ambiguous_fleet_hub_member_group")
 			}
+			native[id] = raw
 			members[id] = map[string]any{"kind": kind, "group": group, "configuration": c.privateConfiguration(insightsWorkspaceResourceSnapshot(raw))}
 		}
 		member := maps.Clone(object(anchors[group]))
@@ -326,8 +340,8 @@ func (c *client) fleetHubMembers(ctx context.Context, state, previous map[string
 	}
 	for id, value := range anchors {
 		if text(object(members[id])["configuration"]) != text(object(value)["configuration"]) {
-			return serviceDenied("fleet_hub_anchor_changed_during_member_scan")
+			return nil, serviceDenied("fleet_hub_anchor_changed_during_member_scan")
 		}
 	}
-	return nil
+	return native, nil
 }

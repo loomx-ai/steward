@@ -147,7 +147,7 @@ The AKS and resource-group responses in these tests are composed protocol
 fixtures. The retained Fleet CLI recordings contain no Hub AKS or managed-group
 GETs, so these tests do not establish live-cloud compatibility of that ownership
 join. Unverified joins remain protected, and root cleanup remains disabled until
-lifecycle delegation and residual checks are ready.
+the root driver and residual checks are ready.
 
 `TestFleetHubInventoryCapturesNativeDescendants` composes the established native
 Uniform scale-set and private-DNS protocol scenarios beneath the verified Hub.
@@ -174,3 +174,21 @@ and recreates the provider/client/worker for each registered scan. It checks
 that the real known-metadata path restores an omitted member, retains the
 previous Hub snapshot after a 403 failure, and updates membership only after
 the member's own 404. The Fleet itself remains present and protected.
+
+`TestFleetHubNativeLifecycleDelegation` normalizes every resource in the composed
+17-member scenario and combines the production attachment, service and AKS
+contributors. Every Hub member has exactly one exclusive Fleet controller;
+ordinary members and shared DNS resources keep their separate relationships.
+Twenty-one boundary cases cover omitted known members, missing or foreign
+inventory assets, duplicate or invalid identities, private/generation changes,
+altered proofs and node-group hints, new or unknown resources, read failures
+and changes between native observations. Unresolved assets remain explicit;
+failed observations cannot yield a usable graph.
+
+`TestFleetHubGraphWorkerPersistsExclusiveOwnership` persists the product-normalized
+assets, reopens SQLite and recreates the runtime and all three contributors for
+the actual graph worker. Omitted known members retain their ownership; tampered
+proofs and native 403s fail reconciliation and preserve the previous graph
+revision and all 17 Hub bindings. This is a composed protocol/persistence test,
+not a live-cloud Hub deletion. The Fleet root remains non-actionable and its
+bindings do not claim that an unfinished root driver verifies member absence.

@@ -406,6 +406,9 @@ func serviceDenied(reason string) error {
 
 func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, assets []asset.Asset) (governance.Contribution, error) {
 	result := governance.Contribution{}
+	if _, err := s.client.fleetHubOwners(assets); err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	var monitorTargets, roleTargets []asset.Asset
 	for _, value := range assets {
 		if value.Identity.Provider == asset.ProviderAzure && value.Identity.NativeType == rbacRoleType {
@@ -461,6 +464,15 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 			continue // Batch already contributed this VM's complete native tree.
 		}
 		if parent.Identity.Provider == asset.ProviderAzure && fleetKind(parent.Identity.NativeType).kind != "" {
+			if parent.Identity.NativeType == fleetType {
+				contribution, err := s.client.contributeFleetHub(ctx, parent, assets)
+				if err != nil {
+					return result, err
+				}
+				result.Bindings = append(result.Bindings, contribution.Bindings...)
+				result.Relationships = append(result.Relationships, contribution.Relationships...)
+				result.Unresolved = append(result.Unresolved, contribution.Unresolved...)
+			}
 			contribution, err := s.client.contributeFleetReferences(ctx, parent, assets)
 			if err != nil {
 				return result, err

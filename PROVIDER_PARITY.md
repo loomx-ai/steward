@@ -2913,3 +2913,42 @@ background evidence only, not acceptance evidence for this work.
   managed-group race tests passed (87.352s), and repository-wide `go vet ./...`
   passed. The focused native/managed-workspace tests passed (14.989s), the
   dedicated restarted Hub scan-worker test passed (0.942s), and diff checks passed.
+
+### Fleet Hub lifecycle delegation and graph recovery
+
+- The service lifecycle contributor now authenticates the saved Fleet Hub state,
+  verifies the Fleet configuration/context, repeats both native managed-group
+  observations and binds the verified Hub AKS, both groups and every observed
+  member directly to Fleet. It reuses the strict inventory walker and existing
+  native managed-group binding checks; full resource bodies remain transient.
+- Fleet Hub ownership takes precedence over the ordinary AKS, service-child
+  and VM/NIC attachment contributions. Static membership hints suppress only
+  duplicate bindings; the mandatory service contributor authenticates their
+  proof before any graph can be persisted, and the AKS contributor authenticates
+  before suppressing its Hub walk. A Hub's unsigned node-group hint cannot
+  expand Fleet membership. Other AKS clusters and shared DNS resources retain
+  their independent relationships.
+- Missing inventory members and foreign connection/partition matches remain
+  unresolved. Duplicate identities, mismatched normalized/native configuration,
+  changed ownership, new or omitted unknown members and incomplete native reads
+  prevent graph rebuild. Known omitted members are recovered by their own GET;
+  a known member's own 404 requires a refreshed inventory before rebuilding the
+  previous graph. RBAC assignments and diagnostic settings remain independent
+  prerequisites.
+- Added combined-contributor tests of all 17 native/composed Hub members and
+  21 boundary cases. A real SQLite graph-worker test persists product-normalized
+  assets, reopens storage and recreates the provider for each reconciliation.
+  It preserves unique Fleet ownership after native list omission; altered
+  receipts and native 403s fail the scan reconciliation without replacing the
+  last accepted graph revision or its 17 Hub bindings.
+- Root cleanup remains non-actionable. These bindings deliberately do not
+  advertise controller verification of member absence until the root driver
+  implements residual readback. Fleet root actions, residuals, Arc membership
+  and Cluster Mesh remain unfinished; all eight acceptance criteria and all
+  27 mapped gaps remain open. Catalog counts stay at 393 resource types/specs,
+  365 cleanup drivers, 1,265 native operations and 225 native source documents.
+- Verification: `go test ./...` passed (Azure 202.077s); Fleet/AKS/attachment/
+  managed-group race tests passed (94.905s); repository-wide `go vet ./...`
+  passed. Focused compatibility tests passed (8.752s), the combined graph and
+  restarted SQLite worker tests passed (2.809s), and diff checks passed.
+  The Hub responses remain composed protocol evidence, not live-cloud proof.
