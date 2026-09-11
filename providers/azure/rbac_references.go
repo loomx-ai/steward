@@ -55,6 +55,9 @@ func (c *client) rbacReferences(kind, id string, raw map[string]any) (map[string
 	}
 	if kind == rbacAssignmentType {
 		props := object(raw["properties"])
+		if props["principalType"] == "ServicePrincipal" {
+			addReference(refs, rbacPrincipalType, rbacPrincipalSelector(c.tenant, text(props["principalId"])))
+		}
 		role, err := c.rbacRoleID(text(props["roleDefinitionId"]))
 		if err != nil {
 			return nil, err
@@ -94,6 +97,13 @@ func (c *client) rbacRecordedReferences(value asset.Asset) (map[string]any, erro
 		}
 		seen := map[string]bool{}
 		for _, wire := range ids {
+			if kind == rbacPrincipalType {
+				if !validRBACPrincipalSelector(kind, wire) || seen[wire] {
+					return nil, serviceDenied("invalid_rbac_recorded_principal_reference")
+				}
+				seen[wire] = true
+				continue
+			}
 			canonical, typ, err := parseID(wire)
 			if kind == rbacRoleType {
 				canonical, _, typ, err = rbacResourceID(wire)
@@ -124,6 +134,10 @@ func (c *client) contributeRBACReferences(ctx context.Context, parent asset.Asse
 		}
 	}
 	refs, err := c.rbacReferences(parent.Identity.NativeType, parent.Identity.NativeID, current.data)
+	if err != nil {
+		return contribution, err
+	}
+	refs, err = c.rbacResolvePrincipals(ctx, parent, assets, refs)
 	if err != nil {
 		return contribution, err
 	}

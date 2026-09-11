@@ -168,7 +168,7 @@ func TestApplicationInsightsWorkbookSharedReferenceGraph(t *testing.T) {
 			storage := nativeResource(storageType, "workbookstore", "westus", map[string]any{})
 			storageID, _, _ := parseID(text(storage["id"]))
 			container := map[string]any{"id": storageID + "/blobServices/default/containers/workbooks", "name": "workbooks", "type": containerType, "location": "westus", "properties": map[string]any{}}
-			identity := nativeResource("Microsoft.ManagedIdentity/userAssignedIdentities", "workbook-reader", "westus", map[string]any{})
+			identity := nativeResource("Microsoft.ManagedIdentity/userAssignedIdentities", "workbook-reader", "westus", map[string]any{"principalId": rbacTestPrincipal, "clientId": rbacTestClientID, "tenantId": testTenant})
 			props := object(f.objects[id]["properties"])
 			props["sourceId"], props["storageUri"] = storageID, text(container["id"])
 			f.objects[id]["identity"] = map[string]any{"type": "UserAssigned", "userAssignedIdentities": map[string]any{text(identity["id"]): map[string]any{}}}

@@ -22,9 +22,11 @@ func apimRecordings(t *testing.T) map[int]redisRecordedResponse {
 	if err != nil || fmt.Sprintf("%x", sha256.Sum256(payload)) != "9ed235982b164e0493dac6f756084aa998991026e60a11178d59ebd6d9b61a91" {
 		t.Fatal("APIM recording evidence changed", err)
 	}
-	// The account identity is composed with the local fixture credential. Bodies
-	// and headers otherwise retain the native evidence in the checked-in file.
+	// Compose the account identity with the local fixture credential, including
+	// the recording's redacted, non-UUID tenant placeholder. The checked-in
+	// original remains unchanged; all other body/header values remain native.
 	payload = bytes.ReplaceAll(payload, []byte("00000000-0000-0000-0000-000000000000"), []byte(testSubscription))
+	payload = bytes.ReplaceAll(payload, []byte("7ysa276d-b8ud-3g4f-86t3-7627jdnd0cf8"), []byte(testTenant))
 	var sources []struct {
 		URI     string                  `json:"source_uri"`
 		SHA     string                  `json:"source_sha256"`

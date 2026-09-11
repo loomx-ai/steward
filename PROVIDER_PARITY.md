@@ -2598,3 +2598,48 @@ background evidence only, not acceptance evidence for this work.
   remain unfinished; no independent emulator or real-cloud RBAC run is claimed.
   The native DELETE edit window and all eight full-provider acceptance criteria
   remain open, alongside the remaining mapped families and lifecycle gaps.
+
+### Azure managed identity principal dependencies
+
+- Subscription role-assignment `principalId` values now join to native
+  user-assigned managed identities and root system-assigned resource identities.
+  Inventory binds the principal/tenant tuple and ARM selector with the connection
+  credential; empty identities are bound too. Native target reads reject a
+  changed principal, tenant or client identity, and saved evidence remains usable
+  after own-resource absence and JSON/client recovery. Location enrichment does
+  not change a resource's principal identity.
+- Graphs and ordinary/Monitor actions require explicit prior assignment deletion
+  even when its ARM scope is in another group. Unindexed or omitted assignments,
+  late arrivals, unreadable native identities and missing/altered evidence block
+  cleanup. Attached user-assigned identities, application `clientId` values,
+  User/Group principal types and other tenants cannot establish ownership of a
+  principal. External service principals remain unresolved Uses references;
+  there are no Microsoft Graph calls or Entra principal mutations.
+- AKS composition covers a system identity on an owned VM. The role assignment
+  remains an independent prerequisite before the controller's native cascade;
+  ownership does not authorize implicit RBAC deletion. The existing scope
+  extension case remains separately covered.
+- Actual SQLite registered scan and graph jobs now also include a regional
+  user-assigned identity alongside global role definitions and assignments. An
+  identity-only plan is blocked. The assignment precedes both the custom role
+  and identity in three independent durable jobs. Each job survives application
+  and client recreation, pending native deletion and final readback without
+  repeating DELETE; built-in roles and independent scopes remain.
+- Retained native 2023-01-31 IdentityGet and IdentityListBySubscription examples
+  are pinned to Microsoft commit `5da82d5c3687ac3cc845330aaf0f13d3a40ce47e`.
+  Source tests verify their original hashes, request bindings and response
+  schemas against the selected native document. APIM and Monitor receiver test
+  compositions substitute fixture GUIDs for upstream redacted/non-UUID values;
+  their retained originals remain unchanged. Native UserAssigned/None responses
+  with root principal fields do not acquire system-identity ownership.
+- Focused RBAC tests passed (4.965s), affected product regression tests passed
+  (21.057s), full Go tests passed (Azure 196.821s; architecture guards 19.490s;
+  shared contracts 1.893s; server 3.517s; unchanged GCP tests cached), affected
+  race tests passed (26.684s), and repository-wide vet passed. Bilingual Azure
+  permissions/capabilities and retained evidence documentation were updated.
+- Existing ARM assets require a rescan for principal evidence. Unknown native
+  readers cannot prove identity. This pass covers the connected subscription;
+  tenant/management-group administration, cross-subscription identity management
+  and PIM mutation remain unfinished. No independent identity/RBAC emulator or
+  real-cloud run is claimed. Catalog/spec counts and the 27 mapped Azure type
+  gaps are unchanged; all eight full-provider acceptance criteria remain open.

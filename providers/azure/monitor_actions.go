@@ -3,7 +3,6 @@ package azure
 import (
 	"context"
 	"maps"
-	"slices"
 	"strings"
 	"time"
 
@@ -90,7 +89,13 @@ func (a *monitorAction) prerequisitesAbsent(ctx context.Context, request contrac
 		}
 		linked := false
 		for typ, ids := range refs {
-			linked = linked || strings.EqualFold(typ, a.kind) && slices.Contains(stringValues(ids), a.id)
+			for _, reference := range stringValues(ids) {
+				matches, err := a.client.monitorReferenceMatches(request.Asset, typ, reference)
+				if err != nil {
+					return err
+				}
+				linked = linked || matches
+			}
 		}
 		if !linked {
 			return serviceDenied("monitor_prerequisite_reference_changed")

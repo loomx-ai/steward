@@ -50,10 +50,13 @@ func newMonitorReceiverFixture(t *testing.T) *monitorReceiverFixture {
 	root := "/subscriptions/" + testSubscription
 	f.namespaceID = root + "/resourcegroups/receiver-group/providers/microsoft.eventhub/namespaces/receiver-namespace"
 	f.workspaceID = root + "/resourcegroups/another-group/providers/microsoft.operationalinsights/workspaces/receiver-workspace"
-	// Native List/Get properties remain intact. Names/scopes and workspace GUID
-	// are composed to link the independent official Action Group example.
+	// Compose names/scopes, the workspace GUID and non-UUID identity placeholders
+	// to link the independent official Action Group example in one tenant.
 	namespace := maps.Clone(object(array(monitorReceiverExample(t, "eventhub-namespace-list.json")["value"])[0]))
 	namespace["id"], namespace["name"], namespace["type"], namespace["location"] = f.namespaceID, last(f.namespaceID), eventHubNamespaceType, "eastus"
+	identity := maps.Clone(object(namespace["identity"]))
+	identity["principalId"], identity["tenantId"] = rbacTestPrincipal, testTenant
+	namespace["identity"] = identity
 	workspace := monitorReceiverExample(t, "workspace-get.json")
 	workspace["id"], workspace["name"], workspace["type"], workspace["location"] = f.workspaceID, last(f.workspaceID), insightsWorkspaceType, "westcentralus"
 	object(workspace["properties"])["customerId"] = monitorReceiverCustomerID

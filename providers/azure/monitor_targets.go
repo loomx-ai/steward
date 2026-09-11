@@ -58,6 +58,9 @@ func (c *client) monitorReceiverTargetCustomer(target asset.Asset) (string, erro
 }
 
 func (c *client) monitorReferenceMatches(target asset.Asset, kind, reference string) (bool, error) {
+	if kind == rbacPrincipalType {
+		return c.rbacPrincipalMatches(target, reference)
+	}
 	if !strings.EqualFold(kind, target.Identity.NativeType) {
 		return false, nil
 	}

@@ -50,6 +50,27 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 			}
 			rows[value.Identity.NativeID] = current.data
 		}
+		if kind == rbacAssignmentType {
+			principals := false
+			for _, raw := range rows {
+				principals = principals || object(raw["properties"])["principalType"] == "ServicePrincipal"
+			}
+			for _, target := range targets {
+				if !rbacIdentityTarget(target) {
+					continue
+				}
+				if target.Normalized[rbacIdentityMetadata] != nil || target.Normalized[rbacIdentityProof] != nil {
+					if _, err := c.rbacRecordedIdentity(target); err != nil {
+						return nil, err
+					}
+				}
+				if principals || text(object(target.Normalized[rbacIdentityMetadata])["principal"]) != "" {
+					if err := c.rbacIdentityRead(ctx, target); err != nil {
+						return nil, err
+					}
+				}
+			}
+		}
 		for _, id := range slices.Sorted(maps.Keys(rows)) {
 			raw := rows[id]
 			refs, err := c.rbacReferences(kind, id, raw)
@@ -58,7 +79,15 @@ func (c *client) rbacIncomingObservation(ctx context.Context, targets, known []a
 			}
 			var state map[string]any
 			for _, target := range targets {
-				if !slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID) {
+				linked := slices.Contains(refs[target.Identity.NativeType], target.Identity.NativeID)
+				for _, reference := range refs[rbacPrincipalType] {
+					matches, err := c.rbacPrincipalMatches(target, reference)
+					if err != nil {
+						return nil, err
+					}
+					linked = linked || matches
+				}
+				if !linked {
 					continue
 				}
 				if state == nil {

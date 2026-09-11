@@ -81,7 +81,11 @@ Azure RBAC 角色定义和角色分配显示在全局清单。发现使用当前
 
 删除自定义角色前，须明确选择并先删除引用它的角色分配。删除作用域资源或其祖先前，同样需要先独立删除引用它们的分配和自定义角色定义，包括托管资源组中的扩展资源。所有 ARM 依赖图与清理检查都会读取订阅的角色分配和角色定义索引；存在关联时还需要作用域和 PIM 读取权限。新出现、未入库或不可读的引用会阻止清理，目标已被删除也不例外。保护标签、管理锁、原生配置或作用域身份变化、内置角色、连接范围之外的可分配范围，以及匹配的 PIM 计划都会阻止独立删除。原生 DELETE 返回 200/204 仅表示接受请求，仍需所选资源自身的 GET 确认不存在才能完成。
 
-RBAC 权限表达式和编写的配置不会进入清单及日志；共享目标和 Entra 身份保持独立。目前依赖排序覆盖 ARM 作用域、角色定义及委托身份资源 ID，角色分配 `principalId` 与托管身份、系统分配身份资源的匹配仍在补充，不能从作用域清理推断身份清理。微软说明删除托管身份后仍会保留其角色分配，参阅[托管身份维护](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance)。尚未实现 PIM 计划删除或租户、管理组级管理。RBAC DELETE 没有版本条件保护，预检后仍可能发生外部并发修改。
+在当前连接的订阅内，角色分配的 `principalId` 还会关联用户分配的托管身份，以及具有系统分配身份的资源，即使角色分配位于其他资源组。删除这些身份资源前，须明确选择并先删除相关分配；由控制资源连同成员一起删除时也遵循这个顺序。微软说明删除托管身份后仍会保留角色分配，参阅[托管身份维护](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/managed-identity-best-practice-recommendations#maintenance)。
+
+使用身份依赖前，请重新扫描已有 ARM 资产。Steward 通过原生资源读取核对已保存的主体和租户 GUID，资源消失后仍保留经过认证的身份信息。身份信息变更、缺失或不可读会阻止依赖检查。读取用户分配身份需要 `Microsoft.ManagedIdentity/userAssignedIdentities/read`；系统身份使用其资源的原生读取权限。该匹配使用 ARM API，无需 Microsoft Graph 权限。应用的 `clientId` 和挂载的共享身份不会建立所有权；删除使用共享身份的资源会保留共享身份及其分配。
+
+RBAC 权限表达式和编写的配置不会进入清单及日志；共享目标和外部 Entra 主体保持独立。尚未实现 PIM 计划删除或租户、管理组级管理。RBAC DELETE 没有版本条件保护，预检后仍可能发生外部并发修改。
 
 诊断设置显示在全局清单。发现过程需要订阅资源列表、已发现源资源的原生读取及子资源列表、资源组和管理锁读取，以及每个确切源范围内的诊断设置列举、读取权限。清理还需要所选设置的 `Microsoft.Insights/diagnosticSettings/delete` 权限。清理源、目标或其祖先时，必须先明确选择并删除相关诊断设置，包括托管资源组中的设置。删除设置会停止相应的导出；共享存储、Event Hubs 和工作区仍是独立资源。参阅微软的[诊断设置说明](https://learn.microsoft.com/zh-cn/azure/azure-monitor/platform/diagnostic-settings)。
 

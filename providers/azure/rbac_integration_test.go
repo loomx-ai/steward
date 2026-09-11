@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -21,8 +22,33 @@ import (
 )
 
 func TestRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T) {
+	for _, principal := range []bool{false, true} {
+		t.Run(map[bool]string{false: "role-and-scopes", true: "managed-identity-principal"}[principal], func(t *testing.T) {
+			testRBACRegisteredScanGraphPlanAndWorkerRecovery(t, principal)
+		})
+	}
+}
+
+func testRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T, principal bool) {
 	ctx := t.Context()
 	f := newRBACFixture(t)
+	identityID := ""
+	if principal {
+		var identity asset.Asset
+		f, _, identity, _ = rbacPrincipalTarget(t, rbacUserIdentityType)
+		identityID = identity.Identity.NativeID
+		base := f.override
+		f.override = func(req *http.Request) (*http.Response, bool) {
+			if req.Method == "DELETE" && strings.EqualFold(req.URL.Path, identityID) {
+				if req.URL.Query().Get("api-version") != "2023-01-31" || !f.hold {
+					t.Fatal("identity worker lost the native pending-deletion protocol")
+				}
+				f.deleted = append(f.deleted, identityID)
+				return jsonResponse(204, nil, nil), true
+			}
+			return base(req)
+		}
+	}
 	r := f.runtime
 	repository, err := sqlite.Open(filepath.Join(t.TempDir(), "rbac.db"), "../../migrations")
 	if err != nil {
@@ -57,13 +83,22 @@ func TestRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T) {
 	handler := inventory.NewScanHandler(repository, registry, inventory.NewService(repository))
 	scan := func(failure bool) []asset.Asset {
 		t.Helper()
-		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: connection.ID, RequestedBy: "rbac-native-worker", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"global"}, ResourceKindIDs: []asset.ResourceKindID{r.resourceKind(rbacRoleType).ID, r.resourceKind(rbacAssignmentType).ID}})
-		if err != nil || len(created.Shards) != 2 {
-			t.Fatal("RBAC did not register two global native sources", created, err)
+		regions := []string{"global"}
+		kinds := []asset.ResourceKindID{r.resourceKind(rbacRoleType).ID, r.resourceKind(rbacAssignmentType).ID}
+		shards := 2
+		if principal {
+			regions = append(regions, "westus")
+			kinds = append(kinds, r.resourceKind(rbacUserIdentityType).ID)
+			shards = 4
+		}
+		created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: connection.ID, RequestedBy: "rbac-native-worker", RegionMode: inventory.RegionModeSelected, RegionIDs: regions, ResourceKindIDs: kinds})
+		if err != nil || len(created.Shards) != shards {
+			t.Fatal("RBAC/identity native sources were not registered", len(created.Shards), err)
 		}
 		for _, shard := range created.Shards {
 			scope, err := repository.GetScope(ctx, shard.ScopeID)
-			if err != nil || scope.Kind != asset.ScopeGlobal || shard.Source != productInventorySource || !shard.Authoritative {
+			regionalIdentity := principal && shard.ResourceKindID == r.resourceKind(rbacUserIdentityType).ID && scope.Kind == asset.ScopeRegion && scope.NativeID == "westus"
+			if err != nil || scope.Kind != asset.ScopeGlobal && !regionalIdentity || shard.Source != productInventorySource || !shard.Authoritative {
 				t.Fatal("RBAC source lost subscription-native coverage", shard, scope, err)
 			}
 		}
@@ -121,6 +156,13 @@ func TestRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T) {
 	if err != nil || blocked.Task.Status == plan.StatusReady || len(blocked.Task.Blockers) == 0 {
 		t.Fatal("retained assignments did not block a persisted role-only plan", blocked, err)
 	}
+	if principal {
+		identity := cdnAsset(t, values, rbacUserIdentityType)
+		blocked, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: identity.ID}}, CreatedBy: "operator"})
+		if err != nil || blocked.Task.Status == plan.StatusReady || len(blocked.Task.Blockers) == 0 {
+			t.Fatal("a role assignment outside the identity's group did not block its persisted plan", blocked, err)
+		}
+	}
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: connection.ID, Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 3 || len(task.ImpactItems) != 0 {
 		t.Fatal("RBAC did not produce three independent native deletion steps", task, err)
@@ -177,6 +219,9 @@ func TestRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T) {
 			t.Fatal("RBAC DELETE acknowledgement closed a live resource", stored, err)
 		}
 		delete(f.resources, value.Identity.NativeID)
+		if value.Identity.NativeID == identityID {
+			delete(f.scopes, identityID)
+		}
 		wire, _ := json.Marshal(job)
 		if err := json.Unmarshal(wire, &job); err != nil {
 			t.Fatal(err)
@@ -196,12 +241,22 @@ func TestRBACRegisteredScanGraphPlanAndWorkerRecovery(t *testing.T) {
 		}
 		completed[step.ID] = true
 	}
-	if f.deleted[2] != rbacTestRoleID() || len(f.scopes) != 2 || len(scan(false)) != 1 {
+	expectedScopes := 2
+	validOrder := f.deleted[2] == rbacTestRoleID()
+	if principal {
+		expectedScopes = 3
+		validOrder = f.deleted[0] == rbacTestAssignmentID() && slices.Contains(f.deleted, identityID) && slices.Contains(f.deleted, rbacTestRoleID())
+	}
+	if !validOrder || len(f.scopes) != expectedScopes || len(scan(false)) != 1 {
 		t.Fatal("RBAC cleanup lost ordering, removed independent scopes or lost the built-in role", f.deleted)
 	}
+	base := f.override
 	f.override = func(req *http.Request) (*http.Response, bool) {
 		if strings.HasSuffix(strings.ToLower(req.URL.Path), "/roledefinitions") {
 			return jsonResponse(403, map[string]any{"error": map[string]any{"code": "AuthorizationFailed"}}, nil), true
+		}
+		if base != nil {
+			return base(req)
 		}
 		return nil, false
 	}

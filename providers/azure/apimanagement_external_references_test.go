@@ -20,7 +20,7 @@ func apimExternalScenario(t *testing.T) (*dnsScenario, *Runtime, []asset.Asset, 
 	s, r, assets := apimScenario(t)
 	group := "/subscriptions/" + testSubscription + "/resourcegroups/certificate-in-another-region"
 	vault := nativeResource(apimVaultType, "actual-vault-resource", "eastus2", map[string]any{"vaultUri": "https://rpbvtkeyvaultintegration.vault-int.azure-int.net/"})
-	identity := nativeResource(apimIdentityType, "certificate-reader", "eastus2", map[string]any{"clientId": apimTestClientID, "principalId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"})
+	identity := nativeResource(apimIdentityType, "certificate-reader", "eastus2", map[string]any{"clientId": apimTestClientID, "principalId": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", "tenantId": testTenant})
 	for _, raw := range []map[string]any{vault, identity} {
 		kind := text(raw["type"])
 		raw["id"] = group + "/providers/" + strings.ToLower(kind) + "/" + text(raw["name"])

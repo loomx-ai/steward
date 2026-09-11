@@ -104,7 +104,46 @@ the resource. The built-in role and independent scope resources remain. A later
 403 does not close the surviving inventory record.
 
 These are composed protocol and application tests, not an independent RBAC
-emulator or live deployment. Principal-GUID matching to managed identities and
-system-assigned resource identities, PIM schedule deletion and tenant/management-
-group administration remain unfinished. Native DELETE has no conditional version
+emulator or live deployment. PIM schedule deletion and tenant/management-group
+administration remain unfinished. Native DELETE has no conditional version
 guard, so the preflight-to-mutation edit window cannot be eliminated.
+
+## Managed identity principal dependencies
+
+`identities/IdentityGet.json` and `identities/IdentityListBySubscription.json`
+retain the Microsoft examples from the same pinned commit, under
+`specification/msi/resource-manager/Microsoft.ManagedIdentity/ManagedIdentity/stable/2023-01-31/examples/`.
+The source tests check both original byte digests, bind the native requests and
+validate response bodies against the selected 2023-01-31 schema. The retained
+ManagedIdentity document digest is
+`e5d776b4b7c62740fa4793bccbde62ab5a5fda40be27de2a2c815b711aa429c9`.
+Its `principalId` identifies the service principal; `clientId` identifies an
+application and cannot join an assignment to an identity.
+
+Inventory authenticates the native principal/tenant tuple and its exact ARM
+selector. Assignment sources retain authenticated tenant/principal selectors.
+A native subscription assignment index and individual target reads join these
+to user-assigned identity resources or root system-assigned resource identities.
+The empty identity is also bound, so enabling an identity after review cannot
+hide a newly relevant assignment. Group membership, attached shared identities,
+application IDs, User/Group principal types and other tenants cannot create this
+ownership. Unmatched external principals remain unresolved Uses references; no
+Microsoft Graph operation or principal deletion is introduced.
+
+Tests cover independently scoped assignments, ordinary and Monitor action
+drivers, unindexed/omitted/late sources, missing or altered proofs, changed or
+unreadable identities, native own-resource absence, JSON/client recovery, and
+AKS controller deletion of a VM with a system identity. The SQLite worker
+scenario scans role definitions, assignments and a user-assigned identity, blocks
+an identity-only plan, and completes three independent jobs after native
+readback across restarts. The assignment precedes both its role and identity;
+built-in roles and scope resources remain.
+
+APIM and Monitor receiver compositions replace the upstream recordings’
+non-UUID tenant/principal placeholders with fixture GUIDs. Original evidence
+files remain unchanged. Native UserAssigned/None responses can retain root
+principal fields; those fields do not make the host own a system identity.
+Existing ARM inventory needs a rescan before principal matching. An unknown
+resource reader cannot prove its identity. Matching is limited to assignments
+within the connected subscription; tenant-wide and cross-subscription identity
+administration is not claimed.

@@ -30,12 +30,19 @@ func TestRBACNativeReferencesRequireIndependentCleanup(t *testing.T) {
 			}
 			assets := []asset.Asset{source}
 			for kind, ids := range refs {
+				if kind == rbacPrincipalType {
+					continue // An external service principal is not an ARM asset.
+				}
 				for _, id := range stringValues(ids) {
 					assets = append(assets, asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: kind, NativeID: id}, Location: "global", Capabilities: asset.CapabilitySet{asset.CapabilityActionable}})
 				}
 			}
 			contribution, err := c.contributeRBACReferences(t.Context(), source, assets)
-			if err != nil || len(contribution.Bindings)+len(contribution.Unresolved) != 0 || len(contribution.Relationships) != 2*(len(assets)-1) {
+			unresolved := 0
+			if kind == rbacAssignmentType {
+				unresolved = 1
+			}
+			if err != nil || len(contribution.Bindings) != 0 || len(contribution.Unresolved) != unresolved || len(contribution.Relationships) != 2*(len(assets)-1) {
 				t.Fatal("RBAC references lost ordering or acquired ownership", contribution, err)
 			}
 			wire, _ := json.Marshal(contribution.Relationships)
@@ -213,25 +220,61 @@ func TestRBACReviewedScopePrerequisiteSurvivesRecovery(t *testing.T) {
 }
 
 func TestRBACManagedGroupAssignmentRequiresIndependentDeletion(t *testing.T) {
+	for _, principal := range []bool{false, true} {
+		t.Run(map[bool]string{false: "scope-extension", true: "owned-vm-principal"}[principal], func(t *testing.T) {
+			testRBACManagedGroupAssignmentRequiresIndependentDeletion(t, principal)
+		})
+	}
+}
+
+func testRBACManagedGroupAssignmentRequiresIndependentDeletion(t *testing.T, principal bool) {
 	f := newRBACFixture(t)
 	s := newAKSScenario()
 	group := strings.ToLower(text(s.group["id"]))
 	clear(f.scopes)
 	f.scopes[group] = s.group
 	clear(f.resources)
-	raw := rbacTestBody(t, rbacAssignmentType, group, rbacTestAssignmentName)
+	scope := group
+	if principal {
+		scope = "/subscriptions/" + testSubscription + "/resourcegroups/test"
+		f.scopes[scope] = map[string]any{"id": scope, "type": groupType, "name": "test", "location": "eastus", "properties": map[string]any{}}
+		s.vm["identity"] = map[string]any{"type": "SystemAssigned", "principalId": rbacTestPrincipal, "tenantId": testTenant}
+		// All members in this scenario have native readers. Unknown resource
+		// kinds cannot prove the identity that would disappear with their group.
+		s.members = []any{s.vm, s.disk}
+	}
+	raw := rbacTestBody(t, rbacAssignmentType, scope, rbacTestAssignmentName)
 	id := strings.ToLower(text(raw["id"]))
 	f.resources[id] = raw
-	s.members = append(s.members, raw)
+	if !principal {
+		object(raw["properties"])["principalType"] = "User"
+		s.members = append(s.members, raw)
+	}
 	r := s.runtime(t)
 	base := r.transport
 	r.transport = roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		if rbacPath(req.URL.Path) {
+		if rbacPath(req.URL.Path) || principal && req.Method == "GET" && strings.EqualFold(req.URL.Path, scope) {
 			return f.runtime.transport.RoundTrip(req)
 		}
 		return base.RoundTrip(req)
 	})
 	values := s.assets(t)
+	if principal {
+		values = slices.DeleteFunc(values, func(value asset.Asset) bool { return value.Identity.NativeType == "microsoft.example/widgets" })
+		c, err := r.resolve(t.Context(), "connection")
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, value := range values {
+			for _, raw := range []map[string]any{s.cluster, s.group, s.vm, s.disk} {
+				if strings.EqualFold(text(raw["id"]), value.Identity.NativeID) {
+					if err := c.rbacIdentityInventory(value.Identity.NativeID, value.Identity.NativeType, raw, value.Normalized); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+		}
+	}
 	assignment := f.asset(t, rbacAssignmentType, id)
 	assignment.Identity.Partition = values[0].Identity.Partition
 	values = append(values, assignment)

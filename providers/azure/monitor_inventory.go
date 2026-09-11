@@ -183,6 +183,9 @@ func (r *Runtime) monitorInventoryItem(ctx context.Context, c *client, raw map[s
 		}
 	}
 	location := monitorResourceRegion(kind, raw)
+	if err := c.rbacIdentityInventory(id, kind, current.data, normalized); err != nil {
+		return contracts.InventoryItem{}, err
+	}
 	scope := contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}
 	if location == "global" {
 		scope = contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global", Location: "global"}

@@ -669,6 +669,9 @@ func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]a
 	if state == "" {
 		state = text(object(raw["properties"])["status"])
 	}
+	if err := c.rbacIdentityInventory(id, nativeType, raw, normalized); err != nil {
+		return contracts.InventoryItem{}, err
+	}
 	return contracts.InventoryItem{NativeID: id, NativeType: nativeType, ResourceKind: r.resourceKind(nativeType), Actionable: &actionable, Scope: scope,
 		Name: text(raw["name"]), Location: region, State: state, Tags: tags, Normalized: normalized, Raw: safe,
 		NativeAliases: []string{text(raw["id"]), id}, NetworkReferences: networkRefs}, nil

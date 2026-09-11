@@ -54,6 +54,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		return filtered, nil, serviceDenied("monitor_target_action_identity_changed")
 	}
 	filtered = request
+	if proof := text(a.planned.Normalized[rbacIdentityProof]); proof != "" && text(value.Normalized[rbacIdentityProof]) != proof {
+		return filtered, nil, serviceDenied("monitor_target_principal_identity_changed")
+	}
 	if diagnostic, ok := a.inner.(*diagnosticAction); ok {
 		identity := request
 		identity.PrerequisiteDeletions = nil // This wrapper authenticates the prerequisites below.
