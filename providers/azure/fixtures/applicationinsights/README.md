@@ -502,6 +502,9 @@ and parent index membership, then individually reads saved IDs omitted from the
 window. A missing parent requires exact parent and child GET 404s. Native GET
 must return exactly one matching object, or HTTP 404 for absence; empty arrays,
 ambiguous arrays, read failures and changed private data remain failures.
+The final complete batch reports individually confirmed missing IDs. The real
+worker closes only those unchanged baseline assets atomically with shard success;
+list omissions, failed scans and concurrent refreshes cannot close records.
 
 Actual scan creation, worker execution, SQLite projection, graph rebuilding and
 planning verify that empty window queries preserve historical assets and fresh
@@ -527,7 +530,11 @@ Workbook discovery enumerates all four documented categories and additional
 categories learned through the unfiltered ARM index and saved native IDs.
 The dedicated source is non-authoritative because unknown custom categories
 can remain undiscovered. Actual scan workers reconcile saved identities and
-cannot turn a stale shard's authority flag into an absence sweep. Templates
+cannot turn a stale shard's authority flag into an absence sweep. Known native
+GET 404s produce explicit absence only in the final complete batch. Two native
+observations compare those IDs before region filtering and bind them to the
+cursor, so an empty region projection cannot hide disappearance/reappearance.
+SQLite scan/recovery tests verify individual closure without a deletion tombstone. Templates
 have no subscription LIST and instead enumerate every native resource group.
 
 Shared GETs request `canFetchContent=true`. Each current workbook and every

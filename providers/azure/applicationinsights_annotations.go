@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-// A successful time-window query never closes older persisted observations.
-// The scan creator takes this source's non-authoritative default from Runtime.
+// Time-window omissions never close older observations. Only an explicit known
+// identity's own native absence can close it through the inventory worker.
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
@@ -37,15 +37,16 @@ func insightsRecentAnnotationWindow() insightsAnnotationWindow {
 
 // A saved ID is only a discovery hint. It must have this subscription's native
 // annotation identity, and an omitted parent needs its own native GET.
-func (c *client) insightsAnnotationParents(ctx context.Context, components []serviceChild, known []string) error {
+func (c *client) insightsAnnotationParents(ctx context.Context, components []serviceChild, known []string) ([]string, error) {
 	parents, seen := map[string]bool{}, map[string]bool{}
+	var absent []string
 	for _, component := range components {
 		parents[component.id] = true
 	}
 	for _, value := range known {
 		id, parent, kind, _, err := insightsLegacyIdentity(value)
 		if err != nil || id != value || kind != insightsAnnotationType || !strings.HasPrefix(parent, c.root()+"/") || seen[id] {
-			return serviceDenied("invalid_insights_known_annotation")
+			return nil, serviceDenied("invalid_insights_known_annotation")
 		}
 		seen[id] = true
 		if parents[parent] {
@@ -53,26 +54,28 @@ func (c *client) insightsAnnotationParents(ctx context.Context, components []ser
 		}
 		if _, err := c.insightsComponent(ctx, parent); !isNotFound(err) {
 			if err != nil {
-				return err
+				return nil, err
 			}
-			return serviceDenied("insights_annotation_parent_missing_from_index")
+			return nil, serviceDenied("insights_annotation_parent_missing_from_index")
 		}
 		mapping, _ := findType(insightsAnnotationType)
 		if _, err := c.insightsChildRead(ctx, mapping, id); !isNotFound(err) {
 			if err != nil {
-				return err
+				return nil, err
 			}
-			return serviceDenied("insights_annotation_survived_parent")
+			return nil, serviceDenied("insights_annotation_survived_parent")
 		}
+		absent = append(absent, id)
 	}
-	return nil
+	return absent, nil
 }
 
-func (c *client) insightsAnnotationInventoryChildren(ctx context.Context, parent string, window insightsAnnotationWindow, known []string) ([]serviceChild, map[string]bool, error) {
+func (c *client) insightsAnnotationInventoryChildren(ctx context.Context, parent string, window insightsAnnotationWindow, known []string) ([]serviceChild, map[string]bool, []string, error) {
 	children, err := c.insightsLegacyChildren(ctx, parent, insightsAnnotationType, window)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
+	var absent []string
 	windowIDs := map[string]bool{}
 	for _, child := range children {
 		windowIDs[child.id] = true
@@ -85,12 +88,13 @@ func (c *client) insightsAnnotationInventoryChildren(ctx context.Context, parent
 		}
 		current, err := c.insightsChildRead(ctx, mapping, id)
 		if isNotFound(err) {
+			absent = append(absent, id)
 			continue // This does not authorize closing any other missing observation.
 		}
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, nil, err
 		}
 		children = append(children, serviceChild{id: id, kind: insightsAnnotationType, data: current.data})
 	}
-	return children, windowIDs, nil
+	return children, windowIDs, absent, nil
 }

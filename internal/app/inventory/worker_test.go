@@ -638,6 +638,193 @@ func wantKnownMetadata() map[string]map[string]any {
 	return map[string]map[string]any{"i-a": {}, "i-z": {"selector": map[string]any{"name": "CaseSensitive", "proof": "original"}}, "other-region": {}}
 }
 
+func TestScanHandlerClosesOnlyConfirmedUnchangedKnownAssets(t *testing.T) {
+	for _, mode := range []string{"native-absence", "network-native-absence", "omission", "unknown", "ordinary-source", "duplicate", "partial-page", "final-cursor", "observed-page", "observed-earlier-page", "failed-page", "canceled", "refreshed", "newer-observation", "new-record", "new-record-as-absent", "outside-coverage", "ambiguous-id", "other-connection", "other-provider", "other-partition", "other-kind"} {
+		t.Run(mode, func(t *testing.T) {
+			ctx, now := t.Context(), time.Now().UTC()
+			repositories := openInventoryWorkerRepositories(t)
+			seedScanWorker(t, repositories, now)
+			put := func(id string, change func(*asset.Asset)) asset.Asset {
+				t.Helper()
+				value := asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderAliCloud, ConnectionID: "connection-worker", Partition: "public", NativeType: workerKind().NativeType, NativeID: id, ScopeKey: "region:cn-hangzhou"}, ResourceKindID: workerKind().ID, ScopeID: "scope-worker", FirstSeenAt: now, LastSeenAt: now}
+				if change != nil {
+					change(&value)
+				}
+				if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
+					t.Fatal(err)
+				}
+				return value
+			}
+			if err := repositories.Inventory().PutScope(ctx, asset.Scope{ID: "outside", ConnectionID: "connection-worker", Kind: asset.ScopeRegion, NativeID: "cn-beijing", CreatedAt: now, UpdatedAt: now}); err != nil {
+				t.Fatal(err)
+			}
+			put("target", func(v *asset.Asset) {
+				if mode == "outside-coverage" {
+					v.ScopeID = "outside"
+				}
+			})
+			put("unobserved", nil)
+			if mode == "ambiguous-id" {
+				put("same-id-another-region", func(v *asset.Asset) {
+					v.Identity.NativeID, v.Identity.ScopeKey, v.ScopeID = "target", "region:cn-beijing", "outside"
+				})
+			}
+			if strings.HasPrefix(mode, "other-") {
+				put("foreign", func(v *asset.Asset) {
+					switch mode {
+					case "other-connection":
+						v.Identity.ConnectionID = "another"
+					case "other-provider":
+						v.Identity.Provider = asset.ProviderAzure
+					case "other-partition":
+						v.Identity.Partition = "another"
+					case "other-kind":
+						v.ResourceKindID = "another"
+					}
+				})
+			}
+			if mode == "network-native-absence" {
+				run, _ := repositories.Inventory().GetScanRun(ctx, "run-worker")
+				run.ScopeMode = asset.ScanSelectedNetworks
+				target := asset.ScanTarget{Key: "vpc:cn-hangzhou:network", Kind: asset.ScanTargetVPC, NativeID: "network", RegionID: "cn-hangzhou"}
+				run.Targets = []asset.ScanTarget{target}
+				if err := repositories.Inventory().PutScanRun(ctx, run); err != nil {
+					t.Fatal(err)
+				}
+				shard, _ := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+				shard.TargetKey = target.Key
+				if err := repositories.Inventory().PutScanShard(ctx, shard); err != nil {
+					t.Fatal(err)
+				}
+			}
+			final := contracts.InventoryBatch{Complete: true, AbsentNativeIDs: []string{"target"}}
+			adapter := &pagedInventoryAdapter{sources: []contracts.InventorySource{{Name: "resource-center", ReconcileKnownIDs: mode != "ordinary-source"}}, pages: []contracts.InventoryBatch{final}}
+			item := contracts.InventoryItem{NativeType: workerKind().NativeType, NativeID: "target", ResourceKind: workerKind()}
+			switch mode {
+			case "omission":
+				adapter.pages[0].AbsentNativeIDs = nil
+			case "unknown", "new-record-as-absent":
+				adapter.pages[0].AbsentNativeIDs = []string{"late"}
+			case "duplicate":
+				adapter.pages[0].AbsentNativeIDs = []string{"target", "target"}
+			case "partial-page":
+				adapter.pages[0].Complete, adapter.pages[0].NextCursor = false, "next"
+			case "final-cursor":
+				adapter.pages[0].NextCursor = "next"
+			case "observed-page":
+				adapter.pages[0].Items = []contracts.InventoryItem{item}
+			case "observed-earlier-page":
+				adapter.pages = []contracts.InventoryBatch{{NextCursor: "next", Items: []contracts.InventoryItem{item}}, final}
+			case "failed-page":
+				adapter.pages = []contracts.InventoryBatch{{NextCursor: "next"}, final}
+				adapter.errors = []error{nil, errors.New("native read denied")}
+			}
+			if strings.HasPrefix(mode, "other-") {
+				adapter.pages[0].AbsentNativeIDs = []string{"foreign"}
+			}
+			adapter.onList = func() {
+				switch mode {
+				case "new-record", "new-record-as-absent":
+					put("late", nil)
+				case "refreshed":
+					current, _ := repositories.Inventory().GetAsset(ctx, "target")
+					current.LastSeenAt = now.Add(time.Hour)
+					if err := repositories.Inventory().PutAsset(ctx, current); err != nil {
+						t.Fatal(err)
+					}
+				case "newer-observation":
+					connection, err := repositories.Connections().GetConnection(ctx, "connection-worker")
+					if err != nil {
+						t.Fatal(err)
+					}
+					shard := asset.ScanShard{ID: "concurrent-observation", ScanRunID: "run-worker", Provider: asset.ProviderAliCloud, Source: "product-api", ScopeID: "scope-worker", ResourceKindID: workerKind().ID, Status: asset.ShardRunning, CreatedAt: now}
+					if err := inventory.NewService(repositories.Inventory()).ProjectBatch(ctx, &shard, connection, contracts.InventoryBatch{Items: []contracts.InventoryItem{item}, Complete: true}, inventory.ProjectionOptions{}); err != nil {
+						t.Fatal(err)
+					}
+					current, err := repositories.Inventory().GetAsset(ctx, "target")
+					if err != nil || current.CurrentObservationID == "" {
+						t.Fatal("concurrent scan did not refresh the same asset", current, err)
+					}
+				case "canceled":
+					run, _ := repositories.Inventory().GetScanRun(ctx, "run-worker")
+					run.Status = asset.ScanCanceling
+					if err := repositories.Inventory().PutScanRun(ctx, run); err != nil {
+						t.Fatal(err)
+					}
+				}
+			}
+			handler := inventory.NewScanHandler(repositories, inventoryRuntime{adapter}, inventory.NewService(repositories.Inventory()))
+			err := handler.Handle(ctx, execution.Job{Payload: map[string]any{"scan_shard_id": "shard-worker"}})
+			wantSuccess := mode == "native-absence" || mode == "network-native-absence" || mode == "omission" || mode == "refreshed" || mode == "newer-observation" || mode == "new-record" || mode == "outside-coverage"
+			if (err == nil) != wantSuccess {
+				t.Fatal("unexpected native absence outcome", err)
+			}
+			closed := mode == "native-absence" || mode == "network-native-absence" || mode == "new-record"
+			value, err := repositories.Inventory().GetAsset(ctx, "target")
+			if err != nil || (value.ClosedAt != nil) != closed || value.DeletedAt != nil {
+				t.Fatal("native absence closed the wrong observation or invented a cleanup tombstone", value, err)
+			}
+			for _, id := range []asset.AssetID{"unobserved", "late", "foreign", "same-id-another-region"} {
+				value, err := repositories.Inventory().GetAsset(ctx, id)
+				if err == nil && value.ClosedAt != nil {
+					t.Fatal("native absence swept an unrelated record", id)
+				}
+			}
+		})
+	}
+}
+
+func TestConfirmedNativeAbsenceCommitsAtomicallyWithShard(t *testing.T) {
+	ctx, now := t.Context(), time.Now().UTC()
+	repositories := openInventoryWorkerRepositories(t)
+	seedScanWorker(t, repositories, now)
+	var baseline []asset.Asset
+	for _, id := range []asset.AssetID{"first", "second"} {
+		value := asset.Asset{ID: id, Identity: asset.Identity{Provider: asset.ProviderAliCloud, ConnectionID: "connection-worker", Partition: "public", NativeType: workerKind().NativeType, NativeID: string(id)}, ResourceKindID: workerKind().ID, ScopeID: "scope-worker", FirstSeenAt: now, LastSeenAt: now}
+		if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
+			t.Fatal(err)
+		}
+		baseline = append(baseline, value)
+	}
+	shard, err := repositories.Inventory().GetScanShard(ctx, "shard-worker")
+	if err != nil {
+		t.Fatal(err)
+	}
+	shard.Authoritative = false
+	service := inventory.NewService(repositories.Inventory())
+	if err := service.FinishShard(ctx, &shard, asset.ShardFailed, "native query failed", baseline[0]); err == nil {
+		t.Fatal("failed shard accepted native absence")
+	}
+	for _, mode := range []string{"foreign", "duplicate"} {
+		second := baseline[1]
+		if mode == "foreign" {
+			second.Identity.ConnectionID = "another"
+		} else {
+			second = baseline[0]
+		}
+		if err := service.FinishShard(ctx, &shard, asset.ShardSucceeded, "", baseline[0], second); err == nil {
+			t.Fatal("invalid native absence transaction succeeded", mode)
+		}
+		for _, original := range baseline {
+			value, err := repositories.Inventory().GetAsset(ctx, original.ID)
+			if err != nil || value.ClosedAt != nil {
+				t.Fatal("failed native absence transaction partially closed assets", value, err)
+			}
+		}
+		stored, err := repositories.Inventory().GetScanShard(ctx, shard.ID)
+		if err != nil || stored.Status != asset.ShardPending {
+			t.Fatal("failed native absence transaction marked shard complete", stored, err)
+		}
+	}
+	if err := service.FinishShard(ctx, &shard, asset.ShardSucceeded, "", baseline[0]); err != nil {
+		t.Fatal(err)
+	}
+	first, err := repositories.Inventory().GetAsset(ctx, baseline[0].ID)
+	if err != nil || first.ClosedAt == nil || first.DeletedAt != nil || shard.Status != asset.ShardSucceeded || shard.Authoritative {
+		t.Fatal("native absence did not commit with its non-authoritative shard", first, shard, err)
+	}
+}
+
 type enrichingInventoryAdapter struct {
 	pagedInventoryAdapter
 	enrich func(context.Context, contracts.InventoryRequest, []contracts.InventoryItem) ([]contracts.InventoryItem, error)

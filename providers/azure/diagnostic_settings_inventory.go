@@ -272,7 +272,17 @@ func (r *Runtime) listDiagnosticSettings(ctx context.Context, c *client, request
 	}
 	end := cursor.Target + min(limit, len(first)-cursor.Target)
 	batch = contracts.InventoryBatch{Items: first[cursor.Target:end], Complete: end == len(first), RequestID: provenance}
-	if !batch.Complete {
+	if batch.Complete {
+		// Every known ID was read directly in both observations. A missing
+		// binding therefore means its own GET returned 404, independent of the
+		// source/group indexes and of the requested region/network projection.
+		bindings := object(before["settings"])
+		for _, id := range request.KnownNativeIDs {
+			if bindings[id] == nil {
+				batch.AbsentNativeIDs = append(batch.AbsentNativeIDs, id)
+			}
+		}
+	} else {
 		cursor.Fingerprint, cursor.Target = fingerprint, end
 		encoded, _ := json.Marshal(cursor)
 		batch.NextCursor = base64.RawURLEncoding.EncodeToString(encoded)

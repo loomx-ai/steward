@@ -382,6 +382,27 @@ func TestApplicationInsightsAnnotationHistoryProjectionAndPlanning(t *testing.T)
 	if wait, err := driver.Wait(ctx, request, result); err != nil || !wait.Done {
 		t.Fatal("historical annotation native absence failed", wait, err)
 	}
+	created, err = creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: connection.ID, RequestedBy: "reconcile-native-history-absence", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"eastus"}, ResourceKindIDs: []asset.ResourceKindID{r.resourceKind(insightsAnnotationType).ID}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, job := range created.Jobs {
+		if err := handler.Handle(ctx, job); err != nil {
+			t.Fatal("annotation native absence did not reconcile", err)
+		}
+	}
+	closed, err := repository.GetAsset(ctx, old.ID)
+	if err != nil || closed.ClosedAt == nil || closed.DeletedAt != nil {
+		t.Fatal("historical own-GET absence failed to close the saved record", closed, err)
+	}
+	values, err = repository.ListActiveAssetsByConnection(ctx, connection.ID, "")
+	if err != nil || len(values) != 3 {
+		t.Fatal("annotation absence closed unrelated history", len(values), err)
+	}
+	graph, err = governance.NewService(repository, repository).RebuildGraph(ctx, root.ID, connection.ID, "annotation-native-absence", r.bundle, []governance.Contributor{lifecycle, NewResourceAttachments()})
+	if err != nil || len(graph.Bindings) != 2 {
+		t.Fatal("closed annotation continued to block relationship reconciliation", graph, err)
+	}
 }
 
 func TestApplicationInsightsAnnotationComponentDeletion(t *testing.T) {
@@ -503,6 +524,9 @@ func TestApplicationInsightsAnnotationKnownIdentityReconciliation(t *testing.T) 
 			}
 			if err != nil || !page.Complete || len(page.Items) != want || reads != 2 {
 				t.Fatal("known identity was not reconciled twice", page, err, reads)
+			}
+			if mode == "live" && len(page.AbsentNativeIDs) != 0 || mode != "live" && !slices.Equal(page.AbsentNativeIDs, []string{ids[0]}) {
+				t.Fatal("annotation absence lost its exact known identity", page.AbsentNativeIDs)
 			}
 			if want == 1 && (page.Items[0].NativeID != ids[0] || page.Items[0].Normalized["_insights_annotation_discovery"] != "known-id") {
 				t.Fatal("historical GET was mislabeled as a window query result", page.Items)

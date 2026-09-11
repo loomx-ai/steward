@@ -182,7 +182,19 @@ func TestDiagnosticInventoryNativeScopesAndKnownOrphans(t *testing.T) {
 					t.Fatal("diagnostic native inventory failed", len(batch.Items), batch.RequestID, err)
 				}
 				items = append(items, batch.Items...)
+				if !batch.Complete && len(batch.AbsentNativeIDs) != 0 {
+					t.Fatal("partial diagnostic page returned native absence")
+				}
 				if batch.Complete {
+					wantAbsent := []string{}
+					for _, id := range request.KnownNativeIDs {
+						if f.settings[id] == nil {
+							wantAbsent = append(wantAbsent, id)
+						}
+					}
+					if !slices.Equal(batch.AbsentNativeIDs, wantAbsent) {
+						t.Fatal("diagnostic absence was not bound to known own-GET results", batch.AbsentNativeIDs, wantAbsent)
+					}
 					break
 				}
 				request.Cursor = batch.NextCursor

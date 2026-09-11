@@ -137,19 +137,21 @@ func (r *Runtime) insightsChildItem(ctx context.Context, c *client, parent contr
 		Raw: safe, NativeAliases: []string{id}, NetworkReferences: network}, nil
 }
 
-func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest, window insightsAnnotationWindow) ([]contracts.InventoryItem, string, error) {
+func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, request contracts.InventoryRequest, window insightsAnnotationWindow) ([]contracts.InventoryItem, []string, string, error) {
 	components, provenance, err := c.insightsComponents(ctx)
 	if err != nil {
-		return nil, "", err
+		return nil, nil, "", err
 	}
+	var absent []string
 	if request.ResourceKind.NativeType == insightsAnnotationType {
-		if err := c.insightsAnnotationParents(ctx, components, request.KnownNativeIDs); err != nil {
-			return nil, "", err
+		absent, err = c.insightsAnnotationParents(ctx, components, request.KnownNativeIDs)
+		if err != nil {
+			return nil, nil, "", err
 		}
 	}
 	indexedGroups, err := c.insightsGroups(ctx)
 	if err != nil {
-		return nil, "", err
+		return nil, nil, "", err
 	}
 	owners := map[string]string{}
 	for id, group := range indexedGroups {
@@ -157,14 +159,14 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 	}
 	locks, err := c.managementLocks(ctx)
 	if err != nil {
-		return nil, "", err
+		return nil, nil, "", err
 	}
 	var items []contracts.InventoryItem
 	groups := map[string]map[string]any{}
 	for _, component := range components {
 		parent, err := r.inventoryItem(ctx, c, component.data, owners, locks)
 		if err != nil {
-			return nil, "", err
+			return nil, nil, "", err
 		}
 		if !productScopeMatches(request, parent) {
 			continue
@@ -173,11 +175,11 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		group, exists := groups[groupID]
 		if !exists {
 			if indexedGroups[groupID] == nil {
-				return nil, "", serviceDenied("insights_inventory_group_disagrees")
+				return nil, nil, "", serviceDenied("insights_inventory_group_disagrees")
 			}
 			group, err = c.insightsGroup(ctx, groupID, indexedGroups[groupID])
 			if err != nil {
-				return nil, "", err
+				return nil, nil, "", err
 			}
 			groups[groupID] = group
 		}
@@ -189,35 +191,37 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		parent.Normalized["_inventory_source"] = productInventorySource
 		if strings.EqualFold(request.ResourceKind.NativeType, applicationInsightsType) {
 			if err := c.insightsWorkspaceInventory(ctx, &parent, component.data, indexedGroups); err != nil {
-				return nil, "", err
+				return nil, nil, "", err
 			}
 			if err := c.insightsConfigurationInventory(ctx, &parent, component.data); err != nil {
-				return nil, "", err
+				return nil, nil, "", err
 			}
 			items = append(items, parent)
 			continue
 		}
 		var children []serviceChild
 		var windowIDs map[string]bool
+		var childAbsent []string
 		if request.ResourceKind.NativeType == insightsAnnotationType {
-			children, windowIDs, err = c.insightsAnnotationInventoryChildren(ctx, component.id, window, request.KnownNativeIDs)
+			children, windowIDs, childAbsent, err = c.insightsAnnotationInventoryChildren(ctx, component.id, window, request.KnownNativeIDs)
 		} else {
 			children, err = c.insightsChildren(ctx, component.id, request.ResourceKind.NativeType)
 		}
 		if err != nil {
-			return nil, "", err
+			return nil, nil, "", err
 		}
+		absent = append(absent, childAbsent...)
 		current, err := c.insightsComponent(ctx, component.id)
 		if err != nil {
-			return nil, "", err
+			return nil, nil, "", err
 		}
 		if c.privateConfiguration(monitorPrivateLinkTargetSnapshot(current)) != parent.Normalized["_monitor_private_link_target_configuration"] {
-			return nil, "", serviceDenied("insights_inventory_component_changed")
+			return nil, nil, "", serviceDenied("insights_inventory_component_changed")
 		}
 		for _, child := range children {
 			item, err := r.insightsChildItem(ctx, c, parent, child)
 			if err != nil {
-				return nil, "", err
+				return nil, nil, "", err
 			}
 			if item.NativeType == insightsAnnotationType {
 				item.Normalized["_insights_annotation_window"] = window
@@ -230,7 +234,8 @@ func (r *Runtime) insightsInventorySnapshot(ctx context.Context, c *client, requ
 		}
 	}
 	slices.SortFunc(items, func(a, b contracts.InventoryItem) int { return strings.Compare(a.NativeID, b.NativeID) })
-	return items, provenance, nil
+	slices.Sort(absent)
+	return items, absent, provenance, nil
 }
 
 func insightsInventoryBindings(items []contracts.InventoryItem) map[string]any {
@@ -368,24 +373,24 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 	} else if cursor.Window != (insightsAnnotationWindow{}) || len(request.KnownNativeIDs) != 0 {
 		return batch, serviceDenied("unexpected_insights_annotation_window")
 	}
-	items, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+	items, absent, provenance, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
 	if err != nil {
 		return batch, err
 	}
 	// As with Batch's native inventory, materialize the current collection
 	// before slicing. Two independently read snapshots catch membership and
 	// private-configuration drift; an old cursor must not skip new resources.
-	current, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
+	current, afterAbsent, _, err := r.insightsInventorySnapshot(ctx, c, request, cursor.Window)
 	if err != nil {
 		return batch, err
 	}
 	bindings := insightsInventoryBindings(items)
-	if c.privateConfiguration(bindings) != c.privateConfiguration(insightsInventoryBindings(current)) {
+	if !slices.Equal(absent, afterAbsent) || c.privateConfiguration(bindings) != c.privateConfiguration(insightsInventoryBindings(current)) {
 		return batch, serviceDenied("insights_inventory_changed_during_scan")
 	}
 	boundary := request
 	boundary.Cursor, boundary.Limit = "", 0
-	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings, "window": cursor.Window})
+	fingerprint := c.privateConfiguration(map[string]any{"request": boundary, "revision": r.bundle.Revision, "bindings": bindings, "absent": absent, "window": cursor.Window})
 	if request.Cursor != "" && (cursor.Fingerprint != fingerprint || cursor.Target >= len(items)) {
 		return batch, serviceDenied("insights_inventory_cursor_changed")
 	}
@@ -396,7 +401,9 @@ func (r *Runtime) listInsights(ctx context.Context, c *client, request contracts
 	}
 	end := cursor.Target + min(limit, len(items)-cursor.Target)
 	batch = contracts.InventoryBatch{Items: items[cursor.Target:end], Complete: end == len(items), RequestID: provenance}
-	if !batch.Complete {
+	if batch.Complete {
+		batch.AbsentNativeIDs = absent
+	} else {
 		cursor.Target = end
 		raw, _ := json.Marshal(cursor)
 		batch.NextCursor = base64.RawURLEncoding.EncodeToString(raw)

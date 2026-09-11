@@ -2484,3 +2484,35 @@ background evidence only, not acceptance evidence for this work.
   the custom source has no blanket absence authority. No independent Monitor
   emulator or live Azure run is claimed. Native DELETE has no conditional version
   guard, leaving an external-edit window after final preflight.
+
+### Explicit native absence for bounded inventory sources
+
+- Added final-batch `AbsentNativeIDs` for sources that reconcile known IDs.
+  The scan worker validates each claim against its fixed connection/provider/
+  kind/partition baseline and all observed pages. Unknown, duplicate, ambiguous,
+  observed and partial-page claims fail the shard. This grants no authority over
+  other omitted resources and does not change the sources' non-authoritative
+  defaults.
+- Successful shard completion closes only the confirmed, unchanged assets in
+  the same database transaction. Identity/scope changes and newer observations
+  survive. Failed/cancelled scans cannot close records; a closure does not create
+  a cleanup deletion tombstone. The normal and network scan paths share this
+  contract and retain coverage checks.
+- Diagnostic settings, shared/private workbooks and historical annotations now
+  report saved identities only after their own native GET confirms absence in
+  both observations. Parent disappearance and bounded list omissions are still
+  insufficient. Workbook/annotation absence sets are compared before region
+  filtering and bound into cursors, including empty projected result sets.
+- Actual SQLite scan/graph/cleanup/recovery scenarios verify individual external
+  deletion reconciliation for all three sources. Shared worker tests cover 22
+  identity, paging, cancellation, failure, network and concurrent-update cases;
+  transaction tests verify rollback of both asset and shard changes. Source
+  tests include permission denial and disappearance/reappearance hidden by a
+  region filter.
+- Final full Go tests passed (Azure 187.581s, GCP 164.711s), affected race tests
+  passed (inventory 6.512s, Azure 37.914s), and repository-wide vet passed.
+  Bilingual Azure documentation and native fixture evidence describe the new
+  behavior. Catalogs and API sources are unchanged. This closes the explicit
+  native-absence follow-up above; remaining discovery/lifecycle/type gaps and
+  all eight overall acceptance criteria remain open. These are native-protocol
+  and application tests, not new independent-emulator or real-cloud evidence.

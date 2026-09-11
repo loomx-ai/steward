@@ -146,15 +146,15 @@ func TestApplicationInsightsWorkbooksNativeScanWorkerAndPlan(t *testing.T) {
 			if wait, err := driver.Wait(ctx, request, result); err != nil || !wait.Done {
 				t.Fatal("persisted action could not prove active absence", wait, err)
 			}
-			// An inventory pass has no action receipt. Bounded source omissions
-			// retain saved rows; complete template enumeration can close them.
+			// Bounded lists still have no blanket authority. Saved workbook IDs
+			// are individually re-read and can close only on their own absence.
 			values = scan()
-			want := 2
-			if kind == insightsWorkbookTemplateType {
-				want = 1
+			if len(values) != 1 {
+				t.Fatal("inventory did not reconcile native workbook absence", len(values))
 			}
-			if len(values) != want {
-				t.Fatal("inventory applied the wrong absence authority", len(values), want)
+			closed, err := repository.GetAsset(ctx, first.ID)
+			if err != nil || closed.ClosedAt == nil || closed.DeletedAt != nil {
+				t.Fatal("inventory absence did not close the record or invented a cleanup tombstone", closed, err)
 			}
 		})
 	}

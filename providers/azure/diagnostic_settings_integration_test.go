@@ -157,6 +157,21 @@ func testDiagnosticRegisteredScanWorkerAndCleanupRecovery(t *testing.T, nativeCa
 	if strings.Contains(string(wire), "PRIVATE_DIAGNOSTIC_WORKER_CONTENT") || strings.Contains(string(wire), "ordinaryFutureField") {
 		t.Fatal("private diagnostic configuration entered persisted inventory")
 	}
+	var externallyRemoved asset.Asset
+	for _, value := range values {
+		if value.ID != first.ID && strings.Contains(value.Identity.NativeID, "/resourcegroups/") {
+			externallyRemoved = value
+			break
+		}
+	}
+	delete(f.settings, externallyRemoved.Identity.NativeID)
+	if len(scan(false)) != 2 {
+		t.Fatal("own native absence did not reconcile the externally removed setting")
+	}
+	removed, err := repository.GetAsset(ctx, externallyRemoved.ID)
+	if err != nil || removed.ClosedAt == nil || removed.DeletedAt != nil {
+		t.Fatal("external native absence failed to close the record or invented a cleanup receipt", removed, err)
+	}
 	lifecycle, err := r.ServiceLifecycle(ctx, connection.ID)
 	if err != nil {
 		t.Fatal(err)
@@ -211,7 +226,7 @@ func testDiagnosticRegisteredScanWorkerAndCleanupRecovery(t *testing.T, nativeCa
 	if err != nil || stored.ClosedAt == nil || len(f.deleted) != 1 {
 		t.Fatal("recovered native receipt did not close exactly one setting", stored, err, f.deleted)
 	}
-	if len(scan(false)) != 2 {
+	if len(scan(false)) != 1 {
 		t.Fatal("subsequent scan lost surviving settings")
 	}
 	denied := slices.Sorted(maps.Keys(f.settings))[0]
@@ -225,7 +240,7 @@ func testDiagnosticRegisteredScanWorkerAndCleanupRecovery(t *testing.T, nativeCa
 		}
 		return nil, false
 	}
-	if len(scan(true)) != 2 {
+	if len(scan(true)) != 1 {
 		t.Fatal("unreadable diagnostic discovery closed saved resources")
 	}
 }

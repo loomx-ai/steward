@@ -99,6 +99,11 @@ The SQLite integration test uses the registered inventory source, scan and graph
 workers, actual cleanup planning/execution jobs and recreated application
 services for pending deletion recovery. Source/group deletion alone preserves
 the setting. The native setting's separate GET controls final completion.
+A later successful scan closes a saved setting only after its own GET returns
+404 in both native observations. Explicit absent IDs appear only on the final
+complete page, and the worker validates them against its fixed baseline.
+The actual scan/graph scenario removes a different setting externally and
+verifies that only its record closes, with no cleanup deletion tombstone.
 `TestDiagnosticNativeSourceNamesAndOrphanSelectors` also composes native
 case-sensitive source names and documented Cosmos response-ID aliases. Saved
 selectors are authenticated with configuration/context and fixed across inventory

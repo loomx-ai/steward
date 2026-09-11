@@ -503,12 +503,15 @@ func schemaRevision(override, kindRevision string) string {
 	return kindRevision
 }
 
-func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, status asset.ShardStatus, failureReason string) error {
+func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, status asset.ShardStatus, failureReason string, confirmedAbsent ...asset.Asset) error {
 	if shard == nil {
 		return fmt.Errorf("scan shard is required")
 	}
 	if status != asset.ShardSucceeded && status != asset.ShardSkipped && status != asset.ShardFailed {
 		return fmt.Errorf("scan shard can only finish as succeeded, skipped, or failed")
+	}
+	if len(confirmedAbsent) != 0 && status != asset.ShardSucceeded {
+		return fmt.Errorf("native absence requires a successful shard")
 	}
 	finishedAt := s.clock()
 	updatedShard := *shard
@@ -590,6 +593,9 @@ func (s *Service) FinishShard(ctx context.Context, shard *asset.ScanShard, statu
 					return err
 				}
 			}
+		}
+		if err := closeConfirmedAbsentAssets(ctx, repository, updatedShard, confirmedAbsent, finishedAt); err != nil {
+			return err
 		}
 		return repository.PutScanShard(ctx, updatedShard)
 	})

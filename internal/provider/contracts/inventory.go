@@ -60,10 +60,15 @@ type InventoryItem struct {
 }
 
 type InventoryBatch struct {
-	Items      []InventoryItem `json:"items"`
-	NextCursor string          `json:"next_cursor,omitempty"`
-	RequestID  string          `json:"request_id,omitempty"`
-	Complete   bool            `json:"complete"`
+	Items []InventoryItem `json:"items"`
+	// AbsentNativeIDs are known identities whose own native read confirmed
+	// absence. Only a final complete batch from a ReconcileKnownIDs source may
+	// return them; a bounded list omission or missing parent is not evidence.
+	// They never grant authority to close any other unobserved asset.
+	AbsentNativeIDs []string `json:"absent_native_ids,omitempty"`
+	NextCursor      string   `json:"next_cursor,omitempty"`
+	RequestID       string   `json:"request_id,omitempty"`
+	Complete        bool     `json:"complete"`
 }
 
 type InventoryAdapter interface {

@@ -473,8 +473,50 @@ func TestApplicationInsightsWorkbooksCustomCategoryAndKnownIDs(t *testing.T) {
 				if err != nil || !page.Complete || len(page.Items) != want {
 					t.Fatal("custom/saved workbook disappeared", page, err)
 				}
+				if mode == "known-gone" && !slices.Equal(page.AbsentNativeIDs, []string{id}) || mode != "known-gone" && len(page.AbsentNativeIDs) != 0 {
+					t.Fatal("workbook absence lost its exact known identity", page.AbsentNativeIDs)
+				}
 				if mode != "known-gone" && !slices.ContainsFunc(f.queries, func(q url.Values) bool { return q.Get("category") == "private-custom-category" }) {
 					t.Fatal("discovered category was never reconciled natively")
+				}
+			})
+		}
+	}
+}
+
+func TestApplicationInsightsWorkbookAbsenceIsIndependentOfRegionFiltering(t *testing.T) {
+	for _, kind := range []string{insightsWorkbookType, insightsMyWorkbookType} {
+		for _, mode := range []string{"live", "gone", "reappeared", "denied"} {
+			t.Run(last(kind)+"/"+mode, func(t *testing.T) {
+				f := newWorkbookFixture(t, kind)
+				id := slices.Sorted(maps.Keys(f.objects))[0]
+				object(f.objects[id]["properties"])["category"] = "saved-custom-category"
+				request := productRequest(f.runtime, kind)
+				request.Scope = asset.Scope{Kind: asset.ScopeRegion, NativeID: "eastus"}
+				request.KnownNativeIDs = []string{id}
+				if mode == "gone" {
+					delete(f.objects, id)
+				}
+				f.override = func(req *http.Request) (*http.Response, bool) {
+					if req.Method == "GET" && strings.EqualFold(req.URL.Path, id) {
+						if mode == "reappeared" && f.calls["GET "+id] == 1 {
+							return jsonResponse(404, map[string]any{}, nil), true
+						}
+						if mode == "denied" {
+							return jsonResponse(403, map[string]any{}, nil), true
+						}
+					}
+					return nil, false
+				}
+				batch, err := f.runtime.List(t.Context(), request)
+				if mode == "reappeared" || mode == "denied" {
+					if err == nil || batch.Complete || len(batch.AbsentNativeIDs) != 0 {
+						t.Fatal("failed/changed native absence became a successful empty scan", batch, err)
+					}
+					return
+				}
+				if err != nil || !batch.Complete || len(batch.Items) != 0 || mode == "live" && len(batch.AbsentNativeIDs) != 0 || mode == "gone" && !slices.Equal(batch.AbsentNativeIDs, []string{id}) {
+					t.Fatal("region filtering was mistaken for native absence", batch, err)
 				}
 			})
 		}

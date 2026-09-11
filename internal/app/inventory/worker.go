@@ -31,6 +31,7 @@ type networkProjection struct {
 	connection asset.CloudConnection
 	target     asset.ScanTarget
 	items      []contracts.InventoryItem
+	absent     []asset.Asset
 }
 
 func NewScanHandler(repositories persistence.Repositories, runtimes RuntimeRegistry, service *Service) *ScanHandler {
@@ -207,6 +208,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	}
 	var knownIDs []string
 	knownMetadata := map[string]map[string]any{}
+	knownAssets := map[string][]asset.Asset{}
 	if reconcileKnown {
 		if kind == nil {
 			return &run, fmt.Errorf("known-resource reconciliation requires a resource kind")
@@ -220,6 +222,7 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			if identity.Provider == shard.Provider && identity.ConnectionID == connection.ID && identity.Partition == connection.Partition && identity.NativeType == kind.NativeType {
 				knownIDs = append(knownIDs, identity.NativeID)
 				knownMetadata[identity.NativeID] = value.Normalized
+				knownAssets[identity.NativeID] = append(knownAssets[identity.NativeID], value)
 			}
 		}
 		slices.Sort(knownIDs)
@@ -227,6 +230,8 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 	}
 	cursor := ""
 	collected := make([]contracts.InventoryItem, 0)
+	observed := map[string]bool{}
+	var confirmedAbsent []asset.Asset
 	for {
 		if err := h.checkTaskControl(ctx, &run, &shard); err != nil {
 			return &run, err
@@ -253,6 +258,12 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 			}
 		}
 		batch, err := adapter.List(ctx, request)
+		if err == nil {
+			for _, item := range batch.Items {
+				observed[item.NativeID] = true
+			}
+			confirmedAbsent, err = confirmedAbsentAssets(batch, reconcileKnown, knownAssets, observed)
+		}
 		if err != nil {
 			if reason, ok := unsupportedSkipReason(err); ok {
 				shard.Coverage.SkipReason = reason
@@ -322,10 +333,10 @@ func (h *ScanHandler) handleShard(ctx context.Context, shardID asset.ScanShardID
 		cursor = batch.NextCursor
 	}
 	if networkTarget != nil {
-		*network = append(*network, networkProjection{shard: shard, connection: connection, target: *networkTarget, items: collected})
+		*network = append(*network, networkProjection{shard: shard, connection: connection, target: *networkTarget, items: collected, absent: confirmedAbsent})
 		return &run, nil
 	}
-	if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, ""); err != nil {
+	if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, "", confirmedAbsent...); err != nil {
 		return &run, err
 	}
 	if err := h.checkTaskControl(ctx, &run, nil); err != nil {
@@ -385,7 +396,7 @@ func (h *ScanHandler) projectNetworkTarget(ctx context.Context, run *asset.ScanR
 				return err
 			}
 		}
-		if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, ""); err != nil {
+		if err := h.service.FinishShard(ctx, &shard, asset.ShardSucceeded, "", projection.absent...); err != nil {
 			return err
 		}
 	}
