@@ -14,90 +14,98 @@ import (
 )
 
 func TestFleetUnindexedIncomingReferencesAndKnownAbsence(t *testing.T) {
-	for _, scenario := range []string{"unindexed", "type casing", "omitted source", "omitted parent", "source absent", "both absent", "parent absent source live", "forbidden source", "forbidden parent", "collection 404", "late source", "late change"} {
-		t.Run(scenario, func(t *testing.T) {
-			f := newFleetFixture(t)
-			values := f.assets(t)
-			root, member := fleetAssetByKind(t, values, fleetType), fleetAssetByKind(t, values, fleetMemberType)
-			target := asset.Asset{ID: "aks", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeID: strings.ToLower(resourceID(aksType, "cluster1")), NativeType: aksType}, Location: "westus"}
-			known := []asset.Asset{member}
-			clear(f.calls)
-			var override func(*http.Request) (*http.Response, bool)
-			switch scenario {
-			case "type casing":
-				target.Identity.NativeType = strings.ToLower(aksType)
-			case "unindexed":
-				known = nil
-			case "omitted source":
-				f.omitted[member.Identity.NativeID] = true
-			case "omitted parent":
-				f.omitted[root.Identity.NativeID], f.omitted[member.Identity.NativeID] = true, true
-			case "source absent":
-				delete(f.resources, member.Identity.NativeID)
-			case "both absent":
-				delete(f.resources, member.Identity.NativeID)
-				delete(f.resources, root.Identity.NativeID)
-			case "parent absent source live":
-				delete(f.resources, root.Identity.NativeID)
-			case "forbidden source", "forbidden parent", "collection 404":
-				override = func(req *http.Request) (*http.Response, bool) {
-					path, status := member.Identity.NativeID, 403
-					if scenario == "forbidden parent" {
-						path = root.Identity.NativeID
+	for _, clusterKind := range []string{aksType, fleetArcClusterType} {
+		for _, scenario := range []string{"unindexed", "type casing", "omitted source", "omitted parent", "source absent", "both absent", "parent absent source live", "forbidden source", "forbidden parent", "collection 404", "late source", "late change"} {
+			t.Run(last(clusterKind)+"/"+scenario, func(t *testing.T) {
+				f := newFleetFixture(t)
+				for _, raw := range f.resources {
+					if raw["type"] == fleetMemberType {
+						object(raw["properties"])["clusterResourceId"] = resourceID(clusterKind, "cluster1")
 					}
-					if scenario == "collection 404" {
-						path, status = root.Identity.NativeID+"/members", 404
-					}
-					if strings.EqualFold(req.URL.Path, path) {
-						return jsonResponse(status, map[string]any{"error": map[string]any{"code": "AuthorizationFailed"}}, nil), true
-					}
-					return nil, false
 				}
-			case "late source", "late change":
-				if scenario == "late source" {
+				values := f.assets(t)
+				root, member := fleetAssetByKind(t, values, fleetType), fleetAssetByKind(t, values, fleetMemberType)
+				target := asset.Asset{ID: "aks", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeID: strings.ToLower(resourceID(clusterKind, "cluster1")), NativeType: clusterKind}, Location: "westus"}
+				known := []asset.Asset{member}
+				clear(f.calls)
+				var override func(*http.Request) (*http.Response, bool)
+				switch scenario {
+				case "type casing":
+					target.Identity.NativeType = strings.ToLower(clusterKind)
+				case "unindexed":
+					known = nil
+				case "omitted source":
+					f.omitted[member.Identity.NativeID] = true
+				case "omitted parent":
+					f.omitted[root.Identity.NativeID], f.omitted[member.Identity.NativeID] = true, true
+				case "source absent":
 					delete(f.resources, member.Identity.NativeID)
+				case "both absent":
+					delete(f.resources, member.Identity.NativeID)
+					delete(f.resources, root.Identity.NativeID)
+				case "parent absent source live":
+					delete(f.resources, root.Identity.NativeID)
+				case "forbidden source", "forbidden parent", "collection 404":
+					override = func(req *http.Request) (*http.Response, bool) {
+						path, status := member.Identity.NativeID, 403
+						if scenario == "forbidden parent" {
+							path = root.Identity.NativeID
+						}
+						if scenario == "collection 404" {
+							path, status = root.Identity.NativeID+"/members", 404
+						}
+						if strings.EqualFold(req.URL.Path, path) {
+							return jsonResponse(status, map[string]any{"error": map[string]any{"code": "AuthorizationFailed"}}, nil), true
+						}
+						return nil, false
+					}
+				case "late source", "late change":
+					if scenario == "late source" {
+						delete(f.resources, member.Identity.NativeID)
+					}
+					override = func(req *http.Request) (*http.Response, bool) {
+						collection := root.Identity.NativeID + "/members"
+						if strings.EqualFold(req.URL.Path, collection) && f.calls["GET "+collection] == 2 {
+							if scenario == "late source" {
+								f.resources[member.Identity.NativeID] = fleetTestBody(t, fleetMemberType, "member1")
+								object(f.resources[member.Identity.NativeID]["properties"])["clusterResourceId"] = resourceID(clusterKind, "cluster1")
+							} else {
+								object(f.resources[member.Identity.NativeID]["properties"])["futurePrivateSetting"] = "changed-between-passes"
+							}
+						}
+						return nil, false
+					}
 				}
-				override = func(req *http.Request) (*http.Response, bool) {
-					collection := root.Identity.NativeID + "/members"
-					if strings.EqualFold(req.URL.Path, collection) && f.calls["GET "+collection] == 2 {
-						if scenario == "late source" {
-							f.resources[member.Identity.NativeID] = fleetTestBody(t, fleetMemberType, "member1")
-						} else {
-							object(f.resources[member.Identity.NativeID]["properties"])["futurePrivateSetting"] = "changed-between-passes"
+				f.override = func(req *http.Request) (*http.Response, bool) {
+					if override != nil {
+						if response, ok := override(req); ok {
+							return response, true
 						}
 					}
-					return nil, false
+					return fleetGraphEmptyIndexes(t, req)
 				}
-			}
-			f.override = func(req *http.Request) (*http.Response, bool) {
-				if override != nil {
-					if response, ok := override(req); ok {
-						return response, true
+				c, _ := f.runtime.resolve(t.Context(), "connection")
+				incoming, err := c.monitorIncomingTargets(t.Context(), []asset.Asset{target}, known...)
+				switch scenario {
+				case "unindexed", "type casing", "omitted source", "omitted parent":
+					if err != nil || len(incoming[target.Identity.NativeID]) != 1 || incoming[target.Identity.NativeID][0].resource.id != member.Identity.NativeID {
+						t.Fatal("live Fleet enrollment escaped reverse discovery", incoming, err)
+					}
+					contribution, err := c.contributeIncomingSources([]asset.Asset{target}, []asset.Asset{target}, incoming)
+					if err != nil || len(contribution.Unresolved) != 1 || len(contribution.Bindings)+len(contribution.Relationships) != 0 || contribution.Unresolved[0].Relationship != graph.RelationshipDependsOn || contribution.Unresolved[0].Evidence[graph.RelationshipEvidenceAutomaticSelection] != false {
+						t.Fatal("unindexed Fleet member lost its deletion blocker", contribution, err)
+					}
+				case "source absent", "both absent":
+					if err != nil || len(incoming[target.Identity.NativeID]) != 0 || f.calls["GET "+member.Identity.NativeID] != 2 {
+						t.Fatal("Fleet absence did not require the member's own GET", incoming, err, f.calls)
+					}
+				default:
+					if err == nil || isNotFound(err) {
+						t.Fatal("failed/changed reverse index became absence", incoming, err)
 					}
 				}
-				return fleetGraphEmptyIndexes(t, req)
-			}
-			c, _ := f.runtime.resolve(t.Context(), "connection")
-			incoming, err := c.monitorIncomingTargets(t.Context(), []asset.Asset{target}, known...)
-			switch scenario {
-			case "unindexed", "type casing", "omitted source", "omitted parent":
-				if err != nil || len(incoming[target.Identity.NativeID]) != 1 || incoming[target.Identity.NativeID][0].resource.id != member.Identity.NativeID {
-					t.Fatal("live Fleet enrollment escaped reverse discovery", incoming, err)
-				}
-				contribution, err := c.contributeIncomingSources([]asset.Asset{target}, []asset.Asset{target}, incoming)
-				if err != nil || len(contribution.Unresolved) != 1 || len(contribution.Bindings)+len(contribution.Relationships) != 0 || contribution.Unresolved[0].Relationship != graph.RelationshipDependsOn || contribution.Unresolved[0].Evidence[graph.RelationshipEvidenceAutomaticSelection] != false {
-					t.Fatal("unindexed Fleet member lost its deletion blocker", contribution, err)
-				}
-			case "source absent", "both absent":
-				if err != nil || len(incoming[target.Identity.NativeID]) != 0 || f.calls["GET "+member.Identity.NativeID] != 2 {
-					t.Fatal("Fleet absence did not require the member's own GET", incoming, err, f.calls)
-				}
-			default:
-				if err == nil || isNotFound(err) {
-					t.Fatal("failed/changed reverse index became absence", incoming, err)
-				}
-			}
-		})
+			})
+		}
 	}
 }
 

@@ -13,15 +13,28 @@ import (
 )
 
 const (
-	fleetType          = "Microsoft.ContainerService/fleets"
-	fleetMemberType    = fleetType + "/members"
-	fleetNamespaceType = fleetType + "/managedNamespaces"
-	fleetRunType       = fleetType + "/updateRuns"
-	fleetStrategyType  = fleetType + "/updateStrategies"
-	fleetProfileType   = fleetType + "/autoUpgradeProfiles"
-	fleetGateType      = fleetType + "/gates"
-	fleetVersion       = "2026-06-01"
+	fleetType           = "Microsoft.ContainerService/fleets"
+	fleetMemberType     = fleetType + "/members"
+	fleetNamespaceType  = fleetType + "/managedNamespaces"
+	fleetRunType        = fleetType + "/updateRuns"
+	fleetStrategyType   = fleetType + "/updateStrategies"
+	fleetProfileType    = fleetType + "/autoUpgradeProfiles"
+	fleetGateType       = fleetType + "/gates"
+	fleetVersion        = "2026-06-01"
+	fleetArcClusterType = "Microsoft.Kubernetes/connectedClusters"
 )
+
+// Fleet enrolls existing AKS or Arc clusters. This reference never grants
+// lifecycle ownership of either cluster or its Kubernetes extensions.
+// https://learn.microsoft.com/azure/kubernetes-fleet/quickstart-create-fleet-and-members
+func fleetClusterKind(kind string) string {
+	for _, supported := range []string{aksType, fleetArcClusterType} {
+		if strings.EqualFold(kind, supported) {
+			return supported
+		}
+	}
+	return ""
+}
 
 type fleetResource struct{ kind, prefix, selector string }
 
@@ -377,7 +390,12 @@ func fleetReferences(kind string, raw map[string]any) (map[string][]string, erro
 			}
 		}
 	case fleetMemberType:
-		err = add(props["clusterResourceId"], aksType, false)
+		target, actual, parseErr := parseID(text(props["clusterResourceId"]))
+		clusterKind := fleetClusterKind(actual)
+		if parseErr != nil || clusterKind == "" || len(strings.Split(target, "/")) != 9 {
+			return nil, serviceDenied("invalid_fleet_member_cluster")
+		}
+		err = add(props["clusterResourceId"], clusterKind, false)
 	case fleetRunType, fleetProfileType:
 		err = add(props["updateStrategyId"], fleetStrategyType, true)
 		if err == nil && kind == fleetRunType {

@@ -11,6 +11,9 @@ import (
 )
 
 func fleetIncomingKinds(kind string) []string {
+	if fleetClusterKind(kind) != "" {
+		return []string{fleetMemberType}
+	}
 	if registered, ok := findType(kind); ok {
 		kind = registered.NativeType
 	}
@@ -23,8 +26,6 @@ func fleetIncomingKinds(kind string) []string {
 		return []string{fleetProfileType}
 	case fleetMemberType:
 		return []string{fleetNamespaceType}
-	case aksType:
-		return []string{fleetMemberType}
 	case subnetType, "Microsoft.ManagedIdentity/userAssignedIdentities":
 		return []string{fleetType}
 	}
@@ -42,7 +43,7 @@ func fleetReferenceMatches(target, source asset.Asset, refs map[string]any) bool
 
 // The native Fleet index is independent of the asset database. Reconcile
 // known sources AND their parents so LIST omission or parent disappearance
-// cannot authorize deleting an AKS cluster, subnet or identity still in use.
+// cannot authorize deleting an AKS/Arc cluster, subnet or identity still in use.
 func (c *client) fleetIncomingObservation(ctx context.Context, targets, known []asset.Asset) (incoming map[string][]monitorIncomingSource, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	incoming = map[string][]monitorIncomingSource{}

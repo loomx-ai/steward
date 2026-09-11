@@ -2952,3 +2952,34 @@ background evidence only, not acceptance evidence for this work.
   passed. Focused compatibility tests passed (8.752s), the combined graph and
   restarted SQLite worker tests passed (2.809s), and diff checks passed.
   The Hub responses remain composed protocol evidence, not live-cloud proof.
+
+
+### Fleet Arc member references and unregister recovery
+
+- Fleet members now accept the documented AKS and Arc Kubernetes cluster ARM
+  identities, including foreign subscriptions. Strict root-resource/type and
+  casing checks reject nested extensions, malformed paths and other resource
+  families. Full private configuration and reference proofs bind the selected
+  cluster before graph contribution or cleanup.
+- Arc enrollment uses the existing registered member inventory, explicit
+  namespace prerequisites and conditional DELETE driver. It owns neither the
+  cluster nor its Kubernetes extensions. Graph contributions retain missing or
+  foreign cluster references and explicitly order member removal before a
+  referenced cluster; reverse native discovery also recognizes unregistered Arc
+  type casing and requires each known member's own absence.
+- Retained tests cover registered inventory/graph/DELETE, serialization and
+  driver recreation, delayed member disappearance, idempotent recovery,
+  namespace ordering, foreign/duplicate targets, cluster retargeting and altered
+  proofs. The twelve reverse-source scenarios now run for both AKS and Arc.
+- The Swagger's ARM-ID annotation still names only AKS, including in the
+  inspected preview document; Microsoft's current quickstart explicitly names
+  Arc connectedClusters. The original source remains unchanged. This is
+  documented protocol compatibility with composed Arc responses, not retained
+  Arc cloud recordings or emulator evidence.
+- Fleet root actions, Hub residual checks and Cluster Mesh remain unfinished.
+  All eight acceptance criteria and all 27 mapped Azure gaps remain open.
+  Catalog counts stay at 393 resource types/specs, 365 cleanup drivers,
+  1,265 native operations and 225 native source documents.
+- Verification: repository-wide `go test ./...` passed (Azure 203.686s),
+  Fleet/AKS/attachment race tests passed (73.358s), and `go vet ./...` passed.
+  Focused Arc/reference tests passed (1.051s), and diff checks passed.

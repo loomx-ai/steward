@@ -192,3 +192,22 @@ proofs and native 403s fail reconciliation and preserve the previous graph
 revision and all 17 Hub bindings. This is a composed protocol/persistence test,
 not a live-cloud Hub deletion. The Fleet root remains non-actionable and its
 bindings do not claim that an unfinished root driver verifies member absence.
+
+`TestFleetMemberClusterReferenceBoundaries`, `TestFleetArcMemberRegisteredLifecycle`
+and `TestFleetArcReferenceScopeAndDrift` exercise documented AKS and Arc member
+references through registered inventory, native graph contributions and the
+existing member DELETE/recovery driver. Arc enrollment preserves its external
+cluster and extensions; namespace prerequisites and each member's own absence
+remain mandatory. Reverse-discovery tests run the same twelve unindexed,
+omitted, absent, forbidden and changing-source cases for both cluster types,
+including a lower-case unregistered Arc type. Foreign scopes retain unresolved
+references, and changed or tampered cluster references cannot authorize cleanup.
+
+These Arc responses are composed protocol evidence. The retained Swagger's
+`ClusterResourceId` is an ARM-ID string, but its `x-ms-arm-id-details` annotation
+lists only AKS (the inspected 2026-06-02 preview has the same annotation).
+Microsoft's [current quickstart](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/quickstart-create-fleet-and-members)
+explicitly supports `Microsoft.Kubernetes/connectedClusters`. The adapter accepts
+exactly those two documented root resource types; it does not change the native
+metadata or claim that a schema annotation or composed test proves live Arc
+compatibility. No Arc recording or independent Arc emulator is retained.
