@@ -1,0 +1,50 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ContainerService/fleets
+  class: container.cluster_fleet
+presentation:
+  displayNames:
+    en-US: Kubernetes Fleet Manager
+    zh-CN: Kubernetes Fleet 管理器
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: kubernetes-fleet
+  list:
+    operation: Azure.Microsoft.ContainerService.Fleets_ListBySubscription
+    parameters:
+      subscriptionId: scope.subscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ContainerService.Fleets_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.Network/virtualNetworks/subnets
+  targetIdPath: refs_microsoft_network_virtualnetworks_subnets
+- type: uses
+  targetType: Microsoft.ManagedIdentity/userAssignedIdentities
+  targetIdPath: refs_microsoft_managedidentity_userassignedidentities

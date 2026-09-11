@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	fleet := request.ResourceKind != nil && fleetKind(request.ResourceKind.NativeType).kind != ""
+	if request.Source == fleetInventorySource && !fleet || fleet && request.Source != "" && request.Source != inventorySource && request.Source != fleetInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_fleet_inventory_source")
 	}
 	diagnostic := request.ResourceKind != nil && strings.EqualFold(request.ResourceKind.NativeType, diagnosticSettingsType)
 	if request.Source == diagnosticInventorySource && !diagnostic || diagnostic && request.Source != "" && request.Source != inventorySource && request.Source != diagnosticInventorySource {
@@ -34,6 +38,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if fleet {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = fleetInventorySource
+		return r.listFleet(ctx, c, request)
 	}
 	if workbook {
 		if request.Source == inventorySource {
@@ -297,6 +308,9 @@ func (c *client) children(ctx context.Context, kind resourceType, raw map[string
 	return result, nil
 }
 func (r *Runtime) inventoryItem(ctx context.Context, c *client, raw map[string]any, groupOwners map[string]string, locks []any) (contracts.InventoryItem, error) {
+	if fleetKind(text(raw["type"])).kind != "" {
+		return r.fleetObservedInventoryItem(ctx, c, raw, groupOwners, locks)
+	}
 	if mapping, known := findType(text(raw["type"])); known && monitorResourceKind(mapping.NativeType) != "" {
 		return r.monitorInventoryItem(ctx, c, raw, groupOwners, locks)
 	}
@@ -928,6 +942,9 @@ func locked(id string, locks []any) bool {
 func safeResource(value any) any {
 	switch typed := value.(type) {
 	case map[string]any:
+		if fleetPath(text(typed["id"])) || fleetPath("/providers/"+text(typed["type"])) {
+			typed = object(fleetSafeValue(typed))
+		}
 		if applicationInsightsRaw(typed) {
 			typed = object(applicationInsightsSafeValue(typed))
 		}

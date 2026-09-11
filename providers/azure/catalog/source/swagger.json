@@ -191017,6 +191017,133 @@
       "scopeKinds": [
         "global"
       ]
+    },
+    {
+      "class": "container.cluster_fleet",
+      "displayName": "Kubernetes Fleet Manager",
+      "nativeType": "Microsoft.ContainerService/fleets",
+      "rest": {
+        "collection": "fleets",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.Fleets_ListBySubscription",
+          "Azure.Microsoft.ContainerService.Fleets_ListByResourceGroup"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.Fleets_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.fleet_member",
+      "displayName": "Fleet member",
+      "nativeType": "Microsoft.ContainerService/fleets/members",
+      "rest": {
+        "collection": "members",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.namespace",
+      "displayName": "Fleet managed namespace",
+      "nativeType": "Microsoft.ContainerService/fleets/managedNamespaces",
+      "rest": {
+        "collection": "managedNamespaces",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.fleet_update",
+      "displayName": "Fleet update run",
+      "nativeType": "Microsoft.ContainerService/fleets/updateRuns",
+      "rest": {
+        "collection": "updateRuns",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.fleet_strategy",
+      "displayName": "Fleet update strategy",
+      "nativeType": "Microsoft.ContainerService/fleets/updateStrategies",
+      "rest": {
+        "collection": "updateStrategies",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.fleet_upgrade_profile",
+      "displayName": "Fleet auto-upgrade profile",
+      "nativeType": "Microsoft.ContainerService/fleets/autoUpgradeProfiles",
+      "rest": {
+        "collection": "autoUpgradeProfiles",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "container.fleet_gate",
+      "displayName": "Fleet update gate",
+      "nativeType": "Microsoft.ContainerService/fleets/gates",
+      "rest": {
+        "collection": "gates",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.Gates_ListByFleet"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.Gates_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
     }
   ]
 }

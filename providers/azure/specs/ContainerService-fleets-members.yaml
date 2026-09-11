@@ -1,0 +1,61 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ContainerService/fleets/members
+  class: container.fleet_member
+presentation:
+  displayNames:
+    en-US: Fleet member
+    zh-CN: Fleet 成员
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: kubernetes-fleet
+  list:
+    operation: Azure.Microsoft.ContainerService.FleetMembers_ListByFleet
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      fleetName: parent.normalized.arm_parameters.fleetName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ContainerService.FleetMembers_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: kubernetes-fleet
+    nativeType: Microsoft.ContainerService/fleets
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  clusterResourceId:
+    path: clusterResourceId
+    type: string
+  group:
+    path: group
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ContainerService/fleets
+  targetIdPath: refs_microsoft_containerservice_fleets
+- type: uses
+  targetType: Microsoft.ContainerService/managedClusters
+  targetIdPath: refs_microsoft_containerservice_managedclusters

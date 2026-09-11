@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if fleetKind(kind).kind != "" {
+		return fleetInventorySource
+	}
 	if strings.EqualFold(kind, diagnosticSettingsType) {
 		return diagnosticInventorySource
 	}

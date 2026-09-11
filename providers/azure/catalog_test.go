@@ -83,6 +83,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				if match[1] == "nspConfigName" {
 					value = "00000001-2222-3333-4444-111144444444.assoc1"
 				}
+				if kind.NativeType == fleetGateType && match[1] == "gateName" {
+					value = rbacTestRoleName
+				}
 				if strings.EqualFold(match[1], "recordType") {
 					value = kind.Collection
 				}

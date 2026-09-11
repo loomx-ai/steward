@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "6f9f79c15d8e7043dd99d74945a28a11e0b70dcce74d00d8f985b15e1028b8f1",
+    "checksum": "6dd25e63e6a856825d5320b74d70611fcf1932401e42d7bd6d7dfd4dd9ca867e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "b2776651fd8160e1d18fa2857865f5be3dfa70c439dc27aba8288205c19ad605",
+  "content_checksum": "6924f30eafb5a9e8375e521ff62b13a10fe0b55b5a646462f1ba4eff28a2a936",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -115378,6 +115378,126 @@
         ],
         "list_operations": [
           "Azure.Microsoft.ContainerRegistry.Registries_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets",
+      "class": "container.cluster_fleet",
+      "display_name": "Kubernetes Fleet Manager",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "fleets",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.Fleets_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.Fleets_ListBySubscription",
+          "Azure.Microsoft.ContainerService.Fleets_ListByResourceGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/autoUpgradeProfiles",
+      "class": "container.fleet_upgrade_profile",
+      "display_name": "Fleet auto-upgrade profile",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "autoUpgradeProfiles",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/gates",
+      "class": "container.fleet_gate",
+      "display_name": "Fleet update gate",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "gates",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.Gates_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.Gates_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/managedNamespaces",
+      "class": "container.namespace",
+      "display_name": "Fleet managed namespace",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "managedNamespaces",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/members",
+      "class": "container.fleet_member",
+      "display_name": "Fleet member",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "members",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/updateRuns",
+      "class": "container.fleet_update",
+      "display_name": "Fleet update run",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "updateRuns",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ContainerService/fleets/updateStrategies",
+      "class": "container.fleet_strategy",
+      "display_name": "Fleet update strategy",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "updateStrategies",
+        "read_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet"
         ]
       }
     },

@@ -2688,3 +2688,42 @@ background evidence only, not acceptance evidence for this work.
   This checkpoint closes no mapped family gap: 27 Azure type gaps and all eight
   overall acceptance criteria remain open. No independent Fleet emulator or new
   real-cloud run is claimed.
+
+### Kubernetes Fleet native inventory registration
+
+- Registered all seven pinned Fleet resource kinds and explicit specifications.
+  Azure now has 393 registered types/specs, 360 cleanup rules and the same 1,265
+  native operations from 225 source documents. Fleet deletion remains disabled
+  while the lifecycle driver, managed Hub proof and execution tests are built;
+  this inventory checkpoint does not satisfy the Fleet cleanup requirement.
+- Added a dedicated non-authoritative, known-ID-reconciling source. Complete
+  subscription Fleet indexes and child indexes use native detail reads and two
+  private snapshots. Saved child IDs recover omitted parents through their own
+  GET; a missing parent cannot close a surviving child. Only two consistent
+  native reads of that specific known resource can report its absence. Failed
+  scopes, incomplete collections and permission failures preserve prior assets.
+- Bound parent configuration, resource-group configuration, protection and
+  current references to the full private native configuration and cursor.
+  Proxy children inherit the Fleet region; tracked namespaces keep their native
+  location. Generic ARM observations use the same native validation and private
+  metadata. Authored namespace annotations, placement expressions and future
+  settings are omitted from public inventory, Invoke responses and API logs.
+- Specs record shared AKS/subnet/identity references, profile-to-strategy links
+  and Gate-to-run links without inventing ownership. Native update runs copy
+  their strategy; the original strategy and creating profile are provenance,
+  not current dependencies. Dynamic namespace placement stays explicit rather
+  than becoming an empty fixed target set. The pinned stable member schema
+  permits AKS; the broader Arc membership described by current Microsoft docs
+  remains unsupported by this selected contract and needs separate work.
+- Retained protocol tests for all seven kinds, source/identity restrictions,
+  missing and forbidden parent/child reads, private drift, credential rotation,
+  cursor resumption and safe logs. A SQLite test exercises registered scan
+  creation, both regions, worker reconciliation, persisted spec relationships,
+  source-authority narrowing and exact known-resource absence. This is protocol
+  and application-worker evidence, not a live Azure run or independent emulator.
+- Verification: repository-wide `go test ./...` passed (Azure 198.574s), all
+  Fleet tests including the SQLite worker passed under `-race` (11.879s),
+  repository-wide `go vet ./...` and all five offline Azure catalog-sync tests
+  passed. Shared catalog tests now bind the native Gate UUID selector. Bilingual
+  coverage docs explicitly label these seven kinds as inventory-only. All eight
+  acceptance criteria and the Fleet lifecycle gap remain open.

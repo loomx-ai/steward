@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ContainerService/fleets/updateRuns
+  class: container.fleet_update
+presentation:
+  displayNames:
+    en-US: Fleet update run
+    zh-CN: Fleet 更新运行
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: kubernetes-fleet
+  list:
+    operation: Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet
+    parameters:
+      subscriptionId: scope.subscription
+      resourceGroupName: parent.normalized.arm_parameters.resourceGroupName
+      fleetName: parent.normalized.arm_parameters.fleetName
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ContainerService.UpdateRuns_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: kubernetes-fleet
+    nativeType: Microsoft.ContainerService/fleets
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: provisioningState
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+  updateStrategyId:
+    path: updateStrategyId
+    type: string
+  autoUpgradeProfileId:
+    path: autoUpgradeProfileId
+    type: string
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.ContainerService/fleets
+  targetIdPath: refs_microsoft_containerservice_fleets
