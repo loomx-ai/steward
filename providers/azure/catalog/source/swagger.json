@@ -1846,6 +1846,151 @@
       "dependency": true,
       "document": {
         "definitions": {
+          "ManagedServiceIdentity": {
+            "description": "Managed service identity (system assigned and/or user assigned identities)",
+            "properties": {
+              "principalId": {
+                "description": "The service principal ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              },
+              "tenantId": {
+                "description": "The tenant ID of the system assigned identity. This property will only be provided for a system assigned identity.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/definitions/ManagedServiceIdentityType"
+              },
+              "userAssignedIdentities": {
+                "$ref": "#/definitions/UserAssignedIdentities"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "ManagedServiceIdentityType": {
+            "description": "Type of managed service identity (where both SystemAssigned and UserAssigned types are allowed).",
+            "enum": [
+              "None",
+              "SystemAssigned",
+              "UserAssigned",
+              "SystemAssigned, UserAssigned"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ManagedServiceIdentityType"
+            }
+          },
+          "UserAssignedIdentities": {
+            "additionalProperties": {
+              "$ref": "#/definitions/UserAssignedIdentity"
+            },
+            "description": "The set of user assigned identities associated with the resource. The userAssignedIdentities dictionary keys will be ARM resource ids in the form: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedIdentity/userAssignedIdentities/{identityName}. The dictionary values can be empty objects ({}) in requests.",
+            "title": "User-Assigned Identities",
+            "type": "object"
+          },
+          "UserAssignedIdentity": {
+            "description": "User assigned identity properties",
+            "properties": {
+              "clientId": {
+                "description": "The client ID of the assigned identity.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              },
+              "principalId": {
+                "description": "The principal ID of the assigned identity.",
+                "format": "uuid",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        }
+      },
+      "source_sha256": "e0053dd5b2f6fdbcdea58a816dff7670b07aeccded7141ea2124713b62d68df5",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v4/managedidentity.json"
+    },
+    {
+      "dependency": true,
+      "document": {
+        "definitions": {
+          "ErrorAdditionalInfo": {
+            "description": "The resource management error additional info.",
+            "properties": {
+              "info": {
+                "description": "The additional info.",
+                "readOnly": true,
+                "type": "object"
+              },
+              "type": {
+                "description": "The additional info type.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorDetail": {
+            "description": "The error detail.",
+            "properties": {
+              "additionalInfo": {
+                "description": "The error additional info.",
+                "items": {
+                  "$ref": "#/definitions/ErrorAdditionalInfo"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "code": {
+                "description": "The error code.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "details": {
+                "description": "The error details.",
+                "items": {
+                  "$ref": "#/definitions/ErrorDetail"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": [
+                  "message",
+                  "target"
+                ]
+              },
+              "message": {
+                "description": "The error message.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "target": {
+                "description": "The error target.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ErrorResponse": {
+            "description": "Common error response for all Azure Resource Manager APIs to return error details for failed operations. (This also follows the OData error response format.).",
+            "properties": {
+              "error": {
+                "$ref": "#/definitions/ErrorDetail",
+                "description": "The error object."
+              }
+            },
+            "title": "Error response",
+            "type": "object"
+          },
           "ProxyResource": {
             "allOf": [
               {
@@ -1884,6 +2029,41 @@
             "title": "Resource",
             "type": "object",
             "x-ms-azure-resource": true
+          },
+          "TrackedResource": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ],
+            "description": "The resource model definition for an Azure Resource Manager tracked top level resource which has 'tags' and a 'location'",
+            "properties": {
+              "location": {
+                "description": "The geo-location where the resource lives",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "tags": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "Resource tags.",
+                "type": "object",
+                "x-ms-mutability": [
+                  "read",
+                  "create",
+                  "update"
+                ]
+              }
+            },
+            "required": [
+              "location"
+            ],
+            "title": "Tracked Resource",
+            "type": "object"
           },
           "systemData": {
             "description": "Metadata pertaining to creation and last modification of the resource.",
@@ -1947,11 +2127,3926 @@
             "name": "api-version",
             "required": true,
             "type": "string"
+          },
+          "ResourceGroupNameParameter": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "SubscriptionIdParameter": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
           }
         }
       },
       "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v5/types.json"
+    },
+    {
+      "dependency": false,
+      "document": {
+        "definitions": {
+          "APIServerAccessProfile": {
+            "description": "Access profile for the Fleet hub API server.",
+            "properties": {
+              "enablePrivateCluster": {
+                "description": "Whether to create the Fleet hub as a private cluster or not.",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "enableVnetIntegration": {
+                "description": "Whether to enable apiserver vnet integration for the Fleet hub or not.",
+                "type": "boolean",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "subnetId": {
+                "$ref": "#/definitions/SubnetResourceId",
+                "description": "The subnet to be used when apiserver vnet integration is enabled. It is required when creating a new Fleet with BYO vnet.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "AdoptionPolicy": {
+            "description": "Action if the Namespace with the same name already exists.",
+            "enum": [
+              "Never",
+              "IfIdentical",
+              "Always"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AdoptionPolicy",
+              "values": [
+                {
+                  "description": "If the Namespace already exists, do not take over the existing Namespace to be managed by ARM.",
+                  "name": "Never",
+                  "value": "Never"
+                },
+                {
+                  "description": "If there is an identical Namespace, take over the existing Namespace to be managed by ARM.",
+                  "name": "IfIdentical",
+                  "value": "IfIdentical"
+                },
+                {
+                  "description": "Always take over the existing Namespace to be managed by ARM, even if it is not identical.",
+                  "name": "Always",
+                  "value": "Always"
+                }
+              ]
+            }
+          },
+          "AgentProfile": {
+            "description": "Agent profile for the Fleet hub.",
+            "properties": {
+              "subnetId": {
+                "$ref": "#/definitions/SubnetResourceId",
+                "description": "The ID of the subnet which the Fleet hub node will join on startup. If this is not specified, a vnet and subnet will be generated and used.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "vmSize": {
+                "description": "The virtual machine size of the Fleet hub.",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "AutoUpgradeLastTriggerStatus": {
+            "description": "AutoUpgradeLastTriggerStatus is the status of the last AutoUpgrade trigger (attempt to automatically create and start UpdateRun when there are new released versions) of an auto upgrade profile.",
+            "enum": [
+              "Succeeded",
+              "Failed"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AutoUpgradeLastTriggerStatus",
+              "values": [
+                {
+                  "description": "The last AutoUpgrade trigger was succeeded.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "The last AutoUpgrade trigger failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                }
+              ]
+            }
+          },
+          "AutoUpgradeNodeImageSelection": {
+            "description": "The node image upgrade to be applied to the target clusters in auto upgrade.",
+            "properties": {
+              "type": {
+                "$ref": "#/definitions/AutoUpgradeNodeImageSelectionType",
+                "description": "The node image upgrade type.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "AutoUpgradeNodeImageSelectionType": {
+            "description": "The node image upgrade type.",
+            "enum": [
+              "Latest",
+              "Consistent"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AutoUpgradeNodeImageSelectionType",
+              "values": [
+                {
+                  "description": "Use the latest image version when upgrading nodes. Clusters may use different image versions (e.g., 'AKSUbuntu-1804gen2containerd-2021.10.12' and 'AKSUbuntu-1804gen2containerd-2021.10.19') because, for example, the latest available version is different in different regions.",
+                  "name": "Latest",
+                  "value": "Latest"
+                },
+                {
+                  "description": "The image versions to upgrade nodes to are selected as described below: for each node pool in managed clusters affected by the update run, the system selects the latest image version such that it is available across all other node pools (in all other clusters) of the same image type. As a result, all node pools of the same image type will be upgraded to the same image version. For example, if the latest image version for image type 'AKSUbuntu-1804gen2containerd' is 'AKSUbuntu-1804gen2containerd-2021.10.12' for a node pool in cluster A in region X, and is 'AKSUbuntu-1804gen2containerd-2021.10.17' for a node pool in cluster B in region Y, the system will upgrade both node pools to image version 'AKSUbuntu-1804gen2containerd-2021.10.12'.",
+                  "name": "Consistent",
+                  "value": "Consistent"
+                }
+              ]
+            }
+          },
+          "AutoUpgradeProfile": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "The AutoUpgradeProfile resource.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/AutoUpgradeProfileProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "AutoUpgradeProfileId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/fleets/updateRuns"
+                }
+              ]
+            }
+          },
+          "AutoUpgradeProfileListResult": {
+            "description": "The response of a AutoUpgradeProfile list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The AutoUpgradeProfile items on this page",
+                "items": {
+                  "$ref": "#/definitions/AutoUpgradeProfile"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "AutoUpgradeProfileProperties": {
+            "description": "The properties of the AutoUpgradeProfile.",
+            "properties": {
+              "autoUpgradeProfileStatus": {
+                "$ref": "#/definitions/AutoUpgradeProfileStatus",
+                "description": "The status of the auto upgrade profile."
+              },
+              "channel": {
+                "$ref": "#/definitions/UpgradeChannel",
+                "description": "Configures how auto-upgrade will be run."
+              },
+              "disabled": {
+                "description": "If set to False: the auto upgrade has effect - target managed clusters will be upgraded on schedule.\nIf set to True: the auto upgrade has no effect - no upgrade will be run on the target managed clusters.\nThis is a boolean and not an enum because enabled/disabled are all available states of the auto upgrade profile.\nBy default, this is set to False.",
+                "type": "boolean"
+              },
+              "longTermSupport": {
+                "description": "  If upgrade channel is not TargetKubernetesVersion, this field must be False.\n  If set to True: Fleet auto upgrade will continue generate update runs for patches of minor versions earlier than N-2 \n  (where N is the latest supported minor version) if those minor versions support Long-Term Support (LTS).\n  By default, this is set to False.\n  For more information on AKS LTS, please see https://learn.microsoft.com/en-us/azure/aks/long-term-support",
+                "type": "boolean"
+              },
+              "nodeImageSelection": {
+                "$ref": "#/definitions/AutoUpgradeNodeImageSelection",
+                "description": "The node image upgrade to be applied to the target clusters in auto upgrade."
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/AutoUpgradeProfileProvisioningState",
+                "description": "The provisioning state of the AutoUpgradeProfile resource.",
+                "readOnly": true
+              },
+              "targetKubernetesVersion": {
+                "description": "  This is the target Kubernetes version for auto-upgrade. The format must be `{major version}.{minor version}`. For example, \"1.30\".\n  By default, this is empty.\n  If upgrade channel is set to TargetKubernetesVersion, this field must not be empty.\n  If upgrade channel is not TargetKubernetesVersion, this field must be empty.",
+                "type": "string"
+              },
+              "updateStrategyId": {
+                "$ref": "#/definitions/FleetUpdateStrategyResourceId",
+                "description": "The resource id of the UpdateStrategy resource to reference. If not specified, the auto upgrade will run on all clusters which are members of the fleet.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "channel"
+            ],
+            "type": "object"
+          },
+          "AutoUpgradeProfileProvisioningState": {
+            "description": "The provisioning state of the AutoUpgradeProfile resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "AutoUpgradeProfileProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "AutoUpgradeProfileStatus": {
+            "description": "AutoUpgradeProfileStatus is the status of an auto upgrade profile.",
+            "properties": {
+              "lastTriggerError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The error details of the last trigger.",
+                "readOnly": true
+              },
+              "lastTriggerStatus": {
+                "$ref": "#/definitions/AutoUpgradeLastTriggerStatus",
+                "description": "The status of the last AutoUpgrade trigger.",
+                "readOnly": true
+              },
+              "lastTriggerUpgradeVersions": {
+                "description": "The target Kubernetes version or node image versions of the last trigger.",
+                "items": {
+                  "type": "string"
+                },
+                "readOnly": true,
+                "type": "array"
+              },
+              "lastTriggeredAt": {
+                "description": "The UTC time of the last attempt to automatically create and start an UpdateRun as triggered by the release of new versions.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "ClusterResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/managedClusters"
+                }
+              ]
+            }
+          },
+          "Core.V1.TaintEffect": {
+            "description": "TaintEffect",
+            "enum": [
+              "NoSchedule"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "TaintEffect",
+              "values": [
+                {
+                  "description": "Do not allow new pods to schedule onto the node unless they tolerate the taint, but allow all pods submitted to Kubelet without going through the scheduler to start, and allow all already-running pods to continue running. Enforced by the scheduler.",
+                  "name": "NoSchedule",
+                  "value": "NoSchedule"
+                }
+              ]
+            }
+          },
+          "Core.V1.TolerationOperator": {
+            "description": "A toleration operator is the set of operators that can be used in a toleration.",
+            "enum": [
+              "Exists",
+              "Equal"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "TolerationOperator",
+              "values": [
+                {
+                  "description": "Toleration Operator Exists",
+                  "name": "Exists",
+                  "value": "Exists"
+                },
+                {
+                  "description": "Toleration Operator Equal",
+                  "name": "Equal",
+                  "value": "Equal"
+                }
+              ]
+            }
+          },
+          "DeletePolicy": {
+            "description": "Delete options for the ARM managed namespace.",
+            "enum": [
+              "Keep",
+              "Delete"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "DeletePolicy",
+              "values": [
+                {
+                  "description": "Delete the ARM resource but keep the Namespace.",
+                  "name": "Keep",
+                  "value": "Keep"
+                },
+                {
+                  "description": "Delete both ARM resource and Namespace.",
+                  "name": "Delete",
+                  "value": "Delete"
+                }
+              ]
+            }
+          },
+          "Fleet": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "The Fleet resource.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "identity": {
+                "$ref": "../../../../../../common-types/resource-management/v4/managedidentity.json#/definitions/ManagedServiceIdentity",
+                "description": "Managed identity."
+              },
+              "properties": {
+                "$ref": "#/definitions/FleetProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "FleetHubProfile": {
+            "description": "The FleetHubProfile configures the fleet hub.",
+            "properties": {
+              "agentProfile": {
+                "$ref": "#/definitions/AgentProfile",
+                "description": "The agent profile for the Fleet hub.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "apiServerAccessProfile": {
+                "$ref": "#/definitions/APIServerAccessProfile",
+                "description": "The access profile for the Fleet hub API server.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "dnsPrefix": {
+                "description": "DNS prefix used to create the FQDN for the Fleet hub.",
+                "maxLength": 54,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][a-zA-Z0-9-]{0,52}[a-zA-Z0-9]$",
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "fqdn": {
+                "description": "The FQDN of the Fleet hub.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "kubernetesVersion": {
+                "description": "The Kubernetes version of the Fleet hub.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "portalFqdn": {
+                "description": "The Azure Portal FQDN of the Fleet hub.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FleetListResult": {
+            "description": "The response of a Fleet list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The Fleet items on this page",
+                "items": {
+                  "$ref": "#/definitions/Fleet"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "FleetManagedNamespace": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "A fleet managed namespace.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/FleetManagedNamespaceProperties",
+                "description": "The resource-specific properties for this resource."
+              }
+            },
+            "type": "object"
+          },
+          "FleetManagedNamespaceListResult": {
+            "description": "The response of a FleetManagedNamespace list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The FleetManagedNamespace items on this page",
+                "items": {
+                  "$ref": "#/definitions/FleetManagedNamespace"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "FleetManagedNamespaceProperties": {
+            "description": "The properties of a fleet managed namespace.",
+            "properties": {
+              "adoptionPolicy": {
+                "$ref": "#/definitions/AdoptionPolicy",
+                "description": "Action if the managed namespace with the same name already exists. Default is Never."
+              },
+              "deletePolicy": {
+                "$ref": "#/definitions/DeletePolicy",
+                "description": "Delete options of a fleet managed namespace. Default is Keep."
+              },
+              "managedNamespaceProperties": {
+                "$ref": "#/definitions/ManagedNamespaceProperties",
+                "description": "The namespace properties for the fleet managed namespace."
+              },
+              "portalFqdn": {
+                "description": "The Azure Portal FQDN of the Fleet hub.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "propagationPolicy": {
+                "$ref": "#/definitions/PropagationPolicy",
+                "description": "The profile of the propagation to create the namespace."
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/FleetManagedNamespaceProvisioningState",
+                "description": "The status of the last operation.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/FleetManagedNamespaceStatus",
+                "description": "Status information of the last operation for fleet managed namespace.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "adoptionPolicy",
+              "deletePolicy"
+            ],
+            "type": "object"
+          },
+          "FleetManagedNamespaceProvisioningState": {
+            "description": "The provisioning state of the fleet managed namespace resource",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "Creating",
+              "Updating",
+              "Deleting"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "FleetManagedNamespaceProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "The provisioning state of a fleet managed namespace being created.",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "The provisioning state of a fleet managed namespace being updated.",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "The provisioning state of a fleet managed namespace being deleted.",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                }
+              ]
+            }
+          },
+          "FleetManagedNamespaceStatus": {
+            "description": "Status information for the fleet managed namespace.",
+            "properties": {
+              "lastOperationError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The last operation error of the fleet managed namespace",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID for the fleet managed namespace",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FleetMember": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/FleetMemberProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "FleetMemberListResult": {
+            "description": "The response of a FleetMember list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The FleetMember items on this page",
+                "items": {
+                  "$ref": "#/definitions/FleetMember"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "FleetMemberProperties": {
+            "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
+            "properties": {
+              "clusterResourceId": {
+                "$ref": "#/definitions/ClusterResourceId",
+                "description": "The ARM resource id of the cluster that joins the Fleet. Must be a valid Azure resource id. e.g.: '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{clusterName}'.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "group": {
+                "description": "The group this member belongs to for multi-cluster update management.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "type": "string"
+              },
+              "labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The labels for the fleet member.",
+                "type": "object"
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/FleetMemberProvisioningState",
+                "description": "The status of the last operation.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/FleetMemberStatus",
+                "description": "Status information of the last operation for fleet member.",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "clusterResourceId"
+            ],
+            "type": "object"
+          },
+          "FleetMemberProvisioningState": {
+            "description": "The provisioning state of the last accepted operation.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "Joining",
+              "Leaving",
+              "Updating"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "FleetMemberProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "The provisioning state of a member joining a fleet.",
+                  "name": "Joining",
+                  "value": "Joining"
+                },
+                {
+                  "description": "The provisioning state of a member leaving a fleet.",
+                  "name": "Leaving",
+                  "value": "Leaving"
+                },
+                {
+                  "description": "The provisioning state of a member being updated.",
+                  "name": "Updating",
+                  "value": "Updating"
+                }
+              ]
+            }
+          },
+          "FleetMemberStatus": {
+            "description": "Status information for the fleet member",
+            "properties": {
+              "lastOperationError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The last operation error of the fleet member",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID for the fleet member",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FleetProperties": {
+            "description": "Fleet properties.",
+            "properties": {
+              "hubProfile": {
+                "$ref": "#/definitions/FleetHubProfile",
+                "description": "The FleetHubProfile configures the Fleet's hub."
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/FleetProvisioningState",
+                "description": "The status of the last operation.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/FleetStatus",
+                "description": "Status information for the fleet.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "FleetProvisioningState": {
+            "description": "The provisioning state of the last accepted operation.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled",
+              "Creating",
+              "Updating",
+              "Deleting"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "FleetProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                },
+                {
+                  "description": "The provisioning state of a fleet being created.",
+                  "name": "Creating",
+                  "value": "Creating"
+                },
+                {
+                  "description": "The provisioning state of a fleet being updated.",
+                  "name": "Updating",
+                  "value": "Updating"
+                },
+                {
+                  "description": "The provisioning state of a fleet being deleted.",
+                  "name": "Deleting",
+                  "value": "Deleting"
+                }
+              ]
+            }
+          },
+          "FleetStatus": {
+            "description": "Status information for the fleet.",
+            "properties": {
+              "lastOperationError": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The last operation error for the fleet.",
+                "readOnly": true
+              },
+              "lastOperationId": {
+                "description": "The last operation ID for the fleet.",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "FleetUpdateStrategy": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "Defines a multi-stage process to perform update operations across members of a Fleet.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/FleetUpdateStrategyProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "FleetUpdateStrategyListResult": {
+            "description": "The response of a FleetUpdateStrategy list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The FleetUpdateStrategy items on this page",
+                "items": {
+                  "$ref": "#/definitions/FleetUpdateStrategy"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "FleetUpdateStrategyProperties": {
+            "description": "The properties of the UpdateStrategy.",
+            "properties": {
+              "provisioningState": {
+                "$ref": "#/definitions/FleetUpdateStrategyProvisioningState",
+                "description": "The provisioning state of the UpdateStrategy resource.",
+                "readOnly": true
+              },
+              "strategy": {
+                "$ref": "#/definitions/UpdateRunStrategy",
+                "description": "Defines the update sequence of the clusters.",
+                "x-ms-mutability": [
+                  "read",
+                  "update",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "strategy"
+            ],
+            "type": "object"
+          },
+          "FleetUpdateStrategyProvisioningState": {
+            "description": "The provisioning state of the UpdateStrategy resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "FleetUpdateStrategyProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "FleetUpdateStrategyResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/fleets/updateStrategies"
+                }
+              ]
+            }
+          },
+          "Gate": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A Gate controls the progression during a staged rollout, e.g. in an Update Run.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/GateProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "GateConfiguration": {
+            "description": "GateConfiguration is used to define where Gates should be placed within the Update Run.",
+            "properties": {
+              "displayName": {
+                "description": "The human-readable display name of the Gate.",
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": {
+                "$ref": "#/definitions/GateType",
+                "description": "The type of the Gate determines how it is completed."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "GateListResult": {
+            "description": "The response of a Gate list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The Gate items on this page",
+                "items": {
+                  "$ref": "#/definitions/Gate"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "GateProperties": {
+            "description": "A Gate controls the progression during a staged rollout, e.g. in an Update Run.",
+            "properties": {
+              "displayName": {
+                "description": "The human-readable display name of the Gate.",
+                "maxLength": 100,
+                "minLength": 1,
+                "type": "string",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "gateType": {
+                "$ref": "#/definitions/GateType",
+                "description": "The type of the Gate determines how it is completed.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/GateProvisioningState",
+                "description": "The provisioning state of the Gate resource.",
+                "readOnly": true
+              },
+              "state": {
+                "$ref": "#/definitions/GateState",
+                "description": "The state of the Gate.",
+                "x-ms-mutability": [
+                  "read",
+                  "update",
+                  "create"
+                ]
+              },
+              "target": {
+                "$ref": "#/definitions/GateTarget",
+                "description": "The target that the Gate is controlling, e.g. an Update Run.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "gateType",
+              "target",
+              "state"
+            ],
+            "type": "object"
+          },
+          "GateProvisioningState": {
+            "description": "The provisioning state of the Gate resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "GateProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "GateResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/fleets/gates"
+                }
+              ]
+            }
+          },
+          "GateState": {
+            "description": "The state of the Gate.",
+            "enum": [
+              "Pending",
+              "Skipped",
+              "Completed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "GateState",
+              "values": [
+                {
+                  "description": "A Pending Gate will continue to block the staged rollout process it is controlling.",
+                  "name": "Pending",
+                  "value": "Pending"
+                },
+                {
+                  "description": "A Skipped Gate means that the staged rollout process it is controlling was skipped.",
+                  "name": "Skipped",
+                  "value": "Skipped"
+                },
+                {
+                  "description": "An Completed Gate allows the staged rollout process to continue.",
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ]
+            }
+          },
+          "GateTarget": {
+            "description": "The target that the Gate is controlling, e.g. an Update Run. Exactly one of the properties objects will be set.",
+            "properties": {
+              "id": {
+                "$ref": "#/definitions/UpdateRunResourceId",
+                "description": "The resource id that the Gate is controlling the rollout of.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "updateRunProperties": {
+                "$ref": "#/definitions/UpdateRunGateTargetProperties",
+                "description": "The properties of the Update Run that the Gate is targeting.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "id"
+            ],
+            "type": "object"
+          },
+          "GateType": {
+            "description": "The type of the Gate determines how it is completed.",
+            "enum": [
+              "Approval"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "GateType",
+              "values": [
+                {
+                  "description": "An approval gate is completed by setting its state to be Completed.",
+                  "name": "Approval",
+                  "value": "Approval"
+                }
+              ]
+            }
+          },
+          "KubernetesVersion": {
+            "type": "string"
+          },
+          "ManagedClusterUpdate": {
+            "description": "The update to be applied to the ManagedClusters.",
+            "properties": {
+              "nodeImageSelection": {
+                "$ref": "#/definitions/NodeImageSelection",
+                "description": "The node image upgrade to be applied to the target nodes in update run.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              },
+              "upgrade": {
+                "$ref": "#/definitions/ManagedClusterUpgradeSpec",
+                "description": "The upgrade to apply to the ManagedClusters."
+              }
+            },
+            "required": [
+              "upgrade"
+            ],
+            "type": "object"
+          },
+          "ManagedClusterUpgradeSpec": {
+            "description": "The upgrade to apply to a ManagedCluster.",
+            "properties": {
+              "kubernetesVersion": {
+                "$ref": "#/definitions/KubernetesVersion",
+                "description": "The Kubernetes version to upgrade the member clusters to."
+              },
+              "type": {
+                "$ref": "#/definitions/ManagedClusterUpgradeType",
+                "description": "ManagedClusterUpgradeType is the type of upgrade to be applied."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "ManagedClusterUpgradeType": {
+            "description": "The type of upgrade to perform when targeting ManagedClusters.",
+            "enum": [
+              "Full",
+              "NodeImageOnly",
+              "ControlPlaneOnly"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "ManagedClusterUpgradeType",
+              "values": [
+                {
+                  "description": "Full upgrades the control plane and all agent pools of the target ManagedClusters. Requires the ManagedClusterUpgradeSpec.KubernetesVersion property to be set.",
+                  "name": "Full",
+                  "value": "Full"
+                },
+                {
+                  "description": "NodeImageOnly upgrades only the node images of the target ManagedClusters. Requires the ManagedClusterUpgradeSpec.KubernetesVersion property to NOT be set.",
+                  "name": "NodeImageOnly",
+                  "value": "NodeImageOnly"
+                },
+                {
+                  "description": "ControlPlaneOnly upgrades only targets the KubernetesVersion of the ManagedClusters and will not be applied to the AgentPool. Requires the ManagedClusterUpgradeSpec.KubernetesVersion property to be set.",
+                  "name": "ControlPlaneOnly",
+                  "value": "ControlPlaneOnly"
+                }
+              ]
+            }
+          },
+          "ManagedNamespaceProperties": {
+            "description": "The namespace properties for the fleet managed namespace.",
+            "properties": {
+              "annotations": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The annotations for the fleet managed namespace.",
+                "type": "object"
+              },
+              "defaultNetworkPolicy": {
+                "$ref": "#/definitions/NetworkPolicy",
+                "description": "The default network policy for the fleet managed namespace."
+              },
+              "defaultResourceQuota": {
+                "$ref": "#/definitions/ResourceQuota",
+                "description": "The default resource quota for the fleet managed namespace."
+              },
+              "labels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "The labels for the fleet managed namespace.",
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "MemberUpdateStatus": {
+            "description": "The status of a member update operation.",
+            "properties": {
+              "clusterResourceId": {
+                "description": "The Azure resource id of the target Kubernetes cluster.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "message": {
+                "description": "The status message after processing the member update operation.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the FleetMember.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "operationId": {
+                "description": "The operation resource id of the latest attempt to perform the operation.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the MemberUpdate operation.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "Meta.V1.LabelSelector": {
+            "description": "A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all objects. A null label selector matches no objects.",
+            "properties": {
+              "matchExpressions": {
+                "description": "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
+                "items": {
+                  "$ref": "#/definitions/Meta.V1.LabelSelectorRequirement"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "matchLabels": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "description": "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \"key\", the operator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "Meta.V1.LabelSelectorOperator": {
+            "description": "A label selector operator is the set of operators that can be used in a selector requirement.",
+            "enum": [
+              "In",
+              "NotIn",
+              "Exists",
+              "DoesNotExist"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "LabelSelectorOperator",
+              "values": [
+                {
+                  "description": "Label Selector Operator In",
+                  "name": "In",
+                  "value": "In"
+                },
+                {
+                  "description": "Label Selector Operator NotIn",
+                  "name": "NotIn",
+                  "value": "NotIn"
+                },
+                {
+                  "description": "Label Selector Operator Exists",
+                  "name": "Exists",
+                  "value": "Exists"
+                },
+                {
+                  "description": "Label Selector Operator DoesNotExist",
+                  "name": "DoesNotExist",
+                  "value": "DoesNotExist"
+                }
+              ]
+            }
+          },
+          "Meta.V1.LabelSelectorRequirement": {
+            "description": "A label selector requirement is a selector that contains values, a key, and an operator that relates the key and values.",
+            "properties": {
+              "key": {
+                "description": "key is the label key that the selector applies to.",
+                "type": "string"
+              },
+              "operator": {
+                "$ref": "#/definitions/Meta.V1.LabelSelectorOperator",
+                "description": "operator represents a key's relationship to a set of values. Valid operators are In, NotIn, Exists and DoesNotExist."
+              },
+              "values": {
+                "description": "values is an array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "key",
+              "operator"
+            ],
+            "type": "object"
+          },
+          "NetworkPolicy": {
+            "description": "The network policy for the managed namespace.",
+            "properties": {
+              "egress": {
+                "$ref": "#/definitions/PolicyRule",
+                "description": "The egress policy for the managed namespace."
+              },
+              "ingress": {
+                "$ref": "#/definitions/PolicyRule",
+                "description": "The ingress policy for the managed namespace."
+              }
+            },
+            "type": "object"
+          },
+          "NodeImageSelection": {
+            "description": "The node image upgrade to be applied to the target nodes in update run.",
+            "properties": {
+              "customNodeImageVersions": {
+                "description": "Custom node image versions to upgrade the nodes to. This field is required if node image selection type is Custom. Otherwise, it must be empty. For each node image family (e.g., 'AKSUbuntu-1804gen2containerd'), this field can contain at most one version (e.g., only one of 'AKSUbuntu-1804gen2containerd-2023.01.12' or 'AKSUbuntu-1804gen2containerd-2023.02.12', not both). If the nodes belong to a family without a matching image version in this field, they are not upgraded.",
+                "items": {
+                  "$ref": "#/definitions/NodeImageVersion"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "version"
+                ]
+              },
+              "type": {
+                "$ref": "#/definitions/NodeImageSelectionType",
+                "description": "The node image upgrade type.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "NodeImageSelectionStatus": {
+            "description": "The node image upgrade specs for the update run.",
+            "properties": {
+              "selectedNodeImageVersions": {
+                "description": "The image versions to upgrade the nodes to.",
+                "items": {
+                  "$ref": "#/definitions/NodeImageVersion"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": [
+                  "version"
+                ]
+              }
+            },
+            "type": "object"
+          },
+          "NodeImageSelectionType": {
+            "description": "The node image upgrade type.",
+            "enum": [
+              "Latest",
+              "Consistent",
+              "Custom"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "NodeImageSelectionType",
+              "values": [
+                {
+                  "description": "Use the latest image version when upgrading nodes. Clusters may use different image versions (e.g., 'AKSUbuntu-1804gen2containerd-2021.10.12' and 'AKSUbuntu-1804gen2containerd-2021.10.19') because, for example, the latest available version is different in different regions.",
+                  "name": "Latest",
+                  "value": "Latest"
+                },
+                {
+                  "description": "The image versions to upgrade nodes to are selected as described below: for each node pool in managed clusters affected by the update run, the system selects the latest image version such that it is available across all other node pools (in all other clusters) of the same image type. As a result, all node pools of the same image type will be upgraded to the same image version. For example, if the latest image version for image type 'AKSUbuntu-1804gen2containerd' is 'AKSUbuntu-1804gen2containerd-2021.10.12' for a node pool in cluster A in region X, and is 'AKSUbuntu-1804gen2containerd-2021.10.17' for a node pool in cluster B in region Y, the system will upgrade both node pools to image version 'AKSUbuntu-1804gen2containerd-2021.10.12'.",
+                  "name": "Consistent",
+                  "value": "Consistent"
+                },
+                {
+                  "description": "Upgrade the nodes to the custom image versions. When set, update run will use node image versions provided in customNodeImageVersions to upgrade the nodes. If set, customNodeImageVersions must not be empty.",
+                  "name": "Custom",
+                  "value": "Custom"
+                }
+              ]
+            }
+          },
+          "NodeImageVersion": {
+            "description": "The node upgrade image version.",
+            "properties": {
+              "version": {
+                "description": "The image version to upgrade the nodes to (e.g., 'AKSUbuntu-1804gen2containerd-2022.12.13').",
+                "readOnly": true,
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.Affinity": {
+            "description": "Affinity is a group of cluster affinity scheduling rules. More to be added.",
+            "properties": {
+              "clusterAffinity": {
+                "$ref": "#/definitions/Placement.V1.ClusterAffinity",
+                "description": "ClusterAffinity contains cluster affinity scheduling rules for the selected resources."
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.ClusterAffinity": {
+            "description": "ClusterAffinity contains cluster affinity scheduling rules for the selected resources.",
+            "properties": {
+              "requiredDuringSchedulingIgnoredDuringExecution": {
+                "$ref": "#/definitions/Placement.V1.ClusterSelector",
+                "description": "If the affinity requirements specified by this field are not met at scheduling time, the resource will not be scheduled onto the cluster. If the affinity requirements specified by this field cease to be met at some point after the placement (e.g. due to an update), the system may or may not try to eventually remove the resource from the cluster."
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.ClusterResourcePlacementSpec": {
+            "description": "ClusterResourcePlacementSpec defines the desired state of ClusterResourcePlacement.",
+            "properties": {
+              "policy": {
+                "$ref": "#/definitions/Placement.V1.PlacementPolicy",
+                "description": "Policy defines how to select member clusters to place the selected resources. If unspecified, all the joined member clusters are selected."
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.ClusterSelector": {
+            "description": "ClusterSelector",
+            "properties": {
+              "clusterSelectorTerms": {
+                "description": "ClusterSelectorTerms is a list of cluster selector terms. The terms are `ORed`.",
+                "items": {
+                  "$ref": "#/definitions/Placement.V1.ClusterSelectorTerm"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "required": [
+              "clusterSelectorTerms"
+            ],
+            "type": "object"
+          },
+          "Placement.V1.ClusterSelectorTerm": {
+            "description": "ClusterSelectorTerm",
+            "properties": {
+              "labelSelector": {
+                "$ref": "#/definitions/Meta.V1.LabelSelector",
+                "description": "LabelSelector is a label query over all the joined member clusters. Clusters matching the query are selected. If you specify both label and property selectors in the same term, the results are AND'd."
+              },
+              "propertySelector": {
+                "$ref": "#/definitions/Placement.V1.PropertySelector",
+                "description": "PropertySelector is a property query over all joined member clusters. Clusters matching the query are selected. If you specify both label and property selectors in the same term, the results are AND'd. At this moment, PropertySelector can only be used with `RequiredDuringSchedulingIgnoredDuringExecution` affinity terms. This field is beta-level; it is for the property-based scheduling feature and is only functional when a property provider is enabled in the deployment."
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.PlacementPolicy": {
+            "description": "PlacementPolicy contains the rules to select target member clusters to place the selected resources. Note that only clusters that are both joined and satisfying the rules will be selected. You can only specify at most one of the two fields: ClusterNames and Affinity. If none is specified, all the joined clusters are selected.",
+            "properties": {
+              "affinity": {
+                "$ref": "#/definitions/Placement.V1.Affinity",
+                "description": "Affinity contains cluster affinity scheduling rules. Defines which member clusters to place the selected resources. Only valid if the placement type is \"PickAll\" or \"PickN\"."
+              },
+              "clusterNames": {
+                "description": "ClusterNames contains a list of names of MemberCluster to place the selected resources. Only valid if the placement type is \"PickFixed\"",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "placementType": {
+                "$ref": "#/definitions/Placement.V1.PlacementType",
+                "description": "Type of placement. Can be \"PickAll\", \"PickN\" or \"PickFixed\". Default is PickAll."
+              },
+              "tolerations": {
+                "description": "If specified, the ClusterResourcePlacement's Tolerations. Tolerations cannot be updated or deleted. This field is beta-level and is for the taints and tolerations feature.",
+                "items": {
+                  "$ref": "#/definitions/Placement.V1.Toleration"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "type": "object"
+          },
+          "Placement.V1.PlacementType": {
+            "description": "PlacementType identifies the type of placement.",
+            "enum": [
+              "PickAll",
+              "PickFixed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PlacementType",
+              "values": [
+                {
+                  "description": "PickAll picks all clusters that satisfy the rules.",
+                  "name": "PickAll",
+                  "value": "PickAll"
+                },
+                {
+                  "description": "PickFixed picks a fixed set of clusters.",
+                  "name": "PickFixed",
+                  "value": "PickFixed"
+                }
+              ]
+            }
+          },
+          "Placement.V1.PropertySelector": {
+            "description": "PropertySelector helps user specify property requirements when picking clusters for resource placement.",
+            "properties": {
+              "matchExpressions": {
+                "description": "MatchExpressions is an array of PropertySelectorRequirements. The requirements are AND'd.",
+                "items": {
+                  "$ref": "#/definitions/Placement.V1.PropertySelectorRequirement"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "matchExpressions"
+            ],
+            "type": "object"
+          },
+          "Placement.V1.PropertySelectorOperator": {
+            "description": "PropertySelectorOperator is the operator that can be used with PropertySelectorRequirements.",
+            "enum": [
+              "Gt",
+              "Ge",
+              "Eq",
+              "Ne",
+              "Lt",
+              "Le"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PropertySelectorOperator",
+              "values": [
+                {
+                  "description": "Gt dictates Fleet to select cluster if its observed value of a given property is greater than the value specified in the requirement.",
+                  "name": "Gt",
+                  "value": "Gt"
+                },
+                {
+                  "description": "Ge dictates Fleet to select cluster if its observed value of a given property is greater than or equal to the value specified in the requirement.",
+                  "name": "Ge",
+                  "value": "Ge"
+                },
+                {
+                  "description": "Eq dictates Fleet to select cluster if its observed value of a given property is equal to the values specified in the requirement.",
+                  "name": "Eq",
+                  "value": "Eq"
+                },
+                {
+                  "description": "Ne dictates Fleet to select cluster if its observed value of a given property is not equal to the values specified in the requirement.",
+                  "name": "Ne",
+                  "value": "Ne"
+                },
+                {
+                  "description": "Lt dictates Fleet to select cluster if its observed value of a given property is less than the value specified in the requirement.",
+                  "name": "Lt",
+                  "value": "Lt"
+                },
+                {
+                  "description": "Le dictates Fleet to select cluster if its observed value of a given property is less than or equal to the value specified in the requirement.",
+                  "name": "Le",
+                  "value": "Le"
+                }
+              ]
+            }
+          },
+          "Placement.V1.PropertySelectorRequirement": {
+            "description": "PropertySelectorRequirement is a specific property requirement when picking clusters for resource placement.",
+            "properties": {
+              "name": {
+                "description": "Name is the name of the property; it should be a Kubernetes label name.",
+                "type": "string"
+              },
+              "operator": {
+                "$ref": "#/definitions/Placement.V1.PropertySelectorOperator",
+                "description": "Operator specifies the relationship between a cluster's observed value of the specified property and the values given in the requirement."
+              },
+              "values": {
+                "description": "Values are a list of values of the specified property which Fleet will compare against the observed values of individual member clusters in accordance with the given operator. At this moment, each value should be a Kubernetes quantity. For more information, see https://pkg.go.dev/k8s.io/apimachinery/pkg/api/resource#Quantity. If the operator is Gt (greater than), Ge (greater than or equal to), Lt (less than), or `Le` (less than or equal to), Eq (equal to), or Ne (ne), exactly one value must be specified in the list.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "name",
+              "operator",
+              "values"
+            ],
+            "type": "object"
+          },
+          "Placement.V1.Toleration": {
+            "description": "Toleration allows ClusterResourcePlacement to tolerate any taint that matches the triple <key,value,effect> using the matching operator <operator>.",
+            "properties": {
+              "effect": {
+                "$ref": "#/definitions/Core.V1.TaintEffect",
+                "description": "Effect indicates the taint effect to match. Empty means match all taint effects. When specified, only allowed value is NoSchedule."
+              },
+              "key": {
+                "description": "Key is the taint key that the toleration applies to. Empty means match all taint keys. If the key is empty, operator must be Exists; this combination means to match all values and all keys.",
+                "type": "string"
+              },
+              "operator": {
+                "$ref": "#/definitions/Core.V1.TolerationOperator",
+                "description": "Operator represents a key's relationship to the value. Valid operators are Exists and Equal. Defaults to Equal. Exists is equivalent to wildcard for value, so that a ClusterResourcePlacement can tolerate all taints of a particular category."
+              },
+              "value": {
+                "description": "Value is the taint value the toleration matches to. If the operator is Exists, the value should be empty, otherwise just a regular string.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "PlacementProfile": {
+            "description": "The configuration profile for default ClusterResourcePlacement for placement.",
+            "properties": {
+              "defaultClusterResourcePlacement": {
+                "$ref": "#/definitions/Placement.V1.ClusterResourcePlacementSpec",
+                "description": "The default ClusterResourcePlacement policy configuration."
+              }
+            },
+            "type": "object"
+          },
+          "PolicyRule": {
+            "description": "The possible values representing different network policy rules.",
+            "enum": [
+              "AllowAll",
+              "DenyAll",
+              "AllowSameNamespace"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PolicyRule",
+              "values": [
+                {
+                  "description": "Allow all network traffic.",
+                  "name": "AllowAll",
+                  "value": "AllowAll"
+                },
+                {
+                  "description": "Deny all network traffic.",
+                  "name": "DenyAll",
+                  "value": "DenyAll"
+                },
+                {
+                  "description": "Allow traffic within the same namespace.",
+                  "name": "AllowSameNamespace",
+                  "value": "AllowSameNamespace"
+                }
+              ]
+            }
+          },
+          "PropagationPolicy": {
+            "description": "The propagation to be used for provisioning the namespace among the fleet.",
+            "properties": {
+              "placementProfile": {
+                "$ref": "#/definitions/PlacementProfile",
+                "description": "The profile to be used for propagation via placement."
+              },
+              "type": {
+                "$ref": "#/definitions/PropagationType",
+                "description": "The type of the policy to be used. Default is Placement."
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "type": "object"
+          },
+          "PropagationType": {
+            "description": "How the namespace will be provisioned among the fleet members.",
+            "enum": [
+              "Placement"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "PropagationType",
+              "values": [
+                {
+                  "description": "Using ClusterResourcePlacement.",
+                  "name": "Placement",
+                  "value": "Placement"
+                }
+              ]
+            }
+          },
+          "ResourceQuota": {
+            "description": "The resource quota for the managed namespace.",
+            "properties": {
+              "cpuLimit": {
+                "description": "The CPU limit for the managed namespace. See more at https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu",
+                "type": "string"
+              },
+              "cpuRequest": {
+                "description": "The CPU request for the managed namespace. See more at https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-cpu",
+                "type": "string"
+              },
+              "memoryLimit": {
+                "description": "The memory limit for the managed namespace. See more at https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory",
+                "type": "string"
+              },
+              "memoryRequest": {
+                "description": "The memory request for the managed namespace. See more at https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#meaning-of-memory",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "SubnetResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.Network/virtualNetworks/subnets"
+                }
+              ]
+            }
+          },
+          "Timing": {
+            "description": "Whether the Gate is placed before or after the target.",
+            "enum": [
+              "Before",
+              "After"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "Timing",
+              "values": [
+                {
+                  "description": "The Gate is before the target.",
+                  "name": "Before",
+                  "value": "Before"
+                },
+                {
+                  "description": "The Gate is after the target.",
+                  "name": "After",
+                  "value": "After"
+                }
+              ]
+            }
+          },
+          "UpdateGroup": {
+            "description": "A group to be updated.",
+            "properties": {
+              "afterGates": {
+                "description": "A list of Gates that will be created after this Group is executed.",
+                "items": {
+                  "$ref": "#/definitions/GateConfiguration"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "beforeGates": {
+                "description": "A list of Gates that will be created before this Group is executed.",
+                "items": {
+                  "$ref": "#/definitions/GateConfiguration"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "maxConcurrency": {
+                "description": "The max number of upgrades that can run concurrently in this specific group.\nActs as a ceiling (and not a quota) for the number of concurrent upgrades within the group you want to tolerate at a time.\nActual concurrency may be lower depending on stage-level concurrency limits or individual member conditions.\nGroup maxConcurrency has a min value of \"1\". The max value is min(number of clusters in the group, the stage maxConcurrency).\nIf no value is provided, defaults to 1.\nAccepts either:\n    \u2022 A fixed count, e.g. \"3\"\n    \u2022 A percentage, e.g. \"25%\" (range 1\u2013100). Percentage is of the number of clusters in the group. \n      Fractional results are rounded down. A minimum of 1 upgrade is enforced.\nExamples:\n    \u2022 \"3\" --> up to 3 members from this group upgrade at once.\n    \u2022 \"100%\" --> \u201call at once\u201d, up to all members for this group upgrade at the same time.\n    \u2022 \"25%\" --> up to 25% of the members in the group will be upgraded at the same time.",
+                "pattern": "^(?:([1-9]\\d*)|([1-9]\\d?|100)%)$",
+                "type": "string"
+              },
+              "name": {
+                "description": "Name of the group.\nIt must match a group name of an existing fleet member.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "UpdateGroupStatus": {
+            "description": "The status of a UpdateGroup.",
+            "properties": {
+              "afterGates": {
+                "description": "The list of Gates that will run after this UpdateGroup.",
+                "items": {
+                  "$ref": "#/definitions/UpdateRunGateStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "beforeGates": {
+                "description": "The list of Gates that will run before this UpdateGroup.",
+                "items": {
+                  "$ref": "#/definitions/UpdateRunGateStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "maxConcurrency": {
+                "description": "  The max number of upgrades that can run concurrently in this group, resolved from the UpdateStrategy.UpdateGroup.maxConcurrency value. If no value was provided, this value defaults to \"1\".",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "members": {
+                "description": "The list of member this UpdateGroup updates.",
+                "items": {
+                  "$ref": "#/definitions/MemberUpdateStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "name": {
+                "description": "The name of the UpdateGroup.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the UpdateGroup.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "UpdateRun": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+              }
+            ],
+            "description": "A multi-stage process to perform update operations across members of a Fleet.",
+            "properties": {
+              "eTag": {
+                "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "properties": {
+                "$ref": "#/definitions/UpdateRunProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "UpdateRunGateStatus": {
+            "description": "The status of the Gate, as represented in the Update Run.",
+            "properties": {
+              "displayName": {
+                "description": "The human-readable display name of the Gate.",
+                "maxLength": 100,
+                "minLength": 1,
+                "readOnly": true,
+                "type": "string"
+              },
+              "gateId": {
+                "$ref": "#/definitions/GateResourceId",
+                "description": "The resource id of the Gate.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the Gate.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "UpdateRunGateTargetProperties": {
+            "description": "The properties of the Update Run that the Gate is targeting.",
+            "properties": {
+              "group": {
+                "description": "The Update Group of the Update Run.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "readOnly": true,
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the Update Run.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "readOnly": true,
+                "type": "string"
+              },
+              "stage": {
+                "description": "The Update Stage of the Update Run.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "readOnly": true,
+                "type": "string"
+              },
+              "timing": {
+                "$ref": "#/definitions/Timing",
+                "description": "Whether the Gate is placed before or after the update itself.",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "timing"
+            ],
+            "type": "object"
+          },
+          "UpdateRunListResult": {
+            "description": "The response of a UpdateRun list operation.",
+            "properties": {
+              "nextLink": {
+                "description": "The link to the next page of items",
+                "format": "uri",
+                "type": "string"
+              },
+              "value": {
+                "description": "The UpdateRun items on this page",
+                "items": {
+                  "$ref": "#/definitions/UpdateRun"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "UpdateRunProperties": {
+            "description": "The properties of the UpdateRun.",
+            "properties": {
+              "autoUpgradeProfileId": {
+                "$ref": "#/definitions/AutoUpgradeProfileId",
+                "description": "AutoUpgradeProfileId is the id of an auto upgrade profile resource.",
+                "readOnly": true
+              },
+              "managedClusterUpdate": {
+                "$ref": "#/definitions/ManagedClusterUpdate",
+                "description": "The update to be applied to all clusters in the UpdateRun. The managedClusterUpdate can be modified until the run is started."
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/UpdateRunProvisioningState",
+                "description": "The provisioning state of the UpdateRun resource.",
+                "readOnly": true
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateRunStatus",
+                "description": "The status of the UpdateRun.",
+                "readOnly": true
+              },
+              "strategy": {
+                "$ref": "#/definitions/UpdateRunStrategy",
+                "description": "The strategy defines the order in which the clusters will be updated.\nIf not set, all members will be updated sequentially. The UpdateRun status will show a single UpdateStage and a single UpdateGroup targeting all members.\nThe strategy of the UpdateRun can be modified until the run is started."
+              },
+              "updateStrategyId": {
+                "$ref": "#/definitions/FleetUpdateStrategyResourceId",
+                "description": "The resource id of the FleetUpdateStrategy resource to reference.\n\nWhen creating a new run, there are three ways to define a strategy for the run:\n1. Define a new strategy in place: Set the \"strategy\" field.\n2. Use an existing strategy: Set the \"updateStrategyId\" field. (since 2023-08-15-preview)\n3. Use the default strategy to update all the members one by one: Leave both \"updateStrategyId\" and \"strategy\" unset. (since 2023-08-15-preview)\n\nSetting both \"updateStrategyId\" and \"strategy\" is invalid.\n\nUpdateRuns created by \"updateStrategyId\" snapshot the referenced UpdateStrategy at the time of creation and store it in the \"strategy\" field. \nSubsequent changes to the referenced FleetUpdateStrategy resource do not propagate.\nUpdateRunStrategy changes can be made directly on the \"strategy\" field before launching the UpdateRun."
+              }
+            },
+            "required": [
+              "managedClusterUpdate"
+            ],
+            "type": "object"
+          },
+          "UpdateRunProvisioningState": {
+            "description": "The provisioning state of the UpdateRun resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "Canceled"
+            ],
+            "readOnly": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UpdateRunProvisioningState",
+              "values": [
+                {
+                  "description": "Resource has been created.",
+                  "name": "Succeeded",
+                  "value": "Succeeded"
+                },
+                {
+                  "description": "Resource creation failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "Resource creation was canceled.",
+                  "name": "Canceled",
+                  "value": "Canceled"
+                }
+              ]
+            }
+          },
+          "UpdateRunResourceId": {
+            "description": "A type definition that refers the id to an Azure Resource Manager resource.",
+            "format": "arm-id",
+            "type": "string",
+            "x-ms-arm-id-details": {
+              "allowedResources": [
+                {
+                  "type": "Microsoft.ContainerService/fleets/updateRuns"
+                }
+              ]
+            }
+          },
+          "UpdateRunStatus": {
+            "description": "The status of a UpdateRun.",
+            "properties": {
+              "nodeImageSelection": {
+                "$ref": "#/definitions/NodeImageSelectionStatus",
+                "description": "The node image upgrade specs for the update run. It is only set in update run when `NodeImageSelection.type` is `Consistent`.",
+                "readOnly": true
+              },
+              "stages": {
+                "description": "The stages composing an update run. Stages are run sequentially withing an UpdateRun.",
+                "items": {
+                  "$ref": "#/definitions/UpdateStageStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the UpdateRun.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "UpdateRunStrategy": {
+            "description": "Defines the update sequence of the clusters via stages and groups.\n\nStages within a run are executed sequentially one after another.\nGroups within a stage are executed in parallel.\nMember clusters within a group are updated sequentially one after another.\n\nA valid strategy contains no duplicate groups within or across stages.",
+            "properties": {
+              "stages": {
+                "description": "The list of stages that compose this update run. Min size: 1.",
+                "items": {
+                  "$ref": "#/definitions/UpdateStage"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              }
+            },
+            "required": [
+              "stages"
+            ],
+            "type": "object"
+          },
+          "UpdateStage": {
+            "description": "Defines a stage which contains the groups to update and the steps to take (e.g., wait for a time period) before starting the next stage.",
+            "properties": {
+              "afterGates": {
+                "description": "A list of Gates that will be created after this Stage is executed.",
+                "items": {
+                  "$ref": "#/definitions/GateConfiguration"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "afterStageWaitInSeconds": {
+                "description": "The time in seconds to wait at the end of this stage before starting the next one. Defaults to 0 seconds if unspecified.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "beforeGates": {
+                "description": "A list of Gates that will be created before this Stage is executed.",
+                "items": {
+                  "$ref": "#/definitions/GateConfiguration"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "groups": {
+                "description": "Defines the groups to be executed in parallel in this stage. Duplicate groups are not allowed. Min size: 1.",
+                "items": {
+                  "$ref": "#/definitions/UpdateGroup"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "maxConcurrency": {
+                "description": "The max number of upgrades that can run concurrently across all groups in this stage.\nActs as a ceiling (and not a quota) for the number of concurrent upgrades within the stage you want to tolerate at a time.\nActual concurrency may be lower depending on group-level concurrency limits or individual member conditions.\nStage maxConcurrency has a min value of \"1\".\nAccepts either:\n    \u2022 A fixed count, e.g., \"3\"\n    \u2022 A percentage, e.g., \"25%\" (range 1\u2013100). Percentage is of the total number of clusters across all groups in the stage.\n      Fractional results are rounded down. A minimum of 1 upgrade is enforced.\nExamples:\n    \u2022 \"3\"     --> up to 3 clusters from this stage upgrade at once (across all groups).\n    \u2022 \"100%\"  --> \u201call at once\u201d; up to all clusters in this stage upgrade at the same time.\n    \u2022 \"25%\"   --> up to 25% of the stage\u2019s total clusters upgrade at the same time.",
+                "pattern": "^(?:([1-9]\\d*)|([1-9]\\d?|100)%)$",
+                "type": "string"
+              },
+              "name": {
+                "description": "The name of the stage. Must be unique within the UpdateRun.",
+                "maxLength": 50,
+                "minLength": 1,
+                "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "type": "object"
+          },
+          "UpdateStageStatus": {
+            "description": "The status of a UpdateStage.",
+            "properties": {
+              "afterGates": {
+                "description": "The list of Gates that will run after this UpdateStage.",
+                "items": {
+                  "$ref": "#/definitions/UpdateRunGateStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "afterStageWaitStatus": {
+                "$ref": "#/definitions/WaitStatus",
+                "description": "The status of the wait period configured on the UpdateStage.",
+                "readOnly": true
+              },
+              "beforeGates": {
+                "description": "The list of Gates that will run before this UpdateStage.",
+                "items": {
+                  "$ref": "#/definitions/UpdateRunGateStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": []
+              },
+              "groups": {
+                "description": "The list of groups to be updated as part of this UpdateStage.",
+                "items": {
+                  "$ref": "#/definitions/UpdateGroupStatus"
+                },
+                "readOnly": true,
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "maxConcurrency": {
+                "description": "The max number of upgrades that can run concurrently across all groups in this stage, resolved from the UpdateStrategy.UpdateStage.maxConcurrency value.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              },
+              "name": {
+                "description": "The name of the UpdateStage.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the UpdateStage.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "UpdateState": {
+            "description": "The state of the UpdateRun, UpdateStage, UpdateGroup, or MemberUpdate.",
+            "enum": [
+              "NotStarted",
+              "Running",
+              "Stopping",
+              "Stopped",
+              "Skipped",
+              "Failed",
+              "Pending",
+              "Completed"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UpdateState",
+              "values": [
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has not been started.",
+                  "name": "NotStarted",
+                  "value": "NotStarted"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that is running.",
+                  "name": "Running",
+                  "value": "Running"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that is being stopped.",
+                  "name": "Stopping",
+                  "value": "Stopping"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has stopped.",
+                  "name": "Stopped",
+                  "value": "Stopped"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has been skipped.",
+                  "name": "Skipped",
+                  "value": "Skipped"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has failed.",
+                  "name": "Failed",
+                  "value": "Failed"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that is pending.",
+                  "name": "Pending",
+                  "value": "Pending"
+                },
+                {
+                  "description": "The state of an UpdateRun/UpdateStage/UpdateGroup/MemberUpdate that has completed.",
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ]
+            }
+          },
+          "UpdateStatus": {
+            "description": "The status for an operation or group of operations.",
+            "properties": {
+              "completedTime": {
+                "description": "The time the operation or group was completed.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "error": {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorDetail",
+                "description": "The error details when a failure is encountered.",
+                "readOnly": true
+              },
+              "startTime": {
+                "description": "The time the operation or group was started.",
+                "format": "date-time",
+                "readOnly": true,
+                "type": "string"
+              },
+              "state": {
+                "$ref": "#/definitions/UpdateState",
+                "description": "The State of the operation or group.",
+                "readOnly": true
+              }
+            },
+            "type": "object"
+          },
+          "UpgradeChannel": {
+            "description": "Configuration of how auto upgrade will be run.",
+            "enum": [
+              "Stable",
+              "Rapid",
+              "NodeImage",
+              "TargetKubernetesVersion"
+            ],
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "UpgradeChannel",
+              "values": [
+                {
+                  "description": " Upgrades the clusters kubernetes version to the latest supported patch release on minor version N-1, where N is the latest supported minor version.\n For example, if a cluster runs version 1.17.7 and versions 1.17.9, 1.18.4, 1.18.6, and 1.19.1 are available, the cluster upgrades to 1.18.6.",
+                  "name": "Stable",
+                  "value": "Stable"
+                },
+                {
+                  "description": "Upgrades the clusters kubernetes version to the latest supported patch release on the latest supported minor version.",
+                  "name": "Rapid",
+                  "value": "Rapid"
+                },
+                {
+                  "description": "Upgrade node image version of the clusters.",
+                  "name": "NodeImage",
+                  "value": "NodeImage"
+                },
+                {
+                  "description": "  Upgrades the clusters Kubernetes version to the latest supported patch version of the specified target Kubernetes version.\n  For information on the behavior of update run for Kubernetes version upgrade, \n  see https://learn.microsoft.com/en-us/azure/kubernetes-fleet/update-orchestration?tabs=azure-portal",
+                  "name": "TargetKubernetesVersion",
+                  "value": "TargetKubernetesVersion"
+                }
+              ]
+            }
+          },
+          "WaitStatus": {
+            "description": "The status of the wait duration.",
+            "properties": {
+              "status": {
+                "$ref": "#/definitions/UpdateStatus",
+                "description": "The status of the wait duration.",
+                "readOnly": true
+              },
+              "waitDurationInSeconds": {
+                "description": "The wait duration configured in seconds.",
+                "format": "int32",
+                "readOnly": true,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "host": "management.azure.com",
+        "info": {
+          "description": "Azure Kubernetes Fleet Manager api client.",
+          "title": "ContainerServiceFleetClient",
+          "version": "2026-06-01",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "parameters": {
+          "FilterQueryParameter": {
+            "description": "Filter the result list using the given expression.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "filter",
+            "x-ms-parameter-location": "method"
+          },
+          "SkipTokenQueryParameter": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "TopQueryParameter": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          }
+        },
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/fleets": {
+            "get": {
+              "description": "Lists fleets in the specified subscription.",
+              "operationId": "Fleets_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Fleets"
+              ],
+              "x-ms-examples": {
+                "Lists the Fleet resources in a subscription.": {
+                  "$ref": "./examples/Fleets_ListBySub.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets": {
+            "get": {
+              "description": "Lists fleets in the specified subscription and resource group.",
+              "operationId": "Fleets_ListByResourceGroup",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Fleets"
+              ],
+              "x-ms-examples": {
+                "Lists the Fleet resources in a resource group.": {
+                  "$ref": "./examples/Fleets_ListByResourceGroup.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}": {
+            "delete": {
+              "description": "Delete a Fleet",
+              "operationId": "Fleets_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Fleets"
+              ],
+              "x-ms-examples": {
+                "Deletes a Fleet resource asynchronously with a long running operation.": {
+                  "$ref": "./examples/Fleets_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Gets a Fleet.",
+              "operationId": "Fleets_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/Fleet"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Fleets"
+              ],
+              "x-ms-examples": {
+                "Gets a Fleet resource.": {
+                  "$ref": "./examples/Fleets_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles": {
+            "get": {
+              "description": "List AutoUpgradeProfile resources by Fleet",
+              "operationId": "AutoUpgradeProfiles_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/AutoUpgradeProfileListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "AutoUpgradeProfiles"
+              ],
+              "x-ms-examples": {
+                "Lists the AutoUpgradeProfile resources by fleet.": {
+                  "$ref": "./examples/AutoUpgradeProfiles_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}": {
+            "delete": {
+              "description": "Delete a AutoUpgradeProfile",
+              "operationId": "AutoUpgradeProfiles_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the AutoUpgradeProfile resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "autoUpgradeProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "AutoUpgradeProfiles"
+              ],
+              "x-ms-examples": {
+                "Delete an AutoUpgradeProfile resource.": {
+                  "$ref": "./examples/AutoUpgradeProfiles_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Get a AutoUpgradeProfile",
+              "operationId": "AutoUpgradeProfiles_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the AutoUpgradeProfile resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "autoUpgradeProfileName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/AutoUpgradeProfile"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "AutoUpgradeProfiles"
+              ],
+              "x-ms-examples": {
+                "Gets an AutoUpgradeProfile resource.": {
+                  "$ref": "./examples/AutoUpgradeProfiles_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates": {
+            "get": {
+              "description": "List Gate resources by Fleet",
+              "operationId": "Gates_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/FilterQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/GateListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Gates"
+              ],
+              "x-ms-examples": {
+                "Lists the Gates of a Fleet.": {
+                  "$ref": "./examples/Gates_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates/{gateName}": {
+            "get": {
+              "description": "Get a Gate",
+              "operationId": "Gates_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Gate resource, a GUID.",
+                  "in": "path",
+                  "maxLength": 36,
+                  "minLength": 36,
+                  "name": "gateName",
+                  "pattern": "^[0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{12}$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/Gate"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "Gates"
+              ],
+              "x-ms-examples": {
+                "Gets a Gate resource.": {
+                  "$ref": "./examples/Gates_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces": {
+            "get": {
+              "description": "List FleetManagedNamespace resources by Fleet",
+              "operationId": "FleetManagedNamespaces_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetManagedNamespaceListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetManagedNamespaces"
+              ],
+              "x-ms-examples": {
+                "FleetManagedNamespaces_ListByFleet": {
+                  "$ref": "./examples/FleetManagedNamespaces_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}": {
+            "delete": {
+              "description": "Delete a FleetManagedNamespace",
+              "operationId": "FleetManagedNamespaces_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the fleet managed namespace resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "managedNamespaceName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetManagedNamespaces"
+              ],
+              "x-ms-examples": {
+                "FleetManagedNamespaces_Delete": {
+                  "$ref": "./examples/FleetManagedNamespaces_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Get a FleetManagedNamespace",
+              "operationId": "FleetManagedNamespaces_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the fleet managed namespace resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "managedNamespaceName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetManagedNamespace"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetManagedNamespaces"
+              ],
+              "x-ms-examples": {
+                "FleetManagedNamespaces_Get": {
+                  "$ref": "./examples/FleetManagedNamespaces_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members": {
+            "get": {
+              "description": "List FleetMember resources by Fleet",
+              "operationId": "FleetMembers_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/FilterQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetMemberListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetMembers"
+              ],
+              "x-ms-examples": {
+                "Lists the members of a Fleet.": {
+                  "$ref": "./examples/FleetMembers_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}": {
+            "delete": {
+              "description": "Delete a FleetMember",
+              "operationId": "FleetMembers_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Fleet member resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "fleetMemberName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetMembers"
+              ],
+              "x-ms-examples": {
+                "Deletes a FleetMember resource asynchronously with a long running operation.": {
+                  "$ref": "./examples/FleetMembers_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Get a FleetMember",
+              "operationId": "FleetMembers_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the Fleet member resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "fleetMemberName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetMember"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetMembers"
+              ],
+              "x-ms-examples": {
+                "Gets a FleetMember resource.": {
+                  "$ref": "./examples/FleetMembers_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns": {
+            "get": {
+              "description": "List UpdateRun resources by Fleet",
+              "operationId": "UpdateRuns_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/UpdateRunListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "UpdateRuns"
+              ],
+              "x-ms-examples": {
+                "Lists the UpdateRun resources by fleet.": {
+                  "$ref": "./examples/UpdateRuns_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}": {
+            "delete": {
+              "description": "Delete a UpdateRun",
+              "operationId": "UpdateRuns_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the UpdateRun resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "updateRunName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "UpdateRuns"
+              ],
+              "x-ms-examples": {
+                "Delete an updateRun resource.": {
+                  "$ref": "./examples/UpdateRuns_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "Get a UpdateRun",
+              "operationId": "UpdateRuns_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the UpdateRun resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "updateRunName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/UpdateRun"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "UpdateRuns"
+              ],
+              "x-ms-examples": {
+                "Gets an UpdateRun resource.": {
+                  "$ref": "./examples/UpdateRuns_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}/stop": {
+            "post": {
+              "description": "Stops an UpdateRun.",
+              "operationId": "UpdateRuns_Stop",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the UpdateRun resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "updateRunName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/UpdateRun"
+                  }
+                },
+                "202": {
+                  "description": "Resource operation accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "UpdateRuns"
+              ],
+              "x-ms-examples": {
+                "Stops an UpdateRun.": {
+                  "$ref": "./examples/UpdateRuns_Stop.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies": {
+            "get": {
+              "description": "List FleetUpdateStrategy resources by Fleet",
+              "operationId": "FleetUpdateStrategies_ListByFleet",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/parameters/TopQueryParameter"
+                },
+                {
+                  "$ref": "#/parameters/SkipTokenQueryParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetUpdateStrategyListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetUpdateStrategies"
+              ],
+              "x-ms-examples": {
+                "List the FleetUpdateStrategy resources by fleet.": {
+                  "$ref": "./examples/UpdateStrategies_ListByFleet.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}": {
+            "delete": {
+              "description": "Delete a FleetUpdateStrategy",
+              "operationId": "FleetUpdateStrategies_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The request should only proceed if an entity matches this string.",
+                  "in": "header",
+                  "name": "If-Match",
+                  "required": false,
+                  "type": "string",
+                  "x-ms-client-name": "ifMatch"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the UpdateStrategy resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "updateStrategyName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Resource deleted successfully."
+                },
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetUpdateStrategies"
+              ],
+              "x-ms-examples": {
+                "Delete a FleetUpdateStrategy resource.": {
+                  "$ref": "./examples/UpdateStrategies_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "azure-async-operation"
+              }
+            },
+            "get": {
+              "description": "Get a FleetUpdateStrategy",
+              "operationId": "FleetUpdateStrategies_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the Fleet resource.",
+                  "in": "path",
+                  "maxLength": 63,
+                  "minLength": 1,
+                  "name": "fleetName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the UpdateStrategy resource.",
+                  "in": "path",
+                  "maxLength": 50,
+                  "minLength": 1,
+                  "name": "updateStrategyName",
+                  "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/FleetUpdateStrategy"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "FleetUpdateStrategies"
+              ],
+              "x-ms-examples": {
+                "Get a FleetUpdateStrategy resource.": {
+                  "$ref": "./examples/UpdateStrategies_Get.json"
+                }
+              }
+            }
+          }
+        },
+        "schemes": [
+          "https"
+        ],
+        "swagger": "2.0"
+      },
+      "source_sha256": "778a2f9cd9c0ec9f80bd198995b41459487c240169a146d64bd2c0281b796b51",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
     },
     {
       "dependency": false,

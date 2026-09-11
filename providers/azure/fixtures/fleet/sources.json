@@ -1,0 +1,200 @@
+[
+  {
+    "file": "AutoUpgradeProfiles_Delete.json",
+    "method": "DELETE",
+    "operation": "AutoUpgradeProfiles_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "74bb57ad0ea18387b0c9f1cd3d183338d9ae6636bbbce56a11240da9160314a8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/AutoUpgradeProfiles_Delete.json"
+  },
+  {
+    "file": "AutoUpgradeProfiles_Get.json",
+    "method": "GET",
+    "operation": "AutoUpgradeProfiles_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "7fd352475d06ba9705c3afab5bd687f879d9b261bf4e2605824f00c2ede814ce",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/AutoUpgradeProfiles_Get.json"
+  },
+  {
+    "file": "AutoUpgradeProfiles_ListByFleet.json",
+    "method": "GET",
+    "operation": "AutoUpgradeProfiles_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "7d4acf5323e09ecbf1ae5b4166fdbf835d725495f13a04b8d521f16f66dc4ac1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/AutoUpgradeProfiles_ListByFleet.json"
+  },
+  {
+    "file": "FleetManagedNamespaces_Delete.json",
+    "method": "DELETE",
+    "operation": "FleetManagedNamespaces_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "dade27f51d982ab0f75100fb1da94a575d6f223d92932d1544be06f1a2b6246b",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetManagedNamespaces_Delete.json"
+  },
+  {
+    "file": "FleetManagedNamespaces_Get.json",
+    "method": "GET",
+    "operation": "FleetManagedNamespaces_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "9378a72be055ac8ccb04c8d17125327265756118497d1d373334c045cfe46db9",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetManagedNamespaces_Get.json"
+  },
+  {
+    "file": "FleetManagedNamespaces_ListByFleet.json",
+    "method": "GET",
+    "operation": "FleetManagedNamespaces_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "f9aa6829daab920d18c08f5142b699a5bc3cb342b9da7c0c54b5f5bfa0b70fe7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetManagedNamespaces_ListByFleet.json"
+  },
+  {
+    "file": "FleetMembers_Delete.json",
+    "method": "DELETE",
+    "operation": "FleetMembers_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "760256fd29dfc9073b1198b7ba69a7e282231d764ecaa9aa48cf11309cbd781d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetMembers_Delete.json"
+  },
+  {
+    "file": "FleetMembers_Get.json",
+    "method": "GET",
+    "operation": "FleetMembers_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "4718fc45a85a7c085dfdbcd5e9f520f583399314e2ee7d8050cfd8ac6c811274",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetMembers_Get.json"
+  },
+  {
+    "file": "FleetMembers_ListByFleet.json",
+    "method": "GET",
+    "operation": "FleetMembers_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "53781fbe665cd4a52ccaca600da2460005e39995cce2aeb977ecfd9a1721be66",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/FleetMembers_ListByFleet.json"
+  },
+  {
+    "file": "Fleets_Delete.json",
+    "method": "DELETE",
+    "operation": "Fleets_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "fc85302e0788f99c69b8e7f91c8927d25e8fe5171690f07bcd58b23af20fc778",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Fleets_Delete.json"
+  },
+  {
+    "file": "Fleets_Get.json",
+    "method": "GET",
+    "operation": "Fleets_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "93532c4aa75e94a40f09377b43034d5c114b36154edcfeccc89ded6cfd23af2f",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Fleets_Get.json"
+  },
+  {
+    "file": "Fleets_ListByResourceGroup.json",
+    "method": "GET",
+    "operation": "Fleets_ListByResourceGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "62154db310bd9dd74398c44bb1663af08cedc63cf0690e25f118861fe8660d74",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Fleets_ListByResourceGroup.json"
+  },
+  {
+    "file": "Fleets_ListBySub.json",
+    "method": "GET",
+    "operation": "Fleets_ListBySubscription",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/fleets",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "aa78b9cf8bea95d19c5a0559d7c313f56c6d2d632a2715ab725797130dd92b0d",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Fleets_ListBySub.json"
+  },
+  {
+    "file": "Gates_Get.json",
+    "method": "GET",
+    "operation": "Gates_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates/{gateName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "71a0e8184ac148a7af5a40d6c311795edfcd3c80452520863ae0f767ce4faef8",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Gates_Get.json"
+  },
+  {
+    "file": "Gates_ListByFleet.json",
+    "method": "GET",
+    "operation": "Gates_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "ad77a59469a2b1970bff367d29be17e7175d648a235bcb35406e3a6b3233b6e0",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/Gates_ListByFleet.json"
+  },
+  {
+    "file": "UpdateRuns_Delete.json",
+    "method": "DELETE",
+    "operation": "UpdateRuns_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "0fb292697ae8844444529546a7453873ce0cf538abd30819d60601a8955d4370",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateRuns_Delete.json"
+  },
+  {
+    "file": "UpdateRuns_Get.json",
+    "method": "GET",
+    "operation": "UpdateRuns_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "30eb66c44dc008cc34a593ba58f2f69648ba2dba12e29102e70afbc7a3d61af1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateRuns_Get.json"
+  },
+  {
+    "file": "UpdateRuns_ListByFleet.json",
+    "method": "GET",
+    "operation": "UpdateRuns_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "845b83736f095e79416217032e7a4c46f9b7112aefed593c127a6f639eba4616",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateRuns_ListByFleet.json"
+  },
+  {
+    "file": "UpdateRuns_Stop.json",
+    "method": "POST",
+    "operation": "UpdateRuns_Stop",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}/stop",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "be8baaa1537d23c0d761072da6703e3bb24ef77908633d20e9337b6197f71a39",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateRuns_Stop.json"
+  },
+  {
+    "file": "UpdateStrategies_Delete.json",
+    "method": "DELETE",
+    "operation": "FleetUpdateStrategies_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "a8a410a374c5bee83b2c6fa035092a9c3a700af3b99b10db6451e84d14f25134",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateStrategies_Delete.json"
+  },
+  {
+    "file": "UpdateStrategies_Get.json",
+    "method": "GET",
+    "operation": "FleetUpdateStrategies_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "e6957cfcfd2cdd88833b398db0f3029b60928cbb8081a0941cd16756b540ac63",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateStrategies_Get.json"
+  },
+  {
+    "file": "UpdateStrategies_ListByFleet.json",
+    "method": "GET",
+    "operation": "FleetUpdateStrategies_ListByFleet",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+    "source_sha256": "12cd39dc8dc3568c508e92711f24367112f15ed5e6d26490a7ce0b8dc75f39e7",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/examples/UpdateStrategies_ListByFleet.json"
+  }
+]

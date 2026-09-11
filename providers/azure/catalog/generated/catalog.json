@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "6cca8521bda5763e04cd1e57c802e4c2340eadc3bc5a88e822899dfec7446732",
+    "checksum": "6f9f79c15d8e7043dd99d74945a28a11e0b70dcce74d00d8f985b15e1028b8f1",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "04eebc15adfab186556fd99dcea63510c4864c21f1fa255b73f21516db161077",
+  "content_checksum": "b2776651fd8160e1d18fa2857865f5be3dfa70c439dc27aba8288205c19ad605",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -57011,6 +57011,1603 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/containerregistry/resource-manager/Microsoft.ContainerRegistry/Registry/stable/2023-07-01/containerregistry.json"
     },
     {
+      "id": "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Delete",
+      "name": "AutoUpgradeProfiles_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "autoUpgradeProfileName": {
+            "description": "The name of the AutoUpgradeProfile resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "autoUpgradeProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Get",
+      "name": "AutoUpgradeProfiles_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "autoUpgradeProfileName": {
+            "description": "The name of the AutoUpgradeProfile resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "autoUpgradeProfileName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "The AutoUpgradeProfile resource.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/AutoUpgradeProfileProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles/{autoUpgradeProfileName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet",
+      "name": "AutoUpgradeProfiles_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a AutoUpgradeProfile list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The AutoUpgradeProfile items on this page",
+            "items": {
+              "$ref": "#/definitions/AutoUpgradeProfile"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/autoUpgradeProfiles",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Delete",
+      "name": "FleetManagedNamespaces_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "managedNamespaceName": {
+            "description": "The name of the fleet managed namespace resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "managedNamespaceName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Get",
+      "name": "FleetManagedNamespaces_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "managedNamespaceName": {
+            "description": "The name of the fleet managed namespace resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "managedNamespaceName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "A fleet managed namespace.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/FleetManagedNamespaceProperties",
+            "description": "The resource-specific properties for this resource."
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces/{managedNamespaceName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet",
+      "name": "FleetManagedNamespaces_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a FleetManagedNamespace list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FleetManagedNamespace items on this page",
+            "items": {
+              "$ref": "#/definitions/FleetManagedNamespace"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/managedNamespaces",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetMembers_Delete",
+      "name": "FleetMembers_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetMemberName": {
+            "description": "The name of the Fleet member resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "fleetMemberName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetMembers_Get",
+      "name": "FleetMembers_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetMemberName": {
+            "description": "The name of the Fleet member resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "fleetMemberName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A member of the Fleet. It contains a reference to an existing Kubernetes cluster on Azure.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/FleetMemberProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members/{fleetMemberName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet",
+      "name": "FleetMembers_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "Filter the result list using the given expression.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "filter",
+            "x-ms-parameter-location": "method"
+          },
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a FleetMember list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FleetMember items on this page",
+            "items": {
+              "$ref": "#/definitions/FleetMember"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/members",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Delete",
+      "name": "FleetUpdateStrategies_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "updateStrategyName": {
+            "description": "The name of the UpdateStrategy resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "updateStrategyName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Get",
+      "name": "FleetUpdateStrategies_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "updateStrategyName": {
+            "description": "The name of the UpdateStrategy resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "updateStrategyName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Defines a multi-stage process to perform update operations across members of a Fleet.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/FleetUpdateStrategyProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies/{updateStrategyName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet",
+      "name": "FleetUpdateStrategies_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a FleetUpdateStrategy list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The FleetUpdateStrategy items on this page",
+            "items": {
+              "$ref": "#/definitions/FleetUpdateStrategy"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateStrategies",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Fleets_Delete",
+      "name": "Fleets_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Fleets_Get",
+      "name": "Fleets_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "The Fleet resource.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "identity": {
+            "$ref": "../../../../../../common-types/resource-management/v4/managedidentity.json#/definitions/ManagedServiceIdentity",
+            "description": "Managed identity."
+          },
+          "properties": {
+            "$ref": "#/definitions/FleetProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Fleets_ListByResourceGroup",
+      "name": "Fleets_ListByResourceGroup",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Fleet list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Fleet items on this page",
+            "items": {
+              "$ref": "#/definitions/Fleet"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Fleets_ListBySubscription",
+      "name": "Fleets_ListBySubscription",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/fleets",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Fleet list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Fleet items on this page",
+            "items": {
+              "$ref": "#/definitions/Fleet"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/fleets",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Gates_Get",
+      "name": "Gates_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates/{gateName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "gateName": {
+            "description": "The name of the Gate resource, a GUID.",
+            "in": "path",
+            "maxLength": 36,
+            "minLength": 36,
+            "name": "gateName",
+            "pattern": "^[0-9a-f]{8}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{4}[-][0-9a-f]{12}$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A Gate controls the progression during a staged rollout, e.g. in an Update Run.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/GateProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates/{gateName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.Gates_ListByFleet",
+      "name": "Gates_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "Filter the result list using the given expression.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "filter",
+            "x-ms-parameter-location": "method"
+          },
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a Gate list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Gate items on this page",
+            "items": {
+              "$ref": "#/definitions/Gate"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/gates",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
       "id": "Azure.Microsoft.ContainerService.ManagedClusters_Delete",
       "name": "ManagedClusters_Delete",
       "service": "Microsoft.ContainerService",
@@ -57391,6 +58988,378 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/containerservice/resource-manager/Microsoft.ContainerService/aks/stable/2024-02-01/managedClusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.UpdateRuns_Delete",
+      "name": "UpdateRuns_Delete",
+      "service": "Microsoft.ContainerService",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "updateRunName": {
+            "description": "The name of the UpdateRun resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "updateRunName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.UpdateRuns_Get",
+      "name": "UpdateRuns_Get",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "updateRunName": {
+            "description": "The name of the UpdateRun resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "updateRunName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A multi-stage process to perform update operations across members of a Fleet.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/UpdateRunProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet",
+      "name": "UpdateRuns_ListByFleet",
+      "service": "Microsoft.ContainerService",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$skipToken": {
+            "description": "The page-continuation token to use with a paged version of this API.",
+            "in": "query",
+            "name": "$skipToken",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "skipToken",
+            "x-ms-parameter-location": "method"
+          },
+          "$top": {
+            "description": "The number of result items to return.",
+            "format": "int32",
+            "in": "query",
+            "name": "$top",
+            "required": false,
+            "type": "integer",
+            "x-ms-client-name": "top",
+            "x-ms-parameter-location": "method"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a UpdateRun list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The UpdateRun items on this page",
+            "items": {
+              "$ref": "#/definitions/UpdateRun"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+    },
+    {
+      "id": "Azure.Microsoft.ContainerService.UpdateRuns_Stop",
+      "name": "UpdateRuns_Stop",
+      "service": "Microsoft.ContainerService",
+      "method": "POST",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}/stop",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "If-Match": {
+            "description": "The request should only proceed if an entity matches this string.",
+            "in": "header",
+            "name": "If-Match",
+            "required": false,
+            "type": "string",
+            "x-ms-client-name": "ifMatch"
+          },
+          "api-version": {
+            "enum": [
+              "2026-06-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "fleetName": {
+            "description": "The name of the Fleet resource.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 1,
+            "name": "fleetName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "updateRunName": {
+            "description": "The name of the UpdateRun resource.",
+            "in": "path",
+            "maxLength": 50,
+            "minLength": 1,
+            "name": "updateRunName",
+            "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "A multi-stage process to perform update operations across members of a Fleet.",
+        "properties": {
+          "eTag": {
+            "description": "If eTag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "properties": {
+            "$ref": "#/definitions/UpdateRunProperties",
+            "description": "The resource-specific properties for this resource.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ContainerService",
+        "version": "2026-06-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "POST",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/fleets/{fleetName}/updateRuns/{updateRunName}/stop",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
     },
     {
       "id": "Azure.Microsoft.CostManagement.Budgets_Delete",

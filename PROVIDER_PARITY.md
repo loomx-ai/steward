@@ -2643,3 +2643,48 @@ background evidence only, not acceptance evidence for this work.
   and PIM mutation remain unfinished. No independent identity/RBAC emulator or
   real-cloud run is claimed. Catalog/spec counts and the 27 mapped Azure type
   gaps are unchanged; all eight full-provider acceptance criteria remain open.
+
+### Azure Kubernetes Fleet native contracts and scope boundaries
+
+- Added 22 native Fleet operations from immutable Microsoft stable
+  `2026-06-01`: root GET/two LISTs/DELETE; member, namespace, strategy, profile
+  and run GET/LIST/DELETE; run Stop; and read-only Gate GET/LIST. The catalog now
+  retains 1,265 operations and 225 documents (170 roots and 55 dependencies).
+  Resource registrations remain at 386 types/specifications and 360 cleanup
+  bindings. This is the foundation for the mapped ACK One/Fleet gap.
+- The 22 unchanged original examples retain hashes and operation provenance.
+  All requests bind to their selected native operations; 33 responses include
+  16 schema-checked bodies. Tests explicitly preserve two upstream null-nextLink
+  discrepancies. Placeholder subscriptions, malformed illustrative subnet/
+  identity IDs and mismatched request/response names remain in the evidence;
+  only composed protocol scenarios replace these with actual-format identities.
+- Seven native resource readers and indexes preserve full private authored
+  configuration, independently GET listed resources, allow additional GET detail
+  and reject changed listed fields. Pagination binds subscription, collection,
+  stable version and opaque continuation without filters. Repeated resources/
+  pages, malformed rows, incomplete responses and dependency 403/404s fail the
+  observation. The shared query guard uses the final native provider/collection,
+  so an AKS resource or resource group named `fleets` is unaffected.
+- References distinguish existing member AKS clusters, supplied Hub subnets and
+  user identities from same-Fleet run/strategy/profile/Gate relationships.
+  Namespace Keep/Delete and full placement configuration stay privately bound.
+  Fixed member names and dynamic scheduling are distinct; a dynamic selection
+  cannot be silently projected as an empty fixed set. Gates expose no mutation.
+- Also retained 44 actual Microsoft CLI GET/DELETE responses at immutable commit
+  `a20385bffcbb7403846af8a65dbfcaf96c717e4d`. Compatibility checks validate 44
+  returned resources across all seven families, nine native DELETE responses,
+  five fixed namespace placements and a real 503 HTML failure. Three gates use
+  ScheduledStart; the native modelAsString contract permits preserving this
+  opaque read-only subtype. Additional placement rollout/scheduling configuration
+  remains in the private digest. Recordings use `2026-06-02-preview`, so this is
+  response compatibility evidence, not a stable-version live-cloud run.
+- The full Go source-baseline run passed (Azure 197.110s; GCP cached), broader
+  Fleet/RBAC/prerequisite race checks passed (23.540s), repository-wide vet passed
+  and all five offline source-import tests passed. Subsequent query-scope and
+  recorded-response changes are covered by final Fleet tests and race checks;
+  the final Fleet race run passed (5.210s) and Azure vet passed again.
+- Fleet inventory/action registration, reviewed deletion graphs, managed Hub/
+  node resource-group reconciliation and actual application recovery remain next.
+  This checkpoint closes no mapped family gap: 27 Azure type gaps and all eight
+  overall acceptance criteria remain open. No independent Fleet emulator or new
+  real-cloud run is claimed.

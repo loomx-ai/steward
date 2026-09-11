@@ -1,0 +1,17 @@
+[
+  {
+    "dependency": true,
+    "source_sha256": "e0053dd5b2f6fdbcdea58a816dff7670b07aeccded7141ea2124713b62d68df5",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v4/managedidentity.json"
+  },
+  {
+    "dependency": true,
+    "source_sha256": "66767620b8edfbc04093c76b78d168cc59822cd9da1e726d35a9d45b73e642c1",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/common-types/resource-management/v5/types.json"
+  },
+  {
+    "dependency": false,
+    "source_sha256": "778a2f9cd9c0ec9f80bd198995b41459487c240169a146d64bd2c0281b796b51",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json"
+  }
+]

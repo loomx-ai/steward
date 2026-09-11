@@ -2087,6 +2087,33 @@
         "RoleDefinitions_List",
         "RoleDefinitions_Delete"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/containerservice/resource-manager/Microsoft.ContainerService/fleet/stable/2026-06-01/fleets.json",
+      "operations": [
+        "AutoUpgradeProfiles_Delete",
+        "AutoUpgradeProfiles_Get",
+        "AutoUpgradeProfiles_ListByFleet",
+        "FleetManagedNamespaces_Delete",
+        "FleetManagedNamespaces_Get",
+        "FleetManagedNamespaces_ListByFleet",
+        "FleetMembers_Delete",
+        "FleetMembers_Get",
+        "FleetMembers_ListByFleet",
+        "FleetUpdateStrategies_Delete",
+        "FleetUpdateStrategies_Get",
+        "FleetUpdateStrategies_ListByFleet",
+        "Fleets_Delete",
+        "Fleets_Get",
+        "Fleets_ListByResourceGroup",
+        "Fleets_ListBySubscription",
+        "Gates_Get",
+        "Gates_ListByFleet",
+        "UpdateRuns_Delete",
+        "UpdateRuns_Get",
+        "UpdateRuns_ListByFleet",
+        "UpdateRuns_Stop"
+      ]
     }
   ],
   "resource_types": [

@@ -1,0 +1,660 @@
+{
+  "responses": [
+    {
+      "body": "{\"eTag\":\"\\\"0b0077de-0000-0600-0000-6a54d1ba0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"hubProfile\":{\"agentProfile\":{\"vmSize\":\"Standard_A8_v2\"},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-glmrhz-pe6jahyx.hcp.westcentralus.azmk8s.io\",\"kubernetesVersion\":\"1.35.6\",\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b094b7fd-1418-4151-9b3f-3bb47f58d47f\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:47:44.5067005Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:47:44.5067005Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 13,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b0077de-0000-0600-0000-6a54d1ba0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"hubProfile\":{\"agentProfile\":{\"vmSize\":\"Standard_A8_v2\"},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-glmrhz-pe6jahyx.hcp.westcentralus.azmk8s.io\",\"kubernetesVersion\":\"1.35.6\",\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b094b7fd-1418-4151-9b3f-3bb47f58d47f\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:47:44.5067005Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:47:44.5067005Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 14,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b009ce0-0000-0600-0000-6a54d3440000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group1\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b1ed2a1d-b872-41f0-b48a-ffc1dc6813ef\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:59:03.2128865Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:59:03.2128865Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 36,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b009ce0-0000-0600-0000-6a54d3440000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group1\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b1ed2a1d-b872-41f0-b48a-ffc1dc6813ef\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:59:03.2128865Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:59:03.2128865Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 37,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b009ce0-0000-0600-0000-6a54d3440000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group1\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b1ed2a1d-b872-41f0-b48a-ffc1dc6813ef\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:59:03.2128865Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:59:03.2128865Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 40,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b0077de-0000-0600-0000-6a54d1ba0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"hubProfile\":{\"agentProfile\":{\"vmSize\":\"Standard_A8_v2\"},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-glmrhz-pe6jahyx.hcp.westcentralus.azmk8s.io\",\"kubernetesVersion\":\"1.35.6\",\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b094b7fd-1418-4151-9b3f-3bb47f58d47f\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:47:44.5067005Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:47:44.5067005Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 41,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'><html xmlns='http://www.w3.org/1999/xhtml'><head><meta content='text/html; charset=utf-8' http-equiv='content-type'/><style type='text/css'>body {font-family:Arial; margin-left:40px; }img  { border:0 none; }#content { margin-left: auto; margin-right: auto }#message h2 { font-size: 20px; font-weight: normal; color: #000000; margin: 34px 0px 0px 0px }#message p  { font-size: 13px; color: #000000; margin: 7px 0px 0px0px}#errorref { font-size: 11px; color: #737373; margin-top: 41px }</style><title>AzureResourceManager</title></head><body><div id='content'><div id='message'><h2>Our services aren't available right now</h2><p>We're working to restore all services as soon as possible. Please check back soon.</p></div><div id='errorref'><span>Ref A: D36C41CDFD714A07B60DF0E1906CE6F7 Ref B: SG2AA1040520036 Ref C: 2026-07-13T12:00:52Z</span></div></div></body></html>",
+      "headers": {
+        "content-type": [
+          "text/html"
+        ]
+      },
+      "interaction": 44,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 503,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00f3e0-0000-0600-0000-6a54d3720000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004\",\"location\":\"westcentralus\",\"name\":\"flns-000004\",\"properties\":{\"adoptionPolicy\":\"Always\",\"deletePolicy\":\"Delete\",\"managedNamespaceProperties\":{\"labels\":{\"fleet.azure.com/managed-by\":\"arm\"}},\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\",\"propagationPolicy\":{\"placementProfile\":{\"defaultClusterResourcePlacement\":{\"policy\":{\"clusterNames\":[\"flmc-000003\"],\"placementType\":\"PickFixed\"},\"rolloutStrategy\":{\"type\":\"RollingUpdate\"}}},\"type\":\"Placement\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"a41730ff-82ab-442f-bbf6-17ecbff2a47b\"}},\"systemData\":{\"createdAt\":\"2026-07-13T12:00:49.0542092Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T12:00:49.0542092Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/managedNamespaces\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 45,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00f3e0-0000-0600-0000-6a54d3720000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004\",\"location\":\"westcentralus\",\"name\":\"flns-000004\",\"properties\":{\"adoptionPolicy\":\"Always\",\"deletePolicy\":\"Delete\",\"managedNamespaceProperties\":{\"labels\":{\"fleet.azure.com/managed-by\":\"arm\"}},\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\",\"propagationPolicy\":{\"placementProfile\":{\"defaultClusterResourcePlacement\":{\"policy\":{\"clusterNames\":[\"flmc-000003\"],\"placementType\":\"PickFixed\"},\"rolloutStrategy\":{\"type\":\"RollingUpdate\"}}},\"type\":\"Placement\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"a41730ff-82ab-442f-bbf6-17ecbff2a47b\"}},\"systemData\":{\"createdAt\":\"2026-07-13T12:00:49.0542092Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T12:00:49.0542092Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/managedNamespaces\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 46,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00f3e0-0000-0600-0000-6a54d3720000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004\",\"location\":\"westcentralus\",\"name\":\"flns-000004\",\"properties\":{\"adoptionPolicy\":\"Always\",\"deletePolicy\":\"Delete\",\"managedNamespaceProperties\":{\"labels\":{\"fleet.azure.com/managed-by\":\"arm\"}},\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\",\"propagationPolicy\":{\"placementProfile\":{\"defaultClusterResourcePlacement\":{\"policy\":{\"clusterNames\":[\"flmc-000003\"],\"placementType\":\"PickFixed\"},\"rolloutStrategy\":{\"type\":\"RollingUpdate\"}}},\"type\":\"Placement\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"a41730ff-82ab-442f-bbf6-17ecbff2a47b\"}},\"systemData\":{\"createdAt\":\"2026-07-13T12:00:49.0542092Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T12:00:49.0542092Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/managedNamespaces\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 47,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b0003e1-0000-0600-0000-6a54d37a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004\",\"location\":\"westcentralus\",\"name\":\"flns-000004\",\"properties\":{\"adoptionPolicy\":\"IfIdentical\",\"deletePolicy\":\"Keep\",\"managedNamespaceProperties\":{\"defaultNetworkPolicy\":{\"ingress\":\"DenyAll\"},\"defaultResourceQuota\":{\"cpuRequest\":\"500m\",\"memoryLimit\":\"256Mi\"},\"labels\":{\"app\":\"myapp\",\"fleet.azure.com/managed-by\":\"arm\"}},\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\",\"propagationPolicy\":{\"placementProfile\":{\"defaultClusterResourcePlacement\":{\"policy\":{\"clusterNames\":[\"flmc-000003\"],\"placementType\":\"PickFixed\"},\"rolloutStrategy\":{\"type\":\"RollingUpdate\"}}},\"type\":\"Placement\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"dfef6f27-6174-4647-945c-316aa8836845\"}},\"systemData\":{\"createdAt\":\"2026-07-13T12:00:49.0542092Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T12:00:57.9659791Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"env\":\"test\"},\"type\":\"Microsoft.ContainerService/fleets/managedNamespaces\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 50,
+      "method": "GET",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b0012e1-0000-0600-0000-6a54d3820000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004\",\"location\":\"westcentralus\",\"name\":\"flns-000004\",\"properties\":{\"adoptionPolicy\":\"IfIdentical\",\"deletePolicy\":\"Keep\",\"managedNamespaceProperties\":{\"defaultNetworkPolicy\":{\"ingress\":\"DenyAll\"},\"defaultResourceQuota\":{\"cpuRequest\":\"500m\",\"memoryLimit\":\"256Mi\"},\"labels\":{\"app\":\"myapp\",\"fleet.azure.com/managed-by\":\"arm\"}},\"propagationPolicy\":{\"placementProfile\":{\"defaultClusterResourcePlacement\":{\"policy\":{\"clusterNames\":[\"flmc-000003\"],\"placementType\":\"PickFixed\"},\"rolloutStrategy\":{\"type\":\"RollingUpdate\"}}},\"type\":\"Placement\"},\"provisioningState\":\"Deleting\",\"status\":{\"lastOperationId\":\"2dbb3476-d0af-4294-a361-018381e9b5b0\"}},\"systemData\":{\"createdAt\":\"2026-07-13T12:00:49.0542092Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T12:00:57.9659791Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"env\":\"test\"},\"type\":\"Microsoft.ContainerService/fleets/managedNamespaces\"}",
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operations/2dbb3476-d0af-4294-a361-018381e9b5b0?api-version=2016-03-30&t=639195408663496002&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=OyzAaleyarxtEyPyhvYh8MvrgqCrCdpqrK9_oPIWfT0mgD--_hul6fSIAkEfX7yGLL2Bm-yBvzsYqS6bv1RUYsZXHcnfX7gZOy-ZZz0E1VgydKaqxZTlPuTXfwCy4-Hf0h9sn1ZAzeYalrubyCQ7wApfIhJ5ar8Oi2slKItGOYytktuyjkx82PoYSXSklc18_NzObTyb0Pg-oHvrksGUkSk5uKgYw18xyxauqgYu-5J9yCxIQrbvH6nK3Mnlv59VXmqGkFEXkc-xM8x2zKnByMah9AqZt5V549o2hhIluga-PG9vsU6zZ_mHDZr1vKPKtRVCbqnrfFDI769H7CigPg&h=412uStkf38R0IO-_nnO8UXCX2KuVoxlvEfKEpoVyMzo"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operationresults/2dbb3476-d0af-4294-a361-018381e9b5b0?api-version=2016-03-30&t=639195408663808226&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=q7RFrBGUU_eoYvy9VsXxCH9wPCZuvNq7G-SQ_COI0KzNeWYfaqBH8JYys-3j-xsNvLsn19rMoC-udVsLtsZznxh-b4MMeVxR8BiULjXohOk5SoGaf3KiuOA2H9XZtSJ_HN2hQjPwtZV3lBJ_i1P_c0a_KVQ-pUSH83iA6qBdIk2f10mVnrPq6YL3cYfEeUIeWi4K3bJQ8XEctznxHo_bQ1Q1R1j87Dm_u7ldBFBpI4okXzbjW9AfHJEqwrIufCFGidBXdc8n4Q5GaFXkm0xbWqGx-BBcFhf8hhPmSpNL9Cf-K12jK9QpYO9SwRX4XYt3HBmP6Q-iQZSPUBDqRyIHsg&h=aauHqa1th2d2BRK6YeXTZL26Nj9cmEtCg1nhEwvb6c4"
+        ]
+      },
+      "interaction": 52,
+      "method": "DELETE",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 202,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/managedNamespaces/flns-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b0023e1-0000-0600-0000-6a54d3890000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group1\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\"},\"provisioningState\":\"Leaving\",\"status\":{\"lastOperationId\":\"3b943e4e-c655-4b01-bce0-1a77973c714f\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:59:03.2128865Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:59:03.2128865Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operations/3b943e4e-c655-4b01-bce0-1a77973c714f?api-version=2016-03-30&t=639195408735655898&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=JZMGqTUPUTMY_oMv3Cjti_XAXB2bQHIyqxB7GV_hrred-dPKfN684TTwxifr3xVLoOY3JGy2B8exB7-WaJWUj2O0j-m9m8tA1bZo-p2KHayDPvEewAG839LJz9Vw8Fz1ErHZS9mkduleDu-z7mm2PQ4OamFm4SSVAczCdN5oTF59B2rg-NDpTaT-WUtox4FFwwbNNcncDprqMti-dCkLN-HTuM_06jS7sOxtfs_c0kb2s7Aao1d2XAlBKmyjoICVLUBtYqQi17ExG0wTfK4RpiiGQt0DCWSJAJq4oAG2f9rCOKA3jTz_eRikPoRDFp2SjgwDFw9IRaVoI2FTMC6tZA&h=rIAAOYWvHfgE15dyrlY5pf0sjrjkStEf7_lsjdXMfro"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operationresults/3b943e4e-c655-4b01-bce0-1a77973c714f?api-version=2016-03-30&t=639195408735812134&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=W-OulOpzcpAX9xND5lWjVZGNGkWpwSQ0NXg_p67Z3SJYC4ZnOdhoDalqMqeOFSt-QXyHIP56NdH-NsnYfODy7YBDfkhMfwZIym2OHHPO6mpiYtBxf8sYRjpLD_JYI0gYvb2UNmZStOlWb9ThaqO5PnGKahK-2d0WQ-wrA7Ul_M2VjPURQZ7NzmerGTnay7cSP2IfrZ6ESy5LSxLOPsCBkcENqcagLs6jXDI0LRbxdjWS4Pg9OV3OuNiEqkLh3PN4YlVctF8GUAHWt_u61ohMJRNwa8nr2IoTBSETNkRX5YWtNTjX-YDfN2GCaP_MDvDGei7NAgy9zfzKB9ykca2zOw&h=jgf4cYfcup4ButCpYxpzLiHmABN9xM9RMXmYjh5M3I0"
+        ]
+      },
+      "interaction": 55,
+      "method": "DELETE",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 202,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b004ce1-0000-0600-0000-6a54d3ac0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"hubProfile\":{\"agentProfile\":{\"vmSize\":\"Standard_A8_v2\"},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-glmrhz-pe6jahyx.hcp.westcentralus.azmk8s.io\",\"kubernetesVersion\":\"1.35.6\",\"portalFqdn\":\"hub-glmrhz-pe6jahyx.portal.hcp.westcentralus.azmk8s.io\"},\"provisioningState\":\"Deleting\",\"status\":{\"lastOperationId\":\"7389752a-b283-481c-ba59-ef5eb6de343b\"}},\"systemData\":{\"createdAt\":\"2026-07-13T11:47:44.5067005Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T11:47:44.5067005Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operations/7389752a-b283-481c-ba59-ef5eb6de343b?api-version=2016-03-30&t=639195409088290570&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=jxHPOSX_JP3-X8v__KO94eTVr5DyhkKX--YjuywUE-RRg-gSWlX5C24sDpTOJ3DlNKge-Hel7uA8Jn3S0vivm3aNNPH3JmlPJMVv1YzSb-2ceNYfrVAd8Aj5CjxJ9jC29b7iR-BArvxLn0p_kLVJMZuDv-b7xAM9jM6iyw5TJWCaksAQOC_sd9lPhKVOU6CWvFj6RX3_BDCrSIRTtsont2u7ULdoK4LwACh-ALQAtzAuOphXqzASZAtYCXdj1rZVU2Z4ECh5YHmAZoIrno5UHO-ZrgKAIrwGrN-mkYqiAMxEkjq9veoc2Yg3oAzftE9Ojze6xG_MaZt0dm37r81v2g&h=NQDT9VxkeO7u4kKTKqzYMNGyiO8FzquY_5vIp12fAo4"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operationresults/7389752a-b283-481c-ba59-ef5eb6de343b?api-version=2016-03-30&t=639195409088447625&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=AdEKRskt8_DnAhWXLqCX0VB1m2NHWJWAzN1x_WOV5byQNNicQSLJBNCdirjDsYiFl1k9_E8Nyx1M3nHlmCS2kriEHcRBNHHGErnrbwACzV0YTRwlCsbi7LOMvkhd1LDc42sQzQyvJV53SJ8j1JxKin6WuE1Ts1pPCWC5srR5qIZyV_jE-thVF4uQeFEF55V5uVLPk1pGiDxcrCk4mOn0K1OwzVTcPiq_A7d_92f2vdePL9BS8-i0lTbiesponRArtperZq1FBw0x1xyL4K3KQxqsefOtljTUNK3EZifhvBh8NAwckQTUyzNRjcSZ8-FeLQV9ZibPKcprKQ0piqEw_w&h=IDvW8zfu3xuOXRmrEevrxStOxVX2-5XIlz83aZ3j3ZU"
+        ]
+      },
+      "interaction": 59,
+      "method": "DELETE",
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml",
+      "status": 202,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b001b89-0000-0600-0000-6a54a2440000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"16d17884-3fa0-4e6d-ad3c-94c7869f44ec\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:00.8108449Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 3,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b001b89-0000-0600-0000-6a54a2440000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"16d17884-3fa0-4e6d-ad3c-94c7869f44ec\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:00.8108449Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 4,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b002a89-0000-0600-0000-6a54a24e0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"16d17884-3fa0-4e6d-ad3c-94c7869f44ec\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:09.6737636Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 6,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b003289-0000-0600-0000-6a54a2530000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"32824f61-ea0b-408e-830f-62c0c129df98\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:15.2302538Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 9,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b003289-0000-0600-0000-6a54a2530000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"32824f61-ea0b-408e-830f-62c0c129df98\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:15.2302538Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 10,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b003289-0000-0600-0000-6a54a2530000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"32824f61-ea0b-408e-830f-62c0c129df98\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:15.2302538Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 11,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"450bffbe-0000-0c00-0000-6a28b3700000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/davidvadas-rg/providers/Microsoft.ContainerService/fleets/davidvadas-flt\",\"identity\":{\"principalId\":\"466ab830-1109-4d54-98f1-550f58c8086d\",\"tenantId\":\"72f988bf-86f1-41af-91ab-2d7cd011db47\",\"type\":\"SystemAssigned\"},\"location\":\"northeurope\",\"name\":\"davidvadas-flt\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"b73c9e9a-edb4-4bbe-a836-ad62c339c2af\"}},\"systemData\":{\"createdAt\":\"2026-06-05T00:04:01.6808103Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-06-10T00:44:32.091801Z\",\"lastModifiedBy\":\"7319c514-987d-4e9b-ac3d-d38c4f427f4c\",\"lastModifiedByType\":\"Application\"},\"type\":\"Microsoft.ContainerService/fleets\"},{\"eTag\":\"\\\"0b003289-0000-0600-0000-6a54a2530000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"32824f61-ea0b-408e-830f-62c0c129df98\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:15.2302538Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"},{\"eTag\":\"\\\"31002624-0000-0800-0000-6a29bbe00000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/mkp-pr21-storm-test/providers/Microsoft.ContainerService/fleets/test-fleet\",\"identity\":{\"type\":\"None\"},\"location\":\"westus2\",\"name\":\"test-fleet\",\"properties\":{\"hubProfile\":{\"agentProfile\":{},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-wvyspw-aubwdj4n.hcp.westus2.azmk8s.io\",\"kubernetesVersion\":\"1.35.5\",\"portalFqdn\":\"hub-wvyspw-aubwdj4n.portal.hcp.westus2.azmk8s.io\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"e332ffaf-5668-4bc7-88f3-373caa8c7267\"}},\"systemData\":{\"createdAt\":\"2026-06-04T00:03:46.9868609Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-06-10T19:17:58.8392952Z\",\"lastModifiedBy\":\"7319c514-987d-4e9b-ac3d-d38c4f427f4c\",\"lastModifiedByType\":\"Application\"},\"type\":\"Microsoft.ContainerService/fleets\"},{\"eTag\":\"\\\"b101aaeb-0000-4d00-0000-6a3ddf290000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/ryanzhang-testgroup/providers/Microsoft.ContainerService/fleets/ryanzhang-testfleet\",\"identity\":{\"type\":\"None\"},\"location\":\"westus3\",\"name\":\"ryanzhang-testfleet\",\"properties\":{\"hubProfile\":{\"agentProfile\":{},\"apiServerAccessProfile\":{\"enablePrivateCluster\":false,\"enableVnetIntegration\":false},\"fqdn\":\"hub-vqsglb-up85jm21.hcp.westus3.azmk8s.io\",\"kubernetesVersion\":\"1.35.5\",\"portalFqdn\":\"hub-vqsglb-up85jm21.portal.hcp.westus3.azmk8s.io\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"88dcf0ea-9031-4cfe-845d-9ed711a283c7\"}},\"systemData\":{\"createdAt\":\"2025-12-24T00:55:57.3360904Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-06-26T01:50:58.197768Z\",\"lastModifiedBy\":\"7319c514-987d-4e9b-ac3d-d38c4f427f4c\",\"lastModifiedByType\":\"Application\"},\"tags\":{\"exempted_by_qi\":\"36250079\"},\"type\":\"Microsoft.ContainerService/fleets\"},{\"eTag\":\"\\\"ed003bf7-0000-3400-0000-6a54a2450000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-z642/providers/Microsoft.ContainerService/fleets/fl-l6yp\",\"identity\":{\"type\":\"None\"},\"location\":\"eastus2euap\",\"name\":\"fl-l6yp\",\"properties\":{\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"1c9bafa0-1486-4bab-baf0-1239bc7dff04\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:01.820267Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:01.820267Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 12,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/fleets?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b002d8c-0000-0600-0000-6a54a3b30000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group1\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group1\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"0019eb53-4c77-4544-9593-6e58f88beaaf\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:36:58.6400438Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:36:58.6400438Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 31,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00728c-0000-0600-0000-6a54a3d10000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"0019eb53-4c77-4544-9593-6e58f88beaaf\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:36.4743271Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:36.4743271Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 33,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00728c-0000-0600-0000-6a54a3d10000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"0019eb53-4c77-4544-9593-6e58f88beaaf\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:36.4743271Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:36.4743271Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 35,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00888c-0000-0600-0000-6a54a3e00000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"1f22e138-835f-4492-abba-1a50d11f608c\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:43.3341536Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:43.3341536Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 39,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00888c-0000-0600-0000-6a54a3e00000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"1f22e138-835f-4492-abba-1a50d11f608c\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:43.3341536Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:43.3341536Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 40,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00888c-0000-0600-0000-6a54a3e00000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"1f22e138-835f-4492-abba-1a50d11f608c\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:43.3341536Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:43.3341536Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 41,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00888c-0000-0600-0000-6a54a3e00000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Succeeded\",\"status\":{\"lastOperationId\":\"1f22e138-835f-4492-abba-1a50d11f608c\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:43.3341536Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:43.3341536Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 42,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 46,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00d88c-0000-0600-0000-6a54a40a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\",\"name\":\"upstr-000005\",\"properties\":{\"provisioningState\":\"Succeeded\",\"strategy\":{\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"type\":\"Approval\"}],\"afterStageWaitInSeconds\":3600,\"beforeGates\":[{\"displayName\":\"stage before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Tuesday\",\"startTime\":\"08:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"maxAllowedFailures\":\"0\",\"maxConcurrency\":\"100%\",\"name\":\"group1\"},{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"type\":\"Approval\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"50%\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"group2\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"7\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"stage1\"}]}},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:34.2627166Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:34.2627166Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/updateStrategies\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 48,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00d88c-0000-0600-0000-6a54a40a0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\",\"name\":\"upstr-000005\",\"properties\":{\"provisioningState\":\"Succeeded\",\"strategy\":{\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"type\":\"Approval\"}],\"afterStageWaitInSeconds\":3600,\"beforeGates\":[{\"displayName\":\"stage before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Tuesday\",\"startTime\":\"08:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"maxAllowedFailures\":\"0\",\"maxConcurrency\":\"100%\",\"name\":\"group1\"},{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"type\":\"Approval\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"50%\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"group2\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"7\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"stage1\"}]}},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:34.2627166Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:34.2627166Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/updateStrategies\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 49,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00ec8c-0000-0600-0000-6a54a4110000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004\",\"name\":\"uprn-000004\",\"properties\":{\"managedClusterUpdate\":{\"nodeImageSelection\":{\"type\":\"Latest\"},\"upgrade\":{\"kubernetesVersion\":\"1.33.0\",\"type\":\"Full\"}},\"provisioningState\":\"Succeeded\",\"status\":{\"failureCount\":0,\"nodeImageSelection\":{},\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"afterStageWaitStatus\":{\"status\":{\"state\":\"NotStarted\"},\"waitDurationInSeconds\":3600},\"beforeGates\":[{\"displayName\":\"stage before gate\",\"gateId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"status\":{\"startTime\":\"2026-07-13T08:38:41.191047734Z\",\"state\":\"Pending\"}}],\"failureCount\":0,\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"status\":{\"state\":\"NotStarted\"}}],\"failureCount\":0,\"maxAllowedFailures\":0,\"maxConcurrency\":1,\"name\":\"group1\",\"status\":{\"state\":\"NotStarted\"}},{\"afterGates\":[{\"displayName\":\"group after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"status\":{\"state\":\"NotStarted\"}}],\"failureCount\":0,\"maxAllowedFailures\":1,\"maxConcurrency\":1,\"members\":[{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"name\":\"flmc-000003\",\"status\":{\"state\":\"NotStarted\"}}],\"name\":\"group2\",\"status\":{\"state\":\"NotStarted\"}}],\"maxAllowedFailures\":1,\"maxConcurrency\":7,\"name\":\"stage1\",\"status\":{\"state\":\"Pending\"}}],\"status\":{\"startTime\":\"2026-07-13T08:38:41.175723946Z\",\"state\":\"Pending\"}},\"strategy\":{\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"type\":\"Approval\"}],\"afterStageWaitInSeconds\":3600,\"beforeGates\":[{\"displayName\":\"stage before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Tuesday\",\"startTime\":\"08:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"maxAllowedFailures\":\"0\",\"maxConcurrency\":\"100%\",\"name\":\"group1\"},{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"type\":\"Approval\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"50%\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"group2\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"7\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"stage1\"}]},\"updateStrategyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:39.1293427Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:39.1293427Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/updateRuns\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 52,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00ec8c-0000-0600-0000-6a54a4110000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004\",\"name\":\"uprn-000004\",\"properties\":{\"managedClusterUpdate\":{\"nodeImageSelection\":{\"type\":\"Latest\"},\"upgrade\":{\"kubernetesVersion\":\"1.33.0\",\"type\":\"Full\"}},\"provisioningState\":\"Succeeded\",\"status\":{\"failureCount\":0,\"nodeImageSelection\":{},\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"afterStageWaitStatus\":{\"status\":{\"state\":\"NotStarted\"},\"waitDurationInSeconds\":3600},\"beforeGates\":[{\"displayName\":\"stage before gate\",\"gateId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"status\":{\"startTime\":\"2026-07-13T08:38:41.191047734Z\",\"state\":\"Pending\"}}],\"failureCount\":0,\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"status\":{\"state\":\"NotStarted\"}}],\"failureCount\":0,\"maxAllowedFailures\":0,\"maxConcurrency\":1,\"name\":\"group1\",\"status\":{\"state\":\"NotStarted\"}},{\"afterGates\":[{\"displayName\":\"group after gate\",\"status\":{\"state\":\"NotStarted\"}}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"status\":{\"state\":\"NotStarted\"}}],\"failureCount\":0,\"maxAllowedFailures\":1,\"maxConcurrency\":1,\"members\":[{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"name\":\"flmc-000003\",\"status\":{\"state\":\"NotStarted\"}}],\"name\":\"group2\",\"status\":{\"state\":\"NotStarted\"}}],\"maxAllowedFailures\":1,\"maxConcurrency\":7,\"name\":\"stage1\",\"status\":{\"state\":\"Pending\"}}],\"status\":{\"startTime\":\"2026-07-13T08:38:41.175723946Z\",\"state\":\"Pending\"}},\"strategy\":{\"stages\":[{\"afterGates\":[{\"displayName\":\"stage after gate\",\"type\":\"Approval\"}],\"afterStageWaitInSeconds\":3600,\"beforeGates\":[{\"displayName\":\"stage before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"groups\":[{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"scheduledStartConfiguration\":{\"startDay\":\"Tuesday\",\"startTime\":\"08:00\",\"utcOffset\":\"+00:00\"},\"type\":\"ScheduledStart\"}],\"maxAllowedFailures\":\"0\",\"maxConcurrency\":\"100%\",\"name\":\"group1\"},{\"afterGates\":[{\"displayName\":\"group after gate\",\"type\":\"Approval\"}],\"beforeGates\":[{\"displayName\":\"group before gate\",\"type\":\"Approval\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"50%\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"group2\"}],\"maxAllowedFailures\":\"1\",\"maxConcurrency\":\"7\",\"memberSelector\":{\"byLabel\":\"team=fleet\"},\"name\":\"stage1\"}]},\"updateStrategyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:39.1293427Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:39.1293427Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/updateRuns\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 53,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00eb8c-0000-0600-0000-6a54a4110000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"name\":\"dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"properties\":{\"displayName\":\"stage before gate\",\"gateType\":\"ScheduledStart\",\"provisioningState\":\"Succeeded\",\"scheduledStartProperties\":{\"absoluteStartTime\":\"2026-07-20T03:00:00Z\",\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"state\":\"Pending\",\"target\":{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004\",\"updateRunProperties\":{\"name\":\"uprn-000004\",\"stage\":\"stage1\",\"timing\":\"Before\"}}},\"type\":\"Microsoft.ContainerService/fleets/gates\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 54,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates?$filter=gateType%20eq%20ScheduledStart&api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00eb8c-0000-0600-0000-6a54a4110000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"name\":\"dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"properties\":{\"displayName\":\"stage before gate\",\"gateType\":\"ScheduledStart\",\"provisioningState\":\"Succeeded\",\"scheduledStartProperties\":{\"absoluteStartTime\":\"2026-07-20T03:00:00Z\",\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"state\":\"Pending\",\"target\":{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004\",\"updateRunProperties\":{\"name\":\"uprn-000004\",\"stage\":\"stage1\",\"timing\":\"Before\"}}},\"type\":\"Microsoft.ContainerService/fleets/gates\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 55,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00eb8c-0000-0600-0000-6a54a4110000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"name\":\"dcb7cad7-cbc7-4575-bef9-9ae358bf1287\",\"properties\":{\"displayName\":\"stage before gate\",\"gateType\":\"ScheduledStart\",\"provisioningState\":\"Succeeded\",\"scheduledStartProperties\":{\"absoluteStartTime\":\"2026-07-20T03:00:00Z\",\"startDay\":\"Monday\",\"startTime\":\"03:00\",\"utcOffset\":\"+00:00\"},\"state\":\"Pending\",\"target\":{\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004\",\"updateRunProperties\":{\"name\":\"uprn-000004\",\"stage\":\"stage1\",\"timing\":\"Before\"}}},\"type\":\"Microsoft.ContainerService/fleets/gates\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 56,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/gates/dcb7cad7-cbc7-4575-bef9-9ae358bf1287?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 58,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateRuns/uprn-000004?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00078d-0000-0600-0000-6a54a41c0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000006\",\"name\":\"aup-000006\",\"properties\":{\"channel\":\"Rapid\",\"disabled\":true,\"longTermSupport\":false,\"nodeImageSelection\":{\"type\":\"Latest\"},\"provisioningState\":\"Succeeded\",\"updateStrategyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:52.4385679Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:52.4385679Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/autoUpgradeProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 61,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000006?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b000a8d-0000-0600-0000-6a54a41d0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000007\",\"name\":\"aup-000007\",\"properties\":{\"channel\":\"TargetKubernetesVersion\",\"disabled\":false,\"longTermSupport\":true,\"provisioningState\":\"Succeeded\",\"targetKubernetesVersion\":\"1.30\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:53.8857301Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:53.8857301Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/autoUpgradeProfiles\"}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 62,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000007?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"value\":[{\"eTag\":\"\\\"0b00078d-0000-0600-0000-6a54a41c0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000006\",\"name\":\"aup-000006\",\"properties\":{\"channel\":\"Rapid\",\"disabled\":true,\"longTermSupport\":false,\"nodeImageSelection\":{\"type\":\"Latest\"},\"provisioningState\":\"Succeeded\",\"updateStrategyId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:52.4385679Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:52.4385679Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/autoUpgradeProfiles\"},{\"eTag\":\"\\\"0b000a8d-0000-0600-0000-6a54a41d0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000007\",\"name\":\"aup-000007\",\"properties\":{\"channel\":\"TargetKubernetesVersion\",\"disabled\":false,\"longTermSupport\":true,\"provisioningState\":\"Succeeded\",\"targetKubernetesVersion\":\"1.30\"},\"systemData\":{\"createdAt\":\"2026-07-13T08:38:53.8857301Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:38:53.8857301Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/autoUpgradeProfiles\"}]}",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 63,
+      "method": "GET",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 65,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 204,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/autoUpgradeProfiles/aup-000006?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "",
+      "headers": {
+        "content-type": [
+          "application/json; charset=utf-8"
+        ]
+      },
+      "interaction": 66,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 200,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/updateStrategies/upstr-000005?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b00238d-0000-0600-0000-6a54a42b0000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003\",\"name\":\"flmc-000003\",\"properties\":{\"clusterResourceId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourcegroups/cli-000001/providers/Microsoft.ContainerService/managedClusters/flmc-000003\",\"group\":\"group2\",\"labels\":{\"fleet.azure.com/cluster-name\":\"flmc-000003\",\"fleet.azure.com/group\":\"group2\",\"fleet.azure.com/location\":\"westcentralus\",\"fleet.azure.com/member-name\":\"flmc-000003\",\"fleet.azure.com/resource-group\":\"cli-000001\",\"fleet.azure.com/subscription-id\":\"d712bfad-d238-486f-8f1b-bf61a831b712\",\"team\":\"fleet\"},\"provisioningState\":\"Leaving\",\"status\":{\"lastOperationId\":\"14f7a293-1a4c-4e63-881d-a2f5464a6b4c\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:37:43.3341536Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:37:43.3341536Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"type\":\"Microsoft.ContainerService/fleets/members\"}",
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operations/14f7a293-1a4c-4e63-881d-a2f5464a6b4c?api-version=2016-03-30&t=639195287478145906&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=Hv1IqtTselS3IhAwQ2yrrtRkfEibVNYNX6e7AuzNToPw7iXYgKDStIVXk4KpLea_b_GCweKQLzRv5oJJYJQfgXvd_7Y2YSTAaNe_Sm45I2tieJzOZ-IGzvG240XxDanbdaTe6ZSS_bPhJSIRr1r8chPY0lnjFazTiz2CiPRS1ojOpJsrS9EJ3m1UYiSEY7WBzUbzGHS65j1G8XuS0X6-l3mbXlxyE7lmtefjrjvEQreDkIfBGsZhO_J-AIjogbtqo38X94A-L3fUpipiM-tnheDZ8xG6nt8Rafqd5FFU4JHgg3D89Ob8bmqZuS1C9df1nM-6ni2VDSQkD_usWvqIIQ&h=WxMs-t53sj5a6yjLJ4r9MW7_DZdrVTVjIP--FrYpU5I"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operationresults/14f7a293-1a4c-4e63-881d-a2f5464a6b4c?api-version=2016-03-30&t=639195287478458388&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=SsG1rFJBOiIIKDMrMRHTAkQ8XtjybQFx6kM4T8l-MQVZDcElJUix6hu3ftXnH39yGOUPuIrVgKvA6g5flL_gY4Acn1DGnIqYti7jNvhPgNVbbezsm3fBCBHn6Ooza9mFK5ZDDIdBSHY8FqQU_t4I4wJWAHQlhc9GYdBcc8FhAD3Q6bhBHmySOI-58YCq3LsoCUjYHsCNyVIw2c4cGFi0ZUkoMIg26g7eHoDkFZTqkTAw8O14rk23BP2YLeYwzRMQSMJRkk_zXnvrMY9QRTm9E6qRj3xKdv0YmKpH_QfI07a3aiFoDn3sLzOelMLfycyb5P2vxkOe1FEDB8DwjwbykA&h=AGQtxEYIAE0ZJj2dYsfxHfwKEy6HbWeC1lTaC_WAsi8"
+        ]
+      },
+      "interaction": 67,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 202,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002/members/flmc-000003?api-version=2026-06-02-preview"
+    },
+    {
+      "body": "{\"eTag\":\"\\\"0b006d8d-0000-0600-0000-6a54a4500000\\\"\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002\",\"identity\":{\"type\":\"None\"},\"location\":\"westcentralus\",\"name\":\"fl-000002\",\"properties\":{\"provisioningState\":\"Deleting\",\"status\":{\"lastOperationId\":\"aa2102ff-c2da-4ae2-87fa-e03549b73d37\"}},\"systemData\":{\"createdAt\":\"2026-07-13T08:31:00.8108449Z\",\"createdBy\":\"test@example.com\",\"createdByType\":\"User\",\"lastModifiedAt\":\"2026-07-13T08:31:15.2302538Z\",\"lastModifiedBy\":\"test@example.com\",\"lastModifiedByType\":\"User\"},\"tags\":{\"foo\":\"doo\"},\"type\":\"Microsoft.ContainerService/fleets\"}",
+      "headers": {
+        "azure-asyncoperation": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operations/aa2102ff-c2da-4ae2-87fa-e03549b73d37?api-version=2016-03-30&t=639195287845525826&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=FtwW2Jwlr7y8OCY1Xndr9x4qgK_fV6E-n9rBWZuL9cf_IEZxw-cprWLm621oOO18E7JnPq8l6XYKQFXtUxpDtQJlOcAffDNWTOcUT7qwpxV1QjQX2b5XCVzIEFtSFAWYbaOkz7aRjvkFsQdgVRWH132bRXpdS7UkGrKzTdIIDmnXUy2Gyp59TpeeutguWWghANcHJ5VLx4kTu_KEXonIkwhloAdrJv2IRdHs_1ibaLGjHo0pFLBx6qY5D2opOfR6ptOO-Ga7ods9oYkAZniysFMnhAQ7FiezwvGSeXZ9nxmZw3bCZBdGxcWyTzNPp_babSlSZ3cBwhuYLT_bEFWb9g&h=zonMgzckG6WKEl-KfKs1Et73Jlv2FghNWGsZH30xUBs"
+        ],
+        "content-type": [
+          "application/json; charset=utf-8"
+        ],
+        "location": [
+          "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ContainerService/locations/westcentralus/operationresults/aa2102ff-c2da-4ae2-87fa-e03549b73d37?api-version=2016-03-30&t=639195287845682077&c=MIIHlDCCBnygAwIBAgIQdihCASSXG-dKfI_D-VVlqTANBgkqhkiG9w0BAQsFADA2MTQwMgYDVQQDEytDQ01FIEcxIFRMUyBSU0EgMjA0OCBTSEEyNTYgMjA0OSBFVVMyIENBIDAxMB4XDTI2MDcwNjE5MTk1OVoXDTI3MDEwMjAxMTk1OVowQDE-MDwGA1UEAxM1YXN5bmNvcGVyYXRpb25zaWduaW5nY2VydGlmaWNhdGUubWFuYWdlbWVudC5henVyZS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDCzjzGCVexW-mQdIfXmvE0Vt_P4-9YdQhyjMqo7G6WcBLzwzBfqXK0uIcnMBRepVKLYh_mPxAV2P2GCfKEZbu_KmSa0zuX4fJ1qZo2za_48297xAhNszXRLP4zIi66J_gcILVC4uuA8KDZdsN34MmmaNato73BvNvXzzSHliKdZFig5HWRCYUHLudu_K-iZXTmHO1-u4BDHSY2xEcO2Wi5tGJ1AZ4fgyKCSxFulPoxqtClK1Ek6Mpa2sMjLT2pr-ffHy0NipMNi07iHdm9n4ZRkBw18gJOeF1ShpgcOAFrfLaag-2rp7W4nVBHuyY--Dtf50SIb-FsnYfuVqCBWB-FAgMBAAGjggSSMIIEjjCBnQYDVR0gBIGVMIGSMAwGCisGAQQBgjd7AQEwZgYKKwYBBAGCN3sCAjBYMFYGCCsGAQUFBwICMEoeSAAzADMAZQAwADEAOQAyADEALQA0AGQANgA0AC0ANABmADgAYwAtAGEAMAA1ADUALQA1AGIAZABhAGYAZgBkADUAZQAzADMAZDAMBgorBgEEAYI3ewMCMAwGCisGAQQBgjd7BAIwDAYDVR0TAQH_BAIwADAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDgYDVR0PAQH_BAQDAgWgMB0GA1UdDgQWBBRXALftRFmjY1LQNbXJ0uYzMnCCqzAfBgNVHSMEGDAWgBT87D7bqnwfgh4FuKEG-UPnArMKuTCCAbIGA1UdHwSCAakwggGlMGmgZ6BlhmNodHRwOi8vcHJpbWFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwa6BpoGeGZWh0dHA6Ly9zZWNvbmRhcnktY2RuLnBraS5jb3JlLndpbmRvd3MubmV0L2Vhc3R1czIvY3Jscy9jY21lZWFzdHVzMnBraS9jY21lZWFzdHVzMmljYTAxLzQzL2N1cnJlbnQuY3JsMFqgWKBWhlRodHRwOi8vY3JsLm1pY3Jvc29mdC5jb20vZWFzdHVzMi9jcmxzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvNDMvY3VycmVudC5jcmwwb6BtoGuGaWh0dHA6Ly9jY21lZWFzdHVzMnBraS5lYXN0dXMyLnBraS5jb3JlLndpbmRvd3MubmV0L2NlcnRpZmljYXRlQXV0aG9yaXRpZXMvY2NtZWVhc3R1czJpY2EwMS80My9jdXJyZW50LmNybDCCAbcGCCsGAQUFBwEBBIIBqTCCAaUwbAYIKwYBBQUHMAKGYGh0dHA6Ly9wcmltYXJ5LWNkbi5wa2kuY29yZS53aW5kb3dzLm5ldC9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBuBggrBgEFBQcwAoZiaHR0cDovL3NlY29uZGFyeS1jZG4ucGtpLmNvcmUud2luZG93cy5uZXQvZWFzdHVzMi9jYWNlcnRzL2NjbWVlYXN0dXMycGtpL2NjbWVlYXN0dXMyaWNhMDEvY2VydC5jZXIwXQYIKwYBBQUHMAKGUWh0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9lYXN0dXMyL2NhY2VydHMvY2NtZWVhc3R1czJwa2kvY2NtZWVhc3R1czJpY2EwMS9jZXJ0LmNlcjBmBggrBgEFBQcwAoZaaHR0cDovL2NjbWVlYXN0dXMycGtpLmVhc3R1czIucGtpLmNvcmUud2luZG93cy5uZXQvY2VydGlmaWNhdGVBdXRob3JpdGllcy9jY21lZWFzdHVzMmljYTAxMA0GCSqGSIb3DQEBCwUAA4IBAQAZrjmWibEuK6QF0t_B1WxpWLqYTQIVZbMw_NyEFtCc_8S5LYZrHcsmMsKZtXs7xqOJiF1TIettwqIw_qlbKRXIQohsTkAni2agjO-3qncnQkDsxz4WyJ0gXt7kfy-kEn9MQRaKjnnaXjhKb3sEpluTCbYgGO6F4Cx3q2vlJVPqlSdRys7ZivOGAtX1woiYL14Oc3MsaafYpdQVaWZ_pX3ZzF2UIq4udNkmPInHLdrIi5qfOi4nQy_XShbwqfvhz4mcqaooZQYbFX57jgSSBbrGsBLpe9SZYEOzi0p11hbbbKVre54QjlO8hGAiyPGTkW28VeoP4NXb9gdJ1-CKzw7l&s=uaQjugqWcGqesnblIzZKMyEQtp5uL991bj2jJndpM6hJG43S_7AO7hjZ9LxXEdVMl3wsj38pcFTGAAB6bUZrN7wabqA3HUuPnzDF0ozMYB-LtZMvTVRmxmU-4CbpnandPtzbAcl4Y74g-ZLLIIiHktS7nh5CPqQmp9MlQcYcW4HUTbgw3Ocdf891_l6hR35nNzVZuXjJ3o7PvTNgfMJsZu2UuJW0SJxwSXjmterhDcQvRgwVBGsRFs8SmSNs6vaTSpWkjCkbPLD605fWQoRFX1FNwKHzes9_4X6Y76AcNxpRm1xeYyYwli549KbP0sdc1TmNHxfRc8_qwmhpxFjdkQ&h=0kjAkhgNroU0m1_OfDeES4N_HjXeCtxRIjmB7qoqBs0"
+        ]
+      },
+      "interaction": 71,
+      "method": "DELETE",
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml",
+      "status": 202,
+      "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/cli-000001/providers/Microsoft.ContainerService/fleets/fl-000002?api-version=2026-06-02-preview"
+    }
+  ],
+  "sources": [
+    {
+      "source_sha256": "c97ce44742df960e036247d5393c9afdeb7a15610774b187471414b4addc3f66",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubful.yaml"
+    },
+    {
+      "source_sha256": "aaa0b27ff685026ef681f58b3c02cfa52daf262d5c8e8e71ff8a99ed06fe41b0",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/a20385bffcbb7403846af8a65dbfcaf96c717e4d/src/fleet/azext_fleet/tests/latest/recordings/test_fleet_hubless.yaml"
+    }
+  ]
+}
