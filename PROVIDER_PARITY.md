@@ -2791,3 +2791,44 @@ background evidence only, not acceptance evidence for this work.
   passed (Azure 196.688s); Fleet, AKS and native target-deletion tests passed
   under `-race` (26.365s); repository-wide `go vet ./...`, all five offline
   Azure catalog-sync tests and diff checks passed.
+
+### Fleet independent child cleanup and persistent Stop/Delete phases
+
+- Enabled native cleanup for Fleet members, managed namespaces, update runs,
+  update strategies and auto-upgrade profiles. All requests bind the retained
+  stable `2026-06-01` operations and current native `If-Match` ETags. Catalog
+  selection, retained resource bindings and all five specs agree; Azure now has
+  393 types/specs and 365 native cleanup rules, with unchanged operation count.
+- Update runs in Running/Pending/Skipped issue native Stop once. Existing Stopping runs
+  are observed, and no run is deleted before native terminal status. The Stop
+  operation can finish while the run is still Stopping. Each cleanup phase has
+  a signed, serializable receipt bound to its reviewed request, original and
+  current operation, polling mode and successor. DELETE receives a fresh phase
+  receipt; poll completion or mutation 404 still requires native own-resource
+  and reviewed Gate readback. Request/receipt changes fail before API access.
+- Kept the complete private configuration, resource-group/Fleet context,
+  protection, lock and incoming-dependency checks before mutation. Gate
+  approval/skip progress is excluded from authored configuration, while its
+  target and subtype settings stay bound. Gate inventory uses the existing
+  controller-only semantics so a reviewed Run can remove it; it still has no
+  DELETE operation. Known omitted Gates are reconciled by individual GETs.
+- Managed namespace Keep/Delete policies are preserved, without policy updates
+  or Kubernetes calls. The stable namespace GET example omits its optional
+  provisioningState; that exact response remains supported with configuration
+  and ETag verification. Documented the different workload consequences and
+  native child deletion/Stop permission requirements in both languages.
+- Added registered-driver protocol tests for native terminal states, delayed
+  Stop, async polling, phase recovery, conditional conflicts, changed private
+  configuration/ownership, protected resources, locks, missing ETags, source
+  omissions/403/404, mutation-versus-resource absence and residual Gates.
+  The real SQLite scan/graph/plan/execution test creates five ordered child
+  steps and one Run-owned Gate impact. Restarted workers preserve phases,
+  send each mutation once, and only close individually verified absences.
+- Fleet root cleanup, managed Hub reconciliation and Arc-enabled membership
+  remain unfinished. This checkpoint does not close the mapped Fleet gap, the
+  other 26 mapped Azure gaps, or any of the eight overall acceptance criteria.
+- Final verification: repository-wide `go test ./...` passed (Azure 198.116s),
+  Fleet/AKS/native-target race tests passed (44.358s), repository-wide `go vet
+  ./...` passed, and all five Azure catalog synchronization tests passed. The
+  native lifecycle state check includes Skipped -> Stop -> Stopped, following
+  the published state-transition table rather than treating Skipped as terminal.

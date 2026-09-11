@@ -44,6 +44,13 @@ func (a *monitorTargetAction) resultForInner(request contracts.ActionRequest, re
 			return contracts.ActionResult{}, err
 		}
 	}
+	if fleet, ok := a.inner.(*fleetAction); ok {
+		innerRequest := request
+		innerRequest.PrerequisiteDeletions = nil // This wrapper binds and verifies their full original request.
+		if err := fleet.verifyPhase(innerRequest, result); err != nil {
+			return contracts.ActionResult{}, err
+		}
+	}
 	return result, nil
 }
 
@@ -61,6 +68,13 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		identity := request
 		identity.PrerequisiteDeletions = nil // This wrapper authenticates the prerequisites below.
 		if err := diagnostic.identity(identity); err != nil {
+			return filtered, nil, err
+		}
+	}
+	if fleet, ok := a.inner.(*fleetAction); ok {
+		identity := request
+		identity.PrerequisiteDeletions, identity.ExecutionResult = nil, nil
+		if err := fleet.identity(identity); err != nil {
 			return filtered, nil, err
 		}
 	}

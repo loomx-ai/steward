@@ -65,9 +65,9 @@ The native lifecycle distinctions driving the subsequent registered integration:
   namespaces and resources. Both policies delete associated Azure RBAC
   assignments. A policy change therefore changes the reviewed configuration.
 - An omitted propagation policy deploys only to the hub. An explicit placement
-  policy can select fixed members or use scheduling rules. The latter remains
-  an explicit unresolved member observation until native membership/placement
-  has been checked; it cannot be treated as an empty fixed selection.
+  policy can select fixed members or use scheduling rules. The latter conservatively
+  blocks deletion of members in the same Fleet until the namespace is removed;
+  it cannot be treated as an empty fixed selection.
 - [Hub and node resources](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle)
   have separate managed resource groups. Group names alone are not ownership
   evidence. The native Fleet response exposes no managed resource-group ARM ID.
@@ -86,8 +86,9 @@ referenced run. Reverse Fleet indexes also guard deletion of AKS clusters,
 subnets, user-assigned identities, strategies and members. Dynamic namespace
 placement conservatively blocks removal of any member of the same Fleet until
 the namespace is explicitly removed; it does not assert actual placement.
-Fleet cleanup, managed Hub reconciliation and execution recovery are still
-being implemented, and all seven kinds remain non-actionable.
+Five independent child kinds now have registered native cleanup drivers.
+Fleet root cleanup remains disabled pending managed Hub reconciliation; Gates
+have no independent action and are removed with their reviewed owning run.
 
 `cli-deletion-polls.json` retains 13 representative GET responses belonging to
 the five asynchronous Fleet deletions in those same immutable recordings. For
@@ -109,3 +110,23 @@ of logs. Additional protocol tests cover changed scope/version/operation IDs,
 malformed or failed status envelopes, expired operation URLs, refreshed signed
 successors and serialized recovery receipts. Operation success or operation 404
 only permits resource readback; it does not establish resource absence.
+
+`TestFleetUpdateRunStopDeleteAndRecovery` separates native Stop and DELETE
+receipts, including HTTP 200 with `Stopping`, HTTP 202 polling, an existing
+stop, the documented Skipped-to-Stopped transition, and native terminal states. It serializes and restores every phase,
+retains the original operation identity, clears prior phase polling successors,
+and checks run and Gate residuals independently. Both mutations use the latest
+verified native ETag as `If-Match`, as declared by the pinned operations.
+Additional tests cover Keep/Delete namespace policies, conditional conflicts,
+permission failures, own-resource versus mutation 404, incomplete dependencies,
+changed context and private configuration, unknown status, and tampered phase
+or request receipts. Gate approval/skip progress may change without changing
+its private ownership proof; target and authored subtype settings stay bound.
+
+`TestFleetRegisteredCleanupWorkerAndPhaseRecovery` uses the actual registered
+scan, graph, cleanup planner, SQLite repository and execution workers. It
+requires explicit namespace-before-member and profile-before-strategy deletion,
+creates five native steps and one delegated Gate impact, resumes the run's Stop
+and DELETE phases after worker/client recreation, and only closes the Gate after
+its own GET confirms absence. A final scan retains only the Fleet root.
+These are protocol fixture and persistence tests, not live Azure execution.

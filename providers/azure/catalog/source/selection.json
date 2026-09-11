@@ -9430,7 +9430,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.FleetMembers_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.FleetMembers_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet"
       ]
@@ -9446,7 +9448,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet"
       ]
@@ -9462,7 +9466,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.UpdateRuns_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.UpdateRuns_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet"
       ]
@@ -9478,7 +9484,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet"
       ]
@@ -9494,7 +9502,9 @@
       "read_operations": [
         "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
       ]

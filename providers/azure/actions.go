@@ -60,6 +60,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if insightsWorkbookKind(kind.NativeType) != "" {
 		return newInsightsWorkbookAction(c, id, value)
 	}
+	if fleetKind(kind.NativeType).kind != "" {
+		return newFleetAction(c, id, value, kind)
+	}
 	if isBatchType(kind.NativeType) {
 		if value.Identity.ConnectionID != id {
 			return nil, serviceDenied("batch_action_connection_changed")

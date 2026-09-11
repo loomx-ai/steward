@@ -52,6 +52,16 @@ fields:
     type: string
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.ContainerService.FleetMembers_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.ContainerService.FleetMembers_Get
+      itemsPath: $
+      identityPath: id
 relationships:
 - type: uses
   targetType: Microsoft.ContainerService/fleets

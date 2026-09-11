@@ -157,9 +157,12 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	normalized["arm_parameters"] = parameters
 	normalized[fleetConfigurationProof] = c.privateConfiguration(fleetSnapshot(kind, raw))
 	normalized[fleetContextProof] = c.privateConfiguration(context)
-	// Registration remains inventory-only until the native lifecycle driver is
-	// available. A group deletion must not bypass that missing review boundary.
-	reason := "azure_fleet_lifecycle_pending"
+	// Fleet root still requires managed Hub reconciliation. Its independent
+	// children use their native cleanup drivers; Gates follow their owning run.
+	reason := ""
+	if kind == fleetType {
+		reason = "azure_fleet_lifecycle_pending"
+	}
 	if kind == fleetGateType {
 		reason = "azure_fleet_gate_requires_update_run"
 	}
@@ -179,7 +182,10 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	if locked(id, locks) {
 		reason = "azure_management_lock"
 	}
-	normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = true, reason
+	normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "" && !controllerOnlyReason(reason), reason
+	if controllerOnlyReason(reason) {
+		normalized["cleanup_controller_only"] = true
+	}
 	refs, err := fleetCurrentReferences(kind, raw)
 	if err != nil {
 		return contracts.InventoryItem{}, err
@@ -207,7 +213,7 @@ func (r *Runtime) fleetInventoryItem(c *client, kind string, raw, parent, group 
 	if location == "global" {
 		scope = contracts.InventoryScope{Kind: asset.ScopeGlobal, NativeID: c.subscription + "/global", Name: "Global", Location: location}
 	}
-	actionable := false
+	actionable := reason == ""
 	return contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Actionable: &actionable, Scope: scope, Name: last(id), State: text(object(raw["properties"])["provisioningState"]), Location: location, Tags: tags, Normalized: normalized, Raw: safe, NativeAliases: []string{text(raw["id"]), id}, NetworkReferences: network}, nil
 }
 

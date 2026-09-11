@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "6dd25e63e6a856825d5320b74d70611fcf1932401e42d7bd6d7dfd4dd9ca867e",
+    "checksum": "35b739a7313527c1edd13af37277adb18cfada15851df78408a92f646a309751",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "6924f30eafb5a9e8375e521ff62b13a10fe0b55b5a646462f1ba4eff28a2a936",
+  "content_checksum": "4960db88d0275382a1bca41afd1579bc448eb7d9a0b36db33aabab450dfc25ce",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -115411,6 +115411,9 @@
         "read_operations": [
           "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
         ]
@@ -115445,6 +115448,9 @@
         "read_operations": [
           "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet"
         ]
@@ -115461,6 +115467,9 @@
         "collection": "members",
         "read_operations": [
           "Azure.Microsoft.ContainerService.FleetMembers_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet"
@@ -115479,6 +115488,9 @@
         "read_operations": [
           "Azure.Microsoft.ContainerService.UpdateRuns_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet"
         ]
@@ -115495,6 +115507,9 @@
         "collection": "updateStrategies",
         "read_operations": [
           "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet"

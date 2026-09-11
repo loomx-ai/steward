@@ -93,16 +93,21 @@ func (c *client) fleetIncarnation(value asset.Asset, raw map[string]any) error {
 // have their own region. The group and Fleet snapshots bind protection and
 // ownership context without storing annotations or authored policy contents.
 func (c *client) fleetContext(ctx context.Context, value asset.Asset, raw map[string]any) error {
+	_, err := c.fleetVerifiedContext(ctx, value, raw)
+	return err
+}
+
+func (c *client) fleetVerifiedContext(ctx context.Context, value asset.Asset, raw map[string]any) (map[string]any, error) {
 	group, err := c.workbookGroup(ctx, value.Identity.NativeID)
 	if err != nil {
-		return contracts.DependencyReadError(err)
+		return nil, contracts.DependencyReadError(err)
 	}
 	context := map[string]any{"group": insightsWorkspaceResourceSnapshot(group)}
 	location := resourceRegion(raw)
 	if parent := fleetParent(value.Identity.NativeID, value.Identity.NativeType); parent != "" {
 		live, err := c.fleetRead(ctx, fleetType, parent)
 		if err != nil {
-			return contracts.DependencyReadError(err)
+			return nil, contracts.DependencyReadError(err)
 		}
 		context["parent"] = fleetSnapshot(fleetType, live.data)
 		if value.Identity.NativeType != fleetNamespaceType {
@@ -110,9 +115,9 @@ func (c *client) fleetContext(ctx context.Context, value asset.Asset, raw map[st
 		}
 	}
 	if value.Location != location || text(value.Normalized[fleetContextProof]) != c.privateConfiguration(context) {
-		return serviceDenied("fleet_context_changed")
+		return nil, serviceDenied("fleet_context_changed")
 	}
-	return nil
+	return context, nil
 }
 
 // LIST omission is not absence. Reconcile reviewed native IDs with their own

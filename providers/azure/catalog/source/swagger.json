@@ -191043,7 +191043,9 @@
       "nativeType": "Microsoft.ContainerService/fleets/members",
       "rest": {
         "collection": "members",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetMembers_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetMembers_ListByFleet"
         ],
@@ -191061,7 +191063,9 @@
       "nativeType": "Microsoft.ContainerService/fleets/managedNamespaces",
       "rest": {
         "collection": "managedNamespaces",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetManagedNamespaces_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetManagedNamespaces_ListByFleet"
         ],
@@ -191079,7 +191083,9 @@
       "nativeType": "Microsoft.ContainerService/fleets/updateRuns",
       "rest": {
         "collection": "updateRuns",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.UpdateRuns_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.UpdateRuns_ListByFleet"
         ],
@@ -191097,7 +191103,9 @@
       "nativeType": "Microsoft.ContainerService/fleets/updateStrategies",
       "rest": {
         "collection": "updateStrategies",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.FleetUpdateStrategies_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.FleetUpdateStrategies_ListByFleet"
         ],
@@ -191115,7 +191123,9 @@
       "nativeType": "Microsoft.ContainerService/fleets/autoUpgradeProfiles",
       "rest": {
         "collection": "autoUpgradeProfiles",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ContainerService.AutoUpgradeProfiles_ListByFleet"
         ],

@@ -783,7 +783,13 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 	verifiedGroups := map[string]bool{}
 	var verify func(asset.Asset, map[string]any) error
 	verify = func(parent asset.Asset, raw map[string]any) error {
-		children, err := a.client.plannedServiceChildren(ctx, parent, raw)
+		var known []asset.Asset
+		if fleetKind(parent.Identity.NativeType).kind != "" {
+			for _, impact := range impacts {
+				known = append(known, impact.Asset)
+			}
+		}
+		children, err := a.client.plannedServiceChildren(ctx, parent, raw, known...)
 		if err != nil {
 			return err
 		}
@@ -798,6 +804,11 @@ func (a *action) serviceCascadePreflight(ctx context.Context, request contracts.
 			visited[child.id] = true
 			if err := a.client.servicePrivateIncarnation(impact.Asset, child.data); err != nil {
 				return err
+			}
+			if fleetKind(child.kind).kind != "" {
+				if err := a.client.fleetContext(ctx, impact.Asset, child.data); err != nil {
+					return err
+				}
 			}
 			if err := serviceIncarnation(impact.Asset, child.data); err != nil {
 				return err

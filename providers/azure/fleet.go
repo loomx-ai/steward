@@ -164,6 +164,10 @@ func fleetSnapshot(kind string, raw map[string]any) map[string]any {
 	delete(props, "provisioningState")
 	if kind != fleetGateType {
 		delete(props, "status")
+	} else {
+		// Approval/skip progress does not change the run's ownership of this
+		// gate. Keep its target and subtype configuration in the digest.
+		delete(props, "state")
 	}
 	if kind == fleetProfileType {
 		delete(props, "autoUpgradeProfileStatus")

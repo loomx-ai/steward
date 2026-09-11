@@ -18,6 +18,14 @@ import (
 )
 
 func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
+	testFleetRegisteredWorkers(t, false)
+}
+
+func TestFleetRegisteredCleanupWorkerAndPhaseRecovery(t *testing.T) {
+	testFleetRegisteredWorkers(t, true)
+}
+
+func testFleetRegisteredWorkers(t *testing.T, cleanup bool) {
 	ctx := t.Context()
 	f := newFleetFixture(t)
 	r := f.runtime
@@ -156,6 +164,13 @@ func TestFleetRegisteredScanWorkerGraphAndKnownAbsence(t *testing.T) {
 		} else if binding.ControllerAssetID != byKind[fleetType].ID || binding.CleanupPolicy != graph.CleanupDirect {
 			t.Fatal("persisted Fleet bypassed a child's independent cleanup", binding)
 		}
+	}
+	if cleanup {
+		testFleetCleanupWorkers(t, f, repository, registry, values)
+		if remaining := scan(fleetTestKinds, false); len(remaining) != 1 || remaining[0].Identity.NativeType != fleetType {
+			t.Fatal("post-cleanup Fleet scan lost native tombstones or the retained Fleet", remaining)
+		}
+		return
 	}
 	// Continue the inventory-only absence scenarios below; they intentionally
 	// leave other stale live children after the parent is removed externally.

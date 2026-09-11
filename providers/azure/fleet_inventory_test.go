@@ -123,7 +123,8 @@ func TestFleetRegisteredInventoryKeepsNativeContextAndReferences(t *testing.T) {
 			if kind == fleetNamespaceType {
 				location = "eastus"
 			}
-			if item.Location != location || item.Scope.Kind != asset.ScopeRegion || item.Actionable == nil || *item.Actionable || item.Normalized["cleanup_protected"] != true {
+			actionable := kind != fleetType && kind != fleetGateType
+			if item.Location != location || item.Scope.Kind != asset.ScopeRegion || item.Actionable == nil || *item.Actionable != actionable || item.Normalized["cleanup_protected"] != (kind == fleetType) || kind == fleetGateType && item.Normalized["cleanup_controller_only"] != true {
 				t.Fatal("Fleet native context lost", item)
 			}
 			for _, field := range []string{fleetConfigurationProof, fleetContextProof, fleetReferencesProof} {
