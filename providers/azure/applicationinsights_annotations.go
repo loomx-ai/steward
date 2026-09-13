@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if hybridComputeKind(kind) != "" {
+		return hybridComputeSource
+	}
 	if strings.EqualFold(kind, defenderPricingType) {
 		return defenderInventorySource
 	}

@@ -32,7 +32,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 429 resource types; 400 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 434 resource types; 400 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -51,6 +51,7 @@ Steward recognizes 429 resource types; 400 have native cleanup actions, includin
 | Data Factory | Factories, pipelines, datasets, dataflows, linked services, credentials, triggers, CDC, global parameters, integration runtimes/nodes and private connections | Reviewed factory cascades; runtime and work preparation; managed virtual networks require factory cleanup |
 | Data Migration | Classic services, projects, tasks/files and service tasks; SQL/Mongo migration services and migrations to SQL or Cosmos DB targets | Reviewed children and migration prerequisites; cancellation and runtime-node preparation before deletion |
 | Defender for Cloud | Subscription protection plans and supported resource-level plan states | Read-only service state, coverage, extensions and inheritance |
+| Azure Arc | Machines, extensions, Run Commands, license profiles and shared ESU licenses | Native inventory and references; cleanup is not yet available |
 | Stream Analytics | Jobs, inputs, outputs, functions, transformations, clusters and cluster private endpoints | Job definitions follow the job; associated cluster jobs require explicit selection or prior removal |
 | Foundry / Cognitive Services | Accounts, deployments, projects, agents, connections, capability hosts, managed networks, content filters and commitment plans | Deployments and reviewed dependencies precede account soft deletion; no purge |
 | Azure AI Search | Services, private endpoint connections, shared private links and network perimeter configuration views | Reviewed links precede service deletion; perimeter views require their service |
@@ -84,6 +85,10 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
 ## Cleanup protections
+
+Azure Arc inventory reads native machines and licenses, plus extensions, Run Commands and license profiles under each machine. Grant `Microsoft.HybridCompute/machines/read`, `Microsoft.HybridCompute/machines/extensions/read`, `Microsoft.HybridCompute/machines/runCommands/read`, `Microsoft.HybridCompute/machines/licenseProfiles/read` and `Microsoft.HybridCompute/licenses/read` for the selected types. Child scans require subscription-wide machine list/read access. Known resources and omitted parents are reread individually; incomplete or denied reads fail the scan. Scripts, extension settings, protected parameters and agent proxy settings stay out of public inventory and API logs.
+
+Arc cleanup is still being implemented and is unavailable in Steward. Cloud registration deletion does not establish that the external server or local agent was removed. Deleting a running Run Command terminates its script; a shared ESU license reference does not authorize deleting that license. See [agent removal guidance](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent). Current tests cover protocol behavior and SQLite scan/graph workers, not live agent removal.
 
 Defender for Cloud plans show the native Free/Standard tier, sub-plan, trial time, enablement time, extension status, inheritance and resource coverage. A Standard subscription plan does not mean every resource is covered: resource overrides may differ. Inventory reads subscription plans, VM/VMSS/Arc machine scopes, and the Containers plan on AKS and ACR. Grant subscription identity, native parent list/read and `Microsoft.Security/pricings/read` access across those scopes. Known plans are reread individually; parent or list disappearance alone does not prove plan absence.
 

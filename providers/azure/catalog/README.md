@@ -36,7 +36,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 429 current resource rules discover through native product APIs. Stream
+All 434 current resource rules discover through native product APIs. Stream
 Analytics transformations use an explicitly expanded job GET because Azure has
 no transformation list operation; Data Factory nodes use their runtime’s native
 GetStatus collection. Defender uses native plan Lists and the named Containers
@@ -80,7 +80,7 @@ families are still incomplete; these protocol checks do not close publication
 or independent emulator acceptance.
 
 Arc HybridCompute adds 16 supporting operations to its two existing machine
-reads, without adding a resource rule or cleanup action. The
+reads, with five inventory rules and no cleanup actions yet. The
 [Arc evidence](../fixtures/hybridcompute/README.md) preserves 19 unchanged
 2025-01-13 examples, enumerates native schema discrepancies and replays 25
 original CLI transport interactions from 2026-07-15. The different recording

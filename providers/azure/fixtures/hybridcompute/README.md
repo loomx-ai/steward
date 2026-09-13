@@ -1,9 +1,10 @@
 # Azure Arc HybridCompute contract evidence
 
-This is the native API and transport foundation for the unfinished Arc machine
-family. It does **not** add an Arc inventory rule, cleanup driver, lifecycle
-plan or restored execution worker. The ENS mapping remains pending: deleting
-an Arc cloud resource is not proof that the external server has been released.
+Native inventory now covers machines, extensions, Run Commands, license profiles
+and shared licenses. It includes own reads, known omission recovery, native
+parent pagination, repeated snapshot/cursor validation, signed references and
+SQLite scan/graph reconciliation. Cleanup remains unfinished and unavailable;
+the ENS mapping is still pending. Cloud absence is not physical-server release.
 
 ## Pinned REST examples
 
@@ -18,7 +19,8 @@ resource-group Lists; extension, Run Command and license-profile GET/List/DELETE
 license GET/subscription List; network-profile GET; and hybrid identity metadata
 GET/List. Sixteen operations extend the two machine reads used by Defender.
 No shared-license deletion, script execution or agent configuration write was
-selected. Existing resource mappings are unchanged.
+selected. Five regional inventory mappings now reference these read operations; no
+DELETE is bound to a resource action until native Arc cleanup is implemented.
 
 `TestHybridComputeOfficialContracts` binds every request, checks API-version
 rejection and provenance, and checks all 24 declared responses, including 15
@@ -90,9 +92,9 @@ nor agent uninstallation follows from replay.
   of the shared license. [Unlinking and license deletion](https://learn.microsoft.com/en-us/azure/azure-arc/servers/api-extended-security-updates)
   are separate operations; machine/profile absence does not prove billing ended.
 
-Native inventory, complete child discovery and known omission repair,
-authenticated incarnation/references, ownership/lock checks, planner ordering,
-resumed cleanup, independent emulator and live-cloud verification remain open.
+Native inventory and signed snapshot/reference checks are implemented. Cleanup
+incarnation checks, ownership/lock checks, planner ordering, resumed cleanup,
+independent emulator and live-cloud verification remain open.
 The [Floci-AZ service list](https://floci.io/floci-az/services/) and
 [generic ARM fallback](https://floci.io/floci-az/services/arm/) were checked on
 2026-09-13: they do not document Arc agent, extension-uninstall or signed

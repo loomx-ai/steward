@@ -1,0 +1,32 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.HybridCompute/machines/licenseProfiles
+  class: security.license_profile
+presentation:
+  displayNames:
+    en-US: Arc license profile
+    zh-CN: Arc 许可证配置
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: hybrid-compute
+  list:
+    operation: Azure.Microsoft.HybridCompute.LicenseProfiles_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.HybridCompute.LicenseProfiles_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  license: esuProfile.assignedLicense
+  esuEligibility: esuProfile.esuEligibility
+  subscriptionStatus: productProfile.subscriptionStatus
+  billingStartDate: productProfile.billingStartDate
+  billingEndDate: productProfile.billingEndDate
+extensions:
+  hook: azure.resource

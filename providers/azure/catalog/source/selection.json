@@ -10437,6 +10437,86 @@
       "list_operations": [
         "Azure.Microsoft.Security.Pricings_List"
       ]
+    },
+    {
+      "native_type": "Microsoft.HybridCompute/machines",
+      "class": "compute.edge_instance",
+      "display_name": "Arc machine",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "machines",
+      "read_operations": [
+        "Azure.Microsoft.HybridCompute.Machines_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.HybridCompute.Machines_ListBySubscription"
+      ]
+    },
+    {
+      "native_type": "Microsoft.HybridCompute/machines/extensions",
+      "class": "compute.instance_extension",
+      "display_name": "Arc machine extension",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "extensions",
+      "read_operations": [
+        "Azure.Microsoft.HybridCompute.MachineExtensions_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.HybridCompute.MachineExtensions_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.HybridCompute/machines/runCommands",
+      "class": "compute.command",
+      "display_name": "Arc Run Command",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "runCommands",
+      "read_operations": [
+        "Azure.Microsoft.HybridCompute.MachineRunCommands_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.HybridCompute.MachineRunCommands_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.HybridCompute/machines/licenseProfiles",
+      "class": "security.license_profile",
+      "display_name": "Arc license profile",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "licenseProfiles",
+      "read_operations": [
+        "Azure.Microsoft.HybridCompute.LicenseProfiles_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.HybridCompute.LicenseProfiles_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.HybridCompute/licenses",
+      "class": "security.license",
+      "display_name": "Arc ESU license",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "licenses",
+      "read_operations": [
+        "Azure.Microsoft.HybridCompute.Licenses_Get"
+      ],
+      "delete_operations": [],
+      "list_operations": [
+        "Azure.Microsoft.HybridCompute.Licenses_ListBySubscription"
+      ]
     }
   ]
 }

@@ -1,0 +1,32 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.HybridCompute/machines
+  class: compute.edge_instance
+presentation:
+  displayNames:
+    en-US: Arc machine
+    zh-CN: Arc 机器
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: hybrid-compute
+  list:
+    operation: Azure.Microsoft.HybridCompute.Machines_ListBySubscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.HybridCompute.Machines_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  connectionStatus: status
+  machineKind: kind
+  agentVersion: agentVersion
+  operatingSystem: osName
+  operatingSystemVersion: osVersion
+extensions:
+  hook: azure.resource

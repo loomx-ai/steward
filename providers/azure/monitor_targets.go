@@ -9,9 +9,10 @@ import (
 const monitorReceiverTargetProof = "_monitor_receiver_target_identity"
 
 func monitorARMTarget(value asset.Asset) bool {
-	// Defender plan records expose service state and have no cleanup driver.
+	// Defender plans and the current Arc inventory expose no cleanup action.
 	// Their graph must not require unrelated incoming-deletion API permissions.
-	if value.Identity.NativeType == defenderPricingType {
+	// Remove Arc from this exception when its native lifecycle driver is wired.
+	if value.Identity.NativeType == defenderPricingType || hybridComputeKind(value.Identity.NativeType) != "" {
 		return false
 	}
 	// Legacy component records retain case-sensitive opaque selectors. They are

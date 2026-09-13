@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.HybridCompute/machines/extensions
+  class: compute.instance_extension
+presentation:
+  displayNames:
+    en-US: Arc machine extension
+    zh-CN: Arc 机器扩展
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: hybrid-compute
+  list:
+    operation: Azure.Microsoft.HybridCompute.MachineExtensions_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.HybridCompute.MachineExtensions_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  publisher: publisher
+  extensionType: type
+  version: typeHandlerVersion
+extensions:
+  hook: azure.resource

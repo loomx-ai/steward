@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 429 类资源，其中 400 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 434 类资源，其中 400 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -51,6 +51,7 @@ Steward 识别 429 类资源，其中 400 类具有原生清理操作（包括 B
 | Data Factory | 工厂、管道、数据集、数据流、链接服务、凭据、触发器、CDC、全局参数、集成运行时及节点、私有连接 | 审查工厂级联；先处理运行时及运行任务；托管虚拟网络随工厂清理 |
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
+| Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 原生盘点与关联；清理功能尚未开放 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -84,6 +85,10 @@ Service Bus/Event Hubs 网络规则集、Event Hubs 网络边界配置、灾难�
 Service Bus 自动转发目标通过原生 API 解析为同一命名空间内的队列或主题。Event Hubs Capture 记录目标存储账户和 Blob 容器依赖。删除命名空间不会自动选择这些存储资源、用户分配的身份或独立的 Private Endpoint。盘点和执行权限必须包含所有已审查子资源的原生读取权限；子资源列表失败不代表命名空间为空。参阅微软的[自动转发](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding)和 [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) 文档。
 
 ## 清理保护
+
+Azure Arc 通过原生接口盘点机器和许可证，并在每台机器下枚举扩展、运行命令和许可证配置。请按所选类型授予 `Microsoft.HybridCompute/machines/read`、`Microsoft.HybridCompute/machines/extensions/read`、`Microsoft.HybridCompute/machines/runCommands/read`、`Microsoft.HybridCompute/machines/licenseProfiles/read` 和 `Microsoft.HybridCompute/licenses/read` 权限。子资源扫描需要订阅范围内的机器列表和读取权限。已知资源及列表遗漏的父机器会逐项补读；不完整响应或权限不足会使扫描失败。脚本、扩展设置、受保护参数和代理设置不会进入公开清单及 API 日志。
+
+Arc 清理仍在实现中，Steward 尚未开放此功能。删除云端注册记录不能证明外部服务器或本地代理已移除。删除运行中的 Run Command 会终止脚本；引用共享 ESU 许可证不代表允许删除该许可证。参见[微软代理移除指南](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent)。当前测试覆盖协议及 SQLite 扫描、图谱工作流，不代表真实代理移除已通过验证。
 
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 

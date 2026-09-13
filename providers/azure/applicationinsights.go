@@ -111,7 +111,12 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 		return safePayload(object(defenderSafeValue(value)))
 	}
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.hybridcompute" {
-		return safePayload(object(dataMigrationSafeValue(value)))
+		cleaned := object(hybridComputeSafeValue(value))
+		if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "DELETE") {
+			cleaned["method"], cleaned["path"] = value["method"], u.Path
+			cleaned["query"] = map[string]any{"api-version": u.Query().Get("api-version")}
+		}
+		return safePayload(cleaned)
 	}
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.datamigration" {
 		cleaned := object(dataMigrationSafeValue(value))

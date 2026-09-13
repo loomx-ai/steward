@@ -3462,3 +3462,48 @@ background evidence only, not acceptance evidence for this work.
   generated Azure files, online reproduction of all 19 examples and all 25
   extracts from three complete CLI recordings, documentation checks (40 chapters
   / 10 original screenshots) and whitespace validation also passed.
+
+### Arc HybridCompute native inventory and reconciliation
+
+- Five regional rules now inventory machines, extensions, Run Commands,
+  machine license profiles and shared ESU licenses through native product
+  Lists and individual GETs. Child discovery enumerates and reads native
+  machines first. Known children recover omitted parents; known resources are
+  reread even when absent from lists. Only their own 404 supports closure.
+- Native continuation checks reject filtering, foreign pages, version changes,
+  duplicate members and wrong parents. Two observations bind private resource
+  configuration and every parent, including parents with empty collections.
+  Scan continuation also binds the connection, scope, kind, known identities
+  and bundle revision. Null connection status remains absent rather than
+  becoming Connected. Read failures and partial responses fail the scan.
+- Public fields retain operational machine, extension, command and license
+  state while scripts, extension settings, protected parameters, agent proxy
+  settings and future authored fields remain private. API diagnostics preserve
+  method, path, API version and request IDs without signed query material.
+  Authenticated references contribute four native `uses` relationships in the
+  worker fixture; shared licenses and external cluster/private-link references
+  do not become owned resources. Missing references remain unresolved.
+- Real SQLite scan and graph workers cover five assets across ten regional
+  shards, reject a saved authoritative flag, preserve all five assets when all
+  indexes omit them, preserve assets after permission failure, and close only
+  the command whose own GET becomes 404. Tests also cover parent pagination,
+  malformed identities/properties, missing parents, forged graph proofs,
+  filtered pages, and private configuration changes across scan continuations.
+- Cleanup remains explicitly unavailable for these five types until the native
+  lifecycle driver is implemented. This is an incremental inventory milestone,
+  not fulfillment of the lifecycle requirement: agent/extension cleanup,
+  running-command impact, ownership/locks, license handling, restored execution
+  and final native readback remain unfinished. The ENS parity row and all eight
+  overall acceptance criteria remain pending. Nineteen mapped Azure types still
+  lack rules; Arc now has rules but remains incomplete behaviorally.
+- Azure has 434 rules, 400 cleanup actions and the same 1,434 operations from
+  182 root and 101 reference documents. All prior operations are unchanged.
+  Bilingual capability and permission documentation distinguishes available
+  inventory from unfinished cleanup.
+- Verification: repository-wide `go test ./...` passed (Azure 303.798s).
+  Final Arc/Defender/catalog race checks passed (24.256s), including the later
+  request-log projection and additional boundary cases. Final `go vet ./...`,
+  six offline importer checks, byte-identical regeneration of both generated
+  files, documentation checks (40 chapters / 10 original screenshots) and
+  whitespace validation passed. Independent emulator and live-cloud evidence
+  remain open.

@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.HybridCompute/machines/runCommands
+  class: compute.command
+presentation:
+  displayNames:
+    en-US: Arc Run Command
+    zh-CN: Arc 运行命令
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: hybrid-compute
+  list:
+    operation: Azure.Microsoft.HybridCompute.MachineRunCommands_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.HybridCompute.MachineRunCommands_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  executionState: instanceView.executionState
+  startedAt: instanceView.startTime
+  endedAt: instanceView.endTime
+extensions:
+  hook: azure.resource
