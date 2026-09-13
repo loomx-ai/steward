@@ -1,0 +1,274 @@
+[
+  {
+    "file": "ElasticSans_Delete_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_Delete_MaximumSet_Gen.json",
+    "source_sha256": "a3e91d006cf1a5699ca76f8c05eaa100aacc5f6cfb88b6359697e475b9009eee",
+    "operation": "ElasticSans_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "ElasticSans_Delete_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_Delete_MinimumSet_Gen.json",
+    "source_sha256": "5cf6fbf3c2cbf145dafa2bbde1b47d826eeaa4dafb5da394355a813c07d336d4",
+    "operation": "ElasticSans_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "ElasticSans_Get_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_Get_MaximumSet_Gen.json",
+    "source_sha256": "ae09a1e11f6586e8e5ccd7e643c55d3b23f7b151eb904488a829c1b8566a0c65",
+    "operation": "ElasticSans_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+    "method": "GET"
+  },
+  {
+    "file": "ElasticSans_Get_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_Get_MinimumSet_Gen.json",
+    "source_sha256": "2b81afc99bfbdda3d509f774307edb10acc8524cf643ea8abba4060d3a79482b",
+    "operation": "ElasticSans_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+    "method": "GET"
+  },
+  {
+    "file": "ElasticSans_ListByResourceGroup_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_ListByResourceGroup_MaximumSet_Gen.json",
+    "source_sha256": "a01b16fb0cffa20fbc54019a1dabbce85c5779e1f43acdde5ce0d5f8db3ba555",
+    "operation": "ElasticSans_ListByResourceGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans",
+    "method": "GET"
+  },
+  {
+    "file": "ElasticSans_ListByResourceGroup_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_ListByResourceGroup_MinimumSet_Gen.json",
+    "source_sha256": "5e3388bb35b815714d8c5f77e12ddfa407e0d11d856ae8f1cce65ad859bc7bba",
+    "operation": "ElasticSans_ListByResourceGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans",
+    "method": "GET"
+  },
+  {
+    "file": "ElasticSans_ListBySubscription_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_ListBySubscription_MaximumSet_Gen.json",
+    "source_sha256": "bc36362e05eb1392cbdeac9f9b2b6a9b8fe216664a5c20c4acf9ec7163784052",
+    "operation": "ElasticSans_ListBySubscription",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ElasticSan/elasticSans",
+    "method": "GET"
+  },
+  {
+    "file": "ElasticSans_ListBySubscription_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/ElasticSans_ListBySubscription_MinimumSet_Gen.json",
+    "source_sha256": "7c3ebd418da14c6ed1c9539357122dec1dba325b3b7a8ec6730aec86944714fd",
+    "operation": "ElasticSans_ListBySubscription",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ElasticSan/elasticSans",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateEndpointConnections_Delete_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_Delete_MaximumSet_Gen.json",
+    "source_sha256": "e3b11cf8ce64708e6d03bfc5b802ee8478eb5b762964550607f64cc34e3ff727",
+    "operation": "PrivateEndpointConnections_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "PrivateEndpointConnections_Delete_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_Delete_MinimumSet_Gen.json",
+    "source_sha256": "03e3f5e61ea875319a2bc4f2cd64e944a0aab9a684f702aa4cd97f38e77a6610",
+    "operation": "PrivateEndpointConnections_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "PrivateEndpointConnections_Get_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_Get_MaximumSet_Gen.json",
+    "source_sha256": "9f543372a657a4ae9e7c5e881558c40f6955d9786aeeaada7dedbb328da487d3",
+    "operation": "PrivateEndpointConnections_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateEndpointConnections_Get_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_Get_MinimumSet_Gen.json",
+    "source_sha256": "19fd37c345bca4e7c2e75132619d3cec96141bd5caa695ca8c2638a2b1e286be",
+    "operation": "PrivateEndpointConnections_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateEndpointConnections_List_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_List_MaximumSet_Gen.json",
+    "source_sha256": "97bb89c9e7bd7302b02623449cffecc6177d0c159b31db49f20f74cfa80b2de3",
+    "operation": "PrivateEndpointConnections_List",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateEndpointConnections_List_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateEndpointConnections_List_MinimumSet_Gen.json",
+    "source_sha256": "0363246307a58c5ccafb04f46e03f076d99ee9beb375553f0dddf89f90fb4871",
+    "operation": "PrivateEndpointConnections_List",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateLinkResources_ListByElasticSan_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateLinkResources_ListByElasticSan_MaximumSet_Gen.json",
+    "source_sha256": "d3956e21014aa878b389b247528b357dbed25c6e842ca36a1a4f13420f23278a",
+    "operation": "PrivateLinkResources_ListByElasticSan",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateLinkResources",
+    "method": "GET"
+  },
+  {
+    "file": "PrivateLinkResources_ListByElasticSan_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/PrivateLinkResources_ListByElasticSan_MinimumSet_Gen.json",
+    "source_sha256": "7c647914a0b0ccde6a90acfa2dca7714710b1fc733de1fa42c2c42dcfbab2250",
+    "operation": "PrivateLinkResources_ListByElasticSan",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateLinkResources",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeGroups_Delete_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_Delete_MaximumSet_Gen.json",
+    "source_sha256": "4577d608860d897be90758eb272cb3c4366589bebe77a875176d0ecaeeb2dfdf",
+    "operation": "VolumeGroups_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "VolumeGroups_Delete_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_Delete_MinimumSet_Gen.json",
+    "source_sha256": "3e108d15319579d287ea89fec77791ee336fc3358ba1043ae79564138cf1cd2d",
+    "operation": "VolumeGroups_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "VolumeGroups_Get_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_Get_MaximumSet_Gen.json",
+    "source_sha256": "42e759706bc2043d272259470ef5346923cd827cc3dd2b1bb3e74f3bb133f23b",
+    "operation": "VolumeGroups_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeGroups_Get_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_Get_MinimumSet_Gen.json",
+    "source_sha256": "32549cb0a14e8fb31200a8fbda4fda1b4687308a6030a9670e8c81acaf5a4570",
+    "operation": "VolumeGroups_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeGroups_ListByElasticSan_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_ListByElasticSan_MaximumSet_Gen.json",
+    "source_sha256": "74a5289fadd654e386bdadb93820bbb3c3e47259756a15ce97a5f23ec9f46e9f",
+    "operation": "VolumeGroups_ListByElasticSan",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeGroups_ListByElasticSan_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeGroups_ListByElasticSan_MinimumSet_Gen.json",
+    "source_sha256": "ef6622cedd01d1273fcda02cd192f6e55e0e1ebeb0b3539883a2aa107af8006d",
+    "operation": "VolumeGroups_ListByElasticSan",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeSnapshots_Delete_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_Delete_MaximumSet_Gen.json",
+    "source_sha256": "93f8a27db19de23923aeb6ef7fd00f01aca122f8d8caaf494107f7617de0ce6e",
+    "operation": "VolumeSnapshots_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "VolumeSnapshots_Delete_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_Delete_MinimumSet_Gen.json",
+    "source_sha256": "91b8a651aa83b36efcd8921797226d20154e585c9e64162aaf98b326f786cd9b",
+    "operation": "VolumeSnapshots_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "VolumeSnapshots_Get_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_Get_MaximumSet_Gen.json",
+    "source_sha256": "9ff0cfd7239e7263ca174056a210630a5e6ea6db51300c8cb43e9ddbf3277617",
+    "operation": "VolumeSnapshots_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeSnapshots_Get_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_Get_MinimumSet_Gen.json",
+    "source_sha256": "b4ea6fd13a9178af1c5cbe7ec54a7472b682e3e58e0c63950c95a2a90400efe7",
+    "operation": "VolumeSnapshots_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeSnapshots_ListByVolumeGroup_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_ListByVolumeGroup_MaximumSet_Gen.json",
+    "source_sha256": "07a8086e20808e611dd71c069cca136ec1c2fc7de4eae77c5b17a3a880022d6c",
+    "operation": "VolumeSnapshots_ListByVolumeGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots",
+    "method": "GET"
+  },
+  {
+    "file": "VolumeSnapshots_ListByVolumeGroup_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/VolumeSnapshots_ListByVolumeGroup_MinimumSet_Gen.json",
+    "source_sha256": "01648d3e9943d21988f699b50fc35160a34ee86b646cca6d57f47186b27ef7c0",
+    "operation": "VolumeSnapshots_ListByVolumeGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots",
+    "method": "GET"
+  },
+  {
+    "file": "Volumes_Delete_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_Delete_MaximumSet_Gen.json",
+    "source_sha256": "766ed60a24a0d0f6f9b42b217afb2db696a39f6e2afec84ae4aeef7c3ff102b1",
+    "operation": "Volumes_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "Volumes_Delete_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_Delete_MinimumSet_Gen.json",
+    "source_sha256": "9c35405593603bd28fd6286f9982524b90eebf0d638902a7118cb66d6b1e7ee1",
+    "operation": "Volumes_Delete",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+    "method": "DELETE"
+  },
+  {
+    "file": "Volumes_Get_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_Get_MaximumSet_Gen.json",
+    "source_sha256": "5c13f44781cb8748890d5f0abdac2c5814177c2cd03396a95751b00a3618df96",
+    "operation": "Volumes_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+    "method": "GET"
+  },
+  {
+    "file": "Volumes_Get_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_Get_MinimumSet_Gen.json",
+    "source_sha256": "c6cf5ac7604b64ac4b5f0467de5b07f10896eae7c4d1d4dfaa72621c8bcee6cf",
+    "operation": "Volumes_Get",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+    "method": "GET"
+  },
+  {
+    "file": "Volumes_ListByVolumeGroup_MaximumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_ListByVolumeGroup_MaximumSet_Gen.json",
+    "source_sha256": "26aee613dea33868cb06fce8fe78b3cead8708b3fb9f9d8bad9b3787d6a38aca",
+    "operation": "Volumes_ListByVolumeGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes",
+    "method": "GET"
+  },
+  {
+    "file": "Volumes_ListByVolumeGroup_MinimumSet_Gen.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/examples/Volumes_ListByVolumeGroup_MinimumSet_Gen.json",
+    "source_sha256": "4ba5bf87128c3c4e640f170f73e05e3b04082654967c31eb1af87e79abb213e9",
+    "operation": "Volumes_ListByVolumeGroup",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes",
+    "method": "GET"
+  }
+]

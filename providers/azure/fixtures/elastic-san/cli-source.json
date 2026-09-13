@@ -1,0 +1,48 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.3.1b1",
+  "wheel_uri": "https://azcliprod.blob.core.windows.net/cli-extensions/elastic_san-1.3.1b1-py3-none-any.whl",
+  "wheel_sha256": "2f4a6cfd7fa568e24ed9a8f792a13b3d59ed4cfc6e637d0161e0a637f5560b8e",
+  "native_api_version": "2024-07-01-preview",
+  "runtime_catalog_api_version": "2026-04-01-preview",
+  "classes": [
+    {
+      "member": "azext_elastic_san/aaz/latest/elastic_san/volume/_delete.py",
+      "member_sha256": "30ac936e626fb973aea51ee30386660804e34f91109ca4e133d6997ce9d78a92",
+      "class": "VolumesDelete",
+      "start_line": 122,
+      "end_line": 228,
+      "file": "cli_VolumesDelete.py.txt",
+      "sha256": "44652825bf226a3a7d3d84ae47357c528efd257fe5076e7349ddff6d0dab0f7f"
+    },
+    {
+      "member": "azext_elastic_san/aaz/latest/elastic_san/volume/_list.py",
+      "member_sha256": "17d9295e0cd5c148bbac214dc4841fff11694c4be0fe1c9206b5332498cba09e",
+      "class": "VolumesListByVolumeGroup",
+      "start_line": 100,
+      "end_line": 291,
+      "file": "cli_VolumesListByVolumeGroup.py.txt",
+      "sha256": "010b3643143c2409ab34e54ce3e6e045ff4b743f979f07cccc214cce413b6bef"
+    },
+    {
+      "member": "azext_elastic_san/aaz/latest/elastic_san/volume/_show.py",
+      "member_sha256": "16b28cccebe8bce21a14d98277ca6c36c02e821b5c7ad74a5bdc12603f4f9f10",
+      "class": "VolumesGet",
+      "start_line": 102,
+      "end_line": 284,
+      "file": "cli_VolumesGet.py.txt",
+      "sha256": "f508ba24e4faeb08fdfbb8e1f2d85c0c2be0d608c7b326de809bfefbbcf5563c"
+    },
+    {
+      "member": "azext_elastic_san/aaz/latest/elastic_san/volume_group/_list.py",
+      "member_sha256": "3ab9f86f5f4efeeea2cbea06f9dca3e4572e491ebd2c71130d7d635edaee0723",
+      "class": "VolumeGroupsListByElasticSan",
+      "start_line": 90,
+      "end_line": 367,
+      "file": "cli_VolumeGroupsListByElasticSan.py.txt",
+      "sha256": "1a34b84c093767463931a4437570249443d86e2b507daa92fc6f48cc3872a4bb"
+    }
+  ],
+  "license_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/LICENSE",
+  "license_sha256": "27ebda9d51f0a56b7e281ccd8230a27236dcb51c05f64b07869ecf6e965d68b0"
+}

@@ -110,10 +110,13 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.security" {
 		return safePayload(object(defenderSafeValue(value)))
 	}
-	if err == nil && u.Host == "management.azure.com" && (armPathProvider(u.Path) == "microsoft.hybridcompute" || armPathProvider(u.Path) == "microsoft.azurestackhci" || armPathProvider(u.Path) == "microsoft.kubernetes" || armPathProvider(u.Path) == "microsoft.hybridcontainerservice") {
+	if err == nil && u.Host == "management.azure.com" && (armPathProvider(u.Path) == "microsoft.hybridcompute" || armPathProvider(u.Path) == "microsoft.azurestackhci" || armPathProvider(u.Path) == "microsoft.kubernetes" || armPathProvider(u.Path) == "microsoft.hybridcontainerservice" || armPathProvider(u.Path) == "microsoft.elasticsan") {
 		cleaned := object(hybridComputeSafeValue(value))
 		if armPathProvider(u.Path) == "microsoft.azurestackhci" {
 			cleaned = object(azureLocalSafeValue(value))
+		}
+		if armPathProvider(u.Path) == "microsoft.elasticsan" {
+			cleaned = object(elasticSanSafeValue(value))
 		}
 		if value["path"] == u.Path && (value["method"] == "GET" || value["method"] == "POST" || value["method"] == "DELETE") {
 			cleaned["method"], cleaned["path"] = value["method"], u.Path

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "74ed97e9fca1e31434f53b8850ba9de93e6c0d485b55a202ec29fce1fed27b8e",
+    "checksum": "9e3132be963b6077d69986ca63d64ceff4e614a419ce1f002c7070e32d2e9fd5",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ea8c42bcd0869ac4211bb73360bd7ecd8862dfe0c21f0bee74542b96b37c9e1e",
+  "content_checksum": "24cfebcdbf7df5db33ade6796153ea06b09046678b9370d24024b0932a199cb5",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -85799,6 +85799,1524 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/domainregistration/resource-manager/Microsoft.DomainRegistration/DomainRegistration/stable/2024-11-01/openapi.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.ElasticSans_Delete",
+      "name": "ElasticSans_Delete",
+      "service": "Microsoft.ElasticSan",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.ElasticSans_Get",
+      "name": "ElasticSans_Get",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Response for ElasticSan request.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/ElasticSanProperties",
+            "description": "Properties of ElasticSan.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.ElasticSans_ListByResourceGroup",
+      "name": "ElasticSans_ListByResourceGroup",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Elastic Sans",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ElasticSan items on this page",
+            "items": {
+              "$ref": "#/definitions/ElasticSan"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription",
+      "name": "ElasticSans_ListBySubscription",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ElasticSan/elasticSans",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Elastic Sans",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The ElasticSan items on this page",
+            "items": {
+              "$ref": "#/definitions/ElasticSan"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.ElasticSan/elasticSans",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Delete",
+      "name": "PrivateEndpointConnections_Delete",
+      "service": "Microsoft.ElasticSan",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the Private Endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get",
+      "name": "PrivateEndpointConnections_Get",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "privateEndpointConnectionName": {
+            "description": "The name of the Private Endpoint connection.",
+            "in": "path",
+            "name": "privateEndpointConnectionName",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Response for PrivateEndpoint Connection object",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/PrivateEndpointConnectionProperties",
+            "description": "Private Endpoint Connection Properties.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections/{privateEndpointConnectionName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List",
+      "name": "PrivateEndpointConnections_List",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a PrivateEndpointConnection list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The PrivateEndpointConnection items on this page",
+            "items": {
+              "$ref": "#/definitions/PrivateEndpointConnection"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateEndpointConnections",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.PrivateLinkResources_ListByElasticSan",
+      "name": "PrivateLinkResources_ListByElasticSan",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateLinkResources",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "A list of private link resources",
+        "properties": {
+          "nextLink": {
+            "description": "URI to fetch the next section of the paginated response.",
+            "readOnly": true,
+            "type": "string"
+          },
+          "value": {
+            "description": "Array of private link resources",
+            "items": {
+              "$ref": "#/definitions/PrivateLinkResource"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/privateLinkResources",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeGroups_Delete",
+      "name": "VolumeGroups_Delete",
+      "service": "Microsoft.ElasticSan",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeGroups_Get",
+      "name": "VolumeGroups_Get",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Response for Volume Group request.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/Identity",
+            "description": "The identity of the resource."
+          },
+          "properties": {
+            "$ref": "#/definitions/VolumeGroupProperties",
+            "description": "Properties of VolumeGroup.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeGroups_ListByElasticSan",
+      "name": "VolumeGroups_ListByElasticSan",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-access-soft-deleted-resources": {
+            "description": "Optional, returns only soft deleted volume groups if set to true. If set to false or if not specified, returns only active volume groups.",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "in": "header",
+            "name": "x-ms-access-soft-deleted-resources",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "x-ms-access-soft-deleted-resources",
+              "values": [
+                {
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "name": "false",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Volume Groups",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The VolumeGroup items on this page",
+            "items": {
+              "$ref": "#/definitions/VolumeGroup"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeSnapshots_Delete",
+      "name": "VolumeSnapshots_Delete",
+      "service": "Microsoft.ElasticSan",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotName": {
+            "description": "The name of the volume snapshot within the given volume group.",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "snapshotName",
+            "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeSnapshots_Get",
+      "name": "VolumeSnapshots_Get",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "snapshotName": {
+            "description": "The name of the volume snapshot within the given volume group.",
+            "in": "path",
+            "maxLength": 80,
+            "minLength": 1,
+            "name": "snapshotName",
+            "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Response for Volume Snapshot request.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/SnapshotProperties",
+            "description": "Properties of Volume Snapshot.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots/{snapshotName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup",
+      "name": "VolumeSnapshots_ListByVolumeGroup",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "$filter": {
+            "description": "Specify $filter='volumeName eq \u003cvolume name\u003e' to filter on volume.",
+            "in": "query",
+            "name": "$filter",
+            "required": false,
+            "type": "string"
+          },
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Snapshots",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Snapshot items on this page",
+            "items": {
+              "$ref": "#/definitions/Snapshot"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/snapshots",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.Volumes_Delete",
+      "name": "Volumes_Delete",
+      "service": "Microsoft.ElasticSan",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "deleteType": {
+            "description": "Optional. Specifies that the delete operation should be a permanent delete for the soft deleted volume. The value of deleteType can only be 'permanent'.",
+            "enum": [
+              "permanent"
+            ],
+            "in": "query",
+            "name": "deleteType",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "DeleteType",
+              "values": [
+                {
+                  "name": "permanent",
+                  "value": "permanent"
+                }
+              ]
+            }
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the Volume.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-delete-snapshots": {
+            "description": "Optional, used to delete snapshots under volume. Allowed value are only true or false. Default value is false.",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "in": "header",
+            "name": "x-ms-delete-snapshots",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "x-ms-delete-snapshots",
+              "values": [
+                {
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "name": "false",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "x-ms-force-delete": {
+            "description": "Optional, used to delete volume if active sessions present. Allowed value are only true or false. Default value is false.",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "in": "header",
+            "name": "x-ms-force-delete",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "x-ms-force-delete",
+              "values": [
+                {
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "name": "false",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.Volumes_Get",
+      "name": "Volumes_Get",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "volumeName": {
+            "description": "The name of the Volume.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeName",
+            "pattern": "^[a-z0-9]+(-[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource"
+          }
+        ],
+        "description": "Response for Volume request.",
+        "properties": {
+          "properties": {
+            "$ref": "#/definitions/VolumeProperties",
+            "description": "Properties of Volume.",
+            "x-ms-client-flatten": true
+          }
+        },
+        "required": [
+          "properties"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes/{volumeName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
+    },
+    {
+      "id": "Azure.Microsoft.ElasticSan.Volumes_ListByVolumeGroup",
+      "name": "Volumes_ListByVolumeGroup",
+      "service": "Microsoft.ElasticSan",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2026-04-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "elasticSanName": {
+            "description": "The name of the ElasticSan.",
+            "in": "path",
+            "maxLength": 24,
+            "minLength": 3,
+            "name": "elasticSanName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          },
+          "volumeGroupName": {
+            "description": "The name of the VolumeGroup.",
+            "in": "path",
+            "maxLength": 63,
+            "minLength": 3,
+            "name": "volumeGroupName",
+            "pattern": "^[A-Za-z0-9]+((-|_)[a-z0-9A-Z]+)*$",
+            "required": true,
+            "type": "string"
+          },
+          "x-ms-access-soft-deleted-resources": {
+            "description": "Optional, returns only soft deleted volumes if set to true. If set to false or if not specified, returns only active volumes.",
+            "enum": [
+              "true",
+              "false"
+            ],
+            "in": "header",
+            "name": "x-ms-access-soft-deleted-resources",
+            "required": false,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": true,
+              "name": "x-ms-access-soft-deleted-resources",
+              "values": [
+                {
+                  "name": "true",
+                  "value": "true"
+                },
+                {
+                  "name": "false",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "List of Volumes",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The Volume items on this page",
+            "items": {
+              "$ref": "#/definitions/Volume"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.ElasticSan",
+        "version": "2026-04-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ElasticSan/elasticSans/{elasticSanName}/volumegroups/{volumeGroupName}/volumes",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json"
     },
     {
       "id": "Azure.Microsoft.EventHub.ApplicationGroup_Delete",

@@ -268,3 +268,5 @@ Azure Local 存储路径支持通过 `Microsoft.AzureStackHCI/storageContainers/
 Azure Local 逻辑网络使用 `2025-06-01-preview` 的 `Microsoft.AzureStackHCI/logicalNetworks/delete` 清理。需要订阅范围的逻辑网络和网卡列表/读取、`Microsoft.Kubernetes/connectedClusters/read`、`Microsoft.HybridContainerService/provisionedClusterInstances/read`，以及资源组和管理锁读取权限。基础设施网络还需要 Arc 机器和 Local VM 列表/读取权限。工作负载网络检查网卡引用和原生 AKS `vnetSubnetIds`；基础设施网络检查同一已核验自定义位置上的 VM、网卡、其他逻辑网络及 AKS 实例。缺失位置或引用字段会按可能占用处理，需补齐证据或先移除占用资源。
 
 占用资源必须明确选中并先清理，或通过原生工具移除；仅选中网络不会自动选中工作负载。AKS 预配实例保留为未解析的原生依赖，需通过原生工具移除后才能继续；该网络流程不包含 AKS 删除。已知占用资源身份会在索引遗漏和 Arc 父注册消失后保留。原生子网的 `ipConfigurationReferences[].ID` 独立于网卡索引核验，残留引用仍会阻止清理。DELETE 前及网络自身返回 404 后，仍需核验保护状态、配置、锁和存活依赖。DELETE 被接受或异步操作成功都不能单独证明清理完成。预览 SDK 的 `Location` 轮询状态会持久化，重启恢复不会重放 DELETE。测试覆盖使用桩运行的原始 SDK 函数、组合协议和 SQLite 重启恢复；物理行为及生产回调仍需云端验证。
+
+Elastic SAN 的原生契约准备覆盖 SAN、卷组、卷、快照与私有终结点连接，盘点和经过审查的清理流程仍在实现。选用的 `2026-04-01-preview` 契约分别列出活动资源和软删除资源，活动列表为空不能证明永久移除。强制断开会话、删除快照和永久删除保留中的卷是三个独立的显式选项。原始 REST 示例和较早的预览 CLI 已进行离线测试；尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。

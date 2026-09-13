@@ -18,6 +18,18 @@ import (
 // by ARM use their ASCII/Punycode form.
 // https://learn.microsoft.com/azure/azure-resource-manager/management/resource-name-rules#microsoftweb
 func bindAzureREST(operation catalog.Operation, parameters map[string]any) (catalog.RESTRequest, error) {
+	// Elastic SAN headers and permanent-delete query values are exact wire
+	// switches. Generic case-insensitive enum matching must not broaden them.
+	if strings.HasPrefix(operation.ID, "Azure.Microsoft.ElasticSan.") {
+		for _, key := range []string{"x-ms-access-soft-deleted-resources", "x-ms-delete-snapshots", "x-ms-force-delete", "deleteType"} {
+			if value, present := parameters[key]; present {
+				wire, ok := value.(string)
+				if !ok || key == "deleteType" && wire != "permanent" || key != "deleteType" && wire != "true" && wire != "false" {
+					return catalog.RESTRequest{}, serviceDenied("invalid_elastic_san_wire_switch")
+				}
+			}
+		}
+	}
 	// Azure Local extends a HybridCompute machine. Several native examples omit
 	// its /providers segment or pass the VM-instance suffix as the parent.
 	// Keep those examples unchanged; accept only the documented parent scope.

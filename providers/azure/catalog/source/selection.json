@@ -2432,6 +2432,28 @@
         "ConnectedCluster_Get",
         "ConnectedCluster_ListBySubscription"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json",
+      "operations": [
+        "ElasticSans_Delete",
+        "ElasticSans_Get",
+        "ElasticSans_ListByResourceGroup",
+        "ElasticSans_ListBySubscription",
+        "PrivateEndpointConnections_Delete",
+        "PrivateEndpointConnections_Get",
+        "PrivateEndpointConnections_List",
+        "PrivateLinkResources_ListByElasticSan",
+        "VolumeGroups_Delete",
+        "VolumeGroups_Get",
+        "VolumeGroups_ListByElasticSan",
+        "VolumeSnapshots_Delete",
+        "VolumeSnapshots_Get",
+        "VolumeSnapshots_ListByVolumeGroup",
+        "Volumes_Delete",
+        "Volumes_Get",
+        "Volumes_ListByVolumeGroup"
+      ]
     }
   ],
   "resource_types": [

@@ -4165,3 +4165,46 @@ background evidence only, not acceptance evidence for this work.
   461.076s, cleanup 5.449s, plan 5.307s); the full Azure race run is not a pass.
   The committed milestone contains 41 files and preserves all 65 pre-existing
   file contents, including unrelated changes in the shared translation file.
+
+### Elastic SAN native contracts and retained-resource boundaries
+
+- The missing dedicated block-storage equivalent now has a pinned native
+  contract foundation: 17 Elastic SAN GET/list/DELETE operations for SANs, volume
+  groups, volumes, snapshots, private endpoint connections and private-link
+  capabilities. The catalog contains 1,489 operations; all prior 1,472 operations
+  and 443 resource mappings remain unchanged. Rules/actions remain 443/413.
+  Inventory, lifecycle ownership and registered cleanup are not yet implemented.
+- The selected `2026-04-01-preview` schema exposes volume-group retention policy
+  and separate active/soft-deleted indexes, which the stable 2025-09-01 contract
+  omits. True selects only retained records, not both populations. The original
+  maximum GET example includes an undeclared retained-resource header; it is
+  rejected, not silently added to the contract. Both DELETE examples explicitly
+  request permanent deletion, so neither establishes a default normal-delete
+  request. Original source bytes are preserved while request copies isolate
+  these differences. Discovery must not interpret these gaps as absence.
+- All 34 native examples preserve 54 response variants and 24 schema-validated
+  bodies. Ten Location callbacks use an external placeholder and are rejected.
+  Exact lifecycle switches are enforced before transport; typed booleans,
+  case-changed values, whitespace and undeclared options cannot broaden deletion.
+  Public invocation/logging retains operational capacity and retention state
+  while excluding key, identity, target/client and unknown private configuration.
+- Four exact classes from a checksum-verified Microsoft preview CLI wheel are
+  executed with transport/serialization stubs. They independently establish
+  list selection, GET's missing retained selector, explicit deletion options
+  and 200/202/204 Location poller setup. Their API version is 2024-07-01-preview;
+  this is not a same-version service test or execution of the full AAZ poller.
+- Remaining work includes authoritative active/retained inventory, known-ID and
+  parent-omission recovery, graph/network references, managed volume ownership,
+  client-session and snapshot prerequisites, private endpoint effects, retained
+  deletion semantics and restored SQLite cleanup with own absence verification.
+  All eight acceptance items and the broader parity audit remain open. No live
+  Elastic SAN backend or independent ARM emulator was used.
+- Verification: full isolated Azure package tests passed (340.010s); focused
+  native-contract/catalog/invocation race checks passed (13.174s), and
+  `go vet ./providers/azure` passed. Shared-workspace integration passed
+  (1.329s). All 36 Python native CLI/SDK/catalog checks passed. Documentation
+  checks passed for 30 isolated and 42 shared chapters, each with 10 original
+  screenshots. Catalog regeneration reproduces exactly; all original source
+  fragments, operations, mappings and CLI extraction hashes were verified.
+  The 53-file milestone preserves all 65 pre-existing file contents. No frontend
+  code changed, and full lifecycle acceptance is still open.

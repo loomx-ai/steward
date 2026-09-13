@@ -1,0 +1,104 @@
+# Azure Elastic SAN native contract evidence
+
+This directory supports the Elastic SAN implementation work. It does not yet
+register Elastic SAN inventory or a reviewed cleanup lifecycle. Those must cover
+SANs, volume groups, volumes, snapshots, private endpoint connections and retained
+resources; adding callable native operations alone does not close the parity gap.
+
+## Pinned REST source
+
+`sources.json` records 34 unchanged maximum/minimum examples for 17 native
+GET/list/DELETE operations from Azure REST API specifications commit
+`c20bf553ad64f20c6d5e3f56080380c086cb1fde`:
+
+`specification/elasticsan/resource-manager/Microsoft.ElasticSan/ElasticSan/preview/2026-04-01-preview/elasticsan.json`
+
+The catalog retains selected operation fragments, native schemas and transitive
+references. Tests bind each example, preserve all 54 responses, and validate all
+24 response bodies using an offline Draft 4 schema compiler. This validates
+schema shape; randomly generated example IDs, types and names are not usable
+ARM inventory identities or live-cloud evidence.
+
+Two discrepancies matter for implementation:
+
+- `Volumes_Get_MaximumSet_Gen.json` includes
+  `x-ms-access-soft-deleted-resources`, but the GET operation does not declare
+  that header. The test rejects the original binding and removes the field only
+  from an in-memory request copy to test the declared contract. The original
+  bytes are unchanged. The retained native CLI GET also has no such header.
+- Both volume DELETE examples explicitly pass `deleteType: permanent`, including
+  the example called `MinimumSet`. This is not a default. The contract tests
+  separately omit it and verify that binding adds no permanent-delete query or
+  force/snapshot-delete headers.
+
+All ten original DELETE callback examples use the external placeholder
+`https://contoso.com/operationstatus`. Transport validation rejects it. None is
+used as a real Azure operation endpoint. Every selected native DELETE declares
+`final-state-via: location` and 200/202/204 responses. Cleanup still needs persisted
+receipts, scoped callback validation, restart recovery and independent absence
+checks; schema examples do not implement or verify those behaviors.
+
+## Active and retained resources
+
+The preview volume-group schema includes `deleteRetentionPolicy.policyState` and
+`retentionPeriodDays`. Volume-group and volume LIST operations accept
+`x-ms-access-soft-deleted-resources`: true returns only retained resources; false
+or omission returns only active resources. This is not an include-all flag.
+Complete discovery must handle both collections and cannot infer permanent
+absence from an empty active collection or an unsupported GET header.
+
+The stable `2025-09-01` contract omits these preview options. This is why the
+selected lifecycle work uses the preview contract. Preview features are not
+assumed to be newly introduced in 2026: the older preview CLI below already
+supports them. No feature fallback may silently hide retained resources.
+
+Native volume DELETE has two separate optional string headers:
+`x-ms-force-delete` permits deletion with active sessions, and
+`x-ms-delete-snapshots` includes snapshots. They default to false. The optional
+`deleteType=permanent` query addresses a soft-deleted volume. Runtime binding
+requires exact string switch values and rejects booleans, mixed case, whitespace,
+unknown values and attempts to inject headers. Generic case-insensitive enum
+matching is not used for these lifecycle switches.
+
+[Microsoft's deletion guide](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)
+requires clients to disconnect before deletion and explains that deleting a SAN
+or volume group removes corresponding children. The
+[snapshot guide](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-snapshots)
+explains that snapshots belong to the volume's lifetime; exported managed disk
+snapshots are separate resources. Private endpoint effects, client disconnection,
+retention and managed volume ownership require explicit implementation and tests.
+
+## Original CLI operations with stubs
+
+`cli-source.json` pins Microsoft's `elastic-san` 1.3.1b1 wheel through a
+checksum-pinned CLI extension index. Four exact nested classes are retained,
+with wheel/member/fragment hashes and source line ranges. `MICROSOFT-LICENSE.txt`
+is the license from the same pinned repository revision; the wheel itself does
+not include a license file.
+
+The classes use `2024-07-01-preview`, not the selected REST catalog version. The
+checks execute their original request properties and DELETE response dispatch
+using small AAZ transport/serialization stubs. They establish:
+
+- Separate active and soft-deleted LIST headers.
+- No soft-deleted selector on native GET.
+- Explicit force, snapshot-delete and permanent-delete options.
+- Native 200/202/204 acceptance and `Location` poller configuration.
+
+The GET response schema builders remain intact in the fragments but are not
+executed. These checks do not execute the complete Azure CLI, AAZ poller,
+controller, iSCSI client or real cloud. No independent Elastic SAN ARM emulator
+was used. The Azure-native request/response examples are protocol evidence.
+
+Run the offline checks from the repository root:
+
+```sh
+go test ./providers/azure -run '^TestElasticSan'
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts -p 'test_elastic_san_cli.py'
+```
+
+To reproduce a class, download the wheel URL from `cli-source.json`, verify its
+SHA-256 against the pinned index, extract the recorded ZIP member and select its
+inclusive `start_line`–`end_line` range without changing whitespace. Verify both
+the member and fragment hashes. Never execute a newly downloaded package as a
+substitute for checking its provenance.
