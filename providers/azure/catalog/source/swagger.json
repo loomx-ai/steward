@@ -54741,6 +54741,42 @@
               "name": "EsuServerType"
             }
           },
+          "ExtensionsResourceStatus": {
+            "description": "Instance view status.",
+            "properties": {
+              "code": {
+                "description": "The status code.",
+                "type": "string"
+              },
+              "displayStatus": {
+                "description": "The short localizable label for the status.",
+                "type": "string"
+              },
+              "level": {
+                "description": "The level code.",
+                "enum": [
+                  "Info",
+                  "Warning",
+                  "Error"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": false,
+                  "name": "ExtensionsStatusLevelTypes"
+                }
+              },
+              "message": {
+                "description": "The detailed status message, including for alerts and error messages.",
+                "type": "string"
+              },
+              "time": {
+                "description": "The time of the status.",
+                "format": "date-time",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
           "FirmwareProfile": {
             "description": "Describes the firmware of the machine",
             "properties": {
@@ -54799,6 +54835,69 @@
               "modelAsString": true,
               "name": "HotpatchEnablementStatus"
             }
+          },
+          "HybridIdentityMetadata": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ProxyResource",
+                "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+              }
+            ],
+            "description": "Defines the HybridIdentityMetadata.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/HybridIdentityMetadataProperties",
+                "description": "Resource properties.",
+                "x-ms-client-flatten": true
+              },
+              "systemData": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/systemData",
+                "description": "The system data."
+              }
+            },
+            "required": [
+              "properties"
+            ],
+            "type": "object",
+            "x-ms-azure-resource": true
+          },
+          "HybridIdentityMetadataList": {
+            "description": "List of HybridIdentityMetadata.",
+            "properties": {
+              "nextLink": {
+                "description": "Url to follow for getting next page of HybridIdentityMetadata.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Array of HybridIdentityMetadata",
+                "items": {
+                  "$ref": "#/definitions/HybridIdentityMetadata"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
+          "HybridIdentityMetadataProperties": {
+            "description": "Defines the resource properties.",
+            "properties": {
+              "identity": {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/Identity",
+                "readOnly": true
+              },
+              "publicKey": {
+                "description": "The Public Key.",
+                "type": "string"
+              },
+              "vmId": {
+                "description": "The unique identifier for the resource.",
+                "type": "string"
+              }
+            },
+            "type": "object"
           },
           "IpAddress": {
             "description": "Describes properties of the IP address.",
@@ -54900,6 +54999,63 @@
               "modelAsString": true,
               "name": "LicenseEdition"
             }
+          },
+          "LicenseProfile": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Describes a license profile in a hybrid machine.",
+            "properties": {
+              "properties": {
+                "description": "Describe the properties of a license profile.",
+                "properties": {
+                  "esuProfile": {
+                    "$ref": "#/definitions/LicenseProfileArmEsuProperties",
+                    "description": "Hybrid Compute ESU Profile properties",
+                    "x-ms-client-flatten": true
+                  },
+                  "productProfile": {
+                    "$ref": "#/definitions/LicenseProfileArmProductProfileProperties",
+                    "description": "Hybrid Compute Product Profile properties",
+                    "x-ms-client-flatten": true
+                  },
+                  "provisioningState": {
+                    "$ref": "#/definitions/ProvisioningState",
+                    "description": "The provisioning state, which only appears in the response."
+                  },
+                  "softwareAssurance": {
+                    "properties": {
+                      "softwareAssuranceCustomer": {
+                        "description": "Specifies if this machine is licensed as part of a Software Assurance agreement.",
+                        "type": "boolean"
+                      }
+                    },
+                    "type": "object",
+                    "x-ms-client-flatten": true
+                  }
+                },
+                "type": "object",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "LicenseProfileArmEsuProperties": {
+            "allOf": [
+              {
+                "$ref": "#/definitions/LicenseProfileArmEsuPropertiesWithoutAssignedLicense"
+              }
+            ],
+            "description": "Describes the properties of a License Profile ARM model.",
+            "properties": {
+              "assignedLicense": {
+                "description": "The resource id of the license.",
+                "type": "string"
+              }
+            },
+            "type": "object"
           },
           "LicenseProfileArmEsuPropertiesWithoutAssignedLicense": {
             "allOf": [
@@ -55088,6 +55244,26 @@
               "name": "LicenseProfileSubscriptionStatus"
             }
           },
+          "LicenseProfilesListResult": {
+            "description": "The List hybrid machine license profile operation response.",
+            "properties": {
+              "nextLink": {
+                "description": "The URI to fetch the next page of Machines. Call ListNext() with this URI to fetch the next page of license profile.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of license profiles.",
+                "items": {
+                  "$ref": "#/definitions/LicenseProfile"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
+          },
           "LicenseProperties": {
             "description": "Describes the properties of a License Profile.",
             "properties": {
@@ -55162,6 +55338,26 @@
               "modelAsString": true,
               "name": "LicenseType"
             }
+          },
+          "LicensesListResult": {
+            "description": "The List license operation response.",
+            "properties": {
+              "nextLink": {
+                "description": "The URI to fetch the next page of Machines. Call ListNext() with this URI to fetch the next page of license profile.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of licenses.",
+                "items": {
+                  "$ref": "#/definitions/License"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "value"
+            ],
+            "type": "object"
           },
           "Machine": {
             "allOf": [
@@ -55307,6 +55503,23 @@
               "typeHandlerVersion": {
                 "description": "Specifies the version of the script handler.",
                 "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "MachineExtensionsListResult": {
+            "description": "Describes the Machine Extensions List Result.",
+            "properties": {
+              "nextLink": {
+                "description": "The uri to fetch the next page of machine extensions. Call ListNext() with this to fetch the next page of extensions.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of extensions",
+                "items": {
+                  "$ref": "#/definitions/MachineExtension"
+                },
+                "type": "array"
               }
             },
             "type": "object"
@@ -55525,6 +55738,194 @@
             },
             "type": "object"
           },
+          "MachineRunCommand": {
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "description": "Describes a Run Command",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/MachineRunCommandProperties",
+                "description": "Describes Run Command Properties",
+                "x-ms-client-flatten": true
+              }
+            },
+            "type": "object"
+          },
+          "MachineRunCommandInstanceView": {
+            "description": "The instance view of a machine run command.",
+            "properties": {
+              "endTime": {
+                "description": "Script end time.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "error": {
+                "description": "Script error stream.",
+                "type": "string"
+              },
+              "executionMessage": {
+                "description": "Communicate script configuration errors or execution messages.",
+                "type": "string"
+              },
+              "executionState": {
+                "description": "Script execution status.",
+                "enum": [
+                  "Unknown",
+                  "Pending",
+                  "Running",
+                  "Failed",
+                  "Succeeded",
+                  "TimedOut",
+                  "Canceled"
+                ],
+                "type": "string",
+                "x-ms-enum": {
+                  "modelAsString": true,
+                  "name": "ExecutionState"
+                }
+              },
+              "exitCode": {
+                "description": "Exit code returned from script execution.",
+                "format": "int32",
+                "type": "integer"
+              },
+              "output": {
+                "description": "Script output stream.",
+                "type": "string"
+              },
+              "startTime": {
+                "description": "Script start time.",
+                "format": "date-time",
+                "type": "string"
+              },
+              "statuses": {
+                "description": "The  status information.",
+                "items": {
+                  "$ref": "#/definitions/ExtensionsResourceStatus"
+                },
+                "type": "array",
+                "x-ms-identifiers": []
+              }
+            },
+            "type": "object"
+          },
+          "MachineRunCommandProperties": {
+            "description": "Describes the properties of a run command.",
+            "properties": {
+              "asyncExecution": {
+                "default": false,
+                "description": "Optional. If set to true, provisioning will complete as soon as script starts and will not wait for script to complete.",
+                "type": "boolean"
+              },
+              "errorBlobManagedIdentity": {
+                "$ref": "#/definitions/RunCommandManagedIdentity",
+                "description": "User-assigned managed identity that has access to errorBlobUri storage blob. Use an empty object in case of system-assigned identity. Make sure managed identity has been given access to blob's container with 'Storage Blob Data Contributor' role assignment. In case of user-assigned identity, make sure you add it under VM's identity. For more info on managed identity and Run Command, refer https://aka.ms/ManagedIdentity and https://aka.ms/RunCommandManaged "
+              },
+              "errorBlobUri": {
+                "description": "Specifies the Azure storage blob where script error stream will be uploaded. Use a SAS URI with read, append, create, write access OR use managed identity to provide the VM access to the blob. Refer errorBlobManagedIdentity parameter.",
+                "type": "string"
+              },
+              "instanceView": {
+                "$ref": "#/definitions/MachineRunCommandInstanceView",
+                "description": "The machine run command instance view.",
+                "readOnly": true
+              },
+              "outputBlobManagedIdentity": {
+                "$ref": "#/definitions/RunCommandManagedIdentity",
+                "description": "User-assigned managed identity that has access to outputBlobUri storage blob. Use an empty object in case of system-assigned identity. Make sure managed identity has been given access to blob's container with 'Storage Blob Data Contributor' role assignment. In case of user-assigned identity, make sure you add it under VM's identity. For more info on managed identity and Run Command, refer https://aka.ms/ManagedIdentity and https://aka.ms/RunCommandManaged "
+              },
+              "outputBlobUri": {
+                "description": "Specifies the Azure storage blob where script output stream will be uploaded. Use a SAS URI with read, append, create, write access OR use managed identity to provide the VM access to the blob. Refer outputBlobManagedIdentity parameter. ",
+                "type": "string"
+              },
+              "parameters": {
+                "description": "The parameters used by the script.",
+                "items": {
+                  "$ref": "#/definitions/RunCommandInputParameter"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "protectedParameters": {
+                "description": "The parameters used by the script.",
+                "items": {
+                  "$ref": "#/definitions/RunCommandInputParameter"
+                },
+                "type": "array",
+                "x-ms-identifiers": [
+                  "name"
+                ]
+              },
+              "provisioningState": {
+                "description": "The provisioning state, which only appears in the response.",
+                "readOnly": true,
+                "type": "string"
+              },
+              "runAsPassword": {
+                "description": "Specifies the user account password on the machine when executing the run command.",
+                "type": "string",
+                "x-ms-secret": true
+              },
+              "runAsUser": {
+                "description": "Specifies the user account on the machine when executing the run command.",
+                "type": "string"
+              },
+              "source": {
+                "$ref": "#/definitions/MachineRunCommandScriptSource",
+                "description": "The source of the run command script."
+              },
+              "timeoutInSeconds": {
+                "description": "The timeout in seconds to execute the run command.",
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "MachineRunCommandScriptSource": {
+            "description": "Describes the script sources for run command. Use only one of script, scriptUri, commandId.",
+            "properties": {
+              "commandId": {
+                "description": "Specifies the commandId of predefined built-in script.",
+                "type": "string"
+              },
+              "script": {
+                "description": "Specifies the script content to be executed on the machine.",
+                "type": "string"
+              },
+              "scriptUri": {
+                "description": "Specifies the script download location. It can be either SAS URI of an Azure storage blob with read access or public URI.",
+                "type": "string"
+              },
+              "scriptUriManagedIdentity": {
+                "$ref": "#/definitions/RunCommandManagedIdentity",
+                "description": "User-assigned managed identity that has access to scriptUri in case of Azure storage blob. Use an empty object in case of system-assigned identity. Make sure the Azure storage blob exists, and managed identity has been given access to blob's container with 'Storage Blob Data Reader' role assignment. In case of user-assigned identity, make sure you add it under VM's identity. For more info on managed identity and Run Command, refer https://aka.ms/ManagedIdentity and https://aka.ms/RunCommandManaged."
+              }
+            },
+            "type": "object"
+          },
+          "MachineRunCommandsListResult": {
+            "description": "Describes the Run Commands List Result.",
+            "properties": {
+              "nextLink": {
+                "description": "The uri to fetch the next page of run commands. Call ListNext() with this to fetch the next page of run commands.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The list of run commands",
+                "items": {
+                  "$ref": "#/definitions/MachineRunCommand"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
           "NetworkInterface": {
             "description": "Describes a network interface.",
             "properties": {
@@ -55730,6 +56131,38 @@
               "name": "ProvisioningState"
             }
           },
+          "RunCommandInputParameter": {
+            "description": "Describes the properties of a run command parameter.",
+            "properties": {
+              "name": {
+                "description": "The run command parameter name.",
+                "type": "string"
+              },
+              "value": {
+                "description": "The run command parameter value.",
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "value"
+            ],
+            "type": "object"
+          },
+          "RunCommandManagedIdentity": {
+            "description": " Contains clientId or objectId (use only one, not both) of a user-assigned managed identity that has access to storage blob used in Run Command. Use an empty RunCommandManagedIdentity object in case of system-assigned identity. Make sure the Azure storage blob exists in case of scriptUri, and managed identity has been given access to blob's container with 'Storage Blob Data Reader' role assignment with scriptUri blob and 'Storage Blob Data Contributor' for Append blobs(outputBlobUri, errorBlobUri). In case of user assigned identity, make sure you add it under VM's identity. For more info on managed identity and Run Command, refer https://aka.ms/ManagedIdentity and https://aka.ms/RunCommandManaged.",
+            "properties": {
+              "clientId": {
+                "description": "Client Id (GUID value) of the user-assigned managed identity. ObjectId should not be used if this is provided.",
+                "type": "string"
+              },
+              "objectId": {
+                "description": "Object Id (GUID value) of the user-assigned managed identity. ClientId should not be used if this is provided.",
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
           "ServiceStatus": {
             "description": "Describes the status and behavior of a service.",
             "properties": {
@@ -55812,7 +56245,91 @@
           "title": "HybridComputeManagementClient",
           "version": "2025-01-13"
         },
+        "parameters": {
+          "licenseNameParameter": {
+            "description": "The name of the license.",
+            "in": "path",
+            "name": "licenseName",
+            "pattern": "[a-zA-Z0-9-_\\.]+",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "licenseProfileNameParameter": {
+            "description": "The name of the license profile.",
+            "enum": [
+              "default"
+            ],
+            "in": "path",
+            "name": "licenseProfileName",
+            "pattern": "[a-zA-Z0-9-_\\.]+",
+            "required": true,
+            "type": "string",
+            "x-ms-enum": {
+              "modelAsString": false,
+              "name": "LicenseProfileName"
+            },
+            "x-ms-parameter-location": "method"
+          },
+          "machineNameParameter": {
+            "description": "The name of the hybrid machine.",
+            "in": "path",
+            "name": "machineName",
+            "pattern": "[a-zA-Z0-9-_\\.]+",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "runCommandNameParameter": {
+            "description": "The name of the run command.",
+            "in": "path",
+            "name": "runCommandName",
+            "pattern": "[a-zA-Z0-9-_\\.]+",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          }
+        },
         "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/licenses": {
+            "get": {
+              "description": "The operation to get all licenses of a non-Azure machine",
+              "operationId": "Licenses_ListBySubscription",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LicensesListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "licenses"
+              ],
+              "x-ms-examples": {
+                "List Licenses by Subscription": {
+                  "$ref": "./examples/license/License_ListBySubscription.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
           "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines": {
             "get": {
               "description": "Lists all the hybrid machines in the specified subscription. Use the nextLink property in the response to get the next page of hybrid machines.",
@@ -55852,7 +56369,161 @@
               }
             }
           },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/licenses/{licenseName}": {
+            "get": {
+              "description": "Retrieves information about the view of a license.",
+              "operationId": "Licenses_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/licenseNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/License"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "licenses"
+              ],
+              "x-ms-examples": {
+                "Get License": {
+                  "$ref": "./examples/license/License_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines": {
+            "get": {
+              "description": "Lists all the hybrid machines in the specified resource group. Use the nextLink property in the response to get the next page of hybrid machines.",
+              "operationId": "Machines_ListByResourceGroup",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "Expands referenced resources.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "machines"
+              ],
+              "x-ms-examples": {
+                "List Machines by resource group": {
+                  "$ref": "./examples/machine/Machines_ListByResourceGroup.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}": {
+            "delete": {
+              "description": "The operation to delete a hybrid machine.",
+              "operationId": "Machines_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the hybrid machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "description": "The URI to poll for completion status.",
+                      "type": "string"
+                    },
+                    "Location": {
+                      "description": "The URL of the resource used to check the status of the asynchronous operation.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The recommended number of seconds to wait before calling the URI specified in Azure-AsyncOperation.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "machines"
+              ],
+              "x-ms-examples": {
+                "Delete a Machine": {
+                  "$ref": "./examples/machine/Machines_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
             "get": {
               "description": "Retrieves information about the model view or the instance view of a hybrid machine.",
               "operationId": "Machines_Get",
@@ -55914,6 +56585,675 @@
                 },
                 "Get Machine with License Profile Instance View": {
                   "$ref": "./examples/machine/Machines_Get_LicenseProfileInstanceView.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/extensions": {
+            "get": {
+              "description": "The operation to get all extensions of a non-Azure machine",
+              "operationId": "MachineExtensions_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the machine containing the extension.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineExtensionsListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineExtensions"
+              ],
+              "x-ms-examples": {
+                "GET all Machine Extensions - List": {
+                  "$ref": "./examples/extension/Extension_List.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/extensions/{extensionName}": {
+            "delete": {
+              "description": "The operation to delete the extension.",
+              "operationId": "MachineExtensions_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the machine where the extension should be deleted.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the machine extension.",
+                  "in": "path",
+                  "name": "extensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "description": "The URI to poll for completion status.",
+                      "type": "string"
+                    },
+                    "Location": {
+                      "description": "The URL of the resource used to check the status of the asynchronous operation.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The recommended number of seconds to wait before calling the URI specified in Azure-AsyncOperation.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineExtensions"
+              ],
+              "x-ms-examples": {
+                "Delete a Machine Extension": {
+                  "$ref": "./examples/extension/Extension_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "The operation to get the extension.",
+              "operationId": "MachineExtensions_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the machine containing the extension.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "The name of the machine extension.",
+                  "in": "path",
+                  "name": "extensionName",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineExtension"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineExtensions"
+              ],
+              "x-ms-examples": {
+                "GET Machine Extension": {
+                  "$ref": "./examples/extension/Extension_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/hybridIdentityMetadata": {
+            "get": {
+              "description": "Returns the list of HybridIdentityMetadata of the given machine.",
+              "operationId": "HybridIdentityMetadata_ListByMachines",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the hybrid machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "schema": {
+                    "$ref": "#/definitions/HybridIdentityMetadataList"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Implements GET HybridIdentityMetadata in a machine.",
+              "tags": [
+                "HybridIdentityMetadata"
+              ],
+              "x-ms-examples": {
+                "HybridIdentityMetadataListByVirtualMachines": {
+                  "$ref": "./examples/HybridIdentityMetadata_ListByVirtualMachines.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/hybridIdentityMetadata/{metadataName}": {
+            "get": {
+              "description": "Implements HybridIdentityMetadata GET method.",
+              "operationId": "HybridIdentityMetadata_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the hybrid machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "description": "Name of the HybridIdentityMetadata.",
+                  "in": "path",
+                  "name": "metadataName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                }
+              ],
+              "produces": [
+                "application/json"
+              ],
+              "responses": {
+                "200": {
+                  "description": "Success",
+                  "schema": {
+                    "$ref": "#/definitions/HybridIdentityMetadata"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "summary": "Gets HybridIdentityMetadata.",
+              "tags": [
+                "HybridIdentityMetadata"
+              ],
+              "x-ms-examples": {
+                "GetHybridIdentityMetadata": {
+                  "$ref": "./examples/HybridIdentityMetadata_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/licenseProfiles": {
+            "get": {
+              "description": "The operation to get all license profiles of a non-Azure machine",
+              "operationId": "LicenseProfiles_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LicenseProfilesListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "licenseProfiles"
+              ],
+              "x-ms-examples": {
+                "List all License Profiles": {
+                  "$ref": "./examples/licenseProfile/LicenseProfile_List.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/licenseProfiles/{licenseProfileName}": {
+            "delete": {
+              "description": "The operation to delete a license profile.",
+              "operationId": "LicenseProfiles_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/machineNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/licenseProfileNameParameter"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "description": "The URI to poll for completion status.",
+                      "type": "string"
+                    },
+                    "Location": {
+                      "description": "The URL of the resource used to check the status of the asynchronous operation.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The recommended number of seconds to wait before calling the URI specified in Azure-AsyncOperation.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "licenseProfiles"
+              ],
+              "x-ms-examples": {
+                "Delete a License Profile": {
+                  "$ref": "./examples/licenseProfile/LicenseProfile_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true
+            },
+            "get": {
+              "description": "Retrieves information about the view of a license profile.",
+              "operationId": "LicenseProfiles_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/machineNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/licenseProfileNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/LicenseProfile"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "licenseProfiles"
+              ],
+              "x-ms-examples": {
+                "Get License Profile": {
+                  "$ref": "./examples/licenseProfile/LicenseProfile_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/networkProfile": {
+            "get": {
+              "description": "The operation to get network information of hybrid machine",
+              "operationId": "NetworkProfile_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "description": "The name of the hybrid machine.",
+                  "in": "path",
+                  "maxLength": 54,
+                  "minLength": 1,
+                  "name": "machineName",
+                  "pattern": "^[a-zA-Z0-9-_\\.]{1,54}$",
+                  "required": true,
+                  "type": "string"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/NetworkProfile"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineNetworkProfile"
+              ],
+              "x-ms-examples": {
+                "GET Network Profile": {
+                  "$ref": "./examples/NetworkProfile_Get.json"
+                }
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands": {
+            "get": {
+              "description": "The operation to get all the run commands of a non-Azure machine.",
+              "operationId": "MachineRunCommands_List",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/machineNameParameter"
+                },
+                {
+                  "description": "The expand expression to apply on the operation.",
+                  "in": "query",
+                  "name": "$expand",
+                  "required": false,
+                  "type": "string"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineRunCommandsListResult"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineRunCommands"
+              ],
+              "x-ms-examples": {
+                "GET all Machine Run Commands": {
+                  "$ref": "./examples/runCommand/RunCommands_List.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands/{runCommandName}": {
+            "delete": {
+              "description": "The operation to delete a run command.",
+              "operationId": "MachineRunCommands_Delete",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/machineNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/runCommandNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Accepted",
+                  "headers": {
+                    "Azure-AsyncOperation": {
+                      "description": "The URI to poll for completion status.",
+                      "type": "string"
+                    },
+                    "Location": {
+                      "description": "The URL of the resource used to check the status of the asynchronous operation.",
+                      "type": "string"
+                    },
+                    "Retry-After": {
+                      "description": "The recommended number of seconds to wait before calling the URI specified in Azure-AsyncOperation.",
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  }
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineRunCommands"
+              ],
+              "x-ms-examples": {
+                "Delete a Machine Run Command": {
+                  "$ref": "./examples/runCommand/RunCommands_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              }
+            },
+            "get": {
+              "description": "The operation to get a run command.",
+              "operationId": "MachineRunCommands_Get",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/machineNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/runCommandNameParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK",
+                  "schema": {
+                    "$ref": "#/definitions/MachineRunCommand"
+                  }
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "tags": [
+                "MachineRunCommands"
+              ],
+              "x-ms-examples": {
+                "Get a Run Command": {
+                  "$ref": "./examples/runCommand/RunCommands_Get.json"
                 }
               }
             }

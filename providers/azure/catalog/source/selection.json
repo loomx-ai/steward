@@ -2330,8 +2330,24 @@
     {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json",
       "operations": [
+        "HybridIdentityMetadata_Get",
+        "HybridIdentityMetadata_ListByMachines",
+        "LicenseProfiles_Delete",
+        "LicenseProfiles_Get",
+        "LicenseProfiles_List",
+        "Licenses_Get",
+        "Licenses_ListBySubscription",
+        "MachineExtensions_Delete",
+        "MachineExtensions_Get",
+        "MachineExtensions_List",
+        "MachineRunCommands_Delete",
+        "MachineRunCommands_Get",
+        "MachineRunCommands_List",
+        "Machines_Delete",
         "Machines_Get",
-        "Machines_ListBySubscription"
+        "Machines_ListByResourceGroup",
+        "Machines_ListBySubscription",
+        "NetworkProfile_Get"
       ]
     }
   ],

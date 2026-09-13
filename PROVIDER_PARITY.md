@@ -3419,3 +3419,46 @@ background evidence only, not acceptance evidence for this work.
   byte-identical catalog/506-shape Data Factory regeneration, all 18 online
   pinned example reproductions, documentation checks (40 chapters / 10 original
   screenshots) and whitespace validation passed.
+
+### Arc HybridCompute native contract foundation
+
+- Added 16 native operations to the two machine reads already used by Defender:
+  machine deletion/resource-group List, extension/Run Command/license-profile
+  GET/List/DELETE, supporting license reads, network-profile GET and hybrid
+  identity metadata GET/List. All 1,418 prior operations and source fragments
+  remain unchanged; no resource mapping, inventory rule or cleanup action was
+  added. Azure remains at 429 rules and 400 actions, with 1,434 operations from
+  182 root and 101 reference documents. All 20 missing mapped Azure types and
+  all eight acceptance criteria remain open.
+- The [Arc evidence](providers/azure/fixtures/hybridcompute/README.md) retains
+  19 unchanged, pinned 2025-01-13 REST examples with 24 responses and 15 bodies.
+  Contract tests assert two undeclared List parameters, two extension-level enum
+  mismatches and exactly 138 non-nullable-schema/null-value discrepancies across
+  eight bodies before adapting only those known values in memory. Native source
+  metadata, raw examples and their hashes are preserved.
+- Twenty-five unmodified interaction extracts from three official CLI recordings
+  exercise shared transport, 429 classification, signed URL preservation and
+  log redaction. Five accepted deletes use distinct `operationstatus` and
+  `operationresults` URLs with intermediate signature changes; terminal result
+  reads are empty HTTP 200 and need explicit transport opt-in. These recordings
+  retain API version 2026-07-15 and contain no final resource-own 404. They do not
+  establish 2025-01-13 lifecycle parity or completed resource deletion.
+- Official guidance requires extensions to be removed before agent disconnect,
+  distinguishes cloud deletion from local agent cleanup, and identifies Azure
+  Local VM deletion consequences. Run Command deletion terminates running
+  scripts. Shared ESU licenses are referenced by machine profiles, not owned by
+  a machine. These behaviors must govern the unfinished native inventory,
+  planning, cleanup and restored worker implementation. The Arc ENS mapping
+  remains pending; cloud-record absence is not physical-server release.
+- Floci-AZ's service and ARM documentation was rechecked on 2026-09-13. It does
+  not document Arc agent/extension removal or signed HybridCompute polling;
+  generic ARM fallthrough does not close independent-emulator acceptance.
+- Verification: repository-wide `go test ./...` passed (Azure 305.753s), including
+  the native contract test. Arc/Defender/catalog race checks passed (18.092s);
+  the subsequently added recorded transport test and native contract test
+  passed together under the race detector (5.428s). Native inventory, cleanup,
+  planning, final own-resource readback and resumed execution remain unfinished.
+  `go vet ./...`, six offline importer tests, byte-identical regeneration of both
+  generated Azure files, online reproduction of all 19 examples and all 25
+  extracts from three complete CLI recordings, documentation checks (40 chapters
+  / 10 original screenshots) and whitespace validation also passed.

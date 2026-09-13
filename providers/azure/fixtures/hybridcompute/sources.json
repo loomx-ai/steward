@@ -1,0 +1,154 @@
+[
+  {
+    "file": "Extension_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/extension/Extension_Delete.json",
+    "operation": "MachineExtensions_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/extensions/{extensionName}",
+    "source_sha256": "5b06deca4e1acbf61855cbd84076c13b88e42650e885512bbc97083c4cd81dde"
+  },
+  {
+    "file": "Extension_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/extension/Extension_Get.json",
+    "operation": "MachineExtensions_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/extensions/{extensionName}",
+    "source_sha256": "01f11432c7d871001268d3d636670ddbf9adb54acf468eac9909b3e48e226d8b"
+  },
+  {
+    "file": "Extension_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/extension/Extension_List.json",
+    "operation": "MachineExtensions_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/extensions",
+    "source_sha256": "f25bc2c69e0d6e667cbd52934a088a164fbb433a7f44b81c1dce684984de9f0c"
+  },
+  {
+    "file": "HybridIdentityMetadata_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/HybridIdentityMetadata_Get.json",
+    "operation": "HybridIdentityMetadata_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/hybridIdentityMetadata/{metadataName}",
+    "source_sha256": "1d748f8696d01a4beb9c101b600c88f292e443b6a53f4f3834872f1629d177d3"
+  },
+  {
+    "file": "HybridIdentityMetadata_ListByVirtualMachines.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/HybridIdentityMetadata_ListByVirtualMachines.json",
+    "operation": "HybridIdentityMetadata_ListByMachines",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/hybridIdentityMetadata",
+    "source_sha256": "f0f139b8e1f24b3ff149170bc0ca3f788892206134406560bf00d3d6fe19ac8e"
+  },
+  {
+    "file": "LicenseProfile_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/licenseProfile/LicenseProfile_Delete.json",
+    "operation": "LicenseProfiles_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/licenseProfiles/{licenseProfileName}",
+    "source_sha256": "5ecd4cda04a37ea704a87c4947e1357d46c3fdaf93b51cc24f5ab55be76a7c0e"
+  },
+  {
+    "file": "LicenseProfile_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/licenseProfile/LicenseProfile_Get.json",
+    "operation": "LicenseProfiles_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/licenseProfiles/{licenseProfileName}",
+    "source_sha256": "264605b76da1c9b9e0a5beb556e615a7540617d0ef5e918228bc9eda56309548"
+  },
+  {
+    "file": "LicenseProfile_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/licenseProfile/LicenseProfile_List.json",
+    "operation": "LicenseProfiles_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/licenseProfiles",
+    "source_sha256": "b1c1067151a8feae500a751f6f3958d9bcd131457c5985f08f68914af355de3d"
+  },
+  {
+    "file": "License_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/license/License_Get.json",
+    "operation": "Licenses_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/licenses/{licenseName}",
+    "source_sha256": "2d91ce86a48848549e3ee6c7a8a6992bf5010264f2be8c429aab1258867e606b"
+  },
+  {
+    "file": "License_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/license/License_ListBySubscription.json",
+    "operation": "Licenses_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/licenses",
+    "source_sha256": "932923fc8590f01a14ead61f9f52d3c1f223127cc3adad1046d841f79d44e384"
+  },
+  {
+    "file": "Machines_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/machine/Machines_Delete.json",
+    "operation": "Machines_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}",
+    "source_sha256": "6e13c11d5cc951f96735c2e68e43b17fbef24539b0ecc52a4498b389228c328a"
+  },
+  {
+    "file": "Machines_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/machine/Machines_Get.json",
+    "operation": "Machines_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}",
+    "source_sha256": "89ac130a2b1cdb6f03ad5b7ba06c2c744a1e94f84bfccd5649cd019cfca48010"
+  },
+  {
+    "file": "Machines_Get_LicenseProfileInstanceView.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/machine/Machines_Get_LicenseProfileInstanceView.json",
+    "operation": "Machines_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}",
+    "source_sha256": "357ef738aa72d731489b3d653318e7ba45109fb8ea7c736db0382ec622323081"
+  },
+  {
+    "file": "Machines_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/machine/Machines_ListByResourceGroup.json",
+    "operation": "Machines_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines",
+    "source_sha256": "0d1eab299919f1b445d18092faa7cb3e9dc81ea15c1f92d305c1359baf6488d5"
+  },
+  {
+    "file": "Machines_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/machine/Machines_ListBySubscription.json",
+    "operation": "Machines_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines",
+    "source_sha256": "10a039621d65bd820818ed7ee5504100e94eba9715167a54f321f883ab6c301d"
+  },
+  {
+    "file": "NetworkProfile_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/NetworkProfile_Get.json",
+    "operation": "NetworkProfile_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/networkProfile",
+    "source_sha256": "9e04c58127d8df35bdd11bbe98eece526e59e9c4734219178e47cad1ea2436cb"
+  },
+  {
+    "file": "RunCommands_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/runCommand/RunCommands_Delete.json",
+    "operation": "MachineRunCommands_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands/{runCommandName}",
+    "source_sha256": "1de9d034a74f022f426b985fcc79099d76c22577a4a59b1192c35d6b51f58f36"
+  },
+  {
+    "file": "RunCommands_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/runCommand/RunCommands_Get.json",
+    "operation": "MachineRunCommands_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands/{runCommandName}",
+    "source_sha256": "7832e1162642db820d35d333d5add9fdc1d0c5cb0345bb62d0410987008311b4"
+  },
+  {
+    "file": "RunCommands_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/runCommand/RunCommands_List.json",
+    "operation": "MachineRunCommands_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines/{machineName}/runCommands",
+    "source_sha256": "cfec95214e29ff8adfbd50e6b17a00d23b138c7b8697ba8a0a967b64cb68f997"
+  }
+]

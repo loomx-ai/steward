@@ -65,7 +65,7 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 1,418 operations from
+Private Link and file shares. The current catalog contains 1,434 operations from
 182 root documents and 101 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
@@ -78,6 +78,13 @@ uses `$include=none`, preserving snapshots until their independent lifecycle is
 modeled. Service-parent cascade/prerequisite handling and the remaining service
 families are still incomplete; these protocol checks do not close publication
 or independent emulator acceptance.
+
+Arc HybridCompute adds 16 supporting operations to its two existing machine
+reads, without adding a resource rule or cleanup action. The
+[Arc evidence](../fixtures/hybridcompute/README.md) preserves 19 unchanged
+2025-01-13 examples, enumerates native schema discrepancies and replays 25
+original CLI transport interactions from 2026-07-15. The different recording
+version and missing final resource reads leave lifecycle verification open.
 
 VM managed disks and NICs, and a NIC's public IPs, contribute native lifecycle
 impact from their `deleteOption` fields. A reviewed retention outcome changes
