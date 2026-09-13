@@ -250,9 +250,16 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		slices.Sort(network)
 		normalized["_azure_local_references"] = recorded
 		normalized["_azure_local_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
-		// Inventory is a completed milestone; native controller cleanup is still
-		// unimplemented. Do not expose a generic DELETE as a reviewed lifecycle.
+		// Controller and independent-resource cleanup still require their native lifecycle.
 		actionable := false
+		if kind == azureLocalAgentType {
+			vm := instances[azureLocalParent(id, kind)]
+			reason := azureLocalGuestProtection(raw, vm, machines[machine])
+			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "vm": c.privateConfiguration(azureLocalCleanupSnapshot(vm)), "machine": c.privateConfiguration(hybridComputeParentStamp(machines[machine])), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "inventory": configuration, "protected": reason != ""}
+			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalCleanupBinding(id, request.ConnectionID, location, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			actionable = reason == ""
+		}
 		tags := map[string]string{}
 		for k, v := range object(safe["tags"]) {
 			if str, ok := v.(string); ok {

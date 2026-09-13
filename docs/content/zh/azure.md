@@ -52,7 +52,7 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
 | Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 先清理已审查的子资源，再移除普通机器注册；共享 ESU 许可证需先解除分配，控制器托管机器需通过控制器处理 |
-| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点与引用图谱；控制器清理仍待完成 |
+| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点、引用图谱与访客代理清理；控制器清理仍待完成 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -102,6 +102,8 @@ Azure Local 通过原生接口盘点 VM 实例、访客代理、访客身份元�
 扫描对话框支持选择 Azure 虚拟网络和 Azure Local 逻辑网络，提供名称或 ARM ID 搜索及分页。创建任务时会重新读取所选网络；网络已删除或不可访问时，不会保存任务。列出 Local 网络需要 `Microsoft.AzureStackHCI/logicalNetworks/read` 权限。逻辑网络内部配置的子网不作为独立 ARM 资源供选择。权限错误会显示在界面中，重试会保留已选网络。
 
 逻辑网络扫描沿网卡与 VM 引用纳入访客资源和关联虚拟磁盘。磁盘的网络归属还需读取原生 VM 实例和 Arc 机器，权限为 `Microsoft.AzureStackHCI/virtualMachineInstances/read` 和 `Microsoft.HybridCompute/machines/read`。系统会重新读取已保存的挂载证据，补查集合遗漏的已知 VM；磁盘解除挂载后，其网络引用中会移除该 VM。存储路径与镜像仍是独立引用。网络归属不授予反向依赖或删除所有权。
+
+Azure Local 访客代理支持原生清理，前提是已扫描并核验 HCI 注册和 VM 配置。需要 `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`，以及访客资源、VM 实例、Arc 机器、资源组和管理锁的读取权限。清理会重新核验已审查配置、保护标记与继承锁，并持久化 ARM 操作以支持重试和重启恢复。只有访客资源自身的 GET 确认不存在，才会完成清理；操作成功或父资源消失都不足以证明完成。计划会提示访客管理可能中断，VM、Arc 注册和身份元数据仍保留。ARM 资源删除并不证明访客端代理已移除。
 
 Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，这些关系不授予删除所有权。Azure Local 控制器清理仍待完成。官方 CLI 先删除 VM 实例，再删除 Arc 注册，关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
 

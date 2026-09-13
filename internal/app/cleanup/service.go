@@ -1790,6 +1790,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if !selectionWarningExists(result, code, value.ID) {
 				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalGuestRemoval, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningAzureLocalGuestRemoval, AssetID: value.ID, Message: "Deleting this Azure Local guest-management resource can interrupt guest management. The VM and Arc registration remain; verify the guest-side result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "ACS::ECS::Image":
 			if !cleanupNormalizedBool(value.Normalized, "IsPublic") ||
 				selectionWarningExists(result, plan.WarningPublicImageMadePrivate, value.ID) {

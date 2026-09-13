@@ -135,6 +135,7 @@ const (
 	WarningScalingGroupForceDelete       WarningCode = "scaling_group_force_delete"
 	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
 	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
+	WarningAzureLocalGuestRemoval        WarningCode = "azure_local_guest_removal"
 	WarningArcCommandTermination         WarningCode = "arc_command_termination"
 	WarningArcSharedLicenseRemoval       WarningCode = "arc_shared_license_removal"
 	WarningArcLicenseProfileRemoval      WarningCode = "arc_license_profile_removal"

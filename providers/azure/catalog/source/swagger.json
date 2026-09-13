@@ -248768,7 +248768,9 @@
       "nativeType": "Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents",
       "rest": {
         "collection": "guestAgents",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.GuestAgent_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.GuestAgents_List"
         ],

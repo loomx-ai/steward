@@ -3798,3 +3798,45 @@ background evidence only, not acceptance evidence for this work.
   passed (8.792s), as did TypeScript and all 20 scan UI tests. Exactly 12 owned
   files are included; all 65 pre-existing file contents were preserved,
   including unrelated edits in the shared translation file.
+
+
+### Azure Local native guest-agent cleanup and restart recovery
+
+- Guest agents now have an explicit native DELETE action. Counts are 443 rules,
+  406 actions and 1,468 operations, with 189 root/102 reference documents. All
+  existing native operation definitions remain unchanged; source mappings,
+  generated checksums and the explicit guest specification are synchronized.
+- Inventory signs guest and VM configuration, HCI registration identity/location,
+  ETag and protection evidence. Preflight rereads the same context and verifies
+  resource-group protection and inherited locks before mutation. Authored and
+  unknown private fields remain bound; changing operational status during
+  deletion does not invalidate the original resource configuration.
+- Native 202/204 deletion persists a resource/request-bound ARM receipt, honors
+  async-header precedence and retry delays, restores signed URL rotations and
+  avoids mutation replay after restart. Poll failure, malformed/foreign URLs,
+  signature changes and operation 404 cannot establish resource absence.
+  A missing parent prevents a new DELETE; the guest's own GET decides completion.
+- Original 2024 SDK methods extracted from the pinned official CLI wheel are
+  retained with hashes, extraction coordinates and the Microsoft MIT license.
+  Offline execution checks native response handling and continuation without
+  another initial mutation. Callback shapes use composed ARM protocol fixtures;
+  no independently recorded Local backend or emulator was available in the
+  inspected Python/.NET/Go/Java SDK and CLI trees. Real-cloud compatibility of
+  the bounded callback policy and guest-side effects remain unverified.
+- The registered SQLite workflow covers scan, graph, warning-bearing plan and
+  restartable execution. Operation success leaves a surviving guest active;
+  eventual own absence closes that guest only. VM/registration/identity are
+  retained. The bilingual warning explains possible guest-management disruption.
+- Nineteen mapped types still lack specifications. VM controller ownership,
+  controller/independent-resource cleanup, final backend verification and real
+  VM/billing outcomes remain unfinished. All eight acceptance criteria stay open.
+- Verification: isolated `77b247c` plus this milestone passed `go test ./...`
+  (Azure 311.021s; GCP 159.966s), Azure Local/Arc/catalog and cleanup race checks
+  (63.153s / 1.394s), `go vet ./...`, nine offline SDK/CLI/importer checks and
+  documentation validation (30 chapters, 10 original screenshots). Catalog
+  reproduction passed after synchronizing the source checksum. Both retained
+  SDK fragments match the pinned wheel, full member hashes and AST line ranges.
+  Shared-workspace Azure/cleanup integration passed (9.586s / 3.359s), plus
+  TypeScript, 39 frontend contracts and 92 cleanup/i18n UI tests. The 23-file
+  milestone preserves all 65 pre-existing file contents, including unrelated
+  shared-translation edits.

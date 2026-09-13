@@ -69,5 +69,90 @@ class AzureLocalCLITests(unittest.TestCase):
                 self.assertEqual(calls, order if fail_at is None else order[:order.index(fail_at) + 1])
 
 
+class AzureLocalGuestSDKTests(unittest.TestCase):
+    def native_functions(self):
+        import textwrap
+        source = json.loads((FIXTURES / "sdk-guest-source.json").read_text())
+        functions = {}
+        for entry in source["functions"]:
+            fragment = (FIXTURES / entry["file"]).read_bytes()
+            self.assertEqual(hashlib.sha256(fragment).hexdigest(), entry["sha256"])
+            functions[entry["function"]] = textwrap.dedent(fragment.decode())
+        return functions
+
+    def test_native_initial_delete_responses(self):
+        from types import MethodType
+        class NativeError(Exception):
+            def __init__(self, **kwargs):
+                super().__init__("native SDK rejected response")
+        class Deserialize:
+            def __call__(self, kind, value):
+                return value
+            def failsafe_deserialize(self, *args):
+                return None
+        for status in (200, 201, 202, 204, 400, 403, 404, 409, 500):
+            with self.subTest(status=status):
+                requests = []
+                def build(**kwargs):
+                    requests.append(kwargs)
+                    return SimpleNamespace(url="https://management.azure.com/native-guest")
+                response = SimpleNamespace(status_code=status, headers={"Location": "https://management.azure.com/native-poll"})
+                pipeline = SimpleNamespace(http_response=response)
+                scope = dict(build_delete_request=build, ClientAuthenticationError=NativeError,
+                             ResourceNotFoundError=NativeError, ResourceExistsError=NativeError,
+                             ResourceNotModifiedError=NativeError, HttpResponseError=NativeError,
+                             ARMErrorFormat=object(), _models=SimpleNamespace(ErrorResponse=object()),
+                             map_error=lambda **kwargs: None)
+                exec("from __future__ import annotations\n" + self.native_functions()["_delete_initial"], scope)
+                instance = SimpleNamespace(_config=SimpleNamespace(api_version="2024-01-01"),
+                                           _client=SimpleNamespace(format_url=lambda url: url,
+                                               _pipeline=SimpleNamespace(run=lambda *args, **kwargs: pipeline)),
+                                           _deserialize=Deserialize())
+                call = MethodType(scope["_delete_initial"], instance)
+                if status in (202, 204):
+                    result = call("native-machine", cls=lambda raw, data, headers: (raw, headers))
+                    self.assertIs(result[0], pipeline)
+                    self.assertEqual(result[1], {"Location": response.headers["Location"]} if status == 202 else {})
+                else:
+                    with self.assertRaises(NativeError):
+                        call("native-machine")
+                self.assertEqual(requests, [dict(resource_uri="native-machine", api_version="2024-01-01", headers={}, params={})])
+
+    def test_native_delete_continuation_skips_mutation(self):
+        from types import MethodType
+        class Poller:
+            def __class_getitem__(cls, item):
+                return cls
+            def __init__(self, *args):
+                self.args = args
+            @classmethod
+            def from_continuation_token(cls, **kwargs):
+                return kwargs
+        polls, mutations = [], []
+        def polling(delay, **kwargs):
+            polls.append(delay)
+            return "arm-polling"
+        scope = dict(LROPoller=Poller, ARMPolling=polling, NoPolling=lambda: "no-polling",
+                     cast=lambda typ, value: value, PollingMethod=object)
+        exec("from __future__ import annotations\n" + self.native_functions()["begin_delete"], scope)
+        native_response = object()
+        def initial(**kwargs):
+            mutations.append(kwargs)
+            return native_response
+        client = object()
+        instance = SimpleNamespace(_delete_initial=initial, _client=client, _config=SimpleNamespace(polling_interval=5))
+        call = MethodType(scope["begin_delete"], instance)
+        first = call("native-machine", polling_interval=7)
+        self.assertEqual(polls, [7])
+        self.assertEqual(len(mutations), 1)
+        self.assertEqual(mutations[0]["resource_uri"], "native-machine")
+        self.assertIs(first.args[1], native_response)
+        restored = call("native-machine", continuation_token="saved-native-token")
+        self.assertEqual(len(mutations), 1)
+        self.assertEqual(restored["continuation_token"], "saved-native-token")
+        self.assertEqual(restored["polling_method"], "arm-polling")
+        self.assertIs(restored["client"], client)
+
+
 if __name__ == "__main__":
     unittest.main()

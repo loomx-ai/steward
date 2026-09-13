@@ -4,8 +4,8 @@ These are contracts for the missing ENS-equivalent VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory and reference graphs are implemented; ownership, planning and
-execution remain unfinished.
+reference checks and cleanup. Native inventory, reference graphs and guest-agent cleanup are implemented; VM
+controller ownership and cleanup remain unfinished.
 
 ## Original Swagger examples
 
@@ -37,7 +37,8 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. No Azure Local cleanup action is enabled.
+metadata are excluded. Guest-agent cleanup uses its native DELETE; other Local
+cleanup actions remain unavailable.
 
 ## Original CLI function
 
@@ -134,3 +135,39 @@ Frontend tests cover VNet-to-Local paging, Local selection, submission and retry
 without losing an existing selection. Browser QA uses the actual scan dialog and
 styles with a temporary HTTP-response fixture in light and dark themes; it is
 UI evidence, not an independent cloud implementation.
+
+## Guest-agent cleanup and SDK evidence
+
+The native guest-agent action binds the guest configuration, VM configuration,
+HCI registration UUID/location, protection state and ETag from inventory. It
+checks current protection and inherited locks twice before DELETE. Private
+credentials and unknown fields remain hashed, not exposed. Parent disappearance
+prevents a new mutation; only the guest's own absence closes its asset. The
+VM, Arc machine and read-only identity metadata are not removed by this action.
+
+The ARM receipt is signed to the resource and immutable action request. It
+supports native 202 and 204 responses, Azure-AsyncOperation precedence, Location
+polling, signed-query rotation, persisted completion and restart without DELETE
+replay. Tests reject altered scope/owner/version/phase, malformed callbacks,
+failed/unknown states and operation 404 as evidence of successful deletion.
+The bounded callback policy accepts subscription-scoped StackHCI regional
+operation collections at the pinned API version. These callback paths are
+composed protocol fixtures based on ARM conventions, not observed Local backend
+recordings; live callback compatibility remains unverified.
+
+`sdk-guest-source.json` pins the exact `_delete_initial` and `begin_delete`
+methods from the official 1.15.1 CLI wheel's vendored 2024-01-01 SDK. The retained
+fragments preserve original indentation, member/fragment hashes and line ranges;
+`LICENSE.microsoft` applies. The offline Python tests execute these original
+methods with transport/poller stubs: only 202/204 are accepted, native Location
+handling is preserved, ARM polling is selected, and continuation skips the
+initial mutation. No installed SDK, emulator or cloud account is used. Reproduce
+the extraction using the same wheel/hash verification above, selecting class
+`GuestAgentOperations` and the named method line ranges in the new manifest.
+
+A registered SQLite scan/graph/plan/execution test selects the guest, includes
+the cleanup warning, recreates repository/runtime across worker retries and
+checks a stable original operation and deletion deadline. A completed operation
+with a still-live guest remains pending; eventual own absence closes only the
+guest. VM and identity assets stay active. This does not validate guest-side
+uninstallation, physical VM deletion, controller cascades or billing outcomes.
