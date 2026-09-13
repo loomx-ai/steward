@@ -26,6 +26,7 @@ func elasticSanTestPollURL() string {
 type elasticSanCleanupFixture struct {
 	*elasticSanFixture
 	deletes, polls int
+	kind           string
 	pollStatus     int
 	locks          []any
 	hook           func(*http.Request) (*http.Response, bool)
@@ -33,7 +34,7 @@ type elasticSanCleanupFixture struct {
 
 func newElasticSanCleanupFixture(t *testing.T) *elasticSanCleanupFixture {
 	t.Helper()
-	f := &elasticSanCleanupFixture{elasticSanFixture: newElasticSanFixture(t), pollStatus: 200, locks: []any{}}
+	f := &elasticSanCleanupFixture{elasticSanFixture: newElasticSanFixture(t), kind: elasticSanSnapshotType, pollStatus: 200, locks: []any{}}
 	f.override = func(req *http.Request) (*http.Response, bool) {
 		if f.hook != nil {
 			if response, handled := f.hook(req); handled {
@@ -49,7 +50,7 @@ func newElasticSanCleanupFixture(t *testing.T) *elasticSanCleanupFixture {
 			return jsonResponse(f.pollStatus, map[string]any{}, nil), true
 		}
 		if req.Method == "DELETE" {
-			if path != f.ids[elasticSanSnapshotType] || req.URL.Query().Get("api-version") != elasticSanVersion || len(req.URL.Query()) != 1 || req.Header.Get("x-ms-force-delete") != "" || req.Header.Get("x-ms-delete-snapshots") != "" || req.ContentLength != 0 {
+			if path != f.ids[f.kind] || req.URL.Query().Get("api-version") != elasticSanVersion || len(req.URL.Query()) != 1 || req.Header.Get("x-ms-force-delete") != "" || req.Header.Get("x-ms-delete-snapshots") != "" || req.ContentLength != 0 {
 				t.Fatal("snapshot cleanup broadened its native mutation")
 			}
 			f.deletes++
@@ -71,7 +72,7 @@ func newElasticSanCleanupFixture(t *testing.T) *elasticSanCleanupFixture {
 
 func (f *elasticSanCleanupFixture) action(t *testing.T) (contracts.ActionDriver, contracts.ActionRequest) {
 	t.Helper()
-	batch, err := f.runtime.List(t.Context(), f.request(elasticSanSnapshotType))
+	batch, err := f.runtime.List(t.Context(), f.request(f.kind))
 	if err != nil || len(batch.Items) != 1 {
 		t.Fatal("snapshot inventory", batch, err)
 	}
@@ -84,7 +85,7 @@ func (f *elasticSanCleanupFixture) action(t *testing.T) (contracts.ActionDriver,
 	if !ok {
 		t.Fatal("missing monitor prerequisite guard")
 	}
-	if _, ok := guard.inner.(*elasticSanSnapshotAction); !ok {
+	if _, ok := guard.inner.(*elasticSanChildAction); !ok {
 		t.Fatal("missing native snapshot driver")
 	}
 	return driver, contracts.ActionRequest{Asset: value, Action: "delete", IdempotencyKey: "elastic-snapshot-delete"}
@@ -251,14 +252,21 @@ func TestElasticSanSnapshotUnverifiedCreationAndReceiptTampering(t *testing.T) {
 }
 
 func TestElasticSanSnapshotSQLiteCleanupRestart(t *testing.T) {
+	testElasticSanChildSQLiteCleanupRestart(t, elasticSanSnapshotType)
+}
+func TestElasticSanEndpointSQLiteCleanupRestart(t *testing.T) {
+	testElasticSanChildSQLiteCleanupRestart(t, elasticSanEndpointType)
+}
+func testElasticSanChildSQLiteCleanupRestart(t *testing.T, kind string) {
 	f := newElasticSanCleanupFixture(t)
+	f.kind = kind
 	logs := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
 	repo, registry, path := azureNativeWorkerRepository(t, f.runtime)
-	values := azureNativeWorkerScan(t, f.runtime, elasticSanSource, repo, registry, []string{elasticSanSnapshotType, elasticSanVolumeType, elasticSanGroupType, elasticSanType}, false, true)
+	values := azureNativeWorkerScan(t, f.runtime, elasticSanSource, repo, registry, []string{kind, elasticSanVolumeType, elasticSanGroupType, elasticSanType}, false, true)
 	var snapshot asset.Asset
 	for _, value := range values {
-		if value.Identity.NativeType == elasticSanSnapshotType {
+		if value.Identity.NativeType == kind {
 			snapshot = value
 		}
 	}
@@ -310,7 +318,7 @@ func TestElasticSanSnapshotSQLiteCleanupRestart(t *testing.T) {
 			return registered.ResolveAction(ctx, value.Identity.ConnectionID, value)
 		})
 		if round == 3 {
-			delete(f.values, f.ids[elasticSanSnapshotType])
+			delete(f.values, f.ids[kind])
 		}
 		err = cleanup.NewExecutionHandler(cleanup.NewService(repo, registered), resolver).Handle(ctx, restored)
 		var retry *cleanup.RetryError
@@ -337,11 +345,11 @@ func TestElasticSanSnapshotSQLiteCleanupRestart(t *testing.T) {
 			}
 		}
 		stored, err := repo.GetAsset(ctx, snapshot.ID)
-		if err != nil || f.values[f.ids[elasticSanSnapshotType]] != nil && stored.ClosedAt != nil {
+		if err != nil || f.values[f.ids[kind]] != nil && stored.ClosedAt != nil {
 			t.Fatal("live snapshot closed", err)
 		}
 		if current.Status == execution.ActionSucceeded {
-			completed = stored.ClosedAt != nil && f.deletes == 1 && f.values[f.ids[elasticSanSnapshotType]] == nil
+			completed = stored.ClosedAt != nil && f.deletes == 1 && f.values[f.ids[kind]] == nil
 			break
 		}
 	}

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "190bde8b84d20b9afdd7c51215f56a981a1327f9d5cca0e0e0c1e48c0bab1fd0",
+    "checksum": "8292c71e9f17ede14c671e9a5d0953ca9d3eab6a8c729fbdfb2bc61659eed668",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "bcdcf3c71723e5f03193ec72de8cc232c22f57768425ce0214dcea9d7e697309",
+  "content_checksum": "25bbe3e2be2e40b8848fa12af69ad0ef50b49777a8030a56548513399b12e446",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -135320,6 +135320,9 @@
         "collection": "privateEndpointConnections",
         "read_operations": [
           "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"

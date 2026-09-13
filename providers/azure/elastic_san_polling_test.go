@@ -55,7 +55,7 @@ func TestElasticSanOriginalSnapshotDeleteRecording(t *testing.T) {
 		}
 	}
 	id := strings.ToLower(text(values[22]["id"]))
-	if elasticSanSnapshotProtection(values[22]) != "" || object(values[24]["properties"])["provisioningState"] != "Deleting" || len(array(values[23]["value"])) != 1 || len(array(values[27]["value"])) != 0 || len(bodies[25])+len(bodies[26]) != 0 || status[25] != 202 || status[26] != 200 {
+	if (&client{}).elasticSanChildProtection(elasticSanSnapshotType, values[22]) != "" || object(values[24]["properties"])["provisioningState"] != "Deleting" || len(array(values[23]["value"])) != 1 || len(array(values[27]["value"])) != 0 || len(bodies[25])+len(bodies[26]) != 0 || status[25] != 202 || status[26] != 200 {
 		t.Fatal("recorded snapshot lifecycle changed")
 	}
 	calls := 0

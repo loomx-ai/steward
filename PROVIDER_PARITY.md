@@ -4329,3 +4329,39 @@ background evidence only, not acceptance evidence for this work.
   diff whitespace checks passed. Pinned source and six body/callback hashes were
   verified, all 1,489 existing operations stayed unchanged, and all 65 preexisting
   worktree file hashes remained unchanged. No live-cloud execution was performed.
+
+### Elastic SAN private endpoint connection cleanup
+
+- Registered native PrivateEndpointConnections_Delete: Azure remains at 1,489
+  operations and 448 kinds/rules, with 415 delete actions. Volume, volume-group
+  and SAN lifecycle cleanup remain pending; this does not close family parity.
+- Reused the snapshot child driver and signed Location poller, preserving prior
+  snapshot serialized keys, versions and configuration/ETag semantics. Connection
+  cleanup binds creation, target, mapped native group IDs and authored config;
+  preflight separately verifies approval state, rereads SAN/mapped group regions,
+  protection and management locks, and waits without mutation on disappearing
+  ancestry. Only the selected connection DELETE is submitted.
+- Reviewed the pinned original GET maximum example: groupIds contain volume-group
+  ARM IDs and systemData supplies creation time. Tests compose valid requests by
+  replacing only documented placeholders in memory. Native mappings now add
+  ordinary group dependency edges and group subnet closure; opaque mappings are
+  retained as inventory but cannot authorize cleanup. No ownership is inferred.
+- Operation success or Disconnected status cannot close a live connection. Own
+  readback, creation/configuration verification, expired-callback behavior and
+  persisted signed phases apply after restart. SQLite tests perform the actual
+  scan/graph/plan/confirmed execution workflow with fresh runtimes and reopened
+  databases, one DELETE, stable operation/deletion deadlines and independent
+  storage assets remaining open. Bilingual docs describe access disruption and
+  exact permission scope, including no consumer Network endpoint deletion.
+- Evidence is native REST fixtures plus composed protocol and SQLite tests. No
+  independent Elastic SAN ARM emulator or live connection deletion was verified.
+  Client/session management, retained volume deletion, parent cascades and broader
+  provider parity remain unfinished; all eight acceptance criteria stay open.
+
+- Validation: isolated Azure full tests passed (342.192s); Elastic SAN/catalog
+  race checks passed (31.698s); Azure go vet passed; all six catalog sync tests
+  passed. Main-workspace Elastic SAN/catalog tests passed (6.272s). Docs checks
+  passed for 30 isolated and 42 main chapters plus 10 original screenshots;
+  staged diff checks passed. All 1,489 operations and original fixture bytes
+  remain unchanged; 448 specs and 415 actions were independently counted.
+  The 65 preexisting worktree file hashes were unchanged.

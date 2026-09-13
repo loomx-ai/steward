@@ -261,6 +261,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		addNetwork(refsByID[id])
 		addNetwork(refsByID[root])
 		addNetwork(refsByID[parent])
+		if kind == elasticSanEndpointType {
+			for _, group := range refsByID[id][elasticSanGroupType] {
+				addNetwork(refsByID[group])
+			}
+		}
 		if kind == elasticSanType {
 			for group := range groups {
 				if elasticSanRoot(group) == root {
@@ -293,11 +298,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			tags[key] = value.(string)
 		}
 		actionable := false
-		if kind == elasticSanSnapshotType {
-			reason := elasticSanSnapshotProtection(raw)
-			state := map[string]any{"resource": c.privateConfiguration(hybridComputeChildSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != ""}
+		if elasticSanIndependentChild(kind) {
+			reason := c.elasticSanChildProtection(kind, raw)
+			state := map[string]any{"resource": c.privateConfiguration(elasticSanChildSnapshot(kind, raw)), "etag": c.privateConfiguration(elasticSanChildVersion(kind, raw)), "protected": reason != ""}
 			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
-			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanSnapshotBinding(value, state)
+			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
 			actionable = reason == ""
 		}

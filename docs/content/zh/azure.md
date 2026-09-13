@@ -275,4 +275,6 @@ Elastic SAN 盘点覆盖 SAN、卷组、卷、快照与私有终结点连接，�
 
 已开放具有可验证创建身份的 Elastic SAN 快照删除。它会移除所选恢复点，保留源卷和父资源。保护标签、管理锁、配置变化及不完整读取会阻止删除。签名操作回执支持重启恢复，避免重复发送 DELETE；只有独立确认快照自身不存在后，成功或过期的回调才能完成清理。父资源缺失本身不能证明快照已移除。
 
-卷、卷组、SAN 和私有终结点连接的清理仍在实现，包括断开会话和软删除卷的移除语义。原始 REST 示例、预览版软删除 CLI 录制、稳定版 `2025-09-01` 快照录制，以及 SQLite 盘点和清理恢复流程已进行离线测试。尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。
+Elastic SAN 私有终结点连接也支持直接删除。删除已批准的连接可能中断其映射卷组的访问。使用方的 Network 私有终结点、网卡、DNS 记录以及 SAN、卷组、卷和快照仍独立保留。清理会验证连接创建身份、目标、原生卷组 ID 和配置，再检查 SAN 与映射卷组的保护状态、区域和管理锁。需授予 `Microsoft.ElasticSan/elasticSans/privateEndpointConnections/delete`，以及连接、SAN、卷组、资源组读取和管理锁列表权限；该连接删除操作不需要 Network 提供方的删除权限。卷组映射不完整的连接仍可被发现，但不能据此授权删除。持久化 Location 操作只有在确认连接自身不存在后才能结束；断开状态或父资源缺失不能单独证明删除完成。
+
+卷、卷组和 SAN 的清理仍在实现，包括断开会话和软删除卷的移除语义。原始 REST 示例、预览版软删除 CLI 录制、稳定版 `2025-09-01` 快照录制，以及 SQLite 盘点和清理恢复流程已进行离线测试。尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。

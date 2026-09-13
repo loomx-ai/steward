@@ -50,9 +50,10 @@ func newElasticSanFixture(t *testing.T) *elasticSanFixture {
 	object(volume["properties"])["storageTarget"] = map[string]any{"targetIqn": "private-elastic-target", "targetPortalHostname": "private-elastic-address"}
 	object(f.values[f.ids[elasticSanSnapshotType]]["properties"])["creationData"] = map[string]any{"sourceId": f.ids[elasticSanVolumeType]}
 	f.values[f.ids[elasticSanSnapshotType]]["systemData"] = map[string]any{"createdAt": "2026-02-11T09:51:01.7803283Z"}
+	f.values[f.ids[elasticSanEndpointType]]["systemData"] = map[string]any{"createdAt": "2026-02-11T09:51:01.7803283Z"}
 	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["privateEndpoint"] = map[string]any{"id": strings.ToLower(resourceID("Microsoft.Network/privateEndpoints", "endpoint"))}
 	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["privateLinkServiceConnectionState"] = map[string]any{"status": "Pending", "actionsRequired": "None", "description": "private-elastic-connection-description"}
-	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["groupIds"] = []any{"volumegroup"}
+	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["groupIds"] = []any{f.ids[elasticSanGroupType]}
 	for _, entry := range []struct{ original, id string }{
 		{f.ids[elasticSanGroupType], f.ids[elasticSanGroupType] + "-retained"},
 		{f.ids[elasticSanVolumeType], f.ids[elasticSanVolumeType] + "-1751081600"},
@@ -139,16 +140,16 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 			t.Fatal("native population", kind, len(batch.Items), err)
 		}
 		for _, item := range batch.Items {
-			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (kind == elasticSanSnapshotType) || item.Normalized["retained"] != f.retained[item.NativeID] {
+			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (elasticSanIndependentChild(kind)) || item.Normalized["retained"] != f.retained[item.NativeID] {
 				t.Fatal("region, retention or actionability changed", item.NativeID)
 			}
 			if _, err := f.client.elasticSanRecorded(elasticSanTestAsset(item)); err != nil {
 				t.Fatal("inventory proof", err)
 			}
-			if kind == elasticSanEndpointType && (object(item.Normalized["privateLinkServiceConnectionState"])["status"] != "Pending" || !slices.Equal(stringValues(item.Normalized["groupIds"]), []string{"volumegroup"})) {
+			if kind == elasticSanEndpointType && (object(item.Normalized["privateLinkServiceConnectionState"])["status"] != "Pending" || !slices.Equal(stringValues(item.Normalized["groupIds"]), []string{f.ids[elasticSanGroupType]})) {
 				t.Fatal("private endpoint operational status lost")
 			}
-			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); (err == nil) != (kind == elasticSanSnapshotType) {
+			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); (err == nil) != (elasticSanIndependentChild(kind)) {
 				t.Fatal("wrong cleanup capability", kind, err)
 			}
 		}
@@ -168,13 +169,26 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 		t.Fatal("SQLite inventory", len(values))
 	}
 	relations, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 8 {
+	if err != nil || len(relations) != 9 {
 		t.Fatal("native parent/source references", len(relations), err)
 	}
 	for _, relation := range relations {
 		if relation.Type != graph.RelationshipUses {
 			t.Fatal("ordinary reference became ownership", relation)
 		}
+	}
+	idsByNative := map[string]asset.AssetID{}
+	for _, value := range values {
+		idsByNative[value.Identity.NativeID] = value.ID
+	}
+	foundGroup := false
+	for _, relation := range relations {
+		if relation.SourceAssetID == idsByNative[f.ids[elasticSanEndpointType]] && relation.TargetAssetID == idsByNative[f.ids[elasticSanGroupType]] {
+			foundGroup = true
+		}
+	}
+	if !foundGroup {
+		t.Fatal("persisted endpoint-to-volume-group relationship missing")
 	}
 	// Reopen persisted observations with a fresh runtime and credential client.
 	repo, err = sqlite.Open(path, "../../migrations")

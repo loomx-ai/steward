@@ -10879,7 +10879,9 @@
       "read_operations": [
         "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"
       ]

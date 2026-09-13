@@ -14,8 +14,14 @@ import (
 const elasticSanSnapshotCleanup = "_elastic_san_snapshot_cleanup"
 const elasticSanSnapshotCleanupProof = "_elastic_san_snapshot_cleanup_proof"
 
-func elasticSanSnapshotProtection(raw map[string]any) string {
-	if reason := protectionReason(resourceType{NativeType: elasticSanSnapshotType}, raw); reason != "" {
+// Snapshot protocol keys and versions remain stable so existing saved executions
+// survive this extension. Resource IDs and signed inventory bind the native kind.
+func elasticSanIndependentChild(kind string) bool {
+	return kind == elasticSanSnapshotType || kind == elasticSanEndpointType
+}
+
+func (c *client) elasticSanChildProtection(kind string, raw map[string]any) string {
+	if reason := protectionReason(resourceType{NativeType: kind}, raw); reason != "" {
 		return reason
 	}
 	created, ok := object(raw["systemData"])["createdAt"].(string)
@@ -25,10 +31,28 @@ func elasticSanSnapshotProtection(raw map[string]any) string {
 	if raw["managedBy"] != nil && raw["managedBy"] != "" || object(raw["properties"])["managedBy"] != nil {
 		return "azure_elastic_san_snapshot_managed"
 	}
-	_, kind, err := parseID(text(object(object(raw["properties"])["creationData"])["sourceId"]))
-	if err != nil || !strings.EqualFold(kind, elasticSanVolumeType) {
-		return "azure_elastic_san_snapshot_source_unverified"
+	if kind == elasticSanSnapshotType {
+		_, sourceKind, err := parseID(text(object(object(raw["properties"])["creationData"])["sourceId"]))
+		if err != nil || !strings.EqualFold(sourceKind, elasticSanVolumeType) {
+			return "azure_elastic_san_snapshot_source_unverified"
+		}
+	} else if kind == elasticSanEndpointType {
+		if _, err := c.elasticSanEndpointGroups(raw); err != nil {
+			return "azure_elastic_san_endpoint_groups_unverified"
+		}
+		_, targetKind, err := parseID(text(object(object(raw["properties"])["privateEndpoint"])["id"]))
+		if err != nil || !strings.EqualFold(targetKind, privateEndpointType) {
+			return "azure_elastic_san_endpoint_target_unverified"
+		}
+		switch object(object(raw["properties"])["privateLinkServiceConnectionState"])["status"] {
+		case "Pending", "Approved", "Rejected", "Disconnected":
+		default:
+			return "azure_elastic_san_endpoint_status_unverified"
+		}
+	} else {
+		return "azure_elastic_san_child_unsupported"
 	}
+
 	switch object(raw["properties"])["provisioningState"] {
 	case "Succeeded", "Failed", "Canceled", "Deleting":
 		return ""
@@ -37,32 +61,32 @@ func elasticSanSnapshotProtection(raw map[string]any) string {
 	}
 }
 
-func (c *client) elasticSanSnapshotBinding(value asset.Asset, state map[string]any) string {
+func (c *client) elasticSanChildBinding(value asset.Asset, state map[string]any) string {
 	return c.privateConfiguration(map[string]any{"protocol": "elastic-san-snapshot-1", "id": value.Identity.NativeID, "connection": value.Identity.ConnectionID, "location": value.Location, "inventory": value.Normalized[elasticSanInventoryProof], "state": state})
 }
 
-func (c *client) elasticSanSnapshotRecord(value asset.Asset) error {
+func (c *client) elasticSanChildRecord(value asset.Asset) error {
 	if _, err := c.elasticSanRecorded(value); err != nil {
 		return err
 	}
 	state := object(value.Normalized[elasticSanSnapshotCleanup])
-	if value.ID == "" || value.Identity.NativeType != elasticSanSnapshotType || value.Normalized["retained"] != false || len(state) != 3 || text(state["resource"]) == "" || text(state["etag"]) == "" || state["protected"] != false || value.Normalized["cleanup_protected"] != false || value.Normalized[elasticSanSnapshotCleanupProof] != c.elasticSanSnapshotBinding(value, state) {
+	if value.ID == "" || !elasticSanIndependentChild(value.Identity.NativeType) || value.Normalized["retained"] != false || len(state) != 3 || text(state["resource"]) == "" || text(state["etag"]) == "" || state["protected"] != false || value.Normalized["cleanup_protected"] != false || value.Normalized[elasticSanSnapshotCleanupProof] != c.elasticSanChildBinding(value, state) {
 		return serviceDenied("invalid_elastic_san_snapshot_cleanup_record")
 	}
 	return nil
 }
 
-type elasticSanSnapshotAction struct {
+type elasticSanChildAction struct {
 	client   *client
 	planned  asset.Asset
 	deletion catalog.RESTRequest
 }
 
-func newElasticSanSnapshotAction(c *client, connection asset.ConnectionID, value asset.Asset, kind resourceType) (*elasticSanSnapshotAction, error) {
-	if err := c.elasticSanSnapshotRecord(value); err != nil {
+func newElasticSanChildAction(c *client, connection asset.ConnectionID, value asset.Asset, kind resourceType) (*elasticSanChildAction, error) {
+	if err := c.elasticSanChildRecord(value); err != nil {
 		return nil, err
 	}
-	if connection != value.Identity.ConnectionID || kind.NativeType != elasticSanSnapshotType || kind.ReadOnly {
+	if connection != value.Identity.ConnectionID || kind.NativeType != value.Identity.NativeType || !elasticSanIndependentChild(kind.NativeType) || kind.ReadOnly {
 		return nil, serviceDenied("elastic_san_snapshot_action_changed")
 	}
 	op, params, err := c.resourceOperation(kind, value.Identity.NativeID, "DELETE")
@@ -73,23 +97,23 @@ func newElasticSanSnapshotAction(c *client, connection asset.ConnectionID, value
 	if err != nil {
 		return nil, err
 	}
-	return &elasticSanSnapshotAction{client: c, planned: value, deletion: deletion}, nil
+	return &elasticSanChildAction{client: c, planned: value, deletion: deletion}, nil
 }
 
-func (*elasticSanSnapshotAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
+func (*elasticSanChildAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
 
-func (a *elasticSanSnapshotAction) phaseBinding(request contracts.ActionRequest, result contracts.ActionResult) string {
+func (a *elasticSanChildAction) phaseBinding(request contracts.ActionRequest, result contracts.ActionResult) string {
 	request.ExecutionResult, request.IdempotencyKey = nil, ""
 	data := maps.Clone(result.Data)
 	delete(data, "binding")
 	return a.client.privateConfiguration(map[string]any{"protocol": "elastic-san-snapshot-delete-1", "request": request, "origin": result.ProviderOperationID, "data": data})
 }
 
-func (a *elasticSanSnapshotAction) identity(request contracts.ActionRequest) error {
+func (a *elasticSanChildAction) identity(request contracts.ActionRequest) error {
 	if request.Action != "delete" || request.Asset.ID != a.planned.ID || request.Asset.Identity != a.planned.Identity || request.Asset.Location != a.planned.Location || request.Asset.Normalized[elasticSanSnapshotCleanupProof] != a.planned.Normalized[elasticSanSnapshotCleanupProof] || len(request.Parameters)+len(request.LifecycleImpacts)+len(request.PrerequisiteDeletions) != 0 {
 		return serviceDenied("elastic_san_snapshot_request_changed")
 	}
-	if err := a.client.elasticSanSnapshotRecord(request.Asset); err != nil {
+	if err := a.client.elasticSanChildRecord(request.Asset); err != nil {
 		return err
 	}
 	if result := request.ExecutionResult; result != nil {
@@ -101,21 +125,21 @@ func (a *elasticSanSnapshotAction) identity(request contracts.ActionRequest) err
 	return nil
 }
 
-func (a *elasticSanSnapshotAction) observe(ctx context.Context) (map[string]any, error) {
-	res, err := a.client.elasticSanRead(ctx, a.planned.Identity.NativeID, elasticSanSnapshotType)
+func (a *elasticSanChildAction) observe(ctx context.Context) (map[string]any, error) {
+	res, err := a.client.elasticSanRead(ctx, a.planned.Identity.NativeID, a.planned.Identity.NativeType)
 	if isNotFound(err) {
 		return nil, nil
 	}
 	if err != nil {
 		return nil, err
 	}
-	if a.client.privateConfiguration(hybridComputeChildSnapshot(res.data)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["resource"] || text(res.data["location"]) != "" && !strings.EqualFold(text(res.data["location"]), a.planned.Location) {
+	if a.client.privateConfiguration(elasticSanChildSnapshot(a.planned.Identity.NativeType, res.data)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["resource"] || text(res.data["location"]) != "" && !strings.EqualFold(text(res.data["location"]), a.planned.Location) {
 		return nil, serviceDenied("elastic_san_snapshot_configuration_changed")
 	}
 	return res.data, nil
 }
 
-func (a *elasticSanSnapshotAction) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+func (a *elasticSanChildAction) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
 	defer func() { err = contracts.DependencyReadError(err) }()
 	if err := a.identity(request); err != nil {
 		return check, err
@@ -131,13 +155,25 @@ func (a *elasticSanSnapshotAction) Preflight(ctx context.Context, request contra
 		if object(raw["properties"])["provisioningState"] == "Deleting" {
 			return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
 		}
-		if reason := elasticSanSnapshotProtection(raw); reason != "" {
+		if reason := a.client.elasticSanChildProtection(a.planned.Identity.NativeType, raw); reason != "" {
 			return check, serviceDenied(reason)
 		}
-		if a.client.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["etag"] {
+		if a.client.privateConfiguration(elasticSanChildVersion(a.planned.Identity.NativeType, raw)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["etag"] {
 			return check, serviceDenied("elastic_san_snapshot_etag_changed")
 		}
-		for _, parent := range []struct{ id, kind string }{{elasticSanRoot(a.planned.Identity.NativeID), elasticSanType}, {elasticSanParent(a.planned.Identity.NativeID, elasticSanSnapshotType), elasticSanGroupType}} {
+		parents := []string{elasticSanRoot(a.planned.Identity.NativeID)}
+		if a.planned.Identity.NativeType == elasticSanSnapshotType {
+			parents = append(parents, elasticSanParent(a.planned.Identity.NativeID, elasticSanSnapshotType))
+		} else {
+			groups, err := a.client.elasticSanEndpointGroups(raw)
+			if err != nil {
+				return check, err
+			}
+			parents = append(parents, groups...)
+		}
+		for _, parentID := range parents {
+			_, parentKind, _ := parseID(parentID)
+			parent := struct{ id, kind string }{parentID, elasticSanKind(parentKind)}
 			res, err := a.client.elasticSanRead(ctx, parent.id, parent.kind)
 			if isNotFound(err) {
 				return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
@@ -171,14 +207,16 @@ func (a *elasticSanSnapshotAction) Preflight(ctx context.Context, request contra
 		if err != nil {
 			return check, err
 		}
-		if locked(a.planned.Identity.NativeID, locks) {
-			return check, serviceDenied("azure_management_lock")
+		for _, id := range append(parents, a.planned.Identity.NativeID) {
+			if locked(id, locks) {
+				return check, serviceDenied("azure_management_lock")
+			}
 		}
 	}
 	return contracts.PreflightResult{Allowed: true}, nil
 }
 
-func (a *elasticSanSnapshotAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+func (a *elasticSanChildAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
 	if err := a.identity(request); err != nil {
 		return contracts.ActionResult{}, err
 	}
@@ -220,7 +258,7 @@ func (a *elasticSanSnapshotAction) Execute(ctx context.Context, request contract
 	return result, nil
 }
 
-func (a *elasticSanSnapshotAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+func (a *elasticSanChildAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if err := a.identity(request); err != nil {
 		return contracts.ReadbackResult{}, err
 	}
@@ -228,7 +266,7 @@ func (a *elasticSanSnapshotAction) Readback(ctx context.Context, request contrac
 	return contracts.ReadbackResult{Exists: raw != nil, State: text(object(raw["properties"])["provisioningState"])}, contracts.DependencyReadError(err)
 }
 
-func (a *elasticSanSnapshotAction) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+func (a *elasticSanChildAction) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
 	request.ExecutionResult = &result
 	if err := a.identity(request); err != nil {
 		return contracts.WaitResult{}, err
@@ -236,7 +274,7 @@ func (a *elasticSanSnapshotAction) Wait(ctx context.Context, request contracts.A
 	poll, err := a.client.elasticSanPoll(ctx, a.planned.Identity.NativeID, a.planned.Location, object(result.Data["operation"]))
 	if err != nil {
 		if isNotFound(err) {
-			// An expired callback can be superseded only by the snapshot's own
+			// An expired callback can be superseded only by the selected child's own
 			// independently verified absence, never by a missing parent/index.
 			read, readErr := a.Readback(ctx, request)
 			if readErr == nil && !read.Exists {
@@ -257,4 +295,4 @@ func (a *elasticSanSnapshotAction) Wait(ctx context.Context, request contracts.A
 	return out, err
 }
 
-var _ contracts.ActionDriver = (*elasticSanSnapshotAction)(nil)
+var _ contracts.ActionDriver = (*elasticSanChildAction)(nil)

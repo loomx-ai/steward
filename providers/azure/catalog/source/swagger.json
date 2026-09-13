@@ -253076,7 +253076,9 @@
       "nativeType": "Microsoft.ElasticSan/elasticSans/privateEndpointConnections",
       "rest": {
         "collection": "privateEndpointConnections",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"
         ],

@@ -52,6 +52,22 @@ func elasticSanReferences(id, kind string, raw map[string]any) (map[string][]str
 			}
 		}
 	}
+	if kind == elasticSanEndpointType {
+		for _, value := range array(props["groupIds"]) {
+			// Preserve opaque labels as display data. Only actual native IDs create
+			// graph edges; cleanup separately requires a fully resolved group mapping.
+			if strings.HasPrefix(text(value), "/") {
+				target, typ, err := parseID(text(value))
+				if err != nil || !strings.EqualFold(typ, elasticSanGroupType) || elasticSanRoot(target) != elasticSanRoot(id) {
+					return nil, serviceDenied("invalid_elastic_san_endpoint_group_reference")
+				}
+				if err := add(value, elasticSanGroupType); err != nil {
+					return nil, err
+				}
+			}
+		}
+	}
+
 	if value := props["networkAcls"]; value != nil {
 		acl := object(value)
 		if acl == nil {

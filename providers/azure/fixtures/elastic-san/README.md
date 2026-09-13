@@ -2,8 +2,8 @@
 
 This directory supports registered Elastic SAN inventory for SANs, volume groups,
 volumes, snapshots, private endpoint connections and retained resources.
-Verified snapshot deletion is registered. Volume, group, SAN and private-endpoint
-cleanup remain pending; this family does not yet close the parity gap.
+Verified snapshot and private-endpoint connection deletion are registered.
+Volume, group and SAN cleanup remain pending; this family does not yet close the parity gap.
 
 ## Pinned REST source
 
@@ -34,9 +34,9 @@ Two discrepancies matter for implementation:
 All ten original DELETE callback examples use the external placeholder
 `https://contoso.com/operationstatus`. Transport validation rejects it. None is
 used as a real Azure operation endpoint. Every selected native DELETE declares
-`final-state-via: location` and 200/202/204 responses. Cleanup still needs persisted
+`final-state-via: location` and 200/202/204 responses. The registered child cleanup drivers add persisted
 receipts, scoped callback validation, restart recovery and independent absence
-checks; schema examples do not implement or verify those behaviors.
+checks; the schema examples alone do not verify those behaviors.
 
 ## Active and retained resources
 
@@ -86,8 +86,9 @@ out of public inventory and API logs. SQLite tests reopen observations with a
 fresh runtime, preserve live resources omitted from indexes, reconcile retained
 absence, and preserve observations after denied reads. Network closure, restored
 volume IDs, forged history and changing snapshots are also exercised. Snapshots
-with verified creation identity support deletion; the other four kinds remain
-read-only while their cleanup lifecycle is implemented and verified.
+and private endpoint connections with verified creation identity support deletion;
+the other three kinds remain read-only while their cleanup lifecycle is
+implemented and verified.
 
 ## Snapshot deletion and Location polling
 
@@ -140,6 +141,43 @@ or volume group removes corresponding children. The
 explains that snapshots belong to the volume's lifetime; exported managed disk
 snapshots are separate resources. Private endpoint effects, client disconnection,
 retention and managed volume ownership require explicit implementation and tests.
+
+## Private endpoint connection deletion
+
+The registered connection driver shares the snapshot's signed Location and
+restart protocol while retaining its existing serialized keys and versions.
+`PrivateEndpointConnections_Delete` binds the exact selected child and submits no
+force, permanent-delete or consumer-endpoint mutation. The pinned native GET
+maximum example identifies `groupIds` as full volume-group ARM IDs, includes
+`systemData.createdAt`, and references a separate Microsoft.Network endpoint.
+Tests load that unchanged example and replace ARM placeholders in memory only.
+Opaque or missing group mappings remain visible but cannot authorize cleanup.
+
+Native mapped groups now contribute ordinary dependency edges and subnet closure.
+Preflight binds creation, target, group mapping, description, version and approval
+state; it rereads the SAN and every mapped group for state, region, protection and
+locks. Missing or deleting ancestry is observed without mutation. Connection
+status/actionsRequired can change during the outstanding delete without erasing
+creation identity, while a preflight status change still invalidates the plan.
+A disconnected connection remains live until its own GET returns 404. Callback
+expiry, parent absence and same-name recreation cannot bypass that readback.
+
+Composed tests cover Pending/Approved/Rejected/Disconnected connections, creation
+and target changes, protected/locked groups, denied and incomplete reads, forged
+requests, expired callbacks and SQLite execution restarts. Only the selected
+connection closes; storage resources remain open and the Network endpoint is
+never deleted. The original REST examples and shared polling recordings are
+protocol evidence; no Elastic SAN connection live-cloud run or independent ARM
+emulator has been verified. Removing an approved connection can interrupt
+private access to its mapped groups; no client migration or disconnection is
+performed by this operation.
+
+Microsoft documents Remove as transitioning the consumer endpoint to
+Disconnected, with separate endpoint cleanup:
+[Manage private endpoint connections](https://learn.microsoft.com/en-us/azure/private-link/manage-private-endpoint#private-endpoint-connections).
+
+Official contract:
+[Private Endpoint Connections Delete](https://learn.microsoft.com/en-us/rest/api/elasticsan/private-endpoint-connections/delete?view=rest-elasticsan-2025-09-01).
 
 ## Original CLI operations with stubs
 
