@@ -55,8 +55,12 @@ func TestAzureLocalOfficialContracts(t *testing.T) {
 			if err != nil || fmt.Sprintf("%x", sha256.Sum256(payload)) != source["source_sha256"] {
 				t.Fatal("native Azure Local example changed", err)
 			}
+			version := "2024-01-01"
+			if strings.HasPrefix(source["operation"], "LogicalNetworks_") {
+				version = "2025-06-01-preview"
+			}
 			op, ok := metadata.catalog.Operation("Azure.Microsoft.AzureStackHCI." + source["operation"])
-			if !ok || op.Call == nil || op.Call.Version != "2024-01-01" || op.Call.Method != source["method"] || op.Call.Path != source["path"] || !strings.Contains(op.SourceURI, "/c20bf553ad64f20c6d5e3f56080380c086cb1fde/") {
+			if !ok || op.Call == nil || op.Call.Version != version || op.Call.Method != source["method"] || op.Call.Path != source["path"] || !strings.Contains(op.SourceURI, "/c20bf553ad64f20c6d5e3f56080380c086cb1fde/") {
 				t.Fatal("Azure Local provenance changed")
 			}
 			operations[op.ID] = true
@@ -101,7 +105,7 @@ func TestAzureLocalOfficialContracts(t *testing.T) {
 				t.Fatal("canonical native request", err)
 			}
 			u, err := url.Parse(request.URL)
-			if err != nil || u.Host != "management.azure.com" || u.Scheme != "https" || u.Query().Get("api-version") != "2024-01-01" || len(request.Body) != 0 {
+			if err != nil || u.Host != "management.azure.com" || u.Scheme != "https" || u.Query().Get("api-version") != version || len(request.Body) != 0 {
 				t.Fatal("native request binding", err)
 			}
 			params["api-version"] = "2023-09-01-preview"

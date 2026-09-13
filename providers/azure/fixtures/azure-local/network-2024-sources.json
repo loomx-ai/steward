@@ -1,0 +1,34 @@
+[
+  {
+    "file": "DeleteLogicalNetwork.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteLogicalNetwork.json",
+    "operation": "LogicalNetworks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "4c4223bf541bf5a830f9fef372d0224a0553a3b72a12fc2b1c45596a024f119b"
+  },
+  {
+    "file": "GetLogicalNetwork.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetLogicalNetwork.json",
+    "operation": "LogicalNetworks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "cb912075508cc5f48ffb52f331f4587199cc164436ac19515fcdb6ae7e2c36a5"
+  },
+  {
+    "file": "ListLogicalNetworkByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkByResourceGroup.json",
+    "operation": "LogicalNetworks_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "1683dd911cfb12e78cff925b8996d45c0c939ff7ec65e7b54ee485005fb9ad74"
+  },
+  {
+    "file": "ListLogicalNetworkBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkBySubscription.json",
+    "operation": "LogicalNetworks_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "4610d72392ff5a95207a66f13df7ff2999ef707382c42b3ee7a6fce47c86f1f7"
+  }
+]

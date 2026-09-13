@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "5d0ec654f3f48b36e20b25acfac71344495b93cec3b03f95afe64061eeb8097d",
+    "checksum": "dd1b46e373424914b89231704d4551a2d3bd66b95d2f14e8802073eba397e685",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "4a392dd686860a05ddd7671ad3a4a05c28981efbbc2da06a6c9b0015d163c56b",
+  "content_checksum": "ebc2bc68f858e05760f0e5518e2744793cbf48fd22c11f0083bacaf43b3e906d",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -35213,7 +35213,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2024-01-01"
+              "2025-06-01-preview"
             ],
             "in": "query",
             "type": "string"
@@ -35221,13 +35221,10 @@
           "logicalNetworkName": {
             "description": "Name of the logical network",
             "in": "path",
-            "maxLength": 64,
-            "minLength": 2,
             "name": "logicalNetworkName",
-            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
+            "type": "string"
           },
           "resourceGroupName": {
             "description": "The name of the resource group. The name is case insensitive.",
@@ -35240,9 +35237,9 @@
             "x-ms-parameter-location": "method"
           },
           "subscriptionId": {
-            "description": "The ID of the target subscription.",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
-            "minLength": 1,
             "name": "subscriptionId",
             "required": true,
             "type": "string"
@@ -35252,7 +35249,7 @@
       },
       "call": {
         "product": "Microsoft.AzureStackHCI",
-        "version": "2024-01-01",
+        "version": "2025-06-01-preview",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "DELETE",
@@ -35261,7 +35258,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json"
     },
     {
       "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Get",
@@ -35274,7 +35271,7 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2024-01-01"
+              "2025-06-01-preview"
             ],
             "in": "query",
             "type": "string"
@@ -35282,13 +35279,10 @@
           "logicalNetworkName": {
             "description": "Name of the logical network",
             "in": "path",
-            "maxLength": 64,
-            "minLength": 2,
             "name": "logicalNetworkName",
-            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$",
             "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
+            "type": "string"
           },
           "resourceGroupName": {
             "description": "The name of the resource group. The name is case insensitive.",
@@ -35301,9 +35295,9 @@
             "x-ms-parameter-location": "method"
           },
           "subscriptionId": {
-            "description": "The ID of the target subscription.",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
-            "minLength": 1,
             "name": "subscriptionId",
             "required": true,
             "type": "string"
@@ -35314,27 +35308,27 @@
       "output_schema": {
         "allOf": [
           {
-            "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
           }
         ],
         "description": "The logical network resource definition.",
         "properties": {
           "extendedLocation": {
-            "$ref": "./common.json#/definitions/ExtendedLocation",
+            "$ref": "#/definitions/ExtendedLocation",
             "description": "The extendedLocation of the resource."
           },
           "properties": {
             "$ref": "#/definitions/LogicalNetworkProperties",
+            "description": "The resource-specific properties for this resource.",
             "x-ms-client-flatten": true
           }
         },
         "type": "object",
-        "x-ms-azure-resource": true,
-        "x-ms-client-flatten": true
+        "x-ms-azure-resource": true
       },
       "call": {
         "product": "Microsoft.AzureStackHCI",
-        "version": "2024-01-01",
+        "version": "2025-06-01-preview",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -35343,75 +35337,7 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
-    },
-    {
-      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_List",
-      "name": "LogicalNetworks_List",
-      "service": "Microsoft.AzureStackHCI",
-      "method": "GET",
-      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
-      "destructive": false,
-      "input_schema": {
-        "properties": {
-          "api-version": {
-            "enum": [
-              "2024-01-01"
-            ],
-            "in": "query",
-            "type": "string"
-          },
-          "resourceGroupName": {
-            "description": "The name of the resource group. The name is case insensitive.",
-            "in": "path",
-            "maxLength": 90,
-            "minLength": 1,
-            "name": "resourceGroupName",
-            "required": true,
-            "type": "string",
-            "x-ms-parameter-location": "method"
-          },
-          "subscriptionId": {
-            "description": "The ID of the target subscription.",
-            "in": "path",
-            "minLength": 1,
-            "name": "subscriptionId",
-            "required": true,
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "output_schema": {
-        "properties": {
-          "nextLink": {
-            "type": "string"
-          },
-          "value": {
-            "items": {
-              "$ref": "#/definitions/LogicalNetworks"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
-      "pagination": {
-        "output_token_path": "nextLink",
-        "items_path": "value"
-      },
-      "call": {
-        "product": "Microsoft.AzureStackHCI",
-        "version": "2024-01-01",
-        "style": "azure-rest",
-        "protocol": "HTTPS",
-        "method": "GET",
-        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
-        "endpoint": "https://management.azure.com",
-        "body_type": "json",
-        "parameter_position": "query"
-      },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json"
     },
     {
       "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListAll",
@@ -35424,15 +35350,15 @@
         "properties": {
           "api-version": {
             "enum": [
-              "2024-01-01"
+              "2025-06-01-preview"
             ],
             "in": "query",
             "type": "string"
           },
           "subscriptionId": {
-            "description": "The ID of the target subscription.",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
             "in": "path",
-            "minLength": 1,
             "name": "subscriptionId",
             "required": true,
             "type": "string"
@@ -35441,17 +35367,24 @@
         "type": "object"
       },
       "output_schema": {
+        "description": "The response of a LogicalNetwork list operation.",
         "properties": {
           "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
             "type": "string"
           },
           "value": {
+            "description": "The LogicalNetwork items on this page",
             "items": {
-              "$ref": "#/definitions/LogicalNetworks"
+              "$ref": "#/definitions/LogicalNetwork"
             },
             "type": "array"
           }
         },
+        "required": [
+          "value"
+        ],
         "type": "object"
       },
       "pagination": {
@@ -35460,7 +35393,7 @@
       },
       "call": {
         "product": "Microsoft.AzureStackHCI",
-        "version": "2024-01-01",
+        "version": "2025-06-01-preview",
         "style": "azure-rest",
         "protocol": "HTTPS",
         "method": "GET",
@@ -35469,7 +35402,82 @@
         "body_type": "json",
         "parameter_position": "query"
       },
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json"
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json"
+    },
+    {
+      "id": "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListByResourceGroup",
+      "name": "LogicalNetworks_ListByResourceGroup",
+      "service": "Microsoft.AzureStackHCI",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-06-01-preview"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "format": "uuid",
+            "in": "path",
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The response of a LogicalNetwork list operation.",
+        "properties": {
+          "nextLink": {
+            "description": "The link to the next page of items",
+            "format": "uri",
+            "type": "string"
+          },
+          "value": {
+            "description": "The LogicalNetwork items on this page",
+            "items": {
+              "$ref": "#/definitions/LogicalNetwork"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "value"
+        ],
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.AzureStackHCI",
+        "version": "2025-06-01-preview",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json"
     },
     {
       "id": "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Delete",

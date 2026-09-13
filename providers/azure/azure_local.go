@@ -115,7 +115,27 @@ func (c *client) azureLocalRead(ctx context.Context, id, kind string) (response,
 			return res, serviceDenied("invalid_azure_local_state")
 		}
 	}
+	if kind == azureLocalNetworkType {
+		if v := object(res.data["properties"])["networkType"]; v != nil {
+			if _, ok := v.(string); !ok {
+				return res, serviceDenied("invalid_azure_local_network_type")
+			}
+		}
+	}
 	return res, nil
+}
+
+// Only the server-returned enum distinguishes workload from infrastructure.
+// Missing or future values stay unknown; names, tags, IP pools and an empty
+// NIC inventory cannot establish which deletion prerequisites apply.
+func azureLocalNetworkRole(raw map[string]any) string {
+	role, _ := object(raw["properties"])["networkType"].(string)
+	switch role {
+	case "Workload", "Infrastructure":
+		return role
+	default:
+		return "Unknown"
+	}
 }
 
 func azureLocalReferences(id, kind string, raw map[string]any) (map[string][]string, error) {

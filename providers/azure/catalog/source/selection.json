@@ -2361,12 +2361,12 @@
       ]
     },
     {
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json",
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json",
       "operations": [
         "LogicalNetworks_Delete",
         "LogicalNetworks_Get",
-        "LogicalNetworks_List",
-        "LogicalNetworks_ListAll"
+        "LogicalNetworks_ListAll",
+        "LogicalNetworks_ListByResourceGroup"
       ]
     },
     {

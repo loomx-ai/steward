@@ -106,6 +106,9 @@ func newAzureLocalFixture(t *testing.T) *azureLocalFixture {
 			}
 		}
 		version := azureLocalVersion
+		if strings.Contains(path, "/microsoft.azurestackhci/logicalnetworks") {
+			version = "2025-06-01-preview"
+		}
 		if provider == "microsoft.hybridcompute" {
 			version = hybridComputeVersion
 		}

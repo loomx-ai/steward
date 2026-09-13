@@ -23,6 +23,7 @@ discovery:
     identityPath: id
 fields:
   state: state
+  networkType: networkType
   vmSwitchName: vmSwitchName
   subnets: subnets
 extensions:

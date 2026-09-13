@@ -101,6 +101,8 @@ Azure Local 通过原生接口盘点 VM 实例、访客代理、访客身份元�
 
 扫描对话框支持选择 Azure 虚拟网络和 Azure Local 逻辑网络，提供名称或 ARM ID 搜索及分页。创建任务时会重新读取所选网络；网络已删除或不可访问时，不会保存任务。列出 Local 网络需要 `Microsoft.AzureStackHCI/logicalNetworks/read` 权限。逻辑网络内部配置的子网不作为独立 ARM 资源供选择。权限错误会显示在界面中，重试会保留已选网络。
 
+逻辑网络盘点使用 `2025-06-01-preview` 读取原生只读字段 `networkType`，区分工作负载网络（`Workload`）和基础设施网络（`Infrastructure`）；字段缺失或无法识别时显示 `Unknown`。名称、标签或网卡列表为空都不能证明网络类型。权限不足或不支持该 API 版本时，扫描失败且不会关闭已有资产。其他 Azure Local 资源仍使用 `2024-01-01`。逻辑网络清理尚未开放：删除基础设施网络前，需要先移除实例上的 VM、网卡和工作负载网络，而且删除只移除云端投影。参见[微软逻辑网络管理说明](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-logical-networks?view=azloc-2604)和 [API 变更记录](https://learn.microsoft.com/en-us/azure/templates/microsoft.azurestackhci/change-log/logicalnetworks)。
+
 逻辑网络扫描沿网卡与 VM 引用纳入访客资源和关联虚拟磁盘。磁盘的网络归属还需读取原生 VM 实例和 Arc 机器，权限为 `Microsoft.AzureStackHCI/virtualMachineInstances/read` 和 `Microsoft.HybridCompute/machines/read`。系统会重新读取已保存的挂载证据，补查集合遗漏的已知 VM；磁盘解除挂载后，其网络引用中会移除该 VM。存储路径与镜像仍是独立引用。网络归属不授予反向依赖或删除所有权。
 
 Azure Local 访客代理支持单独清理，前提是已扫描并核验 HCI 注册和 VM 配置。需要 `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`，以及访客资源、VM 实例、Arc 机器、资源组和管理锁的读取权限。清理会重新核验已审查配置、保护标记与继承锁，并持久化 ARM 操作以支持重试和重启恢复。只有访客资源自身的 GET 确认不存在，才会完成清理；操作成功或父资源消失都不足以证明完成。计划会提示访客管理可能中断，VM、Arc 注册和身份元数据仍保留。ARM 资源删除并不证明访客端代理已移除。

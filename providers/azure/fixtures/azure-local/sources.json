@@ -16,14 +16,6 @@
     "source_sha256": "b8c5a7bb9da995041e7f28dc753df72ad0811692d1d0082a1bb83589bd7219c5"
   },
   {
-    "file": "DeleteLogicalNetwork.json",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteLogicalNetwork.json",
-    "operation": "LogicalNetworks_Delete",
-    "method": "DELETE",
-    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
-    "source_sha256": "4c4223bf541bf5a830f9fef372d0224a0553a3b72a12fc2b1c45596a024f119b"
-  },
-  {
     "file": "DeleteMarketplaceGalleryImage.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/DeleteMarketplaceGalleryImage.json",
     "operation": "MarketplaceGalleryImages_Delete",
@@ -86,14 +78,6 @@
     "method": "GET",
     "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/hybridIdentityMetadata/default",
     "source_sha256": "a24959aaf1470c40f1bbaa2eb059752c6c84f7eedf1553cc60bd263c6cc0c95b"
-  },
-  {
-    "file": "GetLogicalNetwork.json",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/GetLogicalNetwork.json",
-    "operation": "LogicalNetworks_Get",
-    "method": "GET",
-    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
-    "source_sha256": "cb912075508cc5f48ffb52f331f4587199cc164436ac19515fcdb6ae7e2c36a5"
   },
   {
     "file": "GetMarketplaceGalleryImage.json",
@@ -166,22 +150,6 @@
     "method": "GET",
     "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/galleryImages",
     "source_sha256": "b86cf00ba50a6c59d1b05b248acefd9a775e93e47b234a5d78a0a4fb809bdd54"
-  },
-  {
-    "file": "ListLogicalNetworkByResourceGroup.json",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkByResourceGroup.json",
-    "operation": "LogicalNetworks_List",
-    "method": "GET",
-    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
-    "source_sha256": "1683dd911cfb12e78cff925b8996d45c0c939ff7ec65e7b54ee485005fb9ad74"
-  },
-  {
-    "file": "ListLogicalNetworkBySubscription.json",
-    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/examples/ListLogicalNetworkBySubscription.json",
-    "operation": "LogicalNetworks_ListAll",
-    "method": "GET",
-    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
-    "source_sha256": "4610d72392ff5a95207a66f13df7ff2999ef707382c42b3ee7a6fce47c86f1f7"
   },
   {
     "file": "ListMarketplaceGalleryImageByResourceGroup.json",
@@ -262,5 +230,37 @@
     "method": "POST",
     "path": "/{resourceUri}/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default/stop",
     "source_sha256": "73f5a86a4aef57d035419d330263bdfd9c4a615d11bed56f527f14c6ef19b068"
+  },
+  {
+    "file": "network-preview/LogicalNetworks_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/examples/LogicalNetworks_Delete.json",
+    "operation": "LogicalNetworks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "ebb19b146fce34ec30fb7e4e87988606cab89c91da2d8da62c706d170bfc846f"
+  },
+  {
+    "file": "network-preview/LogicalNetworks_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/examples/LogicalNetworks_Get.json",
+    "operation": "LogicalNetworks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}",
+    "source_sha256": "a229199c1981534bdf556a06d909fe108d39f37ed56961b3a2b4d3580b1b58d2"
+  },
+  {
+    "file": "network-preview/LogicalNetworks_ListAll.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/examples/LogicalNetworks_ListAll.json",
+    "operation": "LogicalNetworks_ListAll",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "cc85d2331ad486be086635880e2230de147849ad66b82c6bf05095eed4c8965b"
+  },
+  {
+    "file": "network-preview/LogicalNetworks_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/examples/LogicalNetworks_ListByResourceGroup.json",
+    "operation": "LogicalNetworks_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks",
+    "source_sha256": "1585a4920597d0080cf494f01bce449020f3334f6300598975434c1258a72cea"
   }
 ]

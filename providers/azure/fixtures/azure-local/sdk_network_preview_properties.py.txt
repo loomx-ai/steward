@@ -1,0 +1,62 @@
+class LogicalNetworkProperties(_serialization.Model):
+    """Properties under the logical network resource.
+
+    Variables are only populated by the server, and will be ignored when sending a request.
+
+    :ivar dhcp_options: DhcpOptions contains an array of DNS servers available to VMs deployed in
+     the logical network. Standard DHCP option for a subnet overrides logical network DHCP options.
+    :vartype dhcp_options: ~azure_stack_hci_client.models.LogicalNetworkPropertiesDhcpOptions
+    :ivar subnets: Subnet - list of subnets under the logical network.
+    :vartype subnets: list[~azure_stack_hci_client.models.Subnet]
+    :ivar provisioning_state: Provisioning state of the logical network. Known values are:
+     "Succeeded", "Failed", "InProgress", "Accepted", "Deleting", and "Canceled".
+    :vartype provisioning_state: str or ~azure_stack_hci_client.models.ProvisioningStateEnum
+    :ivar vm_switch_name: name of the network switch to be used for VMs.
+    :vartype vm_switch_name: str
+    :ivar status: The observed state of logical networks.
+    :vartype status: ~azure_stack_hci_client.models.LogicalNetworkStatus
+    :ivar network_type: Type of the Logical Network. Known values are: "Workload" and
+     "Infrastructure".
+    :vartype network_type: str or ~azure_stack_hci_client.models.LogicalNetworkTypeEnum
+    """
+
+    _validation = {
+        "provisioning_state": {"readonly": True},
+        "status": {"readonly": True},
+        "network_type": {"readonly": True},
+    }
+
+    _attribute_map = {
+        "dhcp_options": {"key": "dhcpOptions", "type": "LogicalNetworkPropertiesDhcpOptions"},
+        "subnets": {"key": "subnets", "type": "[Subnet]"},
+        "provisioning_state": {"key": "provisioningState", "type": "str"},
+        "vm_switch_name": {"key": "vmSwitchName", "type": "str"},
+        "status": {"key": "status", "type": "LogicalNetworkStatus"},
+        "network_type": {"key": "networkType", "type": "str"},
+    }
+
+    def __init__(
+        self,
+        *,
+        dhcp_options: Optional["_models.LogicalNetworkPropertiesDhcpOptions"] = None,
+        subnets: Optional[List["_models.Subnet"]] = None,
+        vm_switch_name: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        :keyword dhcp_options: DhcpOptions contains an array of DNS servers available to VMs deployed
+         in the logical network. Standard DHCP option for a subnet overrides logical network DHCP
+         options.
+        :paramtype dhcp_options: ~azure_stack_hci_client.models.LogicalNetworkPropertiesDhcpOptions
+        :keyword subnets: Subnet - list of subnets under the logical network.
+        :paramtype subnets: list[~azure_stack_hci_client.models.Subnet]
+        :keyword vm_switch_name: name of the network switch to be used for VMs.
+        :paramtype vm_switch_name: str
+        """
+        super().__init__(**kwargs)
+        self.dhcp_options = dhcp_options
+        self.subnets = subnets
+        self.provisioning_state = None
+        self.vm_switch_name = vm_switch_name
+        self.status = None
+        self.network_type = None

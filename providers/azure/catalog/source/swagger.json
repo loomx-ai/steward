@@ -7559,6 +7559,742 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/6005e166d7172cb62fd2894971dbfe1910ac5285/specification/monitor/resource-manager/Microsoft.Insights/Insights/preview/2021-05-01-preview/subscriptionDiagnosticsSettings_API.json"
     },
     {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/preview/2025-06-01-preview/stackhcivm.json",
+      "source_sha256": "8907ed708c9718db797ac43d55ae27812bb907109ec0f6f2c519ae709f30fc46",
+      "dependency": false,
+      "document": {
+        "swagger": "2.0",
+        "info": {
+          "title": "Microsoft.AzureStackHCI",
+          "version": "2025-06-01-preview",
+          "description": "Azure Stack HCI management service",
+          "x-typespec-generated": [
+            {
+              "emitter": "@azure-tools/typespec-autorest"
+            }
+          ]
+        },
+        "host": "management.azure.com",
+        "schemes": [
+          "https"
+        ],
+        "paths": {
+          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
+            "get": {
+              "operationId": "LogicalNetworks_ListAll",
+              "tags": [
+                "LogicalNetworks"
+              ],
+              "description": "Lists all of the logical networks in the specified subscription. Use the nextLink property in the response to get the next page of logical networks.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetworkListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "ListLogicalNetworkBySubscription": {
+                  "$ref": "./examples/LogicalNetworks_ListAll.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
+            "get": {
+              "operationId": "LogicalNetworks_ListByResourceGroup",
+              "tags": [
+                "LogicalNetworks"
+              ],
+              "description": "Lists all of the logical networks in the specified resource group. Use the nextLink property in the response to get the next page of logical networks.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetworkListResult"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "ListLogicalNetworkByResourceGroup": {
+                  "$ref": "./examples/LogicalNetworks_ListByResourceGroup.json"
+                }
+              },
+              "x-ms-pageable": {
+                "nextLinkName": "nextLink"
+              }
+            }
+          },
+          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}": {
+            "get": {
+              "operationId": "LogicalNetworks_Get",
+              "tags": [
+                "LogicalNetworks"
+              ],
+              "description": "The operation to get a logical network.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "logicalNetworkName",
+                  "in": "path",
+                  "description": "Name of the logical network",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Azure operation completed successfully.",
+                  "schema": {
+                    "$ref": "#/definitions/LogicalNetwork"
+                  }
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "GetLogicalNetwork": {
+                  "$ref": "./examples/LogicalNetworks_Get.json"
+                }
+              }
+            },
+            "delete": {
+              "operationId": "LogicalNetworks_Delete",
+              "tags": [
+                "LogicalNetworks"
+              ],
+              "description": "The operation to delete a logical network.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v5/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "name": "logicalNetworkName",
+                  "in": "path",
+                  "description": "Name of the logical network",
+                  "required": true,
+                  "type": "string",
+                  "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$"
+                }
+              ],
+              "responses": {
+                "202": {
+                  "description": "Resource deletion accepted.",
+                  "headers": {
+                    "Location": {
+                      "type": "string",
+                      "description": "The Location header contains the URL where the status of the long running operation can be checked."
+                    },
+                    "Retry-After": {
+                      "type": "integer",
+                      "format": "int32",
+                      "description": "The Retry-After header can indicate how long the client should wait before polling the operation status."
+                    }
+                  }
+                },
+                "204": {
+                  "description": "Resource does not exist."
+                },
+                "default": {
+                  "description": "An unexpected error response.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-examples": {
+                "DeleteLogicalNetwork": {
+                  "$ref": "./examples/LogicalNetworks_Delete.json"
+                }
+              },
+              "x-ms-long-running-operation-options": {
+                "final-state-via": "location"
+              },
+              "x-ms-long-running-operation": true
+            }
+          }
+        },
+        "definitions": {
+          "LogicalNetwork": {
+            "type": "object",
+            "description": "The logical network resource definition.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/LogicalNetworkProperties",
+                "description": "The resource-specific properties for this resource.",
+                "x-ms-client-flatten": true
+              },
+              "extendedLocation": {
+                "$ref": "#/definitions/ExtendedLocation",
+                "description": "The extendedLocation of the resource."
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/TrackedResource"
+              }
+            ],
+            "x-ms-azure-resource": true
+          },
+          "ExtendedLocation": {
+            "type": "object",
+            "description": "The complex type of the extended location.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "The name of the extended location."
+              },
+              "type": {
+                "$ref": "#/definitions/ExtendedLocationTypes",
+                "description": "The type of the extended location."
+              }
+            }
+          },
+          "ExtendedLocationTypes": {
+            "type": "string",
+            "description": "The type of extendedLocation.",
+            "enum": [
+              "CustomLocation"
+            ],
+            "x-ms-enum": {
+              "name": "ExtendedLocationTypes",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "CustomLocation",
+                  "value": "CustomLocation",
+                  "description": "Custom extended location type"
+                }
+              ]
+            }
+          },
+          "LogicalNetworkProperties": {
+            "type": "object",
+            "description": "Properties under the logical network resource",
+            "properties": {
+              "dhcpOptions": {
+                "$ref": "#/definitions/LogicalNetworkPropertiesDhcpOptions",
+                "description": "DhcpOptions contains an array of DNS servers available to VMs deployed in the logical network. Standard DHCP option for a subnet overrides logical network DHCP options."
+              },
+              "subnets": {
+                "type": "array",
+                "description": "Subnet - list of subnets under the logical network",
+                "items": {
+                  "$ref": "#/definitions/Subnet"
+                },
+                "x-ms-identifiers": []
+              },
+              "provisioningState": {
+                "$ref": "#/definitions/ProvisioningStateEnum",
+                "description": "Provisioning state of the logical network.",
+                "readOnly": true
+              },
+              "vmSwitchName": {
+                "type": "string",
+                "description": "name of the network switch to be used for VMs"
+              },
+              "status": {
+                "$ref": "#/definitions/LogicalNetworkStatus",
+                "description": "The observed state of logical networks",
+                "readOnly": true
+              },
+              "networkType": {
+                "$ref": "#/definitions/LogicalNetworkTypeEnum",
+                "description": "Type of the Logical Network",
+                "readOnly": true
+              }
+            }
+          },
+          "LogicalNetworkTypeEnum": {
+            "type": "string",
+            "description": "Type of Logical Network",
+            "enum": [
+              "Workload",
+              "Infrastructure"
+            ],
+            "x-ms-enum": {
+              "name": "LogicalNetworkTypeEnum",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Workload",
+                  "value": "Workload",
+                  "description": "Logical Network of type Workload"
+                },
+                {
+                  "name": "Infrastructure",
+                  "value": "Infrastructure",
+                  "description": "Logical Network of type Infrastructure"
+                }
+              ]
+            }
+          },
+          "LogicalNetworkStatus": {
+            "type": "object",
+            "description": "The observed state of logical networks",
+            "properties": {
+              "errorCode": {
+                "type": "string",
+                "description": "LogicalNetwork provisioning error code"
+              },
+              "errorMessage": {
+                "type": "string",
+                "description": "Descriptive error message"
+              },
+              "provisioningStatus": {
+                "$ref": "#/definitions/LogicalNetworkStatusProvisioningStatus",
+                "description": "Logical network provisioning status"
+              }
+            }
+          },
+          "LogicalNetworkStatusProvisioningStatus": {
+            "type": "object",
+            "description": "Describes the status of the provisioning.",
+            "properties": {
+              "operationId": {
+                "type": "string",
+                "description": "The ID of the operation performed on the logical network"
+              },
+              "status": {
+                "$ref": "#/definitions/Status",
+                "description": "The status of the operation performed on the logical network [Succeeded, Failed, InProgress]"
+              }
+            }
+          },
+          "Status": {
+            "type": "string",
+            "description": "The status of the operation performed on the resource [Succeeded, Failed, InProgress]",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "InProgress"
+            ],
+            "x-ms-enum": {
+              "name": "Status",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Succeeded",
+                  "value": "Succeeded",
+                  "description": "Operation succeeded"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed",
+                  "description": "Operation failed"
+                },
+                {
+                  "name": "InProgress",
+                  "value": "InProgress",
+                  "description": "Operation is in progress"
+                }
+              ]
+            },
+            "readOnly": true
+          },
+          "ProvisioningStateEnum": {
+            "type": "string",
+            "description": "Provisioning state of the resource.",
+            "enum": [
+              "Succeeded",
+              "Failed",
+              "InProgress",
+              "Accepted",
+              "Deleting",
+              "Canceled"
+            ],
+            "x-ms-enum": {
+              "name": "ProvisioningStateEnum",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Succeeded",
+                  "value": "Succeeded",
+                  "description": "Provisioning has succeeded"
+                },
+                {
+                  "name": "Failed",
+                  "value": "Failed",
+                  "description": "Provisioning has failed"
+                },
+                {
+                  "name": "InProgress",
+                  "value": "InProgress",
+                  "description": "Provisioning is in progress"
+                },
+                {
+                  "name": "Accepted",
+                  "value": "Accepted",
+                  "description": "Provisioning has been accepted"
+                },
+                {
+                  "name": "Deleting",
+                  "value": "Deleting",
+                  "description": "Deletion of the resource is in progress"
+                },
+                {
+                  "name": "Canceled",
+                  "value": "Canceled",
+                  "description": "Provisioning has been canceled"
+                }
+              ]
+            },
+            "readOnly": true
+          },
+          "Subnet": {
+            "type": "object",
+            "description": "Properties of the subnet.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/SubnetProperties",
+                "description": "Properties of the subnet.",
+                "x-ms-client-flatten": true
+              },
+              "name": {
+                "type": "string",
+                "description": "Name - The name of the resource that is unique within a resource group. This name can be used to access the resource.",
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$"
+              }
+            }
+          },
+          "SubnetProperties": {
+            "type": "object",
+            "description": "Properties of the subnet.",
+            "properties": {
+              "addressPrefix": {
+                "type": "string",
+                "description": "The address prefix for the subnet: Cidr for this subnet - IPv4, IPv6."
+              },
+              "addressPrefixes": {
+                "type": "array",
+                "description": "List of address prefixes for the subnet.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "ipAllocationMethod": {
+                "$ref": "#/definitions/IpAllocationMethodEnum",
+                "description": "IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'"
+              },
+              "ipConfigurationReferences": {
+                "type": "array",
+                "description": "IPConfigurationReferences - list of IPConfigurationReferences",
+                "items": {
+                  "$ref": "#/definitions/SubnetIpConfigurationReference"
+                },
+                "x-ms-identifiers": []
+              },
+              "networkSecurityGroup": {
+                "$ref": "#/definitions/NetworkSecurityGroupArmReference",
+                "description": "NetworkSecurityGroup - Network Security Group attached to the logical network."
+              },
+              "routeTable": {
+                "$ref": "#/definitions/RouteTable",
+                "description": "Route table resource."
+              },
+              "ipPools": {
+                "type": "array",
+                "description": "network associated pool of IP Addresses",
+                "items": {
+                  "$ref": "#/definitions/IPPool"
+                },
+                "x-ms-identifiers": []
+              },
+              "vlan": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Vlan to use for the subnet"
+              }
+            }
+          },
+          "IPPool": {
+            "type": "object",
+            "description": "Describes IPPool",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the IP-Pool"
+              },
+              "ipPoolType": {
+                "$ref": "#/definitions/IPPoolTypeEnum",
+                "description": "Type of the IP Pool [vm, vippool]"
+              },
+              "start": {
+                "type": "string",
+                "description": "Start of the IP address pool"
+              },
+              "end": {
+                "type": "string",
+                "description": "End of the IP address pool"
+              },
+              "info": {
+                "$ref": "#/definitions/IPPoolInfo",
+                "description": "IPPool info"
+              }
+            }
+          },
+          "IPPoolInfo": {
+            "type": "object",
+            "description": "IP Pool info",
+            "properties": {
+              "used": {
+                "type": "string",
+                "description": "Number of IP addresses allocated from the IP Pool",
+                "readOnly": true
+              },
+              "available": {
+                "type": "string",
+                "description": "Number of IP addresses available in the IP Pool",
+                "readOnly": true
+              }
+            }
+          },
+          "IPPoolTypeEnum": {
+            "type": "string",
+            "description": "Type of the IP Pool [vm, vippool]",
+            "enum": [
+              "vm",
+              "vippool"
+            ],
+            "x-ms-enum": {
+              "name": "IPPoolTypeEnum",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "vm",
+                  "value": "vm",
+                  "description": "Virtual Machine IP Pool"
+                },
+                {
+                  "name": "vippool",
+                  "value": "vippool",
+                  "description": "VIP Pool"
+                }
+              ]
+            }
+          },
+          "RouteTable": {
+            "type": "object",
+            "description": "Route table resource.",
+            "properties": {
+              "etag": {
+                "type": "string",
+                "description": "A unique read-only string that changes whenever the resource is updated.",
+                "readOnly": true
+              },
+              "name": {
+                "type": "string",
+                "description": "Resource name.",
+                "readOnly": true
+              },
+              "type": {
+                "type": "string",
+                "description": "Resource type.",
+                "readOnly": true
+              },
+              "properties": {
+                "$ref": "#/definitions/RouteTableProperties",
+                "description": "Properties of the route table.",
+                "x-ms-client-flatten": true
+              }
+            }
+          },
+          "RouteTableProperties": {
+            "type": "object",
+            "description": "RouteTablePropertiesFormat - Route Table resource.",
+            "properties": {
+              "routes": {
+                "type": "array",
+                "description": "Collection of routes contained within a route table.",
+                "items": {
+                  "$ref": "#/definitions/Route"
+                },
+                "x-ms-identifiers": []
+              }
+            }
+          },
+          "Route": {
+            "type": "object",
+            "description": "Route - Route resource.",
+            "properties": {
+              "properties": {
+                "$ref": "#/definitions/RouteProperties",
+                "description": "Properties of the route.",
+                "x-ms-client-flatten": true
+              },
+              "name": {
+                "type": "string",
+                "description": "Name - name of the subnet",
+                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$"
+              }
+            }
+          },
+          "RouteProperties": {
+            "type": "object",
+            "description": "RoutePropertiesFormat - Route resource.",
+            "properties": {
+              "addressPrefix": {
+                "type": "string",
+                "description": "The destination CIDR to which the route applies."
+              },
+              "nextHopIpAddress": {
+                "type": "string",
+                "description": "The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance."
+              }
+            }
+          },
+          "NetworkSecurityGroupArmReference": {
+            "type": "object",
+            "description": "The Azure Resource ID for a Network Security Group.",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "arm-id",
+                "description": "The Azure Resource ID for a Network Security Group.",
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.AzureStackHCI/networkSecurityGroups"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "SubnetIpConfigurationReference": {
+            "type": "object",
+            "description": "The Azure Resource ID for a Network Interface.",
+            "properties": {
+              "ID": {
+                "type": "string",
+                "format": "arm-id",
+                "description": "The Azure Resource ID for a Network Interface.",
+                "x-ms-arm-id-details": {
+                  "allowedResources": [
+                    {
+                      "type": "Microsoft.AzureStackHCI/networkInterfaces"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "IpAllocationMethodEnum": {
+            "type": "string",
+            "description": "IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'",
+            "enum": [
+              "Dynamic",
+              "Static"
+            ],
+            "x-ms-enum": {
+              "name": "IpAllocationMethodEnum",
+              "modelAsString": true,
+              "values": [
+                {
+                  "name": "Dynamic",
+                  "value": "Dynamic",
+                  "description": "Dynamic IP allocation method"
+                },
+                {
+                  "name": "Static",
+                  "value": "Static",
+                  "description": "Static IP allocation method"
+                }
+              ]
+            }
+          },
+          "LogicalNetworkPropertiesDhcpOptions": {
+            "type": "object",
+            "description": "DhcpOptions contains an array of DNS servers available to VMs deployed in the logical network. Standard DHCP option for a subnet overrides logical network DHCP options.",
+            "properties": {
+              "dnsServers": {
+                "type": "array",
+                "description": "The list of DNS servers IP addresses.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "LogicalNetworkListResult": {
+            "type": "object",
+            "description": "The response of a LogicalNetwork list operation.",
+            "properties": {
+              "value": {
+                "type": "array",
+                "description": "The LogicalNetwork items on this page",
+                "items": {
+                  "$ref": "#/definitions/LogicalNetwork"
+                }
+              },
+              "nextLink": {
+                "type": "string",
+                "format": "uri",
+                "description": "The link to the next page of items"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        }
+      }
+    },
+    {
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/common.json",
       "source_sha256": "a63b40b10a55847e1fd2e9e7ff123de98bd99944b6d74e967e8c97b41431b295",
       "dependency": true,
@@ -8041,517 +8777,6 @@
             "maxLength": 80,
             "minLength": 1,
             "description": "Name of the gallery image"
-          }
-        }
-      }
-    },
-    {
-      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/azurestackhci/resource-manager/Microsoft.AzureStackHCI/StackHCIVM/stable/2024-01-01/logicalNetworks.json",
-      "source_sha256": "bd4291f68be2168f5ad3734f823af76d500554b2ef93acac46e42f9900b7b9a9",
-      "dependency": false,
-      "document": {
-        "swagger": "2.0",
-        "info": {
-          "title": "AzureStackHCI",
-          "description": "The Microsoft.AzureStackHCI Rest API spec.",
-          "version": "2024-01-01"
-        },
-        "host": "management.azure.com",
-        "schemes": [
-          "https"
-        ],
-        "paths": {
-          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks/{logicalNetworkName}": {
-            "get": {
-              "operationId": "LogicalNetworks_Get",
-              "x-ms-examples": {
-                "GetLogicalNetwork": {
-                  "$ref": "./examples/GetLogicalNetwork.json"
-                }
-              },
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "#/parameters/LogicalNetworkNameParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "default": {
-                  "description": "Error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
-                  }
-                },
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "$ref": "#/definitions/LogicalNetworks"
-                  }
-                }
-              }
-            },
-            "delete": {
-              "operationId": "LogicalNetworks_Delete",
-              "description": "The operation to delete a logical network.",
-              "x-ms-examples": {
-                "DeleteLogicalNetwork": {
-                  "$ref": "./examples/DeleteLogicalNetwork.json"
-                }
-              },
-              "x-ms-long-running-operation": true,
-              "x-ms-long-running-operation-options": {
-                "final-state-via": "azure-async-operation"
-              },
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "#/parameters/LogicalNetworkNameParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "default": {
-                  "description": "Error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
-                  }
-                },
-                "202": {
-                  "description": "Accepted",
-                  "headers": {
-                    "Location": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "204": {
-                  "description": "No content"
-                }
-              }
-            }
-          },
-          "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
-            "get": {
-              "operationId": "LogicalNetworks_List",
-              "description": "Lists all of the logical networks in the specified resource group. Use the nextLink property in the response to get the next page of logical networks.",
-              "x-ms-examples": {
-                "ListLogicalNetworkByResourceGroup": {
-                  "$ref": "./examples/ListLogicalNetworkByResourceGroup.json"
-                }
-              },
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "default": {
-                  "description": "Error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
-                  }
-                },
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "$ref": "#/definitions/LogicalNetworksListResult"
-                  }
-                }
-              },
-              "x-ms-pageable": {
-                "nextLinkName": "nextLink"
-              }
-            }
-          },
-          "/subscriptions/{subscriptionId}/providers/Microsoft.AzureStackHCI/logicalNetworks": {
-            "get": {
-              "operationId": "LogicalNetworks_ListAll",
-              "description": "Lists all of the logical networks in the specified subscription. Use the nextLink property in the response to get the next page of logical networks.",
-              "x-ms-examples": {
-                "ListLogicalNetworkBySubscription": {
-                  "$ref": "./examples/ListLogicalNetworkBySubscription.json"
-                }
-              },
-              "parameters": [
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
-                },
-                {
-                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
-                }
-              ],
-              "responses": {
-                "default": {
-                  "description": "Error response describing why the operation failed.",
-                  "schema": {
-                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
-                  }
-                },
-                "200": {
-                  "description": "OK",
-                  "schema": {
-                    "$ref": "#/definitions/LogicalNetworksListResult"
-                  }
-                }
-              },
-              "x-ms-pageable": {
-                "nextLinkName": "nextLink"
-              }
-            }
-          }
-        },
-        "definitions": {
-          "LogicalNetworksListResult": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/LogicalNetworks"
-                }
-              },
-              "nextLink": {
-                "type": "string"
-              }
-            }
-          },
-          "LogicalNetworks": {
-            "type": "object",
-            "description": "The logical network resource definition.",
-            "x-ms-azure-resource": true,
-            "x-ms-client-flatten": true,
-            "properties": {
-              "properties": {
-                "x-ms-client-flatten": true,
-                "$ref": "#/definitions/LogicalNetworkProperties"
-              },
-              "extendedLocation": {
-                "$ref": "./common.json#/definitions/ExtendedLocation",
-                "description": "The extendedLocation of the resource."
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/TrackedResource"
-              }
-            ]
-          },
-          "LogicalNetworkProperties": {
-            "type": "object",
-            "x-ms-client-flatten": true,
-            "properties": {
-              "dhcpOptions": {
-                "type": "object",
-                "description": "DhcpOptions contains an array of DNS servers available to VMs deployed in the logical network. Standard DHCP option for a subnet overrides logical network DHCP options.",
-                "properties": {
-                  "dnsServers": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "The list of DNS servers IP addresses."
-                  }
-                }
-              },
-              "subnets": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Subnet"
-                },
-                "description": "Subnet - list of subnets under the logical network",
-                "x-ms-identifiers": []
-              },
-              "provisioningState": {
-                "type": "string",
-                "description": "Provisioning state of the logical network.",
-                "readOnly": true,
-                "enum": [
-                  "Succeeded",
-                  "Failed",
-                  "InProgress",
-                  "Accepted",
-                  "Deleting",
-                  "Canceled"
-                ],
-                "x-ms-enum": {
-                  "name": "ProvisioningStateEnum",
-                  "modelAsString": true
-                }
-              },
-              "vmSwitchName": {
-                "type": "string",
-                "description": "name of the network switch to be used for VMs"
-              },
-              "status": {
-                "$ref": "#/definitions/LogicalNetworkStatus"
-              }
-            },
-            "description": "Properties under the logical network resource"
-          },
-          "LogicalNetworkStatus": {
-            "type": "object",
-            "x-ms-client-flatten": true,
-            "readOnly": true,
-            "properties": {
-              "errorCode": {
-                "type": "string",
-                "description": "LogicalNetwork provisioning error code"
-              },
-              "errorMessage": {
-                "type": "string",
-                "description": "Descriptive error message"
-              },
-              "provisioningStatus": {
-                "type": "object",
-                "properties": {
-                  "operationId": {
-                    "type": "string",
-                    "description": "The ID of the operation performed on the logical network"
-                  },
-                  "status": {
-                    "type": "string",
-                    "description": "The status of the operation performed on the logical network [Succeeded, Failed, InProgress]",
-                    "enum": [
-                      "Succeeded",
-                      "Failed",
-                      "InProgress"
-                    ],
-                    "x-ms-enum": {
-                      "name": "Status",
-                      "modelAsString": true
-                    }
-                  }
-                }
-              }
-            },
-            "description": "The observed state of logical networks"
-          },
-          "Subnet": {
-            "type": "object",
-            "properties": {
-              "properties": {
-                "x-ms-client-flatten": true,
-                "$ref": "#/definitions/SubnetPropertiesFormat",
-                "description": "Properties of the subnet."
-              },
-              "name": {
-                "type": "string",
-                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
-                "description": "Name - The name of the resource that is unique within a resource group. This name can be used to access the resource."
-              }
-            }
-          },
-          "SubnetPropertiesFormat": {
-            "type": "object",
-            "properties": {
-              "addressPrefix": {
-                "type": "string",
-                "description": "The address prefix for the subnet: Cidr for this subnet - IPv4, IPv6."
-              },
-              "addressPrefixes": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "description": "List of address prefixes for the subnet."
-              },
-              "ipAllocationMethod": {
-                "type": "string",
-                "description": "IPAllocationMethod - The IP address allocation method. Possible values include: 'Static', 'Dynamic'",
-                "enum": [
-                  "Dynamic",
-                  "Static"
-                ],
-                "x-ms-enum": {
-                  "name": "IpAllocationMethodEnum",
-                  "modelAsString": true
-                }
-              },
-              "ipConfigurationReferences": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "ID": {
-                      "type": "string",
-                      "description": "IPConfigurationID"
-                    }
-                  },
-                  "description": "IPConfigurationReference - Describes a IPConfiguration under the virtual network"
-                },
-                "x-ms-identifiers": [],
-                "description": "IPConfigurationReferences - list of IPConfigurationReferences"
-              },
-              "routeTable": {
-                "type": "object",
-                "$ref": "#/definitions/RouteTable"
-              },
-              "ipPools": {
-                "type": "array",
-                "description": "network associated pool of IP Addresses",
-                "items": {
-                  "$ref": "#/definitions/IPPool"
-                },
-                "x-ms-identifiers": []
-              },
-              "vlan": {
-                "type": "integer",
-                "format": "int32",
-                "description": "Vlan to use for the subnet"
-              }
-            },
-            "description": "Properties of the subnet."
-          },
-          "IPPool": {
-            "type": "object",
-            "properties": {
-              "name": {
-                "type": "string",
-                "description": "Name of the IP-Pool"
-              },
-              "ipPoolType": {
-                "type": "string",
-                "enum": [
-                  "vm",
-                  "vippool"
-                ],
-                "x-ms-enum": {
-                  "name": "IPPoolTypeEnum",
-                  "modelAsString": false
-                },
-                "description": "Type of the IP Pool [vm, vippool]"
-              },
-              "start": {
-                "type": "string",
-                "description": "Start of the IP address pool"
-              },
-              "end": {
-                "type": "string",
-                "description": "End of the IP address pool"
-              },
-              "info": {
-                "$ref": "#/definitions/IPPoolInfo"
-              }
-            }
-          },
-          "IPPoolInfo": {
-            "type": "object",
-            "properties": {
-              "used": {
-                "type": "string",
-                "readOnly": true,
-                "description": "Number of IP addresses allocated from the IP Pool"
-              },
-              "available": {
-                "type": "string",
-                "readOnly": true,
-                "description": "Number of IP addresses available in the IP Pool"
-              }
-            }
-          },
-          "RouteTable": {
-            "type": "object",
-            "properties": {
-              "etag": {
-                "readOnly": true,
-                "type": "string",
-                "description": "A unique read-only string that changes whenever the resource is updated."
-              },
-              "name": {
-                "readOnly": true,
-                "type": "string",
-                "description": "Resource name."
-              },
-              "type": {
-                "readOnly": true,
-                "type": "string",
-                "description": "Resource type."
-              },
-              "properties": {
-                "x-ms-client-flatten": true,
-                "$ref": "#/definitions/RouteTablePropertiesFormat",
-                "description": "Properties of the route table."
-              }
-            },
-            "description": "Route table resource."
-          },
-          "RouteTablePropertiesFormat": {
-            "type": "object",
-            "properties": {
-              "routes": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/Route"
-                },
-                "description": "Collection of routes contained within a route table.",
-                "x-ms-identifiers": []
-              }
-            },
-            "description": "RouteTablePropertiesFormat - Route Table resource."
-          },
-          "Route": {
-            "type": "object",
-            "properties": {
-              "properties": {
-                "x-ms-client-flatten": true,
-                "$ref": "#/definitions/RoutePropertiesFormat",
-                "description": "Properties of the route."
-              },
-              "name": {
-                "type": "string",
-                "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,78}[_a-zA-Z0-9]$",
-                "description": "Name - name of the subnet"
-              }
-            },
-            "description": "Route - Route resource."
-          },
-          "RoutePropertiesFormat": {
-            "type": "object",
-            "properties": {
-              "addressPrefix": {
-                "type": "string",
-                "description": "The destination CIDR to which the route applies."
-              },
-              "nextHopIpAddress": {
-                "type": "string",
-                "description": "The IP address packets should be forwarded to. Next hop values are only allowed in routes where the next hop type is VirtualAppliance."
-              }
-            },
-            "description": "RoutePropertiesFormat - Route resource."
-          }
-        },
-        "parameters": {
-          "LogicalNetworkNameParameter": {
-            "name": "logicalNetworkName",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[_a-zA-Z0-9]$",
-            "x-ms-parameter-location": "method",
-            "maxLength": 64,
-            "minLength": 2,
-            "description": "Name of the logical network"
           }
         }
       }
@@ -11613,6 +11838,41 @@
             },
             "readOnly": true,
             "type": "object"
+          },
+          "TrackedResource": {
+            "type": "object",
+            "title": "Tracked Resource",
+            "description": "The resource model definition for an Azure Resource Manager tracked top level resource which has 'tags' and a 'location'",
+            "properties": {
+              "tags": {
+                "type": "object",
+                "description": "Resource tags.",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "x-ms-mutability": [
+                  "read",
+                  "create",
+                  "update"
+                ]
+              },
+              "location": {
+                "type": "string",
+                "description": "The geo-location where the resource lives",
+                "x-ms-mutability": [
+                  "read",
+                  "create"
+                ]
+              }
+            },
+            "required": [
+              "location"
+            ],
+            "allOf": [
+              {
+                "$ref": "#/definitions/Resource"
+              }
+            ]
           }
         },
         "parameters": {
@@ -11623,6 +11883,24 @@
             "name": "api-version",
             "required": true,
             "type": "string"
+          },
+          "ResourceGroupNameParameter": {
+            "name": "resourceGroupName",
+            "in": "path",
+            "description": "The name of the resource group. The name is case insensitive.",
+            "required": true,
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 90,
+            "x-ms-parameter-location": "method"
+          },
+          "SubscriptionIdParameter": {
+            "name": "subscriptionId",
+            "in": "path",
+            "description": "The ID of the target subscription. The value must be an UUID.",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
           }
         }
       },

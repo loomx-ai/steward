@@ -1,0 +1,7 @@
+class LogicalNetworkTypeEnum(str, Enum, metaclass=CaseInsensitiveEnumMeta):
+    """Type of Logical Network."""
+
+    WORKLOAD = "Workload"
+    """Logical Network of type Workload"""
+    INFRASTRUCTURE = "Infrastructure"
+    """Logical Network of type Infrastructure"""

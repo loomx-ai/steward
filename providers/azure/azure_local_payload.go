@@ -14,7 +14,7 @@ func azureLocalSafeValue(value any) any {
 		result := object(hybridComputeSafeValue(value))
 		if props := object(value["properties"]); props != nil {
 			public := object(result["properties"])
-			for _, key := range []string{"vmId", "resourceUid", "provisioningAction", "macAddress", "diskFileFormat", "hyperVGeneration", "osType", "vmSwitchName", "ipAddress", "ipAllocationMethod", "addressPrefix", "powerState", "vmSize", "publisher", "offer", "sku"} {
+			for _, key := range []string{"vmId", "resourceUid", "provisioningAction", "macAddress", "diskFileFormat", "hyperVGeneration", "osType", "vmSwitchName", "networkType", "ipAddress", "ipAllocationMethod", "addressPrefix", "powerState", "vmSize", "publisher", "offer", "sku"} {
 				if v, ok := props[key].(string); ok {
 					public[key] = v
 				}

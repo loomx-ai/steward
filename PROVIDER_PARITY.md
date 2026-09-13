@@ -4076,3 +4076,40 @@ background evidence only, not acceptance evidence for this work.
   screenshots) passed. The 28 milestone files preserve all 65 pre-existing file
   contents, including unrelated edits to the shared worker. No live backend or
   independent emulator was used.
+
+### Azure Local logical-network type prerequisite
+
+- Logical-network GET/list/native-delete catalog contracts now use the pinned
+  Microsoft `2025-06-01-preview` source. Its read-only `networkType` distinguishes
+  `Workload` and `Infrastructure`; the original 2024 contract has no such field.
+  This is an inventory prerequisite, not completion of network cleanup. The
+  catalog remains at 443 rules, 412 actions and 1,468 native operations; the four
+  network operations changed (including the native resource-group list rename),
+  with other operations and all resource-type mappings unchanged.
+- Discovery uses the catalog version consistently for indexes and own reads.
+  Only exact native enum values establish the type; missing, future, differently
+  cased or whitespace-padded values remain `Unknown`. Non-string values fail
+  discovery. Names, tags, switch names and empty NIC lists cannot establish
+  workload status. Unknown types remain visible without deletion capability;
+  denied/unsupported preview responses cannot close existing assets.
+- Four new original examples retain their native bytes and source hashes. The
+  four stable examples and provenance are preserved separately. Three unchanged
+  SDK model/enum declarations were checked against the verified 1.15.1 wheel;
+  AST tests establish the read-only field and enum, not live SDK execution.
+  The preview GET example also omits the type, so no workload default is inferred.
+- Tests cover strict types, permission/API-version failures, conflicting native
+  indexes, identity and cursor boundaries, changed-type pagination, own absence,
+  JSON/omitted-index recovery and private-field projection. Existing network
+  selection, SQLite inventory, Local cleanup and Arc recovery tests still pass.
+  Bilingual docs describe the preview API requirement and infrastructure-network
+  prerequisites. Workload/AKS consumers, infrastructure-wide deletion ordering,
+  network cleanup recovery and real-cloud validation remain unfinished. All eight
+  acceptance items remain open; no independent emulator or live backend was used.
+- Validation: full isolated Azure package tests passed (323.087s). Focused race checks passed (Azure
+  262.893s, shared inventory 2.394s), and `go vet` passed for both packages.
+  Focused Local/Arc/catalog checks passed (27.751s); shared-workspace integration
+  passed (Azure 26.816s, inventory 0.791s). All 29 Python SDK/CLI/catalog checks
+  passed. Documentation checks passed in the isolated checkout (30 chapters) and
+  shared workspace (42 chapters), each with 10 original screenshots. Generated
+  catalog reproducibility and unchanged unrelated operations were verified.
+  All 65 pre-existing file contents are preserved. No frontend code changed.

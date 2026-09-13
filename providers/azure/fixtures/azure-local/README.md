@@ -9,11 +9,12 @@ reference checks and cleanup. Native inventory, reference graphs, VM/guest clean
 ## Original Swagger examples
 
 `sources.json` records 33 unchanged examples, SHA-256 values, operations, methods,
-paths and upstream URLs. Seven StackHCIVM root documents at API `2024-01-01` are
-pinned to Azure/azure-rest-api-specs commit
-`c20bf553ad64f20c6d5e3f56080380c086cb1fde`: virtualMachineInstances,
-networkInterfaces, virtualHardDisks, logicalNetworks, storageContainers,
-galleryImages and marketplaceGalleryImages. Selected native fragments and
+paths and upstream URLs. Six StackHCIVM root documents use API `2024-01-01`:
+virtualMachineInstances, networkInterfaces, virtualHardDisks, storageContainers,
+galleryImages and marketplaceGalleryImages. Logical-network operations use the
+`2025-06-01-preview/stackhcivm.json` document for its read-only network type.
+All are pinned to Azure/azure-rest-api-specs commit
+`c20bf553ad64f20c6d5e3f56080380c086cb1fde`. Selected native fragments and
 transitive schemas are retained in `../../catalog/source/swagger.json`.
 
 The selection contains 24 GETs, eight DELETEs and VM Stop, covering VM instances,
@@ -352,3 +353,23 @@ runtimes/repositories between observations, and retains the registration, NIC,
 network and license. The storage DELETE occurs only after VM, both disks and
 both images disappear. These are composed transports and native SDK-function
 checks; physical path/volume behavior and production callbacks remain unverified.
+
+## Logical-network type prerequisite
+
+The four unchanged preview GET/list/DELETE examples are in `network-preview/`;
+`network-2024-sources.json` preserves the four original stable examples and hashes.
+The current preview GET example also omits `networkType`: it is not evidence that
+an untyped resource is a workload network. The native schema and unchanged SDK
+model/enum excerpts declare read-only `Workload` and `Infrastructure` values.
+`network-models-source.json` pins the same verified CLI wheel, member hashes,
+class line ranges and fragment hashes. The Python check parses these declarations
+without importing the SDK or claiming to run its transport.
+
+Inventory reads and indexes share the catalog's preview version. Missing, future,
+case-changed or whitespace-padded enum values stay `Unknown`; non-string values
+fail the scan. Private configuration stays sealed, and changing the native type
+invalidates a paginated snapshot. Known IDs survive an omitted index and JSON
+recovery; permission, version, identity and cursor failures cannot close assets.
+These checks do not grant deletion capability. Workload consumer reconciliation
+(including applicable AKS consumers), infrastructure-wide prerequisites, own
+absence verification and persisted cleanup recovery remain to be implemented.

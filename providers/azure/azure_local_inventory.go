@@ -133,7 +133,11 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		} else if parent != "" {
 			path = parent + "/" + last(typ)
 		}
-		version := azureLocalVersion
+		mapping, ok := findType(typ)
+		if !ok {
+			return serviceDenied("azure_local_mapping_missing")
+		}
+		version := mapping.Version
 		if typ == hybridMachineType {
 			version = hybridComputeVersion
 		}
@@ -287,6 +291,9 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		slices.Sort(network)
 		normalized["_azure_local_references"] = recorded
 		normalized["_azure_local_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
+		if kind == azureLocalNetworkType {
+			normalized["networkType"] = azureLocalNetworkRole(raw)
+		}
 		// Independent resources retain separate cleanup lifecycles.
 		actionable := false
 		if kind == azureLocalAgentType || kind == azureLocalIdentityType {

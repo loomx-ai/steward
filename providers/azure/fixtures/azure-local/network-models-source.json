@@ -1,0 +1,35 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "fragments": [
+    {
+      "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/models/_models.py",
+      "member_sha256": "3a617305925f3db3db5bb3ad56cd1956ec61106c180af347c762cebfdb2efdd9",
+      "class_name": "LogicalNetworkProperties",
+      "start_line": 1444,
+      "end_line": 1499,
+      "file": "sdk_network_2024_properties.py.txt",
+      "sha256": "75ab4a15191bae48355d1e9e072c373560ec03d528b0dbecbeb619d767194b4c"
+    },
+    {
+      "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2025_06_01_preview/models/_models.py",
+      "member_sha256": "88c94bdcec346313e289f3ebd919fce89e10603491b8ae420c901e6fc2034058",
+      "class_name": "LogicalNetworkProperties",
+      "start_line": 1761,
+      "end_line": 1822,
+      "file": "sdk_network_preview_properties.py.txt",
+      "sha256": "c07349ce6f8555f23a293cdcf42012f13981d2a135a7436ade7b67c3f5a0331c"
+    },
+    {
+      "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2025_06_01_preview/models/_enums.py",
+      "member_sha256": "6a0fced55935185038f4e15cd1c1feddf7ee5b88fd271d016925b522233b60f6",
+      "class_name": "LogicalNetworkTypeEnum",
+      "start_line": 147,
+      "end_line": 153,
+      "file": "sdk_network_preview_enum.py.txt",
+      "sha256": "960d01c77e839bcbc5d68b8e6d2de0a544e5ff3093d33175825775cb257c1d97"
+    }
+  ]
+}
