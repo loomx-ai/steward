@@ -142,3 +142,17 @@ func TestRESTMonitorWorkspaceNativeNamePattern(t *testing.T) {
 		}
 	}
 }
+
+func TestRESTSQLVMNativeNamePattern(t *testing.T) {
+	operation := Operation{ID: "Azure.Microsoft.SqlVirtualMachine.SqlVirtualMachines_Get", Call: &OperationCall{Style: "azure-rest", Method: "GET", Endpoint: "https://management.azure.com", Path: "/sqlVirtualMachines/{name}", Version: "2023-10-01"}, InputSchema: map[string]any{"properties": map[string]any{"name": map[string]any{"type": "string", "in": "path", "required": true, "pattern": `^((?!_)[^\\/"'\[\]:|<>+=;,?*@&]{1,64}(?<![.-]))$`}}}}
+	for _, name := range []string{"vm", "v_m", "vm.1", "vm-1", strings.Repeat("a", 64)} {
+		if _, err := BindREST(operation, map[string]any{"name": name}); err != nil {
+			t.Errorf("valid SQL VM name %q: %v", name, err)
+		}
+	}
+	for _, name := range []string{"", "_vm", "vm.", "vm-", "vm[name]", "vm@name", strings.Repeat("a", 65)} {
+		if _, err := BindREST(operation, map[string]any{"name": name}); err == nil {
+			t.Errorf("invalid SQL VM name accepted: %q", name)
+		}
+	}
+}

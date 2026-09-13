@@ -3251,3 +3251,83 @@ background evidence only, not acceptance evidence for this work.
   check, 64-response original recording reproduction and documentation checks
   (40 chapters / 10 screenshots) passed. These checks do not close the broader
   acceptance criteria above.
+
+### Data Migration native inventory, lifecycle and cleanup
+
+- Eight native rules cover classic services, projects, tasks, files and service
+  tasks, SQL/Mongo services, and database migrations across five target routes:
+  SQL server, SQL managed instance, SQL virtual machine, Cosmos Mongo RU account
+  and Mongo vCore cluster. Forty-five DMS operations use `2025-06-30`; two
+  supporting SQL target GETs add 47 operations in total. Azure now has 428 rules,
+  400 cleanup actions and 1,412 operations from 180 root and 101 reference
+  documents. All previous 1,365 operation definitions remain unchanged.
+- Native catalog selection retains task discriminator subtypes with reverse-only
+  references in separate files. The importer identifies the innermost operation
+  provider for target-scoped extensions and preserves SQL VM name constraints.
+  Deterministic generation and offline schema checks retain the pinned source
+  definitions, without using mock schemas as the contract.
+- Inventory rereads complete classic trees, modern service indexes, independent
+  Mongo target indexes and every known own-resource identity. SQL has no native
+  target-scoped migration list in the selected contract. Missing list entries or
+  parents cannot prove known resource absence; forbidden or incomplete context
+  fails the scan. Service execution regions remain separate from target/group
+  regions. Private signatures bind authored inputs, targets, groups, ancestors,
+  typed references, nodes and protection across pagination, graph and actions.
+- Native subnet/NIC, target, storage, identity and schema-file fields contribute
+  dependencies. Supporting SQL MI target reads carry their subnet into network
+  scope; SQL VM target reads carry the underlying compute VM. Neither those
+  fields nor migration service links assign ownership of independent targets.
+  Arbitrary scripts, SQL text, connection strings and opaque input objects are
+  excluded from dependency discovery and public logs.
+- Classic services/projects require reviewed immediate-child deletion. Active
+  tasks cancel first; subsequent DELETE uses `deleteRunningTasks=false`. Shared
+  schema-file consumers and modern service-linked migrations require explicit
+  prior deletion, with reviewed classic ancestor expansion handled consistently.
+  SQL migrations cancel using the recorded migration operation ID. Active Mongo
+  migrations use native force deletion because there is no separate Cancel API.
+  SQL services wait for zero running node jobs, remove the reviewed runtime
+  registrations, verify their absence and then delete the service.
+- Accepted cancellation, node-removal and deletion phases remain durable across
+  retries. SQL Cancel HTTP 200 can include an async receipt. Polling preserves
+  exact returned URLs, uses ARM header precedence and verifies subscription,
+  native operation family, phase and UUID. Old `2021-06-30` polling is accepted
+  only for a fully signed classic service-delete receipt. Generic and typed
+  operation paths have separate checks; no operation 404 proves resource absence.
+  Every recorded descendant and required consumer still needs its own readback
+  after the parent disappears. Changed private inputs, protection, targets,
+  groups, locks or nodes stop further mutations. Verification is bounded to
+  24 hours and does not guarantee atomic exclusion of external changes.
+- The real SQLite inventory/graph/plan/execution workers scan 16 regional shards
+  and execute a 12-step plan through 54 fresh worker invocations. They verify
+  durable intent, generated asset IDs, five cancellations, two node removals,
+  12 deletions, final absence before closure and no repeated persisted mutation.
+  Tests also cover known-list omissions, failed scans, forged receipts, expired
+  polls, retained or protected children, new migrations, surviving orphans,
+  passive running work and unchanged independent targets.
+- The [Data Migration evidence](providers/azure/fixtures/datamigration/README.md)
+  retains 56 unchanged official examples, 76 responses/43 schema-validated bodies
+  and 107 original CLI response bodies from four checksum-pinned sources.
+  Native example identity, scope, parameter and enum inconsistencies remain
+  explicit. Signed URL values are replaced with deterministic replay values;
+  response bodies are unchanged. These are protocol, recorded and SQLite worker
+  checks. Floci-AZ's documented service list does not establish DMS emulation;
+  independent DMS emulator and live-cloud acceptance remain open. Secret masking
+  and absent conditional DELETE versions limit change detection; no source-data,
+  backup-erasure, billing-stop or crash-before-receipt guarantee is made.
+- The DTS mapping now includes classic tasks and modern services/migrations as
+  functional candidates, with its behavior-level verification still pending.
+  A fresh comparison leaves 21 mapped Azure types without rules; GCP has no
+  missing mapped type. All eight acceptance criteria remain open, including
+  lifecycle gaps in existing families, independent emulator/full application
+  verification and publication.
+- Verification: repository-wide `go test ./...` passed (Azure 293.286s); all
+  Data Migration race tests and the shared Data Factory worker regressions passed
+  (206.621s). `go vet ./...`, six offline importer tests, byte-identical catalog
+  regeneration, the 506-shape Data Factory reference generation, 107-response
+  original recording reproduction and documentation checks (40 chapters /
+  10 screenshots) passed. No acceptance criterion is closed by these checks.
+  The four added root documents and 43 dependency documents were also reproduced
+  from their checksum-pinned official sources. Follow-up lifecycle work must
+  add incoming-migration checks to independently deleted SQL/Cosmos and other
+  referenced targets; the current forward edges order jointly selected resources
+  but do not establish the absence of unselected or newly created migrations.

@@ -36,7 +36,7 @@ The [Grafana evidence](../fixtures/grafana/README.md) retains source hashes,
 uncorrected example inconsistencies, schema checks, replay transformations and
 the distinction between protocol, recorded and live-cloud verification.
 
-All 420 current resource rules discover through native product APIs. Stream
+All 428 current resource rules discover through native product APIs. Stream
 Analytics transformations use an explicitly expanded job GET because Azure has
 no transformation list operation; Data Factory nodes use their runtime’s native
 GetStatus collection. Other rules use native product Lists.
@@ -64,8 +64,8 @@ Go tests retain product wire behavior, scan authority, paging and failure cases.
 
 Thirty additional rules cover capacity reservations, dedicated hosts, SSH keys,
 VPN/ExpressRoute, virtual WAN hubs and routing, firewall policies, DNS, flow logs,
-Private Link and file shares. The current catalog contains 1,365 operations from
-176 root documents and 61 reference documents. Parent path parameters preserve
+Private Link and file shares. The current catalog contains 1,412 operations from
+180 root documents and 101 reference documents. Parent path parameters preserve
 the API's actual spelling and hierarchy, including resource-group-only lists.
 Native detail responses may omit `type`; their full bound identity and any
 present type must agree, and partial detail responses cannot authorize deletion.
@@ -420,3 +420,15 @@ across restarted SQLite workers. The [Data Factory evidence](../fixtures/datafac
 retains 54 unchanged examples, 64 native CLI responses, explicit schema/identity
 defects, reproduction commands and verification limits. External data stores and
 self-hosted machines remain separate; native DELETE has no atomic version guard.
+
+Data Migration adds eight native rules and 47 operations, including two supporting
+SQL target GETs. Classic descendants, SQL/Mongo services and five target-scoped
+migration routes retain their actual operation provider and path parameters.
+The importer preserves reverse-only task subtypes through explicit native schema
+roots and enforces SQL VM name lookaround guards before its RE2 pattern. Native
+family reads bind private inputs, targets, references, nodes and protection;
+reviewed cancellation/node-removal phases precede deletion and persist across
+worker restarts. The [Data Migration evidence](../fixtures/datamigration/README.md)
+retains 56 unchanged examples and 107 CLI response bodies, source hashes,
+known native example inconsistencies and signed-URL replay transformations.
+These checks do not establish independent DMS emulator or live-cloud acceptance.

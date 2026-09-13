@@ -455,6 +455,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 	if err := dataFactoryListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
+	if err := dataMigrationListQuery(u); err != nil {
+		return nil, "", response{}, err
+	}
 	if err := fleetListQuery(u); err != nil {
 		return nil, "", response{}, err
 	}
@@ -501,6 +504,9 @@ func (c *client) listPageResult(ctx context.Context, endpoint, collection string
 			return nil, "", response{}, err
 		}
 		if err := dataFactoryListQuery(nu); err != nil {
+			return nil, "", response{}, err
+		}
+		if err := dataMigrationListQuery(nu); err != nil {
 			return nil, "", response{}, err
 		}
 		if err := fleetListQuery(nu); err != nil {

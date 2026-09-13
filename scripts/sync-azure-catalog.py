@@ -118,6 +118,10 @@ def snapshot(selection):
             raise ValueError(f"{uri}: unknown operations {sorted(selected - found)}")
         snapshots[uri] = snapshot
         pending.extend((uri, ref) for ref in references(snapshot))
+        # Some native discriminator subtypes live in separate files with only
+        # a back-reference to the base. Retain explicitly selected schema roots
+        # as dependencies, without inventing operations or changing the source.
+        pending.extend((uri, ref) for ref in entry.get("references", []))
 
     visited = set()
     while pending:

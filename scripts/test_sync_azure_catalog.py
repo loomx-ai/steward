@@ -15,6 +15,28 @@ root = Path(__file__).resolve().parents[1] / "providers/azure/catalog/source"
 
 
 class AzureRefreshTests(unittest.TestCase):
+    def test_explicit_split_subtype_references_remain_dependencies(self):
+        uri = "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/service.json"
+        child_uri = uri.replace("service.json", "tasks.json")
+        originals = {
+            uri: {"swagger": "2.0", "info": {"title": "Service", "version": "1"},
+                  "paths": {"/tasks": {"get": {"operationId": "List", "responses": {"200": {"schema": {"$ref": "#/definitions/Task"}}}}}},
+                  "definitions": {"Task": {"type": "object", "discriminator": "type"}}},
+            child_uri: {"definitions": {
+                "Upload": {"allOf": [{"$ref": "service.json#/definitions/Task"}]},
+                "Install": {"allOf": [{"$ref": "service.json#/definitions/Task"}]},
+                "Unrelated": {"type": "string"}}},
+        }
+        selection = {"documents": [{"source_uri": uri, "operations": ["List"],
+                                   "references": ["tasks.json#/definitions/Upload"]}], "resource_types": []}
+        with patch.object(catalog, "fetch_source", side_effect=lambda url: json.dumps(originals[url]).encode()):
+            result = catalog.snapshot(selection)
+        child = next(document for document in result["documents"] if document["source_uri"] == child_uri)
+        self.assertTrue(child["dependency"])
+        self.assertEqual(set(child["document"]["definitions"]), {"Upload", "Install"})
+        for name, definition in child["document"]["definitions"].items():
+            self.assertEqual(definition, originals[child_uri]["definitions"][name])
+
     def test_polymorphic_subtypes_and_their_transitive_references_are_preserved(self):
         base_uri = "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/base.json"
         child_uri = base_uri.replace("base.json", "child.json")

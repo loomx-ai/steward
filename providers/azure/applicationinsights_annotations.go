@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if dataMigrationKind(kind) != "" {
+		return dataMigrationInventorySource
+	}
 	if dataFactoryKind(kind) != "" {
 		return dataFactoryInventorySource
 	}

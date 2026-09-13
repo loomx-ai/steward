@@ -78,6 +78,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataFactoryKind(kind.NativeType) != "" {
 		return newDataFactoryAction(c, id, value, kind)
 	}
+	if dataMigrationKind(kind.NativeType) != "" {
+		return newDataMigrationAction(c, id, value, kind)
+	}
 	if insightsLegacyKind(kind.NativeType).kind != "" || insightsARMChildKind(kind.NativeType) != "" {
 		return newInsightsChildAction(c, id, value, kind)
 	}

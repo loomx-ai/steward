@@ -58,6 +58,19 @@ func TestAzureOpenAPIImportsOfficialPublicIPOperations(t *testing.T) {
 	assertRESTDeterministic(t, "azure-openapi", asset.ProviderAzure, source)
 }
 
+func TestAzureServiceUsesInnermostNamespace(t *testing.T) {
+	for _, test := range []struct{ path, want string }{
+		{"/subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses", "Microsoft.Network"},
+		{"/subscriptions/{subscriptionId}/resourceGroups/{group}/providers/Microsoft.Sql/servers/{server}/providers/Microsoft.DataMigration/databaseMigrations/{database}", "Microsoft.DataMigration"},
+		{"/{resourceUri}/providers/Microsoft.Insights/diagnosticSettings", "Microsoft.Insights"},
+		{"/providers/{providerNamespace}/operations", "Fallback"},
+	} {
+		if got := azureService(test.path, "Fallback"); got != test.want {
+			t.Errorf("%s: service = %s, want %s", test.path, got, test.want)
+		}
+	}
+}
+
 func TestRESTImportRejectsWrongProviderAndInvalidSources(t *testing.T) {
 	for _, test := range []struct {
 		name, format string

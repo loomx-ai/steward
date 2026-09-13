@@ -134,6 +134,14 @@ func BindREST(operation Operation, parameters map[string]any) (RESTRequest, erro
 				}
 				pattern = strings.TrimSuffix(pattern, "(?<!-)$") + "$"
 			}
+			// SQL VM names exclude a leading underscore and trailing dot or
+			// hyphen with ECMA-262 lookarounds. Preserve both guards in RE2.
+			if strings.HasPrefix(pattern, "^((?!_)") && strings.HasSuffix(pattern, "(?<![.-]))$") {
+				if strings.HasPrefix(text, "_") || strings.HasSuffix(text, ".") || strings.HasSuffix(text, "-") {
+					return RESTRequest{}, fmt.Errorf("parameter %q does not match its API pattern", name)
+				}
+				pattern = "^" + strings.TrimSuffix(strings.TrimPrefix(pattern, "^((?!_)"), "(?<![.-]))$") + "$"
+			}
 			// Redis Enterprise and Search names use bounded ECMA-262 lookaheads.
 			// The remaining native pattern accepts only ASCII characters.
 			for _, minimum := range []int{1, 2} {

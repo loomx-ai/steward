@@ -1,0 +1,506 @@
+[
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbRUMongo_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoDeleteDatabaseMigration.json",
+    "source_sha256": "2e4b739d4c6f0e601584bd50975fb73083fc25f080d344b49625f0a1b38a9312",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbRUMongo_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbRUMongo_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoGetDatabaseMigrationExpanded.json",
+    "source_sha256": "ad0f38ae6a2c4371c92715e37ab124f273dce914d7f01c0a8a4669cbe70e4b42",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbRUMongo_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbRUMongo_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoGetDatabaseMigration.json",
+    "source_sha256": "386949b0deaea3dd0f05a7c959f39b2eea007d6adcb5f7c965d1c57e0c444151",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbRUMongo_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoListByScopeDatabaseMigration.json",
+    "source_sha256": "356212ae027af3cfd89b7bcd12654727cf1c1c90b6df4ed100d31e0e4109e016",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoListByScopeDatabaseMigration.json",
+    "source_sha256": "356212ae027af3cfd89b7bcd12654727cf1c1c90b6df4ed100d31e0e4109e016",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoDeleteDatabaseMigration.json",
+    "source_sha256": "2e4b739d4c6f0e601584bd50975fb73083fc25f080d344b49625f0a1b38a9312",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoGetDatabaseMigrationExpanded.json",
+    "source_sha256": "ad0f38ae6a2c4371c92715e37ab124f273dce914d7f01c0a8a4669cbe70e4b42",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoGetDatabaseMigration.json",
+    "source_sha256": "386949b0deaea3dd0f05a7c959f39b2eea007d6adcb5f7c965d1c57e0c444151",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations/{migrationName}"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoListByScopeDatabaseMigration.json",
+    "source_sha256": "356212ae027af3cfd89b7bcd12654727cf1c1c90b6df4ed100d31e0e4109e016",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations"
+  },
+  {
+    "file": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/CosmosDbMongoListByScopeDatabaseMigration.json",
+    "source_sha256": "356212ae027af3cfd89b7bcd12654727cf1c1c90b6df4ed100d31e0e4109e016",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/mongoClusters/{targetResourceName}/providers/Microsoft.DataMigration/databaseMigrations"
+  },
+  {
+    "file": "DatabaseMigrationsSqlDb_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlDbDeleteDatabaseMigration.json",
+    "source_sha256": "ce0a52b1653289e1e706e26a837f4f9aeb781e90082ea47c33f1c532c1811fc7",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlDb_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{sqlDbInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlDb_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlDbGetDatabaseMigrationExpanded.json",
+    "source_sha256": "29d513a4b543f41386d41cb1422bd045e6a2243ba70346d744ddff5dcd17ce5f",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlDb_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{sqlDbInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlDb_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlDbGetDatabaseMigration.json",
+    "source_sha256": "7ffae55f3068d4137cc94f6d02ce00ec563d6d8b6fc9c6eaecc89a26c7f71e19",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlDb_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{sqlDbInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlDb_cancel.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlDbCancelDatabaseMigration.json",
+    "source_sha256": "25390c7c4a021b9aee9aa23536c5229a7f8d1f67a018bb04f3de1b8e479c4dbf",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlDb_cancel",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{sqlDbInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}/cancel"
+  },
+  {
+    "file": "DatabaseMigrationsSqlMi_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlMiDeleteDatabaseMigration.json",
+    "source_sha256": "2533a05a6b1335929c18b2e28f8c57846168bd592817aa05938177f2b7ad1477",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlMi_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlMi_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlMiGetDatabaseMigrationExpanded.json",
+    "source_sha256": "83ce2b8e0c8bd610a9b9aed0f6d4a020fb50c4226f6959229c9c0d692b1b61be",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlMi_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlMi_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlMiGetDatabaseMigration.json",
+    "source_sha256": "8c5cfb9c7d6fde4de6635b4cb733ab1cbc47e5c6e5c3ce2a2063a815fd053a9f",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlMi_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlMi_cancel.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlMiCancelDatabaseMigration.json",
+    "source_sha256": "03f0432800b849f8c76c8c06a9c8ca4516a16738bba4b49bcdd441b63af61346",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlMi_cancel",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}/cancel"
+  },
+  {
+    "file": "DatabaseMigrationsSqlVm_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlVmDeleteDatabaseMigration.json",
+    "source_sha256": "5f0e3635ea77898cf21ff411d7670ec9e16f286e579a9f009de07aeed26c4120",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlVm_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/{sqlVirtualMachineName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlVm_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlVmGetDatabaseMigrationExpanded.json",
+    "source_sha256": "13a5ccd61136cb0f9a5a7f70a5ce8aae23aa389fd7ba7cf4ca68128772664caa",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlVm_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/{sqlVirtualMachineName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlVm_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlVmGetDatabaseMigration.json",
+    "source_sha256": "13abd0170efe1300ffd6a45e5017c78d2e685716543f062a2602bc46851cead7",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlVm_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/{sqlVirtualMachineName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}"
+  },
+  {
+    "file": "DatabaseMigrationsSqlVm_cancel.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/SqlVmCancelDatabaseMigration.json",
+    "source_sha256": "ecd96239b7ce53d3460982d01cd748b3b08dfda4d65c946223b22f46dc82b349",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "DatabaseMigrationsSqlVm_cancel",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/{sqlVirtualMachineName}/providers/Microsoft.DataMigration/databaseMigrations/{targetDbName}/cancel"
+  },
+  {
+    "file": "Files_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Files_Delete.json",
+    "source_sha256": "1a79512f59b1bce0cc1e35f7bee6212a83a10cd25a5164d7e2b18d5d3fdedc8f",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Files_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/files/{fileName}"
+  },
+  {
+    "file": "Files_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Files_Get.json",
+    "source_sha256": "9f6f2460ac5133723d00c078ed657211c8a7c5882981984ffe044344dd15425e",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Files_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/files/{fileName}"
+  },
+  {
+    "file": "Files_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Files_List.json",
+    "source_sha256": "e64735e8251004093fbfd3acd636833898c2f0f964202ca4c7e78236b3775257",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Files_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/files"
+  },
+  {
+    "file": "ManagedInstances_Get-1.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/examples/ManagedInstanceGetWhileUpdating.json",
+    "source_sha256": "fa09ba83f846eb6e1bf9f1842d7bdaa51cd58a06be2bddc06669be0bddd6bf77",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/ManagedInstances.json",
+    "operation": "ManagedInstances_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}"
+  },
+  {
+    "file": "ManagedInstances_Get-2.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/examples/ManagedInstanceGetWithExpandEqualsAdministrators.json",
+    "source_sha256": "fdbf4fcee9cf0c7231e41fc9e24ad61e13a5dba15eae2a8a672b836cdf18061b",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/ManagedInstances.json",
+    "operation": "ManagedInstances_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}"
+  },
+  {
+    "file": "ManagedInstances_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/examples/ManagedInstanceGet.json",
+    "source_sha256": "ec6fa6a8bf942a6df007c0b343f16e7dc712dfee28ad4c656ad24aa561b9bef0",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/ManagedInstances.json",
+    "operation": "ManagedInstances_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{managedInstanceName}"
+  },
+  {
+    "file": "MigrationServices_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/DeleteMigrationService.json",
+    "source_sha256": "33befaafe0be5a8553ba21078e9778ba5bc7f23d303d686f14531d5acb454a2c",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "MigrationServices_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/migrationServices/{migrationServiceName}"
+  },
+  {
+    "file": "MigrationServices_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/GetMigrationService.json",
+    "source_sha256": "6fe230b83a25811e092681117e2698e7a8818876870dcde2978b1872335e4954",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "MigrationServices_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/migrationServices/{migrationServiceName}"
+  },
+  {
+    "file": "MigrationServices_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListByResourceGroupMigrationService.json",
+    "source_sha256": "9a65371ea909d5d43577749121ddec72da87771dc4d5695a05b8d175787615e5",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "MigrationServices_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/migrationServices"
+  },
+  {
+    "file": "MigrationServices_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListBySubscriptionMigrationService.json",
+    "source_sha256": "4a5e54ef6f9f7a5dfabfda5f2c5ec243e9fdd31fac8dffdcd196c6716ee03ee4",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "MigrationServices_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataMigration/migrationServices"
+  },
+  {
+    "file": "MigrationServices_listMigrations.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListMigrationsByMigrationService.json",
+    "source_sha256": "e344774aae39fcd2fff3db92afeea2a228cfe7525596ffc04a16fec946774135",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "MigrationServices_listMigrations",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/migrationServices/{migrationServiceName}/listMigrations"
+  },
+  {
+    "file": "Projects_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Projects_Delete.json",
+    "source_sha256": "70d12d1054b2c20fa7cd86c47389acd5cee0e80a31dd76b8bd3b31083f20ace3",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Projects_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}"
+  },
+  {
+    "file": "Projects_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Projects_Get.json",
+    "source_sha256": "533106f997d970a3f5d7b7a64fbcfdad27ba3036b65d68df5e1e4cf21eb4980b",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Projects_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}"
+  },
+  {
+    "file": "Projects_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Projects_List.json",
+    "source_sha256": "f1004a46b6a66770875b3568508b07f5b91fef9bef2a44c9d34f78f9d5a0992a",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Projects_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects"
+  },
+  {
+    "file": "ServiceTasks_Cancel.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ServiceTasks_Cancel.json",
+    "source_sha256": "dfe15ea401ccf439fdcc14f7099944f9e8803dccedda2675a2d1f70551d95d86",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "ServiceTasks_Cancel",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/serviceTasks/{taskName}/cancel"
+  },
+  {
+    "file": "ServiceTasks_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ServiceTasks_Delete.json",
+    "source_sha256": "8857d8c547c8304c0e4315ab7dc950b90dd4cacf593b2138e30e0bd892178a3e",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "ServiceTasks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/serviceTasks/{taskName}"
+  },
+  {
+    "file": "ServiceTasks_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ServiceTasks_Get.json",
+    "source_sha256": "dfe15ea401ccf439fdcc14f7099944f9e8803dccedda2675a2d1f70551d95d86",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "ServiceTasks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/serviceTasks/{taskName}"
+  },
+  {
+    "file": "ServiceTasks_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ServiceTasks_List.json",
+    "source_sha256": "89378f7f691bfc64ef91b4e36dbc98244806f0e0f27c2528021603824d790d2e",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "ServiceTasks_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/serviceTasks"
+  },
+  {
+    "file": "Services_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Services_Delete.json",
+    "source_sha256": "8ae9ec89301cf35e3da367e56f16ac5c56301d551b806273295b82fc4046f5f8",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Services_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}"
+  },
+  {
+    "file": "Services_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Services_Get.json",
+    "source_sha256": "777cafc83187624b5310cb3d6e1c9449b7a13e26ce90800a1e5385318385ada8",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Services_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}"
+  },
+  {
+    "file": "Services_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Services_List.json",
+    "source_sha256": "ddc88835cbfa92a67104a102dca13d32fe79ceb11d6a930d0b076d0443311976",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Services_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataMigration/services"
+  },
+  {
+    "file": "Services_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Services_ListByResourceGroup.json",
+    "source_sha256": "fc6e8b46d8d188064153e59757a4ba4254900c14660bd3a6b589b730cece6338",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Services_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services"
+  },
+  {
+    "file": "SqlMigrationServices_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/DeleteSqlMigrationService.json",
+    "source_sha256": "111c5f29c4639861a5b92563f1871f53444e2f0ebcc8b80bda0ea58de266eb81",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/{sqlMigrationServiceName}"
+  },
+  {
+    "file": "SqlMigrationServices_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/GetSqlMigrationService.json",
+    "source_sha256": "5b94022800a088c1c4e877e3512cf18325b309f4a06a32d2bc449b71c7d5f863",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/{sqlMigrationServiceName}"
+  },
+  {
+    "file": "SqlMigrationServices_ListByResourceGroup.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListByResourceGroupSqlMigrationService.json",
+    "source_sha256": "caaf8814b68adb2ec3c6e11363d9953e84678f0bf0a3d0de922b8f362833e461",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_ListByResourceGroup",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices"
+  },
+  {
+    "file": "SqlMigrationServices_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListBySubscriptionSqlMigrationService.json",
+    "source_sha256": "9579381aed98e9b46dee041bd86ff4df73c7fa823ab66aad219ab08bf12171b3",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_ListBySubscription",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.DataMigration/sqlMigrationServices"
+  },
+  {
+    "file": "SqlMigrationServices_deleteNode.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/DeleteIntegrationRuntimeNode.json",
+    "source_sha256": "fc905f8f74e35eb93780634d7c03f48c469ec91c6ed02622d61fdcf1bb4ed360",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_deleteNode",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/{sqlMigrationServiceName}/deleteNode"
+  },
+  {
+    "file": "SqlMigrationServices_listMigrations.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/ListMigrationsBySqlMigrationService.json",
+    "source_sha256": "3177b0ef17908ed62ac609f7cf685b36aca97b0826e3188348b53d8833113e50",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_listMigrations",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/{sqlMigrationServiceName}/listMigrations"
+  },
+  {
+    "file": "SqlMigrationServices_listMonitoringData.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/GetMonitorDataSqlMigrationService.json",
+    "source_sha256": "a30ace16b2983413698ae5bbd3a40fab89d7d6f504a4b7eace5e25c7680c14d3",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+    "operation": "SqlMigrationServices_listMonitoringData",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/{sqlMigrationServiceName}/listMonitoringData"
+  },
+  {
+    "file": "SqlVirtualMachines_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sqlvirtualmachine/resource-manager/Microsoft.SqlVirtualMachine/SqlVirtualMachine/stable/2023-10-01/examples/GetSqlVirtualMachine.json",
+    "source_sha256": "c6f67ab9b03ef364816877aa703e74ce75ddbab0414a638e048c4ea9498434f9",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sqlvirtualmachine/resource-manager/Microsoft.SqlVirtualMachine/SqlVirtualMachine/stable/2023-10-01/sqlvm.json",
+    "operation": "SqlVirtualMachines_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/{sqlVirtualMachineName}"
+  },
+  {
+    "file": "Tasks_Cancel.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Tasks_Cancel.json",
+    "source_sha256": "36cd79767b66f0eff861a8cee2014670da39cc81b94f615eaf0c87085b6afd69",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Tasks_Cancel",
+    "method": "POST",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/tasks/{taskName}/cancel"
+  },
+  {
+    "file": "Tasks_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Tasks_Delete.json",
+    "source_sha256": "e37f2563b63ad73ed8597068705351fb20992b5e43a0afea630554b8134fe0b6",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Tasks_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/tasks/{taskName}"
+  },
+  {
+    "file": "Tasks_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Tasks_Get.json",
+    "source_sha256": "36cd79767b66f0eff861a8cee2014670da39cc81b94f615eaf0c87085b6afd69",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Tasks_Get",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/tasks/{taskName}"
+  },
+  {
+    "file": "Tasks_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/examples/Tasks_List.json",
+    "source_sha256": "67ac085f170ab7c90db5e6ebe0bf8e4101131bb977f46eee9dd5aa9e4a615249",
+    "source_document": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+    "operation": "Tasks_List",
+    "method": "GET",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{groupName}/providers/Microsoft.DataMigration/services/{serviceName}/projects/{projectName}/tasks"
+  }
+]

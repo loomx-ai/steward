@@ -1,0 +1,58 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.DataMigration/services/serviceTasks
+  class: data.migration_task
+presentation:
+  displayNames:
+    en-US: Migration service task
+    zh-CN: 迁移服务任务
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: data-migration
+  list:
+    operation: Azure.Microsoft.DataMigration.ServiceTasks_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.DataMigration.ServiceTasks_Get
+    itemsPath: $
+    identityPath: id
+  parent:
+    source: data-migration
+    nativeType: Microsoft.DataMigration/services
+fields:
+  name:
+    path: name
+    type: string
+  state:
+    path: state
+    type: string
+  subscriptionId:
+    path: subscription_id
+    type: string
+  resourceGroup:
+    path: resource_group
+    type: string
+  tags:
+    path: tags
+    type: object
+extensions:
+  hook: azure.resource
+relationships:
+- type: uses
+  targetType: Microsoft.DataMigration/services
+  targetIdPath: _datamigration_parent
+actions:
+  delete:
+    operation: Azure.Microsoft.DataMigration.ServiceTasks_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.DataMigration.ServiceTasks_Get
+      itemsPath: $
+      identityPath: id

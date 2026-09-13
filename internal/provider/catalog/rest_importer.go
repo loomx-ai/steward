@@ -401,8 +401,10 @@ var restPathParameter = regexp.MustCompile(`\{(\+?)([A-Za-z0-9_]+)\}`)
 
 func azureService(path, fallback string) string {
 	parts := strings.Split(path, "/")
-	for i, part := range parts {
-		if strings.EqualFold(part, "providers") && i+1 < len(parts) && !strings.Contains(parts[i+1], "{") {
+	// An extension resource belongs to the innermost provider, even when
+	// its scope is a resource owned by a different provider.
+	for i := len(parts) - 2; i >= 0; i-- {
+		if strings.EqualFold(parts[i], "providers") && !strings.Contains(parts[i+1], "{") {
 			return parts[i+1]
 		}
 	}

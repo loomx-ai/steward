@@ -1,0 +1,1318 @@
+[
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/d2f60986756c939c3d6d7f85e89798cca158d935/src/datamigration/azext_datamigration/tests/latest/recordings/test_datamigration_Scenario.yaml",
+    "source_sha256": "52afcca05398c948fe6ce59e37ae2387b3bc4b5736886998f224ca12ee09f7a1",
+    "records": [
+      {
+        "index": 2,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/sqlServiceUnitTest-Pipeline2?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"integrationRuntimeState\":\"NeedRegistration\"},\"location\":\"eastus2euap\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/sqlServiceUnitTest-Pipeline2\",\"name\":\"sqlServiceUnitTest-Pipeline2\",\"type\":\"Microsoft.DataMigration/sqlMigrationServices\"}"
+      },
+      {
+        "index": 3,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/dmsCliUnitTest?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"integrationRuntimeState\":\"NeedRegistration\"},\"location\":\"eastus2euap\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/dmsCliUnitTest\",\"name\":\"dmsCliUnitTest\",\"type\":\"Microsoft.DataMigration/sqlMigrationServices\"}"
+      },
+      {
+        "index": 4,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"value\":[{\"properties\":{\"provisioningState\":\"Succeeded\",\"integrationRuntimeState\":\"\"},\"location\":\"eastus2euap\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/dmsCliUnitTest\",\"name\":\"dmsCliUnitTest\",\"type\":\"Microsoft.DataMigration/sqlMigrationServices\"},{\"properties\":{\"provisioningState\":\"Succeeded\",\"integrationRuntimeState\":\"\"},\"location\":\"eastus2euap\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/sqlServiceUnitTest-Pipeline1\",\"name\":\"sqlServiceUnitTest-Pipeline1\",\"type\":\"Microsoft.DataMigration/sqlMigrationServices\"},{\"properties\":{\"provisioningState\":\"Succeeded\",\"integrationRuntimeState\":\"\"},\"location\":\"eastus2euap\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/sqlServiceUnitTest-Pipeline2\",\"name\":\"sqlServiceUnitTest-Pipeline2\",\"type\":\"Microsoft.DataMigration/sqlMigrationServices\"}]}"
+      },
+      {
+        "index": 5,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/dmsCliUnitTest/listMigrations?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"value\":[]}"
+      },
+      {
+        "index": 8,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/dmsCliUnitTest/listMonitoringData?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"default-ir\",\"nodes\":[]}",
+        "request_body": null
+      },
+      {
+        "index": 9,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/CLIUnitTest/providers/Microsoft.DataMigration/sqlMigrationServices/sqlServiceUnitTest-Pipeline2?api-version=2025-06-30",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/deletesqlmigrationservice/operationResults/43e1b622-463a-4488-97fc-7c7552f40bc9?api-version=2025-06-30"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/sqlMigrationServiceOperationResults/43e1b622-463a-4488-97fc-7c7552f40bc9?api-version=2025-06-30"
+          ]
+        },
+        "body": ""
+      },
+      {
+        "index": 10,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/deletesqlmigrationservice/operationResults/43e1b622-463a-4488-97fc-7c7552f40bc9?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"43e1b622-463a-4488-97fc-7c7552f40bc9\",\"status\":\"Succeeded\",\"startTime\":\"2022-04-18T10:54:53.923Z\"}"
+      },
+      {
+        "index": 11,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-CLI-MIOnline?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"backupConfiguration\":{\"sourceLocation\":{\"fileShare\":{\"path\":\"\\\\\\\\aalab03-2k8.redmond.corp.microsoft.com\\\\SharedBackup\\\\tsuman\"},\"fileStorageType\":\"FileShare\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Succeeded\",\"startedOn\":\"2021-12-30T06:16:43.983Z\",\"endedOn\":\"2021-12-30T07:34:46.553Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/IR1\",\"migrationOperationId\":\"c20c73a6-9cf4-488e-b458-243b9eb43e24\",\"kind\":\"SqlMi\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-CLI-MIOnline\",\"name\":\"tsum-CLI-MIOnline\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 12,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-VM?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"backupConfiguration\":{\"sourceLocation\":{\"fileShare\":{\"path\":\"\\\\\\\\aalab03-2k8.redmond.corp.microsoft.com\\\\SharedBackup\\\\tsuman\"},\"fileStorageType\":\"FileShare\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Succeeded\",\"startedOn\":\"2021-12-28T17:31:36.843Z\",\"endedOn\":\"2021-12-28T17:45:08.573Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/IR1\",\"migrationOperationId\":\"18aff4bb-892a-4c9a-bc31-49110101255d\",\"kind\":\"SqlVm\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-VM\",\"name\":\"tsum-Db-VM\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 15,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"AzureBlob\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T10:55:15.18Z\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"6f808196-44c7-477f-b0d3-7cc1a4255cdf\",\"kind\":\"SqlMi\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9\",\"name\":\"tsum-Db-mi-online-blob9\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 16,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"blobContainerName\":\"tsum38-adventureworks\",\"pendingLogBackupsCount\":0},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"AzureBlob\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T10:55:15.18Z\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"6f808196-44c7-477f-b0d3-7cc1a4255cdf\",\"kind\":\"SqlMi\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9\",\"name\":\"tsum-Db-mi-online-blob9\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 17,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9/cancel?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi\",\"provisioningState\":\"Canceling\",\"sourceDatabaseName\":\"AdventureWorks\",\"kind\":\"SqlMi\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/MigrationTesting/providers/Microsoft.Sql/managedInstances/migrationtestmi/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-mi-online-blob9\",\"name\":\"tsum-Db-mi-online-blob9\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}",
+        "request_body": "{\"migrationOperationId\": \"6f808196-44c7-477f-b0d3-7cc1a4255cdf\"}"
+      },
+      {
+        "index": 18,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 19,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 20,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 21,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 22,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 23,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 24,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 25,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlmimigration/operationResults/994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"994ed8f7-6169-4c3f-b05e-2eb7b9f1eae6\",\"status\":\"Succeeded\",\"startTime\":\"2022-04-18T10:55:32.847Z\"}"
+      },
+      {
+        "index": 33,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"AzureBlob\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T10:59:09.107Z\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"2e8b78cf-f22e-4475-8f3d-3a0836b2843f\",\"kind\":\"SqlVm\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10\",\"name\":\"tsum-Db-vm-online-blob10\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 34,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"blobContainerName\":\"tsum38-adventureworks\",\"pendingLogBackupsCount\":0},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"AzureBlob\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T10:59:09.107Z\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"2e8b78cf-f22e-4475-8f3d-3a0836b2843f\",\"kind\":\"SqlVm\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10\",\"name\":\"tsum-Db-vm-online-blob10\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 35,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10/cancel?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM\",\"provisioningState\":\"Canceling\",\"sourceDatabaseName\":\"AdventureWorks\",\"kind\":\"SqlVm\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10\",\"name\":\"tsum-Db-vm-online-blob10\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}",
+        "request_body": "{\"migrationOperationId\": \"2e8b78cf-f22e-4475-8f3d-3a0836b2843f\"}"
+      },
+      {
+        "index": 36,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"98b22b3b-659d-4464-804c-74f12ccaf749\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T11:01:11.297Z\"}"
+      },
+      {
+        "index": 37,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"98b22b3b-659d-4464-804c-74f12ccaf749\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T11:01:11.297Z\"}"
+      },
+      {
+        "index": 38,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"98b22b3b-659d-4464-804c-74f12ccaf749\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T11:01:11.297Z\"}"
+      },
+      {
+        "index": 39,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"98b22b3b-659d-4464-804c-74f12ccaf749\",\"status\":\"InProgress\",\"startTime\":\"2022-04-18T11:01:11.297Z\"}"
+      },
+      {
+        "index": 40,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqlvmmigration/operationResults/98b22b3b-659d-4464-804c-74f12ccaf749?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"98b22b3b-659d-4464-804c-74f12ccaf749\",\"status\":\"Succeeded\",\"startTime\":\"2022-04-18T11:01:11.297Z\"}"
+      },
+      {
+        "index": 41,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"AzureBlob\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Canceled\",\"startedOn\":\"2022-04-18T10:59:09.107Z\",\"endedOn\":\"2022-04-18T11:02:23.15Z\",\"sourceDatabaseName\":\"AdventureWorks\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"2e8b78cf-f22e-4475-8f3d-3a0836b2843f\",\"kind\":\"SqlVm\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.SqlVirtualMachine/sqlVirtualMachines/DMSCmdletTest-SqlVM/providers/Microsoft.DataMigration/databaseMigrations/tsum-Db-vm-online-blob10\",\"name\":\"tsum-Db-vm-online-blob10\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 42,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Canceled\",\"startedOn\":\"2022-04-18T10:13:44.08Z\",\"endedOn\":\"2022-04-18T10:13:52.983Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"b1f1aafa-42bc-4479-9172-5855d4fdb4f1\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 46,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:02:50.483Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"54dd90ce-149f-4221-a74b-e85b37e18b46\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 47,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?force=true&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/dropsqldbmigration/operationResults/f6f64497-897a-4832-b758-284c837af112?api-version=2025-06-30"
+          ]
+        },
+        "body": ""
+      },
+      {
+        "index": 48,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/dropsqldbmigration/operationResults/f6f64497-897a-4832-b758-284c837af112?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"f6f64497-897a-4832-b758-284c837af112\",\"status\":\"Succeeded\",\"startTime\":\"2022-04-18T11:03:05.953Z\"}"
+      },
+      {
+        "index": 51,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:03:34.51Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"cbe6ae9c-f5eb-4500-9247-cd5f4a03c9b4\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 52,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"StartSqlDataCopy\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:03:34.51Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"cbe6ae9c-f5eb-4500-9247-cd5f4a03c9b4\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 53,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb/cancel?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqldbmigration/operationResults/b0d5fb4c-4a23-403d-bb2a-0e3b056c829b?api-version=2025-06-30"
+          ],
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Canceling\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}",
+        "request_body": "{\"migrationOperationId\": \"cbe6ae9c-f5eb-4500-9247-cd5f4a03c9b4\"}"
+      },
+      {
+        "index": 54,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/eastus2euap/operationTypes/cancelsqldbmigration/operationResults/b0d5fb4c-4a23-403d-bb2a-0e3b056c829b?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"b0d5fb4c-4a23-403d-bb2a-0e3b056c829b\",\"status\":\"Succeeded\",\"startTime\":\"2022-04-18T11:03:41.953Z\"}"
+      },
+      {
+        "index": 57,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 58,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 59,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 60,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 61,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 62,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 63,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 64,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[{\"tableName\":\"dbo.Table_1\",\"status\":\"Succeeded\",\"parallelCopyType\":\"None\",\"usedParallelCopies\":1,\"dataRead\":400,\"dataWritten\":400,\"rowsRead\":20,\"rowsCopied\":20,\"copyStart\":\"2022-04-18T11:06:50.003Z\",\"copyThroughput\":0.014000000432133675,\"copyDuration\":27}]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 65,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"MonitorMigration\",\"listOfCopyProgressDetails\":[{\"tableName\":\"dbo.Table_1\",\"status\":\"Succeeded\",\"parallelCopyType\":\"None\",\"usedParallelCopies\":1,\"dataRead\":400,\"dataWritten\":400,\"rowsRead\":20,\"rowsCopied\":20,\"copyStart\":\"2022-04-18T11:06:50.003Z\",\"copyThroughput\":0.014000000432133675,\"copyDuration\":27}]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"InProgress\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 66,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?$expand=MigrationStatusDetails&api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"migrationStatusDetails\":{\"migrationState\":\"Succeeded\",\"listOfCopyProgressDetails\":[{\"tableName\":\"dbo.Table_1\",\"status\":\"Succeeded\",\"parallelCopyType\":\"None\",\"usedParallelCopies\":1,\"dataRead\":400,\"dataWritten\":400,\"rowsRead\":20,\"rowsCopied\":20,\"copyStart\":\"2022-04-18T11:06:50.003Z\",\"copyThroughput\":0.014000000432133675,\"copyDuration\":27}]},\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Succeeded\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"endedOn\":\"2022-04-18T11:08:19.237Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      },
+      {
+        "index": 67,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb?api-version=2025-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"offlineConfiguration\":{\"offline\":true},\"backupConfiguration\":{\"sourceLocation\":{\"fileStorageType\":\"None\"}},\"tableList\":[\"[dbo].[Table_1]\"],\"scope\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb\",\"provisioningState\":\"Succeeded\",\"migrationStatus\":\"Succeeded\",\"startedOn\":\"2022-04-18T11:04:10.497Z\",\"endedOn\":\"2022-04-18T11:08:19.237Z\",\"sourceServerName\":\"AALAB03-2K8.REDMOND.CORP.MICROSOFT.COM\",\"sourceDatabaseName\":\"Brih\",\"migrationService\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.DataMigration/sqlMigrationServices/tsuman-IR2\",\"migrationOperationId\":\"ea36f793-8bd1-4ceb-a82a-e0faf0d0dfcb\",\"kind\":\"SqlDb\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/tsum38RG/providers/Microsoft.Sql/servers/dmstestsqldb/providers/Microsoft.DataMigration/databaseMigrations/NewDb\",\"name\":\"NewDb\",\"type\":\"Microsoft.DataMigration/databaseMigrations\"}"
+      }
+    ]
+  },
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/8bead7f93f086629efb160d56c25f508156925bf/src/azure-cli/azure/cli/command_modules/dms/tests/latest/recordings/test_project_commands.yaml",
+    "source_sha256": "04bc89f55029610584c0dd2980edbf14a5c98924c67c2562001b6b8aa2df6b9e",
+    "records": [
+      {
+        "index": 30,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-g9br4smfnqzm9pi3injgu9x7\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oTE4Rwbtk8sUtQ8aezqHRt3gWnrC4F7T846GhW1K8uE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 31,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project1000004?api-version=2021-06-30",
+        "status": 404,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"error\":{\"code\":\"ResourceNotFound\",\"message\":\"The Resource 'Microsoft.DataMigration/services/dmsclitest000003/projects/project1000004' under resource group 'dms_cli_test000001' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix\"}}"
+      },
+      {
+        "index": 32,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-g9br4smfnqzm9pi3injgu9x7\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oTE4Rwbtk8sUtQ8aezqHRt3gWnrC4F7T846GhW1K8uE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 34,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project1000004?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"SQL\",\"targetPlatform\":\"SQLDB\",\"creationTime\":\"2025-08-11T17:43:08.3749741+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"UgN0bva2/8g6+6gWLFB7OVm7NJnRCVnfASOaCyOJUdE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project1000004\",\"location\":\"centralus\",\"name\":\"project1000004\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 35,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-g9br4smfnqzm9pi3injgu9x7\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oTE4Rwbtk8sUtQ8aezqHRt3gWnrC4F7T846GhW1K8uE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 37,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000006?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"PostgreSQL\",\"targetPlatform\":\"AzureDbForPostgreSQL\",\"creationTime\":\"2025-08-11T17:43:10.0007486+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"Qy6wrGarNFyBeL0uUZ5fI928kBrGitBsmHcYFufgP9E=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000006\",\"location\":\"centralus\",\"name\":\"projectpg000006\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 38,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-g9br4smfnqzm9pi3injgu9x7\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oTE4Rwbtk8sUtQ8aezqHRt3gWnrC4F7T846GhW1K8uE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 40,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000007?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"MySQL\",\"targetPlatform\":\"AzureDbForMySQL\",\"creationTime\":\"2025-08-11T17:43:12.4382785+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"qwZvoxxBYo2hW0O8Y/LnRnhkttBqBi0Duh4s1UcLwZ4=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000007\",\"location\":\"centralus\",\"name\":\"projectmysql000007\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 41,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-g9br4smfnqzm9pi3injgu9x7\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oTE4Rwbtk8sUtQ8aezqHRt3gWnrC4F7T846GhW1K8uE=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 43,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"value\":[{\"properties\":{\"sourcePlatform\":\"SQL\",\"targetPlatform\":\"SQLDB\",\"creationTime\":\"2025-08-11T17:43:08.3749741+00:00\",\"provisioningState\":\"Succeeded\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project1000004\",\"location\":\"centralus\",\"name\":\"project1000004\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"},{\"properties\":{\"sourcePlatform\":\"SQL\",\"targetPlatform\":\"SQLDB\",\"creationTime\":\"2025-08-11T17:43:14.1596994+00:00\",\"provisioningState\":\"Succeeded\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project2000005\",\"location\":\"centralus\",\"name\":\"project2000005\",\"type\":\"Microsoft.DataMigration/services/projects\"},{\"properties\":{\"sourcePlatform\":\"MySQL\",\"targetPlatform\":\"AzureDbForMySQL\",\"creationTime\":\"2025-08-11T17:43:12.4382785+00:00\",\"provisioningState\":\"Succeeded\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000007\",\"location\":\"centralus\",\"name\":\"projectmysql000007\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"},{\"properties\":{\"sourcePlatform\":\"PostgreSQL\",\"targetPlatform\":\"AzureDbForPostgreSQL\",\"creationTime\":\"2025-08-11T17:43:10.0007486+00:00\",\"provisioningState\":\"Succeeded\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000006\",\"location\":\"centralus\",\"name\":\"projectpg000006\",\"tags\":{\"Type\":\"test\",\"Cli\":\"\"},\"type\":\"Microsoft.DataMigration/services/projects\"}]}"
+      },
+      {
+        "index": 45,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project2000005?api-version=2021-06-30",
+        "status": 200,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "index": 47,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30&deleteRunningTasks=true",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationResults/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ]
+        },
+        "body": ""
+      },
+      {
+        "index": 48,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 49,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 50,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 51,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 52,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 53,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 54,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 55,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 56,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"507a4907-1902-482f-bdf3-73db370b87af\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/507a4907-1902-482f-bdf3-73db370b87af\",\"status\":\"Succeeded\"}"
+      }
+    ]
+  },
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/8bead7f93f086629efb160d56c25f508156925bf/src/azure-cli/azure/cli/command_modules/dms/tests/latest/recordings/test_service_commands.yaml",
+    "source_sha256": "38dddb3d706d5b090126300aa97ed3b59fcbd7f95d9d1c1c2a8f740908ce4c4c",
+    "records": [
+      {
+        "index": 2,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 404,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"error\":{\"code\":\"ResourceNotFound\",\"message\":\"The Resource 'Microsoft.DataMigration/services/dmsclitest000003' under resource group 'dms_cli_test000001' was not found. For more details please go to https://aka.ms/ARMResourceNotFoundFix\"}}"
+      },
+      {
+        "index": 28,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-4njgm7zb4vrbbmcx9tx6t2fu\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oJvPDzAcBpdzoqmPqzMFKxyGIAYG7tCf+Lh3yTC9IxY=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 29,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-4njgm7zb4vrbbmcx9tx6t2fu\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"oJvPDzAcBpdzoqmPqzMFKxyGIAYG7tCf+Lh3yTC9IxY=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 30,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"value\":[{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-4njgm7zb4vrbbmcx9tx6t2fu\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}]}"
+      },
+      {
+        "index": 68,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationResults/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ]
+        },
+        "body": ""
+      },
+      {
+        "index": 69,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 70,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 71,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 72,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 73,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/6ddd1302-42e4-4aa5-99b4-e137cff20033\",\"status\":\"Succeeded\"}"
+      }
+    ]
+  },
+  {
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli/8bead7f93f086629efb160d56c25f508156925bf/src/azure-cli/azure/cli/command_modules/dms/tests/latest/recordings/test_task_commands.yaml",
+    "source_sha256": "632eb25e8716c3196559ae1cbd5981795a33ddcd21dd0d1f99396c6dfeeb4428",
+    "records": [
+      {
+        "index": 22,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-bkmjvxv3ypf5dsb5e4zhxehz\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"JAnLpW8MB2JPozeIxoPyTHx63QzuAg/1/k6/ZNHEwn0=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 24,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-bkmjvxv3ypf5dsb5e4zhxehz\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"JAnLpW8MB2JPozeIxoPyTHx63QzuAg/1/k6/ZNHEwn0=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 26,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-bkmjvxv3ypf5dsb5e4zhxehz\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"JAnLpW8MB2JPozeIxoPyTHx63QzuAg/1/k6/ZNHEwn0=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 28,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"provisioningState\":\"Succeeded\",\"virtualNicId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.Network/networkInterfaces/NIC-bkmjvxv3ypf5dsb5e4zhxehz\",\"virtualSubnetId\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dmscli/providers/Microsoft.Network/virtualNetworks/dmsclinetwork/subnets/default\"},\"etag\":\"JAnLpW8MB2JPozeIxoPyTHx63QzuAg/1/k6/ZNHEwn0=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003\",\"kind\":\"Cloud\",\"location\":\"centralus\",\"name\":\"dmsclitest000003\",\"sku\":{\"name\":\"Premium_4vCores\",\"size\":\"4 vCores\",\"tier\":\"Premium\"},\"tags\":{\"area\":\"cli\",\"env\":\"test\"},\"type\":\"Microsoft.DataMigration/services\"}"
+      },
+      {
+        "index": 30,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005?api-version=2021-06-30",
+        "status": 404,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "index": 31,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007/tasks/taskpg000008?api-version=2021-06-30",
+        "status": 404,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "index": 32,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009/tasks/taskmysql000010?api-version=2021-06-30",
+        "status": 404,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "index": 33,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"SQL\",\"targetPlatform\":\"SQLDB\",\"creationTime\":\"2025-08-11T20:05:28.2450704+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"jvFNg7U2JueZ+cKqoY/f7I9SV6winawzoborkSdg2lA=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004\",\"location\":\"centralus\",\"name\":\"project000004\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 35,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"sourceConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"n/T7WSAS1G3j2cDVkPeN/TV1XyoPthJa1Z4UM2aUylA=\",\"dataSource\":\"notarealsourceserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"targetConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"n/T7WSAS1G3j2cDVkPeN/TV1XyoPthJa1Z4UM2aUylA=\",\"dataSource\":\"notarealtargetserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"makeSourceDbReadOnly\":false,\"tableMap\":{\"dbo.TestTableSource1\":\"dbo.TestTableTarget1\",\"dbo.TestTableSource2\":\"dbo.TestTableTarget2\"}}],\"validationOptions\":{\"enableSchemaValidation\":false,\"enableDataIntegrityValidation\":false,\"enableQueryAnalysisValidation\":false},\"encryptedKeyForSecureFields\":\"q0S5i57MvZwZdGjd8yM10cO2sS7rH8iSq+oGCmFOtJIDbOGkMR+gkIeeG2r4T79y8hJ75WOvHt44LU1AmOnaOCTj1pfKr8zkxKb/Pp8xpcHmMteAvNXzXIfovcgT3iriu0XusJ9o+rKGoT7zdIf4a63aIPqzUUPGNmDtORGrJjlFoZl9+y8kqhEFv8dmDDrqOVGxgEA0YFwFlpbhpp3lD3uKHXx7si6Ns0vl1ZTM9ZHlx1F4pQpaDGOjksIhnx4W6q9JT6ECAasXoX7Hm5LCZMCp6yUkYqmGtrh0w0z/f2VE/FwMEhdWFerGZBoBjoDgaWwaWIxL48/UOAnuae6p0A==\"},\"taskId\":\"490524b6-4f4e-4b09-8c79-33df00b17eca\",\"taskType\":\"Migrate.SqlServer.SqlDb\",\"state\":\"Queued\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:32.2902865+00:00\"},\"etag\":\"2P+Wjr7OGKulLW0oZc/iMe/52G1TAzSaXuF43tkcm6M=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005\",\"name\":\"task1000005\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}"
+      },
+      {
+        "index": 36,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005/cancel?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"sourceConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"n/T7WSAS1G3j2cDVkPeN/TV1XyoPthJa1Z4UM2aUylA=\",\"dataSource\":\"notarealsourceserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"targetConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"n/T7WSAS1G3j2cDVkPeN/TV1XyoPthJa1Z4UM2aUylA=\",\"dataSource\":\"notarealtargetserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"makeSourceDbReadOnly\":false,\"tableMap\":{\"dbo.TestTableSource1\":\"dbo.TestTableTarget1\",\"dbo.TestTableSource2\":\"dbo.TestTableTarget2\"}}],\"validationOptions\":{\"enableSchemaValidation\":false,\"enableDataIntegrityValidation\":false,\"enableQueryAnalysisValidation\":false},\"encryptedKeyForSecureFields\":\"q0S5i57MvZwZdGjd8yM10cO2sS7rH8iSq+oGCmFOtJIDbOGkMR+gkIeeG2r4T79y8hJ75WOvHt44LU1AmOnaOCTj1pfKr8zkxKb/Pp8xpcHmMteAvNXzXIfovcgT3iriu0XusJ9o+rKGoT7zdIf4a63aIPqzUUPGNmDtORGrJjlFoZl9+y8kqhEFv8dmDDrqOVGxgEA0YFwFlpbhpp3lD3uKHXx7si6Ns0vl1ZTM9ZHlx1F4pQpaDGOjksIhnx4W6q9JT6ECAasXoX7Hm5LCZMCp6yUkYqmGtrh0w0z/f2VE/FwMEhdWFerGZBoBjoDgaWwaWIxL48/UOAnuae6p0A==\"},\"taskId\":\"490524b6-4f4e-4b09-8c79-33df00b17eca\",\"taskType\":\"Migrate.SqlServer.SqlDb\",\"state\":\"Canceling\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:32.2902865+00:00\"},\"etag\":\"LeS0baEI2ZQWlLQRefvS3AHOq8dmECiGKmuaVs1BXlM=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005\",\"name\":\"task1000005\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}",
+        "request_body": null
+      },
+      {
+        "index": 37,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"SQL\",\"targetPlatform\":\"SQLDB\",\"creationTime\":\"2025-08-11T20:05:28.2450704+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"jvFNg7U2JueZ+cKqoY/f7I9SV6winawzoborkSdg2lA=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004\",\"location\":\"centralus\",\"name\":\"project000004\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 40,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task1000005?api-version=2021-06-30&deleteRunningTasks=true",
+        "status": 200,
+        "headers": {},
+        "body": ""
+      },
+      {
+        "index": 42,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks?api-version=2021-06-30&taskType=Migrate.SqlServer.SqlDb",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"value\":[{\"properties\":{\"input\":{\"sourceConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"bmaYA9vZM/3vr034IpfCvJ3HiwuQeCDsVl6Svn1JWvU=\",\"dataSource\":\"notarealsourceserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"targetConnectionInfo\":{\"type\":\"SqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"bmaYA9vZM/3vr034IpfCvJ3HiwuQeCDsVl6Svn1JWvU=\",\"dataSource\":\"notarealtargetserver\",\"authentication\":\"SqlAuthentication\",\"encryptConnection\":true,\"trustServerCertificate\":true},\"selectedDatabases\":[{\"name\":\"SourceDatabase2\",\"targetDatabaseName\":\"TargetDatabase2\",\"makeSourceDbReadOnly\":false,\"tableMap\":{\"dbo.TestTableSource1\":\"dbo.TestTableTarget1\",\"dbo.TestTableSource2\":\"dbo.TestTableTarget2\"}}],\"validationOptions\":{\"enableSchemaValidation\":false,\"enableDataIntegrityValidation\":false,\"enableQueryAnalysisValidation\":false},\"encryptedKeyForSecureFields\":\"l/Sbgh5jYHbKyblvFncKfafN0AByFYrJoAy7jREA9jI/3RWJEZBXZ0bz3UP2gsf8KOAnRewk6Z7E7ANDyfFTBGsY5TjpHoYeUxYq3+9J7UjQybTw93E5ynhkTfFQUVuzCcuJGmRYUL5bDNQyYvjPaZtpa71fBt+f6n9X8+Q6dJ6yqFGG3WoSPbY7Jd36O/1zYI5pv9vZ8KnBQV9sAWxSCnTagLf8l2+wqxfsz0Nh9IHmdeolXHxjtV5Pe4Y4CPupg6nmIHmRsdouLdad1x1Gd73klp3f/14wBRpPV1gFYXS8M1cf64g0swr6vXxa1NmTduDcAWNFI9OSD3XZ5oMg5g==\"},\"taskId\":\"f1658a79-bb59-463e-b27d-6712ccf6e69d\",\"taskType\":\"Migrate.SqlServer.SqlDb\",\"state\":\"Queued\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:34.3217768+00:00\"},\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/project000004/tasks/task2000006\",\"name\":\"task2000006\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}]}"
+      },
+      {
+        "index": 43,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"PostgreSQL\",\"targetPlatform\":\"AzureDbForPostgreSQL\",\"creationTime\":\"2025-08-11T20:05:29.1096339+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"LVeFv1mE1R6HuH+DcroPdQUoxBRWNIxRctzn99mpkBw=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007\",\"location\":\"centralus\",\"name\":\"projectpg000007\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 45,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007/tasks/taskpg000008?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"selectedTables\":[{\"name\":\"public.TestTableSource1\"},{\"name\":\"public.TestTableSource2\"}]}],\"targetConnectionInfo\":{\"type\":\"PostgreSqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"l4A/F090WDBSH/8gZpAKU3my9BKinrunRSlrbfp3zmg=\",\"serverName\":\"notarealtargetserver\",\"databaseName\":\"notarealdatabasename\",\"port\":5432,\"encryptConnection\":true,\"trustServerCertificate\":false},\"sourceConnectionInfo\":{\"type\":\"PostgreSqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"l4A/F090WDBSH/8gZpAKU3my9BKinrunRSlrbfp3zmg=\",\"serverName\":\"notarealsourceserver\",\"databaseName\":\"notarealdatabasename\",\"port\":5432,\"encryptConnection\":false,\"trustServerCertificate\":true},\"encryptedKeyForSecureFields\":\"grB0dX7o7bKMiC53d+zlp1pws9Sl6P99/wUydQKq04vxp5wWkuWEm6fskCC9lS70ihUC9a/g/qLL6wVOjzQHnvcA0YXLljSMag9A4vQCG0f2Qb8RdmEKAixN6YYR9edMMZtOvhfXlvq15bbb1GNM7rFnFP2upIA2cgPXb7Ax/AaUz7WXJfrGfzoba7UtS+NkhKdF/iWW/yCuPUIqn+v3pU5yEPMyHeZ1F/rhRd63SxMOR3sQjttNyaJGHI3EEdXhVuNSV+7RVb3L1VB1cJnhKNfvhQAv1RclsJzhKxtPERhj8siDUM5EhYhTdHVS9AhMGNyxni8sWXVljdGZ0zJGxQ==\"},\"taskId\":\"9f501d4f-31aa-459f-952d-2793f35dfc27\",\"taskType\":\"Migrate.PostgreSql.AzureDbForPostgreSql.SyncV2\",\"state\":\"Queued\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:37.4276444+00:00\"},\"etag\":\"/AVwkcnAgp1J7j1G2u8Y/5BOFtzAKhT1O5iNFdxAycc=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007/tasks/taskpg000008\",\"name\":\"taskpg000008\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}"
+      },
+      {
+        "index": 46,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007/tasks/taskpg000008/cancel?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"selectedTables\":[{\"name\":\"public.TestTableSource1\"},{\"name\":\"public.TestTableSource2\"}]}],\"targetConnectionInfo\":{\"type\":\"PostgreSqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"l4A/F090WDBSH/8gZpAKU3my9BKinrunRSlrbfp3zmg=\",\"serverName\":\"notarealtargetserver\",\"databaseName\":\"notarealdatabasename\",\"port\":5432,\"encryptConnection\":true,\"trustServerCertificate\":false},\"sourceConnectionInfo\":{\"type\":\"PostgreSqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"l4A/F090WDBSH/8gZpAKU3my9BKinrunRSlrbfp3zmg=\",\"serverName\":\"notarealsourceserver\",\"databaseName\":\"notarealdatabasename\",\"port\":5432,\"encryptConnection\":false,\"trustServerCertificate\":true},\"encryptedKeyForSecureFields\":\"grB0dX7o7bKMiC53d+zlp1pws9Sl6P99/wUydQKq04vxp5wWkuWEm6fskCC9lS70ihUC9a/g/qLL6wVOjzQHnvcA0YXLljSMag9A4vQCG0f2Qb8RdmEKAixN6YYR9edMMZtOvhfXlvq15bbb1GNM7rFnFP2upIA2cgPXb7Ax/AaUz7WXJfrGfzoba7UtS+NkhKdF/iWW/yCuPUIqn+v3pU5yEPMyHeZ1F/rhRd63SxMOR3sQjttNyaJGHI3EEdXhVuNSV+7RVb3L1VB1cJnhKNfvhQAv1RclsJzhKxtPERhj8siDUM5EhYhTdHVS9AhMGNyxni8sWXVljdGZ0zJGxQ==\"},\"taskId\":\"9f501d4f-31aa-459f-952d-2793f35dfc27\",\"taskType\":\"Migrate.PostgreSql.AzureDbForPostgreSql.SyncV2\",\"state\":\"Canceling\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:37.4276444+00:00\"},\"etag\":\"hzzj5D7Cx7p7jRRujouMUKwhJFtbuM3bY8W7SoXhwHk=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectpg000007/tasks/taskpg000008\",\"name\":\"taskpg000008\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}",
+        "request_body": null
+      },
+      {
+        "index": 47,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"MySQL\",\"targetPlatform\":\"AzureDbForMySQL\",\"creationTime\":\"2025-08-11T20:05:30.0122886+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"nBrwKFUoXv3LEp62tX5U2OEvJ0V2UkccKXsb1m/G424=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009\",\"location\":\"centralus\",\"name\":\"projectmysql000009\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 49,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009/tasks/taskmysql000010?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"sourceConnectionInfo\":{\"type\":\"MySqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"gJjgfXqcfGGoAy3G+JhA910fJtEhjnRwgvSF4BDDU38=\",\"serverName\":\"notarealsourceserver\",\"port\":3306,\"encryptConnection\":false},\"targetConnectionInfo\":{\"type\":\"MySqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"gJjgfXqcfGGoAy3G+JhA910fJtEhjnRwgvSF4BDDU38=\",\"serverName\":\"notarealtargetserver\",\"port\":3306,\"encryptConnection\":true},\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"tableMap\":{\"sourceSchema.tableName\":\"targetSchema.tableName\"}}],\"makeSourceServerReadOnly\":true,\"optionalAgentSettings\":{\"DesiredRangesCount\":\"4\",\"QueryTableDataRangeTaskCount\":\"8\"},\"encryptedKeyForSecureFields\":\"05sykmuq2yn3/FzrWUyRaDNr/02u8NDPNtJy0bx4uXbn94Q1zkV63gkKuOi0n9mWonZKzJmxMufazTrW6KkgiMfhN/jphoUbsAqpnJx03geytrfYil8whDhB0+9/5Yar5Rhoxd09JZFPNpJ+JGNfYYluvsFGSWMzoDD0O/dT7rMdrb1rQ7zE7RKc1g4yHi5PEdg0t2zMW3lw/fmtWsf78g9lX+3xbl2qulOdIoqJ2ywP+o+rm9sjb0ZxshGsUKqw4lbhPtF3zWKPgVdDcJoSdfqMIQq8LXkBOHLbD27IQX9fnPGQHk4QYun2J0BDJLHkztBJMSh80EFo8kVreJQkCw==\"},\"taskId\":\"c43cfea6-1461-4ac4-876c-b3ed83bb544c\",\"taskType\":\"Migrate.MySql.AzureDbForMySql\",\"state\":\"Queued\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:40.2569555+00:00\"},\"etag\":\"05Yj6w01GZ/oV2VrRUUpQA+JlGsCdwjTMKF7b0LRI1s=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009/tasks/taskmysql000010\",\"name\":\"taskmysql000010\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}"
+      },
+      {
+        "index": 50,
+        "method": "POST",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009/tasks/taskmysql000010/cancel?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"input\":{\"sourceConnectionInfo\":{\"type\":\"MySqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"gJjgfXqcfGGoAy3G+JhA910fJtEhjnRwgvSF4BDDU38=\",\"serverName\":\"notarealsourceserver\",\"port\":3306,\"encryptConnection\":false},\"targetConnectionInfo\":{\"type\":\"MySqlConnectionInfo\",\"userName\":\"testuser\",\"password\":\"gJjgfXqcfGGoAy3G+JhA910fJtEhjnRwgvSF4BDDU38=\",\"serverName\":\"notarealtargetserver\",\"port\":3306,\"encryptConnection\":true},\"selectedDatabases\":[{\"name\":\"SourceDatabase1\",\"targetDatabaseName\":\"TargetDatabase1\",\"tableMap\":{\"sourceSchema.tableName\":\"targetSchema.tableName\"}}],\"makeSourceServerReadOnly\":true,\"optionalAgentSettings\":{\"DesiredRangesCount\":\"4\",\"QueryTableDataRangeTaskCount\":\"8\"},\"encryptedKeyForSecureFields\":\"05sykmuq2yn3/FzrWUyRaDNr/02u8NDPNtJy0bx4uXbn94Q1zkV63gkKuOi0n9mWonZKzJmxMufazTrW6KkgiMfhN/jphoUbsAqpnJx03geytrfYil8whDhB0+9/5Yar5Rhoxd09JZFPNpJ+JGNfYYluvsFGSWMzoDD0O/dT7rMdrb1rQ7zE7RKc1g4yHi5PEdg0t2zMW3lw/fmtWsf78g9lX+3xbl2qulOdIoqJ2ywP+o+rm9sjb0ZxshGsUKqw4lbhPtF3zWKPgVdDcJoSdfqMIQq8LXkBOHLbD27IQX9fnPGQHk4QYun2J0BDJLHkztBJMSh80EFo8kVreJQkCw==\"},\"taskId\":\"c43cfea6-1461-4ac4-876c-b3ed83bb544c\",\"taskType\":\"Migrate.MySql.AzureDbForMySql\",\"state\":\"Canceling\",\"isCloneable\":true,\"createdOn\":\"2025-08-11T20:05:40.2569555+00:00\"},\"etag\":\"U+vT9LaU9xqttml7kwlPXMMcutc+LeiwJ21ZHG8HeqY=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009/tasks/taskmysql000010\",\"name\":\"taskmysql000010\",\"type\":\"Microsoft.DataMigration/services/projects/tasks\"}",
+        "request_body": null
+      },
+      {
+        "index": 51,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"MySQL\",\"targetPlatform\":\"AzureDbForMySQL\",\"creationTime\":\"2025-08-11T20:05:30.0122886+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"nBrwKFUoXv3LEp62tX5U2OEvJ0V2UkccKXsb1m/G424=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009\",\"location\":\"centralus\",\"name\":\"projectmysql000009\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 53,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009?api-version=2021-06-30",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"properties\":{\"sourcePlatform\":\"MySQL\",\"targetPlatform\":\"AzureDbForMySQL\",\"creationTime\":\"2025-08-11T20:05:30.0122886+00:00\",\"provisioningState\":\"Succeeded\"},\"etag\":\"nBrwKFUoXv3LEp62tX5U2OEvJ0V2UkccKXsb1m/G424=\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003/projects/projectmysql000009\",\"location\":\"centralus\",\"name\":\"projectmysql000009\",\"type\":\"Microsoft.DataMigration/services/projects\"}"
+      },
+      {
+        "index": 55,
+        "method": "DELETE",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/dms_cli_test000001/providers/Microsoft.DataMigration/services/dmsclitest000003?api-version=2021-06-30&deleteRunningTasks=true",
+        "status": 202,
+        "headers": {
+          "azure-asyncoperation": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ],
+          "location": [
+            "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationResults/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h"
+          ]
+        },
+        "body": ""
+      },
+      {
+        "index": 56,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 57,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 58,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 59,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 60,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Running\"}"
+      },
+      {
+        "index": 61,
+        "method": "GET",
+        "url": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455?api-version=2021-06-30&t=replay-t&c=replay-c&s=replay-s&h=replay-h",
+        "status": 200,
+        "headers": {
+          "content-type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "body": "{\"name\":\"1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"id\":\"/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.DataMigration/locations/centralus/operationStatuses/1b8081ad-24c3-4ed7-8153-384e3dc00455\",\"status\":\"Succeeded\"}"
+      }
+    ]
+  }
+]

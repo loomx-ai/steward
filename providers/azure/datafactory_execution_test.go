@@ -22,9 +22,9 @@ import (
 	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 )
 
-func dataFactoryWorkerRepository(t *testing.T, f *dataFactoryFixture) (*sqlite.Repositories, *providerruntime.Registry, string) {
+func azureNativeWorkerRepository(t *testing.T, runtime *Runtime) (*sqlite.Repositories, *providerruntime.Registry, string) {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "datafactory.db")
+	path := filepath.Join(t.TempDir(), "native-azure.db")
 	repository, err := sqlite.Open(path, "../../migrations")
 	if err != nil {
 		t.Fatal(err)
@@ -45,12 +45,18 @@ func dataFactoryWorkerRepository(t *testing.T, f *dataFactoryFixture) (*sqlite.R
 		}
 	}
 	registry := providerruntime.NewRegistry()
-	if err := registry.Register(f.runtime); err != nil {
+	if err := registry.Register(runtime); err != nil {
 		t.Fatal(err)
 	}
-	if err := registry.RegisterBundle(f.runtime.Bundle()); err != nil {
+	if err := registry.RegisterBundle(runtime.Bundle()); err != nil {
 		t.Fatal(err)
 	}
+	return repository, registry, path
+}
+
+func dataFactoryWorkerRepository(t *testing.T, f *dataFactoryFixture) (*sqlite.Repositories, *providerruntime.Registry, string) {
+	t.Helper()
+	repository, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	previous := f.override
 	f.override = func(req *http.Request) (*http.Response, bool) {
 		if previous != nil {
@@ -65,6 +71,11 @@ func dataFactoryWorkerRepository(t *testing.T, f *dataFactoryFixture) (*sqlite.R
 
 func dataFactoryWorkerScan(t *testing.T, f *dataFactoryFixture, repository *sqlite.Repositories, registry *providerruntime.Registry, kinds []string, failure, nativeGraph bool) []asset.Asset {
 	t.Helper()
+	return azureNativeWorkerScan(t, f.runtime, dataFactoryInventorySource, repository, registry, kinds, failure, nativeGraph)
+}
+
+func azureNativeWorkerScan(t *testing.T, runtime *Runtime, source string, repository *sqlite.Repositories, registry *providerruntime.Registry, kinds []string, failure, nativeGraph bool) []asset.Asset {
+	t.Helper()
 	ctx := t.Context()
 	creator, err := inventory.NewCreator(repository, registry)
 	if err != nil {
@@ -72,14 +83,14 @@ func dataFactoryWorkerScan(t *testing.T, f *dataFactoryFixture, repository *sqli
 	}
 	ids := []asset.ResourceKindID{}
 	for _, kind := range kinds {
-		ids = append(ids, f.runtime.resourceKind(kind).ID)
+		ids = append(ids, runtime.resourceKind(kind).ID)
 	}
-	created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "datafactory-worker", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"eastus", "westus"}, ResourceKindIDs: ids})
+	created, err := creator.Create(ctx, inventory.ScanCreationRequest{ConnectionID: "connection", RequestedBy: "native-azure-worker", RegionMode: inventory.RegionModeSelected, RegionIDs: []string{"eastus", "westus"}, ResourceKindIDs: ids})
 	if err != nil || len(created.Shards) != 2*len(kinds) {
-		t.Fatal("registered Data Factory regional shards", len(created.Shards), err)
+		t.Fatal("registered native Azure regional shards", len(created.Shards), err)
 	}
 	for _, shard := range created.Shards {
-		if shard.Source != dataFactoryInventorySource || shard.Authoritative {
+		if shard.Source != source || shard.Authoritative {
 			t.Fatal("native source gained list-absence authority", shard)
 		}
 		shard.Authoritative = true // Saved legacy flags must not override source authority.
@@ -90,14 +101,14 @@ func dataFactoryWorkerScan(t *testing.T, f *dataFactoryFixture, repository *sqli
 	handler := inventory.NewScanHandler(repository, registry, inventory.NewService(repository))
 	for _, job := range created.Jobs {
 		if err := handler.Handle(ctx, job); err != nil && !failure {
-			t.Fatal("registered native Data Factory inventory", err)
+			t.Fatal("registered native Azure inventory", err)
 		}
 	}
 	failed := false
 	for _, shard := range created.Shards {
 		stored, err := repository.GetScanShard(ctx, shard.ID)
 		if err != nil || stored.Authoritative || stored.Coverage.Authoritative || !failure && stored.Status != asset.ShardSucceeded {
-			t.Fatal("Data Factory scan widened absence or failed", stored.Status, err)
+			t.Fatal("native Azure scan widened absence or failed", stored.Status, err)
 		}
 		failed = failed || stored.Status != asset.ShardSucceeded
 	}
@@ -117,10 +128,10 @@ func dataFactoryWorkerScan(t *testing.T, f *dataFactoryFixture, repository *sqli
 			graphs++
 			var contributors governance.ContributorResolver
 			if nativeGraph {
-				contributors = fleetHubGraphContributors{f.runtime}
+				contributors = fleetHubGraphContributors{runtime}
 			}
 			if err := governance.NewGraphHandler(repository, registry, contributors).Handle(ctx, job); err != nil {
-				t.Fatal("registered native Data Factory graph", err)
+				t.Fatal("registered native Azure graph", err)
 			}
 		}
 		if graphs != 1 {

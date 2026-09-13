@@ -922,6 +922,10 @@ resources:
   azure:
     resources:
     - Microsoft.DataMigration/services/projects
+    - Microsoft.DataMigration/services/projects/tasks
+    - Microsoft.DataMigration/sqlMigrationServices
+    - Microsoft.DataMigration/migrationServices
+    - Microsoft.DataMigration/databaseMigrations
   status: pending_verification
 - alicloud: ACS::EAIS::Instance
   spec: providers/alicloud/specs/eais-instance.yaml

@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	datamigration := request.ResourceKind != nil && dataMigrationKind(request.ResourceKind.NativeType) != ""
+	if request.Source == dataMigrationInventorySource && !datamigration || datamigration && request.Source != "" && request.Source != inventorySource && request.Source != dataMigrationInventorySource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_datamigration_inventory_source")
 	}
 	datafactory := request.ResourceKind != nil && dataFactoryKind(request.ResourceKind.NativeType) != ""
 	if request.Source == dataFactoryInventorySource && !datafactory || datafactory && request.Source != "" && request.Source != inventorySource && request.Source != dataFactoryInventorySource {
@@ -46,6 +50,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if datamigration {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = dataMigrationInventorySource
+		return r.listDataMigration(ctx, c, request)
 	}
 	if datafactory {
 		if request.Source == inventorySource {

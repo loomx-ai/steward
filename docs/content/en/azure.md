@@ -32,7 +32,7 @@ Native discovery includes child resources such as VNet subnets, Blob containers,
 
 ## Inventory and cleanup coverage
 
-Steward recognizes 420 resource types; 392 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
+Steward recognizes 428 resource types; 400 have native cleanup actions, including Batch node removal, subject to the conditions below. Additional ARM resource types appear as read-only inventory. Coverage is still being expanded; this is not complete Azure service coverage.
 
 | Service | Resources | Cleanup |
 | --- | --- | --- |
@@ -49,6 +49,7 @@ Steward recognizes 420 resource types; 392 have native cleanup actions, includin
 | Azure DocumentDB | MongoDB-compatible clusters and replicas, firewall rules, private endpoint connections and Microsoft Entra users | Reviewed replicas and children are deleted before their source/parent; deleting a replica preserves its source |
 | Azure Data Explorer | Kusto clusters, databases, follower attachments, data connections, principals, scripts and private connections; custom sandbox images | Reviewed children and follower attachments precede source deletion; read-only databases and active images require their controller |
 | Data Factory | Factories, pipelines, datasets, dataflows, linked services, credentials, triggers, CDC, global parameters, integration runtimes/nodes and private connections | Reviewed factory cascades; runtime and work preparation; managed virtual networks require factory cleanup |
+| Data Migration | Classic services, projects, tasks/files and service tasks; SQL/Mongo migration services and migrations to SQL or Cosmos DB targets | Reviewed children and migration prerequisites; cancellation and runtime-node preparation before deletion |
 | Stream Analytics | Jobs, inputs, outputs, functions, transformations, clusters and cluster private endpoints | Job definitions follow the job; associated cluster jobs require explicit selection or prior removal |
 | Foundry / Cognitive Services | Accounts, deployments, projects, agents, connections, capability hosts, managed networks, content filters and commitment plans | Deployments and reviewed dependencies precede account soft deletion; no purge |
 | Azure AI Search | Services, private endpoint connections, shared private links and network perimeter configuration views | Reviewed links precede service deletion; perimeter views require their service |
@@ -82,6 +83,12 @@ Service Bus/Event Hubs network rule sets, Event Hubs network perimeter configura
 Service Bus autoforwarding dependencies resolve to a queue or topic in the same namespace. Event Hubs Capture references its destination storage account and Blob container. Namespace deletion does not select those storage resources, user-assigned identities or the separate private endpoint for deletion. Inventory and action permissions must include every reviewed child's native read operation; a failed child list is not an empty namespace. See Microsoft's [autoforwarding](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-auto-forwarding) and [Capture](https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-capture-overview) documentation.
 
 ## Cleanup protections
+
+Data Migration covers eight native resource kinds in the migration service's region. Classic service/project children have separate, reviewed deletion steps; running tasks are canceled first. A schema file requires prior cleanup of its consuming tasks. SQL/Mongo services require explicit selection and prior deletion of their target-scoped migrations. SQL migrations cancel before deletion; active Mongo migrations use the native force-delete operation. SQL service cleanup waits for running node jobs to finish, removes reviewed runtime registrations and verifies their absence. Source/target databases, backup storage, identities, networking and runtime machines remain separate resources.
+
+Inventory and cleanup require complete native service/child and migration indexes, own-resource reads, SQL runtime monitoring, referenced SQL/Cosmos target reads, resource groups and management locks. Execution additionally needs the selected DELETE, task/migration Cancel, SQL `deleteNode` and regional operation-status permissions. Mongo uses independent target-scoped lists as well as service indexes; SQL discovery supplements service indexes with reads of previously known migrations. Unknown migrations omitted from all available indexes cannot be recovered.
+
+Configuration, target identity, groups, protection, locks, new migrations or changed runtime nodes can require a new review. Accepted operations and verification resume after worker restarts, with a 24-hour verification limit. Every recorded descendant and required consumer still needs its own absence check after the parent disappears. Migration inputs and connection details stay out of public inventory and logs. Native DELETE has no conditional version guard; masked fields limit change detection. Current evidence includes official API examples, CLI recordings and SQLite worker tests; independent DMS emulator and live-cloud acceptance remain open. See [ARM asynchronous-operation tracking](https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/async-operations).
 
 Data Factory inventory covers 14 native resource kinds in the factory's region, including runtime node registrations and managed virtual networks. Inventory and cleanup need complete child and factory lists, own-resource reads, runtime status, trigger event-subscription status, pipeline-run queries/reads, debug-session queries, resource groups and locks. Cleanup adds the selected DELETE and preparation operations. Authored pipelines, connection values, run parameters and debug details stay out of public inventory and logs.
 

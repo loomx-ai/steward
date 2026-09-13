@@ -2244,6 +2244,79 @@
         "Triggers_UnsubscribeFromEvents",
         "privateEndPointConnections_ListByFactory"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/datamigration.json",
+      "operations": [
+        "Files_Delete",
+        "Files_Get",
+        "Files_List",
+        "Projects_Delete",
+        "Projects_Get",
+        "Projects_List",
+        "ServiceTasks_Cancel",
+        "ServiceTasks_Delete",
+        "ServiceTasks_Get",
+        "ServiceTasks_List",
+        "Services_Delete",
+        "Services_Get",
+        "Services_List",
+        "Services_ListByResourceGroup",
+        "Tasks_Cancel",
+        "Tasks_Delete",
+        "Tasks_Get",
+        "Tasks_List"
+      ],
+      "references": [
+        "./definitions/ServiceTasks.json#/definitions/CheckOCIDriverTaskProperties",
+        "./definitions/ServiceTasks.json#/definitions/UploadOCIDriverTaskProperties",
+        "./definitions/ServiceTasks.json#/definitions/InstallOCIDriverTaskProperties",
+        "./definitions/MigrateSchemaSqlServerSqlDbTask.json#/definitions/MigrateSchemaSqlServerSqlDbTaskProperties"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/datamigration/resource-manager/Microsoft.DataMigration/DataMigration/stable/2025-06-30/sqlmigration.json",
+      "operations": [
+        "DatabaseMigrationsMongoToCosmosDbRUMongo_Delete",
+        "DatabaseMigrationsMongoToCosmosDbRUMongo_Get",
+        "DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope",
+        "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Delete",
+        "DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get",
+        "DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope",
+        "DatabaseMigrationsSqlDb_Delete",
+        "DatabaseMigrationsSqlDb_Get",
+        "DatabaseMigrationsSqlDb_cancel",
+        "DatabaseMigrationsSqlMi_Delete",
+        "DatabaseMigrationsSqlMi_Get",
+        "DatabaseMigrationsSqlMi_cancel",
+        "DatabaseMigrationsSqlVm_Delete",
+        "DatabaseMigrationsSqlVm_Get",
+        "DatabaseMigrationsSqlVm_cancel",
+        "MigrationServices_Delete",
+        "MigrationServices_Get",
+        "MigrationServices_ListByResourceGroup",
+        "MigrationServices_ListBySubscription",
+        "MigrationServices_listMigrations",
+        "SqlMigrationServices_Delete",
+        "SqlMigrationServices_Get",
+        "SqlMigrationServices_ListByResourceGroup",
+        "SqlMigrationServices_ListBySubscription",
+        "SqlMigrationServices_deleteNode",
+        "SqlMigrationServices_listMigrations",
+        "SqlMigrationServices_listMonitoringData"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sql/resource-manager/Microsoft.Sql/SQL/stable/2023-08-01/ManagedInstances.json",
+      "operations": [
+        "ManagedInstances_Get"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/sqlvirtualmachine/resource-manager/Microsoft.SqlVirtualMachine/SqlVirtualMachine/stable/2023-10-01/sqlvm.json",
+      "operations": [
+        "SqlVirtualMachines_Get"
+      ]
     }
   ],
   "resource_types": [
@@ -10153,6 +10226,167 @@
       ],
       "list_operations": [
         "Azure.Microsoft.DataFactory.Triggers_ListByFactory"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/services",
+      "class": "data.migration_service",
+      "display_name": "Database migration service (classic)",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "services",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.Services_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.Services_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.Services_List",
+        "Azure.Microsoft.DataMigration.Services_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/services/projects",
+      "class": "data.transfer_job",
+      "display_name": "Migration project (classic)",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "projects",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.Projects_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.Projects_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.Projects_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/services/projects/tasks",
+      "class": "data.migration_task",
+      "display_name": "Migration task (classic)",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "tasks",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.Tasks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.Tasks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.Tasks_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/services/projects/files",
+      "class": "data.migration_file",
+      "display_name": "Migration project file",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "files",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.Files_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.Files_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.Files_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/services/serviceTasks",
+      "class": "data.migration_task",
+      "display_name": "Migration service task",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "serviceTasks",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.ServiceTasks_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.ServiceTasks_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.ServiceTasks_List"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/migrationServices",
+      "class": "data.migration_service",
+      "display_name": "Database migration service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "migrationServices",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.MigrationServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.MigrationServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.MigrationServices_ListBySubscription",
+        "Azure.Microsoft.DataMigration.MigrationServices_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/sqlMigrationServices",
+      "class": "data.migration_service",
+      "display_name": "SQL migration service",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "sqlMigrationServices",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.SqlMigrationServices_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.SqlMigrationServices_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.SqlMigrationServices_ListBySubscription",
+        "Azure.Microsoft.DataMigration.SqlMigrationServices_ListByResourceGroup"
+      ]
+    },
+    {
+      "native_type": "Microsoft.DataMigration/databaseMigrations",
+      "class": "data.transfer_job",
+      "display_name": "Database migration",
+      "scope_kinds": [
+        "region"
+      ],
+      "collection": "databaseMigrations",
+      "read_operations": [
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlDb_Get",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlMi_Get",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlVm_Get",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbRUMongo_Get",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbvCoreMongo_Get"
+      ],
+      "delete_operations": [
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlDb_Delete",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlMi_Delete",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsSqlVm_Delete",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbRUMongo_Delete",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbvCoreMongo_Delete"
+      ],
+      "list_operations": [
+        "Azure.Microsoft.DataMigration.SqlMigrationServices_listMigrations",
+        "Azure.Microsoft.DataMigration.MigrationServices_listMigrations",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbRUMongo_GetForScope",
+        "Azure.Microsoft.DataMigration.DatabaseMigrationsMongoToCosmosDbvCoreMongo_GetForScope"
+      ],
+      "response_types": [
+        "Microsoft.DataMigration/dataMigrations"
       ]
     }
   ]
