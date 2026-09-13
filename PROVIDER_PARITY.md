@@ -4365,3 +4365,50 @@ background evidence only, not acceptance evidence for this work.
   staged diff checks passed. All 1,489 operations and original fixture bytes
   remain unchanged; 448 specs and 415 actions were independently counted.
   The 65 preexisting worktree file hashes were unchanged.
+
+### Elastic SAN volume cleanup, snapshot ordering and retention outcomes
+
+- Registered native Volumes_Delete without changing the 1,489 operations or 448
+  mappings/specs; delete actions increase to 416. SAN and volume-group cleanup
+  remain pending, including their cascades and retained-group outcomes.
+- Inventory signs volume GUID/creation/configuration, retention observation and
+  snapshot membership. Snapshot collection reads are shared per group; known
+  snapshot own reads recover list omissions, and forged prior cleanup metadata
+  is rejected before these reads. Native source IDs establish authoritative
+  direct snapshot lifecycle bindings. Plans review/order separate snapshot
+  removal before volume DELETE and reject retained snapshot expectations.
+- Ordinary DELETE preserves native retention settings; an omitted policy stays
+  unspecified, never guessed disabled. A separately selected retained volume
+  binds deleteType=permanent. No implicit purge follows soft deletion. Snapshot
+  force removal is disabled; active iSCSI force is false unless a reviewed boolean
+  force_delete option explicitly enables it. Bilingual plan warnings explain
+  retention, permanent data removal and forced-session interruption.
+- Both active/retained populations, selected own GET, retained own GET where
+  addressable and immutable GUID/creation/configuration determine readback. A
+  retained-index 404 fallback remains specific to retained resources. Signed
+  persisted outcomes distinguish soft_deleted with the retained native ID from
+  absent. Callback success/expiry cannot erase live or recreated resources,
+  unknown populations, restored identities or remaining known snapshots.
+- Original pinned CLI soft-delete response bodies prove ID/name transition with
+  unchanged GUID/creation projection. SQLite integration verifies real plan and
+  confirmed two-step snapshot/volume execution, reopened runtimes/databases,
+  one mutation per step, retained outcome persistence and separate retained-copy
+  rediscovery. Targeted protocols cover explicit permanent purge/force, changed
+  retention/configuration, management protection, permission failures, omitted
+  and new snapshots, ambiguous identities and forged state.
+- Tests remain offline protocol/application evidence, not live preview cloud or
+  independent Elastic SAN ARM emulator evidence. No host-side iSCSI command runs.
+  Group/SAN lifecycle completion and the broader eight acceptance criteria remain
+  open; provider parity is not established by this milestone.
+
+- Validation: full Azure (338.609s), cleanup service (3.535s) and plan (1.202s)
+  tests passed. A final older-volume-record graph guard then added recovery of
+  independently known signed snapshot assets; final Elastic SAN/catalog tests
+  passed in isolation (7.285s) and the main workspace (4.154s), with final race
+  checks (41.969s) and vet passing. All six catalog-sync tests passed. Frontend
+  locale tests passed all 16 cases in both workspaces; main type checking and
+  all 39 frontend contract tests passed, and the isolated production build
+  succeeded. Docs passed 30 isolated/42 main chapters and 10 original screenshots.
+  All 1,489 operations and original fixtures remain unchanged. The 64 unrelated
+  WIP hashes stayed unchanged; the existing localization edits were preserved
+  exactly around the six new translated entries and excluded from the commit.

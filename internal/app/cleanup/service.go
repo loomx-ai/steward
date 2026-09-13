@@ -1794,6 +1794,20 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if !selectionWarningExists(result, code, value.ID) {
 				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.ElasticSan/elasticSans/volumegroups/volumes":
+			if value.Identity.Provider != asset.ProviderAzure {
+				continue
+			}
+			code, message := plan.WarningElasticSanVolumeDelete, "Deleting this volume permanently removes its data after the reviewed snapshots are deleted."
+			if value.Normalized["cleanup_deletion_mode"] == "soft_delete" || value.Normalized["cleanup_deletion_mode"] == "native" {
+				code, message = plan.WarningElasticSanVolumeSoftDelete, "Deleting this volume follows its group's retention policy after snapshot cleanup. Any retained copy requires separate cleanup."
+			}
+			if !selectionWarningExists(result, code, value.ID) {
+				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "deletion_mode": value.Normalized["cleanup_deletion_mode"]}})
+			}
+			if input.RequestOptions[value.ID]["force_delete"] == true && !selectionWarningExists(result, plan.WarningElasticSanVolumeForceDelete, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningElasticSanVolumeForceDelete, AssetID: value.ID, Message: "This volume deletion is allowed even with active iSCSI sessions and can interrupt workloads.", Evidence: map[string]any{"operation": "delete", "force_delete": true}})
+			}
 		case "Microsoft.AzureStackHCI/logicalNetworks":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalNetworkRemoval, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAzureLocalNetworkRemoval, AssetID: value.ID, Message: "Deleting this logical network removes its Azure resource after dependencies are cleared. Infrastructure-network deletion removes only the cloud projection; its on-premises network remains.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType, "network_type": value.Normalized["networkType"]}})

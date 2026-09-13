@@ -1068,6 +1068,12 @@ const enUS = {
     "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal.",
   "error.azure_local_registration_removal":
     "Deleting this Azure Local registration first requires removal of its VM and OS disk. NICs and data disks need separate cleanup; verify physical removal separately.",
+  "error.elastic_san_volume_soft_delete":
+    "Deleting this volume follows its group's retention policy after snapshot cleanup. Any retained copy requires separate cleanup.",
+  "error.elastic_san_volume_delete":
+    "Deleting this volume permanently removes its data after the reviewed snapshots are deleted.",
+  "error.elastic_san_volume_force_delete":
+    "This volume deletion is allowed even with active iSCSI sessions and can interrupt workloads.",
   "error.azure_local_disk_removal":
     "Deleting this Azure Local disk can permanently remove its data; verify the physical disk result separately.",
   "error.azure_local_network_removal":
@@ -2175,6 +2181,12 @@ const zhCN: MessageShape = {
     "删除此 Arc 机器会先清理已审查的子资源，再移除云端注册；外部主机和本地代理仍需单独移除。",
   "error.azure_local_registration_removal":
     "删除此 Azure Local 注册前，需要先移除其 VM 和系统盘。网卡和数据盘需单独清理；请另行验证物理资源移除结果。",
+  "error.elastic_san_volume_soft_delete":
+    "删除已审核的快照后，此卷按卷组保留策略处理；如产生保留副本，需要单独清理。",
+  "error.elastic_san_volume_delete":
+    "删除已审核的快照后，此卷的数据将被永久移除。",
+  "error.elastic_san_volume_force_delete":
+    "即使存在活动 iSCSI 会话，也会允许删除此卷，可能中断工作负载。",
   "error.azure_local_disk_removal":
     "删除此 Azure Local 磁盘可能永久移除其数据；请另行验证物理磁盘移除结果。",
   "error.azure_local_network_removal":

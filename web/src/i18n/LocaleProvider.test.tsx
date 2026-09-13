@@ -150,6 +150,16 @@ describe("LocaleProvider error formatting", () => {
   );
 
   it.each([
+    ["elastic_san_volume_soft_delete", "需要单独清理"],
+    ["elastic_san_volume_delete", "数据将被永久移除"],
+    ["elastic_san_volume_force_delete", "可能中断工作负载"],
+  ])("localizes Elastic SAN deletion consequence %s", (code, expected) => {
+    localStorage.setItem(localePreferenceKey, "zh-CN");
+    render(<LocaleProvider><CodeProbe code={code} fallback="untranslated" /></LocaleProvider>);
+    expect(screen.getByTestId("code-message")).toHaveTextContent(expected);
+  });
+
+  it.each([
     [
       "InternalServerError",
       "an internal error has occurred. Please retry.",

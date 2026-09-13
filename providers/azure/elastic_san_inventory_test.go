@@ -45,6 +45,7 @@ func newElasticSanFixture(t *testing.T) *elasticSanFixture {
 	object(group["properties"])["deleteRetentionPolicy"] = map[string]any{"policyState": "Enabled", "retentionPeriodDays": 7}
 	object(group["properties"])["encryptionProperties"] = map[string]any{"keyVaultProperties": map[string]any{"keyVaultUri": "https://private-elastic-vault.vault.azure.net/"}}
 	volume := f.values[f.ids[elasticSanVolumeType]]
+	volume["systemData"] = map[string]any{"createdAt": "2026-02-11T09:51:01.7803283Z"}
 	object(volume["properties"])["sizeGiB"] = 8
 	object(volume["properties"])["volumeId"] = testTenant
 	object(volume["properties"])["storageTarget"] = map[string]any{"targetIqn": "private-elastic-target", "targetPortalHostname": "private-elastic-address"}
@@ -63,6 +64,9 @@ func newElasticSanFixture(t *testing.T) *elasticSanFixture {
 		raw["properties"] = maps.Clone(object(raw["properties"]))
 		raw["id"], raw["name"] = entry.id, last(entry.id)
 		object(raw["properties"])["provisioningState"] = "Deleted"
+		if strings.Contains(entry.id, "/volumes/") {
+			object(raw["properties"])["volumeId"] = azureRequestID(entry.id)
+		}
 		f.values[entry.id], f.retained[entry.id] = raw, true
 	}
 	f.runtime = protocolRuntime(t, func(req *http.Request) (*http.Response, error) {
@@ -169,11 +173,11 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 		t.Fatal("SQLite inventory", len(values))
 	}
 	relations, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 9 {
+	if err != nil || len(relations) != 10 {
 		t.Fatal("native parent/source references", len(relations), err)
 	}
 	for _, relation := range relations {
-		if relation.Type != graph.RelationshipUses {
+		if relation.Type != graph.RelationshipUses && relation.Type != graph.RelationshipAttachedTo {
 			t.Fatal("ordinary reference became ownership", relation)
 		}
 	}
@@ -318,6 +322,7 @@ func TestElasticSanRestoredNativeIDIsNotARetainedAlias(t *testing.T) {
 		request.KnownNativeIDs = append(request.KnownNativeIDs, item.NativeID)
 		request.KnownNativeMetadata[item.NativeID] = item.Normalized
 	}
+	expectedVolumeID := object(f.values[retainedID]["properties"])["volumeId"]
 	restored := maps.Clone(f.values[retainedID])
 	restored["properties"] = maps.Clone(object(restored["properties"]))
 	restored["id"], restored["name"] = activeID, last(activeID)
@@ -332,7 +337,7 @@ func TestElasticSanRestoredNativeIDIsNotARetainedAlias(t *testing.T) {
 	for _, item := range batch.Items {
 		if item.NativeID == activeID {
 			found = true
-			if item.Normalized["retained"] != false || item.Normalized["volumeId"] != testTenant || slices.Contains(item.NativeAliases, retainedID) || slices.Contains(item.NativeAliases, testTenant) {
+			if item.Normalized["retained"] != false || item.Normalized["volumeId"] != expectedVolumeID || slices.Contains(item.NativeAliases, retainedID) || slices.Contains(item.NativeAliases, testTenant) {
 				t.Fatal("restoration conflated native identities", item.NativeAliases)
 			}
 		}

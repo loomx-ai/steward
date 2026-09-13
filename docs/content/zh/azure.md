@@ -277,4 +277,8 @@ Elastic SAN 盘点覆盖 SAN、卷组、卷、快照与私有终结点连接，�
 
 Elastic SAN 私有终结点连接也支持直接删除。删除已批准的连接可能中断其映射卷组的访问。使用方的 Network 私有终结点、网卡、DNS 记录以及 SAN、卷组、卷和快照仍独立保留。清理会验证连接创建身份、目标、原生卷组 ID 和配置，再检查 SAN 与映射卷组的保护状态、区域和管理锁。需授予 `Microsoft.ElasticSan/elasticSans/privateEndpointConnections/delete`，以及连接、SAN、卷组、资源组读取和管理锁列表权限；该连接删除操作不需要 Network 提供方的删除权限。卷组映射不完整的连接仍可被发现，但不能据此授权删除。持久化 Location 操作只有在确认连接自身不存在后才能结束；断开状态或父资源缺失不能单独证明删除完成。
 
-卷、卷组和 SAN 的清理仍在实现，包括断开会话和软删除卷的移除语义。原始 REST 示例、预览版软删除 CLI 录制、稳定版 `2025-09-01` 快照录制，以及 SQLite 盘点和清理恢复流程已进行离线测试。尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。
+Elastic SAN 卷清理会将关联快照列为独立、已审核的前置删除步骤；保留关联快照会阻止卷清理。普通卷删除遵循签名绑定并重新读取的卷组保留策略，不会隐式清除保留副本。如果 API 未返回策略，则保持云端默认行为，通过活动列表、保留列表及卷自身 GET 确认实际结果。识别出的保留副本会记录其原生 ID 和 `volumeId`，继续出现在盘点中，需要单独选中才能永久删除。选中已保留的卷时才使用 `deleteType=permanent`。恢复或同名重建、集合不完整、已知快照仍存在，都会阻止错误地确认删除完成。
+
+卷清理需要卷与快照的列表／读取权限、已审核快照的删除权限、`Microsoft.ElasticSan/elasticSans/volumegroups/volumes/delete`，以及 SAN、卷组、资源组读取和管理锁列表权限。DELETE 的快照删除标记固定为 false，由独立步骤清理快照。默认不强制删除存在活动 iSCSI 会话的卷，请先断开客户端。API 调用方可明确设置卷清理选项 `force_delete: true`，计划会提示可能中断工作负载；保留卷永久删除不接受此选项，也不会执行主机侧客户端命令。签名回执会保留软删除或不存在的结果，重启后不重复发送 DELETE。
+
+卷组和 SAN 的清理仍在实现，包括级联删除及保留卷组的处理。原始 REST 示例、预览版软删除 CLI 录制、稳定版 `2025-09-01` 快照录制，以及 SQLite 盘点和清理恢复流程已进行离线测试。尚未验证真实 Elastic SAN 或独立 ARM 模拟器。参见[微软删除顺序说明](https://learn.microsoft.com/en-us/azure/storage/elastic-san/elastic-san-delete)。

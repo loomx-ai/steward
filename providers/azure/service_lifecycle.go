@@ -464,6 +464,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeCommunication(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	if err := s.contributeElasticSanVolumes(ctx, assets, &result); err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	if err := s.contributeDataFactory(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}

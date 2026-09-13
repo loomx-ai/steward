@@ -85,6 +85,12 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		known[id] = true
 		if metadata := request.KnownNativeMetadata[id]; len(metadata) != 0 {
 			value := asset.Asset{Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: request.ConnectionID, Partition: "azure", NativeID: id, NativeType: kind}, Location: text(object(metadata[elasticSanInventoryRecord])["location"]), Normalized: metadata}
+			if kind == elasticSanVolumeType {
+				state := object(metadata[elasticSanSnapshotCleanup])
+				if len(state) != 0 && metadata[elasticSanSnapshotCleanupProof] != c.elasticSanChildBinding(value, state) {
+					return nil, nil, "", serviceDenied("elastic_san_volume_history_changed")
+				}
+			}
 			prior[id], err = c.elasticSanRecorded(value)
 			if err != nil {
 				return nil, nil, "", err
@@ -208,6 +214,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			if err := collect(kind, group); err != nil {
 				return nil, nil, "", err
 			}
+			if kind == elasticSanVolumeType {
+				if err := collect(elasticSanSnapshotType, group); err != nil {
+					return nil, nil, "", err
+				}
+			}
 		}
 	} else if kind == elasticSanEndpointType {
 		for _, root := range slices.Sorted(maps.Keys(roots)) {
@@ -219,6 +230,36 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 	for id := range known {
 		if err := recoverKnown(id, kind); err != nil {
 			return nil, nil, "", err
+		}
+	}
+	if kind == elasticSanVolumeType {
+		for id, metadata := range request.KnownNativeMetadata {
+			for child := range object(object(object(metadata[elasticSanSnapshotCleanup])["volume"])["snapshots"]) {
+				canonical, err := c.elasticSanIdentity(child, elasticSanSnapshotType)
+				if err != nil || canonical != child || elasticSanParent(child, elasticSanSnapshotType) != elasticSanParent(id, elasticSanVolumeType) {
+					return nil, nil, "", serviceDenied("elastic_san_volume_snapshot_history_changed")
+				}
+				if err := recoverKnown(child, elasticSanSnapshotType); err != nil {
+					return nil, nil, "", err
+				}
+			}
+		}
+	}
+	snapshotsByVolume := map[string]map[string]map[string]any{}
+	if kind == elasticSanVolumeType {
+		for id, observation := range nodes {
+			_, typ, _ := parseID(id)
+			if !strings.EqualFold(typ, elasticSanSnapshotType) {
+				continue
+			}
+			source, typ, err := parseID(text(object(object(observation.raw["properties"])["creationData"])["sourceId"]))
+			if err != nil || !strings.EqualFold(typ, elasticSanVolumeType) {
+				return nil, nil, "", serviceDenied("elastic_san_snapshot_source_unverified")
+			}
+			if snapshotsByVolume[source] == nil {
+				snapshotsByVolume[source] = map[string]map[string]any{}
+			}
+			snapshotsByVolume[source][id] = observation.raw
 		}
 	}
 	refsByID, allBindings := map[string]map[string][]string{}, map[string]any{}
@@ -298,7 +339,18 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			tags[key] = value.(string)
 		}
 		actionable := false
-		if elasticSanIndependentChild(kind) {
+		if kind == elasticSanVolumeType {
+			state, reason, err := c.elasticSanVolumeCleanup(raw, nodes[parent].raw, object(request.KnownNativeMetadata[id][elasticSanSnapshotCleanup]), snapshotsByVolume[id], observation.retained)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
+			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanChildBinding(value, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			normalized["cleanup_deletion_mode"] = elasticSanVolumeMode(state)
+			actionable = reason == ""
+			bindings[id] = c.privateConfiguration(map[string]any{"inventory": record, "cleanup": state})
+		} else if elasticSanIndependentChild(kind) {
 			reason := c.elasticSanChildProtection(kind, raw)
 			state := map[string]any{"resource": c.privateConfiguration(elasticSanChildSnapshot(kind, raw)), "etag": c.privateConfiguration(elasticSanChildVersion(kind, raw)), "protected": reason != ""}
 			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}

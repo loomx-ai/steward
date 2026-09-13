@@ -2,8 +2,8 @@
 
 This directory supports registered Elastic SAN inventory for SANs, volume groups,
 volumes, snapshots, private endpoint connections and retained resources.
-Verified snapshot and private-endpoint connection deletion are registered.
-Volume, group and SAN cleanup remain pending; this family does not yet close the parity gap.
+Verified snapshot, volume and private-endpoint connection deletion are registered.
+Group and SAN cleanup remain pending; this family does not yet close the parity gap.
 
 ## Pinned REST source
 
@@ -86,9 +86,9 @@ out of public inventory and API logs. SQLite tests reopen observations with a
 fresh runtime, preserve live resources omitted from indexes, reconcile retained
 absence, and preserve observations after denied reads. Network closure, restored
 volume IDs, forged history and changing snapshots are also exercised. Snapshots
-and private endpoint connections with verified creation identity support deletion;
-the other three kinds remain read-only while their cleanup lifecycle is
-implemented and verified.
+and private endpoint connections with verified creation identity support deletion.
+Volumes now have the retention-aware lifecycle below; SAN/group cleanup remains
+under implementation.
 
 ## Snapshot deletion and Location polling
 
@@ -178,6 +178,42 @@ Disconnected, with separate endpoint cleanup:
 
 Official contract:
 [Private Endpoint Connections Delete](https://learn.microsoft.com/en-us/rest/api/elasticsan/private-endpoint-connections/delete?view=rest-elasticsan-2025-09-01).
+
+## Volume lifecycle and retained outcomes
+
+The volume driver reuses signed native Location receipts while binding the volume
+GUID, creation identity, authored configuration, group policy and known snapshots.
+The original soft-delete responses 35 and 39 independently show the ARM name/ID
+changing while volumeId and creation data stay fixed. Tests compare their stable
+identity projections without changing the fixture bytes.
+
+Snapshot inventory is shared per group, with signed known snapshot IDs recovered
+through own GETs when omitted from lists. Graph contribution binds actual source
+volume relationships and plans independent snapshot deletion before the volume;
+retaining a snapshot blocks that plan. DELETE always supplies
+`x-ms-delete-snapshots: false`. Native force is false unless the reviewed volume
+request explicitly supplies the boolean `force_delete: true`, which adds a
+localized workload-interruption warning. No client-side disconnection is run.
+
+Ordinary deletion preserves native retention semantics; a missing policy is
+recorded as unspecified, never assumed disabled. A separately selected retained
+volume uses `deleteType=permanent`; ordinary cleanup does not discover a retained
+copy and immediately purge it. Both complete population indexes and own GET are
+required for readback. Matching retained records preserve the GUID and creation
+configuration and use their own GET when addressable, with retained-index
+fallback only on 404. The persisted outcome distinguishes soft_deleted (with the
+retained native ID) from absent. Recreated, restored or ambiguous identities,
+permission failures, missing collections and remaining known snapshots prevent
+false completion. Expired callbacks still require the independent resource check.
+
+The SQLite integration performs inventory, graph, a two-step snapshot/volume plan,
+explicit confirmation, serialized jobs and reopened database/runtime recovery.
+It verifies one snapshot DELETE then one volume DELETE, retained outcome storage,
+parent assets remaining open and the retained copy's separate rediscovery. Other
+protocol tests cover subsequent permanent purge, explicit force, changed policy,
+creation/configuration, managed resources, locks, new/omitted snapshots and forged
+history/receipts. These are composed offline tests; real iSCSI behavior, preview
+service execution and independent ARM emulation remain unverified.
 
 ## Original CLI operations with stubs
 
