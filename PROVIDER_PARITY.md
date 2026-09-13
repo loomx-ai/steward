@@ -3840,3 +3840,30 @@ background evidence only, not acceptance evidence for this work.
   TypeScript, 39 frontend contracts and 92 cleanup/i18n UI tests. The 23-file
   milestone preserves all 65 pre-existing file contents, including unrelated
   shared-translation edits.
+
+
+### Azure Local VM deletion transport preparation
+
+- Retained and executed the pinned official VM SDK's request builder and deletion
+  methods with offline transport/poller stubs. Native VM deletion uses the direct
+  HybridCompute machine parent, API 2024-01-01 and only 202/204 initial responses.
+  Its explicit `final-state-via: azure-async-operation` setting is tested separately
+  from the guest SDK's default polling options. Continuation skips the initial
+  mutation. Original archive/member/AST-fragment hashes and license are retained.
+- Shared Local receipt validation now accepts canonical VM and guest owners and
+  runs the same callback, failure, rotation and restart checks for both. Signed
+  receipts cannot cross kind, machine or subscription; unreviewed roots, read-only
+  identity metadata and malformed/noncanonical IDs fail even without a callback.
+- This prepares the native VM transport; VM cleanup remains unavailable until
+  native child review, dependency ordering, action recovery, identity readback and
+  subsequent Arc registration deletion are connected. No real ARMPolling engine,
+  independent emulator or live Local backend was run. Composed callback shapes
+  still require live compatibility checks. Counts remain 443 rules, 406 actions
+  and 1,468 operations; all eight acceptance criteria remain open.
+- Verification: isolated `6249ecc` plus this milestone passed the full Azure and
+  cleanup package suites (308.649s / 2.817s), Azure Local/Arc/catalog race checks
+  (62.212s), Azure/cleanup `go vet`, twelve offline SDK/CLI/importer checks and
+  documentation validation (30 chapters, 10 original screenshots). All three
+  retained VM fragments match the verified wheel member and AST ranges.
+  Shared-workspace Azure/cleanup integration passed (6.333s / 1.320s). The nine
+  milestone files preserve all 65 pre-existing file contents.

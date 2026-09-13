@@ -11,12 +11,25 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
+// Only the two reviewed native controller/guest DELETE contracts may own these
+// receipts. Identity metadata is read-only; independent Local resource families
+// require their own cleanup lifecycle before they can use this transport.
+func (c *client) azureLocalDeleteOwner(id string) error {
+	canonical, typ, err := parseID(id)
+	kind := azureLocalKind(typ)
+	if err != nil || canonical != id || kind != azureLocalVMType && kind != azureLocalAgentType {
+		return serviceDenied("invalid_azure_local_operation_owner")
+	}
+	_, err = c.azureLocalIdentity(id, kind)
+	return err
+}
+
 // Accept only returned ARM operation endpoints in the selected subscription and
 // StackHCI provider. Keep their signed queries intact; never use the Swagger
 // examples' http://azure.async.operation/status placeholder as a callback.
 func (c *client) azureLocalPollURL(id, endpoint string) (string, error) {
-	if canonical, err := c.azureLocalIdentity(id, azureLocalAgentType); err != nil || canonical != id {
-		return "", serviceDenied("invalid_azure_local_operation_owner")
+	if err := c.azureLocalDeleteOwner(id); err != nil {
+		return "", err
 	}
 	if c.validateURL(endpoint) != nil || len(endpoint) > 32<<10 || endpoint != strings.TrimSpace(endpoint) {
 		return "", serviceDenied("invalid_azure_local_operation_url")
@@ -79,7 +92,7 @@ func (c *client) azureLocalSignReceipt(id string, receipt map[string]any) map[st
 }
 
 func (c *client) azureLocalDeleteReceipt(id string, res response) (map[string]any, error) {
-	if _, err := c.azureLocalIdentity(id, azureLocalAgentType); err != nil {
+	if err := c.azureLocalDeleteOwner(id); err != nil {
 		return nil, err
 	}
 	if err := operationError(res); err != nil {
@@ -99,8 +112,8 @@ func (c *client) azureLocalDeleteReceipt(id string, res response) (map[string]an
 }
 
 func (c *client) azureLocalVerifyReceipt(id string, receipt map[string]any) error {
-	if canonical, err := c.azureLocalIdentity(id, azureLocalAgentType); err != nil || canonical != id {
-		return serviceDenied("invalid_azure_local_receipt_owner")
+	if err := c.azureLocalDeleteOwner(id); err != nil {
+		return err
 	}
 	if receipt["binding"] != c.azureLocalSignReceipt(id, receipt)["binding"] {
 		return serviceDenied("azure_local_saved_receipt_changed")

@@ -171,3 +171,31 @@ checks a stable original operation and deletion deadline. A completed operation
 with a still-live guest remains pending; eventual own absence closes only the
 guest. VM and identity assets stay active. This does not validate guest-side
 uninstallation, physical VM deletion, controller cascades or billing outcomes.
+
+## VM deletion transport contract
+
+`sdk-vm-source.json` retains the VM request builder, `_delete_initial` and
+`begin_delete` from `VirtualMachineInstancesOperations` in that same pinned
+1.15.1 wheel. Archive, full member and exact AST fragment hashes are recorded;
+`LICENSE.microsoft` applies. Offline tests execute the original code with
+transport/poller stubs and check the direct HybridCompute-parent DELETE path,
+API version, empty body, request headers, 202/204 response contract and restart
+without another initial mutation. The VM SDK explicitly passes
+`final-state-via: azure-async-operation` to `ARMPolling`; the guest SDK passes
+no final-state option. Both settings are asserted independently.
+
+The shared Local receipt transport now validates canonical VM-instance and
+existing guest-agent owners. The same malformed-response, callback scope,
+status failure, signed-query rotation and persisted-completion tests run for
+both kinds. Tests reject receipts transferred between VM and guest, between
+machines or across subscriptions before any HTTP call. Identity metadata,
+independent Local roots and malformed/noncanonical IDs cannot own receipts,
+including synchronous receipts without a callback. The raw native SDK does not
+supply these application-level ownership guarantees.
+
+This is a transport preparation milestone. VM cleanup is still unavailable in
+the resource specification; native child review, plan ordering, action recovery,
+metadata readback and the subsequent Arc registration deletion remain to be
+connected. The tests do not execute the real ARMPolling implementation or an
+independent cloud backend. Composed callback shapes are still not recordings,
+and actual VM/NIC/disk/identity or billing outcomes remain unverified.

@@ -70,9 +70,12 @@ class AzureLocalCLITests(unittest.TestCase):
 
 
 class AzureLocalGuestSDKTests(unittest.TestCase):
+    manifest = "sdk-guest-source.json"
+    polling_options = {}
+
     def native_functions(self):
         import textwrap
-        source = json.loads((FIXTURES / "sdk-guest-source.json").read_text())
+        source = json.loads((FIXTURES / self.manifest).read_text())
         functions = {}
         for entry in source["functions"]:
             fragment = (FIXTURES / entry["file"]).read_bytes()
@@ -130,7 +133,7 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
                 return kwargs
         polls, mutations = [], []
         def polling(delay, **kwargs):
-            polls.append(delay)
+            polls.append((delay, kwargs))
             return "arm-polling"
         scope = dict(LROPoller=Poller, ARMPolling=polling, NoPolling=lambda: "no-polling",
                      cast=lambda typ, value: value, PollingMethod=object)
@@ -143,15 +146,43 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
         instance = SimpleNamespace(_delete_initial=initial, _client=client, _config=SimpleNamespace(polling_interval=5))
         call = MethodType(scope["begin_delete"], instance)
         first = call("native-machine", polling_interval=7)
-        self.assertEqual(polls, [7])
+        self.assertEqual(polls, [(7, self.polling_options)])
         self.assertEqual(len(mutations), 1)
         self.assertEqual(mutations[0]["resource_uri"], "native-machine")
         self.assertIs(first.args[1], native_response)
         restored = call("native-machine", continuation_token="saved-native-token")
         self.assertEqual(len(mutations), 1)
+        self.assertEqual(polls, [(7, self.polling_options), (5, self.polling_options)])
         self.assertEqual(restored["continuation_token"], "saved-native-token")
         self.assertEqual(restored["polling_method"], "arm-polling")
         self.assertIs(restored["client"], client)
+
+
+class AzureLocalVMSDKTests(AzureLocalGuestSDKTests):
+    manifest = "sdk-vm-source.json"
+    polling_options = {"lro_options": {"final-state-via": "azure-async-operation"}}
+
+    def test_native_request_builder(self):
+        calls = []
+
+        def serialize(name, value, kind, **kwargs):
+            calls.append((name, value, kind, kwargs))
+            return value
+
+        scope = dict(case_insensitive_dict=dict, HttpRequest=lambda **kwargs: kwargs,
+                     _SERIALIZER=SimpleNamespace(url=serialize, query=serialize, header=serialize))
+        exec("from __future__ import annotations\n" + self.native_functions()["build_delete_request"], scope)
+        machine = "subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.HybridCompute/machines/test-vm"
+        request = scope["build_delete_request"](machine, headers={"x-ms-client-request-id": "reviewed-request"})
+        self.assertEqual(request, dict(method="DELETE",
+            url="/" + machine + "/providers/Microsoft.AzureStackHCI/virtualMachineInstances/default",
+            params={"api-version": "2024-01-01"},
+            headers={"Accept": "application/json", "x-ms-client-request-id": "reviewed-request"}))
+        self.assertEqual(calls, [
+            ("resource_uri", machine, "str", {"skip_quote": True}),
+            ("api_version", "2024-01-01", "str", {}),
+            ("accept", "application/json", "str", {}),
+        ])
 
 
 if __name__ == "__main__":

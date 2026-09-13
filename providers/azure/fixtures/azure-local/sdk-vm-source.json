@@ -1,0 +1,32 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/operations/_virtual_machine_instances_operations.py",
+  "member_sha256": "4995ed902130a87d0e11b19cc4e2b610a37d0ddd6824d5c3a65d825b79dde3e5",
+  "class_name": "VirtualMachineInstancesOperations",
+  "functions": [
+    {
+      "function": "build_delete_request",
+      "start_line": 89,
+      "end_line": 110,
+      "file": "sdk_vm_build_delete_request.py.txt",
+      "sha256": "621d73922f93ff6a8774e514c0162ae12fa225845075de2020f194fba8e81275"
+    },
+    {
+      "function": "_delete_initial",
+      "start_line": 488,
+      "end_line": 531,
+      "file": "sdk_vm_delete_initial.py.txt",
+      "sha256": "a2ac44db586c1c60349b7e68383e218e5b47f4d806f6de9f7174c10183d7fbab"
+    },
+    {
+      "function": "begin_delete",
+      "start_line": 534,
+      "end_line": 576,
+      "file": "sdk_vm_begin_delete.py.txt",
+      "sha256": "2bf2028b891e112113575ff07acc0ccd2a44137db5a51d005138e8a1687c9e30"
+    }
+  ]
+}

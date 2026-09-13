@@ -9,8 +9,14 @@ import (
 )
 
 func TestAzureLocalPollingReceiptsAndBoundaries(t *testing.T) {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType} {
+		t.Run(kind, func(t *testing.T) { testAzureLocalPollingReceiptsAndBoundaries(t, kind) })
+	}
+}
+
+func testAzureLocalPollingReceiptsAndBoundaries(t *testing.T, kind string) {
 	f := newLocalCleanupFixture(t)
-	id := f.ids[azureLocalAgentType]
+	id := f.ids[kind]
 	status, result := localCleanupPollURL("Azure-AsyncOperation"), localCleanupPollURL("Location")
 	header := http.Header{"Azure-Asyncoperation": {status}, "Location": {result}}
 	receipt, err := f.client.azureLocalDeleteReceipt(id, response{status: 202, header: header})
@@ -85,10 +91,16 @@ func TestAzureLocalPollingReceiptsAndBoundaries(t *testing.T) {
 }
 
 func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType} {
+		t.Run(kind, func(t *testing.T) { testAzureLocalPollingFailureDoesNotMeanAbsence(t, kind) })
+	}
+}
+
+func testAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T, kind string) {
 	for _, failure := range []string{"404", "403", "500", "failed", "canceled", "missing-status", "wrong-id", "wrong-name", "unknown-state", "wrong-type", "error-body", "rotation", "redirect"} {
 		t.Run(failure, func(t *testing.T) {
 			f := newLocalCleanupFixture(t)
-			id := f.ids[azureLocalAgentType]
+			id := f.ids[kind]
 			endpoint := localCleanupPollURL("Azure-AsyncOperation")
 			receipt, err := f.client.azureLocalDeleteReceipt(id, response{status: 202, header: http.Header{"Azure-Asyncoperation": {endpoint}}})
 			if err != nil {
@@ -113,6 +125,9 @@ func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
 					delete(body, "status")
 				case "wrong-id":
 					body["resourceId"] = f.ids[azureLocalVMType]
+					if kind == azureLocalVMType {
+						body["resourceId"] = f.ids[azureLocalAgentType]
+					}
 				case "wrong-name":
 					body["name"] = "other"
 				case "unknown-state":
@@ -137,7 +152,7 @@ func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
 	for _, mode := range []string{"Azure-AsyncOperation", "Location"} {
 		t.Run("pending-"+mode, func(t *testing.T) {
 			f := newLocalCleanupFixture(t)
-			id := f.ids[azureLocalAgentType]
+			id := f.ids[kind]
 			receipt, err := f.client.azureLocalDeleteReceipt(id, response{status: 202, header: http.Header{http.CanonicalHeaderKey(mode): {localCleanupPollURL(mode)}}})
 			if err != nil {
 				t.Fatal(err)
@@ -152,5 +167,64 @@ func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
 				t.Fatal("pending", wait, err)
 			}
 		})
+	}
+}
+
+func TestAzureLocalPollingOwnerIsolation(t *testing.T) {
+	f := newLocalCleanupFixture(t)
+	endpoint := localCleanupPollURL("Azure-AsyncOperation")
+	initial := response{status: 202, header: http.Header{"Azure-Asyncoperation": {endpoint}}}
+	calls := 0
+	f.override = func(*http.Request) (*http.Response, bool) {
+		calls++
+		return jsonResponse(200, map[string]any{"status": "Succeeded"}, nil), true
+	}
+	vm, guest := f.ids[azureLocalVMType], f.ids[azureLocalAgentType]
+	for _, id := range []string{vm, guest} {
+		receipt, err := f.client.azureLocalDeleteReceipt(id, initial)
+		if err != nil {
+			t.Fatal("reviewed owner rejected", id, err)
+		}
+		for _, other := range []string{vm, guest, strings.Replace(id, azureLocalMachine(id), azureLocalMachine(id)+"-other", 1)} {
+			if other == id {
+				continue
+			}
+			if wait, err := f.client.azureLocalPoll(t.Context(), other, receipt); err == nil || wait.Done {
+				t.Fatal("receipt crossed owner", id, other, wait, err)
+			}
+		}
+		foreign := *f.client
+		foreign.subscription = testTenant
+		if _, err := foreign.azureLocalPoll(t.Context(), id, receipt); err == nil {
+			t.Fatal("receipt crossed connection subscription")
+		}
+	}
+	invalid := []string{
+		"", azureLocalMachine(vm), strings.ToUpper(vm), " " + vm,
+		strings.Replace(vm, "/default", "/other", 1), vm + "/default",
+		strings.Replace(vm, testSubscription, testTenant, 1),
+		strings.Replace(vm, "/providers/microsoft.hybridcompute/", "/microsoft.hybridcompute/", 1),
+	}
+	for kind, id := range f.ids {
+		if kind != azureLocalVMType && kind != azureLocalAgentType {
+			invalid = append(invalid, id)
+		}
+	}
+	for _, id := range invalid {
+		if _, err := f.client.azureLocalDeleteReceipt(id, initial); err == nil {
+			t.Fatal("unreviewed receipt owner", id)
+		}
+		if _, err := f.client.azureLocalDeleteReceipt(id, response{status: 204}); err == nil {
+			t.Fatal("synchronous receipt bypassed owner validation", id)
+		}
+		if _, err := f.client.azureLocalPollURL(id, endpoint); err == nil {
+			t.Fatal("invalid poll owner", id)
+		}
+		if _, err := f.client.azureLocalPoll(t.Context(), id, f.client.azureLocalSignReceipt(id, nil)); err == nil {
+			t.Fatal("signed synchronous receipt bypassed owner validation", id)
+		}
+	}
+	if calls != 0 {
+		t.Fatal("invalid receipt reached the network", calls)
 	}
 }
