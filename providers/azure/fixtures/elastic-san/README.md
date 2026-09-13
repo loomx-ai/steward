@@ -47,6 +47,29 @@ or omission returns only active resources. This is not an include-all flag.
 Complete discovery must handle both collections and cannot infer permanent
 absence from an empty active collection or an unsupported GET header.
 
+`cli-soft-delete-sources.json` pins ten original response bodies from Microsoft's
+CLI extension recording at commit `2aa1d8fc6417d0d5055acd88e9491e29734ad62b`.
+It records the source file SHA-256, interaction index, request method/path,
+API version, selector, status and each extracted body's SHA-256. Body bytes
+are unchanged. No signed polling URLs or query signing values are extracted.
+The recording uses `2024-07-01-preview`; replay through current catalog bindings
+tests compatibility with these response shapes, not the live 2026 API.
+
+The recorded transitions establish separate active and retained populations,
+restoration, and removal from the retained index after permanent deletion.
+Interaction 39 returns a deleted volume with a `-1751081600` native name/ID
+suffix while retaining its original `volumeId`. IDs must be preserved exactly;
+the active ID is not an alias for that retained ID. There is no retained GET
+in this recording, so it does not establish GET behavior for retained resources.
+
+The native read/index helpers now cover five resource kinds. They validate
+subscription-bound identities and typed operational metadata, preserve the
+active/retained selector on every page, and reject changed collection/version,
+filters, repeated cursors, duplicate records and incomplete responses. A missing
+parent collection propagates as an error. GET has no retained selector and
+preserves 404 as an error. These helpers do not yet register inventory, reconcile
+known IDs, resolve graph references or authorize cleanup.
+
 The stable `2025-09-01` contract omits these preview options. This is why the
 selected lifecycle work uses the preview contract. Preview features are not
 assumed to be newly introduced in 2026: the older preview CLI below already

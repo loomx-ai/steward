@@ -14,6 +14,27 @@ func elasticSanSafeValue(value any) any {
 		result := object(hybridComputeSafeValue(value))
 		if props := object(value["properties"]); props != nil {
 			public := map[string]any{}
+			if sku := object(props["sku"]); sku != nil {
+				publicSKU := map[string]any{}
+				for _, key := range []string{"name", "tier"} {
+					if v, ok := sku[key].(string); ok {
+						publicSKU[key] = v
+					}
+				}
+				public["sku"] = publicSKU
+			}
+			if zones, ok := props["availabilityZones"].([]any); ok {
+				publicZones := []string{}
+				valid := true
+				for _, zone := range zones {
+					v, ok := zone.(string)
+					valid = valid && ok
+					publicZones = append(publicZones, v)
+				}
+				if valid {
+					public["availabilityZones"] = publicZones
+				}
+			}
 			for _, key := range []string{"provisioningState", "volumeId", "volumeName", "protocolType", "encryption", "publicNetworkAccess"} {
 				if v, ok := props[key].(string); ok {
 					public[key] = v

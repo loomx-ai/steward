@@ -1,0 +1,106 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/elastic-san/azext_elastic_san/tests/latest/recordings/test_elastic_san_soft_delete_scenarios.yaml",
+  "source_sha256": "0e5497b7b9decbd6e03ac4b2e5c8fd546855242682efaf876c4149bb3d170f03",
+  "responses": [
+    {
+      "file": "cli-soft-delete-23.json",
+      "sha256": "322d1ee0a39fe3129ff970cf56566cb7e8f3e6694073389ba5a760778b79ddf1",
+      "interaction": 23,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumeGroups",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-27.json",
+      "sha256": "96eb14862e89bc486a1683f480c4ae4afb3f62b99866855af93c2efdb09f42bc",
+      "interaction": 27,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumeGroups",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-28.json",
+      "sha256": "9fd3cc9696640cf709dfc4457573548b71e94331f838e345b57adcaa3216fc95",
+      "interaction": 28,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumeGroups",
+      "api_version": "2024-07-01-preview",
+      "retained": "true",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-35.json",
+      "sha256": "34aa30c58b1c3bc20880b688577ecfe28bde315ac3ed8edcd277fd41b0089df1",
+      "interaction": 35,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-38.json",
+      "sha256": "c86b6344b71a666818f01eab97b5e671ece899a526f77032fd56434b13855c73",
+      "interaction": 38,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-39.json",
+      "sha256": "d30d7a023cf3cf35e2e879f866e19d2552fae7056961d8544686649996c0f21a",
+      "interaction": 39,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "true",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-42.json",
+      "sha256": "34aa30c58b1c3bc20880b688577ecfe28bde315ac3ed8edcd277fd41b0089df1",
+      "interaction": 42,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-43.json",
+      "sha256": "99bcfca61a865fe7ac5bb675250de956e8e0fb175d59adac80bb2fb177154a2c",
+      "interaction": 43,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "true",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-48.json",
+      "sha256": "c86b6344b71a666818f01eab97b5e671ece899a526f77032fd56434b13855c73",
+      "interaction": 48,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "false",
+      "status": 200
+    },
+    {
+      "file": "cli-soft-delete-49.json",
+      "sha256": "99bcfca61a865fe7ac5bb675250de956e8e0fb175d59adac80bb2fb177154a2c",
+      "interaction": 49,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.softdelete000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000003/volumes",
+      "api_version": "2024-07-01-preview",
+      "retained": "true",
+      "status": 200
+    }
+  ]
+}

@@ -4208,3 +4208,33 @@ background evidence only, not acceptance evidence for this work.
   fragments, operations, mappings and CLI extraction hashes were verified.
   The 53-file milestone preserves all 65 pre-existing file contents. No frontend
   code changed, and full lifecycle acceptance is still open.
+
+### Elastic SAN native reads and retained pagination
+
+- Five resource kinds now have native GET and index helpers with selected-
+  subscription, exact-depth ARM identity checks and typed operational metadata.
+  Group and volume indexes bind explicit active/retained headers and preserve
+  them across every page. Changed collection, subscription, API version,
+  filters, malformed cursors, canonical cursor cycles, duplicate IDs, malformed
+  records and incomplete responses return an error without partial rows.
+- GET does not send an undeclared retained selector. Its 404 remains an error;
+  parent-index 404 is also not translated into an empty collection. Registration,
+  repeated complete inventory snapshots, known-ID reconciliation and retained
+  list authority still need to compose these helpers before scanning is enabled.
+- Ten unchanged response bodies from the official CLI soft-delete recording
+  preserve provenance and SHA-256 hashes. They show separate group/volume
+  populations, restore and permanent-removal transitions, and a retained volume
+  gaining a timestamp suffix in its native ID while keeping its `volumeId`.
+  The recording uses 2024-07-01-preview and has no retained-resource GET. Replay
+  against the current bindings is offline response-shape evidence, not live
+  2026 service behavior, an independent emulator, or proof of retained GET.
+- Public payloads now include typed SKU name/tier and availability zones while
+  keeping unknown SKU and target configuration private. No new inventory kinds
+  or cleanup actions are registered; all eight acceptance criteria remain open.
+- Verification: full isolated Azure tests passed (339.990s), Elastic SAN race
+  tests passed (5.878s), and `go vet ./providers/azure` passed. Shared-workspace
+  Elastic SAN integration passed (3.845s). Documentation checks passed for 30
+  isolated and 42 shared chapters, each with 10 original screenshots. All ten
+  response extractions were compared byte-for-byte with the checksum-verified
+  original recording. This 18-file milestone preserves all 65 pre-existing file
+  contents; catalog mappings, operations, rules and actions remain unchanged.
