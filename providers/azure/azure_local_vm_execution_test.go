@@ -23,13 +23,18 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 	t.Run("nic", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalNICType) })
 	t.Run("image", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalImageType) })
 	t.Run("marketplace", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalMarketplaceType) })
+	t.Run("storage", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalStorageType) })
 }
 
 func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...string) {
 	var f *localVMFixture
 	var root *localRootFixture
+	var storage *localStorageFixture
 	if len(rootKind) != 0 {
-		if azureLocalImage(rootKind[0]) {
+		if rootKind[0] == azureLocalStorageType {
+			storage = newLocalStorageFixture(t)
+			root = storage.localRootFixture
+		} else if azureLocalImage(rootKind[0]) {
 			root = newLocalImageFixture(t, rootKind[0])
 		} else {
 			root = newLocalRootFixture(t, rootKind[0])
@@ -71,6 +76,15 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 		steps++
 		expectedRemaining--
 		selected = rootAsset
+	}
+	if storage != nil {
+		for _, value := range values {
+			if value.Identity.NativeID == f.dataDisk || azureLocalImage(value.Identity.NativeType) {
+				selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: value.ID})
+				steps++
+				expectedRemaining--
+			}
+		}
 	}
 	planner := cleanup.NewService(repository, registry)
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "operator"})
@@ -202,7 +216,7 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 			}
 		}
 		if !completed || origin == "" || started == nil {
-			t.Fatal("VM step recovery incomplete", step.AssetID)
+			t.Fatal("VM step recovery incomplete", step.AssetID, origin, started, completed)
 		}
 	}
 	remaining, err := repository.ListActiveAssetsByConnection(ctx, "connection", "")
@@ -211,6 +225,9 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 	}
 	if root != nil && (root.rootDeletes != 1 || root.rootPolls == 0 || f.values[root.id] != nil) {
 		t.Fatal("independent root worker incomplete")
+	}
+	if storage != nil && len(storage.consumerDeletes) != 3 {
+		t.Fatal("storage workload deletion coverage", storage.consumerDeletes)
 	}
 	for _, value := range remaining {
 		if registration && value.Identity.NativeType == hybridMachineType || value.Identity.NativeType == azureLocalVMType || value.Identity.NativeType == azureLocalAgentType || value.Identity.NativeType == azureLocalIdentityType || hybridComputeChild(value.Identity.NativeType) {

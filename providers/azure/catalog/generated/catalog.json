@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "aa744680e50fef439e652f0bb5021822978541bac074bc58a19dcf79ee060bd3",
+    "checksum": "5d0ec654f3f48b36e20b25acfac71344495b93cec3b03f95afe64061eeb8097d",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d8dac90ac8ad37a29ba54561c0604348d70244459eca5be6f7b35880ad9e9106",
+  "content_checksum": "4a392dd686860a05ddd7671ad3a4a05c28981efbbc2da06a6c9b0015d163c56b",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -129894,6 +129894,9 @@
         "collection": "storageContainers",
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.StorageContainers_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.StorageContainers_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.StorageContainers_ListAll"

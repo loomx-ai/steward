@@ -4,7 +4,7 @@ These contracts support the native Local VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks, NICs and both image families have independent cleanup; network/storage cleanup remains unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks, NICs, both image families and storage paths have independent cleanup; logical-network cleanup remains unfinished.
 
 ## Original Swagger examples
 
@@ -36,7 +36,7 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. VM, guest-agent, disk, NIC and image cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
+metadata are excluded. VM, guest-agent, disk, NIC, image and storage-path cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
 
 ## Original CLI function
 
@@ -185,9 +185,9 @@ no final-state option. Both settings are asserted independently.
 The shared Local receipt transport now validates canonical VM-instance and
 existing guest-agent owners. The same malformed-response, callback scope,
 status failure, signed-query rotation and persisted-completion tests run for
-all six supported kinds. Tests reject receipts transferred between resources,
+all seven supported kinds. Tests reject receipts transferred between resources,
 machines or across subscriptions before any HTTP call. Identity metadata,
-network/storage roots and malformed/noncanonical IDs cannot own receipts,
+logical-network roots and malformed/noncanonical IDs cannot own receipts,
 including synchronous receipts without a callback. The raw native SDK does not
 supply these application-level ownership guarantees.
 
@@ -319,3 +319,36 @@ Separate complete-VM tests also select each image and verify ordered cleanup.
 These are composed protocol and original SDK-function checks; no independent
 Azure Local emulator or live backend was used. Physical removal and real
 controller callback compatibility remain unverified.
+
+## Storage paths and verified managed prerequisites
+
+`sdk-storage-source.json` retains the three native storage-container SDK methods
+from the same pinned Microsoft CLI wheel, including exact line ranges and hashes.
+Offline tests execute the original builder, 202/204 response handler and resumable
+poller setup. The original storage-name pattern permits a trailing underscore;
+the catalog preserves this native contract rather than copying the disk pattern.
+
+Native disk/image lists and individual reads, plus Arc machine/Local VM reads,
+establish storage consumers. Signed root context retains all observed disk/image
+IDs and VM scopes; known resources recover index omissions and their IDs survive
+404 for future reads. Placement fields are optional, so missing placement is
+explicitly recorded as uncertain dependency evidence and never inferred unused.
+The graph requires explicit workload selection; it does not claim ownership.
+
+OS disks need special prerequisite handling: their native VM controller removes
+and verifies them. A provider-declared cascade can satisfy a required deletion
+through an already planned controller, only for an exclusive reviewed delegated
+impact whose controller verifies own absence. The shared solver records that
+controller alongside the required disk asset; the worker restores the frozen
+impact after closure/restart. Missing/changed authority, retained/protected
+impacts, ambiguous records and foreign snapshots are rejected. A requirement
+never selects an unselected controller or adds a fabricated disk DELETE.
+
+Tests cover standalone 202/204/404 readback, surviving consumers after path 404,
+new/omitted/unknown/foreign placement, permission and index failures, malformed
+history, configuration/ETags/locks, legacy rescan and explicit selection. The
+SQLite execution test reviews nine direct steps and two VM impacts, restarts
+runtimes/repositories between observations, and retains the registration, NIC,
+network and license. The storage DELETE occurs only after VM, both disks and
+both images disappear. These are composed transports and native SDK-function
+checks; physical path/volume behavior and production callbacks remain unverified.

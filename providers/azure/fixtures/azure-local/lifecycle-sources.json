@@ -27,5 +27,16 @@
     "uri": "https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq?view=azloc-2606",
     "kind": "Microsoft Azure Local FAQ; independent documentation, not a live backend test",
     "finding": "A VM receives a copy of its source image at creation. Gallery image deletion removes the displayed image name from VM details but does not affect the deployed VMs."
+  },
+  "storage_paths": {
+    "uri": "https://learn.microsoft.com/en-us/azure/azure-local/manage/create-storage-path?view=azloc-2606",
+    "kind": "Microsoft management documentation; not a physical backend execution",
+    "finding": "Remove associated workloads before deleting a storage path; use storagepath show to verify absence. Volume deletion is a subsequent separate operation.",
+    "native_contract": "https://learn.microsoft.com/en-us/rest/api/stackhci/storage-containers/delete?view=rest-stackhci-2024-01-01",
+    "placement_fields": [
+      "properties.containerId",
+      "properties.storageProfile.vmConfigStoragePathId"
+    ],
+    "optional_placement": "Native placement fields are optional. Missing placement cannot establish that a resource is on another path; the application retains it as a possible consumer requiring explicit review."
   }
 }

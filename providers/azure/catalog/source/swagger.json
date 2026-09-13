@@ -248871,7 +248871,9 @@
       "nativeType": "Microsoft.AzureStackHCI/storageContainers",
       "rest": {
         "collection": "storageContainers",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.StorageContainers_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.StorageContainers_ListAll"
         ],

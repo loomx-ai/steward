@@ -1,0 +1,32 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/operations/_storage_containers_operations.py",
+  "member_sha256": "cb17cce6a163f5231248107b449f761e0be2fb7e8da2d35548133788951e5824",
+  "class_name": "StorageContainersOperations",
+  "functions": [
+    {
+      "function": "build_delete_request",
+      "start_line": 115,
+      "end_line": 149,
+      "file": "sdk_storage_build_delete_request.py.txt",
+      "sha256": "592a78a636a991fca308b6c32e369ad3cc8c285d9a105b90e193e872cdbae2d2"
+    },
+    {
+      "function": "_delete_initial",
+      "start_line": 510,
+      "end_line": 555,
+      "file": "sdk_storage_delete_initial.py.txt",
+      "sha256": "b14fd85af94702896f8b6ef9d7bf03d72105800e758458690dccbb430ee96387"
+    },
+    {
+      "function": "begin_delete",
+      "start_line": 558,
+      "end_line": 607,
+      "file": "sdk_storage_begin_delete.py.txt",
+      "sha256": "29b0e4218ef5f339fe28f9552286b200654c6a996163ff00f84cbe1a1d82493d"
+    }
+  ]
+}

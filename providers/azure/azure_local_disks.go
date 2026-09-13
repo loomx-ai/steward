@@ -31,8 +31,18 @@ func (c *client) azureLocalRootRecord(value asset.Asset) error {
 	}
 	state := object(value.Normalized[azureLocalCleanup])
 	_, protected := state["protected"].(bool)
-	if value.ID == "" || !azureLocalIndependent(value.Identity.NativeType) || (len(state) != 5 && len(state) != 6) || !protected || value.Location == "" || value.Location != state["location"] || text(state["resource"]) == "" || text(state["etag"]) == "" || state["inventory"] != value.Normalized["_azure_local_configuration"] || value.Normalized["cleanup_protected"] != state["protected"] || value.Normalized[azureLocalCleanupProof] != c.azureLocalRootBinding(value.Identity.NativeID, value.Identity.ConnectionID, state) {
+	if value.ID == "" || !azureLocalIndependent(value.Identity.NativeType) || (len(state) != 5 && len(state) != 6 && len(state) != 7) || !protected || value.Location == "" || value.Location != state["location"] || text(state["resource"]) == "" || text(state["etag"]) == "" || state["inventory"] != value.Normalized["_azure_local_configuration"] || value.Normalized["cleanup_protected"] != state["protected"] || value.Normalized[azureLocalCleanupProof] != c.azureLocalRootBinding(value.Identity.NativeID, value.Identity.ConnectionID, state) {
 		return serviceDenied("invalid_azure_local_disk_record")
+	}
+	if value.Identity.NativeType == azureLocalStorageType {
+		if len(state) != 7 {
+			return serviceDenied("azure_local_storage_history_missing")
+		}
+		if err := c.azureLocalStorageHistory(state["resources"]); err != nil {
+			return err
+		}
+	} else if len(state) == 7 {
+		return serviceDenied("invalid_azure_local_root_history")
 	}
 	if len(state) == 5 {
 		if value.Identity.NativeType != azureLocalDiskType || azureLocalRootConfiguration(text(state["inventory"])) {
@@ -73,14 +83,14 @@ func azureLocalImage(kind string) bool {
 }
 
 func azureLocalIndependent(kind string) bool {
-	return kind == azureLocalDiskType || kind == azureLocalNICType || azureLocalImage(kind)
+	return kind == azureLocalDiskType || kind == azureLocalNICType || azureLocalImage(kind) || kind == azureLocalStorageType
 }
 
 func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, known []string) ([]string, error) {
 	if disk == "" {
 		return nil, nil
 	}
-	if canonical, err := c.azureLocalIdentity(disk, kind); (kind != azureLocalDiskType && kind != azureLocalNICType) || err != nil || canonical != disk {
+	if canonical, err := c.azureLocalIdentity(disk, kind); (kind != azureLocalDiskType && kind != azureLocalNICType && kind != azureLocalStorageType) || err != nil || canonical != disk {
 		return nil, serviceDenied("invalid_azure_local_os_disk")
 	}
 	ids := map[string]bool{}
@@ -124,7 +134,7 @@ func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, k
 		if err != nil {
 			return nil, err
 		}
-		if slices.Contains(refs[kind], disk) {
+		if azureLocalRootReference(refs, kind, disk) {
 			consumers = append(consumers, id)
 		}
 	}

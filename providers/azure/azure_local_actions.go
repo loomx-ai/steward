@@ -103,7 +103,7 @@ func (c *client) azureLocalActionRecord(value asset.Asset) error {
 		err = c.azureLocalVMRecord(value)
 	} else if azureLocalIndependent(value.Identity.NativeType) {
 		err = c.azureLocalRootRecord(value)
-		if len(object(value.Normalized[azureLocalCleanup])) != 6 {
+		if len(object(value.Normalized[azureLocalCleanup])) != 6 && value.Identity.NativeType != azureLocalStorageType {
 			return serviceDenied("azure_local_root_requires_rescan")
 		}
 	} else if value.Identity.NativeType == azureLocalAgentType {

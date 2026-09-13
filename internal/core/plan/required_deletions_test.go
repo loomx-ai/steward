@@ -384,3 +384,68 @@ func TestRequiredDeletionControllerCoversOnlyReviewedPrerequisite(t *testing.T) 
 		})
 	}
 }
+
+func TestRequiredDeletionCanUseDeclaredVerifiedManagedImpact(t *testing.T) {
+	for _, mode := range []string{"verified", "undeclared", "wrong-controller", "unverified", "unselected-controller", "retained", "protected", "inferred", "foreign", "direct"} {
+		t.Run(mode, func(t *testing.T) {
+			member := binding("controller", "disk", graph.OwnershipExclusive, graph.CleanupDelegate, 1)
+			member.Evidence = map[string]any{graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
+			relation := requiredDeletion("storage", "disk")
+			relation.Evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+			relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"controller": true}
+			input := plan.Input{Assets: []asset.Asset{prerequisiteAsset("storage"), prerequisiteAsset("disk"), prerequisiteAsset("controller")}, ResolvedAssetIDs: []asset.AssetID{"storage", "controller"}, LifecycleBindings: []graph.LifecycleBinding{member}, Relationships: []graph.Relationship{relation}}
+			switch mode {
+			case "undeclared":
+				delete(relation.Evidence, graph.RelationshipEvidenceDeletionCascadeControllers)
+			case "wrong-controller":
+				relation.Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"other": true}
+			case "unverified":
+				delete(member.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
+			case "unselected-controller":
+				input.ResolvedAssetIDs = []asset.AssetID{"storage"}
+			case "retained":
+				input.RequestOptions = map[asset.AssetID]map[string]any{"storage": {"retain_resources": []string{"disk"}}}
+			case "protected":
+				input.Protections = []plan.ProtectionPolicy{{AssetID: "disk", Protected: true}}
+			case "inferred":
+				input.LifecycleBindings[0].Authority = graph.AuthorityInferred
+			case "foreign":
+				input.Assets[1].Identity.ConnectionID = "other"
+			case "direct":
+				input.LifecycleBindings[0].CleanupPolicy = graph.CleanupDirect
+			}
+			data, _ := json.Marshal(input)
+			if err := json.Unmarshal(data, &input); err != nil {
+				t.Fatal(err)
+			}
+			result, err := plan.Solve(input)
+			allowed := mode == "verified" || mode == "direct"
+			if err != nil || (len(result.Blockers) == 0) != allowed {
+				t.Fatal("managed prerequisite authority", mode, err, result.Blockers)
+			}
+			if mode == "unselected-controller" && stepForAsset(result.Steps, "controller").ID != "" {
+				t.Fatal("requirement selected its owning controller")
+			}
+			if !allowed {
+				return
+			}
+			required, err := plan.RequiredDeletions(stepForAsset(result.Steps, "storage"))
+			if err != nil || len(required) != 1 || required[0].AssetID != "disk" {
+				t.Fatal("missing frozen managed prerequisite", required, err)
+			}
+			if mode == "verified" {
+				if len(result.Steps) != 2 || len(result.ImpactItems) != 1 || result.Steps[0].AssetID != "controller" || required[0].ControllerAssetID != "controller" || required[0].StepID != result.Steps[0].ID {
+					t.Fatal("managed prerequisite became native disk DELETE", result)
+				}
+			} else if required[0].ControllerAssetID != "" || len(result.Steps) != 3 {
+				t.Fatal("direct requirement became a delegated impact", result)
+			}
+		})
+	}
+	for _, controller := range []asset.AssetID{"source", "target"} {
+		step := plan.CleanupTaskStep{ID: "source-step", AssetID: "source", DependsOn: []plan.StepID{"owner-step"}, Evidence: map[string]any{plan.EvidenceRequiredDeletions: []plan.RequiredDeletion{{AssetID: "target", StepID: "owner-step", ControllerAssetID: controller}}}}
+		if _, err := plan.RequiredDeletions(step); err == nil {
+			t.Fatal("self/target controller accepted", controller)
+		}
+	}
+}

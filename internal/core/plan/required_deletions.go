@@ -13,11 +13,12 @@ import (
 
 const EvidenceRequiredDeletions = "required_deletions"
 
-// RequiredDeletion refers to the prerequisite step's frozen asset snapshot,
-// which survives closed inventory entries and subsequent scans.
+// RequiredDeletion refers to a frozen direct asset or a reviewed managed impact.
+// ControllerAssetID is set only when that prerequisite step verifies its absence.
 type RequiredDeletion struct {
-	AssetID asset.AssetID `json:"asset_id"`
-	StepID  StepID        `json:"step_id"`
+	AssetID           asset.AssetID `json:"asset_id"`
+	StepID            StepID        `json:"step_id"`
+	ControllerAssetID asset.AssetID `json:"controller_asset_id,omitempty"`
 }
 
 func RequiredDeletions(step CleanupTaskStep) ([]RequiredDeletion, error) {
@@ -40,6 +41,9 @@ func RequiredDeletions(step CleanupTaskStep) ([]RequiredDeletion, error) {
 	for _, prerequisite := range prerequisites {
 		if prerequisite.AssetID == "" || prerequisite.AssetID == step.AssetID || prerequisite.StepID == "" || prerequisite.StepID == step.ID || seen[prerequisite.AssetID] || !slices.Contains(step.DependsOn, prerequisite.StepID) {
 			return nil, fmt.Errorf("invalid reviewed cleanup prerequisite")
+		}
+		if prerequisite.ControllerAssetID != "" && (prerequisite.ControllerAssetID == prerequisite.AssetID || prerequisite.ControllerAssetID == step.AssetID) {
+			return nil, fmt.Errorf("invalid managed cleanup prerequisite controller")
 		}
 		seen[prerequisite.AssetID] = true
 	}
@@ -165,16 +169,26 @@ func Solve(input Input) (Result, error) {
 				added = true
 				continue
 			}
-			// A required native DELETE must have its own action. Do not silently
-			// promote it to deletion of an unselected owning controller.
-			if targetStepID == "" || steps[targetStepID].AssetID != target.ID || targetStepID == sourceStepID {
+			// A provider can declare an already planned controller sufficient for
+			// this prerequisite, but only if it verifies the managed asset's own
+			// absence. Never promote a requirement into selecting its controller.
+			var controller asset.AssetID
+			owner := steps[targetStepID].AssetID
+			if targetStepID != "" && targetStepID != sourceStepID && owner != target.ID && controllers[string(owner)] == true {
+				for _, impact := range result.ImpactItems {
+					if impact.AssetID == target.ID && impact.DelegatedTo == targetStepID && impact.ControllerID == owner && impact.Expected == ExpectedDelegatedDelete && impact.Ownership == graph.OwnershipExclusive && impact.CleanupPolicy == graph.CleanupDelegate && impact.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] == true {
+						controller = owner
+					}
+				}
+			}
+			if targetStepID == "" || owner != target.ID && controller == "" || targetStepID == sourceStepID {
 				blocked(BlockDirectCleanupInvalid, "required cleanup has no independent executable action")
 				continue
 			}
 			if byStep[sourceStepID] == nil {
 				byStep[sourceStepID] = map[asset.AssetID]RequiredDeletion{}
 			}
-			byStep[sourceStepID][target.ID] = RequiredDeletion{AssetID: target.ID, StepID: targetStepID}
+			byStep[sourceStepID][target.ID] = RequiredDeletion{AssetID: target.ID, StepID: targetStepID, ControllerAssetID: controller}
 		}
 		if added {
 			continue

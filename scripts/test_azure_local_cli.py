@@ -235,5 +235,11 @@ class AzureLocalMarketplaceSDKTests(AzureLocalDiskSDKTests):
     collection = "marketplaceGalleryImages"
 
 
+class AzureLocalStorageSDKTests(AzureLocalDiskSDKTests):
+    manifest = "sdk-storage-source.json"
+    native_parameters = {"resource_group_name": "test-rg", "storage_container_name": "test-resource"}
+    collection = "storageContainers"
+
+
 if __name__ == "__main__":
     unittest.main()

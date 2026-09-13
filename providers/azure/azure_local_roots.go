@@ -2,7 +2,6 @@ package azure
 
 import (
 	"context"
-	"slices"
 	"strings"
 
 	"github.com/loomx-ai/steward/internal/app/governance"
@@ -22,11 +21,11 @@ func (a *azureLocalAction) rootRequest(request contracts.ActionRequest) error {
 		if !prerequisite.Delete || prerequisite.ControllerID != a.planned.ID || seen[vm.ID] || native[vm.Identity.NativeID] || vm.ID == a.planned.ID || vm.Identity.ConnectionID != a.planned.Identity.ConnectionID || vm.Identity.Partition != a.planned.Identity.Partition {
 			return serviceDenied("invalid_azure_local_root_prerequisite")
 		}
-		if err := a.client.azureLocalVMRecord(vm); err != nil {
+		if err := a.client.azureLocalRootConsumerRecord(vm, a.planned.Identity.NativeType); err != nil {
 			return err
 		}
 		refs, err := a.client.azureLocalRecordedReferences(vm)
-		if err != nil || !slices.Contains(refs[a.planned.Identity.NativeType], a.planned.Identity.NativeID) || vm.Normalized["cleanup_protected"] != false {
+		if err != nil || !azureLocalRootReference(refs, a.planned.Identity.NativeType, a.planned.Identity.NativeID) || vm.Normalized["cleanup_protected"] != false {
 			return serviceDenied("azure_local_root_prerequisite_changed")
 		}
 		seen[vm.ID], native[vm.Identity.NativeID] = true, true
@@ -53,6 +52,11 @@ func (a *azureLocalAction) rootObserve(ctx context.Context) (map[string]any, []s
 		return raw, nil, nil
 	}
 	consumers, err := a.client.azureLocalVMConsumers(ctx, value.Identity.NativeID, value.Identity.NativeType, stringValues(object(value.Normalized[azureLocalCleanup])["vms"]))
+	if err == nil && value.Identity.NativeType == azureLocalStorageType {
+		var roots []string
+		roots, err = a.client.azureLocalStorageConsumers(ctx, value.Identity.NativeID, object(value.Normalized[azureLocalCleanup])["resources"])
+		consumers = append(consumers, roots...)
+	}
 	return raw, consumers, err
 }
 
@@ -121,20 +125,39 @@ func (s *serviceCascades) contributeAzureLocalRoots(ctx context.Context, values 
 		}
 		for _, id := range consumers {
 			vm, found := selected[id]
-			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": azureLocalVMType, "instance_id": id}
+			_, typ, _ := parseID(id)
+			kind := azureLocalKind(typ)
+			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": kind, "instance_id": id}
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: azureLocalVMType, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
-			if err := s.client.azureLocalVMRecord(vm); err != nil {
+			if err := s.client.azureLocalRootConsumerRecord(vm, value.Identity.NativeType); err != nil {
 				return err
 			}
 			refs, err := s.client.azureLocalRecordedReferences(vm)
-			if err != nil || !slices.Contains(refs[value.Identity.NativeType], value.Identity.NativeID) {
+			if err != nil || !azureLocalRootReference(refs, value.Identity.NativeType, value.Identity.NativeID) {
 				return serviceDenied("azure_local_root_consumer_changed")
+			}
+			if value.Identity.NativeType == azureLocalStorageType && len(refs[azureLocalStorageType]) == 0 {
+				evidence["storage_placement_unverified"] = true
 			}
 			if value.Identity.NativeType == azureLocalDiskType && object(vm.Normalized[azureLocalCleanup])["os_disk"] == value.Identity.NativeID {
 				continue
+			}
+			if value.Identity.NativeType == azureLocalStorageType && kind == azureLocalDiskType {
+				controllers := map[string]any{}
+				for _, candidate := range selected {
+					if candidate.Identity.NativeType == azureLocalVMType && object(candidate.Normalized[azureLocalCleanup])["os_disk"] == id {
+						if err := s.client.azureLocalVMRecord(candidate); err != nil {
+							return err
+						}
+						controllers[string(candidate.ID)] = true
+					}
+				}
+				if len(controllers) != 0 {
+					evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = controllers
+				}
 			}
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: vm.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})
 		}

@@ -4034,3 +4034,45 @@ background evidence only, not acceptance evidence for this work.
   native operation, and the six SDK excerpts match the verified original wheel.
   The 28 milestone files preserve all 65 pre-existing file contents. No frontend
   code changed; no emulator or live backend was used.
+
+
+### Azure Local storage paths and managed deletion prerequisites
+
+- Storage paths now use their native 2024-01-01 DELETE contract, bringing the
+  catalog to 443 rules and 412 actions with all 1,468 native operations unchanged.
+  The pinned Microsoft CLI storage SDK builder, initial handler and resumable
+  delete methods are retained with archive/member/fragment hashes.
+- Native disk/image lists and own reads, plus Arc machine/VM reads, identify
+  placement consumers. Signed context preserves known root IDs and VM scopes
+  across omitted indexes, own 404 and later scans. Optional/missing placement is
+  treated as a possible consumer, not evidence that a path is unused. Workloads
+  require explicit selection or native removal; no ownership cascade is inferred.
+- Storage tests exposed a shared prerequisite gap: OS disks are deleted and
+  verified by their VM, so requiring an independent disk action is incorrect.
+  Provider-declared exclusive managed deletion can now satisfy a prerequisite
+  through an already planned controller that verifies own absence. The worker
+  restores the frozen disk impact after closure/restart. Unselected controllers
+  are not promoted, and missing authority, retention, protection, foreign/faulty
+  snapshots and duplicate impacts remain blocked.
+- Standalone storage cleanup verifies configuration/ETags, inherited locks,
+  resource-group protection and live/known references. A path's own 404 cannot
+  close surviving consumers; synchronous responses and persisted polls still
+  require independent readback. Tests cover each native placement kind, unknown
+  placement, new roots, omitted/invalid indexes, denied reads and legacy rescan.
+- The registered SQLite chain reviews nine direct steps and two VM-managed
+  impacts, restarts between polls, never issues OS-disk DELETE and removes the
+  path only after VM/disks/images. Bilingual permission/capability docs and
+  source provenance are updated. Logical-network cleanup, physical behavior,
+  production callbacks and the broader parity audit remain incomplete; all
+  eight acceptance items remain open. No live backend/emulator was used.
+- Validation: full isolated `go test ./...` passed (Azure 329.150s, GCP
+  161.127s). Focused race checks passed (Azure 259.174s, cleanup 3.273s, plan
+  1.929s, inventory 2.338s), and `go vet ./...` passed. The focused Local/Arc/
+  prerequisite suite passed (Azure 28.028s); additional index/legacy checks
+  passed (0.712s). Shared-workspace integration passed for Azure/cleanup/plan/
+  inventory (29.359s / 4.378s / 3.840s / 3.767s). All 27 original SDK/CLI/catalog
+  Python checks, 39 frontend contracts, 92 cleanup/localization UI tests,
+  TypeScript checks and documentation checks (30 chapters, 10 original
+  screenshots) passed. The 28 milestone files preserve all 65 pre-existing file
+  contents, including unrelated edits to the shared worker. No live backend or
+  independent emulator was used.

@@ -52,7 +52,7 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
 | Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 先清理已审查的子资源，再移除普通机器注册；共享 ESU 许可证需先解除分配，控制器托管机器需通过控制器处理 |
-| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点、VM/访客与 Arc 注册清理；验证 VM 前置关系后独立清理磁盘和网卡；镜像独立清理并保留已部署 VM |
+| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点、VM/访客与 Arc 注册清理；验证 VM 前置关系后独立清理磁盘和网卡；镜像独立清理并保留已部署 VM；工作负载清除后清理存储路径 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -253,10 +253,12 @@ Azure Local VM 清理需要 `Microsoft.AzureStackHCI/virtualMachineInstances/del
 
 系统盘纳入 VM 删除影响。[微软更正后的支持答复](https://learn.microsoft.com/en-us/answers/questions/5758576/what-happen-with-associated-data-disk-with-azure-l)称，工程团队确认系统盘会随 VM 删除，而数据盘保留。保留或保护系统盘、访客资源或 Arc 前置资源会阻止 VM 删除。清理前会通过原生机器/VM 读取检查系统盘是否被其他 VM 使用，也会补读此前已观察到但本次父级索引遗漏的 VM。只有 VM、系统盘与身份元数据各自确认不存在，动作才会完成；操作回调成功不足以关闭受影响资产。若原生 VM 响应没有已注册系统盘的 ID，则没有可单独验证的磁盘资产，VM 删除提示仍会说明系统盘将被移除。
 
-清理提示区分系统盘删除、数据盘/网卡保留以及单独执行的 Arc 注册清理。测试覆盖原生 SDK 合约、组合 VM/Arc 协议、保护与保留、引用变化，以及带重启恢复的 SQLite 扫描、图谱、计划和执行链。物理 VM/磁盘移除、真实回调兼容性和计费终止仍需云端验证。Local 网络和存储路径的独立清理尚未开放。
+清理提示区分系统盘删除、数据盘/网卡保留以及单独执行的 Arc 注册清理。测试覆盖原生 SDK 合约、组合 VM/Arc 协议、保护与保留、引用变化，以及带重启恢复的 SQLite 扫描、图谱、计划和执行链。物理 VM/磁盘移除、真实回调兼容性和计费终止仍需云端验证。Local 逻辑网络的独立清理尚未开放。
 
 Azure Local 注册清理需要 `Microsoft.HybridCompute/machines/delete`，并在 VM 自身清理完成后执行。HCI 机器扫描还会读取原生 VM 实例、两类 Local 访客单例、已登记系统盘和三类 Arc 子集合。签名后的 VM 上下文在 VM 消失后仍绑定原注册身份，使后续扫描可以继续清理注册；从未获得已验证 VM 上下文的 HCI 主机仍受保护。注册被替换、读取不可用、VM 被保留或保护，以及 VM、访客、身份元数据或系统盘仍存在，都会阻止删除或完成。父资源消失或操作返回成功均不能代替子资源自身的不存在证据。网卡和数据盘仍是独立资源。
 
 Azure Local 磁盘和网卡支持在全部原生 VM 引用解除后独立清理。需要 `Microsoft.AzureStackHCI/virtualHardDisks/delete` 或 `Microsoft.AzureStackHCI/networkInterfaces/delete`、对应资源读取、订阅范围的 Arc 机器列表/读取和 Local VM 列表/读取，以及资源组和管理锁读取权限。扫描保留已验证的 VM 身份，以恢复父索引遗漏；内部恢复记录不作为网络成员关系。仍在使用该资源的 VM 必须明确选中并先删除，或通过原生管理工具解除挂接后重新扫描。仅选择磁盘或网卡不会自动选择 VM 删除。系统盘继续作为 VM 的受管删除影响。保护、配置变化、读取不可用或新增引用会阻止清理。重启恢复、同步 204 或 DELETE 404 后，仍须确认资源自身不存在且 VM 引用已解除，才能完成。删除磁盘可能永久移除数据。参见原生[磁盘删除](https://learn.microsoft.com/en-us/rest/api/stackhci/virtual-hard-disks/delete?view=rest-stackhci-2024-01-01)和[网卡删除](https://learn.microsoft.com/en-us/rest/api/stackhci/network-interfaces/delete?view=rest-stackhci-2024-01-01)契约。物理资源移除及计费结果仍未验证。
 
 Azure Local 库镜像和市场镜像支持独立清理。需要 `Microsoft.AzureStackHCI/galleryImages/delete` 或 `Microsoft.AzureStackHCI/marketplaceGalleryImages/delete`、对应镜像读取，以及资源组和管理锁读取权限。仅扫描或清理镜像不需要 VM 或 Arc 注册读取权限。根据 [Azure Local 官方 FAQ](https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq)，删除源镜像不会影响已部署 VM 持有的副本。仅选中镜像时生成一个清理步骤，没有 VM 前置删除或受管影响；同时选中引用它的 VM 时，现有引用关系会安排 VM 先清理。删除前检查已审查的镜像配置、ETag、保护标记和锁。测试保留原始 SDK 契约，覆盖同步/异步响应、已知资源恢复及 SQLite 重启执行。包括 DELETE 返回 404 的情况在内，均需镜像自身的不存在证据才能完成；物理镜像移除和生产控制器兼容性仍待实际验证。
+
+Azure Local 存储路径支持通过 `Microsoft.AzureStackHCI/storageContainers/delete` 清理。需要存储路径读取、订阅范围的原生磁盘和两类镜像列表/读取、Arc 机器和 Local VM 列表/读取，以及资源组和管理锁读取权限。系统根据原生 `containerId` 和 `vmConfigStoragePathId` 引用识别占用资源。由于这些位置字段可省略，没有返回存储位置的资源会按可能占用处理，需补齐其位置证据，或明确审查并先清理。已知磁盘、镜像和 VM 身份会在索引遗漏及后续扫描中保留。引用或可能引用该路径的工作负载必须明确选中并先删除，或通过原生工具移除；仅选中路径不会自动选中工作负载。系统盘可由已纳入计划的 VM 满足前置删除要求，但必须有原生生命周期声明并验证系统盘消失。已审查的系统盘影响会在资产关闭和执行器重启后保留，不生成独立的系统盘 DELETE。包括路径已返回 404 的情况在内，删除路径和完成清理前仍会逐项确认占用资源已消失。该操作不会请求删除卷。参见[微软存储路径移除顺序](https://learn.microsoft.com/en-us/azure/azure-local/manage/create-storage-path?view=azloc-2606)及[原生删除契约](https://learn.microsoft.com/en-us/rest/api/stackhci/storage-containers/delete?view=rest-stackhci-2024-01-01)。协议和原始 SDK 测试尚不能证明物理存储移除或生产回调兼容性。

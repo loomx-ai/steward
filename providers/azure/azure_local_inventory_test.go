@@ -191,7 +191,7 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 		t.Fatal("native SQLite scan", len(values))
 	}
 	relations, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 10 {
+	if err != nil || len(relations) != 14 {
 		t.Fatal("native dependency graph", len(relations), err)
 	}
 	for _, value := range values {

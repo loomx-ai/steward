@@ -798,10 +798,14 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 		}
 		seenPrerequisites := map[asset.AssetID]bool{}
 		for _, requirement := range required {
+			owner := requirement.AssetID
+			if requirement.ControllerAssetID != "" {
+				owner = requirement.ControllerAssetID
+			}
 			var prerequisite *plan.CleanupTaskStep
 			for i := range aggregate.Steps {
 				candidate := &aggregate.Steps[i]
-				if candidate.ID == requirement.StepID && candidate.AssetID == requirement.AssetID && candidate.Action == "delete" {
+				if candidate.ID == requirement.StepID && candidate.AssetID == owner && candidate.Action == "delete" {
 					prerequisite = candidate
 					break
 				}
@@ -809,14 +813,26 @@ func (h *ExecutionHandler) Handle(ctx context.Context, job execution.Job) error 
 			if prerequisite == nil {
 				return fmt.Errorf("required cleanup step is missing from the reviewed task")
 			}
-			if _, present := prerequisite.Evidence[plan.EvidencePlannedAsset]; !present {
-				return fmt.Errorf("required cleanup step has no frozen asset snapshot")
+			evidence := prerequisite.Evidence
+			if requirement.ControllerAssetID != "" {
+				evidence = nil
+				for _, impact := range aggregate.ImpactItems {
+					if impact.AssetID == requirement.AssetID && impact.ControllerID == owner && impact.DelegatedTo == requirement.StepID && impact.Expected == plan.ExpectedDelegatedDelete && impact.Ownership == graph.OwnershipExclusive && impact.CleanupPolicy == graph.CleanupDelegate && impact.Evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] == true {
+						if evidence != nil {
+							return fmt.Errorf("required managed cleanup has ambiguous reviewed impacts")
+						}
+						evidence = impact.Evidence
+					}
+				}
 			}
-			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, prerequisite.AssetID)
+			if _, present := evidence[plan.EvidencePlannedAsset]; !present {
+				return fmt.Errorf("required cleanup has no frozen asset snapshot")
+			}
+			managed, err := h.planner.repositories.Inventory().GetAsset(ctx, requirement.AssetID)
 			if err != nil {
 				return err
 			}
-			managed, err = plan.PlannedAsset(prerequisite.Evidence, managed)
+			managed, err = plan.PlannedAsset(evidence, managed)
 			if err != nil {
 				return err
 			}

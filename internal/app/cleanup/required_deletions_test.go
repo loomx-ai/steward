@@ -17,7 +17,7 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-func requiredDeletionExecutionFixture(t *testing.T, authorizer cleanup.ExecutionAuthorizer) (persistence.Repositories, *cleanup.Service) {
+func requiredDeletionExecutionFixture(t *testing.T, authorizer cleanup.ExecutionAuthorizer, managed ...bool) (persistence.Repositories, *cleanup.Service) {
 	t.Helper()
 	repositories := openPlanningRepositories(t)
 	now := time.Date(2026, 7, 13, 11, 0, 0, 0, time.UTC)
@@ -35,13 +35,22 @@ func requiredDeletionExecutionFixture(t *testing.T, authorizer cleanup.Execution
 			graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource,
 		}})
 	}
+	selectors := []plan.CleanupSelector{assetSelector("first"), assetSelector("second")}
+	if len(managed) != 0 && managed[0] {
+		selectors = append(selectors, assetSelector("configuration"))
+		for i := range relationships {
+			relationships[i].TargetAssetID = "view"
+			relationships[i].Evidence[graph.RelationshipEvidenceAutomaticSelection] = false
+			relationships[i].Evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = map[string]any{"configuration": true}
+		}
+	}
 	seedPlanningGraph(t, repositories, "scope-a", "required-graph", assets, relationships, []graph.LifecycleBinding{owner, view})
 	planner := cleanup.NewService(repositories, bundleResolver{asset.ProviderAliCloud: {Provider: asset.ProviderAliCloud, Revision: "bundle-a", Hash: "spec-a"}}, cleanup.WithClock(func() time.Time { return now }), cleanup.WithTaskIDGenerator(func() string { return "cln-required" }), cleanup.WithExecutionIDGenerator(func() string { return "execution-required" }), cleanup.WithExecutionAuthorizer(authorizer))
-	aggregate, err := planner.CreateTask(context.Background(), cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector("first"), assetSelector("second")}, CreatedBy: "operator"})
+	aggregate, err := planner.CreateTask(context.Background(), cleanup.CreateTaskRequest{Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || aggregate.Task.Status != plan.StatusReady || len(aggregate.Steps) != 3 || len(aggregate.ImpactItems) != 1 {
 		t.Fatalf("required cleanup planning failed %+v %v", aggregate, err)
 	}
-	if !slices.Equal(aggregate.Task.ResolvedAssetIDs, []asset.AssetID{"first", "second"}) || cleanupTaskStepForAsset(aggregate.Steps, "retained-owner").ID != "" {
+	if len(managed) == 0 && !slices.Equal(aggregate.Task.ResolvedAssetIDs, []asset.AssetID{"first", "second"}) || cleanupTaskStepForAsset(aggregate.Steps, "retained-owner").ID != "" {
 		t.Fatal("prerequisite changed the user's selected roots or deleted its owner")
 	}
 	return repositories, planner
@@ -315,6 +324,91 @@ func TestIndependentRequiredDeletionSurvivesPlanningAndExecutionPersistence(t *t
 				if len(request.PrerequisiteDeletions) != 1 || request.PrerequisiteDeletions[0].Asset.ID != "job" || request.PrerequisiteDeletions[0].Asset.ClosedAt != nil || request.PrerequisiteDeletions[0].ControllerID != "cluster" {
 					t.Fatal("frozen independent prerequisite changed", request)
 				}
+			}
+		})
+	}
+}
+
+func TestRequiredManagedDeletionRestoresFrozenImpactAndRejectsTampering(t *testing.T) {
+	for _, mode := range []string{"restore", "missing-snapshot", "wrong-controller", "unverified", "retained", "foreign-snapshot", "duplicate-impact"} {
+		t.Run(mode, func(t *testing.T) {
+			ctx := context.Background()
+			repositories, planner := requiredDeletionExecutionFixture(t, cleanup.ExecutionAuthorizerFunc(func(context.Context, string, []asset.AssetID) error { return nil }), true)
+			if _, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{CleanupTaskID: "cln-required", RequestedBy: "operator", IdempotencyKey: "managed-required", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}); err != nil {
+				t.Fatal(err)
+			}
+			owner := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+			source := &scriptedActionDriver{readback: contracts.ReadbackResult{Exists: false}}
+			resolver := cleanup.ActionResolverFunc(func(_ context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
+				if value.ID == "configuration" {
+					return owner, nil
+				}
+				if value.ID == "first" || value.ID == "second" {
+					return source, nil
+				}
+				return nil, fmt.Errorf("unexpected independent action for %s", value.ID)
+			})
+			handler := cleanup.NewExecutionHandler(planner, resolver)
+			if err := handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-required", "configuration")); err != nil {
+				t.Fatal(err)
+			}
+			value, err := repositories.Inventory().GetAsset(ctx, "view")
+			if err != nil || value.ClosedAt == nil {
+				t.Fatal("owner did not close managed prerequisite", err)
+			}
+			value.Normalized = map[string]any{"changed_after_plan": true}
+			if err := repositories.Inventory().PutAsset(ctx, value); err != nil {
+				t.Fatal(err)
+			}
+			aggregate, err := repositories.CleanupTasks().GetTask(ctx, "cln-required")
+			if err != nil {
+				t.Fatal(err)
+			}
+			for i := range aggregate.ImpactItems {
+				impact := &aggregate.ImpactItems[i]
+				if impact.AssetID != "view" {
+					continue
+				}
+				switch mode {
+				case "missing-snapshot":
+					delete(impact.Evidence, plan.EvidencePlannedAsset)
+				case "wrong-controller":
+					impact.ControllerID = "first"
+				case "unverified":
+					delete(impact.Evidence, graph.LifecycleEvidenceControllerVerifiesManagedAbsence)
+				case "retained":
+					impact.Expected = plan.ExpectedRetainExplicit
+				case "foreign-snapshot":
+					v := planningAsset("view", "other", "ACS::ECS::Instance", "view-native", time.Now())
+					impact.Evidence[plan.EvidencePlannedAsset] = v
+				}
+			}
+			if mode == "duplicate-impact" {
+				v := aggregate.ImpactItems[0]
+				v.ID = "duplicate-impact"
+				aggregate.ImpactItems = append(aggregate.ImpactItems, v)
+			}
+			if err := repositories.CleanupTasks().ReplaceTask(ctx, aggregate.Task, aggregate.Steps, aggregate.ImpactItems); err != nil {
+				t.Fatal(err)
+			}
+			handler = cleanup.NewExecutionHandler(planner, resolver)
+			err = handler.Handle(ctx, cleanupExecutionJobForAsset(t, repositories, "cln-required", "first"))
+			if mode != "restore" {
+				if err == nil || source.executeCalls != 0 {
+					t.Fatal("altered managed prerequisite executed", mode, err)
+				}
+				return
+			}
+			if err != nil || source.executeCalls != 1 || owner.executeCalls != 1 {
+				t.Fatal("managed prerequisite recovery", err)
+			}
+			request := source.executeRequests[0]
+			if len(request.PrerequisiteDeletions) != 1 {
+				t.Fatal("missing managed prerequisite", request)
+			}
+			restored := request.PrerequisiteDeletions[0]
+			if restored.Asset.ID != "view" || restored.ControllerID != "first" || !restored.Delete || restored.Asset.ClosedAt != nil || restored.Asset.Normalized["changed_after_plan"] != nil || restored.Asset.Normalized["id"] != "view-native" {
+				t.Fatal("managed prerequisite did not use its frozen impact", restored)
 			}
 		})
 	}
