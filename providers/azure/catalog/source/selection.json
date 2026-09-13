@@ -10465,7 +10465,9 @@
       "read_operations": [
         "Azure.Microsoft.HybridCompute.MachineExtensions_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.HybridCompute.MachineExtensions_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.HybridCompute.MachineExtensions_List"
       ]
@@ -10481,7 +10483,9 @@
       "read_operations": [
         "Azure.Microsoft.HybridCompute.MachineRunCommands_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.HybridCompute.MachineRunCommands_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.HybridCompute.MachineRunCommands_List"
       ]
@@ -10497,7 +10501,9 @@
       "read_operations": [
         "Azure.Microsoft.HybridCompute.LicenseProfiles_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.HybridCompute.LicenseProfiles_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.HybridCompute.LicenseProfiles_List"
       ]

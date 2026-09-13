@@ -28,3 +28,13 @@ fields:
   version: typeHandlerVersion
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.HybridCompute.MachineExtensions_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.HybridCompute.MachineExtensions_Get
+      itemsPath: $
+      identityPath: id

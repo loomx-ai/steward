@@ -3,8 +3,10 @@
 Native inventory now covers machines, extensions, Run Commands, license profiles
 and shared licenses. It includes own reads, known omission recovery, native
 parent pagination, repeated snapshot/cursor validation, signed references and
-SQLite scan/graph reconciliation. Cleanup remains unfinished and unavailable;
-the ENS mapping is still pending. Cloud absence is not physical-server release.
+SQLite scan/graph reconciliation. Extensions, Run Commands and license profiles
+now have native cleanup drivers and restored SQLite execution coverage. Machine
+registrations and shared licenses remain read-only. The ENS mapping is still
+pending. Cloud absence is not physical-server release.
 
 ## Pinned REST examples
 
@@ -19,8 +21,8 @@ resource-group Lists; extension, Run Command and license-profile GET/List/DELETE
 license GET/subscription List; network-profile GET; and hybrid identity metadata
 GET/List. Sixteen operations extend the two machine reads used by Defender.
 No shared-license deletion, script execution or agent configuration write was
-selected. Five regional inventory mappings now reference these read operations; no
-DELETE is bound to a resource action until native Arc cleanup is implemented.
+selected. Five regional inventory mappings reference these read operations;
+three child DELETE operations are bound to native cleanup actions.
 
 `TestHybridComputeOfficialContracts` binds every request, checks API-version
 rejection and provenance, and checks all 24 declared responses, including 15
@@ -86,8 +88,8 @@ signature rotation only within the same operation and previously recorded role.
 Each returned progress receipt can be persisted and resumed by a fresh runtime.
 Status success advances to a saved result URL when present. Empty result 200 or
 204 completes the operation; errors, malformed payloads, redirects and operation
-404 do not establish success. Final own-resource readback still belongs to the
-unfinished cleanup driver; these helpers do not enable resource cleanup actions.
+404 do not establish success. The child cleanup driver additionally requires
+the selected child's own GET to return 404 before completing deletion.
 
 `TestHybridComputeRecordedPollingResume` explicitly adapts the recordings' API
 version to 2025-01-13 in memory, retaining their status bodies and following the
@@ -98,6 +100,34 @@ it is not independent same-version or live-cloud evidence. Separate boundary
 tests cover URL/receipt tampering, credential/resource changes, callback
 disagreement, synchronous responses, failed polls, final-result handling and
 all four runtime DELETE operations.
+
+## Child cleanup and restored execution
+
+The three native child drivers bind authored and unknown private fields, machine
+registration identity, creation metadata and ownership to reviewed inventory.
+They reject configuration changes, malformed tags/ETags, protected tags, managed
+resources/groups, management locks and unresolved incoming deletion dependencies.
+Preflight repeats own child/machine and protection reads. ETags are checked before
+deletion; known provisioning/output fields and parent child projections may
+change during deletion without invalidating stable configuration. Native DELETE
+does not expose If-Match, so these checks cannot close the final mutation race or
+distinguish an identical recreated child without a native creation identifier.
+
+The planner displays localized extension-removal, running-script termination and
+license-profile effects before execution. Shared licenses are retained. A missing
+parent permits only continued verification of the selected child. A DELETE 404,
+synchronous completion or successful asynchronous result still requires an own
+child GET. Receipts bind the reviewed action and survive worker/runtime restart;
+restored execution does not repeat accepted DELETE or reset verification deadlines.
+
+Composed native fixtures cover all three child types, running commands, protected
+and malformed metadata, private/registration changes, parent/child absence,
+permission failures, synchronous/asynchronous results, tampered receipts and
+incoming native alerts. The real SQLite test scans five resources, creates a
+three-step reviewed plan, persists jobs, reconstructs the runtime and worker
+between phases, and closes exactly the three children after their own absence.
+The machine and shared license remain active. This is offline composed execution
+evidence, separate from the unchanged upstream recordings and schema fixtures.
 
 ## Lifecycle boundaries
 
@@ -115,9 +145,9 @@ all four runtime DELETE operations.
   of the shared license. [Unlinking and license deletion](https://learn.microsoft.com/en-us/azure/azure-arc/servers/api-extended-security-updates)
   are separate operations; machine/profile absence does not prove billing ended.
 
-Native inventory and signed snapshot/reference checks are implemented. Cleanup
-incarnation checks, ownership/lock checks, planner ordering, resumed cleanup,
-independent emulator and live-cloud verification remain open.
+Native inventory and child cleanup checks are implemented. Machine cleanup,
+machine-to-child planner ordering, local agent verification, shared-license
+lifecycle policy, independent emulator and live-cloud verification remain open.
 The [Floci-AZ service list](https://floci.io/floci-az/services/) and
 [generic ARM fallback](https://floci.io/floci-az/services/arm/) were checked on
 2026-09-13: they do not document Arc agent, extension-uninstall or signed

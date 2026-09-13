@@ -64,6 +64,24 @@ func (c *client) hybridComputeRead(ctx context.Context, id, kind string) (respon
 	if res.status != 200 || operationLocation(res.header) != "" || identityErr != nil || actual != id || !strings.EqualFold(text(res.data["type"]), kind) || !strings.EqualFold(text(res.data["name"]), last(id)) || object(res.data["properties"]) == nil || text(res.data["location"]) == "" {
 		return res, serviceDenied("invalid_hybrid_compute_native_response")
 	}
+	for _, key := range []string{"etag", "eTag", "managedBy", "kind"} {
+		if value := res.data[key]; value != nil {
+			if _, ok := value.(string); !ok {
+				return res, serviceDenied("invalid_hybrid_compute_metadata_type")
+			}
+		}
+	}
+	if value := res.data["tags"]; value != nil {
+		tags, ok := value.(map[string]any)
+		if !ok {
+			return res, serviceDenied("invalid_hybrid_compute_tags")
+		}
+		for _, value := range tags {
+			if _, ok := value.(string); !ok {
+				return res, serviceDenied("invalid_hybrid_compute_tag_value")
+			}
+		}
+	}
 	// Native examples contain null connection/OS fields. Preserve their absence
 	// without inventing a Connected state; reject malformed present scalar fields.
 	for _, key := range []string{"provisioningState", "status", "vmId", "agentVersion", "osType", "osName", "osVersion"} {

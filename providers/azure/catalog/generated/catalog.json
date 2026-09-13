@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "ff98b6e4df1a0044de86a82d602ec2430a80d96d708238e18e637dff78d0332d",
+    "checksum": "b4ea220bdcbed43defbf014d53644303fc57dba9c17360c41f9fac81c9a6bdb3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "56323431d083324cab31bbe4cac979ea42dec04e3d9232a59136cfbe3483d25c",
+  "content_checksum": "9f8d7226096c3069923d68cd89c42b7ad3bb11cb6ead797edf3bf839931a1152",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -131374,6 +131374,9 @@
         "read_operations": [
           "Azure.Microsoft.HybridCompute.MachineExtensions_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.MachineExtensions_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.MachineExtensions_List"
         ]
@@ -131391,6 +131394,9 @@
         "read_operations": [
           "Azure.Microsoft.HybridCompute.LicenseProfiles_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.LicenseProfiles_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.LicenseProfiles_List"
         ]
@@ -131407,6 +131413,9 @@
         "collection": "runCommands",
         "read_operations": [
           "Azure.Microsoft.HybridCompute.MachineRunCommands_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.MachineRunCommands_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.MachineRunCommands_List"

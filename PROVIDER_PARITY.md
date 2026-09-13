@@ -3540,3 +3540,53 @@ background evidence only, not acceptance evidence for this work.
   (18.600s), `go vet ./...`, documentation checks (30 committed chapters and
   10 original screenshots) and whitespace validation. The five files were
   byte-compared with the shared workspace before adding this verification note.
+
+### Arc HybridCompute native child cleanup and restored workers
+
+- Three native actions now delete machine extensions, Run Commands and license
+  profiles. They retain the pinned 2025-01-13 operations and the signed native
+  polling protocol. Machine registrations and shared ESU licenses remain
+  read-only pending their distinct lifecycle work. Counts are 434 rules, 403
+  cleanup actions and the same 1,434 operations; all prior operation definitions
+  are unchanged. Generation is byte-identical after the source checksum refresh.
+- Child cleanup binds private authored/unknown configuration and machine
+  registration identity to the reviewed inventory, including its signed graph
+  references. Native metadata types, protected tags, managed resources/groups,
+  management locks and current incoming dependencies are verified before
+  mutation. Two observations repeat these checks. ETags are bound before DELETE;
+  provisioning/output and the machine's child projections may change during
+  deletion without pretending that a new registration is the original one.
+- Every completion requires the child's own GET. A parent 404, DELETE 404,
+  synchronous response or operation success alone cannot close a surviving
+  child. Missing parents and already-deleting children cause verification only.
+  Accepted receipts bind the reviewed action and persist signed polling progress;
+  restoring them neither repeats DELETE nor resets the verification deadline.
+  Native DELETE lacks If-Match, so repeated reads do not eliminate the final
+  check/mutation race or identify an identical recreation without native
+  creation metadata. Agent-side removal is separate from cloud child absence.
+- The cleanup plan displays English and Chinese warnings for extension removal,
+  running-script termination and changed machine license configuration. Shared
+  licenses remain untouched, and profile absence does not establish billing
+  termination. Permission documentation includes native child DELETE, parent
+  and resource-group reads, locks and the shared incoming-dependency checks.
+- Composed native tests cover the three child actions, running commands,
+  private/registration changes, malformed metadata, tags/ownership/locks,
+  permission failures, synchronous/asynchronous responses, missing parents,
+  retained children, tampered requests/receipts and native incoming alerts.
+  A real SQLite scan/graph/plan/execution test reviews three child steps, restores
+  the database, job and runtime between phases, closes exactly those children
+  after own absence and leaves the machine and shared license active. Job logs
+  exclude signed queries, script content and private configuration.
+- This completes the child-driver milestone, not overall Arc or provider
+  acceptance. Machine cleanup and ordering, local-agent verification, shared
+  license lifecycle policy, independent emulation/live-cloud evidence and the
+  nineteen mapped Azure types without rules remain open. All eight overall
+  acceptance criteria remain pending.
+- Verification: an isolated checkout of `5349859` plus this milestone passed
+  `go test ./...` (Azure 322.306s), Arc/Defender/catalog/planning race checks
+  (Azure 33.202s; cleanup 1.556s), `go vet ./...`, frontend type checking,
+  39 frontend contract tests, six offline importer tests and documentation
+  checks (30 committed chapters, 10 original screenshots). Both generated
+  artifacts reproduce byte-for-byte. The shared workspace also passed Arc,
+  catalog and cleanup-warning integration tests and frontend type checking.
+  Its pre-existing translation edits were retained outside this commit.

@@ -119,7 +119,15 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		slices.Sort(network)
 		normalized["_hybrid_compute_references"] = recorded
 		normalized["_hybrid_compute_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
-		location, actionable := resourceRegion(raw), false // Cleanup requires the native Arc lifecycle driver.
+		location, actionable := resourceRegion(raw), false
+		if hybridComputeChild(kind) {
+			reason := hybridComputeChildProtection(raw, parents[parent])
+			state := map[string]any{"resource": c.privateConfiguration(hybridComputeChildSnapshot(raw)), "parent": c.privateConfiguration(hybridComputeParentStamp(parents[parent])), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != "", "inventory": configuration}
+			normalized[hybridComputeCleanup] = state
+			normalized[hybridComputeCleanupProof] = c.hybridComputeCleanupBinding(id, request.ConnectionID, location, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			actionable = reason == ""
+		}
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Raw: safe, Normalized: normalized, Actionable: &actionable, NativeAliases: []string{id, text(raw["id"])}, NetworkReferences: slices.Compact(network)}
 		if productScopeMatches(request, item) {
 			items = append(items, item)

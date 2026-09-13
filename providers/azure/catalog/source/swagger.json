@@ -245021,7 +245021,9 @@
       "nativeType": "Microsoft.HybridCompute/machines/extensions",
       "rest": {
         "collection": "extensions",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.MachineExtensions_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.MachineExtensions_List"
         ],
@@ -245039,7 +245041,9 @@
       "nativeType": "Microsoft.HybridCompute/machines/runCommands",
       "rest": {
         "collection": "runCommands",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.MachineRunCommands_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.MachineRunCommands_List"
         ],
@@ -245057,7 +245061,9 @@
       "nativeType": "Microsoft.HybridCompute/machines/licenseProfiles",
       "rest": {
         "collection": "licenseProfiles",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.LicenseProfiles_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.LicenseProfiles_List"
         ],

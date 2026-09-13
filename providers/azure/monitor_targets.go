@@ -9,10 +9,9 @@ import (
 const monitorReceiverTargetProof = "_monitor_receiver_target_identity"
 
 func monitorARMTarget(value asset.Asset) bool {
-	// Defender plans and the current Arc inventory expose no cleanup action.
+	// Defender plans, Arc registrations and shared licenses expose no cleanup action.
 	// Their graph must not require unrelated incoming-deletion API permissions.
-	// Remove Arc from this exception when its native lifecycle driver is wired.
-	if value.Identity.NativeType == defenderPricingType || hybridComputeKind(value.Identity.NativeType) != "" {
+	if value.Identity.NativeType == defenderPricingType || value.Identity.NativeType == hybridMachineType || value.Identity.NativeType == hybridLicenseType {
 		return false
 	}
 	// Legacy component records retain case-sensitive opaque selectors. They are

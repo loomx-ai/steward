@@ -1057,6 +1057,12 @@ const enUS = {
     "This public custom image will be changed to private before deletion.",
   "error.scaling_group_force_delete":
     "This scaling group contains {instance_count} instance(s). They will be released by force deletion.",
+  "error.arc_extension_removal":
+    "Deleting this Arc extension requests its removal from the machine; verify the agent-side result separately.",
+  "error.arc_command_termination":
+    "Deleting this Arc Run Command terminates its script if it is still executing.",
+  "error.arc_license_profile_removal":
+    "Deleting this Arc license profile changes the machine's license configuration; shared licenses remain and billing termination is not established.",
   "error.lifecycle_conflict":
     "Lifecycle authority conflicts prevent safe cleanup.",
   "error.lifecycle_cycle": "The lifecycle controller graph contains a cycle.",
@@ -2139,6 +2145,12 @@ const zhCN: MessageShape = {
     "该公开自定义镜像会先自动转为私有镜像，再执行删除。",
   "error.scaling_group_force_delete":
     "该伸缩组仍包含 {instance_count} 个实例；强制删除时会一并释放。",
+  "error.arc_extension_removal":
+    "删除此 Arc 扩展会请求从机器移除扩展；仍需单独核实代理端结果。",
+  "error.arc_command_termination":
+    "删除此 Arc 运行命令会终止仍在执行的脚本。",
+  "error.arc_license_profile_removal":
+    "删除此 Arc 许可证配置会改变机器的许可配置；共享许可证仍保留，不能据此确认计费已终止。",
   "error.lifecycle_conflict": "生命周期管理权存在冲突，无法安全清理。",
   "error.lifecycle_cycle": "生命周期控制器图中存在环。",
   "error.lifecycle_confidence": "生命周期证据置信度不足，不能执行清理。",

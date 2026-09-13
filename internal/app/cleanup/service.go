@@ -1765,6 +1765,23 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			continue
 		}
 		switch value.Identity.NativeType {
+		case "Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles":
+			if value.Identity.Provider != asset.ProviderAzure {
+				continue
+			}
+			message := "Deleting this Arc extension requests its removal from the machine; verify the agent-side result separately."
+			code := plan.WarningArcExtensionRemoval
+			if value.Identity.NativeType == "Microsoft.HybridCompute/machines/runCommands" {
+				message = "Deleting this Arc Run Command terminates its script if it is still executing."
+				code = plan.WarningArcCommandTermination
+			}
+			if value.Identity.NativeType == "Microsoft.HybridCompute/machines/licenseProfiles" {
+				message = "Deleting this Arc license profile changes the machine's license configuration; shared licenses remain and billing termination is not established."
+				code = plan.WarningArcLicenseProfileRemoval
+			}
+			if !selectionWarningExists(result, code, value.ID) {
+				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
+			}
 		case "ACS::ECS::Image":
 			if !cleanupNormalizedBool(value.Normalized, "IsPublic") ||
 				selectionWarningExists(result, plan.WarningPublicImageMadePrivate, value.ID) {

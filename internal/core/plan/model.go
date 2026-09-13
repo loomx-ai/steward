@@ -133,6 +133,9 @@ const (
 	WarningScanCoverageIncomplete       WarningCode = "scan_coverage_incomplete"
 	WarningPublicImageMadePrivate       WarningCode = "pre_delete_image_visibility_change"
 	WarningScalingGroupForceDelete      WarningCode = "scaling_group_force_delete"
+	WarningArcExtensionRemoval          WarningCode = "arc_extension_removal"
+	WarningArcCommandTermination        WarningCode = "arc_command_termination"
+	WarningArcLicenseProfileRemoval     WarningCode = "arc_license_profile_removal"
 )
 
 type Warning struct {

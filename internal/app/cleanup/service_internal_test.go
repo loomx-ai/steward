@@ -2,6 +2,7 @@ package cleanup
 
 import (
 	"errors"
+	"strings"
 	"testing"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
@@ -97,6 +98,27 @@ func TestAppendSelectionWarningsDescribesScalingGroupForceDelete(t *testing.T) {
 		warnings[0].Code != plan.WarningScalingGroupForceDelete ||
 		warnings[0].Evidence["instance_count"] != float64(3) {
 		t.Fatalf("warnings=%+v", warnings)
+	}
+}
+
+func TestAppendSelectionWarningsDescribesArcChildDeletion(t *testing.T) {
+	input := plan.Input{}
+	solved := plan.Result{}
+	for _, kind := range []string{"Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles"} {
+		value := asset.Asset{ID: asset.AssetID(kind), Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: kind}}
+		input.Assets = append(input.Assets, value)
+		solved.Steps = append(solved.Steps, plan.CleanupTaskStep{AssetID: value.ID})
+	}
+	input.Assets = append(input.Assets, asset.Asset{ID: "unselected", Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: "Microsoft.HybridCompute/machines/runCommands"}})
+	warnings := appendSelectionWarnings(nil, input, solved)
+	warnings = appendSelectionWarnings(warnings, input, solved)
+	if len(warnings) != 3 {
+		t.Fatal("missing or repeated Arc warning", warnings)
+	}
+	for _, warning := range warnings {
+		if !strings.HasPrefix(string(warning.Code), "arc_") || warning.Message == "" || warning.Evidence["operation"] != "delete" {
+			t.Fatal("incorrect Arc effect", warning)
+		}
 	}
 }
 

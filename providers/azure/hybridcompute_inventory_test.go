@@ -59,6 +59,11 @@ func newHybridInventoryFixture(t *testing.T) *hybridInventoryFixture {
 				return res, nil
 			}
 		}
+		if armPathProvider(req.URL.Path) != "microsoft.hybridcompute" {
+			if res, ok := fleetGraphEmptyIndexes(t, req); ok {
+				return res, nil
+			}
+		}
 		if req.Method != "GET" || req.URL.Host != "management.azure.com" || req.URL.Query().Get("api-version") != hybridComputeVersion {
 			return nil, fmt.Errorf("unexpected Arc request %s %s", req.Method, req.URL.Path)
 		}
@@ -115,8 +120,8 @@ func TestHybridComputeNativeInventoryAndWorkers(t *testing.T) {
 		}
 		item := batch.Items[0]
 		encoded, _ := json.Marshal(item)
-		if strings.Contains(string(encoded), "private-arc-configuration") || strings.Contains(string(encoded), "commandToExecute") || strings.Contains(string(encoded), "runAsPassword") || item.Actionable == nil || *item.Actionable {
-			t.Fatal("private configuration or unsupported cleanup exposed", kind)
+		if strings.Contains(string(encoded), "private-arc-configuration") || strings.Contains(string(encoded), "commandToExecute") || strings.Contains(string(encoded), "runAsPassword") || item.Actionable == nil || *item.Actionable != hybridComputeChild(kind) {
+			t.Fatal("private configuration or wrong cleanup capability exposed", kind)
 		}
 		if kind == hybridMachineType && item.Normalized["status"] != nil {
 			t.Fatal("null connection status became a state")
@@ -146,8 +151,8 @@ func TestHybridComputeNativeInventoryAndWorkers(t *testing.T) {
 		}
 	}
 	for _, value := range values {
-		if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); err == nil {
-			t.Fatal("unfinished cleanup driver exposed")
+		if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); (err == nil) != hybridComputeChild(value.Identity.NativeType) {
+			t.Fatal("wrong Arc cleanup dispatch", err)
 		}
 	}
 	for id := range f.values {
