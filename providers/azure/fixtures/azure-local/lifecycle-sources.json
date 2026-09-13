@@ -45,6 +45,9 @@
     "finding": "Infrastructure network deletion requires all Local VMs, NICs and workload logical networks on the Local instance to be removed first. Only its cloud projection is deleted.",
     "discriminator": "properties.networkType is a read-only Workload/Infrastructure enum in 2025-06-01-preview. It is absent from the pinned 2024-01-01 contract; missing values do not prove workload status.",
     "change_log": "https://learn.microsoft.com/en-us/azure/templates/microsoft.azurestackhci/change-log/logicalnetworks",
-    "implementation": "Native preview inventory and strict classification only; independent cleanup remains unavailable."
+    "implementation": "Native preview inventory and independent cleanup with explicit consumer prerequisites, signed recovery and own-resource absence verification. Unknown type/custom location remains protected.",
+    "aks_contract": "https://learn.microsoft.com/en-us/rest/api/hybridcontainer/provisioned-cluster-instances/get?view=rest-hybridcontainer-2024-01-01",
+    "aks_reference": "properties.cloudProviderProfile.infraNetworkProfile.vnetSubnetIds; native AKS consumers block network deletion and require external removal.",
+    "reverse_nic_reference": "properties.subnets[].properties.ipConfigurationReferences[].ID; the native preview schema uses uppercase ID and identifies the NIC ARM resource."
   }
 }

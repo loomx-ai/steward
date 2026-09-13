@@ -33,6 +33,15 @@ func azureLocalCleanupSnapshot(raw map[string]any) map[string]any {
 			delete(props, "guestAgentInstallStatus")
 		}
 	}
+	if azureLocalKind(text(raw["type"])) == azureLocalNetworkType {
+		for _, subnet := range array(props["subnets"]) {
+			properties := object(object(subnet)["properties"])
+			delete(properties, "ipConfigurationReferences")
+			for _, pool := range array(properties["ipPools"]) {
+				delete(object(pool), "info")
+			}
+		}
+	}
 	return out
 }
 
@@ -103,7 +112,7 @@ func (c *client) azureLocalActionRecord(value asset.Asset) error {
 		err = c.azureLocalVMRecord(value)
 	} else if azureLocalIndependent(value.Identity.NativeType) {
 		err = c.azureLocalRootRecord(value)
-		if len(object(value.Normalized[azureLocalCleanup])) != 6 && value.Identity.NativeType != azureLocalStorageType {
+		if len(object(value.Normalized[azureLocalCleanup])) != 6 && value.Identity.NativeType != azureLocalStorageType && value.Identity.NativeType != azureLocalNetworkType {
 			return serviceDenied("azure_local_root_requires_rescan")
 		}
 	} else if value.Identity.NativeType == azureLocalAgentType {

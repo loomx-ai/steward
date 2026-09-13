@@ -24,14 +24,20 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 	t.Run("image", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalImageType) })
 	t.Run("marketplace", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalMarketplaceType) })
 	t.Run("storage", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalStorageType) })
+	t.Run("workload-network", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalNetworkType, "Workload") })
+	t.Run("infrastructure-network", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalNetworkType, "Infrastructure") })
 }
 
 func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...string) {
 	var f *localVMFixture
 	var root *localRootFixture
 	var storage *localStorageFixture
+	var network *localNetworkCleanupFixture
 	if len(rootKind) != 0 {
-		if rootKind[0] == azureLocalStorageType {
+		if rootKind[0] == azureLocalNetworkType {
+			network = newLocalNetworkCleanupFixture(t, rootKind[1])
+			root = network.localRootFixture
+		} else if rootKind[0] == azureLocalStorageType {
 			storage = newLocalStorageFixture(t)
 			root = storage.localRootFixture
 		} else if azureLocalImage(rootKind[0]) {
@@ -86,6 +92,18 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 			}
 		}
 	}
+	if network != nil {
+		if network.workload != "" {
+			expectedRemaining++
+		}
+		for _, value := range values {
+			if value.Identity.NativeType == azureLocalNICType || value.Identity.NativeID == network.workload {
+				selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: value.ID})
+				steps++
+				expectedRemaining--
+			}
+		}
+	}
 	planner := cleanup.NewService(repository, registry)
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != steps || len(task.ImpactItems) != 2 {
@@ -110,6 +128,17 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 		}
 		if warning.Code == plan.WarningAzureLocalGuestRemoval && strings.Contains(warning.Message, "VM and Arc registration remain") {
 			t.Fatal("guest warning contradicts planned VM deletion")
+		}
+	}
+	if network != nil {
+		found := false
+		for _, warning := range task.Task.Warnings {
+			if warning.AssetID == rootAsset.ID && warning.Code == plan.WarningAzureLocalNetworkRemoval && warning.Evidence["network_type"] == rootKind[1] && strings.Contains(warning.Message, "cloud projection") {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("network deletion consequences missing")
 		}
 	}
 	if !warned || registrationWarned != registration || (root != nil && root.kind == azureLocalDiskType && !diskWarned) {
@@ -225,6 +254,15 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...strin
 	}
 	if root != nil && (root.rootDeletes != 1 || root.rootPolls == 0 || f.values[root.id] != nil) {
 		t.Fatal("independent root worker incomplete")
+	}
+	if network != nil {
+		want := 1
+		if network.workload != "" {
+			want++
+		}
+		if len(network.deletes) != want {
+			t.Fatal("network prerequisite coverage", network.deletes)
+		}
 	}
 	if storage != nil && len(storage.consumerDeletes) != 3 {
 		t.Fatal("storage workload deletion coverage", storage.consumerDeletes)

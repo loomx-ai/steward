@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "dd1b46e373424914b89231704d4551a2d3bd66b95d2f14e8802073eba397e685",
+    "checksum": "74ed97e9fca1e31434f53b8850ba9de93e6c0d485b55a202ec29fce1fed27b8e",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "ebc2bc68f858e05760f0e5518e2744793cbf48fd22c11f0083bacaf43b3e906d",
+  "content_checksum": "ea8c42bcd0869ac4211bb73360bd7ecd8862dfe0c21f0bee74542b96b37c9e1e",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -90926,6 +90926,133 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
     },
     {
+      "id": "Azure.Microsoft.HybridContainerService.provisionedClusterInstances_Get",
+      "name": "provisionedClusterInstances_Get",
+      "service": "Microsoft.HybridContainerService",
+      "method": "GET",
+      "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances/default",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectedClusterResourceUri": {
+            "description": "The fully qualified Azure Resource Manager identifier of the connected cluster resource.",
+            "in": "path",
+            "name": "connectedClusterResourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v5/types.json#/definitions/ProxyResource",
+            "description": "The resource model definition for an Azure Resource Manager proxy resource. It will have everything other than required location and tags."
+          }
+        ],
+        "description": "The provisioned cluster resource definition.",
+        "properties": {
+          "extendedLocation": {
+            "$ref": "#/definitions/ExtendedLocation"
+          },
+          "properties": {
+            "$ref": "#/definitions/provisionedClusterProperties"
+          }
+        },
+        "type": "object",
+        "x-ms-azure-resource": true
+      },
+      "call": {
+        "product": "Microsoft.HybridContainerService",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances/default",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "connectedClusterResourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridaks/resource-manager/Microsoft.HybridContainerService/HybridContainerService/stable/2024-01-01/provisionedClusterInstances.json"
+    },
+    {
+      "id": "Azure.Microsoft.HybridContainerService.provisionedClusterInstances_List",
+      "name": "provisionedClusterInstances_List",
+      "service": "Microsoft.HybridContainerService",
+      "method": "GET",
+      "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "connectedClusterResourceUri": {
+            "description": "The fully qualified Azure Resource Manager identifier of the connected cluster resource.",
+            "in": "path",
+            "name": "connectedClusterResourceUri",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method",
+            "x-ms-skip-url-encoding": true
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "Lists the ProvisionedClusterInstance resource associated with the ConnectedCluster.",
+        "properties": {
+          "nextLink": {
+            "type": "string"
+          },
+          "value": {
+            "items": {
+              "$ref": "#/definitions/provisionedCluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object",
+        "x-ms-identifiers": []
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.HybridContainerService",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances",
+        "endpoint": "https://management.azure.com",
+        "raw_path_parameters": [
+          "connectedClusterResourceUri"
+        ],
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridaks/resource-manager/Microsoft.HybridContainerService/HybridContainerService/stable/2024-01-01/provisionedClusterInstances.json"
+    },
+    {
       "id": "Azure.Microsoft.Insights.APIKeys_Delete",
       "name": "APIKeys_Delete",
       "service": "Microsoft.Insights",
@@ -99014,6 +99141,158 @@
         "parameter_position": "query"
       },
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/specification/keyvault/resource-manager/Microsoft.KeyVault/KeyVault/stable/2023-07-01/keyvault.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kubernetes.ConnectedCluster_Get",
+      "name": "ConnectedCluster_Get",
+      "service": "Microsoft.Kubernetes",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{clusterName}",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "clusterName": {
+            "description": "The name of the Kubernetes cluster on which get is called.",
+            "in": "path",
+            "name": "clusterName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "allOf": [
+          {
+            "$ref": "../../../../../../common-types/resource-management/v2/types.json#/definitions/TrackedResource"
+          }
+        ],
+        "description": "Represents a connected cluster.",
+        "properties": {
+          "identity": {
+            "$ref": "#/definitions/ConnectedClusterIdentity",
+            "description": "The identity of the connected cluster."
+          },
+          "kind": {
+            "$ref": "#/definitions/ConnectedClusterKind",
+            "description": "The kind of connected cluster."
+          },
+          "properties": {
+            "$ref": "#/definitions/ConnectedClusterProperties",
+            "description": "Describes the connected cluster resource properties.",
+            "x-ms-client-flatten": true
+          },
+          "systemData": {
+            "$ref": "#/definitions/SystemData",
+            "description": "Metadata pertaining to creation and last modification of the resource",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "properties",
+          "identity"
+        ],
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.Kubernetes",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{clusterName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridkubernetes/resource-manager/Microsoft.Kubernetes/HybridKubernetes/stable/2024-01-01/connectedClusters.json"
+    },
+    {
+      "id": "Azure.Microsoft.Kubernetes.ConnectedCluster_ListBySubscription",
+      "name": "ConnectedCluster_ListBySubscription",
+      "service": "Microsoft.Kubernetes",
+      "method": "GET",
+      "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kubernetes/connectedClusters",
+      "destructive": false,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2024-01-01"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "output_schema": {
+        "description": "The paginated list of connected Clusters",
+        "properties": {
+          "nextLink": {
+            "description": "The link to fetch the next page of connected cluster",
+            "type": "string"
+          },
+          "value": {
+            "description": "The list of connected clusters",
+            "items": {
+              "$ref": "#/definitions/ConnectedCluster"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "pagination": {
+        "output_token_path": "nextLink",
+        "items_path": "value"
+      },
+      "call": {
+        "product": "Microsoft.Kubernetes",
+        "version": "2024-01-01",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "GET",
+        "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kubernetes/connectedClusters",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridkubernetes/resource-manager/Microsoft.Kubernetes/HybridKubernetes/stable/2024-01-01/connectedClusters.json"
     },
     {
       "id": "Azure.Microsoft.Kusto.AttachedDatabaseConfigurations_Delete",
@@ -129842,6 +130121,9 @@
         "collection": "logicalNetworks",
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListAll"

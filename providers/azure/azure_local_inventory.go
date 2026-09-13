@@ -20,8 +20,8 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 	networkDisks := kind == azureLocalDiskType && request.NetworkTarget != nil
 	independent := azureLocalIndependent(kind)
 	networkVMs := map[string]bool{}
-	storageKnown := map[string]bool{}
-	storageRoots := map[string]map[string]any{}
+	rootKnown := map[string]bool{}
+	rootResources := map[string]map[string]any{}
 	values, machines, instances := map[string]map[string]any{}, map[string]map[string]any{}, map[string]map[string]any{}
 	known, provenance := map[string]bool{}, ""
 	read := func(id, typ string) (map[string]any, error) {
@@ -60,9 +60,9 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 				if err := c.azureLocalRootRecord(value); err != nil {
 					return nil, nil, "", err
 				}
-				if kind == azureLocalStorageType {
+				if kind == azureLocalStorageType || kind == azureLocalNetworkType {
 					for _, id := range stringValues(object(prior[azureLocalCleanup])["resources"]) {
-						storageKnown[id] = true
+						rootKnown[id] = true
 					}
 				}
 				for _, vm := range stringValues(object(prior[azureLocalCleanup])["vms"]) {
@@ -193,8 +193,24 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		}
 		return nil
 	}
+	networkInfrastructure := false
+	if kind == azureLocalNetworkType {
+		if err := collect(kind, "", values); err != nil {
+			return nil, nil, "", err
+		}
+		for _, raw := range values {
+			networkInfrastructure = networkInfrastructure || azureLocalNetworkRole(raw) == "Infrastructure"
+			ids, err := azureLocalNetworkNICReferences(raw)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			for _, id := range ids {
+				rootKnown[id] = true
+			}
+		}
+	}
 	extension := kind == azureLocalVMType || kind == azureLocalAgentType || kind == azureLocalIdentityType
-	if extension || networkDisks || independent && !azureLocalImage(kind) {
+	if extension || networkDisks || networkInfrastructure || independent && !azureLocalImage(kind) && kind != azureLocalNetworkType {
 		if err := collect(hybridMachineType, "", machines); err != nil {
 			return nil, nil, "", err
 		}
@@ -214,14 +230,21 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 			}
 		}
 	}
-	if !extension {
+	if !extension && kind != azureLocalNetworkType {
 		if err := collect(kind, "", values); err != nil {
 			return nil, nil, "", err
 		}
 	}
 	if kind == azureLocalStorageType {
 		var err error
-		storageRoots, err = c.azureLocalStorageResources(ctx, slices.Sorted(maps.Keys(storageKnown)))
+		rootResources, err = c.azureLocalStorageResources(ctx, slices.Sorted(maps.Keys(rootKnown)))
+		if err != nil {
+			return nil, nil, "", err
+		}
+	}
+	if kind == azureLocalNetworkType {
+		var err error
+		rootResources, err = c.azureLocalNetworkResources(ctx, slices.Sorted(maps.Keys(rootKnown)))
 		if err != nil {
 			return nil, nil, "", err
 		}
@@ -306,18 +329,27 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		}
 		if independent {
 			reason := protectionReason(resourceType{NativeType: kind}, raw)
+			if kind == azureLocalNetworkType {
+				reason = azureLocalNetworkProtection(raw)
+			}
 			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "inventory": configuration, "protected": reason != "", "location": location}
 			vms := maps.Clone(networkVMs)
 			for vm := range instances {
 				vms[vm] = true
 			}
 			state["vms"] = append([]string{}, slices.Sorted(maps.Keys(vms))...)
-			if kind == azureLocalStorageType {
-				resources := maps.Clone(storageKnown)
-				for id := range storageRoots {
+			if kind == azureLocalStorageType || kind == azureLocalNetworkType {
+				resources := maps.Clone(rootKnown)
+				for id := range rootResources {
 					resources[id] = true
 				}
 				state["resources"] = append([]string{}, slices.Sorted(maps.Keys(resources))...)
+			}
+			if kind == azureLocalNetworkType {
+				state["network_type"] = azureLocalNetworkRole(raw)
+				if state["network_type"] != "Infrastructure" {
+					state["vms"] = []string{}
+				}
 			}
 			bindings[id], actionable = c.privateConfiguration(state), reason == ""
 			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalRootBinding(id, request.ConnectionID, state)
@@ -357,8 +389,8 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 			items = append(items, item)
 		}
 	}
-	if kind == azureLocalStorageType {
-		bindings["storage_resources"] = c.privateConfiguration(map[string]any{"resources": storageRoots})
+	if kind == azureLocalStorageType || kind == azureLocalNetworkType {
+		bindings["root_resources"] = c.privateConfiguration(map[string]any{"resources": rootResources})
 	}
 	bindings["parents"] = c.privateConfiguration(map[string]any{"machines": machines, "instances": instances})
 	return items, bindings, provenance, nil

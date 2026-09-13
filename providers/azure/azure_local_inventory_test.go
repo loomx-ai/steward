@@ -99,6 +99,9 @@ func newAzureLocalFixture(t *testing.T) *azureLocalFixture {
 				return res, nil
 			}
 		}
+		if path == "/subscriptions/"+testSubscription+"/providers/microsoft.kubernetes/connectedclusters" && req.Method == "GET" && req.URL.Query().Get("api-version") == "2024-01-01" {
+			return jsonResponse(200, map[string]any{"value": []any{}}, nil), nil
+		}
 		provider := armPathProvider(path)
 		if provider != "microsoft.azurestackhci" && provider != "microsoft.hybridcompute" {
 			if res, ok := fleetGraphEmptyIndexes(t, req); ok {
@@ -161,7 +164,7 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 		}
 		item := batch.Items[0]
 		items = append(items, item)
-		if item.NativeID != f.ids[kind] || item.Location != "eastus" || item.Actionable == nil || *item.Actionable != azureLocalIndependent(kind) {
+		if item.NativeID != f.ids[kind] || item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (azureLocalIndependent(kind) && kind != azureLocalNetworkType) {
 			t.Fatal("native identity, region or cleanup capability", kind)
 		}
 		if kind == azureLocalVMType && (object(item.Normalized["status"])["powerState"] != "Running" || fmt.Sprint(object(item.Normalized["hardwareProfile"])["memoryMB"]) != "4096") {
@@ -199,7 +202,7 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 	}
 	for _, value := range values {
 		driver, err := f.runtime.ResolveAction(t.Context(), "connection", value)
-		if (err == nil) != azureLocalIndependent(value.Identity.NativeType) {
+		if (err == nil) != (azureLocalIndependent(value.Identity.NativeType) && value.Identity.NativeType != azureLocalNetworkType) {
 			t.Fatal("unexpected native cleanup capability", value.Identity.NativeType, err)
 		}
 		if err == nil {

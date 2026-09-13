@@ -1070,6 +1070,8 @@ const enUS = {
     "Deleting this Azure Local registration first requires removal of its VM and OS disk. NICs and data disks need separate cleanup; verify physical removal separately.",
   "error.azure_local_disk_removal":
     "Deleting this Azure Local disk can permanently remove its data; verify the physical disk result separately.",
+  "error.azure_local_network_removal":
+    "Deleting this logical network removes its Azure resource after dependencies are cleared. Infrastructure-network deletion removes only the cloud projection; its on-premises network remains.",
   "error.azure_local_vm_removal":
     "Deleting this Azure Local VM removes the virtual machine and its OS disk after reviewed child cleanup. Arc registration, NICs and data disks have separate cleanup steps; verify the physical VM result separately.",
   "error.azure_local_guest_removal":
@@ -2175,6 +2177,8 @@ const zhCN: MessageShape = {
     "删除此 Azure Local 注册前，需要先移除其 VM 和系统盘。网卡和数据盘需单独清理；请另行验证物理资源移除结果。",
   "error.azure_local_disk_removal":
     "删除此 Azure Local 磁盘可能永久移除其数据；请另行验证物理磁盘移除结果。",
+  "error.azure_local_network_removal":
+    "逻辑网络会在清除依赖后删除其 Azure 资源。基础设施网络仅移除云端投影，本地网络仍然保留。",
   "error.azure_local_vm_removal":
     "删除此 Azure Local VM 会在已审查的子资源清理后移除虚拟机及其系统盘。Arc 注册、网卡和数据盘分别清理；请另行验证物理虚拟机移除结果。",
   "error.azure_local_guest_removal":

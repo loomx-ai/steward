@@ -70,6 +70,8 @@ class AzureLocalCLITests(unittest.TestCase):
 
 
 class AzureLocalGuestSDKTests(unittest.TestCase):
+    api_version = "2024-01-01"
+    initial_extra_headers = {}
     manifest = "sdk-guest-source.json"
     polling_options = {}
     arguments = ("native-machine",)
@@ -110,7 +112,7 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
                              ARMErrorFormat=object(), _models=SimpleNamespace(ErrorResponse=object()),
                              map_error=lambda **kwargs: None)
                 exec("from __future__ import annotations\n" + self.native_functions()["_delete_initial"], scope)
-                instance = SimpleNamespace(_config=SimpleNamespace(api_version="2024-01-01", subscription_id="test-sub"),
+                instance = SimpleNamespace(_config=SimpleNamespace(api_version=self.api_version, subscription_id="test-sub"),
                                            _client=SimpleNamespace(format_url=lambda url: url,
                                                _pipeline=SimpleNamespace(run=lambda *args, **kwargs: pipeline)),
                                            _deserialize=Deserialize())
@@ -118,11 +120,11 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
                 if status in (202, 204):
                     result = call(*self.arguments, cls=lambda raw, data, headers: (raw, headers))
                     self.assertIs(result[0], pipeline)
-                    self.assertEqual(result[1], {"Location": response.headers["Location"]} if status == 202 else {})
+                    self.assertEqual(result[1], {"Location": response.headers["Location"], **self.initial_extra_headers} if status == 202 else {})
                 else:
                     with self.assertRaises(NativeError):
                         call(*self.arguments)
-                self.assertEqual(requests, [dict(**self.native_parameters, **self.subscription_parameters, api_version="2024-01-01", headers={}, params={})])
+                self.assertEqual(requests, [dict(**self.native_parameters, **self.subscription_parameters, api_version=self.api_version, headers={}, params={})])
 
     def test_native_delete_continuation_skips_mutation(self):
         from types import MethodType
@@ -239,6 +241,34 @@ class AzureLocalStorageSDKTests(AzureLocalDiskSDKTests):
     manifest = "sdk-storage-source.json"
     native_parameters = {"resource_group_name": "test-rg", "storage_container_name": "test-resource"}
     collection = "storageContainers"
+
+
+class AzureLocalNetworkSDKTests(AzureLocalDiskSDKTests):
+    manifest = "sdk-network-source.json"
+    api_version = "2025-06-01-preview"
+    initial_extra_headers = {"Retry-After": None}
+    native_parameters = {"resource_group_name": "test-rg", "logical_network_name": "test-resource"}
+    collection = "logicalNetworks"
+    polling_options = {"lro_options": {"final-state-via": "location"}}
+
+    def test_native_request_builder(self):
+        calls = []
+        def serialize(name, value, kind, **kwargs):
+            calls.append((name, value, kind, kwargs))
+            return value
+        scope = dict(case_insensitive_dict=dict, HttpRequest=lambda **kwargs: kwargs,
+                     _SERIALIZER=SimpleNamespace(url=serialize, query=serialize, header=serialize))
+        exec("from __future__ import annotations\n" + self.native_functions()["build_delete_request"], scope)
+        request = scope["build_delete_request"](**self.native_parameters, **self.subscription_parameters)
+        self.assertEqual(request, dict(method="DELETE",
+            url="/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.AzureStackHCI/logicalNetworks/test-resource",
+            params={"api-version": self.api_version}, headers={"Accept": "application/json"}))
+        self.assertEqual(calls[0], ("subscription_id", "test-sub", "str", {}))
+        self.assertEqual(calls[1], ("resource_group_name", "test-rg", "str", {"max_length": 90, "min_length": 1}))
+        self.assertEqual(calls[2], ("logical_network_name", "test-resource", "str", {
+            "pattern": "^[a-zA-Z0-9]$|^[a-zA-Z0-9][-._a-zA-Z0-9]{0,62}[a-zA-Z0-9]$"}))
+        self.assertEqual(calls[3], ("api_version", self.api_version, "str", {}))
+        self.assertEqual(len(calls), 5)
 
 
 if __name__ == "__main__":

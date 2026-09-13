@@ -116,6 +116,9 @@ func (c *client) azureLocalRead(ctx context.Context, id, kind string) (response,
 		}
 	}
 	if kind == azureLocalNetworkType {
+		if _, err := azureLocalNetworkNICReferences(res.data); err != nil {
+			return res, err
+		}
 		if v := object(res.data["properties"])["networkType"]; v != nil {
 			if _, ok := v.(string); !ok {
 				return res, serviceDenied("invalid_azure_local_network_type")

@@ -11,8 +11,8 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// Only reviewed native VM, guest, disk, NIC, image and storage-path DELETE contracts may own
-// these receipts. Identity metadata and the Local logical networks have no action.
+// Only reviewed native VM, guest and independent-root DELETE contracts may own
+// these receipts. Identity metadata has no independent action.
 func (c *client) azureLocalDeleteOwner(id string) error {
 	canonical, typ, err := parseID(id)
 	kind := azureLocalKind(typ)
@@ -21,6 +21,14 @@ func (c *client) azureLocalDeleteOwner(id string) error {
 	}
 	_, err = c.azureLocalIdentity(id, kind)
 	return err
+}
+
+func azureLocalOperationVersion(id string) string {
+	_, kind, _ := parseID(id)
+	if strings.EqualFold(kind, azureLocalNetworkType) {
+		return "2025-06-01-preview"
+	}
+	return azureLocalVersion
 }
 
 // Accept only returned ARM operation endpoints in the selected subscription and
@@ -39,7 +47,7 @@ func (c *client) azureLocalPollURL(id, endpoint string) (string, error) {
 		return "", serviceDenied("azure_local_operation_scope_changed")
 	}
 	q, err := url.ParseQuery(u.RawQuery)
-	if err != nil || len(q["api-version"]) != 1 || q.Get("api-version") != azureLocalVersion || len(q) != 1 && len(q) != 5 {
+	if err != nil || len(q["api-version"]) != 1 || q.Get("api-version") != azureLocalOperationVersion(id) || len(q) != 1 && len(q) != 5 {
 		return "", serviceDenied("azure_local_operation_query_changed")
 	}
 	if len(q) == 5 {

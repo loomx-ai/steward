@@ -31,8 +31,31 @@ func (c *client) azureLocalRootRecord(value asset.Asset) error {
 	}
 	state := object(value.Normalized[azureLocalCleanup])
 	_, protected := state["protected"].(bool)
-	if value.ID == "" || !azureLocalIndependent(value.Identity.NativeType) || (len(state) != 5 && len(state) != 6 && len(state) != 7) || !protected || value.Location == "" || value.Location != state["location"] || text(state["resource"]) == "" || text(state["etag"]) == "" || state["inventory"] != value.Normalized["_azure_local_configuration"] || value.Normalized["cleanup_protected"] != state["protected"] || value.Normalized[azureLocalCleanupProof] != c.azureLocalRootBinding(value.Identity.NativeID, value.Identity.ConnectionID, state) {
+	if value.ID == "" || !azureLocalIndependent(value.Identity.NativeType) || (len(state) != 5 && len(state) != 6 && len(state) != 7 && len(state) != 8) || !protected || value.Location == "" || value.Location != state["location"] || text(state["resource"]) == "" || text(state["etag"]) == "" || state["inventory"] != value.Normalized["_azure_local_configuration"] || value.Normalized["cleanup_protected"] != state["protected"] || value.Normalized[azureLocalCleanupProof] != c.azureLocalRootBinding(value.Identity.NativeID, value.Identity.ConnectionID, state) {
 		return serviceDenied("invalid_azure_local_disk_record")
+	}
+	if value.Identity.NativeType == azureLocalNetworkType {
+		if len(state) != 8 || state["network_type"] != value.Normalized["networkType"] || !slices.Contains([]string{"Workload", "Infrastructure", "Unknown"}, text(state["network_type"])) {
+			return serviceDenied("invalid_azure_local_network_record")
+		}
+		if state["protected"] == false {
+			refs, err := c.azureLocalRecordedReferences(value)
+			if err != nil {
+				return err
+			}
+			location, err := azureLocalCustomLocation(refs)
+			if err != nil || location == "" || state["network_type"] == "Unknown" {
+				return serviceDenied("azure_local_network_scope_unverified")
+			}
+		}
+		if err := c.azureLocalNetworkHistory(state["resources"]); err != nil {
+			return err
+		}
+		if state["network_type"] != "Infrastructure" && len(stringValues(state["vms"])) != 0 {
+			return serviceDenied("invalid_azure_local_network_vm_history")
+		}
+	} else if len(state) == 8 {
+		return serviceDenied("invalid_azure_local_root_history")
 	}
 	if value.Identity.NativeType == azureLocalStorageType {
 		if len(state) != 7 {
@@ -83,7 +106,7 @@ func azureLocalImage(kind string) bool {
 }
 
 func azureLocalIndependent(kind string) bool {
-	return kind == azureLocalDiskType || kind == azureLocalNICType || azureLocalImage(kind) || kind == azureLocalStorageType
+	return kind == azureLocalDiskType || kind == azureLocalNICType || azureLocalImage(kind) || kind == azureLocalStorageType || kind == azureLocalNetworkType
 }
 
 func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, known []string) ([]string, error) {
@@ -93,6 +116,24 @@ func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, k
 	if canonical, err := c.azureLocalIdentity(disk, kind); (kind != azureLocalDiskType && kind != azureLocalNICType && kind != azureLocalStorageType) || err != nil || canonical != disk {
 		return nil, serviceDenied("invalid_azure_local_os_disk")
 	}
+	resources, err := c.azureLocalVMResources(ctx, known)
+	if err != nil {
+		return nil, err
+	}
+	consumers := []string{}
+	for _, id := range slices.Sorted(maps.Keys(resources)) {
+		refs, err := azureLocalReferences(id, azureLocalVMType, resources[id])
+		if err != nil {
+			return nil, err
+		}
+		if azureLocalRootReference(refs, kind, disk) {
+			consumers = append(consumers, id)
+		}
+	}
+	return consumers, nil
+}
+
+func (c *client) azureLocalVMResources(ctx context.Context, known []string) (map[string]map[string]any, error) {
 	ids := map[string]bool{}
 	for _, id := range known {
 		if canonical, err := c.azureLocalIdentity(id, azureLocalVMType); err != nil || canonical != id || ids[id] {
@@ -121,7 +162,7 @@ func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, k
 		}
 		ids[id+"/providers/microsoft.azurestackhci/virtualmachineinstances/default"] = true
 	}
-	consumers := []string{}
+	resources := map[string]map[string]any{}
 	for _, id := range slices.Sorted(maps.Keys(ids)) {
 		res, err := c.azureLocalRead(ctx, id, azureLocalVMType)
 		if isNotFound(err) {
@@ -130,13 +171,11 @@ func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, k
 		if err != nil {
 			return nil, err
 		}
-		refs, err := azureLocalReferences(id, azureLocalVMType, res.data)
+		_, err = azureLocalReferences(id, azureLocalVMType, res.data)
 		if err != nil {
 			return nil, err
 		}
-		if azureLocalRootReference(refs, kind, disk) {
-			consumers = append(consumers, id)
-		}
+		resources[id] = res.data
 	}
-	return consumers, nil
+	return resources, nil
 }

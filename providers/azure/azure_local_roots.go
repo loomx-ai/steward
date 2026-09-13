@@ -24,8 +24,8 @@ func (a *azureLocalAction) rootRequest(request contracts.ActionRequest) error {
 		if err := a.client.azureLocalRootConsumerRecord(vm, a.planned.Identity.NativeType); err != nil {
 			return err
 		}
-		refs, err := a.client.azureLocalRecordedReferences(vm)
-		if err != nil || !azureLocalRootReference(refs, a.planned.Identity.NativeType, a.planned.Identity.NativeID) || vm.Normalized["cleanup_protected"] != false {
+		matched, err := a.client.azureLocalRootConsumerReference(a.planned, vm)
+		if err != nil || !matched || vm.Normalized["cleanup_protected"] != false {
 			return serviceDenied("azure_local_root_prerequisite_changed")
 		}
 		seen[vm.ID], native[vm.Identity.NativeID] = true, true
@@ -51,6 +51,10 @@ func (a *azureLocalAction) rootObserve(ctx context.Context) (map[string]any, []s
 	if azureLocalImage(value.Identity.NativeType) {
 		return raw, nil, nil
 	}
+	if value.Identity.NativeType == azureLocalNetworkType {
+		consumers, err := a.client.azureLocalNetworkConsumers(ctx, value, raw)
+		return raw, consumers, err
+	}
 	consumers, err := a.client.azureLocalVMConsumers(ctx, value.Identity.NativeID, value.Identity.NativeType, stringValues(object(value.Normalized[azureLocalCleanup])["vms"]))
 	if err == nil && value.Identity.NativeType == azureLocalStorageType {
 		var roots []string
@@ -72,7 +76,11 @@ func (a *azureLocalAction) rootPreflight(ctx context.Context, request contracts.
 		if len(consumers) != 0 {
 			return contracts.PreflightResult{}, serviceDenied("azure_local_resource_still_in_use")
 		}
-		if reason := protectionReason(resourceType{NativeType: a.planned.Identity.NativeType}, raw); reason != "" {
+		reason := protectionReason(resourceType{NativeType: a.planned.Identity.NativeType}, raw)
+		if a.planned.Identity.NativeType == azureLocalNetworkType {
+			reason = azureLocalNetworkProtection(raw)
+		}
+		if reason != "" {
 			return contracts.PreflightResult{}, serviceDenied(reason)
 		}
 		if len(request.PrerequisiteDeletions) == 0 && a.client.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}) != object(request.Asset.Normalized[azureLocalCleanup])["etag"] {
@@ -109,6 +117,9 @@ func (s *serviceCascades) contributeAzureLocalRoots(ctx context.Context, values 
 		if err := s.client.azureLocalRootRecord(value); err != nil {
 			return err
 		}
+		if value.Identity.NativeType == azureLocalNetworkType && value.Normalized["cleanup_protected"] == true {
+			continue
+		}
 		a := &azureLocalAction{client: s.client, planned: value}
 		before := ""
 		var consumers []string
@@ -127,6 +138,9 @@ func (s *serviceCascades) contributeAzureLocalRoots(ctx context.Context, values 
 			vm, found := selected[id]
 			_, typ, _ := parseID(id)
 			kind := azureLocalKind(typ)
+			if strings.EqualFold(typ, azureLocalAKSType) {
+				kind = azureLocalAKSType
+			}
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": kind, "instance_id": id}
 			if !found {
 				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
@@ -135,9 +149,13 @@ func (s *serviceCascades) contributeAzureLocalRoots(ctx context.Context, values 
 			if err := s.client.azureLocalRootConsumerRecord(vm, value.Identity.NativeType); err != nil {
 				return err
 			}
-			refs, err := s.client.azureLocalRecordedReferences(vm)
-			if err != nil || !azureLocalRootReference(refs, value.Identity.NativeType, value.Identity.NativeID) {
+			matched, err := s.client.azureLocalRootConsumerReference(value, vm)
+			if err != nil || !matched {
 				return serviceDenied("azure_local_root_consumer_changed")
+			}
+			refs, err := s.client.azureLocalRecordedReferences(vm)
+			if err != nil {
+				return err
 			}
 			if value.Identity.NativeType == azureLocalStorageType && len(refs[azureLocalStorageType]) == 0 {
 				evidence["storage_placement_unverified"] = true

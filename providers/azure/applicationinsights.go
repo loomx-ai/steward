@@ -110,7 +110,7 @@ func safeAPIPayload(value map[string]any, endpoint string) map[string]any {
 	if err == nil && u.Host == "management.azure.com" && armPathProvider(u.Path) == "microsoft.security" {
 		return safePayload(object(defenderSafeValue(value)))
 	}
-	if err == nil && u.Host == "management.azure.com" && (armPathProvider(u.Path) == "microsoft.hybridcompute" || armPathProvider(u.Path) == "microsoft.azurestackhci") {
+	if err == nil && u.Host == "management.azure.com" && (armPathProvider(u.Path) == "microsoft.hybridcompute" || armPathProvider(u.Path) == "microsoft.azurestackhci" || armPathProvider(u.Path) == "microsoft.kubernetes" || armPathProvider(u.Path) == "microsoft.hybridcontainerservice") {
 		cleaned := object(hybridComputeSafeValue(value))
 		if armPathProvider(u.Path) == "microsoft.azurestackhci" {
 			cleaned = object(azureLocalSafeValue(value))

@@ -28,6 +28,13 @@ func bindAzureREST(operation catalog.Operation, parameters map[string]any) (cata
 			return catalog.RESTRequest{}, serviceDenied("invalid_azure_local_machine_scope")
 		}
 	}
+	if operation.Call != nil && strings.HasPrefix(operation.Call.Path, "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/") {
+		parent, ok := parameters["connectedClusterResourceUri"].(string)
+		id, kind, err := parseID("/" + parent)
+		if !ok || parent != strings.TrimSpace(parent) || err != nil || kind != strings.ToLower(fleetArcClusterType) || len(strings.Split(id, "/")) != 9 {
+			return catalog.RESTRequest{}, serviceDenied("invalid_azure_local_aks_parent_scope")
+		}
+	}
 	if operation.Call != nil && operation.Call.Version == "2025-05-01" && strings.HasPrefix(operation.ID, "Azure.Microsoft.Web.SiteCertificates_") {
 		properties := object(operation.InputSchema["properties"])
 		if object(properties["name"])["pattern"] == "^[A-z][A-z0-9]*$" {

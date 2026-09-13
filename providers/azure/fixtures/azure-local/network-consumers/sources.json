@@ -1,0 +1,38 @@
+[
+  {
+    "file": "ConnectedCluster_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridkubernetes/resource-manager/Microsoft.Kubernetes/HybridKubernetes/stable/2024-01-01/examples/GetClusterExample.json",
+    "source_sha256": "65eb934c3029bc28baae3316f019daf5e27a733a7d5c09df9fdd2bc84e9718c2",
+    "operation": "ConnectedCluster_Get",
+    "product": "Microsoft.Kubernetes",
+    "path": "/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{clusterName}",
+    "method": "GET"
+  },
+  {
+    "file": "ConnectedCluster_ListBySubscription.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridkubernetes/resource-manager/Microsoft.Kubernetes/HybridKubernetes/stable/2024-01-01/examples/GetClustersBySubscriptionExample.json",
+    "source_sha256": "c6009838e9b0fa897e8a78913da080e74e7df72a8829046b78d68c267d539519",
+    "operation": "ConnectedCluster_ListBySubscription",
+    "product": "Microsoft.Kubernetes",
+    "path": "/subscriptions/{subscriptionId}/providers/Microsoft.Kubernetes/connectedClusters",
+    "method": "GET"
+  },
+  {
+    "file": "provisionedClusterInstances_Get.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridaks/resource-manager/Microsoft.HybridContainerService/HybridContainerService/stable/2024-01-01/examples/GetProvisionedClusterInstance.json",
+    "source_sha256": "338fa3115af06aa96fbdb486ac8a9bbff2e50113b36dc3e76342abea8b149625",
+    "operation": "provisionedClusterInstances_Get",
+    "product": "Microsoft.HybridContainerService",
+    "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances/default",
+    "method": "GET"
+  },
+  {
+    "file": "provisionedClusterInstances_List.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridaks/resource-manager/Microsoft.HybridContainerService/HybridContainerService/stable/2024-01-01/examples/ListProvisionedClusterInstances.json",
+    "source_sha256": "26177059fc1f90785b02ed7b189216646ba73c2b6773d6d3e24a8d17c7f382a7",
+    "operation": "provisionedClusterInstances_List",
+    "product": "Microsoft.HybridContainerService",
+    "path": "/{connectedClusterResourceUri}/providers/Microsoft.HybridContainerService/provisionedClusterInstances",
+    "method": "GET"
+  }
+]

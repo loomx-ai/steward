@@ -52,15 +52,15 @@ func TestAzureLocalNetworkTypeInventory(t *testing.T) {
 				t.Fatal(batch, err)
 			}
 			item := batch.Items[0]
-			if item.Normalized["networkType"] != tc.role || item.Actionable == nil || *item.Actionable {
+			if item.Normalized["networkType"] != tc.role || item.Actionable == nil || *item.Actionable != (tc.role != "Unknown") {
 				t.Fatal("network role/capability", item)
 			}
 			value := asset.Asset{ID: "network", Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: "connection", Partition: "azure", NativeType: azureLocalNetworkType, NativeID: id}, Location: item.Location, Normalized: item.Normalized}
 			if _, err := f.client.azureLocalRecordedReferences(value); err != nil {
 				t.Fatal(err)
 			}
-			if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); err == nil {
-				t.Fatal("classification alone enabled deletion")
+			if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); (err == nil) != (tc.role != "Unknown") {
+				t.Fatal("unverified network type enabled deletion")
 			}
 			encoded, _ := json.Marshal(item)
 			if strings.Contains(string(encoded), "private-network-token") {
@@ -80,7 +80,7 @@ func TestAzureLocalNetworkTypeInventory(t *testing.T) {
 				t.Fatal("known network recovery", batch, err)
 			}
 			for path := range f.reads {
-				if strings.Contains(path, "microsoft.hybridcompute") || strings.Contains(path, "/networkinterfaces") {
+				if strings.Contains(path, "microsoft.hybridcompute") && tc.role != "Infrastructure" {
 					t.Fatal("classification made unrelated dependency reads", path)
 				}
 			}

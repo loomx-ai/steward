@@ -2418,6 +2418,20 @@
         "VirtualMachineInstances_List",
         "VirtualMachineInstances_Stop"
       ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridaks/resource-manager/Microsoft.HybridContainerService/HybridContainerService/stable/2024-01-01/provisionedClusterInstances.json",
+      "operations": [
+        "provisionedClusterInstances_Get",
+        "provisionedClusterInstances_List"
+      ]
+    },
+    {
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridkubernetes/resource-manager/Microsoft.Kubernetes/HybridKubernetes/stable/2024-01-01/connectedClusters.json",
+      "operations": [
+        "ConnectedCluster_Get",
+        "ConnectedCluster_ListBySubscription"
+      ]
     }
   ],
   "resource_types": [
@@ -10702,7 +10716,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListAll"
       ]

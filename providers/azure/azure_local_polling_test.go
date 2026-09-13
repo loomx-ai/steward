@@ -9,7 +9,7 @@ import (
 )
 
 func TestAzureLocalPollingReceiptsAndBoundaries(t *testing.T) {
-	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType, azureLocalImageType, azureLocalMarketplaceType, azureLocalStorageType} {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType, azureLocalImageType, azureLocalMarketplaceType, azureLocalStorageType, azureLocalNetworkType} {
 		t.Run(kind, func(t *testing.T) { testAzureLocalPollingReceiptsAndBoundaries(t, kind) })
 	}
 }
@@ -18,13 +18,19 @@ func testAzureLocalPollingReceiptsAndBoundaries(t *testing.T, kind string) {
 	f := newLocalCleanupFixture(t)
 	id := f.ids[kind]
 	status, result := localCleanupPollURL("Azure-AsyncOperation"), localCleanupPollURL("Location")
+	version := azureLocalVersion
+	if kind == azureLocalNetworkType {
+		version = "2025-06-01-preview"
+		status = strings.ReplaceAll(status, azureLocalVersion, version)
+		result = strings.ReplaceAll(result, azureLocalVersion, version)
+	}
 	header := http.Header{"Azure-Asyncoperation": {status}, "Location": {result}}
 	receipt, err := f.client.azureLocalDeleteReceipt(id, response{status: 202, header: header})
 	if err != nil || receipt["mode"] != "Azure-AsyncOperation" || receipt["url"] != status {
 		t.Fatal("ARM header precedence", receipt, err)
 	}
 	for _, bad := range []string{
-		"http://azure.async.operation/status", strings.Replace(status, "management.azure.com", "attacker.test", 1), strings.Replace(status, testSubscription, testTenant, 1), strings.Replace(status, "Microsoft.AzureStackHCI", "Microsoft.Compute", 1), strings.Replace(status, "2024-01-01", "2025-01-01", 1), status + "&api-version=2024-01-01", status + "#fragment", status + "&force=true", strings.Replace(status, "/operationStatuses/", "/virtualMachines/", 1), strings.Replace(status, "11111111-2222-3333-4444-555555555555", "not-an-operation", 1), strings.Replace(status, "/locations/", "/%6cocations/", 1), status + "&t=one&c=two&s=three", strings.Replace(status, "/eastus/", "/../", 1),
+		"http://azure.async.operation/status", strings.Replace(status, "management.azure.com", "attacker.test", 1), strings.Replace(status, testSubscription, testTenant, 1), strings.Replace(status, "Microsoft.AzureStackHCI", "Microsoft.Compute", 1), strings.Replace(status, version, "2025-01-01", 1), status + "&api-version=2024-01-01", status + "#fragment", status + "&force=true", strings.Replace(status, "/operationStatuses/", "/virtualMachines/", 1), strings.Replace(status, "11111111-2222-3333-4444-555555555555", "not-an-operation", 1), strings.Replace(status, "/locations/", "/%6cocations/", 1), status + "&t=one&c=two&s=three", strings.Replace(status, "/eastus/", "/../", 1),
 	} {
 		if _, err := f.client.azureLocalDeleteReceipt(id, response{status: 202, header: http.Header{"Location": {bad}}}); err == nil {
 			t.Fatal("unsafe callback accepted", bad)

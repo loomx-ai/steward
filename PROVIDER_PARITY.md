@@ -4113,3 +4113,55 @@ background evidence only, not acceptance evidence for this work.
   shared workspace (42 chapters), each with 10 original screenshots. Generated
   catalog reproducibility and unchanged unrelated operations were verified.
   All 65 pre-existing file contents are preserved. No frontend code changed.
+
+### Azure Local logical-network cleanup and native AKS consumers
+
+- Workload and infrastructure logical networks now support independent native
+  deletion through the preview contract. The catalog contains 443 rules, 413
+  actions and 1,472 operations. Four native connected-cluster/provisioned-instance
+  GET/list operations establish AKS consumers; no AKS deletion family is added.
+  The previous 1,468 operations remain unchanged.
+- Workload networks check NIC and AKS logical-network references. Infrastructure
+  networks require VMs, NICs, other networks and AKS instances at their verified
+  custom location to be cleared first. Missing references/placement remain
+  possible consumers; unknown network type or custom location cannot authorize
+  deletion. Graph prerequisites require explicit workload selection and never
+  grant cascade ownership. Native AKS dependencies require external removal.
+- Signed history preserves observed NIC/network/AKS identities and VM scopes
+  across omitted indexes and missing Arc registrations. Native reverse NIC IDs
+  are checked independently; stale references continue to block deletion. Own
+  404 still requires consumer checks. Malformed/foreign indexes, denied reads,
+  changed configuration/ETags, protection and inherited locks fail safely.
+- Four unchanged native AKS/Arc examples and three exact preview SDK functions
+  retain source hashes and provenance. Unlike the stable root SDK, network
+  `begin_delete` declares `final-state-via: location`; persisted Location polling
+  and fresh own-resource readback survive runtime/repository restart without
+  another DELETE. Offline original-function checks use stubs and do not execute
+  Azure Core ARMPolling against a service.
+- Registered SQLite tests cover seven workload-network steps or eight
+  infrastructure-network steps, with two existing VM-managed impacts. Tests also
+  cover native index/response boundaries, surviving consumers after network 404,
+  reference/scope changes, private-field isolation, explicit selection and legacy
+  rescan. The cleanup warning and bilingual docs explain that infrastructure
+  deletion removes the cloud projection while its on-premises network remains.
+- This milestone completes the implemented Local network cleanup path, not the
+  broader provider-parity audit. All eight acceptance items remain open. Native
+  AKS deletion, physical behavior and real callback compatibility remain outside
+  this milestone. No independent emulator or live backend was used.
+- Validation: full isolated `go test ./...` passed (Azure
+  340.781s, GCP 161.111s), and `go vet ./...` passed. Shared-workspace Local/Arc/
+  catalog/prerequisite integration passed (Azure 53.785s, cleanup 0.793s, plan
+  1.121s); the full shared inventory package passed (1.328s). All 32 original
+  SDK/CLI/catalog Python checks, 39 frontend contracts, 92 cleanup/localization
+  UI tests, TypeScript checks and documentation checks (30 isolated / 42 shared
+  chapters, each with 10 original screenshots) passed. Catalog reproducibility,
+  all unchanged operations, original wheel/fragment/example hashes and the
+  preservation of 65 existing file contents were verified.
+- The attempted full Azure race run reached its 10-minute default timeout while
+  executing an existing API Management notification test; it did not report a
+  data race. Shared cleanup/inventory race packages passed (13.706s / 7.313s);
+  the plan package was rerun at its correct `internal/core/plan` path and passed
+  (4.337s). The affected Local/Arc/catalog/prerequisite race run passed (Azure
+  461.076s, cleanup 5.449s, plan 5.307s); the full Azure race run is not a pass.
+  The committed milestone contains 41 files and preserves all 65 pre-existing
+  file contents, including unrelated changes in the shared translation file.

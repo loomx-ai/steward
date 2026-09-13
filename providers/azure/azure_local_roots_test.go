@@ -30,7 +30,14 @@ func newLocalRootFixture(t *testing.T, kind string) *localRootFixture {
 		f.id = f.dataDisk
 	}
 	previous := f.override
-	endpoint := strings.ReplaceAll(localCleanupPollURL("Azure-AsyncOperation"), "11111111-2222-3333-4444-555555555555", azureRequestID(f.id))
+	version := azureLocalVersion
+	pollHeader := "Azure-Asyncoperation"
+	if kind == azureLocalNetworkType {
+		version = "2025-06-01-preview"
+		pollHeader = "Location"
+	}
+	endpoint := strings.ReplaceAll(localCleanupPollURL(pollHeader), "11111111-2222-3333-4444-555555555555", azureRequestID(f.id))
+	endpoint = strings.ReplaceAll(endpoint, azureLocalVersion, version)
 	f.override = func(req *http.Request) (*http.Response, bool) {
 		if req.Method == "GET" && req.URL.String() == endpoint {
 			f.rootPolls++
@@ -41,7 +48,7 @@ func newLocalRootFixture(t *testing.T, kind string) *localRootFixture {
 		}
 		if req.Method == "DELETE" && strings.ToLower(req.URL.Path) == f.id {
 			body, _ := io.ReadAll(req.Body)
-			if req.URL.Query().Get("api-version") != azureLocalVersion || len(req.URL.Query()) != 1 || len(body) != 0 || req.Header.Get("If-Match") != "" || req.Header.Get("X-Ms-Client-Request-Id") == "" {
+			if req.URL.Query().Get("api-version") != version || len(req.URL.Query()) != 1 || len(body) != 0 || req.Header.Get("If-Match") != "" || req.Header.Get("X-Ms-Client-Request-Id") == "" {
 				t.Fatal("invalid native root DELETE")
 			}
 			for id, raw := range f.values {
@@ -62,7 +69,7 @@ func newLocalRootFixture(t *testing.T, kind string) *localRootFixture {
 			}
 			object(f.values[f.id]["properties"])["provisioningState"] = "Deleting"
 			f.values[f.id]["etag"] = "root-delete"
-			return &http.Response{StatusCode: 202, Header: http.Header{"Azure-Asyncoperation": {endpoint}}, Body: http.NoBody}, true
+			return &http.Response{StatusCode: 202, Header: http.Header{pollHeader: {endpoint}}, Body: http.NoBody}, true
 		}
 		return previous(req)
 	}

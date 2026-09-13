@@ -24,6 +24,15 @@ func TestAzureLocalOfficialContracts(t *testing.T) {
 	if err != nil || json.Unmarshal(raw, &sources) != nil {
 		t.Fatal(err)
 	}
+	raw, err = os.ReadFile("fixtures/azure-local/network-consumers/sources.json")
+	var consumers []map[string]string
+	if err != nil || json.Unmarshal(raw, &consumers) != nil {
+		t.Fatal(err)
+	}
+	for _, source := range consumers {
+		source["file"] = "network-consumers/" + source["file"]
+		sources = append(sources, source)
+	}
 	raw, err = os.ReadFile("catalog/source/swagger.json")
 	var documents catalog.RESTDocumentSet
 	if err != nil || json.Unmarshal(raw, &documents) != nil {
@@ -59,7 +68,11 @@ func TestAzureLocalOfficialContracts(t *testing.T) {
 			if strings.HasPrefix(source["operation"], "LogicalNetworks_") {
 				version = "2025-06-01-preview"
 			}
-			op, ok := metadata.catalog.Operation("Azure.Microsoft.AzureStackHCI." + source["operation"])
+			product := source["product"]
+			if product == "" {
+				product = "Microsoft.AzureStackHCI"
+			}
+			op, ok := metadata.catalog.Operation("Azure." + product + "." + source["operation"])
 			if !ok || op.Call == nil || op.Call.Version != version || op.Call.Method != source["method"] || op.Call.Path != source["path"] || !strings.Contains(op.SourceURI, "/c20bf553ad64f20c6d5e3f56080380c086cb1fde/") {
 				t.Fatal("Azure Local provenance changed")
 			}
@@ -146,7 +159,7 @@ func TestAzureLocalOfficialContracts(t *testing.T) {
 			}
 		})
 	}
-	if len(sources) != 33 || len(operations) != 33 || responses != 42 || bodies != 25 || badParents != 9 || badCallbacks != 18 || badParameters != 2 {
+	if len(sources) != 37 || len(operations) != 37 || responses != 46 || bodies != 29 || badParents != 9 || badCallbacks != 18 || badParameters != 2 {
 		t.Fatal("incomplete Azure Local evidence", len(sources), len(operations), responses, bodies, badParents, badCallbacks, badParameters)
 	}
 }

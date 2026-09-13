@@ -25,7 +25,7 @@ func (c *client) azureLocalRootConsumerRecord(value asset.Asset, target string) 
 	if value.Identity.NativeType == azureLocalVMType {
 		return c.azureLocalVMRecord(value)
 	}
-	if target == azureLocalStorageType && azureLocalStorageResource(value.Identity.NativeType) {
+	if target == azureLocalStorageType && azureLocalStorageResource(value.Identity.NativeType) || target == azureLocalNetworkType && (value.Identity.NativeType == azureLocalNICType || value.Identity.NativeType == azureLocalNetworkType) {
 		return c.azureLocalRootRecord(value)
 	}
 	return serviceDenied("invalid_azure_local_root_consumer")

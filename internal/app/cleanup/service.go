@@ -1794,6 +1794,10 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			if !selectionWarningExists(result, code, value.ID) {
 				result = append(result, plan.Warning{Code: code, AssetID: value.ID, Message: message, Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})
 			}
+		case "Microsoft.AzureStackHCI/logicalNetworks":
+			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalNetworkRemoval, value.ID) {
+				result = append(result, plan.Warning{Code: plan.WarningAzureLocalNetworkRemoval, AssetID: value.ID, Message: "Deleting this logical network removes its Azure resource after dependencies are cleared. Infrastructure-network deletion removes only the cloud projection; its on-premises network remains.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType, "network_type": value.Normalized["networkType"]}})
+			}
 		case "Microsoft.AzureStackHCI/virtualHardDisks":
 			if value.Identity.Provider == asset.ProviderAzure && !selectionWarningExists(result, plan.WarningAzureLocalDiskRemoval, value.ID) {
 				result = append(result, plan.Warning{Code: plan.WarningAzureLocalDiskRemoval, AssetID: value.ID, Message: "Deleting this Azure Local disk can permanently remove its data; verify the physical disk result separately.", Evidence: map[string]any{"operation": "delete", "native_type": value.Identity.NativeType}})

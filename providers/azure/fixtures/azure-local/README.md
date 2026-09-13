@@ -4,7 +4,7 @@ These contracts support the native Local VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks, NICs, both image families and storage paths have independent cleanup; logical-network cleanup remains unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks, NICs, both image families and storage paths have independent cleanup; logical networks now have independent cleanup with explicit workload prerequisites.
 
 ## Original Swagger examples
 
@@ -20,8 +20,10 @@ transitive schemas are retained in `../../catalog/source/swagger.json`.
 The selection contains 24 GETs, eight DELETEs and VM Stop, covering VM instances,
 guest agents, read-only guest hybrid identity metadata and six independent
 resource families. No destructive operation is invented for identity metadata.
-Tests validate all 25 response bodies against native schemas and preserve all
-42 example responses. They explicitly account for these source discrepancies:
+`network-consumers/sources.json` adds four native connected-cluster/AKS GET/list
+examples, bringing the combined fixture set to 37 original operations. Tests
+validate all 29 response bodies against native schemas and preserve all 46
+example responses. They explicitly account for these source discrepancies:
 
 | Original discrepancy | Test treatment |
 | --- | --- |
@@ -37,7 +39,9 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. VM, guest-agent, disk, NIC, image and storage-path cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
+metadata are excluded. VM, guest-agent, disk, NIC, image, storage-path and logical-
+network cleanup use their native DELETE operations. Identity metadata retains
+its VM-managed lifecycle; these fixtures do not add direct AKS deletion.
 
 ## Original CLI function
 
@@ -370,6 +374,42 @@ case-changed or whitespace-padded enum values stay `Unknown`; non-string values
 fail the scan. Private configuration stays sealed, and changing the native type
 invalidates a paginated snapshot. Known IDs survive an omitted index and JSON
 recovery; permission, version, identity and cursor failures cannot close assets.
-These checks do not grant deletion capability. Workload consumer reconciliation
-(including applicable AKS consumers), infrastructure-wide prerequisites, own
-absence verification and persisted cleanup recovery remain to be implemented.
+Unknown type/custom location does not grant deletion capability. The independent
+cleanup workflow below adds consumer reconciliation and persisted recovery.
+
+## Independent workload and infrastructure network cleanup
+
+`sdk-network-source.json` retains the original preview request builder, initial
+delete handler and `begin_delete` from the verified 1.15.1 wheel. Unlike the stable
+root SDKs, it declares `final-state-via: location`. Python checks execute these
+unchanged functions with stubs for native names, API version, 202/204 handling and
+continuation without another DELETE. They do not execute Azure Core ARMPolling
+against a service. The driver validates and persists the Location receipt, then
+requires the network's own absence and fresh consumer checks to complete.
+
+`network-consumers/sources.json` pins four unchanged GET/list examples from the
+2024 connected-cluster and provisioned-instance contracts. The native AKS GET
+uses the connected-cluster name for its `default` instance; its canonical ARM ID
+and type remain authoritative. Original examples remain unmodified, including
+cross-subscription placement references. Composed fixtures adapt identities in
+memory and add failure scenarios. The catalog adds only four read operations;
+it does not expose AKS inventory/cleanup as a new resource family.
+
+Workload deletion checks NIC and AKS network references, including unknown
+references and the network's own reverse NIC index. Infrastructure deletion
+checks VMs, NICs, logical networks and AKS instances at the verified custom
+location; missing placement remains a possible consumer. Signed history recovers
+known resources omitted from indexes or left after parent registration removal.
+Graph prerequisites require explicit selection; unresolved AKS dependencies
+require native external removal. No network operation owns or cascades workloads.
+The cleanup warning explains that infrastructure deletion removes the cloud
+projection while the on-premises network remains.
+
+Tests cover role/scope/configuration changes, protected unknown types, malformed
+indexes and native responses, cross-subscription references, denied reads,
+sensitive-field isolation, stale reverse references, legacy rescan, and surviving
+consumers after network 404. Registered SQLite execution reviews seven workload
+steps or eight infrastructure steps, with two existing VM-managed impacts. It
+restarts the repository/runtime between observations, verifies prerequisite
+absence and never replays DELETE. No independent emulator or live backend was
+used; physical networking behavior and production callbacks remain unverified.
