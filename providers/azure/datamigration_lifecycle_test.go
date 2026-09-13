@@ -39,9 +39,16 @@ func (f *dataMigrationFixture) assets(t *testing.T) []asset.Asset {
 				return res, true
 			}
 		}
-		return fleetGraphEmptyIndexes(t, req)
+		return dataMigrationOtherIndexes(t, req)
 	}
 	return values
+}
+
+func dataMigrationOtherIndexes(t *testing.T, req *http.Request) (*http.Response, bool) {
+	if provider := armPathProvider(req.URL.Path); provider == "microsoft.datamigration" || provider == "microsoft.documentdb" {
+		return nil, false
+	}
+	return fleetGraphEmptyIndexes(t, req)
 }
 
 func (f *dataMigrationFixture) schemaFileTask() {

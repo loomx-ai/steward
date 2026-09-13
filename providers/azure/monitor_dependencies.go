@@ -214,6 +214,13 @@ func (c *client) monitorIncomingTargets(ctx context.Context, targets []asset.Ass
 		for target, sources := range fleet {
 			incoming[target] = append(incoming[target], sources...)
 		}
+		migrations, err := c.dataMigrationIncomingObservation(ctx, targets, known)
+		if err != nil {
+			return nil, contracts.DependencyReadError(err)
+		}
+		for target, sources := range migrations {
+			incoming[target] = append(incoming[target], sources...)
+		}
 		return incoming, nil
 	}
 	return c.verifiedIncoming(observe)
@@ -238,6 +245,9 @@ func (c *client) verifiedIncoming(observe func() (map[string][]monitorIncomingSo
 				}
 				if fleetKind(source.resource.kind).kind != "" {
 					configuration, group = fleetSnapshot(source.resource.kind, source.resource.data), source.group
+				}
+				if dataMigrationKind(source.resource.kind) != "" {
+					configuration, group = dataMigrationSnapshot(source.resource.kind, source.resource.data), source.group
 				}
 				rows[source.resource.id] = map[string]any{"kind": source.resource.kind, "configuration": configuration, "group": group, "references": source.references}
 			}
@@ -305,6 +315,15 @@ func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incomi
 				if err := c.fleetIncomingUnchanged(*indexed, entry); err != nil {
 					return contribution, err
 				}
+				continue
+			}
+			if dataMigrationKind(source.kind) != "" {
+				if err := c.dataMigrationIncomingUnchanged(*indexed, entry); err != nil {
+					return contribution, err
+				}
+				contribution.Relationships = append(contribution.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: indexed.ID, Type: graph.RelationshipDependsOn, Source: "azure:datamigration-incoming", Confidence: 1, Evidence: map[string]any{
+					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
+				}})
 				continue
 			}
 			if rbacResourceKind(source.kind) != "" {

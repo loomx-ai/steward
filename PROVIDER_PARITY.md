@@ -3327,7 +3327,42 @@ background evidence only, not acceptance evidence for this work.
   original recording reproduction and documentation checks (40 chapters /
   10 screenshots) passed. No acceptance criterion is closed by these checks.
   The four added root documents and 43 dependency documents were also reproduced
-  from their checksum-pinned official sources. Follow-up lifecycle work must
-  add incoming-migration checks to independently deleted SQL/Cosmos and other
-  referenced targets; the current forward edges order jointly selected resources
-  but do not establish the absence of unselected or newly created migrations.
+  from their checksum-pinned official sources. The independent-target gap found
+  in this foundation is addressed by the follow-up below.
+
+### Data Migration incoming references on independent targets
+
+- Independent SQL/Cosmos, network, compute, storage, identity and containing
+  resources now use native incoming DMS discovery through the shared target
+  action guard. Complete classic and modern walks supplement the original
+  forward edges, including known source/ancestor GETs when lists omit them.
+  Native SQL DB/MI `targetDbName` also identifies the specific target database.
+- Indexed migrations contribute authoritative, explicitly selected deletion
+  prerequisites. Unindexed sources block target cleanup; migration references
+  never grant target ownership. Source context stays bound to its own signed
+  connection, while foreign connection/partition graph targets remain unresolved.
+  Private input/reference changes, unreadable native context or changes during
+  the repeated observations fail closed.
+- Full registered lifecycle/planner tests verify target-only blockers, migration
+  ordering and persisted prerequisite assets. The registered SQL target driver
+  requires each reviewed source's own 404 before deletion, restores a serialized
+  request and deletes once. Resumed verification rejects both a reappearing
+  source and a new migration after the target itself disappears. Additional
+  cases cover all five target routes, exact SQL database references, classic
+  references to containing resources and opaque script exclusion.
+- Existing isolated product fixtures explicitly compose empty native DMS indexes
+  with validated versions/scopes. Real DMS fixtures retain their native responses
+  before that fallback. Incoming discovery adds subscription-wide migration
+  read requirements to independent target cleanup; the bilingual Azure guide
+  and retained fixture documentation explain these permissions and behavior.
+- Resource/catalog counts and the 21 missing mapped Azure types are unchanged.
+  This follow-up remains protocol and registered-runtime evidence. Independent
+  emulator/live-cloud verification and all eight overall acceptance criteria
+  remain open.
+- Verification: repository-wide `go test ./...` passed (Azure 297.583s);
+  all DMS, shared native-target and Data Factory registered-worker race tests
+  passed (215.651s). `go vet ./...`, documentation checks (40 chapters /
+  10 original screenshots) and `git diff --check` passed. The 20 existing
+  product scenarios affected by overly strict external connection/partition
+  checks also passed after the native source context was bound independently;
+  no existing blocker or mutation expectation was relaxed.

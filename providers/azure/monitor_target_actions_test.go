@@ -21,6 +21,9 @@ import (
 // use the original Monitor responses instead, including native 403/404 errors.
 func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
 	t.Helper()
+	if response, handled := emptyDataMigrationIndexResponse(t, req); handled {
+		return response, true
+	}
 	if strings.EqualFold(req.URL.Path, "/subscriptions/"+testSubscription+"/providers/"+fleetType) {
 		if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != fleetVersion {
 			t.Fatal("unexpected empty native Fleet index contract", req.Method, req.URL)
@@ -51,6 +54,39 @@ func emptyMonitorIndexResponse(t *testing.T, req *http.Request) (*http.Response,
 		return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 	}
 	return nil, false
+}
+
+// Existing product scenarios explicitly compose an empty DMS environment.
+// Native DMS fixtures handle their own routes before this fallback.
+func emptyDataMigrationIndexResponse(t *testing.T, req *http.Request) (*http.Response, bool) {
+	t.Helper()
+	path := strings.ToLower(req.URL.Path)
+	root := "/subscriptions/" + testSubscription + "/providers/"
+	version := ""
+	for _, kind := range []string{dataMigrationServiceType, dataMigrationSQLServiceType, dataMigrationMongoServiceType} {
+		if path == root+strings.ToLower(kind) {
+			version = dataMigrationVersion
+		}
+	}
+	for _, kind := range []string{"Microsoft.DocumentDB/databaseAccounts", "Microsoft.DocumentDB/mongoClusters"} {
+		if path == root+strings.ToLower(kind) {
+			mapping, _ := findType(kind)
+			version = mapping.Version
+		}
+	}
+	if strings.HasSuffix(path, "/providers/microsoft.datamigration/databasemigrations") {
+		parent := strings.TrimSuffix(path, "/providers/microsoft.datamigration/databasemigrations")
+		if _, kind, err := parseID(parent); err == nil && strings.HasPrefix(parent, "/subscriptions/"+testSubscription+"/resourcegroups/") && slices.Contains([]string{"microsoft.documentdb/databaseaccounts", "microsoft.documentdb/mongoclusters"}, kind) {
+			version = dataMigrationVersion
+		}
+	}
+	if version == "" {
+		return nil, false
+	}
+	if req.Method != "GET" || req.URL.Host != "management.azure.com" || len(req.URL.Query()) != 1 || req.URL.Query().Get("api-version") != version {
+		t.Fatal("unexpected empty native DMS dependency index", req.Method, req.URL)
+	}
+	return jsonResponse(200, map[string]any{"value": []any{}}, nil), true
 }
 
 // Isolated non-RBAC fixtures compose an empty subscription authorization index.

@@ -446,6 +446,7 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 		return result, err
 	}
 	result.Unresolved = append(result.Unresolved, incoming.Unresolved...)
+	result.Relationships = append(result.Relationships, incoming.Relationships...)
 	rbac, err := s.client.verifiedIncoming(func() (map[string][]monitorIncomingSource, error) {
 		return s.client.rbacIncomingObservation(ctx, roleTargets, assets)
 	})

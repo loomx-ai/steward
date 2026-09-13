@@ -134,11 +134,19 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			return filtered, nil, serviceDenied("ambiguous_monitor_target_prerequisite")
 		}
 		seenIDs[member.Identity.NativeID], seenAssets[member.ID] = true, true
-		if monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" && fleetKind(member.Identity.NativeType).kind == "" {
+		migration := dataMigrationKind(member.Identity.NativeType) != "" && dataMigrationKind(value.Identity.NativeType) == ""
+		if !migration && monitorResourceKind(member.Identity.NativeType) == "" && member.Identity.NativeType != diagnosticSettingsType && rbacResourceKind(member.Identity.NativeType) == "" && fleetKind(member.Identity.NativeType).kind == "" {
 			filtered.PrerequisiteDeletions = append(filtered.PrerequisiteDeletions, prerequisite)
 			continue // The native driver authenticates its own prerequisite families.
 		}
 		id, _, kind, err := monitorResourceID(member.Identity.NativeID)
+		if migration {
+			id, kind, err = parseID(member.Identity.NativeID)
+			kind = dataMigrationKind(kind)
+			if err == nil {
+				err = a.client.dataMigrationIdentity(id, kind)
+			}
+		}
 		if member.Identity.NativeType == diagnosticSettingsType {
 			id, _, kind, err = diagnosticResourceID(member.Identity.NativeID)
 		}
@@ -155,7 +163,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 			return filtered, nil, serviceDenied("invalid_monitor_target_prerequisite")
 		}
 		var refs map[string]any
-		if fleetKind(kind).kind != "" {
+		if migration {
+			refs, err = a.client.dataMigrationRecordedReferences(member)
+		} else if fleetKind(kind).kind != "" {
 			refs, err = a.client.fleetRecordedReferences(member)
 		} else if rbacResourceKind(kind) != "" {
 			refs, err = a.client.rbacRecordedReferences(member)
@@ -169,6 +179,10 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		}
 		linked := false
 		for _, target := range targets {
+			if migration {
+				linked = linked || dataMigrationReferenceMatches(target, refs)
+				continue
+			}
 			if fleetKind(kind).kind != "" {
 				linked = linked || fleetReferenceMatches(target, member, refs)
 				continue
@@ -186,7 +200,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 		if !linked {
 			return filtered, nil, serviceDenied("monitor_target_prerequisite_reference_changed")
 		}
-		if fleetKind(kind).kind != "" {
+		if migration {
+			_, err = a.client.dataMigrationRead(ctx, id, kind)
+		} else if fleetKind(kind).kind != "" {
 			_, err = a.client.fleetRead(ctx, kind, id)
 		} else if rbacResourceKind(kind) != "" {
 			_, err = a.client.rbacRead(ctx, kind, text(member.Normalized[rbacWireSelector]))
@@ -206,6 +222,9 @@ func (a *monitorTargetAction) request(ctx context.Context, request contracts.Act
 }
 
 func (a *monitorTargetAction) ownedSource(request contracts.ActionRequest, source monitorIncomingSource) (bool, error) {
+	if dataMigrationKind(source.resource.kind) != "" {
+		return false, nil // Migration definitions require independently reviewed deletion.
+	}
 	if fleetKind(source.resource.kind).kind != "" {
 		for _, impact := range request.LifecycleImpacts {
 			if source.resource.kind == fleetGateType && impact.Delete && impact.ControllerID == request.Asset.ID && impact.Asset.Identity.NativeID == source.resource.id && impact.Asset.Identity.NativeType == fleetGateType && fleetChildRelation(request.Asset, impact.Asset) {

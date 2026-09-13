@@ -158,6 +158,9 @@ func (c *client) dataMigrationNodeManifest(raw map[string]any) map[string]any {
 }
 
 func (r *Runtime) dataMigrationItems(ctx context.Context, c *client, connection asset.ConnectionID, forest dataMigrationForest) (map[string]contracts.InventoryItem, map[string]any, error) {
+	if len(forest.members) == 0 {
+		return map[string]contracts.InventoryItem{}, map[string]any{}, nil
+	}
 	groups, err := c.insightsGroups(ctx)
 	if err != nil {
 		return nil, nil, err

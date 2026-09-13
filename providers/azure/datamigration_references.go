@@ -47,6 +47,13 @@ func dataMigrationReferences(member dataMigrationMember, targetRaw map[string]an
 		if err := add(target, targetKind); err != nil {
 			return nil, err
 		}
+		// The SQL routes name this path parameter targetDbName in the native
+		// contract; it denotes a database, not an arbitrary migration label.
+		if kind == "SqlDb" || kind == "SqlMi" {
+			if err := add(target+"/databases/"+last(member.id), targetKind+"/databases"); err != nil {
+				return nil, err
+			}
+		}
 		// These target types currently supply native GET context, but have no
 		// inventory rule to carry their network/compute edge into scope closure.
 		switch strings.ToLower(targetKind) {

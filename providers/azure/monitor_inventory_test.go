@@ -98,6 +98,9 @@ func newMonitorInventoryFixture(t *testing.T, kind string) *monitorInventoryFixt
 				return response, nil
 			}
 		}
+		if response, ok := emptyDataMigrationIndexResponse(t, req); ok {
+			return response, nil
+		}
 		if response, ok := emptyRBACIndexResponse(t, req); ok {
 			return response, nil
 		}

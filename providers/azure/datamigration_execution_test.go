@@ -30,7 +30,7 @@ func dataMigrationWorkerRepository(t *testing.T, f *dataMigrationFixture) (*sqli
 				return res, true
 			}
 		}
-		return fleetGraphEmptyIndexes(t, req)
+		return dataMigrationOtherIndexes(t, req)
 	}
 	return repository, registry, path
 }

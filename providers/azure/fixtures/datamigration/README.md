@@ -59,7 +59,7 @@ Reproduce the extracts and run the checks:
 python3 providers/azure/fixtures/datamigration/reproduce_recordings.py --check
 python3 -m unittest discover -s scripts -p test_sync_azure_catalog.py
 go test ./providers/azure -run '^TestDataMigration' -count=1
-go test -race ./providers/azure -run '^Test(DataMigration|DataFactoryRegistered)' -count=1
+go test -race ./providers/azure -run '^Test(DataMigration|DataFactoryRegistered|MonitorNativeTarget)' -count=1
 ```
 
 Native SQL Cancel can return HTTP 200 with a partial resource body and an async
@@ -81,6 +81,20 @@ configuration, target, ancestor, group, lock and registered-node context is boun
 across inventory, graph and execution. Typed SQL MI subnet and SQL VM compute
 references preserve network scope without assigning ownership of those targets.
 Arbitrary connection strings, scripts and input objects do not create edges.
+
+Independent targets and ancestors also use the shared native incoming-reference
+guard. Complete classic/modern walks and known own-resource reads detect sources
+before graph contribution, execution and resumed verification. SQL DB/MI routes
+add their native `targetDbName` database reference. Incoming graph prerequisites
+require explicit migration selection, never automatic target ownership. The full
+registered lifecycle and planner tests verify target-only blockers, frozen source
+prerequisites and migration-before-target order. The registered SQL target driver
+accepts those prerequisites only after each source's own 404, and later readback
+rejects a reappearing or newly created source even after the target is gone.
+Changed private context or signed references, forbidden reads and list omissions
+are exercised separately. Source identity stays bound to its own connection;
+foreign connection/partition graph targets remain unresolved rather than borrowing
+that source. Unreadable dependency indexes block independent target cleanup too.
 
 Classic child deletion is reviewed and ordered; active tasks are canceled before
 DELETE with `deleteRunningTasks=false`. File consumers and modern service-linked
