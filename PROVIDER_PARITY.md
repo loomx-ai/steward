@@ -3762,3 +3762,39 @@ background evidence only, not acceptance evidence for this work.
   Shared-workspace Azure Local/Arc/catalog integration passed (8.701s). The
   29 milestone files do not overlap existing work; pre-existing file hashes
   were verified unchanged before commit.
+
+
+### Azure Local network selection and VM-attached disk scope
+
+- Live network search now pages from Azure VNets into Local logical networks,
+  supports name/ARM-ID queries and binds continuations to connection, region,
+  parent, query and source. Exact Local IDs use native individual reads and
+  recover index omissions without querying VNet first. Empty filtered pages
+  advance; exhausted sources terminate. Permission failures remain failures.
+  Local embedded subnet configuration is not fabricated as an ARM subnet.
+- Network scans include Local virtual disks through native VM attachments.
+  Signed saved VM identities recover known parent-index omissions and are
+  reread on subsequent scans; detach removes the VM network reference. These
+  references do not add reverse graph dependencies or deletion ownership.
+- The actual creator/SQLite worker/graph path is covered with the nine Local
+  rules and broad ARM source enabled: live target validation, ten successful
+  shards, six matching assets and rejection before persistence after the
+  selected network disappears. This scoped fixture does not prove all service
+  families' network behavior or pruning of old scope memberships.
+- The existing styled frontend picker now uses Azure network/subnet labels.
+  Permission/page errors expose retry while preserving chosen networks. Twenty
+  scan UI tests, 39 frontend contracts and TypeScript checks passed. Actual
+  dialog/browser QA with a temporary response fixture verified light/dark
+  dropdowns, pagination, permission retry and preserved selection; no native
+  HTML select was present. This is UI evidence, not cloud backend evidence.
+- Counts remain 443 rules, 405 actions and 1,468 operations, with 189 root/102
+  reference documents. Nineteen mapped types still lack specifications. Local
+  controller ownership, cleanup/recovery, independent final readback and live
+  VM/billing outcomes remain pending. All eight acceptance criteria stay open.
+- Verification: isolated `c74a909` plus this milestone passed `go test ./...`
+  (Azure 311.702s; GCP 161.771s), Azure Local/Arc/network/catalog race checks
+  (58.050s), `go vet ./...`, seven offline CLI/importer tests and documentation
+  checks (30 chapters, 10 original screenshots). Shared-workspace integration
+  passed (8.792s), as did TypeScript and all 20 scan UI tests. Exactly 12 owned
+  files are included; all 65 pre-existing file contents were preserved,
+  including unrelated edits in the shared translation file.

@@ -1103,32 +1103,6 @@ func safeResource(value any) any {
 		return value
 	}
 }
-func (r *Runtime) SearchNetworkTargets(ctx context.Context, query contracts.NetworkTargetQuery) (contracts.NetworkTargetPage, error) {
-	nativeType := vnetType
-	if query.Kind == asset.ScanTargetVSwitch {
-		nativeType = subnetType
-	} else if query.Kind != asset.ScanTargetVPC {
-		return contracts.NetworkTargetPage{}, fmt.Errorf("unsupported Azure network target")
-	}
-	kind := r.resourceKind(nativeType)
-	batch, err := r.List(ctx, contracts.InventoryRequest{ConnectionID: query.ConnectionID, Scope: asset.Scope{Kind: asset.ScopeRegion, NativeID: query.RegionID},
-		Source: productInventorySource, ResourceKind: &kind, Cursor: query.Cursor, Limit: query.Limit})
-	if err != nil {
-		return contracts.NetworkTargetPage{}, err
-	}
-	page := contracts.NetworkTargetPage{Items: []contracts.NetworkTargetOption{}, NextCursor: batch.NextCursor}
-	for _, item := range batch.Items {
-		parent := text(item.Normalized["vpc_id"])
-		if query.ParentNativeID != "" && !strings.EqualFold(parent, query.ParentNativeID) {
-			continue
-		}
-		if query.Query != "" && !strings.Contains(strings.ToLower(item.Name+" "+item.NativeID), strings.ToLower(query.Query)) {
-			continue
-		}
-		page.Items = append(page.Items, contracts.NetworkTargetOption{Kind: query.Kind, RegionID: query.RegionID, NativeID: item.NativeID, Name: item.Name, ParentNativeID: parent})
-	}
-	return page, nil
-}
 
 // A malformed lock entry cannot establish an unlocked resource. Subscription
 // and nested ARM locks share the same native extension suffix.

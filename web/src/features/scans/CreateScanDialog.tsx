@@ -52,6 +52,15 @@ export function CreateScanDialog({
   onCreated: (id: string) => void;
 }) {
   const { formatError, locale, t } = useLocale();
+  const azure = connection.provider === "azure";
+  const networkLabel = azure ? t("scans.azureNetworks") : "VPC";
+  const subnetLabel = azure ? t("scans.azureSubnets") : "vSwitch";
+  const networkSearch = t(
+    azure ? "scans.searchAzureNetworks" : "scans.searchVPC",
+  );
+  const subnetSearch = t(
+    azure ? "scans.searchAzureSubnets" : "scans.searchVSwitch",
+  );
   const [scopeMode, setScopeMode] =
     useState<ScanScopeMode>("all_active_regions");
   const [selectedRegionIDs, setSelectedRegionIDs] = useState<string[]>([
@@ -275,7 +284,12 @@ export function CreateScanDialog({
             [
               ["all_active_regions", t("scans.allActiveRegions")],
               ["selected_regions", t("scans.selectedRegions")],
-              ["selected_networks", t("scans.selectedNetworks")],
+              [
+                "selected_networks",
+                t(
+                  azure ? "domain.selected_networks" : "scans.selectedNetworks",
+                ),
+              ],
             ] as const
           ).map(([value, title]) => (
             <label
@@ -309,6 +323,33 @@ export function CreateScanDialog({
       )}
       {scopeMode === "selected_networks" && (
         <div className="space-y-4 rounded-lg border p-3">
+          {(
+            [
+              [networkLabel, vpcs],
+              [subnetLabel, vswitches],
+            ] as const
+          ).map(([label, query]) =>
+            query.error ? (
+              <Alert key={label} variant="destructive">
+                <AlertDescription>
+                  {label}: {formatError(query.error)}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() =>
+                      void (query.isFetchNextPageError
+                        ? query.fetchNextPage()
+                        : query.refetch())
+                    }
+                  >
+                    {t("shell.retry")}
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            ) : null,
+          )}
           <div className="space-y-2">
             <Label>{t("scans.queryRegion")}</Label>
             <Combobox
@@ -322,9 +363,9 @@ export function CreateScanDialog({
             />
           </div>
           <MultiCombobox
-            label="VPC"
-            placeholder={t("scans.searchVPC")}
-            searchPlaceholder={t("scans.searchVPC")}
+            label={networkLabel}
+            placeholder={networkSearch}
+            searchPlaceholder={networkSearch}
             emptyLabel={t("scans.noNetworkTargets")}
             selectedListLabel={t("scans.selectedNetworkList")}
             removeLabel={(name) => t("scans.removeNetworkTarget", { name })}
@@ -362,9 +403,9 @@ export function CreateScanDialog({
             }}
           />
           <MultiCombobox
-            label="vSwitch"
-            placeholder={t("scans.searchVSwitch")}
-            searchPlaceholder={t("scans.searchVSwitch")}
+            label={subnetLabel}
+            placeholder={subnetSearch}
+            searchPlaceholder={subnetSearch}
             emptyLabel={t("scans.noNetworkTargets")}
             selectedListLabel={t("scans.selectedNetworkList")}
             removeLabel={(name) => t("scans.removeNetworkTarget", { name })}
@@ -391,7 +432,7 @@ export function CreateScanDialog({
             }}
           />
           <p className="text-xs text-muted-foreground">
-            {t("scans.networkHint", {
+            {t(azure ? "scans.azureNetworkHint" : "scans.networkHint", {
               count: networkTargets.length,
               regions: networkRegionCount,
             })}

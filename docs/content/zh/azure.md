@@ -99,7 +99,11 @@ Azure Arc 通过原生接口盘点机器和许可证，并在每台机器下枚�
 
 Azure Local 通过原生接口盘点 VM 实例、访客代理、访客身份元数据、网卡、磁盘、逻辑网络、存储路径与镜像。VM 和访客资源发现需要 `Microsoft.HybridCompute/machines/read`，并按所选类型授予对应的 `Microsoft.AzureStackHCI/<资源类型>/read` 权限，包括 `virtualMachineInstances/guestAgents/read` 和 `virtualMachineInstances/hybridIdentityMetadata/read`。已知资源逐项补读；集合为空或缺失时，也会检查固定的 `default` 单例资源。访客资源继承经过核验的 Arc 机器区域。权限不足、扫描期间配置变化或引用格式错误会使扫描失败，不会关闭已有资产。公开字段包含 VM 容量与电源状态、网络地址、磁盘和镜像信息、存储容量；凭据、SSH 密钥、代理配置及本地路径保持私密。
 
-Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，这些关系不授予删除所有权。Azure Local 清理及网络选择器集成仍待完成。官方 CLI 先删除 VM 实例，再删除 Arc 注册，关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
+扫描对话框支持选择 Azure 虚拟网络和 Azure Local 逻辑网络，提供名称或 ARM ID 搜索及分页。创建任务时会重新读取所选网络；网络已删除或不可访问时，不会保存任务。列出 Local 网络需要 `Microsoft.AzureStackHCI/logicalNetworks/read` 权限。逻辑网络内部配置的子网不作为独立 ARM 资源供选择。权限错误会显示在界面中，重试会保留已选网络。
+
+逻辑网络扫描沿网卡与 VM 引用纳入访客资源和关联虚拟磁盘。磁盘的网络归属还需读取原生 VM 实例和 Arc 机器，权限为 `Microsoft.AzureStackHCI/virtualMachineInstances/read` 和 `Microsoft.HybridCompute/machines/read`。系统会重新读取已保存的挂载证据，补查集合遗漏的已知 VM；磁盘解除挂载后，其网络引用中会移除该 VM。存储路径与镜像仍是独立引用。网络归属不授予反向依赖或删除所有权。
+
+Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，这些关系不授予删除所有权。Azure Local 控制器清理仍待完成。官方 CLI 先删除 VM 实例，再删除 Arc 注册，关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
 
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 

@@ -876,3 +876,142 @@ it("deduplicates network union and lets a VPC cover its vSwitches", () => {
     other,
   ]);
 });
+
+it("selects an Azure Local network from native pagination using the styled picker", async () => {
+  connection.provider = "azure";
+  try {
+    vi.mocked(listConnectionRegions).mockResolvedValue({
+      items: [
+        {
+          id: "rgn-local-eastus",
+          connection_id: connection.id,
+          region_id: "eastus",
+          name: "East US",
+          origin: "api",
+          lifecycle: "active",
+          created_at: "2026-09-13T00:00:00Z",
+          updated_at: "2026-09-13T00:00:00Z",
+        },
+      ],
+    });
+    const localID =
+      "/subscriptions/11111111-1111-1111-1111-111111111111/resourcegroups/test/providers/microsoft.azurestackhci/logicalnetworks/local-net";
+    vi.mocked(searchNetworkTargets).mockImplementation(
+      async (_id, kind, input) => {
+        if (kind !== "vpc") return { items: [] };
+        if (input.cursor === "azure-local-page")
+          return {
+            items: [
+              {
+                kind: "vpc",
+                region_id: "eastus",
+                native_id: localID,
+                name: "Local production",
+              },
+            ],
+          };
+        return {
+          items: [
+            {
+              kind: "vpc",
+              region_id: "eastus",
+              native_id: "cloud-network",
+              name: "Cloud production",
+            },
+          ],
+          next_cursor: "azure-local-page",
+        };
+      },
+    );
+    vi.mocked(createScan).mockResolvedValue(scanTask("scan-local"));
+    const user = userEvent.setup();
+    renderView();
+    await user.click(screen.getByRole("button", { name: "Start scan" }));
+    await user.click(screen.getByRole("radio", { name: "Selected networks" }));
+    const picker = screen.getByRole("combobox", {
+      name: "Virtual / logical networks",
+    });
+    expect(picker.tagName).toBe("BUTTON");
+    expect(screen.getByRole("combobox", { name: "Subnets" })).toBeVisible();
+    await user.click(picker);
+    await user.click(await screen.findByRole("button", { name: "Load more" }));
+    await user.click(await screen.findByText("Local production"));
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Schedule scan" }));
+    await waitFor(() =>
+      expect(createScan).toHaveBeenCalledWith(
+        connection.id,
+        expect.objectContaining({
+          scope_mode: "selected_networks",
+          network_targets: [
+            {
+              kind: "vpc",
+              region_id: "eastus",
+              native_id: localID,
+              name: "Local production",
+              parent_native_id: undefined,
+            },
+          ],
+        }),
+      ),
+    );
+  } finally {
+    connection.provider = "alicloud";
+  }
+});
+
+it("shows and retries a failed network page while retaining selected networks", async () => {
+  let denied = true;
+  vi.mocked(searchNetworkTargets).mockImplementation(
+    async (_id, kind, input) => {
+      if (kind !== "vpc") return { items: [] };
+      if (input.cursor === "next") {
+        if (denied) throw new Error("Network read denied");
+        return {
+          items: [
+            {
+              kind: "vpc",
+              region_id: "cn-hangzhou",
+              native_id: "vpc-b",
+              name: "Network B",
+            },
+          ],
+        };
+      }
+      return {
+        items: [
+          {
+            kind: "vpc",
+            region_id: "cn-hangzhou",
+            native_id: "vpc-a",
+            name: "Network A",
+          },
+        ],
+        next_cursor: "next",
+      };
+    },
+  );
+  const user = userEvent.setup();
+  renderView();
+  await user.click(screen.getByRole("button", { name: "Start scan" }));
+  await user.click(
+    screen.getByRole("radio", { name: "Selected VPCs / vSwitches" }),
+  );
+  await user.click(screen.getByRole("combobox", { name: "VPC" }));
+  await user.click(await screen.findByText("Network A"));
+  await user.click(screen.getByRole("button", { name: "Load more" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Network read denied",
+  );
+  await user.keyboard("{Escape}");
+  denied = false;
+  await user.click(screen.getByRole("button", { name: "Try again" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument(),
+  );
+  expect(screen.getByRole("combobox", { name: "VPC" })).toHaveTextContent(
+    "Network A",
+  );
+  await user.click(screen.getByRole("combobox", { name: "VPC" }));
+  expect(await screen.findByText("Network B")).toBeVisible();
+});

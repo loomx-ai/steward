@@ -110,4 +110,27 @@ SQLite scan/graph/reconciliation tests cover all nine families, exact reference
 edges, known omissions, failed reads and individual absence. Network closure
 finds the logical network, its NIC, VM and guest records. Custom locations and
 cross-subscription targets remain unresolved; no relationship grants ownership.
-The network picker, controller cleanup and real backend outcomes remain pending.
+Controller cleanup and real backend outcomes remain pending.
+
+## Network selection and attached disks
+
+`azure_local_network_test.go` composes VNet and Local native transports to check
+signed pagination across both families, filtered empty pages, exact ARM-ID
+lookup, known index omissions, scope/connection/query isolation, denied reads
+and terminal cursors. Local subnet configuration never becomes a fabricated ARM
+subnet target. Disk network references use VM attachment reads and signed saved
+VM identities; known parent omissions, altered signatures, detach and persisted
+empty membership are covered without adding a reverse graph dependency.
+
+A SQLite integration test enables the nine Local rules and the broad ARM source,
+then runs the real scan creator, worker and graph handler. It rereads the selected
+network, executes ten shards and retains six matching assets (network, NIC, VM,
+two guest records and attached disk). Unrelated storage/image resources stay out.
+Deleting the network prevents a second task from being saved. This scoped fixture
+does not establish every service family's complete network-scan behavior, scope
+membership pruning, controller deletion or live backend outcomes.
+
+Frontend tests cover VNet-to-Local paging, Local selection, submission and retry
+without losing an existing selection. Browser QA uses the actual scan dialog and
+styles with a temporary HTTP-response fixture in light and dark themes; it is
+UI evidence, not an independent cloud implementation.
