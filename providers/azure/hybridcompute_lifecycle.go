@@ -91,7 +91,7 @@ func (s *serviceCascades) contributeHybridComputeMachines(ctx context.Context, v
 			evidence := map[string]any{"resource_type": entry["kind"], "instance_id": childID, "delete_by_default": true, "retention_supported": false}
 			target, found := selected[childID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: text(entry["kind"]), NativeID: childID, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: text(entry["kind"]), NativeID: childID, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			allowed := target.Normalized["cleanup_protected"] == false

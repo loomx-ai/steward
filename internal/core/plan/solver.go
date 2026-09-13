@@ -17,6 +17,7 @@ import (
 var ErrCleanupTaskInvalidated = errors.New("cleanup task snapshot is no longer current")
 
 type Input struct {
+	Unresolved        []graph.UnresolvedReference      `json:"unresolved,omitempty"`
 	CleanupTaskID     CleanupTaskID                    `json:"cleanup_task_id,omitempty"`
 	Selectors         []CleanupSelector                `json:"selectors,omitempty"`
 	ResolvedAssetIDs  []asset.AssetID                  `json:"resolved_asset_ids"`
@@ -343,6 +344,14 @@ func solveOnce(input Input) (Result, error) {
 		}
 	}
 
+	for _, reference := range input.Unresolved {
+		owner, deleting := deletionOwner[reference.ControllerID]
+		controller := assets[reference.ControllerID]
+		if !reference.BlocksCleanup || !deleting || controller.ClosedAt != nil || reference.Provider != controller.Identity.Provider || reference.ConnectionID != controller.Identity.ConnectionID {
+			continue
+		}
+		blockers.add(Blocker{Code: BlockUnresolvedCleanup, AssetID: owner, ControllerID: reference.ControllerID, Message: "A cleanup dependency is not verified. Refresh inventory for this resource and its dependencies before continuing.", Evidence: map[string]any{"native_type": reference.NativeType, "native_id": reference.NativeID, "graph_revision": reference.GraphRevision, "reference": reference.Evidence}})
+	}
 	dependencies := make(map[asset.AssetID]map[asset.AssetID]struct{})
 	for childID, controllerID := range directChildren {
 		if _, childExists := stepAssets[childID]; childExists {
@@ -824,6 +833,12 @@ func snapshotHash(input Input, selected []asset.AssetID, assets map[asset.AssetI
 		}
 		return protections[i].Source < protections[j].Source
 	})
+	unresolved := append([]graph.UnresolvedReference(nil), input.Unresolved...)
+	sort.Slice(unresolved, func(i, j int) bool {
+		left, _ := json.Marshal(unresolved[i])
+		right, _ := json.Marshal(unresolved[j])
+		return string(left) < string(right)
+	})
 	payload, err := json.Marshal(struct {
 		Selected      []asset.AssetID                  `json:"selected"`
 		Assets        []asset.Asset                    `json:"assets"`
@@ -834,7 +849,8 @@ func snapshotHash(input Input, selected []asset.AssetID, assets map[asset.AssetI
 		Options       map[asset.AssetID]map[string]any `json:"options"`
 		Selectors     []CleanupSelector                `json:"selectors"`
 		Coverage      ScanCoverage                     `json:"coverage"`
-	}{selected, assetValues, relationships, bindings, protections, input.Revision, input.RequestOptions, input.Selectors, input.Coverage})
+		Unresolved    []graph.UnresolvedReference      `json:"unresolved,omitempty"`
+	}{selected, assetValues, relationships, bindings, protections, input.Revision, input.RequestOptions, input.Selectors, input.Coverage, unresolved})
 	if err != nil {
 		return "", fmt.Errorf("hash cleanup planning snapshot: %w", err)
 	}

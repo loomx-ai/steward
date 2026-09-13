@@ -2,6 +2,8 @@ package relational
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/loomx-ai/steward/internal/core/asset"
 	"github.com/loomx-ai/steward/internal/core/graph"
@@ -130,6 +132,38 @@ func (s *Store) ListGraphRevisionsByConnection(ctx context.Context, connectionID
 	result := make(map[asset.ScopeID]string, len(rows))
 	for _, row := range rows {
 		result[asset.ScopeID(row.ScopeID)] = row.GraphRevision
+	}
+	return result, nil
+}
+
+// Unresolved diagnostics share the graph revision's atomic replacement. Closed
+// controllers and superseded scopes cannot revive old cleanup constraints.
+func (s *Store) ListUnresolvedByConnection(ctx context.Context, connectionID asset.ConnectionID) ([]graph.UnresolvedReference, error) {
+	var rows []graphRevisionRow
+	scopes := s.db.WithContext(ctx).Table("scopes").Select("id").Where("connection_id = ? AND (superseded_by_scope_id IS NULL OR superseded_by_scope_id = '')", string(connectionID))
+	if err := s.db.WithContext(ctx).Table("graph_revisions").Where("scope_id IN (?)", scopes).Order("scope_id ASC").Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	var ids []string
+	if err := s.db.WithContext(ctx).Table("assets").Where("connection_id = ? AND closed_at IS NULL", string(connectionID)).Pluck("id", &ids).Error; err != nil {
+		return nil, err
+	}
+	active := make(map[asset.AssetID]bool, len(ids))
+	for _, id := range ids {
+		active[asset.AssetID(id)] = true
+	}
+	result := []graph.UnresolvedReference{}
+	for _, row := range rows {
+		var references []graph.UnresolvedReference
+		if err := json.Unmarshal([]byte(row.UnresolvedPayload), &references); err != nil {
+			return nil, fmt.Errorf("decode unresolved graph references: %w", err)
+		}
+		for _, reference := range references {
+			if reference.ConnectionID == connectionID && active[reference.ControllerID] {
+				reference.GraphRevision = row.GraphRevision
+				result = append(result, reference)
+			}
+		}
 	}
 	return result, nil
 }

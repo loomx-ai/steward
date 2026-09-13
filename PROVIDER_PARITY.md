@@ -4496,3 +4496,45 @@ background evidence only, not acceptance evidence for this work.
   regenerating from the minimally edited source before the final full run.
   All 64 unrelated WIP hashes remained unchanged; original localization edits
   were preserved exactly around two new translated entries and not staged.
+
+
+## Persisted unresolved cleanup dependencies
+
+- Closed the shared-plan gap recorded in the active Elastic SAN group milestone:
+  governance now atomically persists unresolved references with graph revisions,
+  and cleanup planning loads them with the reviewed lifecycle component. Native
+  Azure and GCP lifecycle contributors explicitly mark incomplete destructive
+  boundaries. Ordinary display references remain informational. No cloud API
+  permissions or generated operation/spec/action counts changed.
+- Selected and delegated deletion boundaries with these diagnostics produce
+  `unresolved_cleanup_dependency` blockers before execution creation. Retained
+  impacts and unrelated resources do not acquire this blocker. Diagnostic content
+  participates in the deterministic plan hash; even unchanged graph revision and
+  inventory cannot keep an old Ready task valid when a dependency finding changes.
+- SQLite and PostgreSQL share migration 00008, storing diagnostics in the graph
+  revision row. Legacy rows start with no diagnostics; rescan relevant resources
+  after upgrade to populate them. Successful graph replacement clears resolved
+  findings; failed serialization rolls back the graph transaction. Reads exclude
+  closed controllers, superseded scopes and foreign-connection diagnostics.
+- The Elastic SAN stale-retained-member regression now verifies a blocked draft
+  and refused execution creation, then a Ready plan after a full family refresh.
+  Native signed preflight checks remain an independent guard. Planner tests cover
+  direct/delegated/retained/unrelated boundaries, provider and connection isolation,
+  and diagnostic ordering. Shared repository contracts cover persistence, clearing,
+  failed replacement and closed controllers on SQLite and real PostgreSQL. A
+  relational test verifies superseded-scope exclusion. User cleanup guidance and
+  both locale messages explain scanning the resource and its dependencies again.
+- Full repository Go tests passed, including Azure (342.919s) and GCP (159.604s).
+  Shared governance/plan/cleanup/SQLite/relational race tests and repository-wide
+  vet passed. After adding the final regressions, cleanup, SQLite, PostgreSQL and
+  relational tests passed again. PostgreSQL used an isolated local
+  `postgres:17-alpine` container; this is database integration evidence, not a cloud
+  emulator or live-cloud result. All eight overall acceptance criteria remain open.
+- Final shared cleanup/relational race checks passed (14.932s/4.829s). Main
+  governance, plan, cleanup, SQLite and relational tests passed; main Elastic SAN
+  tests passed (5.872s). Both workspaces passed all 18 locale UI cases; 39 frontend
+  contracts, TypeScript checks and the isolated production build passed (existing
+  large-chunk advisory only). Documentation checks passed 30 isolated/42 main
+  chapters and all 10 original screenshots. The owned PostgreSQL container was
+  removed and Docker Desktop restored to its initially stopped state. All 64
+  unrelated WIP hashes and the exact original localization edits were preserved.

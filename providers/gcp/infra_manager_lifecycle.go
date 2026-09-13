@@ -260,7 +260,7 @@ func (s *serviceCascades) contributeInfra(ctx context.Context, root asset.Asset,
 			return result, err
 		}
 		if !found {
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, NativeType: member.Kind, NativeID: member.ID, ControllerID: root.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, NativeType: member.Kind, NativeID: member.ID, ControllerID: root.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
 			continue
 		}
 		if metadata {

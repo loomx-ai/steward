@@ -143,7 +143,7 @@ func (s *serviceCascades) contributeAzureLocalRoots(ctx context.Context, values 
 			}
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": kind, "instance_id": id}
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if err := s.client.azureLocalRootConsumerRecord(vm, value.Identity.NativeType); err != nil {

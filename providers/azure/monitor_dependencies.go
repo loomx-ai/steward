@@ -306,7 +306,7 @@ func (c *client) contributeIncomingSources(targets, assets []asset.Asset, incomi
 				indexed = candidate
 			}
 			if indexed == nil {
-				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
+				contribution.Unresolved = append(contribution.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: source.kind, NativeID: source.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: map[string]any{
 					graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": source.kind, "instance_id": source.id,
 				}})
 				continue

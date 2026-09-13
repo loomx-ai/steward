@@ -159,7 +159,7 @@ type InventoryRepository interface {
 }
 
 type GraphRepository interface {
-	ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding) error
+	ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding, ...graph.UnresolvedReference) error
 	CloseAssetTopology(context.Context, asset.AssetID, time.Time) error
 	GetGraphRevision(context.Context, asset.ScopeID) (string, error)
 	ListRelationships(context.Context, asset.AssetID) ([]graph.Relationship, error)
@@ -170,6 +170,7 @@ type GraphRepository interface {
 	ListLifecycleBindingsByScope(context.Context, asset.ScopeID) ([]graph.LifecycleBinding, error)
 	ListRelationshipsByAssetIDs(context.Context, []asset.AssetID) ([]graph.Relationship, error)
 	ListLifecycleBindingsByAssetIDs(context.Context, []asset.AssetID) ([]graph.LifecycleBinding, error)
+	ListUnresolvedByConnection(context.Context, asset.ConnectionID) ([]graph.UnresolvedReference, error)
 	ListRelationshipsByConnection(context.Context, asset.ConnectionID) ([]graph.Relationship, error)
 	ListLifecycleBindingsByConnection(context.Context, asset.ConnectionID) ([]graph.LifecycleBinding, error)
 	ListGraphRevisionsByConnection(context.Context, asset.ConnectionID) (map[asset.ScopeID]string, error)

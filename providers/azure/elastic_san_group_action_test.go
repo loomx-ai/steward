@@ -421,6 +421,19 @@ func TestElasticSanGroupStaleMembershipRequiresGroupRefresh(t *testing.T) {
 	object(f.values[f.ids[elasticSanVolumeType]]["properties"])["sizeGiB"] = 16
 	// Child reconciliation remains available while its group record is older.
 	azureNativeWorkerScan(t, f.runtime, elasticSanSource, repo, registry, []string{elasticSanVolumeType}, false, true)
+	// The persisted diagnostic now blocks the draft before execution.
+	request := cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected}}, CreatedBy: "operator"}
+	task, err := cleanup.NewService(repo, registry).CreateTask(t.Context(), request)
+	blocked := false
+	for _, blocker := range task.Task.Blockers {
+		blocked = blocked || blocker.Code == plan.BlockUnresolvedCleanup && blocker.ControllerID == selected
+	}
+	if err != nil || task.Task.Status == plan.StatusReady || !blocked {
+		t.Fatal("stale group draft did not retain its blocker", task.Task.Status, task.Task.Blockers, err)
+	}
+	if _, err := cleanup.NewService(repo, registry).CreateExecution(t.Context(), cleanup.CreateExecutionRequest{ConnectionID: "connection", CleanupTaskID: task.Task.ID, RequestedBy: "operator", IdempotencyKey: "blocked-group", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}}); err == nil {
+		t.Fatal("blocked group executed")
+	}
 	elasticSanGroupFinishPrerequisites(f)
 	// A task's readiness is not native mutation authority. Even after its child
 	// steps finish, a changed incarnation/configuration must stop the group.
@@ -428,8 +441,7 @@ func TestElasticSanGroupStaleMembershipRequiresGroupRefresh(t *testing.T) {
 		t.Fatal("stale group mutated", err)
 	}
 	azureNativeWorkerScan(t, f.runtime, elasticSanSource, repo, registry, kinds, false, true)
-	request := cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected}}, CreatedBy: "operator"}
-	task, err := cleanup.NewService(repo, registry).CreateTask(t.Context(), request)
+	task, err = cleanup.NewService(repo, registry).CreateTask(t.Context(), request)
 	if err != nil || task.Task.Status != plan.StatusReady {
 		t.Fatal("refreshed group review", task.Task.Status, task.Task.Blockers, err)
 	}

@@ -34,7 +34,7 @@ type batchReferenceGraph struct{ assets []asset.Asset }
 func (g batchReferenceGraph) ListActiveAssetsByConnection(context.Context, asset.ConnectionID, asset.ResourceKindID) ([]asset.Asset, error) {
 	return g.assets, nil
 }
-func (batchReferenceGraph) ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding) error {
+func (batchReferenceGraph) ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding, ...graph.UnresolvedReference) error {
 	return nil
 }
 

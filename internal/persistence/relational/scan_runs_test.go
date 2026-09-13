@@ -161,6 +161,8 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 			id VARCHAR(128) PRIMARY KEY,
 			closed_at TIMESTAMP
 		)`,
+		`CREATE TABLE graph_revisions (scope_id VARCHAR(128) PRIMARY KEY, graph_revision VARCHAR(128) NOT NULL, observed_at TIMESTAMP NOT NULL)`,
+		`INSERT INTO graph_revisions (scope_id, graph_revision, observed_at) VALUES ('scope-existing', 'graph-existing', '2026-08-04 08:00:00+00:00')`,
 		`CREATE TABLE action_attempts (
 			asset_id VARCHAR(128) NOT NULL,
 			status VARCHAR(32) NOT NULL,
@@ -192,6 +194,10 @@ func TestScanTaskReadModelMigrationUpgradesExistingDatabase(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	var legacyGraph graphRevisionRow
+	if err := db.Table("graph_revisions").Where("scope_id = ?", "scope-existing").Take(&legacyGraph).Error; err != nil || legacyGraph.GraphRevision != "graph-existing" || legacyGraph.UnresolvedPayload != "[]" {
+		t.Fatalf("upgraded legacy graph: %+v %v", legacyGraph, err)
+	}
 	var columns []struct {
 		Name string `gorm:"column:name"`
 	}

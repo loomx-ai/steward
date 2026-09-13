@@ -136,7 +136,7 @@ func (c *client) contributeInsightsChildren(ctx context.Context, parent asset.As
 			return result, err
 		}
 		if target == nil {
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 			continue
 		}
 		if target.Location != parent.Location || text(target.Normalized["_insights_component"]) != parent.Identity.NativeID || target.Normalized["_insights_component_configuration"] != parent.Normalized["_monitor_private_link_target_configuration"] || text(target.Normalized[insightsChildProofKey(child.kind)]) != c.insightsChildConfiguration(child.id, child.kind, child.data) {
@@ -200,7 +200,7 @@ func (c *client) contributeInsightsWorkspace(ctx context.Context, parent asset.A
 			return result, err
 		}
 		if target == nil || child.data == nil {
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 			continue
 		}
 		linked, err := monitorPrivateLinkReference(map[string]any{"properties": target.Normalized})

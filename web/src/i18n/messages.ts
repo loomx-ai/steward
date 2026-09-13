@@ -1068,6 +1068,8 @@ const enUS = {
     "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal.",
   "error.azure_local_registration_removal":
     "Deleting this Azure Local registration first requires removal of its VM and OS disk. NICs and data disks need separate cleanup; verify physical removal separately.",
+  "error.unresolved_cleanup_dependency":
+    "A cleanup dependency is not verified. Refresh inventory for this resource and its dependencies before continuing.",
   "error.elastic_san_group_delete":
     "Deleting this volume group first cleans up reviewed volumes, snapshots and independently selected private connections. Native retention remains in effect; retained resources may continue billing.",
   "error.elastic_san_volume_soft_delete":
@@ -2183,6 +2185,8 @@ const zhCN: MessageShape = {
     "删除此 Arc 机器会先清理已审查的子资源，再移除云端注册；外部主机和本地代理仍需单独移除。",
   "error.azure_local_registration_removal":
     "删除此 Azure Local 注册前，需要先移除其 VM 和系统盘。网卡和数据盘需单独清理；请另行验证物理资源移除结果。",
+  "error.unresolved_cleanup_dependency":
+    "清理依赖尚未核验。请重新扫描此资源及其依赖，再继续清理。",
   "error.elastic_san_group_delete":
     "删除此卷组前，会先清理已审核的卷、快照及独立选中的私有连接。原生保留策略继续生效，保留资源可能继续计费。",
   "error.elastic_san_volume_soft_delete":

@@ -703,7 +703,7 @@ func (h *computeGroups) contributeDataproc(ctx context.Context, assets []asset.A
 			}
 			evidence := map[string]any{"resource_type": member.kind, "instance_id": member.id, "lifecycle_kind": "dataproc", "native_cluster_uuid": live["clusterUuid"], "delete_by_default": !member.retain, "retention_supported": member.retain, "native_dataproc_cleanup_only": true}
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, NativeType: member.kind, NativeID: member.id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: root.Identity.Provider, ConnectionID: root.Identity.ConnectionID, NativeType: member.kind, NativeID: member.id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
 				continue
 			}
 			if err = dataprocSameMember(member, managed.Normalized); err != nil {

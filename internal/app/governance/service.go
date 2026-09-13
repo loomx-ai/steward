@@ -19,7 +19,7 @@ type AssetReader interface {
 }
 
 type GraphRepository interface {
-	ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding) error
+	ReplaceGraph(context.Context, asset.ScopeID, string, []graph.Relationship, []graph.LifecycleBinding, ...graph.UnresolvedReference) error
 }
 
 type Contribution struct {
@@ -191,7 +191,7 @@ func (s *Service) RebuildGraph(ctx context.Context, scopeID asset.ScopeID, conne
 		right := string(result.Unresolved[j].ControllerID) + "\x00" + result.Unresolved[j].NativeType + "\x00" + result.Unresolved[j].NativeID
 		return left < right
 	})
-	if err := s.graphs.ReplaceGraph(ctx, scopeID, revision, result.Relationships, result.Bindings); err != nil {
+	if err := s.graphs.ReplaceGraph(ctx, scopeID, revision, result.Relationships, result.Bindings, result.Unresolved...); err != nil {
 		return GraphResult{}, err
 	}
 	return result, nil

@@ -63,7 +63,7 @@ func (s *serviceCascades) contributeElasticSanVolumes(ctx context.Context, asset
 			target := byID[id]
 			evidence := map[string]any{"resource_type": elasticSanSnapshotType, "instance_id": id, "delete_by_default": true, "retention_supported": false}
 			if target.ID == "" {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: asset.ProviderAzure, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanSnapshotType, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: asset.ProviderAzure, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanSnapshotType, NativeID: id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			if target.Identity.NativeType != elasticSanSnapshotType || object(target.Normalized[elasticSanSnapshotCleanup])["resource"] != hashes[id] || target.Normalized[elasticSanSnapshotCleanupProof] != s.client.elasticSanChildBinding(target, object(target.Normalized[elasticSanSnapshotCleanup])) {
@@ -121,7 +121,7 @@ func (s *serviceCascades) contributeElasticSanGroups(ctx context.Context, assets
 			// A child-only scan may leave its parent's frozen context behind.
 			// Require a fresh group scan for group cleanup without preventing
 			// unrelated resource reconciliation in the same scope.
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanGroupType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_group_membership_requires_refresh"}})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: elasticSanGroupType, NativeID: value.Identity.NativeID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: map[string]any{"reason": "elastic_san_group_membership_requires_refresh"}})
 			continue
 		}
 		members := object(state["members"])
@@ -148,7 +148,7 @@ func (s *serviceCascades) contributeElasticSanGroups(ctx context.Context, assets
 				evidence[graph.RelationshipEvidenceDeletionOrder] = graph.DeletionOrderTargetBeforeSource
 			}
 			if target.ID == "" {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: asset.ProviderAzure, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: relation, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: asset.ProviderAzure, ConnectionID: value.Identity.ConnectionID, NativeType: kind, NativeID: id, ControllerID: value.ID, Relationship: relation, Evidence: evidence})
 				continue
 			}
 			if target.Identity.NativeType != kind || s.client.elasticSanChildRecord(target) != nil {

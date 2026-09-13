@@ -159,7 +159,7 @@ func (s *serviceCascades) contributeIncomingMigrations(ctx context.Context, asse
 				}
 			}
 			if configuration == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if err := serviceIncarnation(*configuration, child.data); err != nil {

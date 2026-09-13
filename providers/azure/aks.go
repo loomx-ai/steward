@@ -334,7 +334,7 @@ func (c *client) bindManagedGroup(ctx context.Context, controller asset.Asset, g
 		evidence := map[string]any{"resource_type": nativeType, "instance_id": id, "managed_resource_group": group, "delete_by_default": true, "retention_supported": false, "request_id": requestID, graph.LifecycleEvidenceControllerDeleteGuaranteed: true, graph.LifecycleEvidenceControllerVerifiesManagedAbsence: true}
 		value, found := byID[id]
 		if !found {
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
 			continue
 		}
 		result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: controller.ID, ManagedAssetID: value.ID, Authority: graph.AuthorityAuthoritative, Ownership: graph.OwnershipExclusive, CleanupPolicy: graph.CleanupDelegate, EvidenceSource: source, Evidence: evidence, Confidence: 1})

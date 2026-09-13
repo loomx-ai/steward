@@ -160,7 +160,7 @@ func (s *serviceCascades) contributeAzureLocalRegistration(ctx context.Context, 
 	evidence := map[string]any{"resource_type": azureLocalVMType, "instance_id": local["id"], "delete_by_default": true, "retention_supported": false}
 	if selected.ID == "" {
 		if len(children) != 0 {
-			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: azureLocalVMType, NativeID: text(local["id"]), ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+			result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: azureLocalVMType, NativeID: text(local["id"]), ControllerID: parent.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 		}
 		return nil
 	}

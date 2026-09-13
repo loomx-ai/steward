@@ -423,6 +423,35 @@ func TestCleanupServiceInvalidatesTaskWhenLifecycleSnapshotChanges(t *testing.T)
 	}
 }
 
+func TestCleanupServiceInvalidatesTaskWhenUnresolvedBoundaryChanges(t *testing.T) {
+	ctx := context.Background()
+	repositories := openPlanningRepositories(t)
+	now := time.Date(2026, 7, 13, 10, 0, 0, 0, time.UTC)
+	value := planningAsset("asset-a", "c-1", "ACS::ECS::Instance", "i-1", now)
+	seedPlanningSnapshot(t, repositories, "scope-a", "graph-a", []asset.Asset{value}, nil)
+	service := cleanup.NewService(repositories, bundleResolver{asset.ProviderAliCloud: {Provider: asset.ProviderAliCloud, Revision: "bundle-a", Hash: "spec-a"}}, cleanup.WithTaskIDGenerator(func() string { return "cln-diagnostic" }))
+	created, err := service.CreateTask(ctx, cleanup.CreateTaskRequest{Selectors: []plan.CleanupSelector{assetSelector(value.ID)}, CreatedBy: "operator"})
+	if err != nil || created.Task.Status != plan.StatusReady {
+		t.Fatalf("created = %+v, err = %v", created, err)
+	}
+	// Keep graph revision and inventory unchanged: diagnostic content alone must
+	// invalidate the previously reviewed snapshot before execution can start.
+	if err := repositories.Graph().ReplaceGraph(ctx, "scope-a", "graph-a", nil, nil, graph.UnresolvedReference{
+		BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID,
+		ControllerID: value.ID, NativeType: "attached-disk", NativeID: "missing-disk", Relationship: graph.RelationshipAttachedTo,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	validated, err := service.ValidateTask(ctx, created.Task.ID)
+	if !errors.Is(err, plan.ErrCleanupTaskInvalidated) || validated.Task.Status != plan.StatusInvalidated {
+		t.Fatalf("validated = %+v, err = %v", validated, err)
+	}
+	stored, err := repositories.CleanupTasks().GetTask(ctx, created.Task.ID)
+	if err != nil || stored.Task.Status != plan.StatusInvalidated {
+		t.Fatalf("stored = %+v, err = %v", stored, err)
+	}
+}
+
 func TestCleanupServiceExpandsConnectionAcrossRegionalAndGlobalScopes(t *testing.T) {
 	ctx := context.Background()
 	repositories := openPlanningRepositories(t)

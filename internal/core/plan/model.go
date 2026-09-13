@@ -109,6 +109,7 @@ const (
 	BlockLifecycleConfidence    BlockCode = "lifecycle_confidence"
 	BlockLifecycleAuthority     BlockCode = "lifecycle_authority"
 	BlockProtected              BlockCode = "protected"
+	BlockUnresolvedCleanup      BlockCode = "unresolved_cleanup_dependency"
 	BlockDependencyCycle        BlockCode = "dependency_cycle"
 	BlockDirectCleanupInvalid   BlockCode = "direct_cleanup_invalid"
 	BlockControllerUnavailable  BlockCode = "controller_unavailable"

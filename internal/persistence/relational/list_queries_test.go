@@ -437,3 +437,41 @@ func seedPrimaryListData(t *testing.T, store *Store) {
 		}
 	}
 }
+
+func TestUnresolvedDiagnosticsExcludeSupersededScopes(t *testing.T) {
+	db, err := gorm.Open(sqlite.Open(filepath.Join(t.TempDir(), "diagnostics.db")), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = sqlDB.Close() })
+	if err := persistence.Migrate(sqlDB, "sqlite3", filepath.Join("..", "..", "..", "migrations")); err != nil {
+		t.Fatal(err)
+	}
+	store := New(db)
+	seedPrimaryListData(t, store)
+	var controller assetRow
+	if err := db.Table("assets").Where("closed_at IS NULL").First(&controller).Error; err != nil {
+		t.Fatal(err)
+	}
+	diagnostic := graph.UnresolvedReference{BlocksCleanup: true, Provider: asset.ProviderAliCloud, ConnectionID: asset.ConnectionID(controller.ConnectionID), ControllerID: asset.AssetID(controller.ID), NativeType: "child", NativeID: "missing"}
+	if err := store.ReplaceGraph(context.Background(), asset.ScopeID(controller.ScopeID), "diagnostic-graph", nil, nil, diagnostic); err != nil {
+		t.Fatal(err)
+	}
+	values, err := store.ListUnresolvedByConnection(context.Background(), diagnostic.ConnectionID)
+	if err != nil || len(values) != 1 {
+		t.Fatal("active scope diagnostics", values, err)
+	}
+	// Match the scope alias column written by consolidation; PutScope deliberately
+	// cannot set aliases from an inventory observation.
+	if err := db.Table("scopes").Where("id = ?", controller.ScopeID).Update("superseded_by_scope_id", "replacement").Error; err != nil {
+		t.Fatal(err)
+	}
+	values, err = store.ListUnresolvedByConnection(context.Background(), diagnostic.ConnectionID)
+	if err != nil || len(values) != 0 {
+		t.Fatal("superseded scope revived diagnostics", values, err)
+	}
+}

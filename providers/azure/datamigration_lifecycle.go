@@ -107,7 +107,7 @@ func (s *serviceCascades) contributeDataMigration(ctx context.Context, assets []
 			evidence := map[string]any{"resource_type": child.kind, "instance_id": child.id, "delete_by_default": true, "retention_supported": false}
 			target, found := selected[childID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: childID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: childID, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			allowed := items[childID].Actionable != nil && *items[childID].Actionable
@@ -140,7 +140,7 @@ func (s *serviceCascades) contributeDataMigration(ctx context.Context, assets []
 			evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = controllers
 			source, found := selected[sourceID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: text(entry["kind"]), NativeID: sourceID, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: text(entry["kind"]), NativeID: sourceID, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if source.Identity.NativeType != entry["kind"] || source.Normalized[dataMigrationConfiguration] != entry["configuration"] {

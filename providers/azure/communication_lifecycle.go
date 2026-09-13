@@ -152,7 +152,7 @@ func (s *serviceCascades) contributeCommunication(ctx context.Context, assets []
 			}
 			target, found := selected[childID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			directAllowed := items[childID].Actionable != nil && *items[childID].Actionable
@@ -182,7 +182,7 @@ func (s *serviceCascades) contributeCommunication(ctx context.Context, assets []
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource}
 			account, found := selected[accountID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: communicationType, NativeID: accountID, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: communicationType, NativeID: accountID, ControllerID: value.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: value.ID, TargetAssetID: account.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})

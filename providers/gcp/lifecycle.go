@@ -96,7 +96,7 @@ func (*InstanceDisks) Contribute(_ context.Context, _ asset.ScopeID, assets []as
 				}
 			}
 			if managed == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: vm.Identity.Provider, ConnectionID: vm.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: vm.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: vm.Identity.Provider, ConnectionID: vm.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: vm.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			if attachment.autoDelete {

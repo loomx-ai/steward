@@ -51,7 +51,7 @@ func (s *serviceCascades) contributeRecoveryPrerequisite(ctx context.Context, pa
 		}
 	}
 	if primary == nil {
-		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: primaryID, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: child.kind, NativeID: primaryID, ControllerID: parent.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 		return nil
 	}
 	secondary := asset.Asset{Identity: asset.Identity{NativeType: child.kind, NativeID: child.id}, Normalized: normalized}

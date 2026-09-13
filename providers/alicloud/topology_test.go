@@ -933,7 +933,7 @@ func (r *topologyGraphRepository) ListActiveAssetsByConnection(_ context.Context
 	return result, nil
 }
 
-func (r *topologyGraphRepository) ReplaceGraph(_ context.Context, _ asset.ScopeID, _ string, relationships []graph.Relationship, _ []graph.LifecycleBinding) error {
+func (r *topologyGraphRepository) ReplaceGraph(_ context.Context, _ asset.ScopeID, _ string, relationships []graph.Relationship, _ []graph.LifecycleBinding, unresolved ...graph.UnresolvedReference) error {
 	r.relationships = append([]graph.Relationship(nil), relationships...)
 	return nil
 }

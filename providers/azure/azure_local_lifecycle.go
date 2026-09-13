@@ -65,7 +65,7 @@ func (s *serviceCascades) contributeAzureLocalVMs(ctx context.Context, values []
 			}
 			target, found := selected[childID]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: kind, NativeID: childID, ControllerID: parent.ID, Relationship: relation, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: parent.Identity.Provider, ConnectionID: parent.Identity.ConnectionID, NativeType: kind, NativeID: childID, ControllerID: parent.ID, Relationship: relation, Evidence: evidence})
 				continue
 			}
 			if hybridComputeChild(kind) {

@@ -49,9 +49,10 @@ type assetLifecycleBindingRow struct {
 }
 
 type graphRevisionRow struct {
-	ScopeID       string    `gorm:"column:scope_id;primaryKey"`
-	GraphRevision string    `gorm:"column:graph_revision"`
-	ObservedAt    time.Time `gorm:"column:observed_at"`
+	UnresolvedPayload string    `gorm:"column:unresolved_payload"`
+	ScopeID           string    `gorm:"column:scope_id;primaryKey"`
+	GraphRevision     string    `gorm:"column:graph_revision"`
+	ObservedAt        time.Time `gorm:"column:observed_at"`
 }
 
 type findingRow struct {
@@ -94,13 +95,17 @@ func (s *Store) WithinFindingTx(ctx context.Context, fn func(persistence.Finding
 	})
 }
 
-func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding) error {
+func (s *Store) ReplaceGraph(ctx context.Context, scopeID asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding, unresolved ...graph.UnresolvedReference) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		closedAt := time.Now().UTC()
-		revisionRow := graphRevisionRow{ScopeID: string(scopeID), GraphRevision: revision, ObservedAt: closedAt}
+		payload, err := encode(unresolved)
+		if err != nil {
+			return err
+		}
+		revisionRow := graphRevisionRow{UnresolvedPayload: payload, ScopeID: string(scopeID), GraphRevision: revision, ObservedAt: closedAt}
 		if err := tx.Table("graph_revisions").Clauses(clause.OnConflict{
 			Columns:   []clause.Column{{Name: "scope_id"}},
-			DoUpdates: clause.AssignmentColumns([]string{"graph_revision", "observed_at"}),
+			DoUpdates: clause.AssignmentColumns([]string{"graph_revision", "observed_at", "unresolved_payload"}),
 		}).Create(&revisionRow).Error; err != nil {
 			return err
 		}

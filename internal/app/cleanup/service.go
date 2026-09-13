@@ -1205,6 +1205,7 @@ func retryableProviderSkip(action execution.ActionAttempt) bool {
 }
 
 type resolvedSelection struct {
+	Unresolved []graph.UnresolvedReference
 	SelectionResult
 	Connections       []asset.CloudConnection
 	Scopes            []asset.Scope
@@ -1290,6 +1291,11 @@ func (s *Service) resolveSelection(ctx context.Context, repositories persistence
 		for _, relationship := range connectionRelationships {
 			relationships[relationshipIdentity(relationship)] = relationship
 		}
+		unresolved, err := repositories.Graph().ListUnresolvedByConnection(ctx, connectionID)
+		if err != nil {
+			return resolvedSelection{}, err
+		}
+		result.Unresolved = append(result.Unresolved, unresolved...)
 		connectionBindings, err := repositories.Graph().ListLifecycleBindingsByConnection(ctx, connectionID)
 		if err != nil {
 			return resolvedSelection{}, err
@@ -1369,9 +1375,20 @@ func (s *Service) loadPlanningInput(ctx context.Context, repositories persistenc
 	if err != nil {
 		return plan.Input{}, err
 	}
+	identities := make(map[asset.AssetID]asset.Identity, len(assets))
+	for _, value := range assets {
+		identities[value.ID] = value.Identity
+	}
+	unresolved := []graph.UnresolvedReference{}
+	for _, reference := range selection.Unresolved {
+		identity, exists := identities[reference.ControllerID]
+		if exists && reference.ConnectionID == identity.ConnectionID && reference.Provider == identity.Provider {
+			unresolved = append(unresolved, reference)
+		}
+	}
 	return plan.Input{
 		CleanupTaskID: cleanupTaskID, Selectors: selection.Selectors, ResolvedAssetIDs: selection.AssetIDs, Assets: assets, Relationships: relationships,
-		LifecycleBindings: bindings, Protections: protections, Revision: revision, Coverage: coverage, RequestOptions: requestOptions,
+		LifecycleBindings: bindings, Unresolved: unresolved, Protections: protections, Revision: revision, Coverage: coverage, RequestOptions: requestOptions,
 	}, nil
 }
 

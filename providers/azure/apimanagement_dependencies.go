@@ -242,7 +242,7 @@ func (s *serviceCascades) contributeAPIMReferences(ctx context.Context, assets [
 			}
 			evidence[graph.RelationshipEvidenceDeletionCascadeControllers] = controllers
 			if referrer == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if !apimPrerequisite(target, *referrer) {

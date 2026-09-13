@@ -13,6 +13,7 @@ import (
 )
 
 type graphRepository struct {
+	unresolved    []graph.UnresolvedReference
 	assets        []asset.Asset
 	relationships []graph.Relationship
 	bindings      []graph.LifecycleBinding
@@ -34,7 +35,7 @@ func (r *graphRepository) ListActiveAssetsByConnection(context.Context, asset.Co
 	return result, nil
 }
 
-func (r *graphRepository) ReplaceGraph(_ context.Context, _ asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding) error {
+func (r *graphRepository) ReplaceGraph(_ context.Context, _ asset.ScopeID, revision string, relationships []graph.Relationship, bindings []graph.LifecycleBinding, unresolved ...graph.UnresolvedReference) error {
 	now := time.Date(2026, 7, 13, 4, 0, 0, 0, time.UTC)
 	for index := range r.relationships {
 		if r.relationships[index].ClosedAt == nil && r.relationships[index].GraphRevision != revision {
@@ -46,6 +47,7 @@ func (r *graphRepository) ReplaceGraph(_ context.Context, _ asset.ScopeID, revis
 			r.bindings[index].ClosedAt = &now
 		}
 	}
+	r.unresolved = append([]graph.UnresolvedReference(nil), unresolved...)
 	r.relationships = append(r.relationships, relationships...)
 	r.bindings = append(r.bindings, bindings...)
 	return nil
@@ -79,7 +81,7 @@ func TestGraphRebuildResolvesLaterReferencesAndClosesOldRevision(t *testing.T) {
 	if err != nil {
 		t.Fatalf("first graph rebuild: %v", err)
 	}
-	if len(first.Unresolved) != 1 || len(repository.relationships) != 0 {
+	if len(first.Unresolved) != 1 || len(repository.unresolved) != 1 || repository.unresolved[0].BlocksCleanup || repository.unresolved[0].GraphRevision != "graph-1" || len(repository.relationships) != 0 {
 		t.Fatalf("first rebuild result=%+v relationships=%+v", first, repository.relationships)
 	}
 	repository.assets = append(repository.assets, asset.Asset{
@@ -89,7 +91,7 @@ func TestGraphRebuildResolvesLaterReferencesAndClosesOldRevision(t *testing.T) {
 	if err != nil {
 		t.Fatalf("second graph rebuild: %v", err)
 	}
-	if len(second.Unresolved) != 0 || len(second.Relationships) != 1 {
+	if len(second.Unresolved) != 0 || len(repository.unresolved) != 0 || len(second.Relationships) != 1 {
 		t.Fatalf("second rebuild result=%+v", second)
 	}
 	created := second.Relationships[0]

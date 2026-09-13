@@ -294,7 +294,7 @@ func (s *serviceCascades) contributeBatch(ctx context.Context, assets []asset.As
 				}
 				target, found := selected[child.id]
 				if !found {
-					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: value.Identity.Provider, ConnectionID: value.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: value.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 					continue
 				}
 				if target.Identity.ConnectionID != value.Identity.ConnectionID || target.Identity.Partition != value.Identity.Partition || target.Identity.NativeType != child.kind {
@@ -355,7 +355,7 @@ func (s *serviceCascades) contributeBatchReferences(ctx context.Context, topolog
 				evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource}
 				source, exists := selected[id]
 				if !exists {
-					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: member.kind, NativeID: id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+					result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: member.kind, NativeID: id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 					continue
 				}
 				result.Relationships = append(result.Relationships, graph.Relationship{SourceAssetID: target.ID, TargetAssetID: source.ID, Type: graph.RelationshipDependsOn, Source: serviceCascadeSource, Evidence: evidence, Confidence: 1})

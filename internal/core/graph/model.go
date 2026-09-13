@@ -105,6 +105,9 @@ type LifecycleBinding struct {
 }
 
 type UnresolvedReference struct {
+	// BlocksCleanup is provider evidence of an incomplete destructive boundary.
+	// Ordinary display references leave this false.
+	BlocksCleanup bool               `json:"blocks_cleanup,omitempty"`
 	Provider      asset.Provider     `json:"provider"`
 	ConnectionID  asset.ConnectionID `json:"connection_id"`
 	NativeType    string             `json:"native_type"`

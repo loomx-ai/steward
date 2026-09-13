@@ -150,7 +150,7 @@ func (*ResourceAttachments) Contribute(_ context.Context, _ asset.ScopeID, asset
 				}
 			}
 			if managed == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: controller.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: attachment.kind, NativeID: attachment.id, ControllerID: controller.ID, Relationship: graph.RelationshipAttachedTo, Evidence: evidence})
 				continue
 			}
 			if attachment.delete {

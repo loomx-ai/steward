@@ -656,6 +656,27 @@ func Run(t *testing.T, factory Factory) {
 		if err := repositories.Graph().ReplaceGraph(ctx, "scope-global", "graph-1", relationships, bindings); err != nil {
 			t.Fatal(err)
 		}
+		diagnostic := graph.UnresolvedReference{Provider: asset.ProviderAliCloud, ConnectionID: "conn-a", ControllerID: "asset-1", NativeType: "ACS::ECS::Instance", NativeID: "missing-member", Relationship: graph.RelationshipMemberOf, BlocksCleanup: true, Evidence: map[string]any{"reason": "native_member_not_scanned"}}
+		foreign := diagnostic
+		foreign.ConnectionID = "conn-b"
+		if err := repositories.Graph().ReplaceGraph(ctx, "scope-global", "graph-1", relationships, bindings, diagnostic, foreign); err != nil {
+			t.Fatal(err)
+		}
+		unresolved, err := repositories.Graph().ListUnresolvedByConnection(ctx, "conn-a")
+		if err != nil || len(unresolved) != 1 || !unresolved[0].BlocksCleanup || unresolved[0].NativeID != "missing-member" || unresolved[0].GraphRevision != "graph-1" {
+			t.Fatalf("persisted graph diagnostics = %#v, %v", unresolved, err)
+		}
+		if other, err := repositories.Graph().ListUnresolvedByConnection(ctx, "conn-b"); err != nil || len(other) != 0 {
+			t.Fatalf("cross-connection graph diagnostics = %#v, %v", other, err)
+		}
+		bad := diagnostic
+		bad.Evidence = map[string]any{"invalid": func() {}}
+		if err := repositories.Graph().ReplaceGraph(ctx, "scope-global", "failed-revision", nil, nil, bad); err == nil {
+			t.Fatal("invalid diagnostic did not abort graph transaction")
+		}
+		if unresolved, err = repositories.Graph().ListUnresolvedByConnection(ctx, "conn-a"); err != nil || len(unresolved) != 1 || unresolved[0].GraphRevision != "graph-1" {
+			t.Fatal("failed replacement changed diagnostics", unresolved, err)
+		}
 		if revision, err := repositories.Graph().GetGraphRevision(ctx, "scope-global"); err != nil || revision != "graph-1" {
 			t.Fatalf("graph revision = %q, err = %v", revision, err)
 		}
@@ -742,6 +763,10 @@ func Run(t *testing.T, factory Factory) {
 		if err := repositories.Graph().ReplaceGraph(ctx, "scope-global", "graph-2", nil, nil); err != nil {
 			t.Fatal(err)
 		}
+		if unresolved, err := repositories.Graph().ListUnresolvedByConnection(ctx, "conn-a"); err != nil || len(unresolved) != 0 {
+			t.Fatal("completed graph retained old diagnostics", unresolved, err)
+		}
+
 		if revision, err := repositories.Graph().GetGraphRevision(ctx, "scope-global"); err != nil || revision != "graph-2" {
 			t.Fatalf("empty graph revision = %q, err = %v", revision, err)
 		}
@@ -770,8 +795,12 @@ func Run(t *testing.T, factory Factory) {
 			"graph-stale-closed",
 			[]graph.Relationship{staleRelationship},
 			[]graph.LifecycleBinding{staleBinding},
+			graph.UnresolvedReference{BlocksCleanup: true, Provider: closedAsset.Identity.Provider, ConnectionID: closedAsset.Identity.ConnectionID, ControllerID: closedAsset.ID, NativeType: "closed-child", NativeID: "child", Relationship: graph.RelationshipAttachedTo},
 		); err != nil {
 			t.Fatal(err)
+		}
+		if values, err := repositories.Graph().ListUnresolvedByConnection(ctx, closedAsset.Identity.ConnectionID); err != nil || len(values) != 0 {
+			t.Fatal("closed controller revived graph diagnostics", values, err)
 		}
 		if values, err := repositories.Graph().ListRelationships(ctx, closedAsset.ID); err != nil || len(values) != 0 {
 			t.Fatalf("stale rebuild reopened deleted asset relationships = %#v, err = %v", values, err)

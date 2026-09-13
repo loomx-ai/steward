@@ -210,7 +210,7 @@ func (s *serviceCascades) contributeMonitorPrivateLinkReferences(ctx context.Con
 				}
 			}
 			if referrer == nil || child.data == nil {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: target.Identity.Provider, ConnectionID: target.Identity.ConnectionID, NativeType: child.kind, NativeID: child.id, ControllerID: target.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if !monitorPrivateLinkPrerequisite(target, *referrer) {

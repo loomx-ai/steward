@@ -69,7 +69,7 @@ func (s *serviceCascades) contributeHybridComputeLicenses(ctx context.Context, v
 			evidence := map[string]any{graph.RelationshipEvidenceRequiredDeletion: true, graph.RelationshipEvidenceAutomaticSelection: false, graph.RelationshipEvidenceAuthority: graph.AuthorityAuthoritative, graph.RelationshipEvidenceDeletionOrder: graph.DeletionOrderTargetBeforeSource, "resource_type": hybridProfileType, "instance_id": id}
 			profile, found := selected[id]
 			if !found {
-				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: license.Identity.Provider, ConnectionID: license.Identity.ConnectionID, NativeType: hybridProfileType, NativeID: id, ControllerID: license.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
+				result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: license.Identity.Provider, ConnectionID: license.Identity.ConnectionID, NativeType: hybridProfileType, NativeID: id, ControllerID: license.ID, Relationship: graph.RelationshipDependsOn, Evidence: evidence})
 				continue
 			}
 			if s.client.privateConfiguration(hybridComputeChildSnapshot(assignments[id])) != object(profile.Normalized[hybridComputeCleanup])["resource"] {

@@ -446,7 +446,7 @@ func addGroupBinding(result *governance.Contribution, assets []asset.Asset, cont
 		evidence[graph.LifecycleEvidenceControllerVerifiesManagedAbsence] = true
 	}
 	if !found {
-		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
+		result.Unresolved = append(result.Unresolved, graph.UnresolvedReference{BlocksCleanup: true, Provider: controller.Identity.Provider, ConnectionID: controller.Identity.ConnectionID, NativeType: nativeType, NativeID: id, ControllerID: controller.ID, Relationship: graph.RelationshipMemberOf, Evidence: evidence})
 		return managed, nil
 	}
 	result.Bindings = append(result.Bindings, graph.LifecycleBinding{ControllerAssetID: controller.ID, ManagedAssetID: managed.ID, Authority: graph.AuthorityAuthoritative, Ownership: ownership, CleanupPolicy: policy, EvidenceSource: groupSource, Evidence: evidence, Confidence: 1})
