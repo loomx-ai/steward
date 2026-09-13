@@ -1211,8 +1211,8 @@ resources:
     Azure Local VM instances supply the controller lifecycle and reference separate
     local NICs, disks, logical networks, storage paths and images. The native CLI
     deletes the VM instance before its Arc machine. These Azure Local contracts
-    are pinned; inventory, ownership, cleanup and live controller verification
-    remain unfinished. Native guest identity metadata is read-only, not a separate
+    are pinned and native inventory is implemented. Ownership, cleanup, network-picker
+    integration and live controller verification remain unfinished. Native guest identity metadata is read-only, not a separate
     destructive operation. See providers/azure/fixtures/azure-local/README.md.
 - alicloud: ACS::ESA::Site
   spec: providers/alicloud/specs/esa-site.yaml

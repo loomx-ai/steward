@@ -228,6 +228,17 @@ func (c *client) resourceOperation(kind resourceType, nativeID, method string) (
 			continue
 		}
 		template := strings.Split(operation.Call.Path, "/")
+		if azureLocalKind(kind.NativeType) != "" && strings.Contains(operation.Call.Path, "{resourceUri}") {
+			canonical, err := c.azureLocalIdentity(nativeID, kind.NativeType)
+			if err != nil {
+				return catalog.Operation{}, nil, err
+			}
+			parameters := map[string]any{"resourceUri": strings.TrimPrefix(azureLocalMachine(canonical), "/")}
+			if _, err := bindAzureREST(operation, parameters); err != nil {
+				return catalog.Operation{}, nil, err
+			}
+			return operation, parameters, nil
+		}
 		// Monitor associations are extension resources. Their native resourceUri
 		// consumes the complete, already validated ARM parent path.
 		if kind.NativeType == dataCollectionAssociationType && operation.Call.Path == "/{resourceUri}/providers/Microsoft.Insights/dataCollectionRuleAssociations/{associationName}" {

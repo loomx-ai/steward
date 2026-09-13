@@ -1,0 +1,31 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/virtualMachineInstances
+  class: compute.edge_instance
+presentation:
+  displayNames:
+    en-US: Azure Local VM
+    zh-CN: Azure Local 虚拟机
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  powerState: status.powerState
+  vmSize: hardwareProfile.vmSize
+  processors: hardwareProfile.processors
+  memoryMB: hardwareProfile.memoryMB
+extensions:
+  hook: azure.resource

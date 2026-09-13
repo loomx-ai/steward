@@ -52,6 +52,7 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
 | Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 先清理已审查的子资源，再移除普通机器注册；共享 ESU 许可证需先解除分配，控制器托管机器需通过控制器处理 |
+| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点与引用图谱；控制器清理仍待完成 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -96,7 +97,9 @@ Azure Arc 通过原生接口盘点机器和许可证，并在每台机器下枚�
 
 共享 Arc ESU 许可证清理需要 `Microsoft.HybridCompute/licenses/delete`、许可证读取、订阅范围的机器列表和读取、机器许可证配置列表和读取，以及上述资源组、锁和引用依赖读取权限。关联配置必须显式选中清理，或先单独解除关联；仅删除配置或机器会保留共享许可证。删除前，许可证原生分配计数必须存在且为零。许可证可覆盖同一租户的其他订阅，因此本地配置列表为空不足以证明无关联；外部分配需在对应订阅中处理。计划会提示删除将移除许可权益，计费可能继续最多五个日历日。许可证返回 404 后仍会检查已知和已审查配置的关联，残留关联会阻止完成。参见[许可范围](https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates)及[计费行为](https://learn.microsoft.com/en-us/azure/azure-arc/servers/billing-extended-security-updates)。测试覆盖微软 CLI 原始删除响应及 SQLite 恢复执行，不能据此确认真实计费已经终止。
 
-Azure Local 虚拟机清理尚未支持。其 VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像仍属于待完成的控制器集成。移除普通 Arc 注册不会释放虚拟机。官方 Azure Local CLI 先删除 VM 实例，再删除 Arc 注册；关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。已保留原生接口契约和离线测试，控制器盘点、安全清理与真实后端验证仍待完成。
+Azure Local 通过原生接口盘点 VM 实例、访客代理、访客身份元数据、网卡、磁盘、逻辑网络、存储路径与镜像。VM 和访客资源发现需要 `Microsoft.HybridCompute/machines/read`，并按所选类型授予对应的 `Microsoft.AzureStackHCI/<资源类型>/read` 权限，包括 `virtualMachineInstances/guestAgents/read` 和 `virtualMachineInstances/hybridIdentityMetadata/read`。已知资源逐项补读；集合为空或缺失时，也会检查固定的 `default` 单例资源。访客资源继承经过核验的 Arc 机器区域。权限不足、扫描期间配置变化或引用格式错误会使扫描失败，不会关闭已有资产。公开字段包含 VM 容量与电源状态、网络地址、磁盘和镜像信息、存储容量；凭据、SSH 密钥、代理配置及本地路径保持私密。
+
+Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，这些关系不授予删除所有权。Azure Local 清理及网络选择器集成仍待完成。官方 CLI 先删除 VM 实例，再删除 Arc 注册，关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
 
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 

@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if azureLocalKind(kind) != "" {
+		return azureLocalSource
+	}
 	if hybridComputeKind(kind) != "" {
 		return hybridComputeSource
 	}

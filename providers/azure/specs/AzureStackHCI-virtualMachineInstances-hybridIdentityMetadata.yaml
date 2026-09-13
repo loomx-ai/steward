@@ -1,0 +1,27 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/virtualMachineInstances/hybridIdentityMetadata
+  class: security.identity
+presentation:
+  displayNames:
+    en-US: Azure Local guest identity
+    zh-CN: Azure Local 访客身份
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+extensions:
+  hook: azure.resource

@@ -3721,3 +3721,44 @@ background evidence only, not acceptance evidence for this work.
   Shared-workspace Azure Local/Arc/catalog integration also passed (4.999s).
   The 49 milestone files do not overlap existing work, whose file hashes were
   verified unchanged before commit.
+
+
+### Azure Local native inventory, singleton recovery and reference graphs
+
+- Nine explicit native resource specifications now scan VM instances, guest
+  agents, identity metadata, NICs, disks, logical networks, storage paths and
+  gallery/marketplace images. Counts are 443 rules, 405 actions and 1,468
+  operations, with the same 189 root/102 reference documents. Nineteen mapped
+  Azure types still lack specifications; cleanup for these new types remains
+  unfinished and no generic DELETE is exposed as a reviewed lifecycle.
+- Six independent families use subscription indexes and individual reads. VM
+  and guest discovery starts from native HybridCompute machines; singleton GETs
+  recover unknown omissions even when a child list is empty or missing. Known
+  identities recover omitted roots/parents. A surviving known child whose parent
+  disappeared fails reconciliation; only its own absence closes it. Regions
+  inherit from verified Arc machines, with conflicting locations rejected.
+- Arc's existing unfiltered ARM paging loop is reused. Two observations bind
+  configuration, registrations, membership and scoped continuation tokens.
+  Partial responses, permission errors, changed pages/versions/parents and
+  malformed identities/references fail without publishing a partial snapshot.
+- Public fields include VM power/capacity, network addresses, disk/image state
+  and storage capacity. Credentials, keys, proxy settings, local paths, error
+  text and unknown nested metadata remain private. Signed reference evidence
+  distinguishes VM/guest parents, NICs, disks, logical networks, storage paths,
+  images and custom locations. Foreign or absent targets stay unresolved; these
+  references grant no controller or deletion ownership.
+- Native contract and composed protocol tests now also cover SQLite scans,
+  exact graph edges, known omissions, failed-read preservation, individual
+  absence, public/private projection and logical-network closure through NIC,
+  VM and guests. No emulator or live controller backend was run. Network-picker
+  integration, controller cleanup/recovery, independent final readback and real
+  VM/billing outcomes remain pending. All eight acceptance criteria remain open.
+- Verification: isolated `170dcd6` plus this milestone passed `go test ./...`
+  (Azure 309.349s; GCP 159.705s), Azure Local/Arc/catalog race checks
+  (56.597s), `go vet ./...`, seven offline CLI/importer tests and documentation
+  checks (30 chapters, 10 original screenshots). Additional cursor/identity
+  boundary checks passed (0.605s). Both generators reproduce byte-for-byte,
+  and all 1,468 existing operation definitions remain unchanged.
+  Shared-workspace Azure Local/Arc/catalog integration passed (8.701s). The
+  29 milestone files do not overlap existing work; pre-existing file hashes
+  were verified unchanged before commit.

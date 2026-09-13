@@ -1,0 +1,29 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/networkInterfaces
+  class: network.interface
+presentation:
+  displayNames:
+    en-US: Azure Local network interface
+    zh-CN: Azure Local 网卡
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  macAddress: macAddress
+  ipConfigurations: ipConfigurations
+extensions:
+  hook: azure.resource

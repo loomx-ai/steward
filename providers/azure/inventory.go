@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	local := request.ResourceKind != nil && azureLocalKind(request.ResourceKind.NativeType) != ""
+	if request.Source == azureLocalSource && !local || local && request.Source != "" && request.Source != inventorySource && request.Source != azureLocalSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_azure_local_inventory_source")
 	}
 	hybrid := request.ResourceKind != nil && hybridComputeKind(request.ResourceKind.NativeType) != ""
 	if request.Source == hybridComputeSource && !hybrid || hybrid && request.Source != "" && request.Source != inventorySource && request.Source != hybridComputeSource {
@@ -58,6 +62,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if local {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = azureLocalSource
+		return r.listAzureLocal(ctx, c, request)
 	}
 	if hybrid {
 		if request.Source == inventorySource {

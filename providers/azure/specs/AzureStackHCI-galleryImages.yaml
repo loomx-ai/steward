@@ -1,0 +1,32 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/galleryImages
+  class: compute.image
+presentation:
+  displayNames:
+    en-US: Azure Local gallery image
+    zh-CN: Azure Local 库镜像
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.GalleryImages_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  osType: osType
+  hyperVGeneration: hyperVGeneration
+  publisher: identifier.publisher
+  offer: identifier.offer
+  sku: identifier.sku
+extensions:
+  hook: azure.resource

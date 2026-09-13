@@ -107,6 +107,9 @@ func TestEveryResourceBindsItsOfficialReadAndDelete(t *testing.T) {
 				}
 				if match[1] == "resourceUri" {
 					value = strings.TrimPrefix(resourceID(vmType, "monitored"), "/")
+					if azureLocalKind(kind.NativeType) != "" {
+						value = strings.TrimPrefix(resourceID(hybridMachineType, "local-vm"), "/")
+					}
 				}
 				if kind.NativeType == defenderPricingType && match[1] == "scopeId" {
 					value = "subscriptions/" + testSubscription

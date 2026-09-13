@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/virtualHardDisks
+  class: storage.disk
+presentation:
+  displayNames:
+    en-US: Azure Local disk
+    zh-CN: Azure Local 磁盘
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  diskSizeGB: diskSizeGB
+  diskFileFormat: diskFileFormat
+  dynamic: dynamic
+extensions:
+  hook: azure.resource

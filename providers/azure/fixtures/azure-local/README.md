@@ -4,8 +4,8 @@ These are contracts for the missing ENS-equivalent VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. These fixtures do not implement that inventory,
-ownership, planning or execution workflow.
+reference checks and cleanup. Native inventory and reference graphs are implemented; ownership, planning and
+execution remain unfinished.
 
 ## Original Swagger examples
 
@@ -85,5 +85,29 @@ python3 -m unittest scripts/test_azure_local_cli.py scripts/test_sync_azure_cata
 
 These are native contract, CLI-sequence and composed transport checks. No
 independent Azure Local emulator or live Hyper-V/controller backend was run.
-Inventory reconciliation, controller ownership, asynchronous recovery and
-independent final readback remain required for lifecycle parity.
+Controller ownership, asynchronous recovery and independent final readback
+remain required for lifecycle parity.
+
+## Native inventory and application evidence
+
+Nine explicit specifications use the `azure-local` source. Six independent
+resource families use their subscription list and individual GET operations.
+VM instances are enumerated under native HybridCompute machines; guest agents
+and identity metadata are enumerated under each VM instance. All three are
+fixed `default` singletons, so their own GET also recovers unrecorded omissions
+from empty or missing indexes. Known resources recover omitted roots and parents.
+Parent disappearance alone cannot close a known surviving guest resource.
+
+Tests execute native pagination, changing/forged continuation tokens, parent
+identity drift, partial/denied responses and malformed identities/references.
+Two observations bind authored configuration, parent registrations and reference
+sets without exposing private values. Guest regions come from verified machine
+reads; explicitly conflicting locations fail. VM/disk/storage/image state and
+network addresses use a typed public projection; credentials, keys, proxies,
+local paths, error messages and unknown nested configuration are omitted.
+
+SQLite scan/graph/reconciliation tests cover all nine families, exact reference
+edges, known omissions, failed reads and individual absence. Network closure
+finds the logical network, its NIC, VM and guest records. Custom locations and
+cross-subscription targets remain unresolved; no relationship grants ownership.
+The network picker, controller cleanup and real backend outcomes remain pending.

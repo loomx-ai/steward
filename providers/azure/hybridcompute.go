@@ -102,19 +102,23 @@ func (c *client) hybridComputeIndex(ctx context.Context, kind, parent string) ([
 		}
 		path = parent + "/" + last(kind)
 	}
+	return c.unfilteredARMIndex(ctx, path, hybridComputeVersion)
+}
+
+func (c *client) unfilteredARMIndex(ctx context.Context, path, version string) ([]any, error) {
 	rows, seen := []any{}, map[string]bool{}
-	for next := apiURL(path, hybridComputeVersion); next != ""; {
+	for next := apiURL(path, version); next != ""; {
 		u, err := url.Parse(next)
 		if err != nil || seen[next] {
-			return nil, serviceDenied("invalid_hybrid_compute_cursor")
+			return nil, serviceDenied("invalid_native_arm_cursor")
 		}
 		query, err := url.ParseQuery(u.RawQuery)
-		if err != nil || query.Get("api-version") != hybridComputeVersion {
-			return nil, serviceDenied("hybrid_compute_version_changed")
+		if err != nil || query.Get("api-version") != version {
+			return nil, serviceDenied("native_arm_version_changed")
 		}
 		for key, values := range query {
 			if len(values) != 1 || values[0] == "" || !slices.Contains([]string{"api-version", "$skiptoken", "$skipToken", "skipToken", "continuationToken"}, key) {
-				return nil, serviceDenied("filtered_hybrid_compute_index")
+				return nil, serviceDenied("filtered_native_arm_index")
 			}
 		}
 		seen[next] = true

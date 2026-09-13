@@ -1,0 +1,29 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.AzureStackHCI/storageContainers
+  class: storage.volume
+presentation:
+  displayNames:
+    en-US: Azure Local storage path
+    zh-CN: Azure Local 存储路径
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: azure-local
+  list:
+    operation: Azure.Microsoft.AzureStackHCI.StorageContainers_ListAll
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.AzureStackHCI.StorageContainers_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  availableSizeMB: status.availableSizeMB
+  containerSizeMB: status.containerSizeMB
+extensions:
+  hook: azure.resource

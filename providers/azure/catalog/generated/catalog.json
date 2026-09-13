@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "a013b814484c976fb24f49200c1c63ccc61bfc3634ab5f8f4a9279b7abae3a11",
+    "checksum": "0e596f0bf45994786650c638def8b7dcaa3ef4c56f806050e92a87d068afdce3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "d63c4725bad9832f7ae46f020c9affe8b3ba4d27cb68bbaeb643c3efda59ce6d",
+  "content_checksum": "e11741e7e62e03e9853cf0cbde9d1037e3f072936faa1c123e7c3c909fdfb437",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -129798,6 +129798,168 @@
         ],
         "list_operations": [
           "Azure.Microsoft.Authorization.RoleDefinitions_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/galleryImages",
+      "class": "compute.image",
+      "display_name": "Azure Local gallery image",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "galleryImages",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.GalleryImages_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/logicalNetworks",
+      "class": "network.virtual_network",
+      "display_name": "Azure Local logical network",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "logicalNetworks",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.LogicalNetworks_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.LogicalNetworks_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/marketplaceGalleryImages",
+      "class": "compute.image",
+      "display_name": "Azure Local marketplace image",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "marketplaceGalleryImages",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/networkInterfaces",
+      "class": "network.interface",
+      "display_name": "Azure Local network interface",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "networkInterfaces",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/storageContainers",
+      "class": "storage.volume",
+      "display_name": "Azure Local storage path",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "storageContainers",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.StorageContainers_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.StorageContainers_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/virtualHardDisks",
+      "class": "storage.disk",
+      "display_name": "Azure Local disk",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "virtualHardDisks",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/virtualMachineInstances",
+      "class": "compute.edge_instance",
+      "display_name": "Azure Local VM",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "virtualMachineInstances",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents",
+      "class": "compute.instance_extension",
+      "display_name": "Azure Local guest agent",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "guestAgents",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.GuestAgent_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.GuestAgents_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.AzureStackHCI/virtualMachineInstances/hybridIdentityMetadata",
+      "class": "security.identity",
+      "display_name": "Azure Local guest identity",
+      "scope_kinds": [
+        "region",
+        "subscription"
+      ],
+      "rest": {
+        "collection": "hybridIdentityMetadata",
+        "read_operations": [
+          "Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.AzureStackHCI.HybridIdentityMetadata_List"
         ]
       }
     },
