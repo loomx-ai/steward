@@ -248749,7 +248749,9 @@
       "nativeType": "Microsoft.AzureStackHCI/virtualMachineInstances",
       "rest": {
         "collection": "virtualMachineInstances",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List"
         ],

@@ -41,6 +41,9 @@ func newAzureLocalFixture(t *testing.T) *azureLocalFixture {
 	}
 	f.values[machine] = map[string]any{"id": machine, "name": last(machine), "type": hybridMachineType, "location": "eastus", "kind": "HCI", "properties": map[string]any{"vmId": "native-registration", "provisioningState": "Succeeded"}}
 	f.collections["/subscriptions/"+testSubscription+"/providers/microsoft.hybridcompute/machines"] = hybridMachineType
+	for _, kind := range []string{hybridExtensionType, hybridCommandType, hybridProfileType} {
+		f.collections[machine+"/"+strings.ToLower(last(kind))] = kind
+	}
 	for kind, file := range map[string]string{azureLocalVMType: "GetVirtualMachineInstance", azureLocalAgentType: "GetGuestAgent", azureLocalIdentityType: "GetHybridIdentityMetadata", azureLocalNICType: "GetNetworkInterface", azureLocalDiskType: "GetVirtualHardDisk", azureLocalNetworkType: "GetLogicalNetwork", azureLocalStorageType: "GetStorageContainer", azureLocalImageType: "GetGalleryImage", azureLocalMarketplaceType: "GetMarketplaceGalleryImage"} {
 		payload, err := os.ReadFile("fixtures/azure-local/" + file + ".json")
 		var example map[string]any
@@ -122,7 +125,7 @@ func newAzureLocalFixture(t *testing.T) *azureLocalFixture {
 			}
 			return jsonResponse(200, map[string]any{"value": rows}, nil), nil
 		}
-		if _, typ, err := parseID(path); err == nil && (azureLocalKind(typ) != "" || typ == strings.ToLower(hybridMachineType)) {
+		if _, typ, err := parseID(path); err == nil && (azureLocalKind(typ) != "" || hybridComputeKind(typ) != "") {
 			return jsonResponse(404, map[string]any{"error": map[string]any{"code": "ResourceNotFound"}}, nil), nil
 		}
 		return nil, fmt.Errorf("unexpected Local collection %s", path)

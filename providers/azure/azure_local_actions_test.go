@@ -112,7 +112,7 @@ func (f *localCleanupFixture) driver(t *testing.T, request contracts.ActionReque
 	if !ok {
 		t.Fatal("missing incoming ARM dependency guard")
 	}
-	if _, ok := guard.inner.(*azureLocalGuestAction); !ok {
+	if _, ok := guard.inner.(*azureLocalAction); !ok {
 		t.Fatal("missing native guest driver")
 	}
 	return driver

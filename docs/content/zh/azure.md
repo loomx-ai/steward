@@ -52,7 +52,7 @@ Steward 识别 434 类资源，其中 405 类具有原生清理操作（包括 B
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
 | Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 先清理已审查的子资源，再移除普通机器注册；共享 ESU 许可证需先解除分配，控制器托管机器需通过控制器处理 |
-| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点、引用图谱与访客代理清理；控制器清理仍待完成 |
+| Azure Local | VM 实例、访客代理、身份元数据、网卡、磁盘、网络、存储路径与镜像 | 原生盘点、VM/访客清理及系统盘/身份读回；Arc 注册控制器清理仍待完成 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -103,9 +103,9 @@ Azure Local 通过原生接口盘点 VM 实例、访客代理、访客身份元�
 
 逻辑网络扫描沿网卡与 VM 引用纳入访客资源和关联虚拟磁盘。磁盘的网络归属还需读取原生 VM 实例和 Arc 机器，权限为 `Microsoft.AzureStackHCI/virtualMachineInstances/read` 和 `Microsoft.HybridCompute/machines/read`。系统会重新读取已保存的挂载证据，补查集合遗漏的已知 VM；磁盘解除挂载后，其网络引用中会移除该 VM。存储路径与镜像仍是独立引用。网络归属不授予反向依赖或删除所有权。
 
-Azure Local 访客代理支持原生清理，前提是已扫描并核验 HCI 注册和 VM 配置。需要 `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`，以及访客资源、VM 实例、Arc 机器、资源组和管理锁的读取权限。清理会重新核验已审查配置、保护标记与继承锁，并持久化 ARM 操作以支持重试和重启恢复。只有访客资源自身的 GET 确认不存在，才会完成清理；操作成功或父资源消失都不足以证明完成。计划会提示访客管理可能中断，VM、Arc 注册和身份元数据仍保留。ARM 资源删除并不证明访客端代理已移除。
+Azure Local 访客代理支持单独清理，前提是已扫描并核验 HCI 注册和 VM 配置。需要 `Microsoft.AzureStackHCI/virtualMachineInstances/guestAgents/delete`，以及访客资源、VM 实例、Arc 机器、资源组和管理锁的读取权限。清理会重新核验已审查配置、保护标记与继承锁，并持久化 ARM 操作以支持重试和重启恢复。只有访客资源自身的 GET 确认不存在，才会完成清理；操作成功或父资源消失都不足以证明完成。计划会提示访客管理可能中断，VM、Arc 注册和身份元数据仍保留。ARM 资源删除并不证明访客端代理已移除。
 
-Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，这些关系不授予删除所有权。Azure Local 控制器清理仍待完成。官方 CLI 先删除 VM 实例，再删除 Arc 注册，关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
+Azure Local 图谱区分机器、VM 实例、网卡、磁盘、逻辑网络、存储路径、镜像和自定义位置的引用。缺失或跨订阅目标保留为未解析引用，普通引用关系不授予删除所有权。VM 清理会先移除已审查的访客与 Arc 前置资源，再调用原生 VM DELETE。官方 CLI 还会继续删除 Arc 注册；Steward 中这一后续控制器步骤仍待完成，因此注册在此保留并受到保护。关联网卡和数据盘仍保留，需要单独清理。参见 [Azure Local 虚拟机管理](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)。测试覆盖原生契约、组合协议、网络关联筛选及 SQLite 对账；真实控制器与物理虚拟机移除尚未验证。
 
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 
@@ -248,3 +248,9 @@ Cluster Mesh 清理会先断开已审查的跨集群网络，再删除其配置�
 Fleet 根资源扫描通过托管资源组的 `managedBy`、Fleet 与 AKS 的 API 地址，以及 AKS 的 `nodeResourceGroup` 和该组反向指向 AKS 的归属信息，核验 Hub 归属。随后遍历两个资源组，展开原生子资源和有文档支持的外部后代，并补查通用 ARM 列表遗漏的 Monitor 资源。这需要未过滤的资源组和组内资源列表、成员原生读取及子资源列表，以及相关的订阅 Monitor 和 DNS 索引权限。归属缺失或有歧义时保留为未核实状态，命名规则不能证明归属。已认证的历史标识通过逐项读取找回列表遗漏；未知类型的资源被遗漏或外部归属证据不完整时，扫描不会完成。RBAC 分配和诊断设置仍需独立清理。Fleet 根资源记录仅保存 Hub 和成员配置的私有摘要；独立资源保留各自产品的正常清单字段。生命周期图已将经核验的 Hub 集群、两个托管资源组及其后代统一归属 Fleet，避免再归属 AKS 或挂载资源控制器。清单中缺失的资源保留为待解析引用；证明或原生状态变化会阻止关系图重建。已核验 Hub 归属或确认不含 Hub 的 Fleet 支持根资源清理。选择 Fleet 后，计划会列出原生子配置的独立删除步骤；逐项读取确认它们不存在后，才发送根资源 DELETE。根资源还需要 `Microsoft.ContainerService/fleets/delete` 权限，并重新核验完整 Hub 影响范围、归属、配置、保护设置和管理锁。Hub 级联仅通过 Fleet DELETE 触发。Fleet 消失后，两个托管组及每个已知类型的后代仍须逐项读取确认 404，包括外部托管磁盘和 DNS 资源；未知类型的组内资源依赖所属组确认不存在。要求保留资源、Hub 归属未核实或残留读取失败时，清理不能完成。共享资源及加入 Fleet 的成员集群仍保持独立。参阅 [Hub 集群说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-lifecycle)。
 
 托管命名空间清理沿用已审查的 `deletePolicy`：`Keep` 移除 ARM 管理并保留 Kubernetes 命名空间；`Delete` 删除 Hub 和成员集群上的命名空间及其内容。两种策略都会删除关联的 Azure RBAC 分配。策略或放置配置变化后，需要重新扫描和审查。移除 Fleet 成员只解除成员关系，不会删除其引用的 AKS 或 Arc Kubernetes 集群。Arc 集群和其 Kubernetes 扩展不归 Fleet 所有；跨订阅或清单中缺失的集群保留为待解析引用。参阅[支持的成员类型](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/quickstart-create-fleet-and-members)。参阅[命名空间删除说明](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/howto-managed-namespaces#delete-a-managed-fleet-namespace)和[更新运行状态](https://learn.microsoft.com/en-us/azure/kubernetes-fleet/concepts-update-orchestration#update-run-states)。
+
+Azure Local VM 清理需要 `Microsoft.AzureStackHCI/virtualMachineInstances/delete`。即使只扫描 VM，发现和审查阶段也需要读取两类 Local 访客单例、引用的系统盘，以及 Arc 扩展、运行命令和许可证配置集合，请授予对应的原生读取权限。访客/Arc 前置资源需各自的删除权限；身份元数据和系统盘在 VM 删除后通过自身 GET 验证。系统会检查 VM 及所有受影响资源的资源组保护和管理锁，包括位于其他资源组的系统盘。
+
+系统盘纳入 VM 删除影响。[微软更正后的支持答复](https://learn.microsoft.com/en-us/answers/questions/5758576/what-happen-with-associated-data-disk-with-azure-l)称，工程团队确认系统盘会随 VM 删除，而数据盘保留。保留或保护系统盘、访客资源或 Arc 前置资源会阻止 VM 删除。清理前会通过原生机器/VM 读取检查系统盘是否被其他 VM 使用，也会补读此前已观察到但本次父级索引遗漏的 VM。只有 VM、系统盘与身份元数据各自确认不存在，动作才会完成；操作回调成功不足以关闭受影响资产。若原生 VM 响应没有已注册系统盘的 ID，则没有可单独验证的磁盘资产，VM 删除提示仍会说明系统盘将被移除。
+
+清理提示区分系统盘删除、数据盘/网卡保留以及仍保留的 Arc 注册。测试覆盖原生 SDK 合约、组合 VM/Arc 协议、保护与保留、引用变化，以及带重启恢复的 SQLite 扫描、图谱、计划和执行链。物理 VM/磁盘移除、真实回调兼容性和计费终止仍需云端验证。Local 网络、网卡、数据盘、存储路径和镜像的独立清理尚未开放。

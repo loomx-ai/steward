@@ -136,6 +136,7 @@ const (
 	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
 	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
 	WarningAzureLocalGuestRemoval        WarningCode = "azure_local_guest_removal"
+	WarningAzureLocalVMRemoval           WarningCode = "azure_local_vm_removal"
 	WarningArcCommandTermination         WarningCode = "arc_command_termination"
 	WarningArcSharedLicenseRemoval       WarningCode = "arc_shared_license_removal"
 	WarningArcLicenseProfileRemoval      WarningCode = "arc_license_profile_removal"

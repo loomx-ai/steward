@@ -4,8 +4,7 @@ These are contracts for the missing ENS-equivalent VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs and guest-agent cleanup are implemented; VM
-controller ownership and cleanup remain unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; the final Arc-registration controller step and independent-resource cleanup remain unfinished.
 
 ## Original Swagger examples
 
@@ -37,8 +36,7 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. Guest-agent cleanup uses its native DELETE; other Local
-cleanup actions remain unavailable.
+metadata are excluded. VM and guest-agent cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
 
 ## Original CLI function
 
@@ -86,7 +84,7 @@ python3 -m unittest scripts/test_azure_local_cli.py scripts/test_sync_azure_cata
 
 These are native contract, CLI-sequence and composed transport checks. No
 independent Azure Local emulator or live Hyper-V/controller backend was run.
-Controller ownership, asynchronous recovery and independent final readback
+The final Arc-registration controller lifecycle and live backend verification
 remain required for lifecycle parity.
 
 ## Native inventory and application evidence
@@ -111,7 +109,7 @@ SQLite scan/graph/reconciliation tests cover all nine families, exact reference
 edges, known omissions, failed reads and individual absence. Network closure
 finds the logical network, its NIC, VM and guest records. Custom locations and
 cross-subscription targets remain unresolved; no relationship grants ownership.
-Controller cleanup and real backend outcomes remain pending.
+Final Arc-registration cleanup and real backend outcomes remain pending.
 
 ## Network selection and attached disks
 
@@ -193,9 +191,48 @@ independent Local roots and malformed/noncanonical IDs cannot own receipts,
 including synchronous receipts without a callback. The raw native SDK does not
 supply these application-level ownership guarantees.
 
-This is a transport preparation milestone. VM cleanup is still unavailable in
-the resource specification; native child review, plan ordering, action recovery,
-metadata readback and the subsequent Arc registration deletion remain to be
-connected. The tests do not execute the real ARMPolling implementation or an
+This transport preparation now underlies the VM lifecycle described below.
+The subsequent Arc-registration controller deletion remains to be connected. The tests do not execute the real ARMPolling implementation or an
 independent cloud backend. Composed callback shapes are still not recordings,
 and actual VM/NIC/disk/identity or billing outcomes remain unverified.
+
+
+## VM lifecycle and system-disk correction
+
+VM inventory now signs the native guest/Arc child manifest, OS-disk identity,
+known VM scopes, HCI registration, authored configuration and ETags. Native Arc
+indexes discover extensions/commands/profiles and named reads recover omissions;
+Local guest/identity singletons and the OS disk use their own GETs. VM graph
+contributions require inventory for every affected resource. Arc resources are
+ordered prerequisites without transferring ownership from their registration.
+Guest agents use direct cleanup; identity metadata and the OS disk are reviewed
+managed impacts. Retention/protection prevents a VM cascade.
+
+`lifecycle-sources.json` records the important OS/data-disk distinction. The
+Microsoft support thread first gave a retention answer, then corrected it after
+reporting confirmation with the Local engineering team: OS disks are deleted
+with the VM; data disks remain. The corrected support response is not an
+independent backend execution or an explicit Swagger cascade guarantee. Tests
+were updated to remove the registered OS disk and require its own absence,
+while keeping a distinct data disk. No disk DELETE is fabricated by the VM
+action. An omitted OS-disk ID has no separate ARM asset to verify, and the VM
+warning still describes the OS-disk effect.
+
+Before VM deletion, native machine/VM reads reject another consumer of its OS
+disk, recovering known VMs even when a parent index omits them. The action binds
+resource/registration identity and private authored fields, checks changed
+ETags and locks/protection in all affected resource groups, and permits changing
+native instance-view/agent-installation observations while preserving SMBIOS
+identity. Neither a missing parent nor a successful poll proves managed absence.
+The signed action receipt survives restart; VM, identity and registered OS-disk
+GETs must all establish absence before those assets close. Arc registration,
+data disks, NICs, images and storage paths are left for their separate lifecycles.
+
+The registered SQLite test scans both Local and Arc sources, reviews five native
+deletes and two managed impacts, restarts repository/runtime between worker
+retries, and keeps operation identity and deletion deadlines stable. VM absence,
+then identity absence, each leave the task pending while the OS disk survives.
+Only the final disk own absence completes the controller action. The test
+verifies retained data disk/registration assets and private-log sanitization.
+Real backend behavior, guest/physical removal and billing outcomes are not proved
+by these composed transports; the final Arc-registration cleanup step remains open.

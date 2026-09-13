@@ -10609,7 +10609,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List"
       ]

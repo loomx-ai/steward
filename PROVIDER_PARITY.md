@@ -3867,3 +3867,54 @@ background evidence only, not acceptance evidence for this work.
   retained VM fragments match the verified wheel member and AST ranges.
   Shared-workspace Azure/cleanup integration passed (6.333s / 1.320s). The nine
   milestone files preserve all 65 pre-existing file contents.
+
+
+### Azure Local VM lifecycle, system-disk impact and independent readback
+
+- VM instances now have a native DELETE action. Counts are 443 rules, 407 actions
+  and 1,468 operations; source selection and generated metadata preserve the
+  existing native operation definitions. Nineteen mapped types still lack specs.
+- VM inventory records native guest/identity singletons, Arc extensions/commands/
+  license profiles, the registered OS disk and known VM scopes. Signed history
+  recovers omitted Arc children. Graph contributions order the four direct
+  prerequisites before VM deletion and review identity/OS-disk impacts separately.
+  Arc child ownership stays with its registration; the Local action does not
+  delete that registration. Retention and protection block incompatible cleanup.
+- Research corrected the initial composed fixture's disk-retention assumption:
+  the later Microsoft support response reports engineering confirmation that the
+  OS disk is deleted with the VM, whereas data disks remain. The source URL,
+  response timestamp and correction are retained in `lifecycle-sources.json`.
+  This is support/documentation evidence, not a Swagger cascade guarantee or a
+  live backend test. The native GET contract supplies the registered OS-disk ID.
+- Native machine/VM reads verify that another VM does not use the OS disk, with
+  known VM identities recovering parent-index omissions. The driver checks each
+  managed resource's configuration/ETag, protection and inherited locks, including
+  the OS disk's own resource group. Data disks, NICs, images and storage paths
+  remain independent; the action does not issue separate OS-disk DELETE calls.
+- The same native receipt supports VM recovery. Operational instance/installation
+  observations can change without discarding authored configuration or SMBIOS
+  identity; unchanged legacy guest snapshots remain readable. VM, identity and
+  registered OS-disk own absence are all required before completing the controller
+  action. Missing parents, DELETE 404, synchronous responses and successful polls
+  cannot substitute for those reads. If the native response has no registered
+  OS-disk ID, no separate disk asset can be verified; the warning still describes
+  OS-disk removal with the VM.
+- Registered SQLite tests cover both inventory sources, graph, five direct steps,
+  two managed impacts and repeated repository/runtime restart. VM absence followed
+  by identity absence leaves the task pending while the OS disk survives. Final
+  disk absence closes only the reviewed resources and leaves the data disk and
+  Arc registration active. Additional checks cover stale/forged manifests, denied
+  reads, new/shared consumers, cross-group protection and retention choices.
+- Bilingual capability/permission documentation and cleanup warnings describe the
+  VM/system-disk effect and retained data disks/NICs/registration. The final native
+  Arc-registration controller step, standalone Local root cleanup, real callback
+  compatibility, physical removal and billing outcomes remain unfinished. All
+  eight acceptance criteria remain open.
+- Validation: full isolated `go test ./...` passed (Azure 315.436s, GCP
+  163.693s); focused race checks passed (Azure 96.760s), and `go vet ./...`
+  passed. The 12 pinned CLI/catalog Python checks and documentation validation
+  (30 chapters, 10 original screenshots) passed. After applying the milestone to
+  the shared workspace, Azure/cleanup/plan integration passed (12.448s / 3.456s /
+  3.889s), TypeScript checking passed, and all 39 frontend contract tests plus
+  92 cleanup/localization UI tests passed. The 24 milestone files preserve all
+  65 pre-existing file contents, including unrelated edits in the translation file.

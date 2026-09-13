@@ -1,0 +1,26 @@
+{
+  "observed_on": "2026-09-14",
+  "os_disk": {
+    "uri": "https://learn.microsoft.com/en-us/answers/questions/5758576/what-happen-with-associated-data-disk-with-azure-l",
+    "kind": "Microsoft Q&A corrected support response; not a Swagger deletion guarantee or a live test",
+    "author": "Hemalatha (Microsoft External Staff / Moderator)",
+    "response_at": "2026-02-03T18:17:21.39+00:00",
+    "finding": "The later response reports confirmation from the Azure Local engineering team: VM deletion also removes its OS disk; data disks remain for separate removal.",
+    "correction": "The earlier response at 14:31:38 incorrectly described OS-disk retention. The implementation and tests use the corrected response, not the earlier statement."
+  },
+  "data_disks_and_nics": {
+    "uri": "https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607#delete-a-vm",
+    "kind": "Microsoft management documentation",
+    "finding": "Associated data disks and network interfaces are retained when deleting the VM and require independent cleanup."
+  },
+  "os_disk_identity": {
+    "uri": "https://learn.microsoft.com/en-us/rest/api/stackhci/virtual-machine-instances/get?view=rest-stackhci-2024-01-01#osdisk",
+    "kind": "Native 2024-01-01 REST contract, also retained in catalog/source/swagger.json",
+    "field": "properties.storageProfile.osDisk.id"
+  },
+  "limits": [
+    "No independent emulator or live Azure Local backend was used.",
+    "The action verifies each registered OS disk and guest identity resource with its own GET; operation success or VM absence alone cannot close those assets.",
+    "Physical VM/disk removal and billing termination remain unverified."
+  ]
+}

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "3a22190cb1862d2f3326e7eea23b8058e219118b33187d73351eb5cce41f831a",
+    "checksum": "406c90a1a766b42007623cc270cbdc16bb648f6287807e313541baf61aabfc33",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "e135af6a7457add97fb722acdde4c65241aa97447dfe0097b43af1932fa76a50",
+  "content_checksum": "9385ccd3d910ceafaea07a71146a0d339551b61746881a3e114cbc9525a376a9",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -129921,6 +129921,9 @@
         "collection": "virtualMachineInstances",
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualMachineInstances_List"

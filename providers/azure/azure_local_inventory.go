@@ -232,6 +232,9 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		normalized["name"], normalized["tags"], normalized["state"] = safe["name"], safe["tags"], object(safe["properties"])["provisioningState"]
 		normalized["subscription_id"], normalized["resource_group"], normalized["_inventory_source"] = c.subscription, strings.Split(id, "/")[4], azureLocalSource
 		configuration := c.privateConfiguration(map[string]any{"resource": raw, "machine": machines[machine], "instance": instances[azureLocalParent(id, kind)]})
+		if kind == azureLocalVMType {
+			configuration = azureLocalVMPrefix + configuration
+		}
 		if networkDisks {
 			configuration = azureLocalNetworkConfiguration + configuration
 			vms := append([]string{}, diskVMs[id]...)
@@ -250,15 +253,44 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		slices.Sort(network)
 		normalized["_azure_local_references"] = recorded
 		normalized["_azure_local_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
-		// Controller and independent-resource cleanup still require their native lifecycle.
+		// Independent resources retain separate cleanup lifecycles.
 		actionable := false
-		if kind == azureLocalAgentType {
+		if kind == azureLocalAgentType || kind == azureLocalIdentityType {
 			vm := instances[azureLocalParent(id, kind)]
 			reason := azureLocalGuestProtection(raw, vm, machines[machine])
 			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "vm": c.privateConfiguration(azureLocalCleanupSnapshot(vm)), "machine": c.privateConfiguration(hybridComputeParentStamp(machines[machine])), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "inventory": configuration, "protected": reason != ""}
 			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalCleanupBinding(id, request.ConnectionID, location, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
-			actionable = reason == ""
+			actionable = kind == azureLocalAgentType && reason == ""
+		}
+		if kind == azureLocalDiskType {
+			reason := protectionReason(resourceType{NativeType: kind}, raw)
+			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "inventory": configuration, "protected": reason != "", "location": location}
+			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalDiskBinding(id, request.ConnectionID, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+		}
+		if kind == azureLocalVMType {
+			for _, value := range array(object(object(raw["properties"])["storageProfile"])["dataDisks"]) {
+				if azureLocalOSDisk(raw) != "" && strings.EqualFold(text(object(value)["id"]), azureLocalOSDisk(raw)) {
+					return nil, nil, "", serviceDenied("azure_local_os_disk_also_data_disk")
+				}
+			}
+			hints := map[string]any{}
+			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_azure_local_configuration"]), azureLocalVMPrefix) || prior[azureLocalCleanup] != nil || prior[azureLocalCleanupProof] != nil {
+				if err := c.azureLocalVMRecorded(id, request.ConnectionID, prior); err != nil {
+					return nil, nil, "", err
+				}
+				hints = object(object(prior[azureLocalCleanup])["members"])
+			}
+			children, err := c.azureLocalVMChildren(ctx, id, hints, true, location, azureLocalOSDisk(raw))
+			if err != nil {
+				return nil, nil, "", err
+			}
+			reason := azureLocalGuestProtection(raw, raw, machines[machine])
+			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "machine": c.privateConfiguration(hybridComputeParentStamp(machines[machine])), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "members": c.azureLocalVMMembers(children), "os_disk": azureLocalOSDisk(raw), "vms": slices.Sorted(maps.Keys(instances)), "protected": reason != "", "inventory": configuration, "location": location}
+			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalVMBinding(id, request.ConnectionID, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			bindings[id], actionable = c.privateConfiguration(state), reason == ""
 		}
 		tags := map[string]string{}
 		for k, v := range object(safe["tags"]) {

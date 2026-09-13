@@ -1066,8 +1066,10 @@ const enUS = {
     "Deleting this shared Arc ESU license removes its update entitlement after assignments are cleared; billing may continue for up to five calendar days.",
   "error.arc_machine_registration_removal":
     "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal.",
+  "error.azure_local_vm_removal":
+    "Deleting this Azure Local VM removes the virtual machine and its OS disk after reviewed child cleanup. Arc registration, NICs and data disks remain for separate cleanup; verify the physical VM result separately.",
   "error.azure_local_guest_removal":
-    "Deleting this Azure Local guest-management resource can interrupt guest management. The VM and Arc registration remain; verify the guest-side result separately.",
+    "Deleting this Azure Local guest-management resource can interrupt guest management; verify the guest-side result separately.",
   "error.arc_extension_removal":
     "Deleting this Arc extension requests its removal from the machine; verify the agent-side result separately.",
   "error.arc_command_termination":
@@ -2165,8 +2167,10 @@ const zhCN: MessageShape = {
     "删除此共享 Arc ESU 许可证会在解除分配后移除更新权益；计费可能继续最多五个日历日。",
   "error.arc_machine_registration_removal":
     "删除此 Arc 机器会先清理已审查的子资源，再移除云端注册；外部主机和本地代理仍需单独移除。",
+  "error.azure_local_vm_removal":
+    "删除此 Azure Local VM 会在已审查的子资源清理后移除虚拟机及其系统盘。Arc 注册、网卡和数据盘仍需单独清理；请另行验证物理虚拟机移除结果。",
   "error.azure_local_guest_removal":
-    "删除此 Azure Local 访客管理资源可能中断访客管理。VM 和 Arc 注册仍保留；请另行验证访客端结果。",
+    "删除此 Azure Local 访客管理资源可能中断访客管理；请另行验证访客端结果。",
   "error.arc_extension_removal":
     "删除此 Arc 扩展会请求从机器移除扩展；仍需单独核实代理端结果。",
   "error.arc_command_termination":
