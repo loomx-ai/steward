@@ -58,9 +58,11 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 	kind := elasticSanKind(request.ResourceKind.NativeType)
 	nodes, reads := map[string]elasticSanObservation{}, map[string]map[string]any{}
 	groupHistory := map[string]map[string]any{}
+	boundaryHistory := map[string]map[string]any{}
 	snapshotUnavailable := map[string]bool{}
 	prior, roots, groups := map[string]map[string]any{}, map[string]bool{}, map[string]bool{}
 	known, requestID := map[string]bool{}, ""
+	retainedHistory := map[string]bool{}
 	read := func(id, typ string) (map[string]any, error) {
 		if raw, exists := reads[id]; exists {
 			return raw, nil
@@ -93,6 +95,15 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 					return nil, nil, "", serviceDenied("elastic_san_volume_history_changed")
 				}
 			}
+			if kind == elasticSanType && metadata[elasticSanBoundary] != nil {
+				boundaryHistory[id], err = c.elasticSanBoundaryRecorded(value)
+				if err != nil {
+					return nil, nil, "", err
+				}
+				for child, entry := range object(boundaryHistory[id]["members"]) {
+					retainedHistory[child] = object(entry)["retained"] == true
+				}
+			}
 			if kind == elasticSanGroupType && metadata[elasticSanGroupContext] != nil {
 				groupHistory[id], err = c.elasticSanGroupRecorded(value)
 				if err != nil {
@@ -103,6 +114,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			if err != nil {
 				return nil, nil, "", err
 			}
+			retainedHistory[id] = prior[id]["retained"] == true
 		}
 		if kind != elasticSanType {
 			roots[elasticSanRoot(id)] = true
@@ -174,7 +186,7 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			case "Deleted", "SoftDeleting":
 				retained = true
 			case "Deleting", "Restoring":
-				retained = prior[id]["retained"] == true
+				retained = retainedHistory[id]
 			}
 		}
 		nodes[id] = elasticSanObservation{raw: raw, retained: retained, authority: "get"}
@@ -202,6 +214,20 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			return nil, nil, "", err
 		}
 	}
+	// A known SAN carries independently signed child identities. Recover omitted
+	// groups before enumerating their collections, including retained populations.
+	if kind == elasticSanType {
+		for _, history := range boundaryHistory {
+			for child, entry := range object(history["members"]) {
+				if object(entry)["kind"] == elasticSanGroupType {
+					if err := recoverKnown(child, elasticSanGroupType); err != nil {
+						return nil, nil, "", err
+					}
+					groups[child] = true
+				}
+			}
+		}
+	}
 	if kind == elasticSanGroupType {
 		for id := range known {
 			if err := recoverKnown(id, kind); err != nil {
@@ -212,6 +238,31 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 	for id := range nodes {
 		if _, typ, _ := parseID(id); strings.EqualFold(typ, elasticSanGroupType) {
 			groups[id] = true
+		}
+	}
+	if kind == elasticSanType {
+		for _, group := range slices.Sorted(maps.Keys(groups)) {
+			for _, childKind := range []string{elasticSanVolumeType, elasticSanSnapshotType} {
+				if err := collect(childKind, group); err != nil {
+					if childKind == elasticSanSnapshotType && nodes[group].retained && isNotFound(err) {
+						snapshotUnavailable[group] = true
+					} else {
+						return nil, nil, "", err
+					}
+				}
+			}
+		}
+		for _, root := range slices.Sorted(maps.Keys(roots)) {
+			if err := collect(elasticSanEndpointType, root); err != nil {
+				return nil, nil, "", err
+			}
+		}
+		for _, history := range boundaryHistory {
+			for child, entry := range object(history["members"]) {
+				if err := recoverKnown(child, text(object(entry)["kind"])); err != nil {
+					return nil, nil, "", err
+				}
+			}
 		}
 	}
 	if kind == elasticSanGroupType {
@@ -378,6 +429,12 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 		tags := map[string]string{}
 		for key, value := range object(raw["tags"]) {
 			tags[key] = value.(string)
+		}
+		if kind == elasticSanType {
+			state := c.elasticSanBoundaryState(id, nodes, snapshotUnavailable)
+			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
+			normalized[elasticSanBoundary], normalized[elasticSanBoundaryProof] = state, c.elasticSanBoundaryBinding(value, state)
+			bindings[id] = c.privateConfiguration(map[string]any{"inventory": record, "boundary": state})
 		}
 		if kind == elasticSanGroupType {
 			state, err := c.elasticSanGroupState(id, raw, observation.retained, nodes, groupHistory[id])

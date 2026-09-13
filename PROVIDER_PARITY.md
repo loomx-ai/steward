@@ -4538,3 +4538,45 @@ background evidence only, not acceptance evidence for this work.
   chapters and all 10 original screenshots. The owned PostgreSQL container was
   removed and Docker Desktop restored to its initially stopped state. All 64
   unrelated WIP hashes and the exact original localization edits were preserved.
+
+
+## Elastic SAN parent inventory boundary
+
+- SAN inventory now enumerates groups, volumes, snapshots and provider-side
+  private endpoint connections, including both native active/retained group and
+  volume populations. It saves a signed boundary per SAN: canonical member IDs,
+  native kinds, retention classification and private full-configuration hashes.
+  The signature binds the connection, SAN identity, verified region and inventory
+  proof. Child contents and collection availability participate in the two-read
+  consistency check and pagination fingerprint.
+- Signed prior SAN membership recovers omitted groups before enumerating their
+  children and recovers independently addressable descendants. A retained member
+  in Deleting/Restoring keeps its signed prior population when its own read lacks
+  an unambiguous population marker. Legacy SAN observations without a boundary
+  can be refreshed from the native collections. Different SANs retain separate
+  member sets; private configuration is never copied into public inventory fields.
+- A retained group's snapshot-index 404 records incomplete membership and still
+  reads known snapshots individually. It does not assert that unknown snapshots
+  are absent. Active snapshot-index 404, denied reads and missing volume indexes
+  fail the scan. Completeness here describes the observed inventory boundary;
+  it neither proves deletion eligibility nor retained-resource purge semantics.
+- This closes the missing SAN-wide member observation prerequisite. SAN cleanup
+  still requires lifecycle impact planning, native preflight, asynchronous deletion
+  and independent child/parent outcome verification. Retained-group purge and the
+  previously documented full-family retained snapshot-index reconciliation edge
+  remain unfinished. Existing operation/spec/action counts stay 1489/448/417.
+  All eight overall acceptance criteria remain open.
+- New tests exercise seven native children across four types and both populations,
+  SQLite/runtime restart, legacy refresh, omitted groups/descendants, individual
+  snapshot absence, retained transitions, native collection/own-read failures,
+  signed foreign-member rejection, connection isolation, separate SANs and cursor
+  invalidation from child changes, new connections and collection availability.
+  Evidence is composed native-protocol fixtures and actual SQLite persistence;
+  no live Azure or independent Elastic SAN ARM emulator was used.
+- Validation: final full Azure suite passed (341.318s), Elastic SAN/catalog race
+  tests passed (68.763s), final focused tests passed (10.034s), and main focused
+  tests passed (7.236s). The final separate-SAN regression also passed before the
+  full run. Azure vet passed in both checkouts. Documentation checks passed
+  30 isolated/42 main chapters and all 10 original screenshots. Existing native
+  operation definitions, source catalogs and original protocol fixture bytes were
+  unchanged. All 65 preexisting WIP hashes were preserved.
