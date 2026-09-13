@@ -470,6 +470,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeDataMigration(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	if err := s.contributeAzureLocalRoots(ctx, assets, &result); err != nil {
+		return result, err
+	}
 	if err := s.contributeAzureLocalVMs(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}

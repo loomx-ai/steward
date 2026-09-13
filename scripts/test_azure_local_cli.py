@@ -72,6 +72,9 @@ class AzureLocalCLITests(unittest.TestCase):
 class AzureLocalGuestSDKTests(unittest.TestCase):
     manifest = "sdk-guest-source.json"
     polling_options = {}
+    arguments = ("native-machine",)
+    native_parameters = {"resource_uri": "native-machine"}
+    subscription_parameters = {}
 
     def native_functions(self):
         import textwrap
@@ -107,19 +110,19 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
                              ARMErrorFormat=object(), _models=SimpleNamespace(ErrorResponse=object()),
                              map_error=lambda **kwargs: None)
                 exec("from __future__ import annotations\n" + self.native_functions()["_delete_initial"], scope)
-                instance = SimpleNamespace(_config=SimpleNamespace(api_version="2024-01-01"),
+                instance = SimpleNamespace(_config=SimpleNamespace(api_version="2024-01-01", subscription_id="test-sub"),
                                            _client=SimpleNamespace(format_url=lambda url: url,
                                                _pipeline=SimpleNamespace(run=lambda *args, **kwargs: pipeline)),
                                            _deserialize=Deserialize())
                 call = MethodType(scope["_delete_initial"], instance)
                 if status in (202, 204):
-                    result = call("native-machine", cls=lambda raw, data, headers: (raw, headers))
+                    result = call(*self.arguments, cls=lambda raw, data, headers: (raw, headers))
                     self.assertIs(result[0], pipeline)
                     self.assertEqual(result[1], {"Location": response.headers["Location"]} if status == 202 else {})
                 else:
                     with self.assertRaises(NativeError):
-                        call("native-machine")
-                self.assertEqual(requests, [dict(resource_uri="native-machine", api_version="2024-01-01", headers={}, params={})])
+                        call(*self.arguments)
+                self.assertEqual(requests, [dict(**self.native_parameters, **self.subscription_parameters, api_version="2024-01-01", headers={}, params={})])
 
     def test_native_delete_continuation_skips_mutation(self):
         from types import MethodType
@@ -145,12 +148,12 @@ class AzureLocalGuestSDKTests(unittest.TestCase):
         client = object()
         instance = SimpleNamespace(_delete_initial=initial, _client=client, _config=SimpleNamespace(polling_interval=5))
         call = MethodType(scope["begin_delete"], instance)
-        first = call("native-machine", polling_interval=7)
+        first = call(*self.arguments, polling_interval=7)
         self.assertEqual(polls, [(7, self.polling_options)])
         self.assertEqual(len(mutations), 1)
-        self.assertEqual(mutations[0]["resource_uri"], "native-machine")
+        self.assertEqual({k: mutations[0][k] for k in self.native_parameters}, self.native_parameters)
         self.assertIs(first.args[1], native_response)
-        restored = call("native-machine", continuation_token="saved-native-token")
+        restored = call(*self.arguments, continuation_token="saved-native-token")
         self.assertEqual(len(mutations), 1)
         self.assertEqual(polls, [(7, self.polling_options), (5, self.polling_options)])
         self.assertEqual(restored["continuation_token"], "saved-native-token")
@@ -183,6 +186,41 @@ class AzureLocalVMSDKTests(AzureLocalGuestSDKTests):
             ("api_version", "2024-01-01", "str", {}),
             ("accept", "application/json", "str", {}),
         ])
+
+
+class AzureLocalDiskSDKTests(AzureLocalGuestSDKTests):
+    manifest = "sdk-disk-source.json"
+    polling_options = {"lro_options": {"final-state-via": "azure-async-operation"}}
+    arguments = ("test-rg", "test-resource")
+    native_parameters = {"resource_group_name": "test-rg", "virtual_hard_disk_name": "test-resource"}
+    subscription_parameters = {"subscription_id": "test-sub"}
+    collection = "virtualHardDisks"
+
+    def test_native_request_builder(self):
+        calls = []
+        def serialize(name, value, kind, **kwargs):
+            calls.append((name, value, kind, kwargs))
+            return value
+        scope = dict(case_insensitive_dict=dict, HttpRequest=lambda **kwargs: kwargs,
+                     _SERIALIZER=SimpleNamespace(url=serialize, query=serialize, header=serialize))
+        exec("from __future__ import annotations\n" + self.native_functions()["build_delete_request"], scope)
+        request = scope["build_delete_request"](**self.native_parameters, **self.subscription_parameters,
+                                              headers={"x-ms-client-request-id": "reviewed-request"})
+        self.assertEqual(request, dict(method="DELETE",
+            url=f"/subscriptions/test-sub/resourceGroups/test-rg/providers/Microsoft.AzureStackHCI/{self.collection}/test-resource",
+            params={"api-version": "2024-01-01"},
+            headers={"Accept": "application/json", "x-ms-client-request-id": "reviewed-request"}))
+        self.assertEqual(len(calls), 5)
+        self.assertEqual(calls[0], ("subscription_id", "test-sub", "str", {"min_length": 1}))
+        self.assertEqual(calls[1], ("resource_group_name", "test-rg", "str", {"max_length": 90, "min_length": 1}))
+        self.assertEqual(calls[2][3]["max_length"], 80)
+        self.assertIn("pattern", calls[2][3])
+
+
+class AzureLocalNICSDKTests(AzureLocalDiskSDKTests):
+    manifest = "sdk-nic-source.json"
+    native_parameters = {"resource_group_name": "test-rg", "network_interface_name": "test-resource"}
+    collection = "networkInterfaces"
 
 
 if __name__ == "__main__":

@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "406c90a1a766b42007623cc270cbdc16bb648f6287807e313541baf61aabfc33",
+    "checksum": "b687861f5529f183dee548b64b526d2101ce1dbf560a32519f02b17ab4d45786",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9385ccd3d910ceafaea07a71146a0d339551b61746881a3e114cbc9525a376a9",
+  "content_checksum": "9c6ca74e7cead845b85fa5e9b71d28b0f4d139a7cea6aeb5596e270820c1e388",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -129868,6 +129868,9 @@
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll"
         ]
@@ -129903,6 +129906,9 @@
         "collection": "virtualHardDisks",
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll"

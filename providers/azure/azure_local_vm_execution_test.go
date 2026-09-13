@@ -19,18 +19,31 @@ import (
 func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 	t.Run("vm", func(t *testing.T) { azureLocalWorkerRecovery(t, false) })
 	t.Run("registration", func(t *testing.T) { azureLocalWorkerRecovery(t, true) })
+	t.Run("disk", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalDiskType) })
+	t.Run("nic", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalNICType) })
 }
 
-func azureLocalWorkerRecovery(t *testing.T, registration bool) {
-	f := newLocalVMFixture(t)
+func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...string) {
+	var f *localVMFixture
+	var root *localRootFixture
+	if len(rootKind) != 0 {
+		root = newLocalRootFixture(t, rootKind[0])
+		root.retain = true
+		f = root.localVMFixture
+	} else {
+		f = newLocalVMFixture(t)
+	}
 	f.holdVM, f.holdMeta, f.holdDisk = true, true, true
 	logs := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
 	repository, registry, path := azureNativeWorkerRepository(t, f.runtime)
 	azureNativeWorkerScan(t, f.runtime, azureLocalSource, repository, registry, []string{azureLocalVMType, azureLocalAgentType, azureLocalIdentityType, azureLocalNICType, azureLocalDiskType, azureLocalNetworkType, azureLocalStorageType, azureLocalImageType, azureLocalMarketplaceType}, false, true)
 	values := azureNativeWorkerScan(t, f.runtime, hybridComputeSource, repository, registry, []string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, false, true)
-	var vm, metadata, machine asset.Asset
+	var vm, metadata, machine, rootAsset asset.Asset
 	for _, value := range values {
+		if root != nil && value.Identity.NativeID == root.id {
+			rootAsset = value
+		}
 		if value.Identity.NativeType == hybridMachineType {
 			machine = value
 		}
@@ -45,16 +58,27 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool) {
 	if registration {
 		selected, steps, arcDeletes = machine, 6, 4
 	}
+	selectors := []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected.ID}}
+	expectedRemaining := 11 - arcDeletes
+	if root != nil {
+		selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: rootAsset.ID})
+		steps++
+		expectedRemaining--
+		selected = rootAsset
+	}
 	planner := cleanup.NewService(repository, registry)
-	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: []plan.CleanupSelector{{Kind: plan.SelectorAsset, AssetID: selected.ID}}, CreatedBy: "operator"})
+	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "operator"})
 	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != steps || len(task.ImpactItems) != 2 {
 		t.Fatal("VM plan", err, task.Task.Status, task.Task.Blockers, len(task.Steps), task.ImpactItems)
 	}
 	if task.Steps[len(task.Steps)-1].AssetID != selected.ID {
 		t.Fatal("VM controller ordering or metadata outcome", task.Steps, task.ImpactItems)
 	}
-	warned, registrationWarned := false, false
+	warned, registrationWarned, diskWarned := false, false, false
 	for _, warning := range task.Task.Warnings {
+		if root != nil && root.kind == azureLocalDiskType && warning.AssetID == rootAsset.ID && warning.Code == plan.WarningAzureLocalDiskRemoval {
+			diskWarned = true
+		}
 		if warning.AssetID == machine.ID && warning.Code == plan.WarningArcMachineRegistrationRemoval {
 			t.Fatal("Local registration warning describes an external host")
 		}
@@ -68,7 +92,7 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool) {
 			t.Fatal("guest warning contradicts planned VM deletion")
 		}
 	}
-	if !warned || registrationWarned != registration {
+	if !warned || registrationWarned != registration || (root != nil && root.kind == azureLocalDiskType && !diskWarned) {
 		t.Fatal("VM deletion consequences missing from review")
 	}
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{ConnectionID: "connection", CleanupTaskID: task.Task.ID, RequestedBy: "operator", IdempotencyKey: "vm-worker", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
@@ -115,6 +139,9 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool) {
 			resolver := cleanup.ActionResolverFunc(func(ctx context.Context, value asset.Asset) (cleanup.ActionDriver, error) {
 				return registered.ResolveAction(ctx, value.Identity.ConnectionID, value)
 			})
+			if root != nil && step.AssetID == rootAsset.ID && round == 3 {
+				delete(f.values, root.id)
+			}
 			if step.AssetID == vm.ID {
 				if round == 3 {
 					delete(f.values, f.ids[azureLocalVMType])
@@ -173,8 +200,11 @@ func azureLocalWorkerRecovery(t *testing.T, registration bool) {
 		}
 	}
 	remaining, err := repository.ListActiveAssetsByConnection(ctx, "connection", "")
-	if err != nil || len(remaining) != 11-arcDeletes || f.vmDeletes != 1 || f.deleted != 1 || len(f.arc.deleted) != arcDeletes {
+	if err != nil || len(remaining) != expectedRemaining || f.vmDeletes != 1 || f.deleted != 1 || len(f.arc.deleted) != arcDeletes {
 		t.Fatal("VM recovery coverage", err, len(remaining), f.vmDeletes, f.deleted, f.arc.deleted)
+	}
+	if root != nil && (root.rootDeletes != 1 || root.rootPolls == 0 || f.values[root.id] != nil) {
+		t.Fatal("independent root worker incomplete")
 	}
 	for _, value := range remaining {
 		if registration && value.Identity.NativeType == hybridMachineType || value.Identity.NativeType == azureLocalVMType || value.Identity.NativeType == azureLocalAgentType || value.Identity.NativeType == azureLocalIdentityType || hybridComputeChild(value.Identity.NativeType) {

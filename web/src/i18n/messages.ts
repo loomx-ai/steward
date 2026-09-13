@@ -1068,6 +1068,8 @@ const enUS = {
     "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal.",
   "error.azure_local_registration_removal":
     "Deleting this Azure Local registration first requires removal of its VM and OS disk. NICs and data disks need separate cleanup; verify physical removal separately.",
+  "error.azure_local_disk_removal":
+    "Deleting this Azure Local disk can permanently remove its data; verify the physical disk result separately.",
   "error.azure_local_vm_removal":
     "Deleting this Azure Local VM removes the virtual machine and its OS disk after reviewed child cleanup. Arc registration, NICs and data disks have separate cleanup steps; verify the physical VM result separately.",
   "error.azure_local_guest_removal":
@@ -2171,6 +2173,8 @@ const zhCN: MessageShape = {
     "删除此 Arc 机器会先清理已审查的子资源，再移除云端注册；外部主机和本地代理仍需单独移除。",
   "error.azure_local_registration_removal":
     "删除此 Azure Local 注册前，需要先移除其 VM 和系统盘。网卡和数据盘需单独清理；请另行验证物理资源移除结果。",
+  "error.azure_local_disk_removal":
+    "删除此 Azure Local 磁盘可能永久移除其数据；请另行验证物理磁盘移除结果。",
   "error.azure_local_vm_removal":
     "删除此 Azure Local VM 会在已审查的子资源清理后移除虚拟机及其系统盘。Arc 注册、网卡和数据盘分别清理；请另行验证物理虚拟机移除结果。",
   "error.azure_local_guest_removal":

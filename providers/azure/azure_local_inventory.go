@@ -13,10 +13,12 @@ import (
 )
 
 const azureLocalNetworkConfiguration = "azure-local-network:"
+const azureLocalRootPrefix = "azure-local-root:"
 
 func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request contracts.InventoryRequest) ([]contracts.InventoryItem, map[string]any, string, error) {
 	kind := azureLocalKind(request.ResourceKind.NativeType)
 	networkDisks := kind == azureLocalDiskType && request.NetworkTarget != nil
+	independent := azureLocalIndependent(kind)
 	networkVMs := map[string]bool{}
 	values, machines, instances := map[string]map[string]any{}, map[string]map[string]any{}, map[string]map[string]any{}
 	known, provenance := map[string]bool{}, ""
@@ -47,6 +49,21 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 			return nil, nil, "", err
 		}
 		values[id] = raw
+		if prior := request.KnownNativeMetadata[id]; independent && len(prior) != 0 {
+			value := asset.Asset{ID: asset.AssetID(id), Identity: asset.Identity{Provider: asset.ProviderAzure, ConnectionID: request.ConnectionID, Partition: "azure", NativeID: id, NativeType: kind}, Location: text(object(prior[azureLocalCleanup])["location"]), Normalized: prior}
+			if _, err := c.azureLocalRecordedReferences(value); err != nil {
+				return nil, nil, "", err
+			}
+			if azureLocalRootConfiguration(text(prior["_azure_local_configuration"])) || prior[azureLocalCleanup] != nil || prior[azureLocalCleanupProof] != nil {
+				if err := c.azureLocalRootRecord(value); err != nil {
+					return nil, nil, "", err
+				}
+				for _, vm := range stringValues(object(prior[azureLocalCleanup])["vms"]) {
+					networkVMs[vm] = true
+				}
+			}
+		}
+
 		if prior := request.KnownNativeMetadata[id]; kind == azureLocalDiskType && strings.HasPrefix(text(prior["_azure_local_configuration"]), azureLocalNetworkConfiguration) {
 			vms := append([]string{}, stringValues(prior["_azure_local_network_vms"])...)
 			expected := c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": prior["_azure_local_configuration"], "vms": vms})
@@ -166,7 +183,7 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		return nil
 	}
 	extension := kind == azureLocalVMType || kind == azureLocalAgentType || kind == azureLocalIdentityType
-	if extension || networkDisks {
+	if extension || networkDisks || independent {
 		if err := collect(hybridMachineType, "", machines); err != nil {
 			return nil, nil, "", err
 		}
@@ -178,7 +195,7 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 				return nil, nil, "", err
 			}
 		}
-		if kind != azureLocalVMType && !networkDisks {
+		if kind != azureLocalVMType && !networkDisks && !independent {
 			for _, instance := range slices.Sorted(maps.Keys(instances)) {
 				if err := collect(kind, instance, values); err != nil {
 					return nil, nil, "", err
@@ -235,6 +252,9 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		if kind == azureLocalVMType {
 			configuration = azureLocalVMPrefix + configuration
 		}
+		if independent {
+			configuration = azureLocalRootPrefix + configuration
+		}
 		if networkDisks {
 			configuration = azureLocalNetworkConfiguration + configuration
 			vms := append([]string{}, diskVMs[id]...)
@@ -263,10 +283,16 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
 			actionable = kind == azureLocalAgentType && reason == ""
 		}
-		if kind == azureLocalDiskType {
+		if independent {
 			reason := protectionReason(resourceType{NativeType: kind}, raw)
 			state := map[string]any{"resource": c.privateConfiguration(azureLocalCleanupSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "inventory": configuration, "protected": reason != "", "location": location}
-			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalDiskBinding(id, request.ConnectionID, state)
+			vms := maps.Clone(networkVMs)
+			for vm := range instances {
+				vms[vm] = true
+			}
+			state["vms"] = append([]string{}, slices.Sorted(maps.Keys(vms))...)
+			bindings[id], actionable = c.privateConfiguration(state), reason == ""
+			normalized[azureLocalCleanup], normalized[azureLocalCleanupProof] = state, c.azureLocalRootBinding(id, request.ConnectionID, state)
 			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
 		}
 		if kind == azureLocalVMType {

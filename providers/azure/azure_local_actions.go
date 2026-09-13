@@ -101,6 +101,11 @@ func (c *client) azureLocalActionRecord(value asset.Asset) error {
 	var err error
 	if value.Identity.NativeType == azureLocalVMType {
 		err = c.azureLocalVMRecord(value)
+	} else if azureLocalIndependent(value.Identity.NativeType) {
+		err = c.azureLocalRootRecord(value)
+		if len(object(value.Normalized[azureLocalCleanup])) != 6 {
+			return serviceDenied("azure_local_root_requires_rescan")
+		}
 	} else if value.Identity.NativeType == azureLocalAgentType {
 		err = c.azureLocalChildRecord(value)
 	} else {
@@ -124,6 +129,10 @@ func (a *azureLocalAction) identity(request contracts.ActionRequest) error {
 	}
 	if request.Asset.Identity.NativeType == azureLocalVMType {
 		if err := a.vmRequest(request); err != nil {
+			return err
+		}
+	} else if azureLocalIndependent(request.Asset.Identity.NativeType) {
+		if err := a.rootRequest(request); err != nil {
 			return err
 		}
 	} else if len(request.LifecycleImpacts)+len(request.PrerequisiteDeletions) != 0 {
@@ -193,6 +202,9 @@ func (a *azureLocalAction) Preflight(ctx context.Context, request contracts.Acti
 	if request.Asset.Identity.NativeType == azureLocalVMType {
 		return a.vmPreflight(ctx, request)
 	}
+	if azureLocalIndependent(request.Asset.Identity.NativeType) {
+		return a.rootPreflight(ctx, request)
+	}
 	for range 2 {
 		guest, vm, machine, err := a.observe(ctx)
 		if err != nil {
@@ -218,6 +230,10 @@ func (a *azureLocalAction) protection(ctx context.Context, selected, vm, machine
 	if reason := azureLocalGuestProtection(selected, vm, machine); reason != "" {
 		return serviceDenied(reason)
 	}
+	return a.resourceProtection(ctx, children)
+}
+
+func (a *azureLocalAction) resourceProtection(ctx context.Context, children map[string]map[string]any) error {
 	groups := map[string]bool{strings.Join(strings.Split(a.planned.Identity.NativeID, "/")[:5], "/"): true}
 	for id := range children {
 		groups[strings.Join(strings.Split(id, "/")[:5], "/")] = true
@@ -281,7 +297,11 @@ func (a *azureLocalAction) Execute(ctx context.Context, request contracts.Action
 			}
 		}
 	}
-	result := contracts.ActionResult{ProviderOperationID: operationLocation(res.header), ProviderRequestID: res.requestID, RetryAfter: retryAfter(res.header), Data: map[string]any{"phase": "delete", "operation": operation}}
+	origin := operationLocation(res.header)
+	if res.status == 204 {
+		origin = res.requestID
+	}
+	result := contracts.ActionResult{ProviderOperationID: origin, ProviderRequestID: res.requestID, RetryAfter: retryAfter(res.header), Data: map[string]any{"phase": "delete", "operation": operation}}
 	result.Data["binding"] = a.phaseBinding(request, result)
 	return result, nil
 }
@@ -292,6 +312,10 @@ func (a *azureLocalAction) Readback(ctx context.Context, request contracts.Actio
 	}
 	if request.Asset.Identity.NativeType == azureLocalVMType {
 		return a.vmReadback(ctx)
+	}
+	if azureLocalIndependent(request.Asset.Identity.NativeType) {
+		raw, consumers, err := a.rootObserve(ctx)
+		return contracts.ReadbackResult{Exists: raw != nil || len(consumers) != 0, State: "azure_local_resource_deleting"}, contracts.DependencyReadError(err)
 	}
 	guest, _, _, err := a.observe(ctx)
 	return contracts.ReadbackResult{Exists: guest != nil, State: text(object(guest["properties"])["provisioningState"])}, contracts.DependencyReadError(err)

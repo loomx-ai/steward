@@ -156,7 +156,7 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 		}
 		item := batch.Items[0]
 		items = append(items, item)
-		if item.NativeID != f.ids[kind] || item.Location != "eastus" || item.Actionable == nil || *item.Actionable {
+		if item.NativeID != f.ids[kind] || item.Location != "eastus" || item.Actionable == nil || *item.Actionable != azureLocalIndependent(kind) {
 			t.Fatal("native identity, region or cleanup capability", kind)
 		}
 		if kind == azureLocalVMType && (object(item.Normalized["status"])["powerState"] != "Running" || fmt.Sprint(object(item.Normalized["hardwareProfile"])["memoryMB"]) != "4096") {
@@ -189,12 +189,18 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 		t.Fatal("native SQLite scan", len(values))
 	}
 	relations, err := repo.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 9 {
+	if err != nil || len(relations) != 10 {
 		t.Fatal("native dependency graph", len(relations), err)
 	}
 	for _, value := range values {
-		if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); err == nil {
-			t.Fatal("unfinished Local lifecycle exposed generic cleanup")
+		driver, err := f.runtime.ResolveAction(t.Context(), "connection", value)
+		if (err == nil) != azureLocalIndependent(value.Identity.NativeType) {
+			t.Fatal("unexpected native cleanup capability", value.Identity.NativeType, err)
+		}
+		if err == nil {
+			if _, err := driver.Preflight(t.Context(), contracts.ActionRequest{Asset: value, Action: "delete"}); err == nil {
+				t.Fatal("in-use root passed preflight")
+			}
 		}
 	}
 	for id := range f.values {

@@ -97,7 +97,7 @@ func newLocalVMFixture(t *testing.T) *localVMFixture {
 	return f
 }
 
-func (f *localVMFixture) asset(t *testing.T, kind string) asset.Asset {
+func (f *localVMFixture) asset(t *testing.T, kind string, selected ...string) asset.Asset {
 	t.Helper()
 	request := f.request(kind)
 	if hybridComputeKind(kind) != "" {
@@ -108,8 +108,12 @@ func (f *localVMFixture) asset(t *testing.T, kind string) asset.Asset {
 		t.Fatal("VM family inventory", kind, err)
 	}
 	var item contracts.InventoryItem
+	id := f.ids[kind]
+	if len(selected) == 1 {
+		id = selected[0]
+	}
 	for _, candidate := range batch.Items {
-		if candidate.NativeID == f.ids[kind] {
+		if candidate.NativeID == id {
 			item = candidate
 		}
 	}

@@ -11,13 +11,12 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// Only the two reviewed native controller/guest DELETE contracts may own these
-// receipts. Identity metadata is read-only; independent Local resource families
-// require their own cleanup lifecycle before they can use this transport.
+// Only reviewed native VM, guest, disk and NIC DELETE contracts may own these
+// receipts. Identity metadata and the remaining Local roots have no action.
 func (c *client) azureLocalDeleteOwner(id string) error {
 	canonical, typ, err := parseID(id)
 	kind := azureLocalKind(typ)
-	if err != nil || canonical != id || kind != azureLocalVMType && kind != azureLocalAgentType {
+	if err != nil || canonical != id || kind != azureLocalVMType && kind != azureLocalAgentType && !azureLocalIndependent(kind) {
 		return serviceDenied("invalid_azure_local_operation_owner")
 	}
 	_, err = c.azureLocalIdentity(id, kind)
@@ -101,11 +100,16 @@ func (c *client) azureLocalDeleteReceipt(id string, res response) (map[string]an
 	if len(res.data) != 0 || res.status != 202 && res.status != 204 {
 		return nil, serviceDenied("invalid_azure_local_delete_response")
 	}
+	// ARM 204 is terminal even when the server includes diagnostic operation
+	// headers (as the original Swagger examples do). Never follow/store them.
+	if res.status == 204 {
+		return c.azureLocalSignReceipt(id, nil), nil
+	}
 	receipt, err := c.azureLocalOperationHeaders(id, res.header)
 	if err != nil {
 		return nil, err
 	}
-	if res.status == 202 && len(receipt) == 0 || res.status == 204 && len(receipt) != 0 {
+	if len(receipt) == 0 {
 		return nil, serviceDenied("invalid_azure_local_delete_receipt")
 	}
 	return c.azureLocalSignReceipt(id, receipt), nil

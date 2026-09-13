@@ -84,11 +84,19 @@ func scalarReferences(value any, result []string) []string {
 			result = scalarReferences(item, result)
 		}
 	case map[string]string:
-		for _, item := range typed {
+		for key, item := range typed {
+			if strings.HasPrefix(key, "_") {
+				continue
+			}
 			result = scalarReferences(item, result)
 		}
 	case map[string]any:
-		for _, item := range typed {
+		for key, item := range typed {
+			// Provider recovery/signature metadata is not a network attachment.
+			// Providers expose verified membership through NetworkReferences.
+			if strings.HasPrefix(key, "_") {
+				continue
+			}
 			result = scalarReferences(item, result)
 		}
 	}

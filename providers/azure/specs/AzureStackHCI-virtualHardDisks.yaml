@@ -28,3 +28,13 @@ fields:
   dynamic: dynamic
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get
+      itemsPath: $
+      identityPath: id

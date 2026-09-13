@@ -10664,7 +10664,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll"
       ]
@@ -10681,7 +10683,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll"
       ]

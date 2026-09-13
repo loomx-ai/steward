@@ -4,7 +4,7 @@ These contracts support the native Local VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal; independent-resource cleanup remains unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks and NICs have independent cleanup; network/storage/image cleanup remains unfinished.
 
 ## Original Swagger examples
 
@@ -36,7 +36,7 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. VM and guest-agent cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
+metadata are excluded. VM, guest-agent, disk and NIC cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
 
 ## Original CLI function
 
@@ -259,3 +259,36 @@ disk/identity configuration, synchronous responses and DELETE 404.
 
 This implements the reviewed native API sequence; the composed transport does
 not prove physical removal, production callback shapes or billing termination.
+
+## Independent disk and NIC cleanup
+
+`sdk-disk-source.json` and `sdk-nic-source.json` retain the original request
+builder, initial delete and `begin_delete` from the same pinned 1.15.1 CLI wheel.
+Their native methods accept 202/204 and use `final-state-via: azure-async-operation`.
+The offline Python tests execute the retained functions with stubs and verify
+resource-group/resource names, subscription, API version, header serialization,
+response status handling and continuation without replay. These are original
+SDK function checks, not a live service or independent emulator.
+
+The driver reuses the signed Local receipt and own readback. An ARM 204 is
+terminal even with diagnostic operation headers (the original examples include
+a placeholder header); those headers are discarded and never visited or saved.
+For 202, only validated same-subscription StackHCI ARM callback endpoints are
+accepted. Neither status proves the resource itself is absent.
+
+Root inventory binds all observed VM scopes, preserving known identities through
+index omissions and VM 404. Configuration prefixes and signed context prevent
+removing recovery metadata to bypass consumer checks. Legacy disk snapshots
+remain usable for pending VM impacts, while direct root deletion requires rescan.
+Native VM references block direct deletion; graph prerequisites require explicit
+VM selection and never silently expand a disk/NIC selection into VM deletion.
+OS disks retain their existing VM-managed lifecycle. Protection, ETags, inherited
+locks, new consumers and denied reads are checked before mutation.
+
+Registered SQLite tests now cover VM cleanup followed by a separately selected
+data disk or NIC, with two VM-managed impacts, six direct steps, repeated runtime/
+repository restart and own absence checks. Standalone tests cover detach,
+retention/protection, omitted parents, 202/204/404, malformed context and legacy
+rescans. A shared network-filter regression prevents private recovery hints from
+being interpreted as network attachments; explicit verified references remain.
+Physical disk/NIC removal, real callback compatibility and billing are unverified.

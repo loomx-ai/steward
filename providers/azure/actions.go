@@ -81,7 +81,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataMigrationKind(kind.NativeType) != "" {
 		return newDataMigrationAction(c, id, value, kind)
 	}
-	if kind.NativeType == azureLocalAgentType || kind.NativeType == azureLocalVMType {
+	if kind.NativeType == azureLocalAgentType || kind.NativeType == azureLocalVMType || azureLocalIndependent(kind.NativeType) {
 		return newAzureLocalAction(c, id, value, kind)
 	}
 	if hybridComputeKind(kind.NativeType) != "" {

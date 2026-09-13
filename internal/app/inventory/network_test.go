@@ -46,3 +46,16 @@ func nativeIDs(items []contracts.InventoryItem) []string {
 	}
 	return result
 }
+
+func TestNetworkClosureIgnoresPrivateRecoveryHints(t *testing.T) {
+	items := []contracts.InventoryItem{
+		{NativeID: "vm-a", NetworkReferences: []string{"network-a"}},
+		{NativeID: "other-disk", Normalized: map[string]any{"_cleanup": map[string]any{"known_vms": []string{"vm-a"}}}},
+		{NativeID: "other-vm", Raw: map[string]any{"_saved_index": []string{"vm-a"}}},
+		{NativeID: "attached-disk", NetworkReferences: []string{"vm-a"}, Normalized: map[string]any{"_cleanup": map[string]any{"known_vms": []string{"vm-b"}}}},
+	}
+	selected := inventory.FilterNetworkClosure(asset.ScanTarget{Kind: asset.ScanTargetVPC, NativeID: "network-a"}, items)
+	if len(selected) != 2 || selected[0].NativeID != "vm-a" || selected[1].NativeID != "attached-disk" {
+		t.Fatal("private recovery hints expanded network membership", selected)
+	}
+}

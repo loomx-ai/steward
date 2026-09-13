@@ -1,0 +1,32 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/operations/_network_interfaces_operations.py",
+  "member_sha256": "a35aa1838c2b0b9a2ecfc87a9a5b29cb2b956f80fffbc6304cfbeedbb24e8936",
+  "class_name": "NetworkInterfacesOperations",
+  "functions": [
+    {
+      "function": "build_delete_request",
+      "start_line": 115,
+      "end_line": 149,
+      "file": "sdk_nic_build_delete_request.py.txt",
+      "sha256": "6302c21b3c1c304c387d558b4deef80e2914409f58d7f73f2de3ddcae540eedd"
+    },
+    {
+      "function": "_delete_initial",
+      "start_line": 510,
+      "end_line": 555,
+      "file": "sdk_nic_delete_initial.py.txt",
+      "sha256": "8853a40ab406e583ed58343da7d465c59963fb804cc72819ec4dcaa41525943d"
+    },
+    {
+      "function": "begin_delete",
+      "start_line": 558,
+      "end_line": 607,
+      "file": "sdk_nic_begin_delete.py.txt",
+      "sha256": "d9f0411b0dc5c3c7f0132340dcf28d2075484dd7d31e9f2581ef347af620e278"
+    }
+  ]
+}

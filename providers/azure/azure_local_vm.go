@@ -195,7 +195,7 @@ func (a *azureLocalAction) vmMemberAsset(child asset.Asset) error {
 		}
 		configuration = object(child.Normalized[hybridComputeCleanup])["resource"]
 	} else if kind == azureLocalDiskType {
-		if err := a.client.azureLocalDiskRecord(child); err != nil {
+		if err := a.client.azureLocalRootRecord(child); err != nil {
 			return err
 		}
 		configuration = object(child.Normalized[azureLocalCleanup])["resource"]

@@ -248810,7 +248810,9 @@
       "nativeType": "Microsoft.AzureStackHCI/networkInterfaces",
       "rest": {
         "collection": "networkInterfaces",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.NetworkInterfaces_ListAll"
         ],
@@ -248829,7 +248831,9 @@
       "nativeType": "Microsoft.AzureStackHCI/virtualHardDisks",
       "rest": {
         "collection": "virtualHardDisks",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.VirtualHardDisks_ListAll"
         ],

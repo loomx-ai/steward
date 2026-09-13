@@ -3956,3 +3956,47 @@ background evidence only, not acceptance evidence for this work.
   checking, 39 frontend contract tests and 92 cleanup/localization UI tests.
   The 15 milestone files preserve all 65 pre-existing file contents, including
   unrelated translation edits. No live controller/backend was used.
+
+
+### Azure Local independent disks and network interfaces
+
+- Native disk/NIC DELETE actions bring the catalog to 443 rules and 409 actions;
+  all 1,468 operation definitions are preserved. Original request builders and
+  delete/poller methods from the pinned Microsoft CLI 1.15.1 wheel are retained
+  with hashes. Offline SDK/CLI/catalog checks cover both new root shapes.
+- Root inventory now reads native VM scopes and binds durable consumer history.
+  Known parent-index omissions and vanished VM IDs remain recoverable. A new
+  configuration prefix prevents dropping the signed history to bypass checks.
+  Legacy disk metadata remains valid for existing VM impacts; independent
+  deletion requires a fresh root scan.
+- Native VM references must be cleared before disk/NIC deletion. A dependent VM
+  must be explicitly selected or detached externally; the graph never silently
+  selects a VM from a root-resource selection. OS disks remain delegated VM
+  impacts. Independent roots check configuration/ETag, inherited locks, resource
+  group protection and fresh/known consumers before mutation and own readback.
+- ARM 204 operation headers are diagnostic and discarded without network access,
+  matching the native terminal response and original examples. Validated 202
+  callbacks retain the existing bounded receipt. Synchronous results, DELETE 404
+  and restart cannot replace resource absence or replay deletion.
+- New tests exposed a shared network-filter problem: private recovery metadata
+  could expand a network scan through unrelated known IDs. The common scalar
+  reference fallback now excludes internal underscore fields; explicit verified
+  network references still participate. The retained regression checks both.
+- Registered SQLite tests exercise VM-first disk/NIC cleanup, six direct steps,
+  two managed impacts and repeated runtime/repository recovery. Focused cases
+  cover live references, explicit selection, retention, protected resources,
+  omitted indexes, malformed history, permission errors, legacy rescan and native
+  202/204/404 responses. Bilingual docs and disk data-loss warnings are updated.
+- Local networks, storage paths and images still need independent lifecycles.
+  Real backend callback compatibility, physical removal, billing and the wider
+  provider-parity acceptance remain unverified. All eight acceptance items stay
+  open; these tests are protocol evidence rather than live-cloud validation.
+- Validation: full isolated `go test ./...` passed (Azure 327.620s, GCP
+  169.291s); focused race checks passed (Azure 177.879s), and `go vet ./...`
+  passed. All 18 retained SDK/CLI/catalog Python checks and documentation checks
+  (30 chapters, 10 original screenshots) passed. Shared-workspace integration
+  passed for Azure/cleanup/plan/inventory (21.224s / 3.623s / 3.680s / 3.378s),
+  together with TypeScript checking, 39 frontend contract tests and 92
+  cleanup/localization UI tests. The 36 milestone files preserve all 65
+  pre-existing file contents, including unrelated translation edits. No live
+  controller/backend was used.

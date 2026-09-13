@@ -1,0 +1,32 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/operations/_virtual_hard_disks_operations.py",
+  "member_sha256": "ebe4aa763420a2f5df8151284917422ca5b9dd3db06e06ae14d2dfd98d83d0f2",
+  "class_name": "VirtualHardDisksOperations",
+  "functions": [
+    {
+      "function": "build_delete_request",
+      "start_line": 115,
+      "end_line": 149,
+      "file": "sdk_disk_build_delete_request.py.txt",
+      "sha256": "9e7e59924d53d0634e0063f488795a10c19c2c5660fe1f4859faa10a7df5c687"
+    },
+    {
+      "function": "_delete_initial",
+      "start_line": 510,
+      "end_line": 555,
+      "file": "sdk_disk_delete_initial.py.txt",
+      "sha256": "90ce741a9195ff5854312f24c863e9495ff68d6d6c76fd0c3b9024750b5c129d"
+    },
+    {
+      "function": "begin_delete",
+      "start_line": 558,
+      "end_line": 607,
+      "file": "sdk_disk_begin_delete.py.txt",
+      "sha256": "ed5c63030f46e341645b70320a145fc11a10492409ee191f491de731b06c4ede"
+    }
+  ]
+}

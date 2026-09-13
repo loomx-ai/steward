@@ -9,7 +9,7 @@ import (
 )
 
 func TestAzureLocalPollingReceiptsAndBoundaries(t *testing.T) {
-	for _, kind := range []string{azureLocalVMType, azureLocalAgentType} {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType} {
 		t.Run(kind, func(t *testing.T) { testAzureLocalPollingReceiptsAndBoundaries(t, kind) })
 	}
 }
@@ -30,9 +30,18 @@ func testAzureLocalPollingReceiptsAndBoundaries(t *testing.T, kind string) {
 			t.Fatal("unsafe callback accepted", bad)
 		}
 	}
-	for _, res := range []response{{status: 202}, {status: 200}, {status: 204, header: header}, {status: 202, data: map[string]any{"status": "Succeeded"}, header: header}, {status: 202, header: http.Header{"Location": {result, result}}}, {status: 202, header: http.Header{"Location": {""}}}, {status: 202, header: http.Header{"Operation-Location": {status}}}, {status: 202, header: http.Header{"Azure-Asyncoperation": {status}, "Location": {strings.Replace(result, "11111111-2222-3333-4444-555555555555", testTenant, 1)}}}} {
+	for _, res := range []response{{status: 202}, {status: 200}, {status: 202, data: map[string]any{"status": "Succeeded"}, header: header}, {status: 202, header: http.Header{"Location": {result, result}}}, {status: 202, header: http.Header{"Location": {""}}}, {status: 202, header: http.Header{"Operation-Location": {status}}}, {status: 202, header: http.Header{"Azure-Asyncoperation": {status}, "Location": {strings.Replace(result, "11111111-2222-3333-4444-555555555555", testTenant, 1)}}}} {
 		if _, err := f.client.azureLocalDeleteReceipt(id, res); err == nil {
 			t.Fatal("invalid initial receipt", res.status)
+		}
+	}
+	for _, endpoint := range []string{status, "http://azure.async.operation/status", "https://untrusted.test/ignored"} {
+		synchronous, err := f.client.azureLocalDeleteReceipt(id, response{status: 204, header: http.Header{"Azure-Asyncoperation": {endpoint}}})
+		if err != nil || len(synchronous) != 1 {
+			t.Fatal("terminal response retained a callback", synchronous, err)
+		}
+		if wait, err := f.client.azureLocalPoll(t.Context(), id, synchronous); err != nil || !wait.Done {
+			t.Fatal("terminal response attempted polling", wait, err)
 		}
 	}
 	for _, field := range []string{"url", "mode", "complete", "binding", "unknown"} {
@@ -91,7 +100,7 @@ func testAzureLocalPollingReceiptsAndBoundaries(t *testing.T, kind string) {
 }
 
 func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
-	for _, kind := range []string{azureLocalVMType, azureLocalAgentType} {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType} {
 		t.Run(kind, func(t *testing.T) { testAzureLocalPollingFailureDoesNotMeanAbsence(t, kind) })
 	}
 }
@@ -180,12 +189,13 @@ func TestAzureLocalPollingOwnerIsolation(t *testing.T) {
 		return jsonResponse(200, map[string]any{"status": "Succeeded"}, nil), true
 	}
 	vm, guest := f.ids[azureLocalVMType], f.ids[azureLocalAgentType]
-	for _, id := range []string{vm, guest} {
+	owners := []string{vm, guest, f.ids[azureLocalDiskType], f.ids[azureLocalNICType]}
+	for _, id := range owners {
 		receipt, err := f.client.azureLocalDeleteReceipt(id, initial)
 		if err != nil {
 			t.Fatal("reviewed owner rejected", id, err)
 		}
-		for _, other := range []string{vm, guest, strings.Replace(id, azureLocalMachine(id), azureLocalMachine(id)+"-other", 1)} {
+		for _, other := range append(append([]string{}, owners...), strings.Replace(id, azureLocalMachine(id), azureLocalMachine(id)+"-other", 1)) {
 			if other == id {
 				continue
 			}
@@ -206,7 +216,7 @@ func TestAzureLocalPollingOwnerIsolation(t *testing.T) {
 		strings.Replace(vm, "/providers/microsoft.hybridcompute/", "/microsoft.hybridcompute/", 1),
 	}
 	for kind, id := range f.ids {
-		if kind != azureLocalVMType && kind != azureLocalAgentType {
+		if kind != azureLocalVMType && kind != azureLocalAgentType && !azureLocalIndependent(kind) {
 			invalid = append(invalid, id)
 		}
 	}
