@@ -3507,3 +3507,36 @@ background evidence only, not acceptance evidence for this work.
   files, documentation checks (40 chapters / 10 original screenshots) and
   whitespace validation passed. Independent emulator and live-cloud evidence
   remain open.
+
+### Arc HybridCompute deletion receipts and resumable native polling
+
+- The four catalog DELETE operations now validate native response statuses,
+  callback roles and operation identity; accepted Run Command deletion requires
+  its final Location callback. Synchronous and asynchronous receipts bind the
+  exact resource and credential configuration before they can be restored.
+- Native polling preserves complete signed URLs and accepts signature rotation
+  only for the same subscription, provider, region, UUID, API version and saved
+  URL role. Status success advances to the saved result URL. Empty final 200/204
+  completes the operation only; operation 404, permission failure, redirects,
+  malformed responses and failed/canceled states cannot prove resource absence.
+  Returned progress is authenticated for persistence and leaves the previous
+  receipt unchanged.
+- A clearly labeled cross-version adaptation replays five deletions and 19
+  polls from the pinned Microsoft CLI recordings, serializing the receipt and
+  creating a fresh runtime at each step. Only the subscription and API version
+  are adapted in memory, and requests follow newly returned signatures. The
+  unmodified transport/provenance tests remain separate. Boundary tests cover
+  forged phases, changed owners/credentials, URL scope and query violations,
+  mismatched callbacks, final-result handling and runtime DELETE dispatch.
+- This is a polling foundation milestone. Arc's five resource mappings remain
+  read-only, with cleanup drivers, plan impact/ordering, ownership/locks,
+  restored cleanup workers and final own-resource absence still unfinished.
+  Counts remain 434 rules, 400 actions and 1,434 operations; all eight overall
+  acceptance criteria and independent-emulator/live-cloud evidence remain open.
+- Verification used an isolated checkout of `d6584fc` plus exactly these five
+  changed files because concurrent, unrelated identity changes were being
+  edited in the shared workspace. Repository-wide `go test ./...` passed there
+  (Azure 362.347s; GCP 218.185s), as did Arc/Defender/catalog race checks
+  (18.600s), `go vet ./...`, documentation checks (30 committed chapters and
+  10 original screenshots) and whitespace validation. The five files were
+  byte-compared with the shared workspace before adding this verification note.

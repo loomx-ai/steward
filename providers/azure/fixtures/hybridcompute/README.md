@@ -57,10 +57,11 @@ bodies and request headers are not copied.
 | `test_esu_license.yaml` | 11–13, 23–25 | Two machine license-profile deletes and polling |
 | `test_run_command.yaml` | 17–23 | Run Command delete and polling |
 
-These recordings use **2026-07-15**, not the catalog's 2025-01-13. Tests keep that
-version and replace only the zero subscription placeholder with the local test
-subscription. They exercise shared HTTP transport, throttling classification
-and signature redaction; they do not establish cross-version lifecycle parity.
+These recordings use **2026-07-15**, not the catalog's 2025-01-13. The original
+transport test keeps that version and replaces only the zero subscription
+placeholder with the local test subscription. It exercises shared HTTP
+transport, throttling classification and signature redaction; it does not
+establish cross-version lifecycle parity.
 
 Native status URLs use subscription-scoped
 `Microsoft.HybridCompute/locations/{region}/operationstatus/{uuid}`; result URLs
@@ -71,10 +72,32 @@ polling its initial status URL. Tests preserve the signed query bytes.
 
 All five result reads are empty HTTP 200. Ordinary GET rejects these; the
 transport accepts them only with explicit empty-result opt-in and the test's
-exact recorded URL validator. Production Arc receipt authentication, scope
-validation, rotation/resume and final own-resource reads remain unfinished.
-The recordings contain no own-resource 404 after deletion, so neither absence
-nor agent uninstallation follows from replay.
+exact recorded URL validator. The recordings contain no own-resource 404 after
+deletion, so neither absence nor agent uninstallation follows from replay.
+
+## Native deletion receipts and polling
+
+The runtime's four catalog DELETE operations now validate their native response
+statuses and callbacks. Run Command's accepted response requires a Location
+callback. The polling helper authenticates saved receipts against the exact
+resource and credential configuration, validates subscription/provider/region/
+operation UUID/API version/URL role, preserves signed query bytes, and permits
+signature rotation only within the same operation and previously recorded role.
+Each returned progress receipt can be persisted and resumed by a fresh runtime.
+Status success advances to a saved result URL when present. Empty result 200 or
+204 completes the operation; errors, malformed payloads, redirects and operation
+404 do not establish success. Final own-resource readback still belongs to the
+unfinished cleanup driver; these helpers do not enable resource cleanup actions.
+
+`TestHybridComputeRecordedPollingResume` explicitly adapts the recordings' API
+version to 2025-01-13 in memory, retaining their status bodies and following the
+new signatures instead of the CLI's initial URL. It replays five accepted
+deletions and 19 polls, rebuilding the runtime and serializing/restoring the
+receipt between every step. This adaptation tests the protocol implementation;
+it is not independent same-version or live-cloud evidence. Separate boundary
+tests cover URL/receipt tampering, credential/resource changes, callback
+disagreement, synchronous responses, failed polls, final-result handling and
+all four runtime DELETE operations.
 
 ## Lifecycle boundaries
 
@@ -106,7 +129,7 @@ The ordinary checks run offline from the repository root:
 
 ```sh
 go generate ./providers/azure
-go test ./providers/azure -run 'TestHybridCompute(OfficialContracts|RecordedTransport)' -count=1
+go test ./providers/azure -run 'TestHybridCompute' -count=1
 ```
 
 For online reproduction, download the pinned URLs in `sources.json` and

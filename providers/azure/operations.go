@@ -82,6 +82,22 @@ func (r *Runtime) Invoke(ctx context.Context, invocation contracts.Invocation) (
 	if err != nil {
 		return contracts.InvocationResult{}, err
 	}
+	if strings.HasPrefix(operation.ID, "Azure.Microsoft.HybridCompute.") && request.Method == "DELETE" {
+		u, _ := url.Parse(request.URL)
+		id, _, err := parseID(u.Path)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		receipt, err := c.hybridComputeDeleteReceipt(id, result)
+		if err != nil {
+			return contracts.InvocationResult{}, err
+		}
+		operationID := text(receipt["status_url"])
+		if operationID == "" {
+			operationID = text(receipt["result_url"])
+		}
+		return contracts.InvocationResult{Data: safeAPIPayload(result.data, request.URL), RequestID: result.requestID, OperationID: operationID}, nil
+	}
 	if strings.HasPrefix(operation.ID, "Azure.Microsoft.Communication.") && request.Method == "DELETE" {
 		u, _ := url.Parse(request.URL)
 		_, typ, _ := parseID(u.Path)
