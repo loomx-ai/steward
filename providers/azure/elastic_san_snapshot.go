@@ -1,0 +1,260 @@
+package azure
+
+import (
+	"context"
+	"maps"
+	"strings"
+	"time"
+
+	"github.com/loomx-ai/steward/internal/core/asset"
+	"github.com/loomx-ai/steward/internal/provider/catalog"
+	"github.com/loomx-ai/steward/internal/provider/contracts"
+)
+
+const elasticSanSnapshotCleanup = "_elastic_san_snapshot_cleanup"
+const elasticSanSnapshotCleanupProof = "_elastic_san_snapshot_cleanup_proof"
+
+func elasticSanSnapshotProtection(raw map[string]any) string {
+	if reason := protectionReason(resourceType{NativeType: elasticSanSnapshotType}, raw); reason != "" {
+		return reason
+	}
+	created, ok := object(raw["systemData"])["createdAt"].(string)
+	if _, err := time.Parse(time.RFC3339Nano, created); !ok || err != nil {
+		return "azure_elastic_san_snapshot_creation_unverified"
+	}
+	if raw["managedBy"] != nil && raw["managedBy"] != "" || object(raw["properties"])["managedBy"] != nil {
+		return "azure_elastic_san_snapshot_managed"
+	}
+	_, kind, err := parseID(text(object(object(raw["properties"])["creationData"])["sourceId"]))
+	if err != nil || !strings.EqualFold(kind, elasticSanVolumeType) {
+		return "azure_elastic_san_snapshot_source_unverified"
+	}
+	switch object(raw["properties"])["provisioningState"] {
+	case "Succeeded", "Failed", "Canceled", "Deleting":
+		return ""
+	default:
+		return "azure_elastic_san_snapshot_not_ready"
+	}
+}
+
+func (c *client) elasticSanSnapshotBinding(value asset.Asset, state map[string]any) string {
+	return c.privateConfiguration(map[string]any{"protocol": "elastic-san-snapshot-1", "id": value.Identity.NativeID, "connection": value.Identity.ConnectionID, "location": value.Location, "inventory": value.Normalized[elasticSanInventoryProof], "state": state})
+}
+
+func (c *client) elasticSanSnapshotRecord(value asset.Asset) error {
+	if _, err := c.elasticSanRecorded(value); err != nil {
+		return err
+	}
+	state := object(value.Normalized[elasticSanSnapshotCleanup])
+	if value.ID == "" || value.Identity.NativeType != elasticSanSnapshotType || value.Normalized["retained"] != false || len(state) != 3 || text(state["resource"]) == "" || text(state["etag"]) == "" || state["protected"] != false || value.Normalized["cleanup_protected"] != false || value.Normalized[elasticSanSnapshotCleanupProof] != c.elasticSanSnapshotBinding(value, state) {
+		return serviceDenied("invalid_elastic_san_snapshot_cleanup_record")
+	}
+	return nil
+}
+
+type elasticSanSnapshotAction struct {
+	client   *client
+	planned  asset.Asset
+	deletion catalog.RESTRequest
+}
+
+func newElasticSanSnapshotAction(c *client, connection asset.ConnectionID, value asset.Asset, kind resourceType) (*elasticSanSnapshotAction, error) {
+	if err := c.elasticSanSnapshotRecord(value); err != nil {
+		return nil, err
+	}
+	if connection != value.Identity.ConnectionID || kind.NativeType != elasticSanSnapshotType || kind.ReadOnly {
+		return nil, serviceDenied("elastic_san_snapshot_action_changed")
+	}
+	op, params, err := c.resourceOperation(kind, value.Identity.NativeID, "DELETE")
+	if err != nil {
+		return nil, err
+	}
+	deletion, err := bindAzureREST(op, params)
+	if err != nil {
+		return nil, err
+	}
+	return &elasticSanSnapshotAction{client: c, planned: value, deletion: deletion}, nil
+}
+
+func (*elasticSanSnapshotAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
+
+func (a *elasticSanSnapshotAction) phaseBinding(request contracts.ActionRequest, result contracts.ActionResult) string {
+	request.ExecutionResult, request.IdempotencyKey = nil, ""
+	data := maps.Clone(result.Data)
+	delete(data, "binding")
+	return a.client.privateConfiguration(map[string]any{"protocol": "elastic-san-snapshot-delete-1", "request": request, "origin": result.ProviderOperationID, "data": data})
+}
+
+func (a *elasticSanSnapshotAction) identity(request contracts.ActionRequest) error {
+	if request.Action != "delete" || request.Asset.ID != a.planned.ID || request.Asset.Identity != a.planned.Identity || request.Asset.Location != a.planned.Location || request.Asset.Normalized[elasticSanSnapshotCleanupProof] != a.planned.Normalized[elasticSanSnapshotCleanupProof] || len(request.Parameters)+len(request.LifecycleImpacts)+len(request.PrerequisiteDeletions) != 0 {
+		return serviceDenied("elastic_san_snapshot_request_changed")
+	}
+	if err := a.client.elasticSanSnapshotRecord(request.Asset); err != nil {
+		return err
+	}
+	if result := request.ExecutionResult; result != nil {
+		if len(result.Data) != 3 || result.Data["phase"] != "delete" || result.Data["binding"] != a.phaseBinding(request, *result) {
+			return serviceDenied("elastic_san_snapshot_phase_changed")
+		}
+		return a.client.elasticSanVerifyReceipt(a.planned.Identity.NativeID, a.planned.Location, object(result.Data["operation"]))
+	}
+	return nil
+}
+
+func (a *elasticSanSnapshotAction) observe(ctx context.Context) (map[string]any, error) {
+	res, err := a.client.elasticSanRead(ctx, a.planned.Identity.NativeID, elasticSanSnapshotType)
+	if isNotFound(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	if a.client.privateConfiguration(hybridComputeChildSnapshot(res.data)) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["resource"] || text(res.data["location"]) != "" && !strings.EqualFold(text(res.data["location"]), a.planned.Location) {
+		return nil, serviceDenied("elastic_san_snapshot_configuration_changed")
+	}
+	return res.data, nil
+}
+
+func (a *elasticSanSnapshotAction) Preflight(ctx context.Context, request contracts.ActionRequest) (check contracts.PreflightResult, err error) {
+	defer func() { err = contracts.DependencyReadError(err) }()
+	if err := a.identity(request); err != nil {
+		return check, err
+	}
+	for range 2 {
+		raw, err := a.observe(ctx)
+		if err != nil {
+			return check, err
+		}
+		if raw == nil {
+			return contracts.PreflightResult{Allowed: true, Absent: true}, nil
+		}
+		if object(raw["properties"])["provisioningState"] == "Deleting" {
+			return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
+		}
+		if reason := elasticSanSnapshotProtection(raw); reason != "" {
+			return check, serviceDenied(reason)
+		}
+		if a.client.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}) != object(a.planned.Normalized[elasticSanSnapshotCleanup])["etag"] {
+			return check, serviceDenied("elastic_san_snapshot_etag_changed")
+		}
+		for _, parent := range []struct{ id, kind string }{{elasticSanRoot(a.planned.Identity.NativeID), elasticSanType}, {elasticSanParent(a.planned.Identity.NativeID, elasticSanSnapshotType), elasticSanGroupType}} {
+			res, err := a.client.elasticSanRead(ctx, parent.id, parent.kind)
+			if isNotFound(err) {
+				return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
+			}
+			if err != nil {
+				return check, err
+			}
+			if parent.kind == elasticSanType && resourceRegion(res.data) != a.planned.Location || text(res.data["location"]) != "" && !strings.EqualFold(text(res.data["location"]), a.planned.Location) {
+				return check, serviceDenied("elastic_san_snapshot_parent_region_changed")
+			}
+			switch object(res.data["properties"])["provisioningState"] {
+			case "Deleting", "Deleted", "SoftDeleting":
+				return contracts.PreflightResult{Allowed: true, Evidence: map[string]any{"elastic_san_wait": true}}, nil
+			}
+			if reason := protectionReason(resourceType{NativeType: parent.kind}, res.data); reason != "" {
+				return check, serviceDenied(reason)
+			}
+		}
+		groupID := strings.Join(strings.Split(a.planned.Identity.NativeID, "/")[:5], "/")
+		group, err := a.client.request(ctx, "GET", apiURL(groupID, resourcesVersion))
+		if err != nil {
+			return check, err
+		}
+		if !insightsARMReadValid(group, groupID, groupType) {
+			return check, serviceDenied("elastic_san_snapshot_resource_group_unverified")
+		}
+		if reason := protectionReason(resourceType{NativeType: groupType}, group.data); reason != "" {
+			return check, serviceDenied(reason)
+		}
+		locks, err := a.client.managementLocks(ctx)
+		if err != nil {
+			return check, err
+		}
+		if locked(a.planned.Identity.NativeID, locks) {
+			return check, serviceDenied("azure_management_lock")
+		}
+	}
+	return contracts.PreflightResult{Allowed: true}, nil
+}
+
+func (a *elasticSanSnapshotAction) Execute(ctx context.Context, request contracts.ActionRequest) (contracts.ActionResult, error) {
+	if err := a.identity(request); err != nil {
+		return contracts.ActionResult{}, err
+	}
+	if request.ExecutionResult != nil {
+		return *request.ExecutionResult, nil
+	}
+	check, err := a.Preflight(ctx, request)
+	if err != nil {
+		return contracts.ActionResult{}, err
+	}
+	id, location := a.planned.Identity.NativeID, a.planned.Location
+	res := response{}
+	receipt := a.client.elasticSanSignReceipt(id, location, nil)
+	if !check.Absent && check.Evidence["elastic_san_wait"] != true {
+		headers := maps.Clone(a.deletion.Headers)
+		if headers == nil {
+			headers = map[string]string{}
+		}
+		if request.IdempotencyKey != "" {
+			headers["x-ms-client-request-id"] = azureRequestID(request.IdempotencyKey)
+		}
+		res, err = a.client.requestBody(ctx, a.deletion.Method, a.deletion.URL, a.deletion.Body, headers)
+		if err != nil && !isNotFound(err) {
+			return contracts.ActionResult{}, contracts.DependencyReadError(err)
+		}
+		if err == nil {
+			receipt, err = a.client.elasticSanDeleteReceipt(id, location, res)
+			if err != nil {
+				return contracts.ActionResult{}, err
+			}
+		}
+	}
+	origin := res.requestID
+	if endpoint := text(receipt["url"]); endpoint != "" {
+		origin, _ = a.client.elasticSanPollURL(id, location, endpoint)
+	}
+	result := contracts.ActionResult{ProviderOperationID: origin, ProviderRequestID: res.requestID, RetryAfter: retryAfter(res.header), Data: map[string]any{"phase": "delete", "operation": receipt}}
+	result.Data["binding"] = a.phaseBinding(request, result)
+	return result, nil
+}
+
+func (a *elasticSanSnapshotAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
+	if err := a.identity(request); err != nil {
+		return contracts.ReadbackResult{}, err
+	}
+	raw, err := a.observe(ctx)
+	return contracts.ReadbackResult{Exists: raw != nil, State: text(object(raw["properties"])["provisioningState"])}, contracts.DependencyReadError(err)
+}
+
+func (a *elasticSanSnapshotAction) Wait(ctx context.Context, request contracts.ActionRequest, result contracts.ActionResult) (contracts.WaitResult, error) {
+	request.ExecutionResult = &result
+	if err := a.identity(request); err != nil {
+		return contracts.WaitResult{}, err
+	}
+	poll, err := a.client.elasticSanPoll(ctx, a.planned.Identity.NativeID, a.planned.Location, object(result.Data["operation"]))
+	if err != nil {
+		if isNotFound(err) {
+			// An expired callback can be superseded only by the snapshot's own
+			// independently verified absence, never by a missing parent/index.
+			read, readErr := a.Readback(ctx, request)
+			if readErr == nil && !read.Exists {
+				return contracts.WaitResult{Done: true, Data: maps.Clone(result.Data)}, nil
+			}
+		}
+		return contracts.WaitResult{}, contracts.DependencyReadError(err)
+	}
+	out := contracts.WaitResult{State: poll.State, RetryAfter: max(2*time.Second, poll.RetryAfter), Data: maps.Clone(result.Data)}
+	out.Data["operation"] = poll.Data
+	result.Data = out.Data
+	out.Data["binding"] = a.phaseBinding(request, result)
+	if !poll.Done {
+		return out, nil
+	}
+	read, err := a.Readback(ctx, request)
+	out.Done, out.State = err == nil && !read.Exists, read.State
+	return out, err
+}
+
+var _ contracts.ActionDriver = (*elasticSanSnapshotAction)(nil)

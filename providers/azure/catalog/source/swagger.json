@@ -253056,7 +253056,9 @@
       "nativeType": "Microsoft.ElasticSan/elasticSans/volumegroups/snapshots",
       "rest": {
         "collection": "snapshots",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup"
         ],

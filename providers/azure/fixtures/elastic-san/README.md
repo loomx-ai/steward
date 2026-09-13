@@ -2,8 +2,8 @@
 
 This directory supports registered Elastic SAN inventory for SANs, volume groups,
 volumes, snapshots, private endpoint connections and retained resources.
-A reviewed cleanup lifecycle is still pending; native operations and inventory
-alone do not close the parity gap.
+Verified snapshot deletion is registered. Volume, group, SAN and private-endpoint
+cleanup remain pending; this family does not yet close the parity gap.
 
 ## Pinned REST source
 
@@ -85,8 +85,40 @@ are not converted into guessed ARM IDs. Private key/target configuration stays
 out of public inventory and API logs. SQLite tests reopen observations with a
 fresh runtime, preserve live resources omitted from indexes, reconcile retained
 absence, and preserve observations after denied reads. Network closure, restored
-volume IDs, forged history and changing snapshots are also exercised. Registered
-kinds remain read-only until cleanup is implemented and verified.
+volume IDs, forged history and changing snapshots are also exercised. Snapshots
+with verified creation identity support deletion; the other four kinds remain
+read-only while their cleanup lifecycle is implemented and verified.
+
+## Snapshot deletion and Location polling
+
+`cli-snapshot-sources.json` pins six original response bodies from Microsoft's
+snapshot scenario recording at commit `2aa1d8fc6417d0d5055acd88e9491e29734ad62b`.
+That recording uses the stable `2025-09-01` API, independently of the earlier
+soft-delete preview recording. It shows native GET/list, a DELETE 202 containing
+the same snapshot identity and creation timestamp, a pending empty 202 callback,
+an empty 200 callback, and a subsequent empty snapshot list. Empty `.body` files
+preserve the original zero-byte responses. Callback metadata retains paths,
+query key names, version, monitor mode and hashes of the original signed URLs;
+signature values are not copied into fixtures. Replay changes only the composed
+request version/signature values, not the original bodies or source metadata.
+
+DELETE accepts reviewed 200/202/204 responses. Optional resource bodies must name
+the selected resource. A 202 requires Location; regional asyncoperations URLs
+must match subscription, provider, planned region, UUID, API version and
+`monitor=true`. Signed query values may rotate within the same operation.
+Unreviewed async headers, redirects, malformed responses, forged receipts and
+scope changes fail closed. Terminal 204 diagnostic URLs are neither persisted
+nor followed. Transport completion alone never establishes resource absence.
+
+Snapshot cleanup binds native creation/configuration and the inventory proof,
+checks protected tags, resource-group protection, locks and parent regions, and
+never submits volume force/snapshot-delete/permanent flags. Existing deletion or
+missing parents cause observation without a new DELETE. SQLite restart tests
+preserve the original opaque operation ID and deletion-check deadline, avoid a
+second DELETE, and keep source volumes/parents open. An expired callback can be
+superseded only by the snapshot's independent own GET absence; a live or
+same-name replacement snapshot cannot be closed. No live service or independent
+ARM emulator was run.
 
 The stable `2025-09-01` contract omits these preview options. This is why the
 selected lifecycle work uses the preview contract. Preview features are not

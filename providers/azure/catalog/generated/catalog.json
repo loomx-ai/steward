@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "89d0e7d9d776f915569424257b010362299dc8013d0eaffa1577736dbe9a0e89",
+    "checksum": "190bde8b84d20b9afdd7c51215f56a981a1327f9d5cca0e0e0c1e48c0bab1fd0",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "12b1e500c695c8c5cadd06d41e795c05c3b8b6cfc47f7c818ae5dec15c58908c",
+  "content_checksum": "bcdcf3c71723e5f03193ec72de8cc232c22f57768425ce0214dcea9d7e697309",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -135354,6 +135354,9 @@
         "collection": "snapshots",
         "read_operations": [
           "Azure.Microsoft.ElasticSan.VolumeSnapshots_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup"

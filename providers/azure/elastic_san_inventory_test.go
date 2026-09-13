@@ -49,6 +49,7 @@ func newElasticSanFixture(t *testing.T) *elasticSanFixture {
 	object(volume["properties"])["volumeId"] = testTenant
 	object(volume["properties"])["storageTarget"] = map[string]any{"targetIqn": "private-elastic-target", "targetPortalHostname": "private-elastic-address"}
 	object(f.values[f.ids[elasticSanSnapshotType]]["properties"])["creationData"] = map[string]any{"sourceId": f.ids[elasticSanVolumeType]}
+	f.values[f.ids[elasticSanSnapshotType]]["systemData"] = map[string]any{"createdAt": "2026-02-11T09:51:01.7803283Z"}
 	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["privateEndpoint"] = map[string]any{"id": strings.ToLower(resourceID("Microsoft.Network/privateEndpoints", "endpoint"))}
 	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["privateLinkServiceConnectionState"] = map[string]any{"status": "Pending", "actionsRequired": "None", "description": "private-elastic-connection-description"}
 	object(f.values[f.ids[elasticSanEndpointType]]["properties"])["groupIds"] = []any{"volumegroup"}
@@ -138,7 +139,7 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 			t.Fatal("native population", kind, len(batch.Items), err)
 		}
 		for _, item := range batch.Items {
-			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable || item.Normalized["retained"] != f.retained[item.NativeID] {
+			if item.Location != "eastus" || item.Actionable == nil || *item.Actionable != (kind == elasticSanSnapshotType) || item.Normalized["retained"] != f.retained[item.NativeID] {
 				t.Fatal("region, retention or actionability changed", item.NativeID)
 			}
 			if _, err := f.client.elasticSanRecorded(elasticSanTestAsset(item)); err != nil {
@@ -147,8 +148,8 @@ func TestElasticSanInventoryNativePopulationsAndSQLite(t *testing.T) {
 			if kind == elasticSanEndpointType && (object(item.Normalized["privateLinkServiceConnectionState"])["status"] != "Pending" || !slices.Equal(stringValues(item.Normalized["groupIds"]), []string{"volumegroup"})) {
 				t.Fatal("private endpoint operational status lost")
 			}
-			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); err == nil {
-				t.Fatal("unreviewed cleanup registered")
+			if _, err := f.runtime.ResolveAction(ctx, "connection", elasticSanTestAsset(item)); (err == nil) != (kind == elasticSanSnapshotType) {
+				t.Fatal("wrong cleanup capability", kind, err)
 			}
 		}
 		items = append(items, batch.Items...)

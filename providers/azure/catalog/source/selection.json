@@ -10861,7 +10861,9 @@
       "read_operations": [
         "Azure.Microsoft.ElasticSan.VolumeSnapshots_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.ElasticSan.VolumeSnapshots_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup"
       ]

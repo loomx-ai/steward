@@ -1,0 +1,88 @@
+{
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/elastic-san/azext_elastic_san/tests/latest/recordings/test_elastic_san_snapshot_scenarios.yaml",
+  "source_sha256": "08f109e11c530c2116e9cb6ef797a10dc4406f00ac9fd8da8c511bcb8c0e2dd3",
+  "responses": [
+    {
+      "interaction": 22,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.snapshot000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000005/snapshots/snapshot000008",
+      "api_version": "2025-09-01",
+      "status": 200,
+      "body_file": "cli-snapshot-22.body",
+      "body_sha256": "3fce6daf7a6b8d7a465bf08e5d7de63c819be50b6e1f6c8c6b784bac3ed28429"
+    },
+    {
+      "interaction": 23,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.snapshot000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000005/snapshots",
+      "api_version": "2025-09-01",
+      "status": 200,
+      "body_file": "cli-snapshot-23.body",
+      "body_sha256": "37e466c659aae6b9a6bcd15397e14eddac5e940b4c29a619ff594e8f58ad339b"
+    },
+    {
+      "interaction": 24,
+      "method": "DELETE",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.snapshot000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000005/snapshots/snapshot000008",
+      "api_version": "2025-09-01",
+      "status": 202,
+      "body_file": "cli-snapshot-24.body",
+      "body_sha256": "f51b00b70ded7fbadcf1eba3b93d7a387495b5448b8645d0c919666c7df45edf",
+      "location": {
+        "path": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ElasticSan/locations/eastus2/asyncoperations/2dbf5f3e-2f7f-4fba-8873-4ebe52ad566c",
+        "api_version": "2025-09-01",
+        "monitor": "true",
+        "query_keys": [
+          "api-version",
+          "c",
+          "h",
+          "monitor",
+          "s",
+          "t"
+        ],
+        "original_url_sha256": "bcffe83ec24f119ae82824d497f9e8e3260abd728237bc8685c2a99fdfd374af"
+      }
+    },
+    {
+      "interaction": 25,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ElasticSan/locations/eastus2/asyncoperations/2dbf5f3e-2f7f-4fba-8873-4ebe52ad566c",
+      "api_version": "2025-09-01",
+      "status": 202,
+      "body_file": "cli-snapshot-25.body",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "location": {
+        "path": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ElasticSan/locations/eastus2/asyncoperations/2dbf5f3e-2f7f-4fba-8873-4ebe52ad566c",
+        "api_version": "2025-09-01",
+        "monitor": "true",
+        "query_keys": [
+          "api-version",
+          "c",
+          "h",
+          "monitor",
+          "s",
+          "t"
+        ],
+        "original_url_sha256": "bc29bad2712f8e162bc1df91807bd2de91b218492280f8d7a586d938dc1288db"
+      }
+    },
+    {
+      "interaction": 26,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/providers/Microsoft.ElasticSan/locations/eastus2/asyncoperations/2dbf5f3e-2f7f-4fba-8873-4ebe52ad566c",
+      "api_version": "2025-09-01",
+      "status": 200,
+      "body_file": "cli-snapshot-26.body",
+      "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "interaction": 27,
+      "method": "GET",
+      "path": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/clitest.rg.testelasticsan.snapshot000001/providers/Microsoft.ElasticSan/elasticSans/elastic-san000002/volumegroups/volume-group000005/snapshots",
+      "api_version": "2025-09-01",
+      "status": 200,
+      "body_file": "cli-snapshot-27.body",
+      "body_sha256": "99bcfca61a865fe7ac5bb675250de956e8e0fb175d59adac80bb2fb177154a2c"
+    }
+  ]
+}

@@ -293,6 +293,14 @@ func (r *Runtime) elasticSanSnapshot(ctx context.Context, c *client, request con
 			tags[key] = value.(string)
 		}
 		actionable := false
+		if kind == elasticSanSnapshotType {
+			reason := elasticSanSnapshotProtection(raw)
+			state := map[string]any{"resource": c.privateConfiguration(hybridComputeChildSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != ""}
+			value := asset.Asset{Identity: asset.Identity{NativeID: id, ConnectionID: request.ConnectionID}, Location: location, Normalized: normalized}
+			normalized[elasticSanSnapshotCleanup], normalized[elasticSanSnapshotCleanupProof] = state, c.elasticSanSnapshotBinding(value, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			actionable = reason == ""
+		}
 		item := contracts.InventoryItem{NativeID: id, NativeType: kind, ResourceKind: r.resourceKind(kind), Name: text(raw["name"]), State: text(normalized["state"]), Tags: tags, Location: location, Scope: contracts.InventoryScope{Kind: asset.ScopeRegion, NativeID: location, Name: location, Location: location}, Raw: safe, Normalized: normalized, Actionable: &actionable, NativeAliases: []string{id, text(raw["id"])}, NetworkReferences: network}
 		if productScopeMatches(request, item) {
 			items = append(items, item)

@@ -4285,3 +4285,47 @@ background evidence only, not acceptance evidence for this work.
   and 443 prior mappings remain unchanged. The five new mappings compile to
   448 specs/rules and 413 actions. This 23-file milestone preserves all 65
   pre-existing file contents.
+
+### Elastic SAN snapshot deletion and persisted Location operations
+
+- Registered direct snapshot deletion with native VolumeSnapshots_Delete. Azure
+  still has 1,489 operations and 448 kinds/rules; actions increase from 413 to
+  414. Volume, group, SAN and private-endpoint cleanup remain pending. Snapshot
+  cleanup removes only the selected restore point; it does not delete its source
+  volume, siblings or parents and submits no volume force/permanent options.
+- A signed cleanup record binds creation/configuration, ETag observations and
+  the signed inventory identity. Missing creation timestamps, managed resources
+  and unsupported states remain protected. Preflight rereads snapshot identity,
+  protection, parent regions/states, resource-group protection and inherited
+  locks. Existing deletion and missing parents are observed without mutation.
+- Location receipts bind the selected resource and region. Reviewed regional
+  asyncoperations URLs require the selected subscription/provider/version,
+  operation UUID and monitor=true. Signature rotation may not change the native
+  operation. Malformed or ambiguous headers, unsafe redirects, bad response
+  identity/state and forged saved phases are rejected. Terminal 204 diagnostic
+  callbacks are neither saved nor followed; opaque operation IDs avoid exposing
+  signing values through execution provenance.
+- Poll success is followed by independent snapshot readback. An expired callback
+  cannot erase a live snapshot or use parent absence as evidence. Independent
+  own GET absence can finish that expired operation. Same-name recreation and
+  changed immutable configuration fail closed. SQLite execution tests reopen
+  the database with a fresh runtime, preserve operation identity and deletion
+  deadline, send one DELETE, and keep source volumes/parents open.
+- Six unchanged response bodies from the pinned official snapshot CLI recording
+  add stable 2025-09-01 evidence alongside the existing preview soft-delete
+  recording. Native deletion preserves creation identity while provisioning and
+  modification state change; Location returns empty 202 then empty 200, followed
+  by an empty snapshot list. Source/body/URL hashes and safe callback shapes are
+  retained; original signing values are not copied. Current-version replay is
+  composed offline evidence, not a 2026 cloud execution or independent emulator.
+- The remaining four Elastic SAN cleanup kinds, retained-volume outcome rules,
+  connection/session effects and broader provider parity remain open. All eight
+  acceptance criteria are still unproven.
+
+- Validation: isolated Azure full suite passed (341.211s); Elastic SAN/catalog
+  race checks passed (24.716s); Azure go vet passed; all six catalog sync tests
+  passed. Main-workspace Elastic SAN/catalog tests passed (5.610s). Documentation
+  checks passed for 30 isolated and 42 main chapters plus 10 original screenshots;
+  diff whitespace checks passed. Pinned source and six body/callback hashes were
+  verified, all 1,489 existing operations stayed unchanged, and all 65 preexisting
+  worktree file hashes remained unchanged. No live-cloud execution was performed.

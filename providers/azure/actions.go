@@ -84,6 +84,9 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if kind.NativeType == azureLocalAgentType || kind.NativeType == azureLocalVMType || azureLocalIndependent(kind.NativeType) {
 		return newAzureLocalAction(c, id, value, kind)
 	}
+	if kind.NativeType == elasticSanSnapshotType {
+		return newElasticSanSnapshotAction(c, id, value, kind)
+	}
 	if hybridComputeKind(kind.NativeType) != "" {
 		return newHybridComputeAction(c, id, value, kind)
 	}
