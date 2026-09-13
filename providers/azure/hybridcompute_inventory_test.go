@@ -142,14 +142,14 @@ func TestHybridComputeNativeInventoryAndWorkers(t *testing.T) {
 		t.Fatal("native worker inventory", len(values))
 	}
 	relations, err := repository.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 7 {
+	if err != nil || len(relations) != 8 {
 		t.Fatal("native Arc references", len(relations), err)
 	}
 	counts := map[graph.RelationshipType]int{}
 	for _, relation := range relations {
 		counts[relation.Type]++
 	}
-	if counts[graph.RelationshipUses] != 4 || counts[graph.RelationshipAttachedTo] != 3 {
+	if counts[graph.RelationshipUses] != 4 || counts[graph.RelationshipAttachedTo] != 3 || counts[graph.RelationshipDependsOn] != 1 {
 		t.Fatal("Arc references and child ownership", counts)
 	}
 	for _, value := range values {

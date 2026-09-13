@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "da1d10ff3c59b61c4dcb338048e69e2808daa795d18de0dc701bb5314c74f4f2",
+    "checksum": "0a28285848b9e9653dc525c940af4856005c94359e5326ee69ad73c3aee7a5fc",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "1eb18deb3c544576dcd7d6c4567061031e1494c2c07807e9b9ce8332c3e0f198",
+  "content_checksum": "20d12cd6feb8491df41b1911e74607307c253da162fdc0f032655c65e3500476",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -87680,6 +87680,65 @@
       "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
     },
     {
+      "id": "Azure.Microsoft.HybridCompute.Licenses_Delete",
+      "name": "Licenses_Delete",
+      "service": "Microsoft.HybridCompute",
+      "method": "DELETE",
+      "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/licenses/{licenseName}",
+      "destructive": true,
+      "input_schema": {
+        "properties": {
+          "api-version": {
+            "enum": [
+              "2025-01-13"
+            ],
+            "in": "query",
+            "type": "string"
+          },
+          "licenseName": {
+            "description": "The name of the license.",
+            "in": "path",
+            "name": "licenseName",
+            "pattern": "[a-zA-Z0-9-_\\.]+",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "resourceGroupName": {
+            "description": "The name of the resource group. The name is case insensitive.",
+            "in": "path",
+            "maxLength": 90,
+            "minLength": 1,
+            "name": "resourceGroupName",
+            "required": true,
+            "type": "string",
+            "x-ms-parameter-location": "method"
+          },
+          "subscriptionId": {
+            "description": "The ID of the target subscription.",
+            "in": "path",
+            "minLength": 1,
+            "name": "subscriptionId",
+            "required": true,
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "call": {
+        "product": "Microsoft.HybridCompute",
+        "version": "2025-01-13",
+        "style": "azure-rest",
+        "protocol": "HTTPS",
+        "method": "DELETE",
+        "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/licenses/{licenseName}",
+        "endpoint": "https://management.azure.com",
+        "body_type": "json",
+        "parameter_position": "query"
+      },
+      "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json"
+    },
+    {
       "id": "Azure.Microsoft.HybridCompute.Licenses_Get",
       "name": "Licenses_Get",
       "service": "Microsoft.HybridCompute",
@@ -131339,6 +131398,9 @@
         "collection": "licenses",
         "read_operations": [
           "Azure.Microsoft.HybridCompute.Licenses_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.Licenses_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.Licenses_ListBySubscription"

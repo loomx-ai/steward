@@ -64,6 +64,14 @@
     "source_sha256": "b1c1067151a8feae500a751f6f3958d9bcd131457c5985f08f68914af355de3d"
   },
   {
+    "file": "License_Delete.json",
+    "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/license/License_Delete.json",
+    "operation": "Licenses_Delete",
+    "method": "DELETE",
+    "path": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/licenses/{licenseName}",
+    "source_sha256": "aa5ac876069130baf2fe7b4ef55ee4d5d13e3cdc75afbaadf44db08fed09ad6a"
+  },
+  {
     "file": "License_Get.json",
     "source_uri": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/examples/license/License_Get.json",
     "operation": "Licenses_Get",

@@ -112,6 +112,9 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		if kind == hybridMachineType {
 			configuration = hybridComputeMachinePrefix + configuration
 		}
+		if kind == hybridLicenseType {
+			configuration = hybridComputeLicensePrefix + configuration
+		}
 		bindings[id] = configuration
 		normalized["_hybrid_compute_configuration"] = configuration
 		recorded, network := map[string]any{}, []string{}
@@ -123,6 +126,24 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		normalized["_hybrid_compute_references"] = recorded
 		normalized["_hybrid_compute_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
 		location, actionable := resourceRegion(raw), false
+		if kind == hybridLicenseType {
+			hints := map[string]any{}
+			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeLicensePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {
+				if err := c.hybridComputeLicenseRecorded(id, request.ConnectionID, prior); err != nil {
+					return nil, nil, "", err
+				}
+				hints = object(object(prior[hybridComputeCleanup])["assignments"])
+			}
+			assignments, err := c.hybridComputeLicenseAssignments(ctx, id, hints, true)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			reason := c.hybridComputeLicenseProtection(raw)
+			state := map[string]any{"resource": c.privateConfiguration(hybridComputeLicenseSnapshot(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != "", "inventory": configuration, "assignments": c.hybridComputeAssignmentRecords(assignments), "location": location}
+			normalized[hybridComputeCleanup], normalized[hybridComputeCleanupProof] = state, c.hybridComputeLicenseBinding(id, request.ConnectionID, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			bindings[id], actionable = c.privateConfiguration(state), reason == ""
+		}
 		if kind == hybridMachineType {
 			hints := map[string]any{}
 			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeMachinePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {

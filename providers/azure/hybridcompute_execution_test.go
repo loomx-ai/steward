@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -18,18 +17,24 @@ import (
 )
 
 func TestHybridComputeRegisteredExecutionRecovery(t *testing.T) {
-	for _, machine := range []bool{false, true} {
-		t.Run(fmt.Sprint("machine=", machine), func(t *testing.T) {
-			testHybridComputeRegisteredExecutionRecovery(t, machine)
+	for _, selection := range []string{"children", "machine", "license"} {
+		t.Run(selection, func(t *testing.T) {
+			testHybridComputeRegisteredExecutionRecovery(t, selection)
 		})
 	}
 }
 
-func testHybridComputeRegisteredExecutionRecovery(t *testing.T, machine bool) {
+func testHybridComputeRegisteredExecutionRecovery(t *testing.T, selection string) {
+	machine := selection == "machine"
+	license := selection == "license"
 	logs := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
 	f := newHybridCleanupFixture(t)
 	steps := 3
+	if license {
+		f = newHybridLicenseFixture(t)
+		steps = 2
+	}
 	if machine {
 		f.standardMachine()
 		steps = 4
@@ -43,7 +48,7 @@ func testHybridComputeRegisteredExecutionRecovery(t *testing.T, machine bool) {
 	values := azureNativeWorkerScan(t, f.runtime, hybridComputeSource, repository, registry, []string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, false, true)
 	selectors := []plan.CleanupSelector{}
 	for _, value := range values {
-		if (!machine && hybridComputeChild(value.Identity.NativeType)) || (machine && value.Identity.NativeType == hybridMachineType) {
+		if (selection == "children" && hybridComputeChild(value.Identity.NativeType)) || (machine && value.Identity.NativeType == hybridMachineType) || (license && (value.Identity.NativeType == hybridLicenseType || value.Identity.NativeType == hybridProfileType)) {
 			selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: value.ID})
 		}
 	}
@@ -160,7 +165,7 @@ func testHybridComputeRegisteredExecutionRecovery(t *testing.T, machine bool) {
 		t.Fatal("Arc recovery coverage", err, len(remaining), f.deleted, restarts)
 	}
 	for _, value := range remaining {
-		if hybridComputeChild(value.Identity.NativeType) || (machine && value.Identity.NativeType != hybridLicenseType) {
+		if (!license && (hybridComputeChild(value.Identity.NativeType) || (machine && value.Identity.NativeType != hybridLicenseType))) || (license && (value.Identity.NativeType == hybridLicenseType || value.Identity.NativeType == hybridProfileType)) {
 			t.Fatal("unexpected remaining Arc resource")
 		}
 	}

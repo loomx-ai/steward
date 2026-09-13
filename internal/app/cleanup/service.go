@@ -1765,12 +1765,16 @@ func appendSelectionWarnings(values []plan.Warning, input plan.Input, solved pla
 			continue
 		}
 		switch value.Identity.NativeType {
-		case "Microsoft.HybridCompute/machines", "Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles":
+		case "Microsoft.HybridCompute/licenses", "Microsoft.HybridCompute/machines", "Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles":
 			if value.Identity.Provider != asset.ProviderAzure {
 				continue
 			}
 			message := "Deleting this Arc extension requests its removal from the machine; verify the agent-side result separately."
 			code := plan.WarningArcExtensionRemoval
+			if value.Identity.NativeType == "Microsoft.HybridCompute/licenses" {
+				message = "Deleting this shared Arc ESU license removes its update entitlement after assignments are cleared; billing may continue for up to five calendar days."
+				code = plan.WarningArcSharedLicenseRemoval
+			}
 			if value.Identity.NativeType == "Microsoft.HybridCompute/machines" {
 				message = "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal."
 				code = plan.WarningArcMachineRegistrationRemoval

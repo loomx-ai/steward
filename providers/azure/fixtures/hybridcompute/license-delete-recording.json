@@ -1,0 +1,50 @@
+{
+  "body": null,
+  "headers": {
+    "cache-control": [
+      "no-cache"
+    ],
+    "content-length": [
+      "0"
+    ],
+    "content-type": [
+      "application/json"
+    ],
+    "date": [
+      "Thu, 23 Jul 2026 02:27:34 GMT"
+    ],
+    "expires": [
+      "-1"
+    ],
+    "pragma": [
+      "no-cache"
+    ],
+    "strict-transport-security": [
+      "max-age=31536000; includeSubDomains"
+    ],
+    "x-cache": [
+      "CONFIG_NOCACHE"
+    ],
+    "x-content-type-options": [
+      "nosniff"
+    ],
+    "x-ms-operation-identifier": [
+      "tenantId=72f988bf-86f1-41af-91ab-2d7cd011db47,objectId=0cd46ea8-7371-4f65-9bb5-5de55bea6d52/westus2/af78b6a3-2c7d-437c-b3b7-27c3202cd281"
+    ],
+    "x-ms-ratelimit-remaining-subscription-deletes": [
+      "799"
+    ],
+    "x-ms-ratelimit-remaining-subscription-global-deletes": [
+      "11999"
+    ],
+    "x-msedge-ref": [
+      "Ref A: 3AAA41AB1D8B4840983BD4E7657488E7 Ref B: MNZ221060618035 Ref C: 2026-07-23T02:27:34Z"
+    ]
+  },
+  "interaction_index": 5,
+  "method": "DELETE",
+  "source_sha256": "ddecf934e4335742f1354eb65c9be44a8085698af2edfa3487689055525aef11",
+  "source_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/connectedmachine/azext_connectedmachine/tests/latest/recordings/test_esu_license.yaml",
+  "status": 200,
+  "uri": "https://management.azure.com/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/yao_test/providers/Microsoft.HybridCompute/licenses/myESULicense?api-version=2026-07-15"
+}

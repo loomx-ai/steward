@@ -473,6 +473,9 @@ func (s *serviceCascades) Contribute(ctx context.Context, _ asset.ScopeID, asset
 	if err := s.contributeHybridComputeMachines(ctx, assets, &result); err != nil {
 		return result, contracts.DependencyReadError(err)
 	}
+	if err := s.contributeHybridComputeLicenses(ctx, assets, &result); err != nil {
+		return result, contracts.DependencyReadError(err)
+	}
 	batchOwners := batchManagedNodes(assets, result)
 	if err := s.contributeIncomingMigrations(ctx, assets, &result); err != nil {
 		return result, err

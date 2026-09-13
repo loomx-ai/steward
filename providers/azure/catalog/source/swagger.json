@@ -56409,6 +56409,47 @@
                   "$ref": "./examples/license/License_Get.json"
                 }
               }
+            },
+            "delete": {
+              "tags": [
+                "licenses"
+              ],
+              "operationId": "Licenses_Delete",
+              "description": "The operation to delete a license.",
+              "parameters": [
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ApiVersionParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/SubscriptionIdParameter"
+                },
+                {
+                  "$ref": "../../../../../../common-types/resource-management/v3/types.json#/parameters/ResourceGroupNameParameter"
+                },
+                {
+                  "$ref": "#/parameters/licenseNameParameter"
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "OK"
+                },
+                "204": {
+                  "description": "No Content"
+                },
+                "default": {
+                  "description": "Error response describing why the operation failed.",
+                  "schema": {
+                    "$ref": "../../../../../../common-types/resource-management/v3/types.json#/definitions/ErrorResponse"
+                  }
+                }
+              },
+              "x-ms-long-running-operation": true,
+              "x-ms-examples": {
+                "Delete a License": {
+                  "$ref": "./examples/license/License_Delete.json"
+                }
+              }
             }
           },
           "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HybridCompute/machines": {
@@ -245083,7 +245124,9 @@
       "nativeType": "Microsoft.HybridCompute/licenses",
       "rest": {
         "collection": "licenses",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.Licenses_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.Licenses_ListBySubscription"
         ],

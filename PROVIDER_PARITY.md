@@ -3633,3 +3633,49 @@ background evidence only, not acceptance evidence for this work.
   catalog and cleanup-warning tests passed (Azure 7.430s; cleanup 3.328s), as did
   frontend type checking. Pre-existing translation changes were byte-checked
   and preserved outside the milestone commit.
+
+
+### Arc shared ESU license cleanup and independent consumer ordering
+
+- Shared licenses now bind native `Licenses_Delete` from the pinned 2025-01-13
+  contract. Its original example returns empty 200/204 despite retaining the
+  LRO annotation. A separate exact extraction of Microsoft's CLI interaction 5
+  records DELETE 200 with no callbacks at API 2026-07-15. Tests preserve that
+  original transport version; no same-version live-cloud claim follows.
+- License inventory signs tenant/immutable identity, private authored configuration
+  and known local profile assignments. Native machine/profile indexes and each
+  profile GET recover omitted known associations. Public fields include assigned
+  license count and processors; private licensing metadata remains hidden.
+- Native graph references require explicit profile selection without claiming
+  license ownership over machines/profiles. Profile/machine-only cleanup retains
+  shared licenses. Deletion requires no live local assignments and a present,
+  nonnegative native assignment count of zero. This guards assignments beyond
+  the current subscription; documented cross-subscription consumers must be
+  cleared through their own connection workflow. Group, lock, protection,
+  credential identity and incoming dependencies remain checked before DELETE.
+- Signed synchronous receipts bind reviewed prerequisites across restarts.
+  Completion reads the license itself and saved/reviewed assignment references;
+  an operation response or license 404 cannot conceal a remaining association.
+  Repeated reads cannot eliminate concurrent reassignment because native DELETE
+  lacks conditional mutation. Billing termination is not inferred from absence.
+- Bilingual plan warnings and permission guidance describe entitlement removal
+  and up to five further calendar days of billing. Composed tests cover explicit
+  selection, foreign counts, missing/malformed metadata, opaque immutable IDs,
+  configuration changes, protection/locks, permissions, late/omitted profiles,
+  forged history/receipts and surviving associations. SQLite scan/graph/plan and
+  restored execution now also cover profile plus license deletion while retaining
+  the machine and its other children.
+- Counts are 434 rules, 405 actions and 1,435 operations, with 182 root and 101
+  reference documents. Existing operations remain unchanged. Controller variants,
+  agent-side verification, cross-subscription orchestration, identity/network
+  profile lifecycle, independent emulation/live-cloud/billing evidence and
+  nineteen missing mapped Azure types remain unfinished. All eight acceptance
+  criteria remain open.
+- Verification: isolated `d60fa6a` plus this milestone passed `go test ./...`
+  (Azure 313.148s; GCP 165.175s), Arc/Defender/catalog/planning race checks
+  (Azure 55.913s; cleanup 1.318s), `go vet ./...`, frontend type checking,
+  39 frontend contract tests, six offline importer tests and documentation checks
+  (30 committed chapters, 10 original screenshots). Both generated artifacts
+  reproduce byte-for-byte. Shared-workspace integration passed (Azure 5.627s;
+  cleanup 0.269s), along with frontend type checking. Existing translation edits
+  were verified separately and preserved outside this commit.

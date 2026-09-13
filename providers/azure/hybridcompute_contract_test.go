@@ -198,7 +198,7 @@ func TestHybridComputeOfficialContracts(t *testing.T) {
 			}
 		})
 	}
-	if len(sources) != 19 || len(operations) != 18 || responses != 24 || bodies != 15 || nullFields != 138 {
+	if len(sources) != 20 || len(operations) != 19 || responses != 26 || bodies != 15 || nullFields != 138 {
 		t.Fatal("incomplete native evidence", len(sources), len(operations), responses, bodies, nullFields)
 	}
 }

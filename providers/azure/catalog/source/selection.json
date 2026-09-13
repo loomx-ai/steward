@@ -2335,6 +2335,7 @@
         "LicenseProfiles_Delete",
         "LicenseProfiles_Get",
         "LicenseProfiles_List",
+        "Licenses_Delete",
         "Licenses_Get",
         "Licenses_ListBySubscription",
         "MachineExtensions_Delete",
@@ -10521,7 +10522,9 @@
       "read_operations": [
         "Azure.Microsoft.HybridCompute.Licenses_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.HybridCompute.Licenses_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.HybridCompute.Licenses_ListBySubscription"
       ]

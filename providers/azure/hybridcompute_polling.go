@@ -12,14 +12,14 @@ import (
 )
 
 func hybridComputeDeletableKind(kind string) bool {
-	return slices.Contains([]string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType}, kind)
+	return slices.Contains([]string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, kind)
 }
 
 // The returned UUID identifies a native ProviderHub operation. Its signature
 // may rotate, but the subscription, region, UUID, version and URL role may not.
 func (c *client) hybridComputePollURL(id, endpoint, role string) (string, error) {
 	canonical, typ, err := parseID(id)
-	if err != nil || canonical != id || !hybridComputeDeletableKind(hybridComputeKind(typ)) || !strings.HasPrefix(id, c.root()+"/") || c.validateURL(endpoint) != nil || len(endpoint) > 32<<10 || endpoint != strings.TrimSpace(endpoint) {
+	if err != nil || canonical != id || !hybridComputeDeletableKind(hybridComputeKind(typ)) || hybridComputeKind(typ) == hybridLicenseType || !strings.HasPrefix(id, c.root()+"/") || c.validateURL(endpoint) != nil || len(endpoint) > 32<<10 || endpoint != strings.TrimSpace(endpoint) {
 		return "", serviceDenied("invalid_hybrid_compute_operation_owner")
 	}
 	u, _ := url.Parse(endpoint)
@@ -90,6 +90,15 @@ func (c *client) hybridComputeDeleteReceipt(id string, res response) (map[string
 	}
 	if err := operationError(res); err != nil {
 		return nil, err
+	}
+	if kind == hybridLicenseType {
+		if len(res.data) != 0 || (res.status != 200 && res.status != 204) || operationLocation(res.header) != "" {
+			return nil, serviceDenied("invalid_hybrid_compute_license_delete_response")
+		}
+		if _, err := c.hybridComputeOperationHeaders(id, res.header); err != nil {
+			return nil, err
+		}
+		return c.hybridComputeSignReceipt(id, nil), nil
 	}
 	if len(res.data) != 0 || res.status != 202 && res.status != 204 && !(res.status == 200 && kind == hybridExtensionType) {
 		return nil, serviceDenied("invalid_hybrid_compute_delete_response")

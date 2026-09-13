@@ -5,27 +5,26 @@ and shared licenses. It includes own reads, known omission recovery, native
 parent pagination, repeated snapshot/cursor validation, signed references and
 SQLite scan/graph reconciliation. Extensions, Run Commands and license profiles
 now have native cleanup drivers and restored SQLite execution coverage. Ordinary
-machine registrations support ordered cleanup; shared licenses remain read-only. The ENS mapping is still
+machine registrations support ordered cleanup; shared licenses require cleared assignments. The ENS mapping is still
 pending. Cloud absence is not physical-server release.
 
 ## Pinned REST examples
 
-The 19 unchanged JSON examples in `sources.json` come from Microsoft's
+The 20 unchanged JSON examples in `sources.json` come from Microsoft's
 [`HybridCompute.json`, stable 2025-01-13](https://github.com/Azure/azure-rest-api-specs/blob/c20bf553ad64f20c6d5e3f56080380c086cb1fde/specification/hybridcompute/resource-manager/Microsoft.HybridCompute/HybridCompute/stable/2025-01-13/HybridCompute.json).
 The full Swagger SHA-256 is
 `eecab3d393ce57ef584391b028c109e7066829d4e2bc3685e8e2918ade7cde66`.
 Each example records its upstream URL, checksum, operation, method and path.
 
-The catalog retains 18 operations: machine GET/DELETE and subscription /
+The catalog retains 19 operations: machine GET/DELETE and subscription /
 resource-group Lists; extension, Run Command and license-profile GET/List/DELETE;
-license GET/subscription List; network-profile GET; and hybrid identity metadata
-GET/List. Sixteen operations extend the two machine reads used by Defender.
-No shared-license deletion, script execution or agent configuration write was
-selected. Five regional inventory mappings reference these read operations;
-four DELETE operations are bound to native cleanup actions.
+license GET/DELETE/subscription List; network-profile GET; and hybrid identity metadata
+GET/List. Seventeen operations extend the two machine reads used by Defender.
+No script execution or agent configuration write was selected. Five regional inventory mappings reference these read operations;
+five DELETE operations are bound to native cleanup actions.
 
 `TestHybridComputeOfficialContracts` binds every request, checks API-version
-rejection and provenance, and checks all 24 declared responses, including 15
+rejection and provenance, and checks all 26 declared responses, including 15
 bodies. DELETE metadata retains long-running semantics; Run Command also retains
 `final-state-via: location`. The four DELETE examples contain callback
 placeholders, not usable polling URLs. Tests preserve these inconsistencies:
@@ -155,6 +154,44 @@ assets, protection, malformed/tampered requests, late children and residual own 
 These tests do not establish agent uninstall or independent live-cloud behavior.
 Hybrid identity metadata and network profiles retain contract evidence only; their
 controller lifecycle and separate inventory remain unfinished.
+
+## Shared ESU license cleanup
+
+License DELETE is now selected from the same pinned Swagger. Its unchanged
+`License_Delete.json` example declares 200/204 with empty bodies, while the
+operation retains `x-ms-long-running-operation: true`. The runtime accepts those
+synchronous results and requires own-resource absence. It does not invent 202 or
+callback behavior absent from this license evidence.
+
+`license-delete-recording.json` separately retains interaction 5 from the same
+pinned `test_esu_license.yaml` (upstream SHA-256
+`ddecf934e4335742f1354eb65c9be44a8085698af2edfa3487689055525aef11`).
+It is the upstream DELETE 200 empty response without polling headers, using
+2026-07-15. The test keeps the original request version and response and only
+replaces the public subscription placeholder. This adds real recorded transport
+evidence; it does not prove same-version cloud execution or final license absence.
+
+Inventory binds private license configuration, immutable identity, tenant and
+known local profile references. Native machine/profile indexes and each profile's
+own GET recover missing consumer assets and known index omissions. The graph
+requires explicit selection of referencing profiles without claiming ownership.
+Deletion requires zero native `assignedLicenses`, including when local indexes are
+empty: the documented scope includes other subscriptions in the same tenant.
+External assignments must be cleared in their own subscription workflow; this
+connection does not silently mutate them. Group/lock/incoming checks remain active.
+Native counters have no conditional DELETE guarantee, so repeated reads cannot
+eliminate concurrent reassignment or guarantee immediate service convergence.
+
+Synchronous responses and license 404 do not close surviving recorded/reviewed
+profile references. Restored receipts preserve the selected prerequisites and
+never repeat accepted DELETE. A SQLite test explicitly reviews profile and
+license deletion, restores every phase, and retains the machine and its other
+children. Additional tests cover foreign assignment counts, missing/malformed
+counters, opaque immutable IDs, altered identity/configuration, permission denial,
+protection/locks, omitted/new profiles, forged history and retained assignments.
+Localized warnings describe entitlement removal and up to five additional calendar
+days of billing. Actual billing and complete cross-subscription execution remain
+outside the available offline evidence.
 
 ## Lifecycle boundaries
 

@@ -203,7 +203,7 @@ func TestHybridComputeReceiptBoundaries(t *testing.T) {
 			t.Error("invalid saved field accepted", extra)
 		}
 	}
-	for _, owner := range []string{"", resourceID(hybridMachineType, "machine"), strings.ToLower(resourceID(hybridLicenseType, "license")), strings.Replace(id, testSubscription, testTenant, 1)} {
+	for _, owner := range []string{"", resourceID(hybridMachineType, "machine"), strings.ToLower(resourceID("Microsoft.HybridCompute/privateLinkScopes", "scope")), strings.Replace(id, testSubscription, testTenant, 1)} {
 		if _, err := c.hybridComputeDeleteReceipt(owner, response{status: 204}); err == nil {
 			t.Error("invalid deletion owner accepted")
 		}

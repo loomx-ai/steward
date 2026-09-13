@@ -183,6 +183,13 @@ func hybridComputeSafeValue(value any) any {
 					}
 				}
 			}
+			if details := object(props["licenseDetails"]); details != nil {
+				for _, key := range []string{"processors", "assignedLicenses"} {
+					if value, err := batchInteger(details[key], 32); err == nil && value >= 0 {
+						object(public["licenseDetails"])[key] = value
+					}
+				}
+			}
 			result["properties"] = public
 		}
 		for _, key := range []string{"body", "value"} {

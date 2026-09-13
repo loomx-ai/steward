@@ -73,6 +73,12 @@ func (c *client) hybridComputeCleanupRecord(value asset.Asset) error {
 	if value.ID == "" || value.Location == "" || value.Location != strings.ToLower(value.Location) {
 		return serviceDenied("invalid_hybrid_compute_cleanup_identity")
 	}
+	if value.Identity.NativeType == hybridLicenseType {
+		if value.Location != text(state["location"]) {
+			return serviceDenied("hybrid_compute_license_location_changed")
+		}
+		return c.hybridComputeLicenseRecorded(value.Identity.NativeID, value.Identity.ConnectionID, value.Normalized)
+	}
 	if value.Identity.NativeType == hybridMachineType {
 		if value.Location != text(state["location"]) {
 			return serviceDenied("hybrid_compute_machine_location_changed")
@@ -135,6 +141,10 @@ func (a *hybridComputeAction) identity(request contracts.ActionRequest) error {
 		if err := a.machineRequest(request); err != nil {
 			return err
 		}
+	} else if a.kind.NativeType == hybridLicenseType {
+		if err := a.licenseRequest(request); err != nil {
+			return err
+		}
 	} else if len(request.PrerequisiteDeletions) != 0 {
 		return serviceDenied("unexpected_hybrid_compute_prerequisite")
 	}
@@ -187,7 +197,13 @@ func (a *hybridComputeAction) observe(ctx context.Context, request contracts.Act
 }
 
 func (a *hybridComputeAction) protection(ctx context.Context, selected, parent map[string]any) error {
-	if reason := hybridComputeChildProtection(selected, parent); reason != "" {
+	reason := ""
+	if a.kind.NativeType == hybridLicenseType {
+		reason = a.client.hybridComputeLicenseProtection(selected)
+	} else {
+		reason = hybridComputeChildProtection(selected, parent)
+	}
+	if reason != "" {
 		return serviceDenied(reason)
 	}
 	groupID := strings.Join(strings.Split(a.id, "/")[:5], "/")
@@ -221,6 +237,9 @@ func (a *hybridComputeAction) Preflight(ctx context.Context, request contracts.A
 	}
 	if a.kind.NativeType == hybridMachineType {
 		return a.machinePreflight(ctx, request)
+	}
+	if a.kind.NativeType == hybridLicenseType {
+		return a.licensePreflight(ctx, request)
 	}
 	for range 2 {
 		selected, parent, err := a.observe(ctx, request)
@@ -287,6 +306,10 @@ func (a *hybridComputeAction) Readback(ctx context.Context, request contracts.Ac
 	if a.kind.NativeType == hybridMachineType {
 		raw, children, err := a.machineObserve(ctx, request)
 		return contracts.ReadbackResult{Exists: raw != nil || len(children) != 0, State: "hybrid_compute_machine_deleting"}, err
+	}
+	if a.kind.NativeType == hybridLicenseType {
+		raw, assignments, err := a.licenseObserve(ctx, request)
+		return contracts.ReadbackResult{Exists: raw != nil || len(assignments) != 0, State: "hybrid_compute_license_deleting"}, err
 	}
 	selected, _, err := a.observe(ctx, request)
 	return contracts.ReadbackResult{Exists: selected != nil, State: text(object(selected["properties"])["provisioningState"])}, err
