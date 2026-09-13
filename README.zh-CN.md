@@ -1,11 +1,11 @@
 <p align="center">
-  <a href="https://loomx.ai/steward"><img src="web/public/brand/steward-symbol.svg" alt="Steward" width="72" height="72"></a>
+  <a href="https://loomx.ai/zh/"><img src="web/public/brand/steward-symbol.svg" alt="Steward" width="72" height="72"></a>
 </p>
 
-<h1 align="center">steward</h1>
+<h1 align="center">Steward</h1>
 
 <p align="center">
-  <strong>看清云资源，掌握每一次清理。</strong>
+  <strong>多云资源盘点、依赖可视化与清理审查。</strong>
 </p>
 
 <p align="center">
@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://loomx.ai/steward">官方网站</a> ·
+  <a href="https://loomx.ai/zh/">官方网站</a> ·
   <a href="https://loomx.ai/steward/docs/latest/zh/">使用文档</a> ·
   <a href="https://loomx.ai/steward/docs/latest/zh/tutorials/first-inventory/">入门教程</a>
 </p>
@@ -24,7 +24,7 @@
   <a href="README.md">English</a> / 简体中文
 </p>
 
-Steward 是一个开源的云资源盘点与清理工具。它将[阿里云](https://loomx.ai/steward/docs/latest/zh/alicloud/)、[AWS](https://loomx.ai/steward/docs/latest/zh/aws/)、[Google Cloud](https://loomx.ai/steward/docs/latest/zh/gcp/) 和 [Microsoft Azure](https://loomx.ai/steward/docs/latest/zh/azure/) 的资源带到同一个界面，帮助你看清正在运行的资源，并在清理前理解影响范围。
+Steward 是 LoomX 的开源多云资源盘点、依赖可视化与清理审查工具。它将[阿里云](https://loomx.ai/steward/docs/latest/zh/alicloud/)、[AWS](https://loomx.ai/steward/docs/latest/zh/aws/)、[Google Cloud](https://loomx.ai/steward/docs/latest/zh/gcp/) 和 [Microsoft Azure](https://loomx.ai/steward/docs/latest/zh/azure/) 的资源带到同一个界面，帮助你看清正在运行的资源，并在清理前理解影响范围。
 
 你可以在浏览器中使用 [Steward Cloud](https://steward.console.loomx.ai)，也可以[自行安装 Steward](https://loomx.ai/steward/docs/latest/zh/installation/)。
 
@@ -47,6 +47,8 @@ Steward 是一个开源的云资源盘点与清理工具。它将[阿里云](htt
 从[认识 Steward](https://loomx.ai/steward/docs/latest/zh/intro/)了解基本概念，再跟随[快速开始](https://loomx.ai/steward/docs/latest/zh/quick-start/)或[首次资源盘点教程](https://loomx.ai/steward/docs/latest/zh/tutorials/first-inventory/)上手。
 
 [使用文档](https://loomx.ai/steward/docs/latest/zh/)涵盖云连接、资源盘点、关系分析、清理和部署。
+
+也可以从具体任务开始：[跨地域盘点 AWS 资源](https://loomx.ai/steward/docs/latest/zh/tutorials/aws-resource-inventory/)，或[审查云资源清理依赖](https://loomx.ai/steward/docs/latest/zh/tutorials/review-cleanup-dependencies/)。
 
 ## 参与开发
 

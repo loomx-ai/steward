@@ -78,3 +78,5 @@ CloudFormation 管理的资源应结合栈一起审查：Steward 读取栈资源
 | 栈或资源删除失败 | 检查终止保护、保留策略、云端依赖与操作错误详情；不要反复直接提交删除。 |
 
 下一步：[扫描资源](./scans.md) · [查询资源](./resources.md) · [清理资源](./cleanup.md)
+
+需要跨地域、跨连接核对覆盖记录时，请跟随[AWS 云资源盘点教程](./tutorials/aws-resource-inventory.md)。

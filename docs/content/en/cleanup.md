@@ -53,3 +53,5 @@ After fixing the cause, use the task’s available continue or resume action; co
 For Google Cloud, review the [supported actions and deletion protections](./gcp.md#deletion-protections), including VM auto-delete disks, nonempty buckets, and read-only GKE clusters.
 
 For Azure, review [cleanup protections](./azure.md#cleanup-protections), including management locks, VM attachment settings, empty storage requirements, and managed resources.
+
+For an exercise that stops before execution, follow [Review cloud resource dependencies before cleanup](./tutorials/review-cleanup-dependencies.md).

@@ -35,3 +35,5 @@ VPC 视图按交换机展示资源。聚合节点可展开查看成员；搜索�
 ## Google Cloud 网络
 
 GCP VPC 是全局资源，子网属于地域。同一 VPC 可出现在多个地域视图中；清理地域内的 VPC 分组会保留共享的全局网络。参阅 [Google Cloud](./gcp.md#全局-vpc-与地域子网)。
+
+跟随[清理依赖审查教程](./tutorials/review-cleanup-dependencies.md)，检查共享资源，并在删除之前记录范围决定。

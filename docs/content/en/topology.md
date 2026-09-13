@@ -35,3 +35,5 @@ Relationships come from scanned resources and supported relationship rules. A mi
 ## Google Cloud networks
 
 GCP VPCs are global and their subnets are regional. The same VPC can appear in multiple regional views. A regional VPC cleanup preserves the shared global network. See [Google Cloud](./gcp.md#global-vpcs-and-regional-subnets).
+
+Work through [Review cleanup dependencies](./tutorials/review-cleanup-dependencies.md) to inspect shared resources and record a scope decision before deletion.

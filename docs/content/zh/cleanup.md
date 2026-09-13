@@ -53,3 +53,5 @@ navTitle: "清理资源"
 使用 Google Cloud 时，请先查看[清理范围与删除保护](./gcp.md#删除保护)，包括 VM 磁盘自动删除、非空存储桶和只读 GKE 集群。
 
 使用 Azure 时，请先查看[清理保护](./azure.md#清理保护)，包括管理锁、VM 挂载设置、存储空资源要求和托管资源限制。
+
+需要先练习审查而不执行删除时，请阅读[清理云资源前，如何审查依赖与影响范围](./tutorials/review-cleanup-dependencies.md)。

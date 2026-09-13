@@ -1,14 +1,14 @@
 ---
 title: "Steward 文档"
-description: "盘点云资源，理解依赖，审查并执行清理。"
+description: "学习使用 LoomX 的 Steward：盘点阿里云、AWS、Azure 与 Google Cloud 资源，查看依赖并审查清理影响。"
 navTitle: "文档首页"
 ---
 
-<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>安装 Steward</strong><span aria-hidden="true">→</span><span>选择系统，安装或下载</span></a><a href="./tutorials.md"><strong>动手教程</strong><span aria-hidden="true">→</span><span>从启动服务到第一次资源盘点</span></a><a href="./guides.md"><strong>使用文档</strong><span aria-hidden="true">→</span><span>查阅连接、扫描、关系与清理操作</span></a></div>
+<div class="docs-start-links docs-entry-links"><a href="./installation.md"><strong>安装 Steward</strong><span aria-hidden="true">→</span><span>选择系统，安装或下载</span></a><a href="./tutorials.md"><strong>动手教程</strong><span aria-hidden="true">→</span><span>盘点 AWS 资源，审查清理依赖</span></a><a href="./guides.md"><strong>使用文档</strong><span aria-hidden="true">→</span><span>查阅连接、扫描、关系与清理操作</span></a></div>
 
 ## 认识 Steward
 
-Steward 帮助你盘点已有云资源、查看资源依赖，并在审查影响后执行清理。可在本机或服务器运行，也可使用 [Steward Cloud](https://steward.console.loomx.ai)。
+Steward 是 LoomX 的开源多云资源盘点与清理工具，帮助你发现已有资源、查看依赖，并在审查影响后执行清理。可在本机或服务器运行，也可使用 [Steward Cloud](https://steward.console.loomx.ai)。
 
 [了解工作原理 →](./intro.md)
 
