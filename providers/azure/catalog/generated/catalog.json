@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "9e3132be963b6077d69986ca63d64ceff4e614a419ce1f002c7070e32d2e9fd5",
+    "checksum": "89d0e7d9d776f915569424257b010362299dc8013d0eaffa1577736dbe9a0e89",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "24cfebcdbf7df5db33ade6796153ea06b09046678b9370d24024b0932a199cb5",
+  "content_checksum": "12b1e500c695c8c5cadd06d41e795c05c3b8b6cfc47f7c818ae5dec15c58908c",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -135289,6 +135289,91 @@
         ],
         "list_operations": [
           "Azure.Microsoft.DomainRegistration.Domains_ListOwnershipIdentifiers"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ElasticSan/elasticSans",
+      "class": "storage.dedicated_cluster",
+      "display_name": "Elastic SAN",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "elasticSans",
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ElasticSan/elasticSans/privateEndpointConnections",
+      "class": "network.private_endpoint_connection",
+      "display_name": "Elastic SAN private endpoint connection",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ElasticSan/elasticSans/volumegroups",
+      "class": "storage.volume_group",
+      "display_name": "Elastic SAN volume group",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "volumegroups",
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeGroups_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeGroups_ListByElasticSan"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ElasticSan/elasticSans/volumegroups/snapshots",
+      "class": "storage.snapshot",
+      "display_name": "Elastic SAN volume snapshot",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "snapshots",
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup"
+        ]
+      }
+    },
+    {
+      "native_type": "Microsoft.ElasticSan/elasticSans/volumegroups/volumes",
+      "class": "storage.volume",
+      "display_name": "Elastic SAN volume",
+      "scope_kinds": [
+        "region"
+      ],
+      "rest": {
+        "collection": "volumes",
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.Volumes_Get"
+        ],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.Volumes_ListByVolumeGroup"
         ]
       }
     },

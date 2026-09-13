@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ElasticSan/elasticSans/privateEndpointConnections
+  class: network.private_endpoint_connection
+presentation:
+  displayNames:
+    en-US: Elastic SAN private endpoint connection
+    zh-CN: Elastic SAN 私有终结点连接
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: elastic-san
+  list:
+    operation: Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  connectionStatus: privateLinkServiceConnectionState.status
+  actionsRequired: privateLinkServiceConnectionState.actionsRequired
+  groupIds: groupIds
+extensions:
+  hook: azure.resource

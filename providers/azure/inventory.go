@@ -13,8 +13,12 @@ import (
 )
 
 func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) (contracts.InventoryBatch, error) {
-	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource {
+	if request.Source != "" && request.Source != inventorySource && request.Source != productInventorySource && request.Source != insightsAnnotationSource && request.Source != insightsWorkbookSource && request.Source != diagnosticInventorySource && request.Source != fleetInventorySource && request.Source != communicationInventorySource && request.Source != dataFactoryInventorySource && request.Source != dataMigrationInventorySource && request.Source != defenderInventorySource && request.Source != hybridComputeSource && request.Source != azureLocalSource && request.Source != elasticSanSource {
 		return contracts.InventoryBatch{}, fmt.Errorf("unsupported Azure inventory source")
+	}
+	elastic := request.ResourceKind != nil && elasticSanKind(request.ResourceKind.NativeType) != ""
+	if request.Source == elasticSanSource && !elastic || elastic && request.Source != "" && request.Source != inventorySource && request.Source != elasticSanSource {
+		return contracts.InventoryBatch{}, serviceDenied("invalid_elastic_san_inventory_source")
 	}
 	local := request.ResourceKind != nil && azureLocalKind(request.ResourceKind.NativeType) != ""
 	if request.Source == azureLocalSource && !local || local && request.Source != "" && request.Source != inventorySource && request.Source != azureLocalSource {
@@ -62,6 +66,13 @@ func (r *Runtime) List(ctx context.Context, request contracts.InventoryRequest) 
 	}
 	if request.Scope.Kind == asset.ScopeSubscription && !strings.EqualFold(request.Scope.NativeID, c.subscription) {
 		return contracts.InventoryBatch{}, fmt.Errorf("Azure inventory scope belongs to another subscription")
+	}
+	if elastic {
+		if request.Source == inventorySource {
+			return contracts.InventoryBatch{Complete: true}, nil
+		}
+		request.Source = elasticSanSource
+		return r.listElasticSan(ctx, c, request)
 	}
 	if local {
 		if request.Source == inventorySource {

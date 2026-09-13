@@ -252995,6 +252995,96 @@
         "subscription",
         "region"
       ]
+    },
+    {
+      "class": "storage.dedicated_cluster",
+      "displayName": "Elastic SAN",
+      "nativeType": "Microsoft.ElasticSan/elasticSans",
+      "rest": {
+        "collection": "elasticSans",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.ElasticSans_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "storage.volume_group",
+      "displayName": "Elastic SAN volume group",
+      "nativeType": "Microsoft.ElasticSan/elasticSans/volumegroups",
+      "rest": {
+        "collection": "volumegroups",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeGroups_ListByElasticSan"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeGroups_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "storage.volume",
+      "displayName": "Elastic SAN volume",
+      "nativeType": "Microsoft.ElasticSan/elasticSans/volumegroups/volumes",
+      "rest": {
+        "collection": "volumes",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.Volumes_ListByVolumeGroup"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.Volumes_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "storage.snapshot",
+      "displayName": "Elastic SAN volume snapshot",
+      "nativeType": "Microsoft.ElasticSan/elasticSans/volumegroups/snapshots",
+      "rest": {
+        "collection": "snapshots",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.VolumeSnapshots_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
+    },
+    {
+      "class": "network.private_endpoint_connection",
+      "displayName": "Elastic SAN private endpoint connection",
+      "nativeType": "Microsoft.ElasticSan/elasticSans/privateEndpointConnections",
+      "rest": {
+        "collection": "privateEndpointConnections",
+        "delete_operations": [],
+        "list_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_List"
+        ],
+        "read_operations": [
+          "Azure.Microsoft.ElasticSan.PrivateEndpointConnections_Get"
+        ]
+      },
+      "scopeKinds": [
+        "region"
+      ]
     }
   ]
 }

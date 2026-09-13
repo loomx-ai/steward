@@ -1,0 +1,30 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ElasticSan/elasticSans/volumegroups/volumes
+  class: storage.volume
+presentation:
+  displayNames:
+    en-US: Elastic SAN volume
+    zh-CN: Elastic SAN 卷
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: elastic-san
+  list:
+    operation: Azure.Microsoft.ElasticSan.Volumes_ListByVolumeGroup
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ElasticSan.Volumes_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  retained: retained
+  sizeGiB: sizeGiB
+  volumeId: volumeId
+extensions:
+  hook: azure.resource

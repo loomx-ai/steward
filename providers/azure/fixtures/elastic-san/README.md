@@ -1,9 +1,9 @@
 # Azure Elastic SAN native contract evidence
 
-This directory supports the Elastic SAN implementation work. It does not yet
-register Elastic SAN inventory or a reviewed cleanup lifecycle. Those must cover
-SANs, volume groups, volumes, snapshots, private endpoint connections and retained
-resources; adding callable native operations alone does not close the parity gap.
+This directory supports registered Elastic SAN inventory for SANs, volume groups,
+volumes, snapshots, private endpoint connections and retained resources.
+A reviewed cleanup lifecycle is still pending; native operations and inventory
+alone do not close the parity gap.
 
 ## Pinned REST source
 
@@ -67,8 +67,26 @@ subscription-bound identities and typed operational metadata, preserve the
 active/retained selector on every page, and reject changed collection/version,
 filters, repeated cursors, duplicate records and incomplete responses. A missing
 parent collection propagates as an error. GET has no retained selector and
-preserves 404 as an error. These helpers do not yet register inventory, reconcile
-known IDs, resolve graph references or authorize cleanup.
+preserves 404 as an error. The registered `elastic-san` source composes two
+complete native snapshots, recovers known IDs using GET, retains valid selected
+soft-delete index records when GET returns 404, and detects duplicate populations.
+Known absence requires both completed population scans and the known ID's own
+404. A missing parent collection is incomplete, not an empty retained index.
+
+Inventory records bind native identity, connection, private configuration hash,
+region, ancestry, retention and reference/network evidence. Signed history can
+preserve known child region/network context when a parent has disappeared but
+its child indexes remain readable. Unverified orphans fail closed. A cursor binds
+the request, bundle revision and full native snapshot, including parent context.
+
+Parent, subnet, source volume, managed controller, assigned identity and private
+endpoint references contribute ordinary graph edges. Key Vault data-plane hosts
+are not converted into guessed ARM IDs. Private key/target configuration stays
+out of public inventory and API logs. SQLite tests reopen observations with a
+fresh runtime, preserve live resources omitted from indexes, reconcile retained
+absence, and preserve observations after denied reads. Network closure, restored
+volume IDs, forged history and changing snapshots are also exercised. Registered
+kinds remain read-only until cleanup is implemented and verified.
 
 The stable `2025-09-01` contract omits these preview options. This is why the
 selected lifecycle work uses the preview contract. Preview features are not

@@ -1,0 +1,38 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ElasticSan/elasticSans
+  class: storage.dedicated_cluster
+presentation:
+  displayNames:
+    en-US: Elastic SAN
+    zh-CN: Elastic SAN
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: elastic-san
+  list:
+    operation: Azure.Microsoft.ElasticSan.ElasticSans_ListBySubscription
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ElasticSan.ElasticSans_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  baseSizeTiB: baseSizeTiB
+  extendedCapacitySizeTiB: extendedCapacitySizeTiB
+  totalSizeTiB: totalSizeTiB
+  totalVolumeSizeGiB: totalVolumeSizeGiB
+  volumeGroupCount: volumeGroupCount
+  totalIops: totalIops
+  totalMBps: totalMBps
+  skuName: sku.name
+  skuTier: sku.tier
+  availabilityZones: availabilityZones
+  publicNetworkAccess: publicNetworkAccess
+extensions:
+  hook: azure.resource

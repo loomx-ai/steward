@@ -4238,3 +4238,50 @@ background evidence only, not acceptance evidence for this work.
   response extractions were compared byte-for-byte with the checksum-verified
   original recording. This 18-file milestone preserves all 65 pre-existing file
   contents; catalog mappings, operations, rules and actions remain unchanged.
+
+### Elastic SAN registered active/retained inventory
+
+- Registered five native resource kinds with the `elastic-san` source: SANs,
+  volume groups, volumes, snapshots and private endpoint connections. The Azure
+  catalog still contains 1,489 operations; mappings and rules increase from
+  443 to 448, while registered actions remain 413. The SAN uses the dedicated
+  storage-cluster class from the AliCloud parity baseline. Cleanup stays pending.
+- Two complete subscription-native snapshots cover the selected kind and its
+  parent context. Active/retained lists remain separate on every page. GET
+  validates active entries and recovers known IDs omitted by indexes; selected
+  retained-list entries survive GET 404. Duplicate populations, inconsistent
+  GET/list state, changed snapshots and incomplete collections fail atomically.
+  Own 404 and both completed population indexes are required for known absence.
+- Child region and network context derive from verified SAN/group records.
+  Signed prior observations can recover known children after parent disappearance
+  when child collections remain readable. Unverified orphans and parent-index
+  404 fail closed. Regional filtering does not close a live ID from another
+  region; the worker intentionally supplies known IDs across regional shards.
+- A signed inventory record binds identity, connection, configuration, region,
+  native ancestry, retention and graph/network evidence. Continuations also bind
+  the request, complete snapshot and bundle revision. Forged, stripped, unrelated
+  or changed evidence is rejected. Restored active IDs and timestamp-suffixed
+  retained IDs remain distinct even when the service preserves `volumeId`.
+- Ordinary graph references cover parents, subnets, source volumes/resources,
+  private endpoints, assigned identities and managed controllers. They do not
+  authorize ownership or cascade deletion. Key Vault hosts do not become guessed
+  ARM IDs. Public capacity, SKU, zones, retention and private-link connection
+  status are retained; key, target and connection-description configuration
+  remains private. Resource-specific fields are declared in YAML.
+- SQLite worker tests exercise all five regional sources, eight fixture assets,
+  ordinary graph edges, database reopen with a fresh runtime, index omission
+  recovery, retained absence and denied-read preservation. Other scenarios cover
+  network closure, historical parents, native restoration IDs, proof tampering,
+  scope/source changes, incomplete indexes and a change between complete passes.
+  The original REST and older CLI evidence remains unchanged; no live cloud or
+  independent ARM emulator was used. Cleanup and all eight acceptance criteria
+  remain open.
+- Verification: full isolated Azure tests passed (340.246s); Elastic SAN and
+  catalog race checks passed (18.069s); `go vet ./providers/azure` passed.
+  Shared-workspace Elastic SAN/catalog integration passed (1.944s). All six
+  catalog synchronization tests passed. Documentation checks passed for 30
+  isolated and 42 shared chapters, each with 10 original screenshots. Catalog
+  regeneration is reproducible; all 1,489 operations, original native documents
+  and 443 prior mappings remain unchanged. The five new mappings compile to
+  448 specs/rules and 413 actions. This 23-file milestone preserves all 65
+  pre-existing file contents.

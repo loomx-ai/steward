@@ -23,17 +23,27 @@ func elasticSanSafeValue(value any) any {
 				}
 				public["sku"] = publicSKU
 			}
-			if zones, ok := props["availabilityZones"].([]any); ok {
-				publicZones := []string{}
-				valid := true
-				for _, zone := range zones {
-					v, ok := zone.(string)
-					valid = valid && ok
-					publicZones = append(publicZones, v)
+			for _, key := range []string{"availabilityZones", "groupIds"} {
+				if values, ok := props[key].([]any); ok {
+					publicValues, valid := []any{}, true
+					for _, value := range values {
+						v, ok := value.(string)
+						valid = valid && ok
+						publicValues = append(publicValues, v)
+					}
+					if valid {
+						public[key] = publicValues
+					}
 				}
-				if valid {
-					public["availabilityZones"] = publicZones
+			}
+			if state := object(props["privateLinkServiceConnectionState"]); state != nil {
+				connection := map[string]any{}
+				for _, key := range []string{"status", "actionsRequired"} {
+					if v, ok := state[key].(string); ok {
+						connection[key] = v
+					}
 				}
+				public["privateLinkServiceConnectionState"] = connection
 			}
 			for _, key := range []string{"provisioningState", "volumeId", "volumeName", "protocolType", "encryption", "publicNetworkAccess"} {
 				if v, ok := props[key].(string); ok {

@@ -956,8 +956,9 @@ resources:
     resources:
     - Microsoft.ElasticSan/elasticSans
   status: pending_verification
-  notes: A generic disk is not a dedicated storage-cluster equivalent; assess the cloud resource model
-    before declaring parity.
+  notes: Azure now inventories native Elastic SANs and active/retained child resources; cleanup
+    remains under review. A generic GCP disk is not a dedicated storage-cluster equivalent;
+    assess the cloud resource model before declaring parity.
 - alicloud: ACS::EBS::DiskReplicaGroup
   spec: providers/alicloud/specs/ebs-disk-replica-group.yaml
   class: storage.replica_group

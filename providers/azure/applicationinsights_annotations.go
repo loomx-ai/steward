@@ -11,6 +11,9 @@ import (
 const insightsAnnotationSource = "application-insights-annotations"
 
 func insightsInventorySource(kind string) string {
+	if elasticSanKind(kind) != "" {
+		return elasticSanSource
+	}
 	if azureLocalKind(kind) != "" {
 		return azureLocalSource
 	}

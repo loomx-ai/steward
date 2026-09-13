@@ -57,6 +57,12 @@ func (c *client) elasticSanIdentity(wire, kind string) (string, error) {
 	if err != nil || wire != strings.TrimSpace(wire) || kind == "" || elasticSanKind(typ) != kind || len(strings.Split(id, "/")) != depth || !strings.HasPrefix(id, c.root()+"/resourcegroups/") {
 		return "", serviceDenied("invalid_elastic_san_identity")
 	}
+	// Retained rows may have no usable GET, but their path parameters must
+	// still satisfy the native resource contract before becoming inventory.
+	read, _, _ := elasticSanOperations(kind)
+	if _, _, err := c.resourceOperation(resourceType{NativeType: kind, ReadOperations: []string{"Azure.Microsoft.ElasticSan." + read}}, id, "GET"); err != nil {
+		return "", serviceDenied("invalid_elastic_san_native_name")
+	}
 	return id, nil
 }
 
@@ -237,14 +243,29 @@ func (c *client) elasticSanRecord(raw map[string]any, kind string) (string, erro
 			}
 		}
 	}
-	if value := props["availabilityZones"]; value != nil {
-		zones, ok := value.([]any)
-		if !ok {
-			return "", serviceDenied("invalid_elastic_san_zones")
+	for _, key := range []string{"availabilityZones", "groupIds"} {
+		if value := props[key]; value != nil {
+			values, ok := value.([]any)
+			if !ok {
+				return "", serviceDenied("invalid_elastic_san_string_list")
+			}
+			for _, value := range values {
+				if _, ok := value.(string); !ok {
+					return "", serviceDenied("invalid_elastic_san_string_list_value")
+				}
+			}
 		}
-		for _, zone := range zones {
-			if _, ok := zone.(string); !ok {
-				return "", serviceDenied("invalid_elastic_san_zone_value")
+	}
+	if value := props["privateLinkServiceConnectionState"]; value != nil {
+		state := object(value)
+		if state == nil {
+			return "", serviceDenied("invalid_elastic_san_connection_state")
+		}
+		for _, key := range []string{"status", "actionsRequired"} {
+			if value := state[key]; value != nil {
+				if _, ok := value.(string); !ok {
+					return "", serviceDenied("invalid_elastic_san_connection_state_value")
+				}
 			}
 		}
 	}

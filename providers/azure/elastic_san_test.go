@@ -309,8 +309,11 @@ func TestElasticSanPublicSKUAndZones(t *testing.T) {
 	props["storageTarget"] = map[string]any{"targetIqn": "private-san-target"}
 	public := object(object(elasticSanSafeValue(raw))["properties"])
 	encoded, _ := json.Marshal(public)
-	if strings.Contains(string(encoded), "private-san-") || object(public["sku"])["name"] != "Premium_ZRS" || !slices.Equal(public["availabilityZones"].([]string), []string{"1", "2"}) {
+	if strings.Contains(string(encoded), "private-san-") || object(public["sku"])["name"] != "Premium_ZRS" || !slices.Equal(stringValues(public["availabilityZones"]), []string{"1", "2"}) {
 		t.Fatal("public operational metadata", public)
+	}
+	if !nativeConfigurationContains(elasticSanSafeValue(raw), elasticSanSafeValue(elasticSanSafeValue(raw))) {
+		t.Fatal("repeated projection lost operational metadata")
 	}
 	props["availabilityZones"] = []any{"1", map[string]any{"secret": "private-san-zone"}}
 	if object(object(elasticSanSafeValue(raw))["properties"])["availabilityZones"] != nil {
@@ -321,13 +324,15 @@ func TestElasticSanPublicSKUAndZones(t *testing.T) {
 func TestElasticSanMalformedOperationalMetadata(t *testing.T) {
 	c := &client{subscription: testSubscription}
 	for key, values := range map[string][]any{
-		"provisioningState":     {true, 1, []any{}},
-		"volumeId":              {"bad", " " + testTenant, true},
-		"sizeGiB":               {"1", -1, 1.5, true, 1e30},
-		"encryptionInTransit":   {"true", 1},
-		"sku":                   {"Premium_LRS", map[string]any{"name": 1}, map[string]any{"tier": false}},
-		"availabilityZones":     {"1", []any{"1", 2}},
-		"deleteRetentionPolicy": {"Enabled", map[string]any{"policyState": true}, map[string]any{"retentionPeriodDays": "7"}, map[string]any{"retentionPeriodDays": -1}, map[string]any{"retentionPeriodDays": 2147483648}},
+		"provisioningState":                 {true, 1, []any{}},
+		"volumeId":                          {"bad", " " + testTenant, true},
+		"sizeGiB":                           {"1", -1, 1.5, true, 1e30},
+		"encryptionInTransit":               {"true", 1},
+		"sku":                               {"Premium_LRS", map[string]any{"name": 1}, map[string]any{"tier": false}},
+		"availabilityZones":                 {"1", []any{"1", 2}},
+		"groupIds":                          {"group", []any{"group", true}},
+		"privateLinkServiceConnectionState": {"Approved", map[string]any{"status": true}, map[string]any{"actionsRequired": 1}},
+		"deleteRetentionPolicy":             {"Enabled", map[string]any{"policyState": true}, map[string]any{"retentionPeriodDays": "7"}, map[string]any{"retentionPeriodDays": -1}, map[string]any{"retentionPeriodDays": 2147483648}},
 	} {
 		for _, value := range values {
 			raw := elasticSanTestRecord(elasticSanVolumeType)

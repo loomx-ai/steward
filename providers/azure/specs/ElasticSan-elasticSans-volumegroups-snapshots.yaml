@@ -1,0 +1,29 @@
+schema: steward.io/resource-kind
+kind: ResourceKind
+metadata:
+  provider: azure
+  nativeType: Microsoft.ElasticSan/elasticSans/volumegroups/snapshots
+  class: storage.snapshot
+presentation:
+  displayNames:
+    en-US: Elastic SAN volume snapshot
+    zh-CN: Elastic SAN 卷快照
+  consoleLinkTemplate: https://portal.azure.com/#resource{nativeId}
+scope:
+  kind: region
+discovery:
+  source: elastic-san
+  list:
+    operation: Azure.Microsoft.ElasticSan.VolumeSnapshots_ListByVolumeGroup
+    itemsPath: value
+    identityPath: id
+  detail:
+    operation: Azure.Microsoft.ElasticSan.VolumeSnapshots_Get
+    itemsPath: $
+    identityPath: id
+fields:
+  state: state
+  sourceVolumeSizeGiB: sourceVolumeSizeGiB
+  volumeName: volumeName
+extensions:
+  hook: azure.resource
