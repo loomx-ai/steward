@@ -22,5 +22,10 @@
     "No independent emulator or live Azure Local backend was used.",
     "The action verifies each registered OS disk and guest identity resource with its own GET; operation success or VM absence alone cannot close those assets.",
     "Physical VM/disk removal and billing termination remain unverified."
-  ]
+  ],
+  "images": {
+    "uri": "https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq?view=azloc-2606",
+    "kind": "Microsoft Azure Local FAQ; independent documentation, not a live backend test",
+    "finding": "A VM receives a copy of its source image at creation. Gallery image deletion removes the displayed image name from VM details but does not affect the deployed VMs."
+  }
 }

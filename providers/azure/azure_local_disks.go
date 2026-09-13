@@ -43,6 +43,9 @@ func (c *client) azureLocalRootRecord(value asset.Asset) error {
 			return serviceDenied("invalid_azure_local_root_inventory")
 		}
 		vms := stringValues(state["vms"])
+		if azureLocalImage(value.Identity.NativeType) && len(vms) != 0 {
+			return serviceDenied("azure_local_image_has_no_vm_consumers")
+		}
 		if c.privateConfiguration(map[string]any{"vms": vms}) != c.privateConfiguration(map[string]any{"vms": state["vms"]}) {
 			return serviceDenied("invalid_azure_local_root_history")
 		}
@@ -65,15 +68,19 @@ func (c *client) azureLocalDiskConsumers(ctx context.Context, disk string, known
 	return c.azureLocalVMConsumers(ctx, disk, azureLocalDiskType, known)
 }
 
+func azureLocalImage(kind string) bool {
+	return kind == azureLocalImageType || kind == azureLocalMarketplaceType
+}
+
 func azureLocalIndependent(kind string) bool {
-	return kind == azureLocalDiskType || kind == azureLocalNICType
+	return kind == azureLocalDiskType || kind == azureLocalNICType || azureLocalImage(kind)
 }
 
 func (c *client) azureLocalVMConsumers(ctx context.Context, disk, kind string, known []string) ([]string, error) {
 	if disk == "" {
 		return nil, nil
 	}
-	if canonical, err := c.azureLocalIdentity(disk, kind); !azureLocalIndependent(kind) || err != nil || canonical != disk {
+	if canonical, err := c.azureLocalIdentity(disk, kind); (kind != azureLocalDiskType && kind != azureLocalNICType) || err != nil || canonical != disk {
 		return nil, serviceDenied("invalid_azure_local_os_disk")
 	}
 	ids := map[string]bool{}

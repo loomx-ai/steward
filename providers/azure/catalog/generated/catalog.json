@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "b687861f5529f183dee548b64b526d2101ce1dbf560a32519f02b17ab4d45786",
+    "checksum": "aa744680e50fef439e652f0bb5021822978541bac074bc58a19dcf79ee060bd3",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9c6ca74e7cead845b85fa5e9b71d28b0f4d139a7cea6aeb5596e270820c1e388",
+  "content_checksum": "d8dac90ac8ad37a29ba54561c0604348d70244459eca5be6f7b35880ad9e9106",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -129814,6 +129814,9 @@
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.GalleryImages_Get"
         ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.GalleryImages_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll"
         ]
@@ -129849,6 +129852,9 @@
         "collection": "marketplaceGalleryImages",
         "read_operations": [
           "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_ListAll"

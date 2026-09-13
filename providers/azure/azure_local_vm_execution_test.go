@@ -21,13 +21,19 @@ func TestAzureLocalVMRegisteredExecutionRecovery(t *testing.T) {
 	t.Run("registration", func(t *testing.T) { azureLocalWorkerRecovery(t, true) })
 	t.Run("disk", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalDiskType) })
 	t.Run("nic", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalNICType) })
+	t.Run("image", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalImageType) })
+	t.Run("marketplace", func(t *testing.T) { azureLocalWorkerRecovery(t, false, azureLocalMarketplaceType) })
 }
 
 func azureLocalWorkerRecovery(t *testing.T, registration bool, rootKind ...string) {
 	var f *localVMFixture
 	var root *localRootFixture
 	if len(rootKind) != 0 {
-		root = newLocalRootFixture(t, rootKind[0])
+		if azureLocalImage(rootKind[0]) {
+			root = newLocalImageFixture(t, rootKind[0])
+		} else {
+			root = newLocalRootFixture(t, rootKind[0])
+		}
 		root.retain = true
 		f = root.localVMFixture
 	} else {

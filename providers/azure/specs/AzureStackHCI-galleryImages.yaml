@@ -30,3 +30,13 @@ fields:
   sku: identifier.sku
 extensions:
   hook: azure.resource
+actions:
+  delete:
+    operation: Azure.Microsoft.AzureStackHCI.GalleryImages_Delete
+    idempotency: readback
+    waiter: azure_operation
+    readback: azure_absent
+    read:
+      operation: Azure.Microsoft.AzureStackHCI.GalleryImages_Get
+      itemsPath: $
+      identityPath: id

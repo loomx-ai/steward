@@ -10736,7 +10736,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.GalleryImages_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.GalleryImages_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll"
       ]
@@ -10753,7 +10755,9 @@
       "read_operations": [
         "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Get"
       ],
-      "delete_operations": [],
+      "delete_operations": [
+        "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Delete"
+      ],
       "list_operations": [
         "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_ListAll"
       ]

@@ -1,0 +1,32 @@
+{
+  "index_uri": "https://raw.githubusercontent.com/Azure/azure-cli-extensions/2aa1d8fc6417d0d5055acd88e9491e29734ad62b/src/index.json",
+  "version": "1.15.1",
+  "wheel_uri": "https://hciarcvmsstorage.z13.web.core.windows.net/cli-extensions/stack_hci_vm-1.15.1-py3-none-any.whl",
+  "wheel_sha256": "383dd0504cd32345dc1570b67f434943a48d775423bacc6537bc6012639338d0",
+  "member": "azext_stack_hci_vm/vendored_sdks/stack_hci_vm/v2024_01_01/operations/_gallery_images_operations.py",
+  "member_sha256": "39e27dac6273d489dbcacee27d9b4c35cc004f75a6475a536c19d0902ebb3afb",
+  "class_name": "GalleryImagesOperations",
+  "functions": [
+    {
+      "function": "build_delete_request",
+      "start_line": 115,
+      "end_line": 149,
+      "file": "sdk_image_build_delete_request.py.txt",
+      "sha256": "14e8ea64d1e31a3109c483009f3cac99a7f185f0f235ae432dc4f81389cb342d"
+    },
+    {
+      "function": "_delete_initial",
+      "start_line": 510,
+      "end_line": 555,
+      "file": "sdk_image_delete_initial.py.txt",
+      "sha256": "5c8cd2710e86177dea1d8266cdb61f5e865575057f6eb8d5835225a713d188db"
+    },
+    {
+      "function": "begin_delete",
+      "start_line": 558,
+      "end_line": 607,
+      "file": "sdk_image_begin_delete.py.txt",
+      "sha256": "1922e52272a3815fe0becdb108c515c225afa86952b50fcbe0d5273282d5f1cc"
+    }
+  ]
+}

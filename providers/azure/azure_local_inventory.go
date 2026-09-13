@@ -183,7 +183,7 @@ func (r *Runtime) azureLocalSnapshot(ctx context.Context, c *client, request con
 		return nil
 	}
 	extension := kind == azureLocalVMType || kind == azureLocalAgentType || kind == azureLocalIdentityType
-	if extension || networkDisks || independent {
+	if extension || networkDisks || independent && !azureLocalImage(kind) {
 		if err := collect(hybridMachineType, "", machines); err != nil {
 			return nil, nil, "", err
 		}

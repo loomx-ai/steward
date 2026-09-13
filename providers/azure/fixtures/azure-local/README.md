@@ -4,7 +4,7 @@ These contracts support the native Local VM controller lifecycle.
 Ordinary Arc machine deletion unregisters an external host. Azure Local has a
 separate VM controller operation, and [Microsoft's management guide](https://learn.microsoft.com/en-us/azure/azure-local/manage/manage-arc-virtual-machines?view=azloc-2607)
 says NICs and data disks remain after deleting the VM. They need independent
-reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks and NICs have independent cleanup; network/storage/image cleanup remains unfinished.
+reference checks and cleanup. Native inventory, reference graphs, VM/guest cleanup and managed-resource readback are implemented; reviewed Arc-registration cleanup follows VM removal. Disks, NICs and both image families have independent cleanup; network/storage cleanup remains unfinished.
 
 ## Original Swagger examples
 
@@ -36,7 +36,7 @@ inventory or deletion evidence. The [VM DELETE contract](https://learn.microsoft
 uses a HybridCompute machine as parent. Runtime binding enforces that direct
 parent and the connection's subscription. Generic invocation/logging projects
 only existing Arc public fields; OS/SSH/proxy configuration and unknown nested
-metadata are excluded. VM, guest-agent, disk and NIC cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
+metadata are excluded. VM, guest-agent, disk, NIC and image cleanup use their native DELETE operations. Other Local direct cleanup actions remain unavailable.
 
 ## Original CLI function
 
@@ -84,8 +84,8 @@ python3 -m unittest scripts/test_azure_local_cli.py scripts/test_sync_azure_cata
 
 These are native contract, CLI-sequence and composed transport checks. No
 independent Azure Local emulator or live Hyper-V/controller backend was run.
-The final Arc-registration controller lifecycle and live backend verification
-remain required for lifecycle parity.
+Arc-registration cleanup is implemented below; live backend verification
+remains required for lifecycle parity.
 
 ## Native inventory and application evidence
 
@@ -185,14 +185,14 @@ no final-state option. Both settings are asserted independently.
 The shared Local receipt transport now validates canonical VM-instance and
 existing guest-agent owners. The same malformed-response, callback scope,
 status failure, signed-query rotation and persisted-completion tests run for
-both kinds. Tests reject receipts transferred between VM and guest, between
+all six supported kinds. Tests reject receipts transferred between resources,
 machines or across subscriptions before any HTTP call. Identity metadata,
-independent Local roots and malformed/noncanonical IDs cannot own receipts,
+network/storage roots and malformed/noncanonical IDs cannot own receipts,
 including synchronous receipts without a callback. The raw native SDK does not
 supply these application-level ownership guarantees.
 
 This transport preparation now underlies the VM lifecycle described below.
-The subsequent Arc-registration controller deletion remains to be connected. The tests do not execute the real ARMPolling implementation or an
+The subsequent Arc-registration controller is connected below. The tests do not execute the real ARMPolling implementation or an
 independent cloud backend. Composed callback shapes are still not recordings,
 and actual VM/NIC/disk/identity or billing outcomes remain unverified.
 
@@ -292,3 +292,30 @@ retention/protection, omitted parents, 202/204/404, malformed context and legacy
 rescans. A shared network-filter regression prevents private recovery hints from
 being interpreted as network attachments; explicit verified references remain.
 Physical disk/NIC removal, real callback compatibility and billing are unverified.
+
+## Independent gallery and marketplace image cleanup
+
+`sdk-image-source.json` and `sdk-marketplace-source.json` retain the original
+request builder, initial response handler and resumable delete methods from the
+same verified Microsoft CLI wheel. The six extracted functions retain exact
+line ranges and hashes. Offline checks execute them with stubs, covering native
+resource names, API version, 202/204 response acceptance, error statuses and
+continuation without another DELETE. All original Swagger examples are unchanged.
+
+The [Azure Local FAQ](https://learn.microsoft.com/en-us/azure/azure-local/manage/azure-arc-vms-faq)
+explains that image deletion does not affect deployed VMs: VM creation copied the
+source image. `lifecycle-sources.json` records this distinction. Images reuse the
+signed root action but have no VM consumers, prerequisite deletions or cascade
+impacts. Image-only inventory/actions do not read Arc/VM endpoints. If both image
+and VM are selected, the ordinary reference orders VM removal before the image.
+
+Tests retain a live VM referencing each image while deleting that image, reject
+injected VM prerequisites/impacts, and check native permissions, protection,
+locks, ETags and changed configuration. Own GET absence, not 202/204/DELETE 404 or
+operation success, completes cleanup. Poll ownership/failure tests include both
+image kinds. SQLite tests scan the full Local graph, select only the image,
+restart runtimes/repositories between polls and close only the selected image.
+Separate complete-VM tests also select each image and verify ordered cleanup.
+These are composed protocol and original SDK-function checks; no independent
+Azure Local emulator or live backend was used. Physical removal and real
+controller callback compatibility remain unverified.

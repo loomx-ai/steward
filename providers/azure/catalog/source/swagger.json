@@ -248890,7 +248890,9 @@
       "nativeType": "Microsoft.AzureStackHCI/galleryImages",
       "rest": {
         "collection": "galleryImages",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.GalleryImages_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.GalleryImages_ListAll"
         ],
@@ -248909,7 +248911,9 @@
       "nativeType": "Microsoft.AzureStackHCI/marketplaceGalleryImages",
       "rest": {
         "collection": "marketplaceGalleryImages",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.AzureStackHCI.MarketplaceGalleryImages_ListAll"
         ],

@@ -11,8 +11,8 @@ import (
 	"github.com/loomx-ai/steward/internal/provider/contracts"
 )
 
-// Only reviewed native VM, guest, disk and NIC DELETE contracts may own these
-// receipts. Identity metadata and the remaining Local roots have no action.
+// Only reviewed native VM, guest, disk, NIC and image DELETE contracts may own
+// these receipts. Identity metadata and the remaining Local roots have no action.
 func (c *client) azureLocalDeleteOwner(id string) error {
 	canonical, typ, err := parseID(id)
 	kind := azureLocalKind(typ)

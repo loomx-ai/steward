@@ -12,7 +12,7 @@ import (
 )
 
 func (a *azureLocalAction) rootRequest(request contracts.ActionRequest) error {
-	if len(request.LifecycleImpacts) != 0 {
+	if len(request.LifecycleImpacts) != 0 || azureLocalImage(a.planned.Identity.NativeType) && len(request.PrerequisiteDeletions) != 0 {
 		return serviceDenied("azure_local_root_has_no_cascade")
 	}
 	seen := map[asset.AssetID]bool{}
@@ -46,6 +46,11 @@ func (a *azureLocalAction) rootObserve(ctx context.Context) (map[string]any, []s
 		if resourceRegion(raw) != value.Location || a.client.privateConfiguration(azureLocalCleanupSnapshot(raw)) != object(value.Normalized[azureLocalCleanup])["resource"] {
 			return raw, nil, serviceDenied("azure_local_root_configuration_changed")
 		}
+	}
+	// VM creation copies the source image. Deleting an image does not require
+	// deleting deployed VMs or reading their Arc registrations (Azure Local FAQ).
+	if azureLocalImage(value.Identity.NativeType) {
+		return raw, nil, nil
 	}
 	consumers, err := a.client.azureLocalVMConsumers(ctx, value.Identity.NativeID, value.Identity.NativeType, stringValues(object(value.Normalized[azureLocalCleanup])["vms"]))
 	return raw, consumers, err

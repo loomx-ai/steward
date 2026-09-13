@@ -49,7 +49,7 @@ func newLocalRootFixture(t *testing.T, kind string) *localRootFixture {
 					continue
 				}
 				refs, err := azureLocalReferences(id, azureLocalVMType, raw)
-				if err != nil || slices.Contains(refs[kind], f.id) {
+				if err != nil || !azureLocalImage(kind) && slices.Contains(refs[kind], f.id) {
 					t.Fatal("deleted attached resource", kind, err)
 				}
 			}
@@ -344,7 +344,7 @@ func TestAzureLocalRootsInventoryHistory(t *testing.T) {
 }
 
 func TestAzureLocalRootsLegacyRescanAndVMImpact(t *testing.T) {
-	for _, kind := range []string{azureLocalDiskType, azureLocalNICType} {
+	for _, kind := range []string{azureLocalDiskType, azureLocalNICType, azureLocalImageType, azureLocalMarketplaceType} {
 		t.Run(kind, func(t *testing.T) {
 			f := newLocalRootFixture(t, kind)
 			vm := f.vmRequest(t)

@@ -9,7 +9,7 @@ import (
 )
 
 func TestAzureLocalPollingReceiptsAndBoundaries(t *testing.T) {
-	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType} {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType, azureLocalImageType, azureLocalMarketplaceType} {
 		t.Run(kind, func(t *testing.T) { testAzureLocalPollingReceiptsAndBoundaries(t, kind) })
 	}
 }
@@ -100,7 +100,7 @@ func testAzureLocalPollingReceiptsAndBoundaries(t *testing.T, kind string) {
 }
 
 func TestAzureLocalPollingFailureDoesNotMeanAbsence(t *testing.T) {
-	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType} {
+	for _, kind := range []string{azureLocalVMType, azureLocalAgentType, azureLocalDiskType, azureLocalNICType, azureLocalImageType, azureLocalMarketplaceType} {
 		t.Run(kind, func(t *testing.T) { testAzureLocalPollingFailureDoesNotMeanAbsence(t, kind) })
 	}
 }
@@ -189,7 +189,7 @@ func TestAzureLocalPollingOwnerIsolation(t *testing.T) {
 		return jsonResponse(200, map[string]any{"status": "Succeeded"}, nil), true
 	}
 	vm, guest := f.ids[azureLocalVMType], f.ids[azureLocalAgentType]
-	owners := []string{vm, guest, f.ids[azureLocalDiskType], f.ids[azureLocalNICType]}
+	owners := []string{vm, guest, f.ids[azureLocalDiskType], f.ids[azureLocalNICType], f.ids[azureLocalImageType], f.ids[azureLocalMarketplaceType]}
 	for _, id := range owners {
 		receipt, err := f.client.azureLocalDeleteReceipt(id, initial)
 		if err != nil {

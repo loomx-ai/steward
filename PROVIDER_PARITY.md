@@ -4000,3 +4000,37 @@ background evidence only, not acceptance evidence for this work.
   cleanup/localization UI tests. The 36 milestone files preserve all 65
   pre-existing file contents, including unrelated translation edits. No live
   controller/backend was used.
+
+
+### Azure Local gallery and marketplace image cleanup
+
+- Both image families now use their native 2024-01-01 DELETE operations, bringing
+  the catalog to 443 rules and 411 actions; all 1,468 operation definitions remain
+  unchanged. The original SDK builders, response handlers and resumable methods
+  from the pinned Microsoft CLI wheel are retained with hashes and line ranges.
+- The official Azure Local FAQ establishes a critical lifecycle distinction:
+  deleting a source image does not affect VMs created from its copy. Image-only
+  inventory/actions therefore require no VM/Arc reads, VM deletions or managed
+  impacts. Existing references order VM removal first when both are selected.
+- Images reuse the signed root receipt, private configuration/ETag comparison,
+  resource-group protection, inherited locks, bounded callbacks and own readback.
+  Original records can be rescanned; known index omissions recover through own
+  GET. Removing signed context or injecting VM history/prerequisites is rejected.
+- Retained tests exercise both image kinds with surviving referencing VMs,
+  native 202/204/404, denied reads, changed/protected resources, receipt transfer,
+  SDK continuation and SQLite restarts. Deployed VM configuration remains intact
+  in image-only execution; complete VM+image plans keep their reviewed ordering.
+- Bilingual capability/permission docs and source provenance are updated. Local
+  network/storage cleanup, live controller behavior, physical removal and the
+  broader provider-parity audit remain unfinished; all eight acceptance items
+  remain open. Original SDK functions and composed transports do not establish
+  independent emulator or real-cloud parity.
+- Validation: full isolated `go test ./...` passed (Azure 328.152s, GCP
+  164.905s), focused race tests passed (Azure 227.793s), and `go vet ./...`
+  passed. The focused Azure/Arc/catalog suite passed (21.413s); shared-workspace
+  integration passed for Azure/cleanup/plan/inventory (24.231s / 0.769s / 1.183s /
+  2.370s). All 24 original SDK/CLI/catalog Python checks and documentation checks
+  (30 chapters, 10 original screenshots) passed. Generation preserved every
+  native operation, and the six SDK excerpts match the verified original wheel.
+  The 28 milestone files preserve all 65 pre-existing file contents. No frontend
+  code changed; no emulator or live backend was used.

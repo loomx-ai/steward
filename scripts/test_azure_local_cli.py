@@ -223,5 +223,17 @@ class AzureLocalNICSDKTests(AzureLocalDiskSDKTests):
     collection = "networkInterfaces"
 
 
+class AzureLocalImageSDKTests(AzureLocalDiskSDKTests):
+    manifest = "sdk-image-source.json"
+    native_parameters = {"resource_group_name": "test-rg", "gallery_image_name": "test-resource"}
+    collection = "galleryImages"
+
+
+class AzureLocalMarketplaceSDKTests(AzureLocalDiskSDKTests):
+    manifest = "sdk-marketplace-source.json"
+    native_parameters = {"resource_group_name": "test-rg", "marketplace_gallery_image_name": "test-resource"}
+    collection = "marketplaceGalleryImages"
+
+
 if __name__ == "__main__":
     unittest.main()

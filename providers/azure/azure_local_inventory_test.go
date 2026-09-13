@@ -144,7 +144,9 @@ func (f *azureLocalFixture) request(kind string) contracts.InventoryRequest {
 }
 
 func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
-	f := newAzureLocalFixture(t)
+	f := newLocalCleanupFixture(t).azureLocalFixture
+	// Keep this inventory fixture's unverified VM registration, with native group/lock reads for independent images.
+	object(f.values[f.ids[hybridMachineType]]["properties"])["vmId"] = "native-registration"
 	logs := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, e execution.JobLogEntry) { logs = append(logs, e) }))
 	kinds := []string{azureLocalVMType, azureLocalAgentType, azureLocalIdentityType, azureLocalNICType, azureLocalDiskType, azureLocalNetworkType, azureLocalStorageType, azureLocalImageType, azureLocalMarketplaceType}
@@ -198,8 +200,8 @@ func TestAzureLocalNativeInventoryAndWorkers(t *testing.T) {
 			t.Fatal("unexpected native cleanup capability", value.Identity.NativeType, err)
 		}
 		if err == nil {
-			if _, err := driver.Preflight(t.Context(), contracts.ActionRequest{Asset: value, Action: "delete"}); err == nil {
-				t.Fatal("in-use root passed preflight")
+			if _, err := driver.Preflight(t.Context(), contracts.ActionRequest{Asset: value, Action: "delete"}); (err == nil) != azureLocalImage(value.Identity.NativeType) {
+				t.Fatal("root preflight did not distinguish images from attached resources", err)
 			}
 		}
 	}
