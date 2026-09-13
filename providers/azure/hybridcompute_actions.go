@@ -65,13 +65,33 @@ func hybridComputeChildProtection(raw, parent map[string]any) string {
 	return ""
 }
 
-func (c *client) hybridComputeCleanupAsset(value asset.Asset) error {
+func (c *client) hybridComputeCleanupRecord(value asset.Asset) error {
 	if _, err := c.hybridComputeRecordedReferences(value); err != nil {
 		return err
 	}
 	state := object(value.Normalized[hybridComputeCleanup])
-	if !hybridComputeChild(value.Identity.NativeType) || value.ID == "" || value.Location == "" || value.Location != strings.ToLower(value.Location) || len(state) != 5 || state["inventory"] != value.Normalized["_hybrid_compute_configuration"] || text(state["resource"]) == "" || text(state["parent"]) == "" || state["protected"] != false || value.Normalized["cleanup_protected"] != false || value.Normalized[hybridComputeCleanupProof] != c.hybridComputeCleanupBinding(value.Identity.NativeID, value.Identity.ConnectionID, value.Location, state) {
+	if value.ID == "" || value.Location == "" || value.Location != strings.ToLower(value.Location) {
+		return serviceDenied("invalid_hybrid_compute_cleanup_identity")
+	}
+	if value.Identity.NativeType == hybridMachineType {
+		if value.Location != text(state["location"]) {
+			return serviceDenied("hybrid_compute_machine_location_changed")
+		}
+		return c.hybridComputeMachineRecorded(value.Identity.NativeID, value.Identity.ConnectionID, value.Normalized)
+	}
+	_, protected := state["protected"].(bool)
+	if !hybridComputeChild(value.Identity.NativeType) || len(state) != 5 || text(state["inventory"]) != text(value.Normalized["_hybrid_compute_configuration"]) || text(state["resource"]) == "" || text(state["parent"]) == "" || !protected || value.Normalized["cleanup_protected"] != state["protected"] || value.Normalized[hybridComputeCleanupProof] != c.hybridComputeCleanupBinding(value.Identity.NativeID, value.Identity.ConnectionID, value.Location, state) {
 		return serviceDenied("invalid_hybrid_compute_cleanup_asset")
+	}
+	return nil
+}
+
+func (c *client) hybridComputeCleanupAsset(value asset.Asset) error {
+	if err := c.hybridComputeCleanupRecord(value); err != nil {
+		return err
+	}
+	if value.Normalized["cleanup_protected"] != false {
+		return serviceDenied("hybrid_compute_reviewed_resource_protected")
 	}
 	return nil
 }
@@ -105,11 +125,18 @@ func newHybridComputeAction(c *client, connection asset.ConnectionID, value asse
 func (*hybridComputeAction) DeletionCheckTimeout() time.Duration { return 24 * time.Hour }
 
 func (a *hybridComputeAction) identity(request contracts.ActionRequest) error {
-	if request.Action != "delete" || request.Asset.ID != a.planned.ID || request.Asset.Identity != a.planned.Identity || request.Asset.Location != a.planned.Location || request.Asset.Normalized[hybridComputeCleanupProof] != a.planned.Normalized[hybridComputeCleanupProof] || len(request.Parameters)+len(request.LifecycleImpacts)+len(request.PrerequisiteDeletions) != 0 {
+	if request.Action != "delete" || request.Asset.ID != a.planned.ID || request.Asset.Identity != a.planned.Identity || request.Asset.Location != a.planned.Location || request.Asset.Normalized[hybridComputeCleanupProof] != a.planned.Normalized[hybridComputeCleanupProof] || len(request.Parameters)+len(request.LifecycleImpacts) != 0 {
 		return serviceDenied("hybrid_compute_action_request_changed")
 	}
 	if err := a.client.hybridComputeCleanupAsset(request.Asset); err != nil {
 		return err
+	}
+	if a.kind.NativeType == hybridMachineType {
+		if err := a.machineRequest(request); err != nil {
+			return err
+		}
+	} else if len(request.PrerequisiteDeletions) != 0 {
+		return serviceDenied("unexpected_hybrid_compute_prerequisite")
 	}
 	if request.ExecutionResult != nil {
 		return a.verifyPhase(request, *request.ExecutionResult)
@@ -192,6 +219,9 @@ func (a *hybridComputeAction) Preflight(ctx context.Context, request contracts.A
 	if err := a.identity(request); err != nil {
 		return check, err
 	}
+	if a.kind.NativeType == hybridMachineType {
+		return a.machinePreflight(ctx, request)
+	}
 	for range 2 {
 		selected, parent, err := a.observe(ctx, request)
 		if err != nil {
@@ -253,6 +283,10 @@ func (a *hybridComputeAction) Execute(ctx context.Context, request contracts.Act
 func (a *hybridComputeAction) Readback(ctx context.Context, request contracts.ActionRequest) (contracts.ReadbackResult, error) {
 	if err := a.identity(request); err != nil {
 		return contracts.ReadbackResult{}, err
+	}
+	if a.kind.NativeType == hybridMachineType {
+		raw, children, err := a.machineObserve(ctx, request)
+		return contracts.ReadbackResult{Exists: raw != nil || len(children) != 0, State: "hybrid_compute_machine_deleting"}, err
 	}
 	selected, _, err := a.observe(ctx, request)
 	return contracts.ReadbackResult{Exists: selected != nil, State: text(object(selected["properties"])["provisioningState"])}, err

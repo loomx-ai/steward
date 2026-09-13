@@ -1057,6 +1057,8 @@ const enUS = {
     "This public custom image will be changed to private before deletion.",
   "error.scaling_group_force_delete":
     "This scaling group contains {instance_count} instance(s). They will be released by force deletion.",
+  "error.arc_machine_registration_removal":
+    "Deleting this Arc machine removes its cloud registration after reviewed child cleanup; the external host and local agent require separate removal.",
   "error.arc_extension_removal":
     "Deleting this Arc extension requests its removal from the machine; verify the agent-side result separately.",
   "error.arc_command_termination":
@@ -2145,6 +2147,8 @@ const zhCN: MessageShape = {
     "该公开自定义镜像会先自动转为私有镜像，再执行删除。",
   "error.scaling_group_force_delete":
     "该伸缩组仍包含 {instance_count} 个实例；强制删除时会一并释放。",
+  "error.arc_machine_registration_removal":
+    "删除此 Arc 机器会先清理已审查的子资源，再移除云端注册；外部主机和本地代理仍需单独移除。",
   "error.arc_extension_removal":
     "删除此 Arc 扩展会请求从机器移除扩展；仍需单独核实代理端结果。",
   "error.arc_command_termination":

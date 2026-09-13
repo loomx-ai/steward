@@ -109,6 +109,9 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		normalized["subscription_id"], normalized["resource_group"] = c.subscription, strings.Split(id, "/")[4]
 		normalized["_inventory_source"] = hybridComputeSource
 		configuration := c.privateConfiguration(map[string]any{"resource": raw, "parent": parents[parent]})
+		if kind == hybridMachineType {
+			configuration = hybridComputeMachinePrefix + configuration
+		}
 		bindings[id] = configuration
 		normalized["_hybrid_compute_configuration"] = configuration
 		recorded, network := map[string]any{}, []string{}
@@ -120,6 +123,24 @@ func (r *Runtime) hybridComputeSnapshot(ctx context.Context, c *client, request 
 		normalized["_hybrid_compute_references"] = recorded
 		normalized["_hybrid_compute_reference_binding"] = c.privateConfiguration(map[string]any{"id": id, "connection": request.ConnectionID, "configuration": configuration, "references": refs})
 		location, actionable := resourceRegion(raw), false
+		if kind == hybridMachineType {
+			hints := map[string]any{}
+			if prior := request.KnownNativeMetadata[id]; strings.HasPrefix(text(prior["_hybrid_compute_configuration"]), hybridComputeMachinePrefix) || prior[hybridComputeCleanup] != nil || prior[hybridComputeCleanupProof] != nil {
+				if err := c.hybridComputeMachineRecorded(id, request.ConnectionID, prior); err != nil {
+					return nil, nil, "", err
+				}
+				hints = object(object(prior[hybridComputeCleanup])["members"])
+			}
+			children, err := c.hybridComputeMachineChildren(ctx, id, hints, true)
+			if err != nil {
+				return nil, nil, "", err
+			}
+			reason := hybridComputeMachineProtection(raw)
+			state := map[string]any{"resource": c.privateConfiguration(hybridComputeMachineSnapshot(raw)), "registration": c.privateConfiguration(hybridComputeParentStamp(raw)), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "members": c.hybridComputeMachineMembers(children), "protected": reason != "", "inventory": configuration, "location": location}
+			normalized[hybridComputeCleanup], normalized[hybridComputeCleanupProof] = state, c.hybridComputeMachineBinding(id, request.ConnectionID, state)
+			normalized["cleanup_protected"], normalized["cleanup_protection_reason"] = reason != "", reason
+			bindings[id], actionable = c.privateConfiguration(state), reason == ""
+		}
 		if hybridComputeChild(kind) {
 			reason := hybridComputeChildProtection(raw, parents[parent])
 			state := map[string]any{"resource": c.privateConfiguration(hybridComputeChildSnapshot(raw)), "parent": c.privateConfiguration(hybridComputeParentStamp(parents[parent])), "etag": c.privateConfiguration(map[string]any{"etag": raw["etag"], "eTag": raw["eTag"]}), "protected": reason != "", "inventory": configuration}

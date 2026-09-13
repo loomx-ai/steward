@@ -4,10 +4,10 @@
   "source": {
     "format": "azure-openapi",
     "uri": "catalog/source/swagger.json",
-    "checksum": "b4ea220bdcbed43defbf014d53644303fc57dba9c17360c41f9fac81c9a6bdb3",
+    "checksum": "da1d10ff3c59b61c4dcb338048e69e2808daa795d18de0dc701bb5314c74f4f2",
     "generator": "steward/cataloggen"
   },
-  "content_checksum": "9f8d7226096c3069923d68cd89c42b7ad3bb11cb6ead797edf3bf839931a1152",
+  "content_checksum": "1eb18deb3c544576dcd7d6c4567061031e1494c2c07807e9b9ce8332c3e0f198",
   "operations": [
     {
       "id": "Azure.Microsoft.AlertsManagement.AlertProcessingRules_Delete",
@@ -131356,6 +131356,9 @@
         "collection": "machines",
         "read_operations": [
           "Azure.Microsoft.HybridCompute.Machines_Get"
+        ],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.Machines_Delete"
         ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.Machines_ListBySubscription"

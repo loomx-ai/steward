@@ -3590,3 +3590,46 @@ background evidence only, not acceptance evidence for this work.
   artifacts reproduce byte-for-byte. The shared workspace also passed Arc,
   catalog and cleanup-warning integration tests and frontend type checking.
   Its pre-existing translation edits were retained outside this commit.
+
+
+### Arc HybridCompute machine registration cleanup and ordered prerequisites
+
+- Ordinary machine registrations (empty kind, AWS or GCP) now have a native
+  cleanup action. HCI, VMware, SCVMM, AVS, EPS, unknown kinds and registrations
+  linked to parent clusters remain protected for their controller lifecycle.
+  Azure now has 434 rules, 404 cleanup actions and the same 1,434 operations.
+  Both generated catalogs reproduce byte-for-byte; existing operations are unchanged.
+- Machine inventory reads all three native child indexes and each child itself,
+  binding membership, private configuration and stable registration identity.
+  Saved children recover index omissions. Graph ownership uses explicit direct
+  child deletion steps; unscanned children remain unresolved, and retaining or
+  protecting a child blocks registration deletion. Selecting only a machine
+  produces four steps when its extension, command and license profile exist.
+- Machine DELETE rechecks registration/configuration, child absence, group and
+  lock protection and native incoming dependencies. Reviewed child deletion may
+  update the machine ETag and embedded projections. Each completion reads the
+  root and every recorded/reviewed child independently, even after parent 404.
+  Signed receipts bind the reviewed prerequisites across worker/runtime restarts.
+  Operation completion, DELETE 404 and parent 404 alone never prove subtree absence.
+- English/Chinese plan warnings and permission documentation distinguish cloud
+  registration removal from external host and local-agent removal. Native DELETE
+  still lacks If-Match, so repeated reads cannot eliminate the last check/mutation
+  race or identify an identical recreation lacking native creation metadata.
+  Shared licenses are retained. Controller variants, local-agent verification,
+  hybrid identity metadata/network-profile lifecycle, shared-license policy,
+  independent emulation/live-cloud evidence and nineteen missing mapped Azure
+  types remain open. All eight overall acceptance criteria remain pending.
+- Composed tests cover eligibility, retained/protected children, known omissions,
+  missing child assets, changing configuration/identity, permission failures,
+  late children, locks, forged requests/receipts, synchronous DELETE and surviving
+  children after parent 404. SQLite execution tests cover both child-only selection
+  and machine selection, restore database/jobs/runtime between phases, preserve
+  original operation/deadline, and close only individually verified resources.
+- Verification: isolated `07a7cec` plus this milestone passed `go test ./...`
+  (Azure 309.427s; GCP 163.099s), Arc/Defender/catalog/planning race checks
+  (Azure 54.427s; cleanup 8.077s), `go vet ./...`, frontend type checking,
+  39 frontend contract tests, six offline importer tests and documentation checks
+  (30 committed chapters, 10 original screenshots). Shared-workspace Arc,
+  catalog and cleanup-warning tests passed (Azure 7.430s; cleanup 3.328s), as did
+  frontend type checking. Pre-existing translation changes were byte-checked
+  and preserved outside the milestone commit.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -16,10 +17,23 @@ import (
 	providerruntime "github.com/loomx-ai/steward/internal/provider/runtime"
 )
 
-func TestHybridComputeRegisteredChildExecutionRecovery(t *testing.T) {
+func TestHybridComputeRegisteredExecutionRecovery(t *testing.T) {
+	for _, machine := range []bool{false, true} {
+		t.Run(fmt.Sprint("machine=", machine), func(t *testing.T) {
+			testHybridComputeRegisteredExecutionRecovery(t, machine)
+		})
+	}
+}
+
+func testHybridComputeRegisteredExecutionRecovery(t *testing.T, machine bool) {
 	logs := []execution.JobLogEntry{}
 	ctx := execution.WithJobLogSink(t.Context(), execution.JobLogSinkFunc(func(_ context.Context, entry execution.JobLogEntry) { logs = append(logs, entry) }))
 	f := newHybridCleanupFixture(t)
+	steps := 3
+	if machine {
+		f.standardMachine()
+		steps = 4
+	}
 	for _, raw := range f.values {
 		if raw["type"] == hybridCommandType {
 			object(object(raw["properties"])["instanceView"])["executionState"] = "Running"
@@ -29,13 +43,13 @@ func TestHybridComputeRegisteredChildExecutionRecovery(t *testing.T) {
 	values := azureNativeWorkerScan(t, f.runtime, hybridComputeSource, repository, registry, []string{hybridMachineType, hybridExtensionType, hybridCommandType, hybridProfileType, hybridLicenseType}, false, true)
 	selectors := []plan.CleanupSelector{}
 	for _, value := range values {
-		if hybridComputeChild(value.Identity.NativeType) {
+		if (!machine && hybridComputeChild(value.Identity.NativeType)) || (machine && value.Identity.NativeType == hybridMachineType) {
 			selectors = append(selectors, plan.CleanupSelector{Kind: plan.SelectorAsset, AssetID: value.ID})
 		}
 	}
 	planner := cleanup.NewService(repository, registry)
 	task, err := planner.CreateTask(ctx, cleanup.CreateTaskRequest{ConnectionID: "connection", Selectors: selectors, CreatedBy: "operator"})
-	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != 3 {
+	if err != nil || task.Task.Status != plan.StatusReady || len(task.Steps) != steps {
 		t.Fatal("Arc child plan", err, task.Task.Status, task.Task.Blockers, len(task.Steps))
 	}
 	warnings := map[asset.AssetID]bool{}
@@ -47,7 +61,7 @@ func TestHybridComputeRegisteredChildExecutionRecovery(t *testing.T) {
 			}
 		}
 	}
-	if len(warnings) != 3 {
+	if len(warnings) != steps {
 		t.Fatal("review omitted Arc deletion consequences", task.Task.Warnings)
 	}
 	attempt, err := planner.CreateExecution(ctx, cleanup.CreateExecutionRequest{ConnectionID: "connection", CleanupTaskID: task.Task.ID, RequestedBy: "operator", IdempotencyKey: "arc-worker", Confirmation: cleanup.ExecutionConfirmation{Acknowledged: true}})
@@ -142,12 +156,12 @@ func TestHybridComputeRegisteredChildExecutionRecovery(t *testing.T) {
 		}
 	}
 	remaining, err := repository.ListActiveAssetsByConnection(ctx, "connection", "")
-	if err != nil || len(remaining) != 2 || len(f.deleted) != 3 || restarts <= 3 {
+	if err != nil || len(remaining) != 5-steps || len(f.deleted) != steps || restarts <= steps {
 		t.Fatal("Arc recovery coverage", err, len(remaining), f.deleted, restarts)
 	}
 	for _, value := range remaining {
-		if hybridComputeChild(value.Identity.NativeType) {
-			t.Fatal("Arc child remained active")
+		if hybridComputeChild(value.Identity.NativeType) || (machine && value.Identity.NativeType != hybridLicenseType) {
+			t.Fatal("unexpected remaining Arc resource")
 		}
 	}
 	encoded, _ := json.Marshal(logs)

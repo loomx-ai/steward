@@ -245003,7 +245003,9 @@
       "nativeType": "Microsoft.HybridCompute/machines",
       "rest": {
         "collection": "machines",
-        "delete_operations": [],
+        "delete_operations": [
+          "Azure.Microsoft.HybridCompute.Machines_Delete"
+        ],
         "list_operations": [
           "Azure.Microsoft.HybridCompute.Machines_ListBySubscription"
         ],

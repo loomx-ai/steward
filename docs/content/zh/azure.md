@@ -32,7 +32,7 @@ Communication Services 的电话号码、预留号码和房间使用独立的 Mi
 
 ## 盘点与清理范围
 
-Steward 识别 434 类资源，其中 403 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
+Steward 识别 434 类资源，其中 404 类具有原生清理操作（包括 Batch 节点移除），执行时受下列条件约束。ARM 返回的其他资源类型作为只读清单展示。覆盖范围仍在扩展，尚未完整覆盖 Azure 的所有产品。
 
 | 产品 | 资源 | 清理能力 |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ Steward 识别 434 类资源，其中 403 类具有原生清理操作（包括 B
 | Data Factory | 工厂、管道、数据集、数据流、链接服务、凭据、触发器、CDC、全局参数、集成运行时及节点、私有连接 | 审查工厂级联；先处理运行时及运行任务；托管虚拟网络随工厂清理 |
 | Data Migration | 经典服务、项目、任务/文件和服务任务；SQL/Mongo 迁移服务及面向 SQL、Cosmos DB 的迁移 | 审查子资源及迁移前置删除；先取消任务、处理运行时节点，再删除服务 |
 | Defender for Cloud | 订阅防护计划及支持的资源级计划状态 | 只读展示服务状态、覆盖率、扩展及继承关系 |
-| Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 扩展、运行命令和机器许可证配置支持审查后清理；机器注册及共享许可证保持只读 |
+| Azure Arc | 机器、扩展、运行命令、许可证配置和共享 ESU 许可证 | 先清理已审查的子资源，再移除普通机器注册；控制器托管机器需通过控制器处理，共享许可证保持只读 |
 | Stream Analytics | 作业、输入、输出、函数、转换、集群和集群私有终结点 | 作业定义随作业删除；集群关联作业须明确选中或先移出集群 |
 | Foundry / Cognitive Services | 账号、部署、项目、代理、连接、能力主机、托管网络、内容过滤与承诺计划 | 先删除部署及已审查的依赖，再软删除账号；不执行永久清除 |
 | Azure AI Search | 服务、专用终结点连接、共享私有链接与网络边界配置视图 | 先删除已审查的连接；边界配置视图随服务清理 |
@@ -90,7 +90,9 @@ Azure Arc 通过原生接口盘点机器和许可证，并在每台机器下枚�
 
 清理 Arc 扩展、运行命令或许可证配置，需要相应的 `Microsoft.HybridCompute/machines/extensions/delete`、`Microsoft.HybridCompute/machines/runCommands/delete` 或 `Microsoft.HybridCompute/machines/licenseProfiles/delete` 权限，以及子资源和机器读取、资源组列表与读取、管理锁读取和适用的 Monitor、诊断设置、RBAC、Fleet、DMS 依赖读取权限。引用这些资源的规则需要先审查并移除。驱动在删除前核验机器注册身份、子资源私有配置、保护标签和托管关系；重启后沿用已保存的签名异步进度，并要求子资源自身 GET 返回 404。父机器消失或异步操作成功不能单独完成清理。
 
-清理计划会提示：删除运行中的 Run Command 会终止脚本；扩展移除需要单独核实代理端结果；删除许可证配置会改变机器许可配置，共享许可证仍保留。许可证配置消失不能证明计费已终止。机器注册及共享 ESU 许可证仍只读。原生子资源 DELETE 不支持 If-Match 条件，重复校验也不能消除最后一次检查与删除之间的变化窗口。参见[微软代理移除指南](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent)。测试覆盖原生协议回放及 SQLite 扫描、图谱、计划和恢复执行；真实代理移除仍待验证。
+清理计划会提示：删除运行中的 Run Command 会终止脚本；扩展移除需要单独核实代理端结果；删除许可证配置会改变机器许可配置，共享许可证仍保留。许可证配置消失不能证明计费已终止。共享 ESU 许可证仍只读。原生 DELETE 不支持 If-Match 条件，重复校验也不能消除最后一次检查与删除之间的变化窗口。参见[微软代理移除指南](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent)。测试覆盖原生协议回放及 SQLite 扫描、图谱、计划和恢复执行；真实代理移除仍待验证。
+
+普通 Arc 机器注册（类型为空、AWS 或 GCP）支持在已审查的扩展、运行命令和许可证配置删除后清理。需要 `Microsoft.HybridCompute/machines/delete` 及三类子集合读取权限；仅扫描机器时也须读取这些子集合。子资源清单缺失时，需先补齐再生成计划；保留子资源会阻止机器删除。即使机器返回 404，系统仍会逐项读取已知和已审查的子资源。计划会提示：移除云端注册后，外部主机和本地代理仍需单独移除。HCI、VMware、SCVMM、AVS、EPS、未知类型及关联父集群的注册受到保护，需通过原生控制器生命周期处理。参见[断开连接与 Azure Local 删除说明](https://learn.microsoft.com/en-us/azure/azure-arc/servers/azcmagent-disconnect)。
 
 Defender for Cloud 计划展示原生 Free/Standard 等级、子计划、试用剩余时间、启用时间、扩展状态、继承关系及资源覆盖率。订阅计划为 Standard 并不代表所有资源均受保护，资源级覆盖配置可能不同。盘点读取订阅计划、VM/VMSS/Arc 机器范围，以及 AKS、ACR 上的 Containers 计划；需要相应范围内的订阅身份、原生父资源列表与读取、`Microsoft.Security/pricings/read` 权限。已知计划会逐项补读，父资源或列表中消失不能单独证明计划不存在。
 

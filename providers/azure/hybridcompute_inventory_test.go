@@ -142,13 +142,15 @@ func TestHybridComputeNativeInventoryAndWorkers(t *testing.T) {
 		t.Fatal("native worker inventory", len(values))
 	}
 	relations, err := repository.ListRelationshipsByConnection(t.Context(), "connection")
-	if err != nil || len(relations) != 4 {
+	if err != nil || len(relations) != 7 {
 		t.Fatal("native Arc references", len(relations), err)
 	}
+	counts := map[graph.RelationshipType]int{}
 	for _, relation := range relations {
-		if relation.Type != graph.RelationshipUses {
-			t.Fatal("Arc reference became ownership", relation)
-		}
+		counts[relation.Type]++
+	}
+	if counts[graph.RelationshipUses] != 4 || counts[graph.RelationshipAttachedTo] != 3 {
+		t.Fatal("Arc references and child ownership", counts)
 	}
 	for _, value := range values {
 		if _, err := f.runtime.ResolveAction(t.Context(), "connection", value); (err == nil) != hybridComputeChild(value.Identity.NativeType) {

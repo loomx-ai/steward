@@ -81,7 +81,7 @@ func (r *Runtime) ResolveAction(ctx context.Context, id asset.ConnectionID, valu
 	if dataMigrationKind(kind.NativeType) != "" {
 		return newDataMigrationAction(c, id, value, kind)
 	}
-	if hybridComputeChild(kind.NativeType) {
+	if hybridComputeChild(kind.NativeType) || kind.NativeType == hybridMachineType {
 		return newHybridComputeAction(c, id, value, kind)
 	}
 	if insightsLegacyKind(kind.NativeType).kind != "" || insightsARMChildKind(kind.NativeType) != "" {

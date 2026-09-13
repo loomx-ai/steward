@@ -63,7 +63,7 @@ func newHybridCleanupFixture(t *testing.T) *hybridCleanupFixture {
 			return nil, false
 		}
 		_, typ, err := parseID(path)
-		if err != nil || !hybridComputeChild(hybridComputeKind(typ)) || f.values[path] == nil || req.URL.Query().Get("api-version") != hybridComputeVersion || len(req.URL.Query()) != 1 || req.Header.Get("If-Match") != "" || req.Header.Get("X-Ms-Client-Request-Id") == "" {
+		if err != nil || (hybridComputeKind(typ) != hybridMachineType && !hybridComputeChild(hybridComputeKind(typ))) || f.values[path] == nil || req.URL.Query().Get("api-version") != hybridComputeVersion || len(req.URL.Query()) != 1 || req.Header.Get("If-Match") != "" || req.Header.Get("X-Ms-Client-Request-Id") == "" {
 			t.Fatal("wrong Arc deletion", req.Method, req.URL.Path)
 		}
 		f.deleted[path]++
@@ -72,9 +72,17 @@ func newHybridCleanupFixture(t *testing.T) *hybridCleanupFixture {
 		}
 		object(f.values[path]["properties"])["provisioningState"] = "Deleting"
 		f.values[path]["etag"] = "after-delete"
-		parent := f.values[hybridComputeParent(path, hybridComputeKind(typ))]
-		parent["etag"] = "changed-by-child-delete"
-		object(parent["properties"])["extensions"] = []any{}
+		if hybridComputeKind(typ) == hybridMachineType {
+			for id, raw := range f.values {
+				if hybridComputeChild(text(raw["type"])) && hybridComputeParent(id, text(raw["type"])) == path {
+					t.Fatal("machine DELETE preceded child absence", id)
+				}
+			}
+		} else {
+			parent := f.values[hybridComputeParent(path, hybridComputeKind(typ))]
+			parent["etag"] = "changed-by-child-delete"
+			object(parent["properties"])["extensions"] = []any{}
+		}
 		if f.deleteStatus != 202 {
 			if !f.hold {
 				delete(f.values, path)

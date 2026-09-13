@@ -101,10 +101,10 @@ func TestAppendSelectionWarningsDescribesScalingGroupForceDelete(t *testing.T) {
 	}
 }
 
-func TestAppendSelectionWarningsDescribesArcChildDeletion(t *testing.T) {
+func TestAppendSelectionWarningsDescribesArcDeletion(t *testing.T) {
 	input := plan.Input{}
 	solved := plan.Result{}
-	for _, kind := range []string{"Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles"} {
+	for _, kind := range []string{"Microsoft.HybridCompute/machines", "Microsoft.HybridCompute/machines/extensions", "Microsoft.HybridCompute/machines/runCommands", "Microsoft.HybridCompute/machines/licenseProfiles"} {
 		value := asset.Asset{ID: asset.AssetID(kind), Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: kind}}
 		input.Assets = append(input.Assets, value)
 		solved.Steps = append(solved.Steps, plan.CleanupTaskStep{AssetID: value.ID})
@@ -112,7 +112,7 @@ func TestAppendSelectionWarningsDescribesArcChildDeletion(t *testing.T) {
 	input.Assets = append(input.Assets, asset.Asset{ID: "unselected", Identity: asset.Identity{Provider: asset.ProviderAzure, NativeType: "Microsoft.HybridCompute/machines/runCommands"}})
 	warnings := appendSelectionWarnings(nil, input, solved)
 	warnings = appendSelectionWarnings(warnings, input, solved)
-	if len(warnings) != 3 {
+	if len(warnings) != 4 {
 		t.Fatal("missing or repeated Arc warning", warnings)
 	}
 	for _, warning := range warnings {

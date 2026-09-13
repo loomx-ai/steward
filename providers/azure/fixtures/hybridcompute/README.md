@@ -4,8 +4,8 @@ Native inventory now covers machines, extensions, Run Commands, license profiles
 and shared licenses. It includes own reads, known omission recovery, native
 parent pagination, repeated snapshot/cursor validation, signed references and
 SQLite scan/graph reconciliation. Extensions, Run Commands and license profiles
-now have native cleanup drivers and restored SQLite execution coverage. Machine
-registrations and shared licenses remain read-only. The ENS mapping is still
+now have native cleanup drivers and restored SQLite execution coverage. Ordinary
+machine registrations support ordered cleanup; shared licenses remain read-only. The ENS mapping is still
 pending. Cloud absence is not physical-server release.
 
 ## Pinned REST examples
@@ -22,7 +22,7 @@ license GET/subscription List; network-profile GET; and hybrid identity metadata
 GET/List. Sixteen operations extend the two machine reads used by Defender.
 No shared-license deletion, script execution or agent configuration write was
 selected. Five regional inventory mappings reference these read operations;
-three child DELETE operations are bound to native cleanup actions.
+four DELETE operations are bound to native cleanup actions.
 
 `TestHybridComputeOfficialContracts` binds every request, checks API-version
 rejection and provenance, and checks all 24 declared responses, including 15
@@ -129,6 +129,33 @@ between phases, and closes exactly the three children after their own absence.
 The machine and shared license remain active. This is offline composed execution
 evidence, separate from the unchanged upstream recordings and schema fixtures.
 
+## Machine registration cleanup
+
+Ordinary registrations (empty kind, AWS or GCP) use native machine DELETE after
+reviewed extension, Run Command and license-profile steps. Controller variants
+(HCI, VMware, SCVMM, AVS, EPS, unknown kinds and parent-cluster-backed machines)
+remain protected. The warning describes cloud registration removal and the
+separate external host/local-agent lifecycle; it does not promise physical release.
+
+Root inventory reads every native child list and each child's own GET, signing
+known membership and private configuration. Saved child IDs recover list omissions.
+The graph records direct exclusive child ownership, never implicit cascading
+absence. Unknown children require inventory reconciliation; retaining a child
+blocks root cleanup. Machine registration/configuration, locks, group protection
+and incoming dependencies are rechecked before mutation. Child deletion may change
+the parent's ETag and embedded child projection; its stable registration stays bound.
+
+Readback checks the root and the union of recorded/reviewed child identities even
+when the root is absent. Operation success, DELETE 404 or parent 404 alone cannot
+complete surviving reviewed children. Receipts bind prerequisites across restarts.
+The SQLite test additionally selects only the machine, reviews four ordered steps,
+restores jobs/runtime/database between phases and leaves only the shared license.
+Other composed tests cover controller eligibility, omitted indexes, missing child
+assets, protection, malformed/tampered requests, late children and residual own reads.
+These tests do not establish agent uninstall or independent live-cloud behavior.
+Hybrid identity metadata and network profiles retain contract evidence only; their
+controller lifecycle and separate inventory remain unfinished.
+
 ## Lifecycle boundaries
 
 - [Agent removal](https://learn.microsoft.com/en-us/azure/azure-arc/servers/uninstall-agent)
@@ -136,8 +163,8 @@ evidence, separate from the unchanged upstream recordings and schema fixtures.
   does not reset local agent state; locally running
   `azcmagent disconnect --force-local-only` can clean up after cloud deletion.
 - [Azure Local VMs have different deletion consequences](https://learn.microsoft.com/en-us/azure/azure-arc/servers/azcmagent-disconnect).
-  Machine kind includes HCI, VMware, SCVMM and other variants. Their ownership
-  and deletion behavior needs an explicit guard before independent cleanup.
+  Machine kind includes HCI, VMware, SCVMM and other variants. These registrations
+  remain protected until their native controller lifecycle is implemented.
 - [Deleting a Run Command](https://learn.microsoft.com/en-us/azure/azure-arc/servers/run-command)
   terminates an executing script. That impact requires review before cleanup.
 - [ESU licenses](https://learn.microsoft.com/en-us/azure/azure-arc/servers/license-extended-security-updates)

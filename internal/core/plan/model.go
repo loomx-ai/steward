@@ -127,15 +127,16 @@ type Blocker struct {
 type WarningCode string
 
 const (
-	WarningManagedResourceDirectCleanup WarningCode = "managed_resource_direct_cleanup"
-	WarningManagedByControllerSkipped   WarningCode = "managed_by_controller"
-	WarningNotActionableSkipped         WarningCode = "not_actionable"
-	WarningScanCoverageIncomplete       WarningCode = "scan_coverage_incomplete"
-	WarningPublicImageMadePrivate       WarningCode = "pre_delete_image_visibility_change"
-	WarningScalingGroupForceDelete      WarningCode = "scaling_group_force_delete"
-	WarningArcExtensionRemoval          WarningCode = "arc_extension_removal"
-	WarningArcCommandTermination        WarningCode = "arc_command_termination"
-	WarningArcLicenseProfileRemoval     WarningCode = "arc_license_profile_removal"
+	WarningManagedResourceDirectCleanup  WarningCode = "managed_resource_direct_cleanup"
+	WarningManagedByControllerSkipped    WarningCode = "managed_by_controller"
+	WarningNotActionableSkipped          WarningCode = "not_actionable"
+	WarningScanCoverageIncomplete        WarningCode = "scan_coverage_incomplete"
+	WarningPublicImageMadePrivate        WarningCode = "pre_delete_image_visibility_change"
+	WarningScalingGroupForceDelete       WarningCode = "scaling_group_force_delete"
+	WarningArcMachineRegistrationRemoval WarningCode = "arc_machine_registration_removal"
+	WarningArcExtensionRemoval           WarningCode = "arc_extension_removal"
+	WarningArcCommandTermination         WarningCode = "arc_command_termination"
+	WarningArcLicenseProfileRemoval      WarningCode = "arc_license_profile_removal"
 )
 
 type Warning struct {
